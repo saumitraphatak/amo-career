@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Techniques — AMO Career</title>
+  <meta name="description" content="Practical instrumentation guide for optical-tweezer and ultracold-atom experiments. Fiber coupling, AOMs, polarimetry, laser locking, optical pumping, RF electronics, and laser systems.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <style>
+    /* ── Page-specific ── */
+    .tip-box {
+      background: rgba(52,211,153,0.06);
+      border-left: 3px solid rgba(52,211,153,0.5);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      padding: var(--sp-3) var(--sp-5);
+      color: #a0ffcc;
+      font-size: 0.875rem;
+      margin: var(--sp-3) 0;
+      line-height: 1.65;
+    }
+    .vendor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: var(--sp-3) var(--sp-4);
+      margin: var(--sp-3) 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .vendor-card a { color: var(--c-lab); }
+    .vendor-card a:hover { color: #fff; }
+    .vendor-card strong { color: var(--text-primary); }
+
+    /* Two-column layout inside accordion/tab panels */
+    .two-col { display: grid; grid-template-columns: 3fr 2fr; gap: var(--sp-6); }
+    .two-col-half { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); }
+
+    /* Calculator card */
+    .calc-card {
+      background: rgba(52,211,153,0.04);
+      border: 1px solid rgba(52,211,153,0.18);
+      border-radius: var(--r-lg);
+      padding: var(--sp-5);
+    }
+    .calc-card h4 { color: var(--c-lab); margin-bottom: var(--sp-4); font-size: 0.875rem; }
+    .calc-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+    .calc-field label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--sp-1); }
+    .calc-field input, .calc-field select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-med);
+      border-radius: var(--r-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color var(--t);
+    }
+    .calc-field input:focus, .calc-field select:focus { border-color: var(--c-lab); }
+    .calc-btn {
+      padding: 8px 20px;
+      background: rgba(52,211,153,0.12);
+      border: 1px solid rgba(52,211,153,0.3);
+      border-radius: var(--r-sm);
+      color: var(--c-lab);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--t);
+      font-family: var(--font-sans);
+      margin-top: var(--sp-2);
+    }
+    .calc-btn:hover { background: rgba(52,211,153,0.2); }
+    .calc-result {
+      display: flex;
+      gap: var(--sp-4);
+      flex-wrap: wrap;
+      margin-top: var(--sp-4);
+    }
+    .calc-metric {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-med);
+      border-radius: var(--r-sm);
+      padding: var(--sp-2) var(--sp-4);
+      min-width: 130px;
+    }
+    .calc-metric-val { font-size: 1.1rem; font-weight: 700; color: var(--c-lab); font-family: var(--font-mono); }
+    .calc-metric-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+    .calc-note { font-size: 0.78rem; color: var(--text-muted); margin-top: var(--sp-2); font-style: italic; }
+    .calc-feedback { margin-top: var(--sp-3); font-size: 0.85rem; }
+
+    /* Lens table */
+    .lens-table { width: 100%; border-collapse: collapse; margin-top: var(--sp-3); font-size: 0.8rem; }
+    .lens-table th { text-align: left; padding: 5px 10px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .lens-table td { padding: 5px 10px; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.04); font-family: var(--font-mono); font-size: 0.78rem; }
+    .lens-table td:first-child { font-family: var(--font-sans); }
+
+    /* Section dividers within tab panels */
+    .tech-section { margin-bottom: var(--sp-10); }
+    .tech-section-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--sp-4); display: flex; align-items: center; gap: var(--sp-3); border-bottom: 1px solid var(--border); padding-bottom: var(--sp-3); }
+
+    /* AOM table */
+    .aom-table { width: 100%; border-collapse: collapse; font-size: 0.825rem; }
+    .aom-table th { padding: var(--sp-2) var(--sp-3); text-align: left; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border-med); }
+    .aom-table td { padding: var(--sp-2) var(--sp-3); color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+    .aom-table td:first-child { color: var(--text-primary); font-weight: 600; }
+
+    /* Stokes table */
+    .stokes-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: var(--sp-4) 0; }
+    .stokes-table th { padding: var(--sp-2) var(--sp-4); text-align: left; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border-med); }
+    .stokes-table td { padding: var(--sp-2) var(--sp-4); border-bottom: 1px solid var(--border); }
+    .stokes-table td:first-child { font-family: var(--font-mono); color: var(--c-atom); font-weight: 600; }
+    .stokes-table td:nth-child(2) { color: var(--text-primary); }
+    .stokes-table td:nth-child(3) { color: var(--text-secondary); font-size: 0.8rem; }
+
+    /* Lock hierarchy display */
+    .hierarchy-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-med);
+      border-radius: var(--r);
+      padding: var(--sp-5) var(--sp-6);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 2;
+      color: var(--text-secondary);
+      overflow-x: auto;
+    }
+    .hier-abs { color: var(--c-atom); }
+    .hier-derived { color: var(--c-lab); }
+    .hier-ref { color: var(--c-qc); }
+
+    /* Laser card */
+    .laser-card-grid { display: grid; grid-template-columns: 3fr 2fr; gap: var(--sp-6); }
+    .laser-detail-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; margin-top: var(--sp-3); }
+    .laser-detail-val { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+    .laser-detail-val strong { color: var(--text-primary); }
+
+    /* Checklist */
+    .checklist { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .checklist-item { display: flex; align-items: flex-start; gap: var(--sp-2); font-size: 0.875rem; color: var(--text-secondary); }
+    .checklist-icon { flex-shrink: 0; color: var(--c-lab); }
+
+    /* Code block */
+    pre.code-block {
+      background: rgba(6,14,28,0.95);
+      border: 1px solid var(--border-med);
+      border-radius: var(--r);
+      padding: var(--sp-5);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: #a0d8ef;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: var(--sp-4) 0;
+    }
+
+    /* References grid */
+    .refs-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-6); }
+    .refs-head { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--sp-4); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--border); }
+    .refs-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .ref-link { font-size: 0.825rem; color: var(--text-muted); transition: color var(--t); display: flex; gap: var(--sp-2); }
+    .ref-link:hover { color: var(--text-primary); }
+    .ref-plain { font-size: 0.825rem; color: var(--text-muted); line-height: 1.5; margin-bottom: var(--sp-2); }
+
+    /* GP demo chart area */
+    .gp-chart-wrap { position: relative; height: 240px; margin: var(--sp-4) 0; }
+
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+      .two-col-half { grid-template-columns: 1fr; }
+      .laser-card-grid { grid-template-columns: 1fr; }
+      .refs-3col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrap">
+
+    <!-- ── Page Hero ──────────────────────────────── -->
+    <div class="page-hero" style="
+      --page-color: var(--c-lab);
+      --page-bg: rgba(52,211,153,0.07);
+      --page-border: rgba(52,211,153,0.2);
+    ">
+      <div class="container">
+        <div class="page-hero-eyebrow" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.2);color:var(--c-lab)">🔬 Tool 02 · Lab Techniques</div>
+        <h1>⚗️ AMO Lab Techniques</h1>
+        <p class="page-hero-desc">
+          Practical instrumentation guide for optical-tweezer and ultracold-atom experiments —
+          covering beam delivery, optical pumping, RF electronics, computational tools, and laser systems.
+          Drawn from Chapter 6 of Phatak (2025), PhD Thesis, Purdue University (Hood Lab).
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Page Content ───────────────────────────── -->
+    <div class="page-content">
+      <div class="container">
+
+        <div class="concept-box anim-in">
+          This page is a practical guide for anyone entering an AMO lab — covering the <strong>how</strong>
+          and <strong>why</strong> behind the core techniques used in optical-tweezer experiments with
+          laser-cooled atoms. The emphasis is on physical reasoning: not just what to do,
+          but why each component is designed the way it is and what breaks when it goes wrong.
+          Use the tabs below to jump to a topic.
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             MAIN TABS
+             ══════════════════════════════════════════ -->
+        <div data-tabs-wrap class="anim-in delay-1 mt-8">
+          <div class="tab-bar" data-group="main" style="--page-color: var(--c-lab)">
+            <button class="tab-btn active" data-tab="beam">🔦 Beam Delivery</button>
+            <button class="tab-btn" data-tab="pumping">🌀 Optical Pumping</button>
+            <button class="tab-btn" data-tab="rf">📡 RF &amp; Electronics</button>
+            <button class="tab-btn" data-tab="comp">💻 Computational Tools</button>
+            <button class="tab-btn" data-tab="lasers">🔴 Laser Systems</button>
+          </div>
+
+          <!-- ══════════════════════════════════════════
+               TAB 1 — BEAM DELIVERY
+               ══════════════════════════════════════════ -->
+          <div class="tab-panel active" data-tab="beam" data-group="main">
+
+            <!-- 1. Fiber Coupling -->
+            <div class="tech-section">
+              <div class="tech-section-title">1 · Optical Fiber Coupling</div>
+              <div class="concept-box">
+                Almost every laser beam in an AMO experiment is delivered to the optical table via
+                optical fiber. This is not merely a convenience: fibers <strong>spatially filter</strong> the
+                beam, <strong>mechanically decouple</strong> the laser table from the experiment table, and
+                allow laser sources to be swapped without realigning downstream optics.
+                The practical consequence is that <em>fiber coupling efficiency determines beam quality at the atom</em>.
+                <br><br>
+                Three fiber types appear in a typical lab:
+                <ul style="margin-top:var(--sp-3);margin-left:var(--sp-5);color:var(--text-secondary);line-height:1.8;font-size:0.9rem">
+                  <li><strong>Single-mode (SM)</strong> — supports only the fundamental HE₁₁ mode; any higher-order input content is rejected. Essential wherever spatial coherence matters.</li>
+                  <li><strong>Polarisation-maintaining (PM)</strong> — SM fiber with stress rods that introduce birefringence; preserves the input polarisation when aligned to the principal axis. Every beam requiring a defined polarisation at the atom must travel on PM fiber.</li>
+                  <li><strong>Multimode (MM)</strong> — large core, easy to couple; used for wavemeter pick-offs, diagnostics, and detection paths where polarisation is unimportant.</li>
+                </ul>
+              </div>
+
+              <!-- Mode-matching accordion -->
+              <div class="accordion">
+                <div class="accordion-header">
+                  <div class="accordion-title">Mode-matching: the key formula + calculator</div>
+                  <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+                <div class="accordion-body">
+                  <div class="two-col">
+                    <div>
+                      <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin-bottom:var(--sp-4)">
+                        A lens of focal length <strong>f</strong> converts an input Gaussian beam of 1/e² radius <strong>w_in</strong> into a focused waist:
+                      </p>
+                      <div class="formula-box">w₀ ≈ λ f / (π w_in)</div>
+                      <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin:var(--sp-3) 0">
+                        The coupling condition is <strong>w₀ = w_f</strong>, where <strong>w_f = MFD/2</strong> is the fiber mode radius.
+                        Solving for the required focal length:
+                      </p>
+                      <div class="formula-box">f = π w_in w_f / λ</div>
+                      <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-top:var(--sp-3)">
+                        <strong>Trade-off:</strong> shorter f → tighter focus, higher peak efficiency, stricter alignment tolerances.
+                        Longer f → more robust over temperature drifts.
+                      </p>
+                      <div class="tip-box" style="margin-top:var(--sp-4)">
+                        <strong>Target:</strong> 50–80% coupling into SM/PM fiber; &gt;80% into MM. PM fiber extinction ratio target: &gt;20 dB (P∥/P⊥ &gt; 100), meaning &lt;1% power in the wrong polarisation axis.
+                      </div>
+                    </div>
+                    <div>
+                      <div class="calc-card">
+                        <h4>🔧 Mode-matching calculator</h4>
+                        <div class="calc-row">
+                          <div class="calc-field">
+                            <label>Wavelength λ (nm)</label>
+                            <input type="number" id="fc-lambda" value="780" min="400" max="1100" step="1">
+                          </div>
+                          <div class="calc-field">
+                            <label>Input beam w_in (mm)</label>
+                            <input type="number" id="fc-win" value="1.5" min="0.5" max="5" step="0.1">
+                          </div>
+                        </div>
+                        <div class="calc-field">
+                          <label>Fiber MFD (μm) — SM-780HP ≈ 5 μm</label>
+                          <input type="number" id="fc-mfd" value="5.0" min="2" max="50" step="0.5">
+                        </div>
+                        <button class="calc-btn" onclick="calcFiber()">Calculate</button>
+                        <div class="calc-result" id="fc-result" style="display:none">
+                          <div class="calc-metric">
+                            <div class="calc-metric-val" id="fc-focal">—</div>
+                            <div class="calc-metric-label">Required focal length</div>
+                          </div>
+                          <div class="calc-metric">
+                            <div class="calc-metric-val" id="fc-waist">—</div>
+                            <div class="calc-metric-label">Focused waist w₀</div>
+                          </div>
+                        </div>
+                        <div id="fc-lens-wrap" style="display:none;margin-top:var(--sp-4)">
+                          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:var(--sp-2)">Thorlabs aspheric lenses at your settings:</div>
+                          <table class="lens-table">
+                            <thead><tr><th>Lens</th><th>f</th><th>w₀</th><th>Match</th></tr></thead>
+                            <tbody id="fc-lens-table"></tbody>
+                          </table>
+                        </div>
+                        <p class="calc-note">Formula: f = π w_in w_f / λ &nbsp;·&nbsp; Verify with VNA or throughput measurement</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div><!-- /accordion mode-match -->
+
+              <!-- PM alignment accordion -->
+              <div class="accordion">
+                <div class="accordion-header">
+                  <div class="accordion-title">PM fiber alignment procedure</div>
+                  <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+                </div>
+                <div class="accordion-body">
+                  <ol style="color:var(--text-secondary);font-size:0.9rem;line-height:2;margin-left:var(--sp-5)">
+                    <li>Use a PBS to prepare clean linear polarisation upstream.</li>
+                    <li>Rotate a HWP after the PBS to align the polarisation to the fiber's keyed (slow/fast) axis.</li>
+                    <li>Optimise coupling for maximum throughput.</li>
+                    <li>Measure extinction ratio (ER) at the output through an analyser PBS.</li>
+                    <li>Iterate HWP angle to maximise ER.</li>
+                  </ol>
+                  <div class="tip-box" style="margin-top:var(--sp-4)">
+                    <strong>Target ER &gt; 20 dB.</strong> Residual polarisation impurity (leakage into the orthogonal axis) is the dominant limit on optical-pumping fidelity and on the σ⁺–σ⁻ purity of gray-molasses imaging beams.
+                  </div>
+                </div>
+              </div>
+
+              <div class="two-col-half" style="margin-top:var(--sp-3)">
+                <div class="vendor-card">📦 <strong>Thorlabs — SM &amp; PM Fibers</strong><br>
+                  <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=10760" target="_blank" rel="noopener">SM-780HP</a> (780 nm, MFD 5.0 μm) ·
+                  <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=740" target="_blank" rel="noopener">PM780-HP</a> (PM, 780 nm) ·
+                  P1-630A-FC (630 nm)
+                </div>
+                <div class="vendor-card">📦 <strong>Thorlabs — Coupling Lenses</strong><br>
+                  <a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=C220TMD-B" target="_blank" rel="noopener">C220TMD</a> (f=11 mm) ·
+                  <a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=C230TMD-B" target="_blank" rel="noopener">C230TMD</a> (f=4.51 mm) ·
+                  <a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=C240TMD-B" target="_blank" rel="noopener">C240TMD</a> (f=8 mm)
+                </div>
+              </div>
+            </div><!-- /tech-section fiber -->
+
+            <!-- 2. Double-Pass AOMs -->
+            <div class="tech-section">
+              <div class="tech-section-title">2 · Double-Pass Acousto-Optic Modulators (AOMs)</div>
+              <div class="concept-box">
+                An AOM diffracts light off a moving acoustic grating, shifting the optical frequency
+                by f_RF while deflecting the beam by the Bragg angle. The problem with a single pass:
+                the Bragg angle depends on f_RF, so <em>tuning the frequency also steers the beam</em>.
+                This coupling is unacceptable for precision experiments.<br><br>
+                The solution is <strong>double-passing</strong>: retroreflect the first-order beam back through the
+                same crystal. The frequency shift doubles to <strong>2 f_RF</strong> and the angular deviations
+                cancel exactly — the output beam direction is <em>independent</em> of f_RF. Every
+                tunable beam in the experiment uses a double-pass AOM.
+              </div>
+
+              <div class="two-col">
+                <div>
+                  <div class="accordion">
+                    <div class="accordion-header">
+                      <div class="accordion-title">Cat's-eye retroreflector geometry</div>
+                      <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+                    </div>
+                    <div class="accordion-body">
+                      <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">The most compact double-pass geometry:</p>
+                      <ol style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5)">
+                        <li>AOM crystal → first-order beam deflected by Bragg angle</li>
+                        <li>Lens (f = one focal length from crystal) collimates and focuses</li>
+                        <li>QWP + mirror at one focal length from lens — retroreflects beam</li>
+                        <li>QWP traversed twice → <strong>polarisation rotated 90°</strong></li>
+                        <li>Second pass through AOM → frequency shifted by another f_RF</li>
+                        <li>PBS transmits the 2f_RF output (orthogonal polarisation) and rejects zero-order</li>
+                      </ol>
+                      <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-top:var(--sp-4)">
+                        The cat's-eye geometry makes retroreflection <strong>insensitive to mirror tilt</strong>, which is why it is preferred over simpler flat-mirror configurations.
+                      </p>
+                      <div style="margin-top:var(--sp-4)">
+                        <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:var(--sp-2)">Typical performance</div>
+                        <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+                          <div class="calc-metric"><div class="calc-metric-val">~90%</div><div class="calc-metric-label">Single-pass eff.</div></div>
+                          <div class="calc-metric"><div class="calc-metric-val">~80%</div><div class="calc-metric-label">Double-pass eff.</div></div>
+                          <div class="calc-metric"><div class="calc-metric-val">40–50 dB</div><div class="calc-metric-label">Extinction (AOM off)</div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="accordion">
+                    <div class="accordion-header">
+                      <div class="accordion-title">Longitudinal vs. shear-wave AOMs</div>
+                      <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+                    </div>
+                    <div class="accordion-body">
+                      <table class="aom-table">
+                        <thead>
+                          <tr><th>Property</th><th>Longitudinal</th><th>Shear-wave</th></tr>
+                        </thead>
+                        <tbody>
+                          <tr><td>Acoustic mode</td><td>Atoms ∥ propagation</td><td>Atoms ⊥ propagation</td></tr>
+                          <tr><td>Sound velocity</td><td>~4–6 km/s</td><td>~1–2 km/s</td></tr>
+                          <tr><td>Deflection angle</td><td>Larger (AOD use)</td><td>Smaller</td></tr>
+                          <tr><td>RF bandwidth</td><td>Broader</td><td>Narrower</td></tr>
+                          <tr><td>Diffraction eff.</td><td>Lower at peak</td><td>Higher at peak</td></tr>
+                        </tbody>
+                      </table>
+                      <div class="tip-box" style="margin-top:var(--sp-4)">
+                        <strong>In the lab:</strong> Cooling/imaging beams → shear-wave AOM.
+                        Tweezer array generation → longitudinal AOM (AOD), because large deflection range is needed to position hundreds of tweezers.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="calc-card">
+                    <h4>🔧 AOM switching-time calculator</h4>
+                    <div class="calc-field" style="margin-bottom:var(--sp-3)">
+                      <label>Acoustic material</label>
+                      <select id="aom-material">
+                        <option value="4.0">TeO₂ (4.0 mm/μs)</option>
+                        <option value="5.9">Fused silica (5.9 mm/μs)</option>
+                        <option value="3.6">PbMoO₄ (3.6 mm/μs)</option>
+                      </select>
+                    </div>
+                    <div class="calc-field" style="margin-bottom:var(--sp-3)">
+                      <label>Beam 1/e² diameter at crystal (μm)</label>
+                      <input type="number" id="aom-diam" value="100" min="20" max="500" step="10">
+                    </div>
+                    <button class="calc-btn" onclick="calcAOM()">Calculate</button>
+                    <div class="calc-result" id="aom-result" style="display:none">
+                      <div class="calc-metric">
+                        <div class="calc-metric-val" id="aom-trise">—</div>
+                        <div class="calc-metric-label">Rise time (10–90%)</div>
+                      </div>
+                    </div>
+                    <div class="calc-feedback" id="aom-feedback" style="display:none"></div>
+                    <p class="calc-note">Formula: t_rise = d_beam / v_s &nbsp;·&nbsp; Focus tighter to get faster switching</p>
+                  </div>
+                  <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>AOM vendors</strong><br>
+                    <a href="https://www.goochandhousego.com/products/acousto-optic-modulators/" target="_blank" rel="noopener">Gooch &amp; Housego</a> ·
+                    <a href="https://www.aaoptoelectronic.com/acousto-optics/aom/" target="_blank" rel="noopener">AA Opto-Electronic</a> (MT series) ·
+                    <a href="https://isomet.com/aom.html" target="_blank" rel="noopener">Isomet</a>
+                  </div>
+                  <div class="vendor-card">📦 <strong>EOM vendors (fast switching)</strong><br>
+                    <a href="https://www.qubig.com/electro-optic-modulator.html" target="_blank" rel="noopener">Qubig</a> ·
+                    <a href="https://www.eospace.com/electro-optic-modulator" target="_blank" rel="noopener">EOSpace</a> ·
+                    <a href="https://www.jenoptik.com/products/optical-systems/electro-optical-components" target="_blank" rel="noopener">Jenoptik</a>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /tech-section AOMs -->
+
+            <!-- 3. Polarimetry -->
+            <div class="tech-section">
+              <div class="tech-section-title">3 · Polarimetry — Stokes Parameters &amp; the Poincaré Sphere</div>
+              <div class="concept-box">
+                Polarisation purity is one of the most critical and least forgiving parameters in AMO experiments.
+                A <strong>1% admixture</strong> of the wrong circular component in an optical-pumping beam can reduce state-preparation fidelity from &gt;99% to &lt;95%.
+                A few percent of linear polarisation in a σ⁺–σ⁻ gray-molasses beam opens decoherence pathways.
+                Measuring polarisation quantitatively — not just qualitatively — is essential.
+              </div>
+
+              <div class="two-col-half">
+                <div>
+                  <h3 style="color:var(--text-primary);font-size:1rem;margin-bottom:var(--sp-3)">Stokes parameters</h3>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-bottom:var(--sp-3)">
+                    The complete polarisation state is described by four intensity measurements:
+                  </p>
+                  <table class="stokes-table">
+                    <thead><tr><th>Parameter</th><th>Meaning</th></tr></thead>
+                    <tbody>
+                      <tr><td>S₀ = I_total</td><td>Total power</td></tr>
+                      <tr><td>S₁ = I_H − I_V</td><td>Horizontal vs. vertical linear</td></tr>
+                      <tr><td>S₂ = I₊₄₅ − I₋₄₅</td><td>Diagonal linear</td></tr>
+                      <tr><td>S₃ = I_RCP − I_LCP</td><td>Right vs. left circular</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="formula-box" style="margin-top:var(--sp-3)">P = √(S₁² + S₂² + S₃²) / S₀</div>
+                  <p style="color:var(--text-muted);font-size:0.78rem;margin-top:var(--sp-2)">
+                    P = degree of polarisation (1 = fully polarised)
+                  </p>
+                </div>
+                <div>
+                  <h3 style="color:var(--text-primary);font-size:1rem;margin-bottom:var(--sp-3)">Rotating-QWP measurement method</h3>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.75">
+                    Place a QWP on a rotation stage before a PBS analyser. As QWP angle θ is swept, transmitted intensity follows:
+                  </p>
+                  <div class="formula-box" style="font-size:0.875rem;line-height:1.8">
+                    I(θ) = ½(A + B sin2θ + C cos4θ + D sin4θ)<br>
+                    S₀ = A − C &nbsp;|&nbsp; S₁ = 2C &nbsp;|&nbsp; S₂ = 2D &nbsp;|&nbsp; S₃ = B
+                  </div>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-top:var(--sp-3)">Use 50–100 evenly spaced angles for reliable results.</p>
+                  <h3 style="color:var(--text-primary);font-size:1rem;margin:var(--sp-4) 0 var(--sp-3)">QWP retardance calibration</h3>
+                  <div class="formula-box">δ = 2 cos⁻¹(√(I_min / I_max))</div>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-top:var(--sp-3)">
+                    Measure between two PBS ports with linear input. Any deviation from 90° is corrected in the fitting procedure.
+                    <strong>Calibrate every QWP</strong> in optical-pumping and imaging paths.
+                  </p>
+                </div>
+              </div>
+
+              <div style="margin-top:var(--sp-3)">
+                <div class="tip-box">
+                  <strong>Poincaré Sphere:</strong>
+                  RCP (σ⁺) sits at the north pole (S₃ = +1), LCP (σ⁻) at the south pole (S₃ = −1).
+                  All linear states lie on the equator. Elliptical states are on the surface.
+                  A pure state has |S| = S₀; partially polarised light has |S| &lt; S₀.
+                </div>
+              </div>
+            </div><!-- /tech-section polarimetry -->
+
+            <!-- 4. Laser Freq Stabilization (nested tabs) -->
+            <div class="tech-section">
+              <div class="tech-section-title">4 · Laser Frequency Stabilisation</div>
+              <div class="concept-box">
+                Free-running diode lasers drift by ~MHz per minute due to temperature and current fluctuations.
+                Atomic transitions have natural linewidths of 5–6 MHz (D1, D2 lines) or even ~3.5 Hz
+                (Cs 5D₅/₂ quadrupole). Three complementary strategies cover all stabilisation needs in the lab, forming a hierarchy.
+              </div>
+
+              <div data-tabs-wrap>
+                <div class="tab-bar" data-group="lock" style="--page-color: var(--c-lab)">
+                  <button class="tab-btn active" data-tab="sas">🔬 SAS Locking</button>
+                  <button class="tab-btn" data-tab="beat">🎵 Beat-Note Locking</button>
+                  <button class="tab-btn" data-tab="pdh">🏗️ PDH Cavity Locking</button>
+                  <button class="tab-btn" data-tab="hierarchy">🗺️ Lock Hierarchy</button>
+                </div>
+
+                <!-- SAS -->
+                <div class="tab-panel active" data-tab="sas" data-group="lock" style="padding-top:var(--sp-5)">
+                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Saturated-Absorption Spectroscopy (SAS) Locking</h3>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                    Two counter-propagating beams through a <strong>heated vapour cell</strong> create a Doppler-free
+                    Lamb dip: only atoms with near-zero velocity see both beams resonantly, so a narrow (~linewidth)
+                    feature appears on the Doppler-broadened background.
+                  </p>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                    <strong>Error signal generation:</strong> FM dithering (current modulation or EOM sideband) +
+                    phase-sensitive detection (lock-in) converts the Lamb dip into an error signal that crosses zero at line centre.
+                  </p>
+                  <div class="tip-box">
+                    <strong>Used for:</strong> Cs 852 nm D2 laser · Li 671 nm D1 laser (direct atomic references).<br>
+                    <strong>Not suitable for:</strong> Cs 685 nm quadrupole line (I_sat ≈ 2.3 W/cm², impractical for SAS) → use PDH cavity lock instead.
+                  </div>
+                  <div class="two-col-half" style="margin-top:var(--sp-4)">
+                    <div class="vendor-card">📦 <strong>Vapour cell suppliers</strong><br>
+                      <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=6816" target="_blank" rel="noopener">Thorlabs Cs/Rb cells</a> ·
+                      <a href="https://www.alvarezresearch.com/" target="_blank" rel="noopener">Alvarez Research</a>
+                    </div>
+                    <div class="vendor-card">📦 <strong>Lock electronics</strong><br>
+                      <a href="https://vescent.com/products/electronics/d2-125-laser-servo/" target="_blank" rel="noopener">Vescent D2-125</a> laser servo ·
+                      <a href="https://www.toptica.com/products/tunable-diode-lasers/stabilization-accessories/" target="_blank" rel="noopener">Toptica DLC Pro</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Beat-note -->
+                <div class="tab-panel" data-tab="beat" data-group="lock" style="padding-top:var(--sp-5)">
+                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Beat-Note (Offset) Locking</h3>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                    When two lasers need a fixed frequency difference, overlap them on a <strong>fast photodiode</strong>
+                    and compare the heterodyne beat-note to an RF reference.
+                  </p>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                    <strong>Example:</strong> Li D2 laser offset phase-locked to Li D1 laser (Vescent electronics),
+                    inheriting the D1 absolute reference while maintaining ~10–100 Hz relative linewidth for coherent Raman processes.
+                  </p>
+                  <div style="margin-bottom:var(--sp-4)">
+                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-2)">Advantages</div>
+                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:1.9;margin-left:var(--sp-5)">
+                      <li>Tunable offset (change RF reference frequency)</li>
+                      <li>Fast relative linewidth (~Hz level)</li>
+                      <li>No vacuum infrastructure required</li>
+                      <li>One well-stabilised master laser as absolute reference</li>
+                    </ul>
+                  </div>
+                  <div class="formula-box" style="text-align:left;line-height:2">
+                    Li D1 (SAS locked, absolute) ──── beat-lock ──→ Li D2<br>
+                    Cs D2 (SAS locked, absolute) ──── beat-lock ──→ Cs repumper
+                  </div>
+                  <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>Beat-note lock electronics</strong><br>
+                    <a href="https://vescent.com/products/electronics/d2-135-offset-phase-lock-servo/" target="_blank" rel="noopener">Vescent D2-135</a> offset PLL ·
+                    <a href="https://www.analog.com/en/products/hmc984.html" target="_blank" rel="noopener">Analog Devices HMC984</a> PFD ·
+                    <a href="https://www.minicircuits.com/WebStore/RF-Mixers.html" target="_blank" rel="noopener">Mini-Circuits</a> RF mixers
+                  </div>
+                </div>
+
+                <!-- PDH -->
+                <div class="tab-panel" data-tab="pdh" data-group="lock" style="padding-top:var(--sp-5)">
+                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Pound-Drever-Hall (PDH) Cavity Locking</h3>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                    For wavelengths without accessible atomic references, or when <strong>sub-kHz linewidth</strong>
+                    is required, lock to a high-finesse Fabry-Pérot cavity.
+                  </p>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                    <strong>Principle:</strong> Phase-modulate the input beam (EOM at Ω) → detect reflected light on
+                    fast photodiode → demodulate at Ω → antisymmetric error signal that crosses zero exactly at cavity resonance.
+                  </p>
+                  <div style="margin-bottom:var(--sp-4)">
+                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-3)">Key parameters — 685 nm lock (Phatak 2025)</div>
+                    <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">77.5 mm</div><div class="calc-metric-label">Cavity length L</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">1.93 GHz</div><div class="calc-metric-label">ν_FSR</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">~15 000</div><div class="calc-metric-label">Finesse F</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">~100 kHz</div><div class="calc-metric-label">Cavity linewidth</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">~1 kHz</div><div class="calc-metric-label">Laser linewidth</div></div>
+                    </div>
+                  </div>
+                  <div class="formula-box" style="text-align:left;line-height:1.8;font-size:0.85rem">
+                    Diode → prism pair (astigmatism) → isolator (30–40 dB) → EOM (27 MHz)<br>
+                    → mode-matching telescope → ULE cavity (vacuum, mK temp. stabilisation)
+                  </div>
+                  <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin:var(--sp-4) 0">
+                    <strong>Two-loop feedback:</strong> Fast path to laser current (MHz BW) + slow path to PZT (kHz BW).
+                    Cavity drift ≈ 2.5 kHz per 0.01°C temperature excursion.
+                  </p>
+                  <div class="warn-box">
+                    <strong>Critical:</strong> Fractional length stability for 1 kHz laser linewidth is δL/L ~ 10⁻¹², corresponding to picometer-scale cavity length control. Thermal isolation at the mK level is non-negotiable.
+                  </div>
+                  <div class="two-col-half" style="margin-top:var(--sp-4)">
+                    <div class="vendor-card">📦 <strong>ULE cavities</strong><br>
+                      <a href="https://www.advanced-thin-films.com/products/optical-cavities/" target="_blank" rel="noopener">Advanced Thin Films</a> ·
+                      <a href="https://www.stable-laser.com/" target="_blank" rel="noopener">Stable Laser Systems</a> ·
+                      <a href="https://www.refoc.us/" target="_blank" rel="noopener">REFoc.us</a>
+                    </div>
+                    <div class="vendor-card">📦 <strong>Reference reading</strong><br>
+                      <a href="https://arxiv.org/abs/physics/0109098" target="_blank" rel="noopener">Black (2001)</a> — PDH tutorial (Am. J. Phys.) ·
+                      <a href="https://doi.org/10.1103/RevModPhys.87.637" target="_blank" rel="noopener">Ludlow et al. (2015)</a> — Optical atomic clocks
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hierarchy -->
+                <div class="tab-panel" data-tab="hierarchy" data-group="lock" style="padding-top:var(--sp-5)">
+                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Lock hierarchy — how all lasers are referenced</h3>
+                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-5)">
+                    The three methods form a complementary hierarchy:
+                  </p>
+                  <table class="aom-table" style="margin-bottom:var(--sp-6)">
+                    <thead><tr><th>Method</th><th>Absolute ref?</th><th>Linewidth</th><th>Infrastructure</th></tr></thead>
+                    <tbody>
+                      <tr><td>SAS</td><td>✅ Yes (atomic line)</td><td>~MHz</td><td>Vapour cell + lock-in</td></tr>
+                      <tr><td>Beat-note</td><td>Via master laser</td><td>~Hz (relative)</td><td>Fast PD + RF electronics</td></tr>
+                      <tr><td>PDH cavity</td><td>Via cavity (ULE)</td><td>~kHz</td><td>Vacuum + thermal control</td></tr>
+                    </tbody>
+                  </table>
+                  <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-3)">Hood Lab hierarchy (Li-Cs experiment)</div>
+                  <div class="hierarchy-block">
+                    <span class="hier-abs">Li D1 (671 nm)</span> ─── <span class="hier-ref">SAS locked</span> ──────────── absolute reference<br>
+                    &nbsp;&nbsp;&nbsp;└── <span class="hier-derived">Li D2 (671 nm)</span> ─────── <span class="hier-ref">beat lock</span> (Vescent D2-135)<br>
+                    <br>
+                    <span class="hier-abs">Cs D2 (852 nm)</span> ─── <span class="hier-ref">SAS locked</span> ──────────── absolute reference<br>
+                    &nbsp;&nbsp;&nbsp;└── <span class="hier-derived">Cs repumper</span> ──────── <span class="hier-ref">beat lock</span><br>
+                    <br>
+                    <span class="hier-derived">Cs 685 nm</span> ──────── <span class="hier-ref">PDH (ULE cavity)</span> ──── &lt;1 kHz linewidth<br>
+                    <span class="hier-derived">1064 nm tweezer</span> ─── free-running (stable Nd:YAG/fiber laser)
+                  </div>
+                </div>
+              </div><!-- /lock sub-tabs -->
+            </div><!-- /tech-section laser stabilization -->
+
+          </div><!-- /tab beam -->
+
+          <!-- ══════════════════════════════════════════
+               TAB 2 — OPTICAL PUMPING
+               ══════════════════════════════════════════ -->
+          <div class="tab-panel" data-tab="pumping" data-group="main">
+            <div class="concept-box" style="margin-bottom:var(--sp-6)">
+              Optical pumping drives an atom into a specific Zeeman sublevel via repeated photon absorption
+              and spontaneous emission cycles. In a tweezer experiment, its purposes are twofold:
+              <ol style="margin-top:var(--sp-3);margin-left:var(--sp-5);color:var(--text-secondary);font-size:0.9rem;line-height:1.9">
+                <li><strong>State preparation</strong> — put the atom in a single, well-defined |F, m_F⟩ state before any coherent manipulation.</li>
+                <li><strong>Detection preparation</strong> — define the initial condition for state-selective fluorescence imaging.</li>
+              </ol>
+              <br>Imperfect optical pumping is a direct source of systematic error in lifetime measurements, qubit state detection, and gate fidelity.
+            </div>
+
+            <div data-tabs-wrap>
+              <div class="tab-bar" data-group="pump" style="--page-color: var(--c-lab)">
+                <button class="tab-btn active" data-tab="cs-pump">🔵 Cesium</button>
+                <button class="tab-btn" data-tab="li-pump">🔴 Lithium</button>
+              </div>
+
+              <!-- Cs pumping -->
+              <div class="tab-panel active" data-tab="cs-pump" data-group="pump" style="padding-top:var(--sp-6)">
+                <div class="two-col">
+                  <div>
+                    <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Cesium: pumping to |F=4, m_F=+4⟩</h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                      <strong>Scheme:</strong> σ⁺-polarised light driving <strong>F=4 → F′=4</strong> has no allowed absorption for an atom
+                      already in m_F=+4 (which would require Δm_F=+1, but no m′_F=+5 exists in the excited state).
+                      That state is <em>dark</em>; all other m_F sublevels are continuously depopulated until the atom accumulates in m_F=+4.
+                    </p>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                      <strong>Repumper:</strong> A beam resonant with F=3→F′=4 returns any population that decayed to F=3.
+                    </p>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                      <strong>Why the magnetic-field direction matters:</strong>
+                      The quantisation axis is defined by the <strong>local B-field</strong>, not the laser k-vector.
+                      If the bias field is misaligned with the beam, the σ⁺ in the lab frame decomposes into σ⁺, π, and σ⁻ in the atom's frame.
+                      Apply a bias field of ~6 G <strong>along the optical axis</strong> of the pumping beam.
+                    </p>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Diagnostic: the depumping-ratio test</h4>
+                    <ol style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5)">
+                      <li>Drive F=4→F′=4 <em>without</em> the repumper — atoms in F=4 scatter photons and heat out of the trap.</li>
+                      <li>Under aligned B-field: atoms in the dark state |4,+4⟩ survive for ~1 ms (off-resonant scattering only).</li>
+                      <li>Under deliberately misaligned B-field (~45°): σ⁺ acquires σ⁻ component → atoms depumped in ~10 μs.</li>
+                      <li><strong>Target depumping ratio &gt; 100</strong> (aligned/misaligned survival times).</li>
+                    </ol>
+                    <p style="color:var(--text-secondary);font-size:0.875rem;margin-top:var(--sp-4);line-height:1.7">
+                      <strong>Adjustment knobs:</strong> laser frequency (exact line centre), QWP orientation (polarisation purity), bias field direction. Together these achieve &gt;99% pumping fidelity.
+                    </p>
+                  </div>
+                  <div>
+                    <div class="tip-box" style="margin-bottom:var(--sp-4)">
+                      <strong>Quick diagnosis checklist:</strong><br>
+                      ✅ ER of pumping beam fiber &gt; 20 dB<br>
+                      ✅ Bias field coil along pump beam axis<br>
+                      ✅ Pump laser on F=4→F′=4 (not F=3→F′=4)<br>
+                      ✅ Repumper on F=3→F′=4<br>
+                      ✅ Depumping ratio &gt; 100<br>
+                      ✅ Pump pulse duration &gt; 5 × (1/Γ_scatter)
+                    </div>
+                    <div class="vendor-card">📦 <strong>Bias coil drivers</strong><br>
+                      <a href="https://www.teamwavelength.com/products/temperature-controllers-laser-diode-drivers/laser-diode-drivers/" target="_blank" rel="noopener">Wavelength Electronics</a> low-noise current sources ·
+                      <a href="https://www.itech.de/en/products/power-supplies/" target="_blank" rel="noopener">itech</a> programmable supplies
+                    </div>
+                    <div class="vendor-card">📦 <strong>Key optics</strong><br>
+                      <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=753" target="_blank" rel="noopener">Thorlabs PBS cubes</a> ·
+                      <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=5128" target="_blank" rel="noopener">Thorlabs QWPs</a> ·
+                      <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=756" target="_blank" rel="noopener">Thorlabs HWPs</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Li pumping -->
+              <div class="tab-panel" data-tab="li-pump" data-group="pump" style="padding-top:var(--sp-6)">
+                <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Lithium: D2-line optical pumping</h3>
+                <div class="warn-box" style="margin-bottom:var(--sp-5)">
+                  <strong>Challenge:</strong> The ⁶Li D2 excited-state hyperfine splitting is only ~5 MHz — comparable to Γ.
+                  Different F′ components overlap, making it impossible to address a single excited hyperfine level cleanly.
+                  In practice, a combination of F=3/2→F′=3/2 and F=1/2→F′=3/2 light is used.
+                </div>
+                <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Procedure</h4>
+                <ol style="color:var(--text-secondary);font-size:0.9rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-5)">
+                  <li>Coarse beam alignment to MOT on the diagonal camera.</li>
+                  <li>Fine alignment on a single trapped atom.</li>
+                  <li>Verify resonance by scanning laser frequency over the atom-loss signal.</li>
+                  <li>Characterise fidelity with the depumping-ratio test (same as Cs).</li>
+                </ol>
+                <div class="two-col-half">
+                  <div class="tip-box">
+                    <strong>Advantage:</strong> Ground-state hyperfine splitting of 228 MHz ≫ D2 linewidth → state-selective probing is clean and free of cross-talk.
+                  </div>
+                  <div class="tip-box">
+                    <strong>Practical note:</strong> In a dual-species (Li+Cs) setup, the Li pumping beams co-propagate with the Cs beams — beam geometry and PM-fiber infrastructure are shared, so only minor frequency and alignment adjustments are needed once Cs pumping is optimised.
+                  </div>
+                </div>
+                <div class="vendor-card" style="margin-top:var(--sp-4)">📄 <strong>References</strong> ·
+                  <a href="https://jet.physics.ncsu.edu/techdocs/pdf/PropertiesOfLi.pdf" target="_blank" rel="noopener">Gehm (2003) — Properties of ⁶Li (NCSU)</a> ·
+                  <a href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener">Steck — Cs D-line data</a>
+                </div>
+              </div>
+            </div><!-- /pump sub-tabs -->
+          </div><!-- /tab pumping -->
+
+          <!-- ══════════════════════════════════════════
+               TAB 3 — RF & ELECTRONICS
+               ══════════════════════════════════════════ -->
+          <div class="tab-panel" data-tab="rf" data-group="main">
+            <div class="concept-box" style="margin-bottom:var(--sp-6)">
+              Coherent control of atomic hyperfine states requires delivering oscillating magnetic fields
+              at precise frequencies — 228 MHz for ⁶Li ground-state splitting, ~76 MHz in the Paschen-Back
+              (high-field) regime, 9.2 GHz for Cs. The engineering challenge is delivering enough B-field
+              amplitude at the atom while fitting inside an existing vacuum apparatus. Safety-critical
+              high-current electronics (Feshbach coils) demand dedicated hardware interlocks that are
+              independent of the computer control system.
+            </div>
+
+            <div data-tabs-wrap>
+              <div class="tab-bar" data-group="rf" style="--page-color: var(--c-lab)">
+                <button class="tab-btn active" data-tab="antenna">📡 Hyperfine Antenna Design</button>
+                <button class="tab-btn" data-tab="safety">⚡ Safety &amp; High-Current</button>
+              </div>
+
+              <!-- Antenna -->
+              <div class="tab-panel active" data-tab="antenna" data-group="rf" style="padding-top:var(--sp-6)">
+                <div class="two-col">
+                  <div>
+                    <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Loop antenna for Li hyperfine transitions</h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-3)">
+                      A <strong>single-turn loop</strong> radiates primarily through its magnetic dipole field.
+                      The radiation resistance of a small loop of area A at frequency f is:
+                    </p>
+                    <div class="formula-box">R_rad ≈ 20π² (2πA/λ²)² Ω</div>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin:var(--sp-4) 0">
+                      For any loop that fits near a vacuum cell, R_rad ≪ 50 Ω. Efficient power delivery
+                      from a 50 Ω source therefore requires an <strong>impedance-matching network</strong>.
+                    </p>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Three approaches tested (with VNA)</h4>
+                    <ol style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
+                      <li><strong>Capacitive loading</strong> — series or parallel capacitor shifts resonance. <em>Result: parallel ~47 pF proved most effective for 76 MHz, compact geometry.</em></li>
+                      <li><strong>Transmission-line stub matching</strong> — moves impedance on Smith chart. Works in principle, but spurious resonances can complicate things.</li>
+                      <li><strong>Discrete LC networks</strong> — more design freedom but more components.</li>
+                    </ol>
+                    <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-bottom:var(--sp-4)">
+                      <strong>Achieved:</strong> reflection minimum ~10 dB, sufficient B-field at the atom with ~100 W amplifier.
+                    </p>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Lessons learned</h4>
+                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:1.9;margin-left:var(--sp-5)">
+                      <li>Lead length (connector to loop) contributes parasitic inductance at 100 MHz — non-negligible.</li>
+                      <li>Simulate with <strong>SimSmith</strong> before building every iteration.</li>
+                      <li>The resonant frequency scales inversely with circumference at fixed inductance.</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <div class="calc-card">
+                      <h4>🔧 Loop antenna quick estimate</h4>
+                      <div class="calc-field" style="margin-bottom:var(--sp-3)">
+                        <label>Target frequency (MHz)</label>
+                        <input type="number" id="ant-freq" value="76" min="10" max="500" step="1">
+                      </div>
+                      <div class="calc-field" style="margin-bottom:var(--sp-3)">
+                        <label>Loop diameter (cm)</label>
+                        <input type="number" id="ant-diam" value="3.0" min="0.5" max="20" step="0.5">
+                      </div>
+                      <button class="calc-btn" onclick="calcAntenna()">Calculate</button>
+                      <div class="calc-result" id="ant-result" style="display:none">
+                        <div class="calc-metric">
+                          <div class="calc-metric-val" id="ant-rrad">—</div>
+                          <div class="calc-metric-label">R_rad (mΩ)</div>
+                        </div>
+                        <div class="calc-metric">
+                          <div class="calc-metric-val" id="ant-l">—</div>
+                          <div class="calc-metric-label">Inductance (nH)</div>
+                        </div>
+                        <div class="calc-metric">
+                          <div class="calc-metric-val" id="ant-c">—</div>
+                          <div class="calc-metric-label">Match capacitor (pF)</div>
+                        </div>
+                      </div>
+                      <p class="calc-note">Approximate formulas — always verify with VNA measurement.</p>
+                    </div>
+                    <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>Tools &amp; instruments</strong><br>
+                      <a href="https://www.siglentna.com/spectrum-vna/ssa3000x-plus-series-spectrum-analyzer-and-svna/" target="_blank" rel="noopener">Siglent SVA1015X</a> VNA ·
+                      <a href="https://www.ae6ty.com/smith_charts.html" target="_blank" rel="noopener">SimSmith</a> (free Smith chart simulator) ·
+                      <a href="https://www.minicircuits.com/WebStore/RF-Amplifiers.html" target="_blank" rel="noopener">Mini-Circuits</a> RF amplifiers
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Safety -->
+              <div class="tab-panel" data-tab="safety" data-group="rf" style="padding-top:var(--sp-6)">
+                <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Feshbach coil safety interlocks</h3>
+                <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                  Feshbach coils produce fields of order <strong>1000 G</strong> by carrying large DC currents.
+                  Sudden current interruption generates inductive voltage spikes that can damage power supplies and coils.
+                </p>
+                <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Hardware interlock logic (essential rules)</h4>
+                <ul style="color:var(--text-secondary);font-size:0.9rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-5)">
+                  <li>Monitor: coil temperature, current level, supply voltage</li>
+                  <li>On threshold exceeded: <strong>ramp down smoothly</strong>, do not switch off abruptly</li>
+                  <li>All interlock logic implemented in <strong>relay hardware</strong>, independent of computer control</li>
+                  <li>Interlock circuit must be untriggerable by software bugs</li>
+                </ul>
+                <div class="warn-box">
+                  <strong>⚠️ Never bypass a hardware interlock for convenience.</strong>
+                  Inductive spikes from sudden coil switching have destroyed power supplies and
+                  cracked coil epoxy in labs worldwide. The hardware interlock is not optional.
+                  A software interlock fails if the computer crashes. A relay cannot be bypassed by software.
+                </div>
+                <div class="vendor-card" style="margin-top:var(--sp-5)">📦 <strong>High-current supplies</strong><br>
+                  <a href="https://www.kepco.com/products/dc-power-supplies/" target="_blank" rel="noopener">Kepco BOP bipolar</a> ·
+                  <a href="https://www.iseg-hv.com/" target="_blank" rel="noopener">iSeg</a> precision current sources ·
+                  <a href="https://www.ametek-programmablepower.com/" target="_blank" rel="noopener">AMETEK Programmable Power</a>
+                </div>
+              </div>
+            </div><!-- /rf sub-tabs -->
+          </div><!-- /tab rf -->
+
+          <!-- ══════════════════════════════════════════
+               TAB 4 — COMPUTATIONAL TOOLS
+               ══════════════════════════════════════════ -->
+          <div class="tab-panel" data-tab="comp" data-group="main">
+            <div class="concept-box" style="margin-bottom:var(--sp-6)">
+              Optimising an ultracold-atom experiment means navigating a high-dimensional continuous parameter space
+              where each measurement takes seconds to minutes. A MOT has ≥5 knobs; a tweezer experiment adds trap depth,
+              cooling polarisation, B-field direction. Naïve grid search over 5 variables × 10 points = 10⁵ trials — months of run time.
+            </div>
+
+            <div data-tabs-wrap>
+              <div class="tab-bar" data-group="comp" style="--page-color: var(--c-lab)">
+                <button class="tab-btn active" data-tab="bayes">🧠 Bayesian Optimisation</button>
+                <button class="tab-btn" data-tab="qutip">🔬 QuTiP Simulation</button>
+              </div>
+
+              <!-- Bayesian Optimisation -->
+              <div class="tab-panel active" data-tab="bayes" data-group="comp" style="padding-top:var(--sp-6)">
+                <div class="two-col">
+                  <div>
+                    <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">How it works</h3>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-3)">
+                      <strong>Gaussian-Process Regression (GPR):</strong> a non-parametric Bayesian model that
+                      maintains a probabilistic map of the response surface (e.g. atom survival vs. laser detuning + power).
+                      At each step it returns a predicted value <strong>and an uncertainty</strong> — unexplored regions have high uncertainty.
+                    </p>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                      <strong>Acquisition function:</strong> selects the next measurement point by trading off exploitation (sample near current optimum) and exploration (reduce uncertainty in poorly sampled regions).
+                    </p>
+                    <table class="aom-table" style="margin-bottom:var(--sp-5)">
+                      <thead><tr><th>Acquisition function</th><th>When to use</th></tr></thead>
+                      <tbody>
+                        <tr><td>Expected Improvement (EI)</td><td>Default; works well near optimum</td></tr>
+                        <tr><td>Upper Confidence Bound (UCB)</td><td>When signal is absent, need broad search</td></tr>
+                        <tr><td>Probability of Improvement (PI)</td><td>Conservative; avoids risk</td></tr>
+                      </tbody>
+                    </table>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Workflow</h4>
+                    <ol style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
+                      <li>Collect 5–20 initial points from Latin hypercube or random design</li>
+                      <li>Train GPR model; inspect posterior mean + uncertainty</li>
+                      <li>Select next point by maximising EI/UCB</li>
+                      <li>Run experiment, append data, retrain, repeat</li>
+                    </ol>
+                    <div class="tip-box">
+                      <strong>Convergence:</strong> 30–100 evaluations for 4–8 dimensional spaces (vs. thousands for grid search).
+                    </div>
+                    <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>Software</strong><br>
+                      <a href="https://scikit-learn.org/stable/modules/gaussian_process.html" target="_blank" rel="noopener">scikit-learn GPR</a> ·
+                      <a href="https://github.com/fmfn/BayesianOptimization" target="_blank" rel="noopener">BayesianOptimization (Python)</a> ·
+                      <a href="https://ax.dev/" target="_blank" rel="noopener">Meta Ax platform</a> ·
+                      <a href="https://arxiv.org/abs/1807.02811" target="_blank" rel="noopener">Shahriari et al. (2016)</a> — BO tutorial
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-3)">GP posterior demo — atom survival vs. cooling detuning</div>
+                    <div class="gp-chart-wrap">
+                      <canvas id="gp-chart"></canvas>
+                    </div>
+                    <p style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:var(--sp-2)">
+                      Grey dotted = true function · Purple band = GP ±2σ · Yellow = observations · Green dashed = next query point
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- QuTiP -->
+              <div class="tab-panel" data-tab="qutip" data-group="comp" style="padding-top:var(--sp-6)">
+                <div class="concept-box" style="margin-bottom:var(--sp-6)">
+                  The master-equation simulations in the Li and Cs chapters are implemented in
+                  <strong>QAtomTweezer</strong> — a purpose-built Python library on top of QuTiP.
+                  The key idea is to treat a single atom with <em>full hyperfine structure</em> coupled
+                  to a <strong>1D harmonic oscillator</strong> representing one motional axis of the tweezer.
+                </div>
+                <div class="two-col-half">
+                  <div>
+                    <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Physical model</h3>
+                    <div class="formula-box" style="text-align:left;line-height:2">H = H_internal ⊗ H_HO</div>
+                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:1.9;margin-left:var(--sp-5);margin:var(--sp-4) 0 var(--sp-4) var(--sp-5)">
+                      <li><strong>H_internal:</strong> all hyperfine and Zeeman sublevels (typically 12–24 states for D1 of an alkali)</li>
+                      <li><strong>H_HO:</strong> harmonic oscillator, truncated at N_HO = 10–20 Fock states</li>
+                      <li>Total dimension: d_int × N_HO (e.g. 12 × 12 = 144 for Li D1)</li>
+                    </ul>
+                    <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.75;margin-bottom:var(--sp-3)">
+                      <strong>Key feature:</strong> the full matrix exponential is used for the recoil operator R̂ = e^(iη(â+â†))
+                      (not the Lamb-Dicke expansion), so the code is valid <em>beyond</em> the strict Lamb-Dicke regime.
+                    </p>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">3 validation cross-checks</h4>
+                    <ol style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5)">
+                      <li>Fock distribution P(n) — fit to Boltzmann to extract T_eff</li>
+                      <li>Excited-state fraction p_e — compare to measured photon rate</li>
+                      <li>Temperature minimum — verify location in 2D parameter scans</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Code structure</h3>
+<pre class="code-block"># Entry points:
+QAtomTweezer.py
+QAtomTweezer_SingleLevel.py
+
+# Main callable:
+SteadyStateTweezer(
+    x,      # [δ1, δ2, Ω1, Ω2, φ1, φ2]
+    wh,     # trap freq in units of Γ
+    Nh,     # HO truncation
+    atom,   # AtomSettings object
+    eta,    # Lamb-Dicke parameter
+    pol,    # polarisation config
+)
+# Returns: ⟨n⟩, P(n), p_e</pre>
+                    <h4 style="color:var(--text-primary);margin:var(--sp-4) 0 var(--sp-3)">Performance</h4>
+                    <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.9rem">1–5 s</div><div class="calc-metric-label">per steady-state eval (144×144)</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.9rem">10–30 min</div><div class="calc-metric-label">2D scan 50×50 (joblib)</div></div>
+                    </div>
+                    <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>Software stack</strong><br>
+                      <a href="https://qutip.org/docs/latest/" target="_blank" rel="noopener">QuTiP documentation</a> ·
+                      <a href="https://joblib.readthedocs.io/" target="_blank" rel="noopener">joblib (parallelism)</a> ·
+                      <a href="https://arxiv.org/abs/1211.6518" target="_blank" rel="noopener">Johansson et al. (2013)</a> — QuTiP 2 paper
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /comp sub-tabs -->
+          </div><!-- /tab comp -->
+
+          <!-- ══════════════════════════════════════════
+               TAB 5 — LASER SYSTEMS
+               ══════════════════════════════════════════ -->
+          <div class="tab-panel" data-tab="lasers" data-group="main">
+            <div class="concept-box" style="margin-bottom:var(--sp-6)">
+              AMO experiments for Li–Cs tweezer work require four distinct laser wavelengths, each with
+              its own technical demands. All are produced by <strong>external-cavity diode lasers (ECDLs)</strong>
+              in Littrow configuration, except the 1064 nm tweezer which uses a commercial Nd:YAG/fiber laser.
+            </div>
+
+            <!-- ECDL accordion -->
+            <div class="accordion">
+              <div class="accordion-header">
+                <div class="accordion-title">External-Cavity Diode Lasers (ECDLs) — general principles</div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="two-col-half">
+                  <div>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                      A bare semiconductor diode lases on multiple longitudinal modes. Two tuning mechanisms in a bare diode:
+                    </p>
+                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
+                      <li>Injection current: ∂ν/∂I ~ 1–3 GHz/A (fast but noisy)</li>
+                      <li>Temperature: ∂ν/∂T ~ −20 to −40 GHz/K (slow, hysteretic)</li>
+                    </ul>
+                    <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
+                      Neither alone provides the narrow linewidth (&lt;100 kHz) or mode-hop-free tuning range (&gt;1 GHz) required.
+                    </p>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">The Littrow ECDL solution</h4>
+                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
+                      <li>Holographic grating at Littrow angle feeds first-order diffraction back into the diode</li>
+                      <li>Selects one longitudinal mode of the extended cavity</li>
+                      <li>Grating angle (PZT-tuned) + injection current → mode-hop-free tuning over 1–2 GHz</li>
+                      <li>AR coating on front facet suppresses internal Fabry-Pérot resonances</li>
+                    </ul>
+                    <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-top:var(--sp-3)">
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.9rem">~100 kHz</div><div class="calc-metric-label">Free-running linewidth</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.9rem">1–2 GHz</div><div class="calc-metric-label">Mode-hop-free scan</div></div>
+                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.9rem">~30 MHz/V</div><div class="calc-metric-label">PZT tuning</div></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Common failure modes</h4>
+                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
+                      <li><strong>Mode hops:</strong> usually from temperature drift; cure with better temperature control</li>
+                      <li><strong>Reduced output:</strong> check AR coating; diodes degrade with age and excessive current</li>
+                      <li><strong>Multiple modes:</strong> grating feedback misaligned; realign while monitoring on wavemeter</li>
+                      <li><strong>Linewidth broadening:</strong> current noise from noisy driver; use low-noise current source</li>
+                    </ul>
+                    <h4 style="color:var(--text-primary);margin-bottom:var(--sp-3)">Alignment tips</h4>
+                    <ol style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
+                      <li>Set temperature for approximate target wavelength</li>
+                      <li>Coarsely align grating to first-order feedback with IR card</li>
+                      <li>Monitor wavelength on wavemeter; find single-mode region</li>
+                      <li>Maximise mode-hop-free range by co-scanning PZT + current (feed-forward)</li>
+                    </ol>
+                    <div class="vendor-card">📦 <strong>ECDL vendors</strong><br>
+                      <a href="https://www.toptica.com/products/tunable-diode-lasers/ecdl-dfb-lasers/dl-pro/" target="_blank" rel="noopener">Toptica DL Pro</a> ·
+                      <a href="https://www.sacher-laser.com/home/home/product_detail/lion/model/lion.html" target="_blank" rel="noopener">Sacher LION</a> ·
+                      <a href="https://www.moglabs.com/products/laser-systems/external-cavity-diode-laser" target="_blank" rel="noopener">MOGLabs CEL</a> ·
+                      <a href="https://www.riotphotonics.com/products/laser-systems/" target="_blank" rel="noopener">RIO Photonics</a> (DFB)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 laser accordions -->
+            <!-- 671 nm -->
+            <div class="accordion" style="border-left: 3px solid #fb923c">
+              <div class="accordion-header">
+                <div class="accordion-title">
+                  <span style="color:#fb923c;font-family:var(--font-mono);font-size:1.1rem">671 nm</span>
+                  — Lithium D-lines (⁶Li / ⁷Li)
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="laser-card-grid">
+                  <div>
+                    <div class="laser-detail-label">Transitions</div>
+                    <p class="laser-detail-val">D1 (670.992 nm) and D2 (670.977 nm)</p>
+                    <div class="laser-detail-label">Role in experiment</div>
+                    <p class="laser-detail-val">MOT (D2), Zeeman slower (D2), Λ-GM cooling and tweezer imaging (D1)</p>
+                    <div class="laser-detail-label">Linewidth</div>
+                    <p class="laser-detail-val"><code>Γ/2π = 5.87 MHz</code> (D1 and D2 nearly identical)</p>
+                    <div class="laser-detail-label">Key challenge</div>
+                    <p class="laser-detail-val">D1 and D2 lines separated by only ~10 GHz — both needed simultaneously. D2 laser offset-locked to D1. Lightest alkali: recoil temperature 3.54 μK, largest recoil in the alkalis.</p>
+                    <div class="laser-detail-label">Locking strategy</div>
+                    <p class="laser-detail-val">D1: SAS locked to vapour cell. D2: beat-note locked to D1 (Vescent D2-135).</p>
+                  </div>
+                  <div>
+                    <div class="laser-detail-label">Laser source</div>
+                    <p class="laser-detail-val">Toptica or home-built ECDL at 671 nm; TA amplifier often needed for MOT power</p>
+                    <div class="vendor-card" style="margin-top:var(--sp-3)">📦 <strong>Diode sources</strong><br>
+                      <a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=L671P200" target="_blank" rel="noopener">Thorlabs L671P200</a> ·
+                      <a href="https://www.eagleyard.com/products/" target="_blank" rel="noopener">Eagleyard Photonics</a> ·
+                      <a href="https://www.lasercomponents.com/us/laser-diodes/" target="_blank" rel="noopener">Laser Components</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 852 nm -->
+            <div class="accordion" style="border-left: 3px solid #34d399">
+              <div class="accordion-header">
+                <div class="accordion-title">
+                  <span style="color:#34d399;font-family:var(--font-mono);font-size:1.1rem">852 nm</span>
+                  — Cesium D2 (¹³³Cs)
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="laser-card-grid">
+                  <div>
+                    <div class="laser-detail-label">Transitions</div>
+                    <p class="laser-detail-val">D2 (852.347 nm); D1 at 894.6 nm also used in some labs</p>
+                    <div class="laser-detail-label">Role</div>
+                    <p class="laser-detail-val">MOT, fluorescence imaging, repumper</p>
+                    <div class="laser-detail-label">Linewidth</div>
+                    <p class="laser-detail-val"><code>Γ/2π = 5.23 MHz</code></p>
+                    <div class="laser-detail-label">Key challenge</div>
+                    <p class="laser-detail-val">Large hyperfine splitting (9.193 GHz) means cooler and repumper must be offset by ~9.2 GHz — use AOM chain or separate laser with beat lock.</p>
+                    <div class="laser-detail-label">Locking strategy</div>
+                    <p class="laser-detail-val">SAS locked directly to Cs D2 line in vapour cell.</p>
+                  </div>
+                  <div>
+                    <div class="vendor-card">📦 <strong>Diode sources</strong><br>
+                      <a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=L852P150" target="_blank" rel="noopener">Thorlabs L852P150</a> ·
+                      <a href="https://www.eagleyard.com/products/" target="_blank" rel="noopener">Eagleyard Photonics</a> ·
+                      <a href="https://www.lasercomponents.com/us/laser-diodes/" target="_blank" rel="noopener">Laser Components</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 685 nm -->
+            <div class="accordion" style="border-left: 3px solid #a78bfa">
+              <div class="accordion-header">
+                <div class="accordion-title">
+                  <span style="color:#a78bfa;font-family:var(--font-mono);font-size:1.1rem">685 nm</span>
+                  — Cesium quadrupole transition (5D₅/₂)
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="laser-card-grid">
+                  <div>
+                    <div class="laser-detail-label">Transitions</div>
+                    <p class="laser-detail-val">6S₁/₂ → 5D₅/₂ (electric quadrupole, Γ/2π ≈ 117.6 kHz = 3.5 Hz natural linewidth)</p>
+                    <div class="laser-detail-label">Role</div>
+                    <p class="laser-detail-val">Narrow-line sideband cooling of Cs in tweezer; excited-state lifetime measurement</p>
+                    <div class="laser-detail-label">Linewidth</div>
+                    <p class="laser-detail-val"><code>Γ/2π = 117.6 kHz</code> &nbsp;(3.5 Hz natural; resolved sidebands at typical trap frequency)</p>
+                    <div class="laser-detail-label">Key challenge</div>
+                    <p class="laser-detail-val"><strong>Forbidden E2 transition</strong> → I_sat ≈ 2.3 W/cm² (much higher than D-lines). No SAS possible. Requires PDH lock to ULE cavity for &lt;1 kHz linewidth. Astigmatism correction needed (prism pair before cavity).</p>
+                    <div class="laser-detail-label">Locking strategy</div>
+                    <p class="laser-detail-val">PDH locked to ULE cavity (L=77.5 mm, F≈15 000, linewidth ~100 kHz). Laser linewidth ~1 kHz.</p>
+                  </div>
+                  <div>
+                    <div class="vendor-card">📦 <strong>Diode source</strong><br>
+                      <a href="https://www.thorlabs.com/thorproduct.cfm?partnumber=L685P010" target="_blank" rel="noopener">Thorlabs L685P010</a> (AR-coated front facet strongly preferred for stable ECDL operation)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1064 nm -->
+            <div class="accordion" style="border-left: 3px solid #fbbf24">
+              <div class="accordion-header">
+                <div class="accordion-title">
+                  <span style="color:#fbbf24;font-family:var(--font-mono);font-size:1.1rem">1064 nm</span>
+                  — Optical tweezer trap (Li + Cs)
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="laser-card-grid">
+                  <div>
+                    <div class="laser-detail-label">Transitions</div>
+                    <p class="laser-detail-val">Far-detuned (no resonant absorption); acts as conservative dipole trap potential</p>
+                    <div class="laser-detail-label">Role</div>
+                    <p class="laser-detail-val">Creates the optical tweezer potential; all atoms trapped in the 1064 nm focus</p>
+                    <div class="laser-detail-label">What matters here</div>
+                    <p class="laser-detail-val"><strong>Intensity noise</strong>, not frequency noise. Intensity noise at trap frequencies (kHz) causes parametric heating.</p>
+                    <div class="laser-detail-label">RIN target</div>
+                    <p class="laser-detail-val"><code>&lt; −130 dBc/Hz</code> at trap sidebands. Needs intensity stabilisation (AOM servo on pick-off PD).</p>
+                    <div class="laser-detail-label">Locking strategy</div>
+                    <p class="laser-detail-val">Free-running (stable Nd:YAG or fiber laser); intensity servo via AOM feedback.</p>
+                  </div>
+                  <div>
+                    <div class="vendor-card">📦 <strong>Laser sources</strong><br>
+                      Coherent Mephisto ·
+                      NKT Photonics Koheras ·
+                      Azurlight fiber amplifier ·
+                      <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=15" target="_blank" rel="noopener">Thorlabs Nd:YAG</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /tab lasers -->
+
+        </div><!-- /main tabs wrap -->
+
+        <!-- ══════════════════════════════════════════
+             REFERENCES
+             ══════════════════════════════════════════ -->
+        <hr class="divider mt-12 mb-8">
+        <h2 class="mb-6 anim-in">📚 References &amp; Further Reading</h2>
+
+        <div class="refs-3col anim-in delay-1">
+          <div>
+            <div class="refs-head">Primary Source &amp; Textbooks</div>
+            <p class="ref-plain"><a href="https://hoodlab.physics.purdue.edu" target="_blank" rel="noopener" style="color:var(--c-lab)">Phatak (2025) — PhD Thesis, Purdue (Chapter 6)</a><br><em>"Cooling Lithium and Cesium Single Atoms in Optical Tweezers"</em></p>
+            <p class="ref-plain" style="margin-top:var(--sp-3)">Metcalf &amp; van der Straten — <em>Laser Cooling and Trapping</em> (1999)</p>
+            <p class="ref-plain">Foot — <em>Atomic Physics</em> (OUP, 2005)</p>
+            <p class="ref-plain">Saleh &amp; Teich — <em>Fundamentals of Photonics</em> (Wiley)</p>
+            <p class="ref-plain">Pozar — <em>Microwave Engineering</em> (Wiley, 4th ed.)</p>
+          </div>
+          <div>
+            <div class="refs-head">Key Papers</div>
+            <div class="refs-list">
+              <a class="ref-link" href="https://arxiv.org/abs/physics/0109098" target="_blank" rel="noopener">📄 Black (2001) — PDH locking tutorial (Am. J. Phys.)</a>
+              <a class="ref-link" href="https://arxiv.org/abs/1211.6518" target="_blank" rel="noopener">📄 Johansson et al. (2013) — QuTiP 2</a>
+              <a class="ref-link" href="https://arxiv.org/abs/2009.07073" target="_blank" rel="noopener">📄 Kaufman &amp; Ni (2021) — Tweezer arrays review</a>
+              <a class="ref-link" href="https://arxiv.org/abs/1807.02811" target="_blank" rel="noopener">📄 Shahriari et al. (2016) — Bayesian optimisation tutorial</a>
+              <a class="ref-link" href="https://arxiv.org/abs/2104.05648" target="_blank" rel="noopener">📄 Torrontegui et al. (2023) — ML for AMO (review)</a>
+            </div>
+          </div>
+          <div>
+            <div class="refs-head">Vendor App Notes &amp; Tools</div>
+            <div class="refs-list">
+              <a class="ref-link" href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=10760" target="_blank" rel="noopener">🔗 Thorlabs fiber coupling guide</a>
+              <a class="ref-link" href="https://www.aaoptoelectronic.com/acousto-optics/aom/" target="_blank" rel="noopener">🔗 AA Opto AOM selection guide</a>
+              <a class="ref-link" href="https://vescent.com/resources/" target="_blank" rel="noopener">🔗 Vescent laser locking app note</a>
+              <a class="ref-link" href="https://www.ae6ty.com/smith_charts.html" target="_blank" rel="noopener">🔗 SimSmith — Smith chart tool</a>
+              <a class="ref-link" href="https://qutip.org/docs/latest/" target="_blank" rel="noopener">🔗 QuTiP documentation</a>
+              <a class="ref-link" href="https://scikit-learn.org/stable/modules/gaussian_process.html" target="_blank" rel="noopener">🔗 scikit-learn GP regression</a>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /container -->
+    </div><!-- /page-content -->
+  </div><!-- /page-wrap -->
+
+  <!-- Scripts -->
+  <script src="../js/main.js"></script>
+  <script>
+    renderNav({ active: 'lab-techniques', root: '../' });
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <script>
+    /* ── Fiber coupling calculator ── */
+    function calcFiber() {
+      const lam   = parseFloat(document.getElementById('fc-lambda').value) * 1e-9;
+      const w_in  = parseFloat(document.getElementById('fc-win').value)    * 1e-3;
+      const mfd   = parseFloat(document.getElementById('fc-mfd').value)    * 1e-6;
+      const w_f   = mfd / 2;
+      const f_req = Math.PI * w_in * w_f / lam;
+      const w0    = lam * f_req / (Math.PI * w_in);
+
+      document.getElementById('fc-focal').textContent = (f_req * 1e3).toFixed(1) + ' mm';
+      document.getElementById('fc-waist').textContent = (w0 * 1e6).toFixed(2) + ' μm';
+      document.getElementById('fc-result').style.display = 'flex';
+
+      // Lens table
+      const lenses = [
+        { name: 'C220TMD', f: 11.0 },
+        { name: 'C230TMD', f: 4.51 },
+        { name: 'C240TMD', f: 8.0  },
+        { name: 'A220TM',  f: 11.0 },
+      ];
+      let html = '';
+      lenses.forEach(lens => {
+        const fM = lens.f * 1e-3;
+        const w0l = lam * fM / (Math.PI * w_in);
+        const ratio = Math.abs(w0l - w_f) / w_f;
+        const note = ratio < 0.2 ? '✅ good match' : (w0l < w_f ? '⚠️ tight' : '⬆️ oversized');
+        html += `<tr>
+          <td><a href="https://www.thorlabs.com/search/thorsearch.cfm?search=${lens.name}" target="_blank" rel="noopener" style="color:var(--c-lab)">${lens.name}</a></td>
+          <td>${lens.f} mm</td>
+          <td>${(w0l * 1e6).toFixed(2)} μm</td>
+          <td>${note}</td>
+        </tr>`;
+      });
+      document.getElementById('fc-lens-table').innerHTML = html;
+      document.getElementById('fc-lens-wrap').style.display = 'block';
+    }
+
+    /* ── AOM switching time calculator ── */
+    function calcAOM() {
+      const vs     = parseFloat(document.getElementById('aom-material').value); // mm/μs
+      const d_um   = parseFloat(document.getElementById('aom-diam').value);      // μm
+      const t_ns   = (d_um * 1e-6) / (vs * 1e3) * 1e9; // ns
+
+      document.getElementById('aom-trise').textContent = t_ns.toFixed(0) + ' ns';
+      document.getElementById('aom-result').style.display = 'flex';
+
+      const fb = document.getElementById('aom-feedback');
+      fb.style.display = 'block';
+      if (t_ns < 10) {
+        fb.innerHTML = '<div class="tip-box">Faster than 10 ns — consider an EOM instead (electro-optic effect is instantaneous).</div>';
+      } else if (t_ns > 200) {
+        fb.innerHTML = '<div class="warn-box">Rise time &gt; 200 ns — focus the beam tighter inside the crystal.</div>';
+      } else {
+        fb.innerHTML = '<div class="tip-box">Good switching speed for most AMO experimental sequences.</div>';
+      }
+    }
+
+    /* ── Loop antenna calculator ── */
+    function calcAntenna() {
+      const f_MHz  = parseFloat(document.getElementById('ant-freq').value);
+      const d_cm   = parseFloat(document.getElementById('ant-diam').value);
+
+      const A   = Math.PI * (d_cm * 1e-2 / 2) ** 2;        // m²
+      const lam = 3e8 / (f_MHz * 1e6);                      // m
+      const R_rad = 20 * Math.PI ** 2 * (2 * Math.PI * A / lam ** 2) ** 2; // Ω
+      const L_nH = 12.566 * (d_cm / 2);                     // nH (approx single-turn)
+      const C_pF = 1e12 / ((2 * Math.PI * f_MHz * 1e6) ** 2 * L_nH * 1e-9); // pF
+
+      document.getElementById('ant-rrad').textContent = (R_rad * 1000).toFixed(2) + ' mΩ';
+      document.getElementById('ant-l').textContent    = L_nH.toFixed(0) + ' nH';
+      document.getElementById('ant-c').textContent    = C_pF.toFixed(0) + ' pF';
+      document.getElementById('ant-result').style.display = 'flex';
+    }
+
+    /* ── GP demo chart (pre-computed data) ── */
+    (function buildGPChart() {
+      const N = 80;
+      const xVals = Array.from({ length: N }, (_, i) => -5 + i * (10 / (N - 1)));
+
+      // "True" function: atom survival vs cooling detuning
+      const yTrue = xVals.map(x =>
+        Math.exp(-0.3 * (x - 1.2) ** 2) * 0.85 + 0.1 * Math.exp(-0.8 * (x + 2) ** 2)
+      );
+
+      // 6 fixed observations
+      const obsX = [-4.2, -1.8, 0.5, 1.1, 2.3, 3.8];
+      const obsY = [0.04, 0.14, 0.63, 0.82, 0.49, 0.12];
+
+      // Simple RBF GP (approximated with pre-baked mu/std)
+      const l = 1.5, sigmaN = 0.02;
+      function rbf(x1, x2) { return Math.exp(-0.5 * ((x1 - x2) / l) ** 2); }
+
+      // Build K(obs,obs) + sigma_n^2 I
+      const n = obsX.length;
+      const K = Array.from({ length: n }, (_, i) =>
+        Array.from({ length: n }, (_, j) => rbf(obsX[i], obsX[j]) + (i === j ? sigmaN ** 2 : 0))
+      );
+
+      // Naive matrix inversion (6×6 is fine)
+      function matInv(M) {
+        const dim = M.length;
+        const aug = M.map((row, i) => [...row, ...Array.from({ length: dim }, (_, j) => i === j ? 1 : 0)]);
+        for (let col = 0; col < dim; col++) {
+          let pivot = col;
+          for (let row = col + 1; row < dim; row++) if (Math.abs(aug[row][col]) > Math.abs(aug[pivot][col])) pivot = row;
+          [aug[col], aug[pivot]] = [aug[pivot], aug[col]];
+          const scale = aug[col][col];
+          for (let j = 0; j < 2 * dim; j++) aug[col][j] /= scale;
+          for (let row = 0; row < dim; row++) {
+            if (row === col) continue;
+            const factor = aug[row][col];
+            for (let j = 0; j < 2 * dim; j++) aug[row][j] -= factor * aug[col][j];
+          }
+        }
+        return aug.map(row => row.slice(dim));
+      }
+
+      const Kinv = matInv(K);
+      // alpha = K_inv @ obsY
+      const alpha = Array.from({ length: n }, (_, i) => obsY.reduce((s, y, j) => s + Kinv[i][j] * y, 0));
+
+      // GP posterior mean and std at each test point
+      const mu  = xVals.map(xt => obsX.reduce((s, xo, i) => s + rbf(xo, xt) * alpha[i], 0));
+      const std = xVals.map(xt => {
+        const kxs = obsX.map(xo => rbf(xo, xt));
+        const kss = 1.0; // rbf(xt,xt) = 1
+        let correction = 0;
+        for (let i = 0; i < n; i++)
+          for (let j = 0; j < n; j++)
+            correction += kxs[i] * Kinv[i][j] * kxs[j];
+        return Math.sqrt(Math.max(0, kss - correction));
+      });
+
+      const muPlus2  = mu.map((m, i) => m + 2 * std[i]);
+      const muMinus2 = mu.map((m, i) => m - 2 * std[i]);
+
+      // Find next query (max of GP mean + 0.5*std = UCB approx)
+      const ucb = mu.map((m, i) => m + 0.5 * std[i]);
+      const nextIdx = ucb.indexOf(Math.max(...ucb));
+      const nextX   = xVals[nextIdx];
+
+      const ctx = document.getElementById('gp-chart').getContext('2d');
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: xVals.map(x => x.toFixed(1)),
+          datasets: [
+            {
+              label: 'True function (hidden)',
+              data: yTrue,
+              borderColor: 'rgba(150,150,180,0.45)',
+              borderDash: [4, 4],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.4,
+            },
+            {
+              label: 'GP +2σ',
+              data: muPlus2,
+              borderColor: 'rgba(167,139,250,0)',
+              pointRadius: 0,
+              fill: '+1',
+              backgroundColor: 'rgba(167,139,250,0.16)',
+              tension: 0.4,
+            },
+            {
+              label: 'GP −2σ',
+              data: muMinus2,
+              borderColor: 'rgba(167,139,250,0)',
+              pointRadius: 0,
+              fill: false,
+              tension: 0.4,
+            },
+            {
+              label: 'GP mean',
+              data: mu,
+              borderColor: '#a78bfa',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              tension: 0.4,
+              fill: false,
+            },
+            {
+              label: 'Next query',
+              data: xVals.map((_, i) => i === nextIdx ? ucb[nextIdx] : null),
+              borderColor: '#34d399',
+              borderDash: [3, 3],
+              borderWidth: 1.5,
+              pointRadius: 6,
+              pointStyle: 'triangle',
+              pointBackgroundColor: '#34d399',
+              showLine: false,
+              fill: false,
+            },
+            {
+              label: 'Observations',
+              data: (() => {
+                const d = Array(N).fill(null);
+                obsX.forEach((ox, oi) => {
+                  const idx = xVals.reduce((bi, v, i) => Math.abs(v - ox) < Math.abs(xVals[bi] - ox) ? i : bi, 0);
+                  d[idx] = obsY[oi];
+                });
+                return d;
+              })(),
+              backgroundColor: '#fbbf24',
+              borderColor: '#fbbf24',
+              pointRadius: 5,
+              showLine: false,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0c1526',
+              borderColor: 'rgba(56,189,248,0.3)',
+              borderWidth: 1,
+              titleColor: '#e2e8f0',
+              bodyColor: '#94a3b8',
+            },
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Cooling detuning (Γ units)', color: '#64748b', font: { size: 11 } },
+              ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 10 },
+              grid:  { color: 'rgba(100,100,150,0.1)' },
+            },
+            y: {
+              title: { display: true, text: 'Atom survival', color: '#64748b', font: { size: 11 } },
+              ticks: { color: '#94a3b8', font: { size: 10 } },
+              grid:  { color: 'rgba(100,100,150,0.1)' },
+              min: -0.05, max: 1.0,
+            },
+          },
+        },
+      });
+    })();
+  </script>
+
+</body>
+</html>
