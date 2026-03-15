@@ -77,7 +77,7 @@ function renderNav({ active = '', root = '' } = {}) {
       <div class="nav-inner">
 
         <!-- Logo -->
-        <a class="nav-logo" href="${root}index.html" aria-label="AMO Career home">
+        <a class="nav-logo" href="${root}home.html" aria-label="AMO Career home">
           <div class="nav-logo-mark">⚛️</div>
           <div>
             <div class="nav-logo-text"><span class="amo">AMO</span> Career</div>
@@ -116,12 +116,12 @@ function renderNav({ active = '', root = '' } = {}) {
             </div>
           </div>
 
-          <a class="nav-btn" href="${root}index.html#about">About</a>
+          <a class="nav-btn" href="${root}home.html#about">About</a>
         </div>
 
         <!-- Right side -->
         <div class="nav-right">
-          <a class="nav-cta" href="${root}index.html#tools">Explore Tools</a>
+          <a class="nav-cta" href="${root}home.html#tools">Explore Tools</a>
         </div>
 
         <!-- Hamburger -->
@@ -143,7 +143,7 @@ function renderNav({ active = '', root = '' } = {}) {
         ${mobileLearn}
       </div>
       <div class="nav-mobile-section">
-        <a class="nav-mobile-link" href="${root}index.html#about">
+        <a class="nav-mobile-link" href="${root}home.html#about">
           <span>👤</span> About
         </a>
       </div>
