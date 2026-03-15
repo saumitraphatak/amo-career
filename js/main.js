@@ -226,10 +226,10 @@ function initTabs() {
         bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Update panels
+        // Update panels — only filter by group when the panel declares one
         const wrap = bar.closest('[data-tabs-wrap]') || document;
         wrap.querySelectorAll(`.tab-panel[data-tab]`).forEach(p => {
-          if (group && p.dataset.group !== group) return;
+          if (p.dataset.group && group && p.dataset.group !== group) return;
           p.classList.toggle('active', p.dataset.tab === target);
         });
       });
