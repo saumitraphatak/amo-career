@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cooling Simulator — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-cool); }
+
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .25rem 0;
+      border-left: 3px solid var(--c-cool); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.25rem .85rem; }
+    .section-block { margin-bottom: 3rem; }
+
+    /* Temperature ladder */
+    .ladder-wrap {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.5rem;
+    }
+
+    /* Theory boxes */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #1e3a5f;
+      border-left: 4px solid var(--c-cool); border-radius: 10px;
+      padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--c-cool); margin: 0 0 .6rem 0; }
+    .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+    .eq { font-family: var(--mono); font-size: .88rem; color: #f0abfc; display: block; margin: .5rem 0; text-align: center; }
+
+    /* Two-col layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 800px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* Chart cards */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1.1rem;
+    }
+    .chart-card h5 {
+      font-size: .85rem; font-weight: 600; color: var(--text-secondary);
+      margin: 0 0 .75rem 0; text-align: center; text-transform: uppercase; letter-spacing: .04em;
+    }
+
+    /* Interactive controls */
+    .ctrl-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+    .ctrl-group label { font-size: .8rem; color: var(--text-muted); display: block; margin-bottom: .25rem; }
+    .ctrl-group input[type=range] { width: 160px; accent-color: var(--c-cool); }
+    .ctrl-val { font-family: var(--mono); font-size: .82rem; color: var(--c-cool); margin-left: .3rem; }
+
+    /* Comparison table */
+    .comp-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .comp-table th {
+      background: #0a1628; color: var(--text-muted); font-weight: 600;
+      padding: .6rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
+    }
+    .comp-table td { padding: .55rem .9rem; border-bottom: 1px solid #0f1e35; color: var(--text-secondary); vertical-align: top; }
+    .comp-table tr:hover td { background: #0c1a2e; }
+    .comp-table .hot { color: #f87171; }
+    .comp-table .mid { color: #fbbf24; }
+    .comp-table .cold { color: var(--c-cool); }
+    .comp-table .ultra { color: #a78bfa; }
+
+    /* Atom guide cards */
+    .atom-guide { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .9rem; }
+    .atom-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1rem 1.1rem;
+      border-top: 3px solid var(--c-cool);
+    }
+    .atom-card h5 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0 0 .4rem 0; }
+    .atom-card .ac-seq { font-size: .78rem; color: var(--c-cool); font-family: var(--mono); margin-bottom: .5rem; }
+    .atom-card p { font-size: .8rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+
+    /* Code block */
+    .code-block {
+      background: #050c18; border: 1px solid #1e3a5f;
+      border-radius: 8px; padding: 1rem 1.25rem;
+      font-family: var(--mono); font-size: .8rem;
+      color: #94a3b8; white-space: pre; overflow-x: auto;
+      line-height: 1.65;
+    }
+    .code-block .kw  { color: #c084fc; }
+    .code-block .fn  { color: #60a5fa; }
+    .code-block .cm  { color: #475569; }
+    .code-block .st  { color: #34d399; }
+    .code-block .num { color: #fbbf24; }
+
+    /* Reference list */
+    .ref-list { list-style: none; padding: 0; margin: 0; }
+    .ref-list li {
+      padding: .6rem 0; border-bottom: 1px solid #0f1e35;
+      font-size: .85rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .ref-list li:last-child { border-bottom: none; }
+    .ref-list .ref-num { color: var(--c-cool); font-family: var(--mono); margin-right: .5rem; }
+
+    /* Lambda diagram */
+    .lambda-svg { display: block; margin: 1rem auto; }
+
+    /* Highlight box */
+    .hi-box {
+      background: linear-gradient(135deg, #0d1f3c, #0a1528);
+      border: 1px solid var(--c-cool); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 1rem;
+    }
+    .hi-box h5 { font-size: .9rem; font-weight: 700; color: var(--c-cool); margin: 0 0 .4rem 0; }
+    .hi-box p  { font-size: .84rem; color: var(--text-secondary); margin: 0; line-height: 1.65; }
+
+    /* Sideband labels */
+    .sb-label { font-size: .75rem; color: var(--text-muted); text-align: center; margin-top: .4rem; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-cool);">
+  <div class="container">
+    <div class="hero-badge anim-in">COOLING METHODS</div>
+    <h1 class="page-title anim-in delay-1">
+      Laser Cooling <span class="grad-text" style="--ga: var(--c-cool); --gb: #818cf8;">Simulator</span>
+    </h1>
+    <p class="page-desc anim-in delay-2">
+      From room temperature to quantum ground state. Explore Doppler cooling, sub-Doppler gray
+      molasses, and resolved-sideband cooling — the three stages that bring atoms to the quantum limit.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">300 K</span><span class="stat-lbl">room temp</span></div>
+      <div class="stat"><span class="stat-val">→ μK</span><span class="stat-lbl">laser cooled</span></div>
+      <div class="stat"><span class="stat-val">→ nK</span><span class="stat-lbl">BEC / tweezer GS</span></div>
+      <div class="stat"><span class="stat-val">⟨n⟩&lt;0.1</span><span class="stat-lbl">motional ground state</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top: 2.5rem;">
+
+  <!-- ═══ TEMPERATURE LADDER ═══ -->
+  <section class="section-block anim-in">
+    <div class="section-title">Temperature Ladder</div>
+    <div class="section-sub">From room temperature to motional ground state — 9 orders of magnitude</div>
+
+    <div class="ladder-wrap">
+      <canvas id="ladderChart" height="260"></canvas>
+    </div>
+
+    <div class="theory-box" style="margin-top: 1.25rem;">
+      <h4>Why Cold Atoms for Quantum Computing?</h4>
+      <p>
+        Gate fidelity for a two-qubit Rydberg entangling gate scales as
+        <span class="eq">ℱ ≈ 1 − α⟨n⟩ − β/Ω_R</span>
+        where ⟨n⟩ is the mean vibrational quantum number and Ω_R is the Rabi frequency.
+        Each cooling stage suppresses thermal motion, reducing state-preparation errors from &gt;10% to &lt;0.5%.
+        Resolved-sideband cooling to ⟨n⟩ &lt; 0.1 is now routine in tweezer arrays.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ TABS ═══ -->
+  <section class="section-block anim-in delay-1">
+    <div data-tabs-wrap>
+      <div class="tab-bar" data-group="cool-main">
+        <button class="tab-btn active" data-tab="doppler">① Doppler Cooling</button>
+        <button class="tab-btn" data-tab="subdoppler">② Sub-Doppler & Gray Molasses</button>
+        <button class="tab-btn" data-tab="sideband">③ Sideband Cooling</button>
+        <button class="tab-btn" data-tab="compare">④ Method Comparison</button>
+        <button class="tab-btn" data-tab="codes">⑤ Simulation Codes</button>
+        <button class="tab-btn" data-tab="refs">⑥ References</button>
+      </div>
+
+      <!-- ══════════════ TAB 1: DOPPLER ══════════════ -->
+      <div class="tab-panel active" data-tab="doppler">
+        <div class="theory-box">
+          <h4>Radiation Pressure Force</h4>
+          <p>
+            A two-level atom moving with velocity v along a laser beam of detuning δ = ω_L − ω_0
+            experiences a Doppler-shifted resonance at ω_0 − kv. The scattering rate
+          </p>
+          <span class="eq">Γ_sc = (Γ/2) · s₀ / [1 + s₀ + (2δ'/Γ)²]</span>
+          <p>
+            where δ' = δ + kv is the effective detuning and s₀ = I/I_sat. With counter-propagating
+            beams the net force becomes velocity-dependent:
+          </p>
+          <span class="eq">F(v) ≈ −αv,    α = ℏk² · 4|δ|s₀Γ / (1 + s₀ + (2δ/Γ)²)²</span>
+          <p>
+            This viscous force (α &gt; 0 for red detuning δ &lt; 0) cools atoms. The minimum
+            Doppler temperature is set by photon recoil:
+          </p>
+          <span class="eq">T_D = ℏΓ / (2k_B)</span>
+        </div>
+
+        <div class="two-col" style="margin-top: 1.25rem;">
+          <!-- Force curve -->
+          <div class="chart-card">
+            <h5>Force Curve F(v) — interactive</h5>
+            <div class="ctrl-row">
+              <div class="ctrl-group">
+                <label>Detuning δ/Γ <span id="detVal" class="ctrl-val">−0.5</span></label>
+                <input type="range" id="detSlide" min="-3" max="-0.1" step="0.05" value="-0.5"
+                  oninput="updateForce()">
+              </div>
+              <div class="ctrl-group">
+                <label>Saturation s₀ <span id="satVal" class="ctrl-val">0.5</span></label>
+                <input type="range" id="satSlide" min="0.05" max="5" step="0.05" value="0.5"
+                  oninput="updateForce()">
+              </div>
+            </div>
+            <canvas id="forceChart" height="220"></canvas>
+            <div class="sb-label">α (damping) = <span id="alphaVal">—</span></div>
+          </div>
+
+          <!-- T_Doppler vs detuning -->
+          <div class="chart-card">
+            <h5>T_Doppler vs Detuning</h5>
+            <canvas id="tdopChart" height="220"></canvas>
+            <div class="sb-label">Minimum T_D = ℏΓ/(2k_B) at δ = −Γ/2</div>
+          </div>
+        </div>
+
+        <div class="theory-box" style="margin-top: 1.25rem;">
+          <h4>Doppler Limit in Practice</h4>
+          <p>
+            For Cs D2 line (Γ/2π = 5.234 MHz): T_D = 125 μK.
+            For ⁶Li D2 (Γ/2π = 5.87 MHz): T_D = 141 μK.
+            Sub-Doppler effects can break this limit, reaching the photon recoil temperature
+            T_r = ℏ²k²/(mk_B).
+          </p>
+          <p>
+            A 3D molasses (6 beams ±x, ±y, ±z) provides isotropic cooling. Adding a magnetic
+            field gradient creates a magneto-optical trap (MOT) that both cools and traps atoms.
+          </p>
+        </div>
+
+        <!-- Atom guide -->
+        <div class="section-title" style="margin-top: 2rem; font-size: 1.1rem;">Doppler Cooling Parameters by Species</div>
+        <div class="atom-guide" style="margin-top: .75rem;">
+          <div class="atom-card">
+            <h5>⁶Li  (671 nm)</h5>
+            <div class="ac-seq">MOT → cMOT → GM</div>
+            <p>Γ/2π = 5.87 MHz. T_D = 141 μK.
+              Unresolved excited hyperfine structure — GM essential for sub-Doppler cooling.
+              T_r = 3.5 μK.</p>
+          </div>
+          <div class="atom-card">
+            <h5>⁸⁷Rb  (780 nm)</h5>
+            <div class="ac-seq">MOT → PGC → evaporation</div>
+            <p>Γ/2π = 6.065 MHz. T_D = 146 μK.
+              Well-resolved F levels. Sub-Doppler polarisation-gradient cooling (PGC) to ~4 μK.</p>
+          </div>
+          <div class="atom-card">
+            <h5>¹³³Cs  (852 nm)</h5>
+            <div class="ac-seq">MOT → cMOT → GM → RSB</div>
+            <p>Γ/2π = 5.234 MHz. T_D = 125 μK.
+              Strong Sisyphus cooling. Tweezer arrays with RSB cooling to ⟨n⟩ &lt; 0.1.</p>
+          </div>
+          <div class="atom-card">
+            <h5>²³Na  (589 nm)</h5>
+            <div class="ac-seq">Zeeman slower → MOT → PGC</div>
+            <p>Γ/2π = 9.795 MHz. T_D = 235 μK.
+              Yellow D2 line. First atom laser (MIT 1997). High evaporation efficiency.</p>
+          </div>
+          <div class="atom-card">
+            <h5>⁸⁸Sr  (689 nm)</h5>
+            <div class="ac-seq">Blue MOT → Red MOT → magic tweezer</div>
+            <p>Narrow-line intercombination: Γ/2π = 7.5 kHz. T_D = 180 nK.
+              Direct sub-μK MOT. Magic wavelength at 813 nm for optical lattice clock.</p>
+          </div>
+          <div class="atom-card">
+            <h5>¹⁷⁴Yb  (556 nm)</h5>
+            <div class="ac-seq">Blue MOT → Green MOT → lattice</div>
+            <p>Narrow ¹S₀→³P₁: Γ/2π = 182 kHz. T_D = 4.4 μK.
+              Nuclear spin I=0. Ideal for SU(N) fermions (¹⁷¹Yb) and optical clocks.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 2: SUB-DOPPLER ══════════════ -->
+      <div class="tab-panel" data-tab="subdoppler">
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Sisyphus Cooling (Polarisation-Gradient)</h4>
+              <p>
+                In a standing wave with spatially varying polarisation (lin⊥lin), the light-shifted
+                sublevel energies vary with position on the scale of λ/4. An atom in |m_F = +F⟩
+                moving in the +x direction climbs a potential hill, losing kinetic energy.
+                At the top it optically pumps to |m_F = −F⟩ (lowest potential at that location),
+                and the cycle repeats — Sisyphus loses kinetic energy each half-cycle.
+              </p>
+              <span class="eq">T_Sisyphus ∝ U₀²/(E_r) ∝ I²/(δ² E_r)</span>
+              <p>
+                Temperature is limited by the photon recoil energy E_r = ℏ²k²/(2m).
+                For Cs: T_r ≈ 200 nK. PGC can reach 2–4 T_r ≈ a few μK.
+              </p>
+            </div>
+
+            <div class="theory-box">
+              <h4>Λ-Enhanced Gray Molasses (GM) for ⁶Li</h4>
+              <p>
+                ⁶Li has an unresolved excited-state hyperfine structure (Δ_HF &lt; Γ), making
+                Sisyphus PGC inefficient. Instead, a <strong>Λ-system gray molasses</strong>
+                (D1 line at 671 nm) exploits a dark state between |F=1/2⟩ and |F=3/2⟩:
+              </p>
+              <span class="eq">|dark⟩ = cos θ |F=1/2⟩ − sin θ |F=3/2⟩</span>
+              <p>
+                Dark-state atoms are velocity-selected: slow atoms stay dark (low scatter),
+                fast atoms couple to the bright state and get cooled. GM achieves
+                T ≈ 40–60 μK for ⁶Li, well below T_D = 141 μK.
+              </p>
+              <p>
+                Our experiment: GM on the D1 line at δ/Γ ≈ +2, reaching T ≈ 50 μK before
+                loading into the optical tweezer array.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <!-- Sisyphus potential chart -->
+            <div class="chart-card">
+              <h5>Sisyphus Potential (lin⊥lin)</h5>
+              <canvas id="sisChart" height="200"></canvas>
+              <div class="sb-label">Sublevel energies U±(x) and optical pumping at crests</div>
+            </div>
+
+            <!-- Lambda diagram (SVG) -->
+            <div class="chart-card" style="margin-top: 1rem;">
+              <h5>Λ System — Gray Molasses Level Diagram</h5>
+              <svg class="lambda-svg" width="280" height="200" viewBox="0 0 280 200">
+                <!-- Ground states -->
+                <line x1="30" y1="170" x2="120" y2="170" stroke="#60a5fa" stroke-width="2"/>
+                <line x1="160" y1="170" x2="250" y2="170" stroke="#34d399" stroke-width="2"/>
+                <text x="70" y="188" fill="#60a5fa" font-size="12" text-anchor="middle">|F=1/2⟩</text>
+                <text x="205" y="188" fill="#34d399" font-size="12" text-anchor="middle">|F=3/2⟩</text>
+                <!-- Excited state -->
+                <line x1="80" y1="60" x2="200" y2="60" stroke="#f0abfc" stroke-width="2"/>
+                <text x="140" y="50" fill="#f0abfc" font-size="12" text-anchor="middle">|e⟩ (D1 excited)</text>
+                <!-- Arrows -->
+                <line x1="85" y1="170" x2="110" y2="65" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr)"/>
+                <line x1="195" y1="170" x2="170" y2="65" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr)"/>
+                <!-- Dark state annotation -->
+                <text x="140" y="130" fill="#fbbf24" font-size="11" text-anchor="middle">|dark⟩</text>
+                <text x="140" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">= cos θ|F=½⟩ − sin θ|F=³/₂⟩</text>
+                <!-- Δ arrow -->
+                <text x="210" y="115" fill="#94a3b8" font-size="10">δ</text>
+                <defs>
+                  <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/>
+                  </marker>
+                </defs>
+              </svg>
+              <div class="sb-label">D1 Λ-system: dark state protected from scattering</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hi-box" style="margin-top: 1.25rem;">
+          <h5>Thesis Result — ⁶Li Gray Molasses</h5>
+          <p>
+            By applying a D1 gray molasses (Ω/2π ≈ 3 Γ, δ/2π ≈ +2 Γ) for 3 ms after the MOT
+            switch-off, we achieved T ≈ 50 μK from T_MOT ≈ 200 μK — a 4× improvement in
+            temperature that directly reduces the motional-state occupation after loading into
+            the tweezer: ⟨n⟩_initial ∝ T/ω_trap.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 3: SIDEBAND ══════════════ -->
+      <div class="tab-panel" data-tab="sideband">
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Harmonic Trap & Sideband Structure</h4>
+              <p>
+                An atom in a harmonic potential with trap frequency ω_trap/2π has quantised
+                motional states |n⟩. The motional sidebands appear at:
+              </p>
+              <span class="eq">ω_carrier ± n·ω_trap/2π</span>
+              <p>
+                In the Lamb-Dicke regime (η² = E_r/ℏω ≪ 1), transition rates on the red
+                sideband (RSB, ω − ω_trap) go as η²n, while the blue sideband (BSB) goes as η²(n+1).
+              </p>
+              <span class="eq">η = k√(ℏ/2mω_trap) = √(E_r/ℏω_trap)</span>
+            </div>
+            <div class="theory-box">
+              <h4>Resolved Sideband Cooling Cycle</h4>
+              <p>
+                Drive the RSB: |g,n⟩ → |e,n−1⟩. Spontaneous emission returns mostly to |g,n−1⟩
+                (Lamb-Dicke suppression). Each cycle removes one vibrational quantum:
+              </p>
+              <span class="eq">⟨ṅ⟩ = −Γ_cool · n + Γ_heat</span>
+              <p>
+                Steady-state: ⟨n⟩_ss = (Γ_heat/Γ_cool) ≈ η²Γ²/(4ω²) for weak sideband.
+                In practice ⟨n⟩_ss &lt; 0.1 is achievable.
+              </p>
+            </div>
+
+            <div class="theory-box">
+              <h4>EIT-Assisted Cooling</h4>
+              <p>
+                Electromagnetically Induced Transparency (EIT) cooling uses a probe + coupling
+                beam to engineer a narrow absorption feature at the RSB frequency.
+                The dark state suppresses carrier scattering while the RSB absorption is enhanced,
+                achieving faster cooling rates than conventional RSB cooling.
+              </p>
+              <span class="eq">⟨n⟩_EIT ≈ (γ_dark/ω_trap)² · 1/4</span>
+              <p>
+                EIT is especially useful for motional frequencies ω_trap &lt; Γ (unresolved sideband
+                regime), enabling ground-state cooling in shallower traps.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <!-- Sideband spectrum -->
+            <div class="chart-card">
+              <h5>Sideband Spectrum — interactive</h5>
+              <div class="ctrl-row">
+                <div class="ctrl-group">
+                  <label>⟨n⟩ <span id="nbarVal" class="ctrl-val">5</span></label>
+                  <input type="range" id="nbarSlide" min="0.1" max="20" step="0.1" value="5"
+                    oninput="updateSideband()">
+                </div>
+                <div class="ctrl-group">
+                  <label>η (Lamb-Dicke) <span id="etaVal" class="ctrl-val">0.15</span></label>
+                  <input type="range" id="etaSlide" min="0.05" max="0.4" step="0.01" value="0.15"
+                    oninput="updateSideband()">
+                </div>
+              </div>
+              <canvas id="sbChart" height="210"></canvas>
+              <div class="sb-label">RSB/BSB asymmetry ≈ ⟨n⟩/(⟨n⟩+1) — thermometry probe</div>
+            </div>
+
+            <!-- Cooling evolution -->
+            <div class="chart-card" style="margin-top: 1rem;">
+              <h5>⟨n⟩(t) Cooling Evolution</h5>
+              <div class="ctrl-row">
+                <div class="ctrl-group">
+                  <label>Initial ⟨n⟩ <span id="n0Val" class="ctrl-val">20</span></label>
+                  <input type="range" id="n0Slide" min="1" max="50" step="1" value="20"
+                    oninput="updateCoolEvo()">
+                </div>
+                <div class="ctrl-group">
+                  <label>Γ_cool/ω <span id="gcVal" class="ctrl-val">0.05</span></label>
+                  <input type="range" id="gcSlide" min="0.01" max="0.2" step="0.005" value="0.05"
+                    oninput="updateCoolEvo()">
+                </div>
+              </div>
+              <canvas id="evoChart" height="210"></canvas>
+              <div class="sb-label">⟨n⟩(t) = ⟨n⟩_ss + (n₀ − ⟨n⟩_ss)e^{−Γ_cool t}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 4: COMPARISON ══════════════ -->
+      <div class="tab-panel" data-tab="compare">
+        <div class="section-title" style="font-size: 1.1rem; margin-bottom: .5rem;">All Cooling Methods at a Glance</div>
+
+        <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Stage</th>
+                <th>T_min</th>
+                <th>Limit</th>
+                <th>Typical atoms</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Zeeman Slower</td>
+                <td>Pre-cooling</td>
+                <td class="hot">~10 mK</td>
+                <td>Doppler</td>
+                <td>Most alkalis, Sr, Yb</td>
+                <td>Slows hot atomic beam before MOT</td>
+              </tr>
+              <tr>
+                <td>3D MOT</td>
+                <td>Stage 1</td>
+                <td class="hot">~100–200 μK</td>
+                <td>Doppler</td>
+                <td>All</td>
+                <td>Combines cooling + 3D spatial trapping</td>
+              </tr>
+              <tr>
+                <td>Compressed MOT (cMOT)</td>
+                <td>Stage 1b</td>
+                <td class="mid">~50 μK</td>
+                <td>Doppler / PGC</td>
+                <td>Cs, Rb, Li</td>
+                <td>Ramp B-field + detuning before sub-Doppler</td>
+              </tr>
+              <tr>
+                <td>Polarisation-Gradient (PGC)</td>
+                <td>Stage 2</td>
+                <td class="mid">2–10 μK</td>
+                <td>Photon recoil</td>
+                <td>Rb, Cs, K, Na</td>
+                <td>lin⊥lin or σ+σ− standing waves, no B-field</td>
+              </tr>
+              <tr>
+                <td>D1 Gray Molasses (GM)</td>
+                <td>Stage 2</td>
+                <td class="mid">~40–60 μK</td>
+                <td>Photon recoil</td>
+                <td>⁶Li, K (unresolved HF)</td>
+                <td>Λ-system dark state, works on D1 line</td>
+              </tr>
+              <tr>
+                <td>Narrow-line MOT (red)</td>
+                <td>Stage 2</td>
+                <td class="cold">~1 μK</td>
+                <td>Photon recoil</td>
+                <td>Sr (689 nm), Yb (556 nm)</td>
+                <td>Single-photon recoil kicks visible; direct sub-μK</td>
+              </tr>
+              <tr>
+                <td>Resolved Sideband (RSB)</td>
+                <td>Stage 3</td>
+                <td class="ultra">⟨n⟩ &lt; 0.1</td>
+                <td>Lamb-Dicke, η</td>
+                <td>Cs, Rb, Ca⁺, Mg⁺ in tweezers/lattices</td>
+                <td>Requires resolved ω_trap &gt; Γ; closes on RSB</td>
+              </tr>
+              <tr>
+                <td>EIT Cooling</td>
+                <td>Stage 3</td>
+                <td class="ultra">⟨n⟩ &lt; 0.1</td>
+                <td>Dark-state linewidth</td>
+                <td>Ca⁺, Mg⁺, Sr, neutral atoms</td>
+                <td>Dark resonance engineered at RSB; faster rate</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Comparison bar chart -->
+        <div class="chart-card">
+          <h5>Temperature Scale Comparison (log₁₀ T / K)</h5>
+          <canvas id="compChart" height="260"></canvas>
+        </div>
+
+        <div class="three-col" style="margin-top: 1.25rem;">
+          <div class="theory-box">
+            <h4>Doppler Limit</h4>
+            <p>T_D = ℏΓ/(2k_B). Set by the balance between laser cooling force and random recoil kicks from spontaneous emission. Scales with linewidth.</p>
+          </div>
+          <div class="theory-box">
+            <h4>Recoil Limit</h4>
+            <p>T_r = ℏ²k²/(mk_B). Every scattered photon imparts ℏk momentum. For Cs: T_r ≈ 198 nK. Fundamental barrier for free-space laser cooling.</p>
+          </div>
+          <div class="theory-box">
+            <h4>Lamb-Dicke Limit</h4>
+            <p>In a trap: ⟨n⟩_ss → η²Γ²/(4ω²). Deep into Lamb-Dicke regime (η → 0) and resolved sidebands (ω ≫ Γ), ⟨n⟩ → 0.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 5: CODES ══════════════ -->
+      <div class="tab-panel" data-tab="codes">
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>pylcp — Laser Cooling Physics</h4>
+              <p>
+                <code>pylcp</code> (Python Laser Cooling Physics) is an open-source package for
+                simulating laser-atom interactions. It supports rate-equation, optical Bloch equation,
+                and Hund's case (a) Hamiltonian approaches.
+              </p>
+            </div>
+            <div class="code-block"><span class="kw">import</span> pylcp
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># Define laser beams (3D molasses)</span>
+laser_beams = pylcp.laserBeams([
+  {<span class="st">'kvec'</span>: np.array([<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>]), <span class="st">'s'</span>: <span class="num">0.5</span>, <span class="st">'delta'</span>: <span class="num">-0.5</span>},
+  {<span class="st">'kvec'</span>: np.array([<span class="num">-1</span>,<span class="num">0</span>,<span class="num">0</span>]), <span class="st">'s'</span>: <span class="num">0.5</span>, <span class="st">'delta'</span>: <span class="num">-0.5</span>},
+  <span class="cm"># ... ±y, ±z beams</span>
+], beam_type=pylcp.infinitePlaneWaveBeam)
+
+<span class="cm"># Define atom (e.g., Rb F=2 → F'=3)</span>
+atom = pylcp.hamiltonians.singleF(
+    F=<span class="num">2</span>, Fp=<span class="num">3</span>, gamma=<span class="num">1</span>, dipole_matrix_element=<span class="num">1</span>
+)
+
+<span class="cm"># Integrate force equation</span>
+eqn = pylcp.rateeq(laser_beams, magField, atom)
+eqn.set_initial_pop(np.array([<span class="num">1</span>/<span class="num">5</span>]*<span class="num">5</span>))
+sol = eqn.equilibrium_populations(r=np.zeros(<span class="num">3</span>), v=np.array([<span class="num">0.1</span>,<span class="num">0</span>,<span class="num">0</span>]))</div>
+          </div>
+
+          <div>
+            <div class="theory-box">
+              <h4>arc — Alkali Rydberg Calculator</h4>
+              <p>
+                <code>arc</code> provides atomic structure data, dipole matrix elements, and
+                Rydberg state properties for alkali atoms. Useful for computing polarizabilities,
+                C₆ coefficients, and Rydberg blockade radii.
+              </p>
+            </div>
+            <div class="code-block"><span class="kw">from</span> arc <span class="kw">import</span> Caesium
+
+atom = Caesium()
+
+<span class="cm"># Get natural linewidth of D2 line</span>
+gamma = atom.getTransitionRate(<span class="num">6</span>,<span class="num">0</span>,<span class="num">0.5</span>, <span class="num">6</span>,<span class="num">1</span>,<span class="num">1.5</span>)
+<span class="fn">print</span>(<span class="st">f"Γ/2π = {gamma/<span class="num">2</span>/np.pi/<span class="num">1e6</span>:.3f} MHz"</span>)
+
+<span class="cm"># Rydberg C6 coefficient for 70S1/2</span>
+C6 = atom.getC6term(<span class="num">70</span>,<span class="num">0</span>,<span class="num">0.5</span>, <span class="num">70</span>,<span class="num">0</span>,<span class="num">0.5</span>)
+R_b = (abs(C6) / (hbar * <span class="num">2</span>*np.pi*<span class="num">1e6</span>)) ** (<span class="num">1</span>/<span class="num">6</span>)
+<span class="fn">print</span>(<span class="st">f"Blockade radius = {R_b*<span class="num">1e6</span>:.1f} μm"</span>)</div>
+
+            <div class="theory-box" style="margin-top: 1rem;">
+              <h4>QuTiP — Quantum Toolbox</h4>
+              <p>
+                For master equation simulation of the density matrix ρ under sideband cooling
+                (Lindblad form):
+              </p>
+              <span class="eq">ρ̇ = −i[H_eff, ρ] + Σ_k (L_k ρ L_k† − ½{L_k†L_k, ρ})</span>
+            </div>
+            <div class="code-block"><span class="kw">import</span> qutip <span class="kw">as</span> qt
+N = <span class="num">30</span>  <span class="cm"># Fock space truncation</span>
+a = qt.destroy(N)
+H = eta * Omega * (a + a.dag())  <span class="cm"># RSB drive</span>
+c_ops = [np.sqrt(gamma) * a]     <span class="cm"># decay</span>
+result = qt.mesolve(H, rho0, tlist, c_ops,
+                    e_ops=[a.dag()*a])</div>
+          </div>
+        </div>
+
+        <div class="hi-box" style="margin-top: 1.25rem;">
+          <h5>Additional Libraries</h5>
+          <p>
+            <strong>AtomicUnits.jl</strong> (Julia) — unit conversions for atomic physics.
+            <strong>QuantumOptics.jl</strong> — fast master-equation solvers in Julia.
+            <strong>MOLSCAT</strong> — molecular scattering for Feshbach resonances.
+            <strong>COMSOL</strong> — FEM for magnetic trap geometry and electrode design.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 6: REFERENCES ══════════════ -->
+      <div class="tab-panel" data-tab="refs">
+        <ul class="ref-list">
+          <li><span class="ref-num">[1]</span> T. W. Hänsch and A. L. Schawlow, "Cooling of gases by laser radiation," <em>Opt. Commun.</em> 13, 68 (1975).</li>
+          <li><span class="ref-num">[2]</span> D. J. Wineland and H. Dehmelt, "Proposed 10¹⁴ δν &lt; ν laser fluorescence spectroscopy on Tl⁺ mono-ion oscillator," <em>Bull. Am. Phys. Soc.</em> 20, 637 (1975).</li>
+          <li><span class="ref-num">[3]</span> S. Chu et al., "Three-dimensional viscous confinement and cooling of atoms by resonance radiation pressure," <em>Phys. Rev. Lett.</em> 55, 48 (1985). Nobel Prize 1997.</li>
+          <li><span class="ref-num">[4]</span> P. D. Lett et al., "Observation of atoms laser cooled below the Doppler limit," <em>Phys. Rev. Lett.</em> 61, 169 (1988).</li>
+          <li><span class="ref-num">[5]</span> J. Dalibard and C. Cohen-Tannoudji, "Laser cooling below the Doppler limit by polarization gradients: simple theoretical models," <em>J. Opt. Soc. Am. B</em> 6, 2023 (1989).</li>
+          <li><span class="ref-num">[6]</span> A. Aspect et al., "Laser cooling below single-photon recoil by velocity-selective coherent population trapping," <em>Phys. Rev. Lett.</em> 61, 826 (1988).</li>
+          <li><span class="ref-num">[7]</span> F. Sievers et al., "Simultaneous sub-Doppler laser cooling of fermionic ⁶Li and ⁴⁰K on the D1 line," <em>Phys. Rev. A</em> 91, 023426 (2015).</li>
+          <li><span class="ref-num">[8]</span> I. Diedrich et al., "Laser cooling to the zero-point energy of motion," <em>Phys. Rev. Lett.</em> 62, 403 (1989). First sideband cooling.</li>
+          <li><span class="ref-num">[9]</span> A. M. Kaufman et al., "Cooling a single atom in an optical tweezer to its quantum ground state," <em>Phys. Rev. X</em> 2, 041014 (2012).</li>
+          <li><span class="ref-num">[10]</span> J. D. Thompson et al., "Coherence and Raman sideband cooling of a single atom in an optical tweezer," <em>Phys. Rev. Lett.</em> 110, 133001 (2013).</li>
+          <li><span class="ref-num">[11]</span> A. J. Park et al., "Cavity-enhanced optical lattice clock," <em>Phys. Rev. X</em> 10, 021078 (2020). EIT cooling in neutral atoms.</li>
+          <li><span class="ref-num">[12]</span> B. J. Lester et al., "Rapid production of uniformly filled atomic arrays," <em>Phys. Rev. Lett.</em> 115, 073003 (2015).</li>
+        </ul>
+      </div>
+    </div><!-- /data-tabs-wrap -->
+  </section>
+
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'cooling-simulator', root: '../' });
+initScrollReveal();
+initTabs();
+
+/* ─── Physical constants ─────────────────────────────── */
+const hbar = 1.0546e-34, kB = 1.3806e-23, amu = 1.6605e-27;
+
+/* ─── TEMPERATURE LADDER ─────────────────────────────── */
+(function() {
+  const stages = [
+    { label: 'Room temperature', T: 300, color: '#ef4444' },
+    { label: 'Zeeman slower', T: 0.05, color: '#f97316' },
+    { label: '3D MOT', T: 150e-6, color: '#eab308' },
+    { label: 'cMOT / PGC', T: 10e-6, color: '#84cc16' },
+    { label: 'Gray Molasses (D1)', T: 50e-6, color: '#60a5fa' },
+    { label: 'Narrow-line MOT', T: 1e-6, color: '#38bdf8' },
+    { label: 'Loaded tweezer', T: 20e-6, color: '#818cf8' },
+    { label: 'RSB / EIT cooled', T: 1e-7, color: '#a78bfa' },
+    { label: 'Motional GS ⟨n⟩<0.1', T: 5e-9, color: '#e879f9' },
+  ];
+  const ctx = document.getElementById('ladderChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: stages.map(s => s.label),
+      datasets: [{
+        data: stages.map(s => Math.log10(s.T)),
+        backgroundColor: stages.map(s => s.color + 'cc'),
+        borderColor: stages.map(s => s.color),
+        borderWidth: 1, borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const T = stages[ctx.dataIndex].T;
+              if (T >= 1) return `T = ${T} K`;
+              if (T >= 1e-3) return `T = ${(T*1e3).toFixed(1)} mK`;
+              if (T >= 1e-6) return `T = ${(T*1e6).toFixed(1)} μK`;
+              if (T >= 1e-9) return `T = ${(T*1e9).toFixed(1)} nK`;
+              return `T = ${T.toExponential(1)} K`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'log₁₀(T / K)', color: '#94a3b8' },
+          ticks: { color: '#64748b', callback: v => `10^${v}` },
+          grid: { color: '#1e293b' },
+        },
+        y: { ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: '#0f1e35' } }
+      }
+    }
+  });
+})();
+
+/* ─── FORCE CURVE ─────────────────────────────────────── */
+let forceChart;
+function buildForceChart() {
+  const ctx = document.getElementById('forceChart').getContext('2d');
+  forceChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { label: 'F(v)/F_max', data: [], borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.3 },
+      { label: 'zero', data: [], borderColor: '#334155', borderWidth: 1, borderDash: [4,4], pointRadius: 0 }
+    ]},
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      scales: {
+        x: { title: { display: true, text: 'v / (Γ/k)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: 'F (arb.)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+function updateForce() {
+  const delta = parseFloat(document.getElementById('detSlide').value);
+  const s0    = parseFloat(document.getElementById('satSlide').value);
+  document.getElementById('detVal').textContent = delta.toFixed(2);
+  document.getElementById('satVal').textContent = s0.toFixed(2);
+
+  // v in units of Γ/k
+  const vs = [], F1 = [], F0 = [];
+  let alpha = 0;
+  for (let vi = -5; vi <= 5; vi += 0.1) {
+    const dp = delta + vi;
+    const dm = delta - vi;
+    const f = 0.5*s0 / (1 + s0 + (2*dp)**2) - 0.5*s0 / (1 + s0 + (2*dm)**2);
+    vs.push(vi.toFixed(2));
+    F1.push(f);
+    F0.push(0);
+    if (Math.abs(vi) < 0.15) alpha = -f / vi; // slope at origin
+  }
+  forceChart.data.labels = vs;
+  forceChart.data.datasets[0].data = F1;
+  forceChart.data.datasets[1].data = F0;
+  forceChart.update('none');
+  document.getElementById('alphaVal').textContent = alpha.toFixed(3) + ' F_max·k/Γ';
+}
+
+/* ─── T_Doppler CHART ─────────────────────────────────── */
+(function() {
+  const ctx = document.getElementById('tdopChart').getContext('2d');
+  const dels = [], Ts = [];
+  for (let d = -5; d <= -0.1; d += 0.05) {
+    dels.push(d.toFixed(2));
+    // T_D ∝ (1 + (2δ/Γ)²) / |δ| * Γ/4  (in units of ℏΓ/2kB)
+    Ts.push((1 + (2*d)**2) / (4*Math.abs(d)));
+  }
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels: dels, datasets: [{
+      label: 'T_D (units of ℏΓ/2k_B)', data: Ts,
+      borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0,
+      fill: true, backgroundColor: '#60a5fa18', tension: 0.3
+    }]},
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      scales: {
+        x: { title: { display: true, text: 'δ / Γ', color: '#94a3b8' },
+             ticks: { color: '#64748b', maxTicksLimit: 7 }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: 'T_D (ℏΓ/2k_B)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, max: 6 }
+      }
+    }
+  });
+})();
+
+/* ─── SISYPHUS POTENTIAL ──────────────────────────────── */
+(function() {
+  const ctx = document.getElementById('sisChart').getContext('2d');
+  const xs = [], Uplus = [], Uminus = [];
+  for (let x = 0; x <= 2; x += 0.01) {
+    xs.push(x.toFixed(2));
+    Uplus.push( Math.cos(2 * Math.PI * x));
+    Uminus.push(-Math.cos(2 * Math.PI * x));
+  }
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels: xs, datasets: [
+      { label: 'U₊(x) (m_F>0)', data: Uplus, borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.3 },
+      { label: 'U₋(x) (m_F<0)', data: Uminus, borderColor: '#f472b6', borderWidth: 2, pointRadius: 0, tension: 0.3 }
+    ]},
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        annotation: { annotations: [] }
+      },
+      scales: {
+        x: { title: { display: true, text: 'x / λ', color: '#94a3b8' },
+             ticks: { color: '#64748b', maxTicksLimit: 5 }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: 'U (arb.)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+})();
+
+/* ─── SIDEBAND SPECTRUM ───────────────────────────────── */
+let sbChart;
+function buildSBChart() {
+  const ctx = document.getElementById('sbChart').getContext('2d');
+  sbChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [], datasets: [{
+      label: 'Sideband strength', data: [],
+      backgroundColor: [], borderColor: [], borderWidth: 1, borderRadius: 3,
+    }]},
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: { display: true, text: 'Probe detuning (ω_trap units)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: 'Transition rate (arb.)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+function updateSideband() {
+  const nbar = parseFloat(document.getElementById('nbarSlide').value);
+  const eta  = parseFloat(document.getElementById('etaSlide').value);
+  document.getElementById('nbarVal').textContent = nbar.toFixed(1);
+  document.getElementById('etaVal').textContent  = eta.toFixed(2);
+
+  const labels = [], vals = [], cols = [];
+  for (let n = -4; n <= 4; n++) {
+    labels.push(n === 0 ? 'carrier' : (n > 0 ? `+${n}BSB` : `${n}RSB`));
+    let val = 0;
+    if (n === 0) val = 1.0 - eta*eta*(2*nbar+1);  // carrier (LD approx)
+    else if (n > 0) val = eta*eta * (nbar + 1);     // BSB ∝ (n̄+1)
+    else            val = eta*eta * nbar;            // RSB ∝ n̄
+    vals.push(Math.max(0, val));
+    cols.push(n < 0 ? '#60a5fa' : n === 0 ? '#fbbf24' : '#f472b6');
+  }
+  sbChart.data.labels = labels;
+  sbChart.data.datasets[0].data = vals;
+  sbChart.data.datasets[0].backgroundColor = cols.map(c => c + 'aa');
+  sbChart.data.datasets[0].borderColor = cols;
+  sbChart.update('none');
+}
+
+/* ─── COOLING EVOLUTION ──────────────────────────────── */
+let evoChart;
+function buildEvoChart() {
+  const ctx = document.getElementById('evoChart').getContext('2d');
+  evoChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { label: '⟨n⟩(t)', data: [], borderColor: '#60a5fa', borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true, backgroundColor: '#60a5fa15' },
+      { label: '⟨n⟩_ss', data: [], borderColor: '#fbbf24', borderWidth: 1.5, borderDash: [5,5], pointRadius: 0 }
+    ]},
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      scales: {
+        x: { title: { display: true, text: 'Γ_cool · t', color: '#94a3b8' },
+             ticks: { color: '#64748b', maxTicksLimit: 6 }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: '⟨n⟩', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+function updateCoolEvo() {
+  const n0 = parseFloat(document.getElementById('n0Slide').value);
+  const gc = parseFloat(document.getElementById('gcSlide').value);
+  document.getElementById('n0Val').textContent = n0.toFixed(0);
+  document.getElementById('gcVal').textContent = gc.toFixed(3);
+
+  // nss = eta^2 * Gamma^2 / (4 omega^2) ≈ gc^2 * 4  (rough)
+  const nss = gc * gc * 4;
+  const ts = [], ns = [], nssLine = [];
+  for (let t = 0; t <= 8; t += 0.1) {
+    ts.push(t.toFixed(1));
+    ns.push(nss + (n0 - nss) * Math.exp(-t));
+    nssLine.push(nss);
+  }
+  evoChart.data.labels = ts;
+  evoChart.data.datasets[0].data = ns;
+  evoChart.data.datasets[1].data = nssLine;
+  evoChart.update('none');
+}
+
+/* ─── COMPARISON BAR ─────────────────────────────────── */
+(function() {
+  const ctx = document.getElementById('compChart').getContext('2d');
+  const methods = ['Room Temp','Zeeman Slower','3D MOT','cMOT / PGC','Gray Molasses','Narrow-line MOT','RSB Cooled','GS (⟨n⟩<0.1)'];
+  const logTs   = [2.48, -1.3, -3.82, -5, -4.3, -6, -7, -8.3];
+  const colors  = ['#ef4444','#f97316','#eab308','#84cc16','#60a5fa','#38bdf8','#a78bfa','#e879f9'];
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: methods,
+      datasets: [{ data: logTs, backgroundColor: colors.map(c => c + 'cc'), borderColor: colors, borderWidth: 1, borderRadius: 5 }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `log₁₀(T) = ${ctx.raw}` } } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: 'log₁₀(T / K)', color: '#94a3b8' },
+             ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+})();
+
+/* ─── INIT INTERACTIVE CHARTS ────────────────────────── */
+buildForceChart(); updateForce();
+buildSBChart();    updateSideband();
+buildEvoChart();   updateCoolEvo();
+</script>
+</body>
+</html>

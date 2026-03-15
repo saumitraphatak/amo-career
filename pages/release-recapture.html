@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Release-Recapture — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-rr); }
+
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .25rem 0;
+      border-left: 3px solid var(--c-rr); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.25rem .85rem; }
+    .section-block { margin-bottom: 3rem; }
+
+    /* Theory */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #2d1f0d;
+      border-left: 4px solid var(--c-rr); border-radius: 10px;
+      padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--c-rr); margin: 0 0 .6rem 0; }
+    .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+    .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc; display: block;
+          margin: .5rem 0; text-align: center; }
+
+    /* Simulator card */
+    .sim-card {
+      background: var(--bg-card); border: 1px solid #2d1f0d;
+      border-radius: 14px; padding: 1.5rem;
+    }
+    .sim-card h3 {
+      font-size: 1.1rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 1.25rem 0; display: flex; align-items: center; gap: .5rem;
+    }
+    .sim-card h3::before { content: '⚡'; }
+
+    /* Controls grid */
+    .ctrl-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem; margin-bottom: 1.25rem;
+    }
+    .ctrl-field label { font-size: .8rem; color: var(--text-muted); display: block; margin-bottom: .35rem; }
+    .ctrl-field input, .ctrl-field select {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 7px; padding: .45rem .75rem;
+      color: var(--text-primary); font-size: .87rem; font-family: var(--mono);
+    }
+    .ctrl-field input:focus, .ctrl-field select:focus {
+      outline: none; border-color: var(--c-rr);
+    }
+    .ctrl-field select option { background: #0a1628; }
+
+    .temp-row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+    .temp-chip {
+      background: #0a1628; border: 1px solid #1e3a5f; border-radius: 6px;
+      padding: .3rem .65rem; font-family: var(--mono); font-size: .8rem;
+      color: var(--text-secondary); display: flex; align-items: center; gap: .4rem;
+    }
+    .temp-chip button { background: none; border: none; color: #64748b; cursor: pointer; font-size: .9rem; padding: 0; }
+    .temp-chip button:hover { color: #ef4444; }
+
+    .run-btn {
+      background: var(--c-rr); color: #000; border: none;
+      border-radius: 8px; padding: .65rem 1.5rem;
+      font-weight: 700; font-size: .9rem; cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    .run-btn:hover { opacity: .9; }
+    .run-btn:active { transform: scale(.97); }
+    .run-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Results */
+    .results-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem;
+    }
+    @media(max-width: 800px) { .results-grid { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: #060e1c; border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1.1rem;
+    }
+    .chart-card h5 {
+      font-size: .85rem; font-weight: 600; color: var(--text-secondary);
+      margin: 0 0 .75rem 0; text-align: center; text-transform: uppercase; letter-spacing: .04em;
+    }
+
+    /* Summary table */
+    .sum-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .75rem; }
+    .sum-table th {
+      background: #0a1628; color: var(--text-muted); font-weight: 600;
+      padding: .55rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
+    }
+    .sum-table td {
+      padding: .5rem .9rem; border-bottom: 1px solid #0f1e35;
+      color: var(--text-secondary); font-family: var(--mono); font-size: .82rem;
+    }
+    .sum-table tr:hover td { background: #0c1a2e; }
+
+    /* Status */
+    .sim-status {
+      font-size: .82rem; color: var(--text-muted);
+      font-family: var(--mono); margin: .5rem 0;
+    }
+    .sim-status.running { color: var(--c-rr); }
+    .sim-status.done    { color: #34d399; }
+
+    /* Physics diagram */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Notes */
+    .note-list { list-style: none; padding: 0; margin: 0; }
+    .note-list li {
+      padding: .5rem 0; border-bottom: 1px solid #0f1e35;
+      font-size: .84rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .note-list li:last-child { border-bottom: none; }
+    .note-list .dot { color: var(--c-rr); margin-right: .5rem; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-rr);">
+  <div class="container">
+    <div class="hero-badge anim-in">TWEEZER THERMOMETRY</div>
+    <h1 class="page-title anim-in delay-1">
+      Release &amp; <span class="grad-text" style="--ga: var(--c-rr); --gb: #fbbf24;">Recapture</span>
+    </h1>
+    <p class="page-desc anim-in delay-2">
+      Monte Carlo thermometry for optical tweezers. Release atoms, let them fly ballistically under
+      gravity, then recapture — the survival curve encodes the temperature.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">N ≥ 500</span><span class="stat-lbl">MC samples</span></div>
+      <div class="stat"><span class="stat-val">D1+D2</span><span class="stat-lbl">polarizability</span></div>
+      <div class="stat"><span class="stat-val">4 species</span><span class="stat-lbl">Cs, Rb, Na, Li</span></div>
+      <div class="stat"><span class="stat-val">gravity</span><span class="stat-lbl">included</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top: 2.5rem;">
+
+  <!-- ═══ PHYSICS ═══ -->
+  <section class="section-block anim-in">
+    <div class="section-title">Physics of Release-Recapture</div>
+    <div class="section-sub">How thermal atoms escape and the survival probability encodes temperature</div>
+
+    <div class="two-col">
+      <div>
+        <div class="theory-box">
+          <h4>1. Dynamic Polarizability</h4>
+          <p>
+            The trap depth of an optical tweezer is set by the AC Stark shift. For an alkali atom
+            with D1 and D2 resonances, the scalar dynamic polarizability is (in atomic units):
+          </p>
+          <span class="eq">α(ω) = Σⱼ ΔEⱼ|dⱼ|² / [3(ΔEⱼ² − ω²)] + α_core</span>
+          <p>
+            where ΔEⱼ = E_excited − E_ground in Hartree, dⱼ is the reduced matrix element in
+            units of e·a₀, and ω is in atomic units (Eₕ/ℏ). Converting to SI and computing
+            the peak intensity:
+          </p>
+          <span class="eq">U₀ = α_SI · I_peak / (c·ε₀),    I_peak = S·2P/(π·w₀²)</span>
+          <p>
+            where S is the Strehl ratio (1 = perfect focus). The trap frequency is then:
+          </p>
+          <span class="eq">ωᵣ = √(4U₀/mw₀²),    ωᵤ = √(2U₀/mzᴿ²)</span>
+        </div>
+
+        <div class="theory-box">
+          <h4>2. Thermal Initial Conditions</h4>
+          <p>
+            In the harmonic approximation of the Gaussian well, the thermal position
+            distribution has widths:
+          </p>
+          <span class="eq">σᵣ = √(k_BT/mωᵣ²) = √(k_BTw₀²/4U₀)</span>
+          <span class="eq">σᵤ = √(k_BT/mωᵤ²) = √(k_BTzᴿ²/2U₀)</span>
+          <p>
+            Velocities are sampled from a Maxwell-Boltzmann distribution:
+          </p>
+          <span class="eq">vₓ,ᵧ,ᵤ ~ 𝒩(0, √(k_BT/m))</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="theory-box">
+          <h4>3. Ballistic Free Flight</h4>
+          <p>
+            During the release time Δt, atoms propagate freely under gravity (along ẑ):
+          </p>
+          <span class="eq">x(Δt) = x₀ + vₓΔt</span>
+          <span class="eq">y(Δt) = y₀ + vᵧΔt</span>
+          <span class="eq">z(Δt) = z₀ + vᵤΔt − ½gΔt²</span>
+          <p>
+            The z-velocity acquires a gravitational component:
+          </p>
+          <span class="eq">vᵤ(Δt) = vᵤ₀ − gΔt</span>
+        </div>
+
+        <div class="theory-box">
+          <h4>4. Recapture Condition</h4>
+          <p>
+            After the tweezer is re-switched on, an atom at position (x_f, y_f, z_f) with
+            velocity v_f is recaptured if its total energy is negative (bound state):
+          </p>
+          <span class="eq">E_total = ½m|v_f|² + U(r_f) &lt; 0</span>
+          <p>
+            where the Gaussian trap potential is:
+          </p>
+          <span class="eq">U(ρ,z) = −U₀ · (w₀/w(z))² · exp(−2ρ²/w(z)²)</span>
+          <span class="eq">w(z) = w₀√(1 + z²/zᴿ²)</span>
+          <p>
+            So the recapture condition becomes:
+            <strong>½m|v_f|² &lt; U₀·(w₀/w(z_f))²·exp(−2ρ_f²/w(z_f)²)</strong>
+          </p>
+        </div>
+
+        <!-- Trajectory diagram (SVG) -->
+        <div class="chart-card" style="margin-top: 0;">
+          <h5>Trajectory Sketch</h5>
+          <svg width="100%" viewBox="0 0 320 180">
+            <!-- Trap focus -->
+            <ellipse cx="160" cy="90" rx="18" ry="8" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="3,3"/>
+            <text x="160" y="107" fill="#fb923c" font-size="10" text-anchor="middle">tweezer</text>
+            <!-- Beam -->
+            <line x1="60" y1="90" x2="260" y2="90" stroke="#fb923c" stroke-width="1" opacity=".4"/>
+            <!-- Trajectories with gravity -->
+            <path d="M160,90 Q180,70 210,95" stroke="#60a5fa" stroke-width="1.5" fill="none"/>
+            <path d="M160,90 Q175,55 215,110" stroke="#34d399" stroke-width="1.5" fill="none"/>
+            <path d="M160,90 Q190,40 240,130" stroke="#f472b6" stroke-width="1.5" fill="none"/>
+            <!-- Arrow labels -->
+            <text x="215" y="92" fill="#60a5fa" font-size="9">cold (recap)</text>
+            <text x="218" y="108" fill="#34d399" font-size="9">warm (barely)</text>
+            <text x="243" y="128" fill="#f472b6" font-size="9">hot (escapes)</text>
+            <!-- Gravity arrow -->
+            <line x1="290" y1="130" x2="290" y2="155" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#garr)"/>
+            <text x="295" y="145" fill="#94a3b8" font-size="9">g</text>
+            <defs>
+              <marker id="garr" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto">
+                <polygon points="0,0 5,2.5 0,5" fill="#94a3b8"/>
+              </marker>
+            </defs>
+            <!-- Δt label -->
+            <text x="160" y="170" fill="#fb923c" font-size="10" text-anchor="middle">← release Δt →</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SIMULATOR ═══ -->
+  <section class="section-block anim-in delay-1">
+    <div class="section-title">Monte Carlo Simulator</div>
+    <div class="section-sub">Port of the Python/NumPy vectorised simulation — runs in your browser</div>
+
+    <div class="sim-card">
+      <h3>Tweezer Parameters</h3>
+
+      <div class="ctrl-grid">
+        <div class="ctrl-field">
+          <label>Atom species</label>
+          <select id="speciesSel">
+            <option value="Cs">¹³³Cs</option>
+            <option value="Rb">⁸⁷Rb</option>
+            <option value="Na">²³Na</option>
+            <option value="Li">⁶Li</option>
+          </select>
+        </div>
+        <div class="ctrl-field">
+          <label>Wavelength (nm)</label>
+          <input type="number" id="lambdaIn" value="1064" min="500" max="1200" step="1">
+        </div>
+        <div class="ctrl-field">
+          <label>Power (mW)</label>
+          <input type="number" id="powerIn" value="1.5" min="0.01" max="100" step="0.1">
+        </div>
+        <div class="ctrl-field">
+          <label>Beam waist w₀ (μm)</label>
+          <input type="number" id="waistIn" value="0.8" min="0.3" max="5" step="0.05">
+        </div>
+        <div class="ctrl-field">
+          <label>Strehl ratio S</label>
+          <input type="number" id="strehlIn" value="0.9" min="0.1" max="1.0" step="0.05">
+        </div>
+        <div class="ctrl-field">
+          <label>MC samples N</label>
+          <select id="mcNSel">
+            <option value="300">300 (fast)</option>
+            <option value="600" selected>600 (default)</option>
+            <option value="1500">1500 (accurate)</option>
+          </select>
+        </div>
+        <div class="ctrl-field">
+          <label>Max release time (ms)</label>
+          <input type="number" id="dtMaxIn" value="3" min="0.5" max="20" step="0.5">
+        </div>
+        <div class="ctrl-field">
+          <label>Time steps</label>
+          <select id="nStepsSel">
+            <option value="30">30</option>
+            <option value="50" selected>50</option>
+            <option value="80">80</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Temperatures -->
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size:.8rem; color:var(--text-muted); display:block; margin-bottom:.5rem;">
+          Temperatures to simulate (μK) — click × to remove
+        </label>
+        <div class="temp-row" id="tempChips">
+          <!-- chips rendered by JS -->
+        </div>
+        <div style="display:flex; gap:.5rem; align-items:center; margin-top:.5rem;">
+          <input type="number" id="tempAddIn" placeholder="e.g. 15" min="0.1" max="1000" step="0.5"
+            style="width:110px; background:#0a1628; border:1px solid #1e3a5f; border-radius:6px;
+                   padding:.35rem .6rem; color:var(--text-primary); font-family:var(--mono); font-size:.83rem;">
+          <button onclick="addTemp()" style="background:#1e3a5f; border:none; border-radius:6px;
+            padding:.38rem .8rem; color:var(--c-rr); cursor:pointer; font-size:.83rem;">+ Add T</button>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <button class="run-btn" id="runBtn" onclick="runSimulation()">▶ Run Simulation</button>
+        <div class="sim-status" id="simStatus">Configure parameters and press Run.</div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-grid" id="resultsDiv" style="display:none;">
+        <div class="chart-card">
+          <h5>Survival Probability P_cap(Δt)</h5>
+          <canvas id="survChart" height="280"></canvas>
+        </div>
+        <div class="chart-card">
+          <h5>Trap &amp; System Parameters</h5>
+          <div id="trapInfo" style="font-family:var(--mono); font-size:.82rem; color:var(--text-secondary); line-height:2;"></div>
+          <div style="overflow-x:auto; margin-top:.75rem;">
+            <table class="sum-table" id="sumTable">
+              <thead>
+                <tr>
+                  <th>T (μK)</th>
+                  <th>P_cap(0)</th>
+                  <th>P_cap(t_max)</th>
+                  <th>½-life (ms)</th>
+                </tr>
+              </thead>
+              <tbody id="sumBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SPECIES DATA ═══ -->
+  <section class="section-block anim-in delay-2">
+    <div class="section-title">Species Polarizability Data</div>
+    <div class="section-sub">D1 + D2 transition data used for dynamic polarizability calculation</div>
+
+    <div style="overflow-x:auto;">
+      <table class="sum-table">
+        <thead>
+          <tr>
+            <th>Species</th>
+            <th>ΔE_D1 (Eₕ)</th>
+            <th>|d_D1| (ea₀)</th>
+            <th>ΔE_D2 (Eₕ)</th>
+            <th>|d_D2| (ea₀)</th>
+            <th>α_core (a.u.)</th>
+            <th>Mass (u)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>¹³³Cs</td><td>0.050932</td><td>4.4890</td><td>0.053456</td><td>6.3238</td><td>17.35</td><td>133</td></tr>
+          <tr><td>⁸⁷Rb</td><td>0.057314</td><td>4.231</td><td>0.058396</td><td>5.977</td><td>10.54</td><td>87</td></tr>
+          <tr><td>²³Na</td><td>0.077258</td><td>3.5246</td><td>0.077336</td><td>4.9838</td><td>1.86</td><td>23</td></tr>
+          <tr><td>⁶Li</td><td>0.067906</td><td>3.317</td><td>0.067907</td><td>4.689</td><td>2.04</td><td>6</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="theory-box" style="margin-top:1rem;">
+      <h4>Polarizability Formula (full)</h4>
+      <p>
+        In atomic units, with ω_au = Eₕ/ℏ ≈ 4.134×10¹⁶ rad/s and ω_laser = 2πc/λ:
+      </p>
+      <span class="eq">α(ω) = Σⱼ∈{D1,D2} ΔEⱼ · |dⱼ|² / [3(ΔEⱼ² − (ω/ω_au)²)] + α_core</span>
+      <p>
+        SI conversion: α_SI = α_au × 4πε₀a₀³ = α_au × 1.6488×10⁻⁴¹ C·m²/V.
+        Note: for wavelengths far from resonance (λ ≫ D1, D2 wavelengths for blue detuning,
+        or red-detuned for standard tweezers), α &gt; 0 and the trap minimum is at
+        maximum intensity.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ ASSUMPTIONS ═══ -->
+  <section class="section-block anim-in delay-2">
+    <div class="section-title">Notes &amp; Assumptions</div>
+    <ul class="note-list">
+      <li><span class="dot">▸</span><strong>Harmonic initial distribution:</strong> Atom positions are sampled from a Gaussian distribution matching the harmonic approximation of the Gaussian well. Valid when T ≪ U₀/k_B.</li>
+      <li><span class="dot">▸</span><strong>Ballistic flight:</strong> No inter-atomic collisions (single-atom tweezer). Gravity acts in the −z direction. No light forces during release.</li>
+      <li><span class="dot">▸</span><strong>Full Gaussian recapture:</strong> The recapture condition uses the exact Gaussian potential (not harmonic approx), including the z-dependence through w(z) = w₀√(1 + z²/z_R²).</li>
+      <li><span class="dot">▸</span><strong>Scalar polarizability:</strong> We use only the scalar component; vector/tensor contributions are neglected (valid for linearly polarized, far-detuned tweezers in the electronic ground state).</li>
+      <li><span class="dot">▸</span><strong>Single-transition approximation:</strong> Only D1 and D2 lines contribute (core correction α_core included). Higher excited states add &lt;1% for λ &gt; 700 nm.</li>
+      <li><span class="dot">▸</span><strong>Recapture efficiency:</strong> The simulation does not model atom re-heating during recapture, quantum tunnelling, or motional-state filtering. It predicts the classical recapture probability.</li>
+      <li><span class="dot">▸</span><strong>Statistical noise:</strong> For N_MC = 600, standard error ≈ 1/√600 ≈ 4%. Increase to 1500 for smoother curves.</li>
+    </ul>
+  </section>
+
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'release-recapture', root: '../' });
+initScrollReveal();
+
+/* ─── Physical constants ─────────────────────────────── */
+const PI  = Math.PI;
+const c_l = 2.99792458e8;   // speed of light
+const eps0 = 8.8541878e-12; // vacuum permittivity
+const kB  = 1.380649e-23;   // Boltzmann
+const hbar = 1.054572e-34;  // ħ
+const g   = 9.80665;        // gravity
+const amu = 1.66053906e-27; // atomic mass unit
+const a0  = 5.29177210e-11; // Bohr radius
+const Eh  = 4.35974472e-18; // Hartree energy
+const alpha0_SI = 4*PI*eps0*a0*a0*a0; // a.u. polarizability → SI
+
+/* ─── Species database ───────────────────────────────── */
+const SPECIES = {
+  Cs: { dE_D1:0.050932, d_D1:4.4890, dE_D2:0.053456, d_D2:6.3238, alpha_core:17.35, A:133, label:'¹³³Cs' },
+  Rb: { dE_D1:0.057314, d_D1:4.231,  dE_D2:0.058396, d_D2:5.977,  alpha_core:10.54, A:87,  label:'⁸⁷Rb'  },
+  Na: { dE_D1:0.077258, d_D1:3.5246, dE_D2:0.077336, d_D2:4.9838, alpha_core:1.86,  A:23,  label:'²³Na'  },
+  Li: { dE_D1:0.067906, d_D1:3.317,  dE_D2:0.067907, d_D2:4.689,  alpha_core:2.04,  A:6,   label:'⁶Li'   },
+};
+
+/* ─── Box-Muller normal sampler ──────────────────────── */
+let _bmSpare = null, _bmHas = false;
+function randn() {
+  if (_bmHas) { _bmHas = false; return _bmSpare; }
+  const u = Math.random(), v = Math.random();
+  const mag = Math.sqrt(-2 * Math.log(u + 1e-300));
+  _bmSpare = mag * Math.sin(2*PI*v);
+  _bmHas = true;
+  return mag * Math.cos(2*PI*v);
+}
+
+/* ─── Temperature chip management ───────────────────── */
+let temps_uK = [5, 15, 40];
+function renderChips() {
+  const row = document.getElementById('tempChips');
+  row.innerHTML = temps_uK.map((T, i) =>
+    `<div class="temp-chip">${T} μK
+       <button title="remove" onclick="removeTemp(${i})">×</button>
+     </div>`
+  ).join('');
+}
+function addTemp() {
+  const v = parseFloat(document.getElementById('tempAddIn').value);
+  if (isNaN(v) || v <= 0) return;
+  if (temps_uK.length >= 6) { alert('Max 6 temperatures'); return; }
+  temps_uK.push(v);
+  temps_uK.sort((a,b) => a-b);
+  renderChips();
+  document.getElementById('tempAddIn').value = '';
+}
+function removeTemp(i) {
+  temps_uK.splice(i, 1);
+  renderChips();
+}
+renderChips();
+
+/* ─── Polarizability ─────────────────────────────────── */
+function calcAlpha(sp, lambda_m) {
+  const omega = 2*PI*c_l / lambda_m;
+  const x = hbar * omega / Eh;     // in atomic units of energy
+  const alpha_au = (
+    sp.dE_D1 * sp.d_D1**2 / (3*(sp.dE_D1**2 - x**2)) +
+    sp.dE_D2 * sp.d_D2**2 / (3*(sp.dE_D2**2 - x**2)) +
+    sp.alpha_core
+  );
+  return alpha_au * alpha0_SI;     // SI: C·m²/V
+}
+
+/* ─── Trap depth & frequencies ───────────────────────── */
+function trapParams(sp, lambda_m, power_W, w0_m, strehl) {
+  const alpha = calcAlpha(sp, lambda_m);
+  const I_peak = strehl * 2*power_W / (PI * w0_m**2);
+  const U0 = alpha * I_peak / (c_l * eps0);   // Joules (positive for red-det)
+  const m  = sp.A * amu;
+  const zR = PI * w0_m**2 / lambda_m;
+  const wr = Math.sqrt(4*U0 / (m * w0_m**2));
+  const wz = Math.sqrt(2*U0 / (m * zR**2));
+  return { U0, m, zR, w0: w0_m, wr, wz, alpha, I_peak };
+}
+
+/* ─── Monte Carlo ─────────────────────────────────────── */
+function runMC(tp, T_uK, N_MC, t_max_s, nSteps) {
+  const T = T_uK * 1e-6;
+  const { U0, m, zR, w0, wr, wz } = tp;
+  const sig_v = Math.sqrt(kB*T/m);
+  const sig_r = Math.sqrt(kB*T/(m*wr*wr));
+  const sig_z = Math.sqrt(kB*T/(m*wz*wz));
+
+  const times = [], survival = [];
+  const dtStep = t_max_s / nSteps;
+
+  for (let si = 0; si <= nSteps; si++) {
+    const dt = si * dtStep;
+    let recap = 0;
+
+    for (let i = 0; i < N_MC; i++) {
+      // Initial position (harmonic thermal)
+      const x0 = randn() * sig_r;
+      const y0 = randn() * sig_r;
+      const z0 = randn() * sig_z;
+
+      // Initial velocity (Maxwell-Boltzmann)
+      const vx = randn() * sig_v;
+      const vy = randn() * sig_v;
+      const vz = randn() * sig_v;
+
+      // Free flight with gravity
+      const xf = x0 + vx*dt;
+      const yf = y0 + vy*dt;
+      const zf = z0 + vz*dt - 0.5*g*dt*dt;
+      const vzf = vz - g*dt;
+
+      // KE final
+      const KE = 0.5*m*(vx*vx + vy*vy + vzf*vzf);
+
+      // Gaussian potential at final position
+      const wz_pos2 = w0*w0 * (1 + (zf/zR)**2);
+      const r2 = xf*xf + yf*yf;
+      const U_f = U0 * (w0*w0 / wz_pos2) * Math.exp(-2*r2 / wz_pos2);
+
+      // Recapture condition: KE < U_f
+      if (KE < U_f) recap++;
+    }
+
+    times.push(dt * 1e3);         // in ms
+    survival.push(recap / N_MC);
+  }
+
+  return { times, survival };
+}
+
+/* ─── Chart ──────────────────────────────────────────── */
+let survChart = null;
+const COLORS = ['#fb923c','#60a5fa','#34d399','#f472b6','#fbbf24','#a78bfa'];
+
+function runSimulation() {
+  const sp     = SPECIES[document.getElementById('speciesSel').value];
+  const lambda = parseFloat(document.getElementById('lambdaIn').value)  * 1e-9;
+  const power  = parseFloat(document.getElementById('powerIn').value)   * 1e-3;
+  const w0     = parseFloat(document.getElementById('waistIn').value)   * 1e-6;
+  const strehl = parseFloat(document.getElementById('strehlIn').value);
+  const N_MC   = parseInt(document.getElementById('mcNSel').value);
+  const dt_max = parseFloat(document.getElementById('dtMaxIn').value)   * 1e-3;
+  const nSteps = parseInt(document.getElementById('nStepsSel').value);
+
+  if (temps_uK.length === 0) { alert('Add at least one temperature.'); return; }
+
+  const btn = document.getElementById('runBtn');
+  const status = document.getElementById('simStatus');
+  btn.disabled = true;
+  status.className = 'sim-status running';
+  status.textContent = 'Running Monte Carlo…';
+
+  setTimeout(() => {
+    try {
+      const tp = trapParams(sp, lambda, power, w0, strehl);
+
+      // Trap info
+      const U0_uK  = tp.U0 / kB * 1e6;
+      const wr_kHz = tp.wr / (2*PI) / 1e3;
+      const wz_kHz = tp.wz / (2*PI) / 1e3;
+      const zR_um  = tp.zR * 1e6;
+      const alpha_au = tp.alpha / alpha0_SI;
+
+      document.getElementById('trapInfo').innerHTML = [
+        `Species:  ${sp.label}`,
+        `λ:        ${(lambda*1e9).toFixed(0)} nm`,
+        `α:        ${alpha_au.toFixed(1)} a.u.`,
+        `I_peak:   ${(tp.I_peak/1e9).toFixed(2)} GW/m²`,
+        `U₀:       ${U0_uK.toFixed(0)} μK`,
+        `ωᵣ/2π:   ${wr_kHz.toFixed(1)} kHz`,
+        `ωᵤ/2π:   ${wz_kHz.toFixed(2)} kHz`,
+        `z_R:      ${zR_um.toFixed(2)} μm`,
+      ].join('<br>');
+
+      // Run MC for each temperature
+      const allResults = temps_uK.map((T, idx) => {
+        const res = runMC(tp, T, N_MC, dt_max, nSteps);
+        return { T, ...res, color: COLORS[idx % COLORS.length] };
+      });
+
+      // Summary table
+      const tbody = document.getElementById('sumBody');
+      tbody.innerHTML = allResults.map(r => {
+        const p0 = r.survival[0].toFixed(3);
+        const pf = r.survival[r.survival.length-1].toFixed(3);
+        // Find half-life: first time survival < 0.5
+        let halfLife = '> t_max';
+        for (let i = 1; i < r.survival.length; i++) {
+          if (r.survival[i] <= 0.5) {
+            const t0 = r.times[i-1], t1 = r.times[i];
+            const p0_ = r.survival[i-1], p1_ = r.survival[i];
+            const tH = t0 + (0.5 - p0_)/(p1_ - p0_) * (t1 - t0);
+            halfLife = tH.toFixed(2) + ' ms';
+            break;
+          }
+        }
+        return `<tr><td>${r.T}</td><td>${p0}</td><td>${pf}</td><td>${halfLife}</td></tr>`;
+      }).join('');
+
+      // Chart
+      const ctx = document.getElementById('survChart').getContext('2d');
+      if (survChart) survChart.destroy();
+      survChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: allResults[0].times.map(t => t.toFixed(2)),
+          datasets: allResults.map(r => ({
+            label: `T = ${r.T} μK`,
+            data: r.survival,
+            borderColor: r.color,
+            backgroundColor: r.color + '22',
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: true,
+          }))
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: ctx => `P_cap = ${(ctx.raw*100).toFixed(1)}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Release time Δt (ms)', color: '#94a3b8' },
+              ticks: { color: '#64748b', maxTicksLimit: 8 },
+              grid: { color: '#1e293b' }
+            },
+            y: {
+              title: { display: true, text: 'Recapture probability', color: '#94a3b8' },
+              ticks: { color: '#64748b', callback: v => (v*100).toFixed(0)+'%' },
+              grid: { color: '#1e293b' },
+              min: 0, max: 1
+            }
+          }
+        }
+      });
+
+      document.getElementById('resultsDiv').style.display = 'grid';
+      status.className = 'sim-status done';
+      status.textContent = `Done — ${temps_uK.length} curve(s) · ${N_MC} samples each.`;
+
+    } catch(e) {
+      status.className = 'sim-status';
+      status.textContent = 'Error: ' + e.message;
+    }
+    btn.disabled = false;
+  }, 20);
+}
+</script>
+</body>
+</html>
