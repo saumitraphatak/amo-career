@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QC Landscape — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ── page-specific styles ─────────────────────────────────────── */
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 .25rem 0;
+      border-left: 3px solid var(--c-qc);
+      padding-left: .75rem;
+    }
+    .section-sub {
+      color: var(--text-muted);
+      font-size: .9rem;
+      margin: 0 0 1.25rem .85rem;
+    }
+    .section-block {
+      margin-bottom: 3.5rem;
+    }
+
+    /* ── three-col grid ─────────────────────────────────────────── */
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .five-col  { display: grid; grid-template-columns: repeat(5,1fr); gap: .8rem; }
+
+    @media(max-width:900px) { .three-col { grid-template-columns: 1fr; } .five-col { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:600px) { .two-col { grid-template-columns: 1fr; } .five-col { grid-template-columns: 1fr; } }
+
+    /* ── DiVincenzo box ─────────────────────────────────────────── */
+    .dv-box {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .dv-box .dv-num {
+      font-size: 1.3rem;
+      margin-bottom: .35rem;
+    }
+    .dv-box .dv-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: .4rem;
+    }
+    .dv-box p {
+      font-size: .82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* ── platform card (local) ──────────────────────────────────── */
+    .plat-card {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1.1rem 1.3rem;
+      margin-bottom: .75rem;
+      transition: border-color .2s;
+    }
+    .plat-card:hover { border-color: var(--c-qc); }
+    .plat-card h4 { font-size: .95rem; color: var(--text-primary); margin: 0 0 .5rem 0; }
+    .plat-card p  { font-size: .85rem; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+    /* ── metric badges ──────────────────────────────────────────── */
+    .badge-m {
+      display: inline-block;
+      border-radius: 6px;
+      padding: .15rem .6rem;
+      font-size: .78rem;
+      margin: .15rem .15rem;
+      font-weight: 500;
+    }
+    .badge-m.green  { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
+    .badge-m.yellow { background: #451a03; color: #fcd34d; border: 1px solid #d97706; }
+    .badge-m.red    { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; }
+
+    /* ── thesis quote ───────────────────────────────────────────── */
+    .thesis-quote {
+      background: linear-gradient(90deg, #1e1b4b 0%, #0f172a 100%);
+      border-left: 4px solid #7c3aed;
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.4rem;
+      margin: 1rem 0;
+      color: #c4b5fd;
+      font-style: italic;
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+
+    /* ── company pill ───────────────────────────────────────────── */
+    .company-pill {
+      display: inline-block;
+      background: #1e3a5f;
+      color: #93c5fd;
+      border: 1px solid #3b82f6;
+      border-radius: 20px;
+      padding: .2rem .75rem;
+      font-size: .8rem;
+      margin: .2rem;
+      font-weight: 600;
+    }
+
+    /* ── platform deep dive layout ──────────────────────────────── */
+    .plat-deep { display: grid; grid-template-columns: 3fr 2fr; gap: 1.5rem; }
+    @media(max-width:768px) { .plat-deep { grid-template-columns: 1fr; } }
+
+    .key-papers h4 { font-size: .9rem; color: var(--text-secondary); margin: 1rem 0 .5rem 0; }
+    .key-papers ul { padding-left: 1.2rem; margin: 0; }
+    .key-papers li { font-size: .83rem; color: var(--text-muted); margin-bottom: .35rem; line-height: 1.5; }
+    .key-papers a  { color: #93c5fd; }
+
+    /* ── tab panel scroll-fix ───────────────────────────────────── */
+    .tab-panel { min-height: 0; }
+
+    /* ── roadmap items ──────────────────────────────────────────── */
+    .roadmap-item {
+      border-radius: 8px;
+      padding: .9rem 1.2rem;
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .roadmap-item .ri-title {
+      font-weight: 700;
+      font-size: .93rem;
+      margin-bottom: .25rem;
+    }
+    .roadmap-item .ri-desc {
+      font-size: .85rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.55;
+    }
+    .roadmap-item .ri-badge {
+      flex-shrink: 0;
+      border-radius: 12px;
+      padding: .15rem .65rem;
+      font-size: .73rem;
+      font-weight: 700;
+      margin-top: .1rem;
+    }
+
+    /* ── timeline ───────────────────────────────────────────────── */
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
+    @media(max-width:768px) { .timeline-grid { grid-template-columns: 1fr; } }
+
+    .tl-col {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .tl-col-header {
+      font-size: .9rem;
+      font-weight: 700;
+      padding-bottom: .6rem;
+      margin-bottom: .75rem;
+      border-bottom: 2px solid currentColor;
+    }
+    .tl-event {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      margin-bottom: .55rem;
+    }
+    .tl-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-top: .3rem;
+      flex-shrink: 0;
+    }
+    .tl-dot.solid { background: currentColor; }
+    .tl-dot.open  { background: transparent; border: 2px solid currentColor; }
+    .tl-event .tl-year {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: .05rem;
+    }
+    .tl-event .tl-label {
+      font-size: .82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .tl-event .tl-label.projected { color: #475569; font-style: italic; }
+
+    /* ── snapshot table ─────────────────────────────────────────── */
+    .qt { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .qt th {
+      background: #1e1b4b;
+      color: #c4b5fd;
+      padding: .65rem .85rem;
+      text-align: left;
+      border-bottom: 2px solid #312e81;
+      white-space: nowrap;
+    }
+    .qt td {
+      color: var(--text-secondary);
+      padding: .55rem .85rem;
+      border-bottom: 1px solid #1a2236;
+      vertical-align: middle;
+    }
+    .qt tr:hover td { background: #0c1526; }
+    .qt tr.highlight td { color: #c4b5fd; font-weight: 600; }
+    .qt-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #1e293b; }
+
+    /* ── chart canvas ───────────────────────────────────────────── */
+    .chart-box {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .chart-caption {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin: .4rem 0 0 0;
+      font-style: italic;
+    }
+
+    /* ── references ─────────────────────────────────────────────── */
+    .refs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    @media(max-width:768px) { .refs-grid { grid-template-columns: 1fr; } }
+    .ref-col h4 { font-size: .88rem; font-weight: 700; color: var(--text-secondary); margin: 0 0 .6rem 0; }
+    .ref-col ul { padding-left: 1.1rem; margin: 0; }
+    .ref-col li { font-size: .82rem; color: var(--text-muted); margin-bottom: .4rem; line-height: 1.5; }
+    .ref-col a  { color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <!-- ── Page Hero ─────────────────────────────────────────────── -->
+  <section class="page-hero" style="--page-color: var(--c-qc)">
+    <div class="container">
+      <span class="page-hero-badge" style="background:rgba(167,139,250,.12); border-color:rgba(167,139,250,.35); color:#c4b5fd;">
+        Chapter 8 · Phatak (2025)
+      </span>
+      <h1 class="page-hero-title">Quantum Computing Landscape</h1>
+      <p class="page-hero-desc">
+        A researcher's guide to the hardware race — platforms, companies, metrics, and where neutral atoms fit in.
+        From NISQ to fault tolerance: superconducting, trapped-ion, neutral-atom, silicon-spin, photonic, and topological qubits.
+      </p>
+      <div style="display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem;">
+        <span class="company-pill">6 Platforms</span>
+        <span class="company-pill">DiVincenzo Criteria</span>
+        <span class="company-pill">Radar Comparison</span>
+        <span class="company-pill">Roadmap Timeline</span>
+        <span class="company-pill">20+ Companies</span>
+      </div>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 2rem var(--gap, 1.5rem);">
+
+    <!-- ── 1. NISQ Era ─────────────────────────────────────────── -->
+    <section class="section-block anim-in">
+      <h2 class="section-title">The NISQ Era: Where We Are</h2>
+      <p class="section-sub">Noisy Intermediate-Scale Quantum — where the field stands today and the gap to fault tolerance.</p>
+      <div class="three-col">
+        <div class="concept-box">
+          <div class="concept-box-label">🎯 The Goal</div>
+          <p>Fault-tolerant quantum computers that run Shor's algorithm on RSA-2048 (~10⁶ physical qubits, error rate &lt;10⁻³) and simulate industrial molecules (FeMoco, nitrogenase) with ~100 logical qubits at error rates below 10⁻⁴.</p>
+        </div>
+        <div class="concept-box">
+          <div class="concept-box-label">📍 Where We Are (NISQ)</div>
+          <p>Noisy Intermediate-Scale Quantum devices — tens to hundreds of physical qubits, no error correction, circuit depths limited by decoherence. Google's 53-qubit supremacy (2019) and photonic Gaussian boson sampling confirmed quantum advantage on specific sampling tasks, but no practically useful algorithms yet. <em>— Preskill (2018)</em></p>
+        </div>
+        <div class="concept-box">
+          <div class="concept-box-label">🚧 The Gap</div>
+          <p>Current best two-qubit error rates are 10⁻³ to 10⁻². Surface codes need &lt;10⁻³ per gate. At ~441 physical qubits per logical qubit (distance-21 surface code), RSA-2048 breaking requires ~2×10⁶ physical qubits — 3–4 orders of magnitude beyond today.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. DiVincenzo Criteria ───────────────────────────────── -->
+    <section class="section-block anim-in delay-1">
+      <h2 class="section-title">The DiVincenzo Criteria</h2>
+      <p class="section-sub">Five necessary (and simultaneously required) conditions for a viable qubit platform.</p>
+      <div class="warn-box" style="margin-bottom:1.1rem;">
+        <strong>DiVincenzo (2000)</strong> — A physical system is a viable qubit platform only if it satisfies all five criteria
+        <em>simultaneously, at scale, and with fault-tolerance margins</em>. No platform has fully satisfied all five yet —
+        this is what makes quantum computing hard.
+      </div>
+      <div class="five-col">
+        <div class="dv-box">
+          <div class="dv-num">1️⃣</div>
+          <div class="dv-title">Scalable Register</div>
+          <p>Well-defined |0⟩,|1⟩ two-level subspace, replicable in large numbers without performance degradation.</p>
+        </div>
+        <div class="dv-box">
+          <div class="dv-num">2️⃣</div>
+          <div class="dv-title">Initialisation</div>
+          <p>Reliable preparation of the fiducial |000…0⟩ state before each computation. Requires optical pumping + ground-state cooling.</p>
+        </div>
+        <div class="dv-box">
+          <div class="dv-num">3️⃣</div>
+          <div class="dv-title">Long Coherence</div>
+          <p>T₂ ≫ t_gate. Decoherence must be slow vs. gate time. For neutral atoms: T₂ &gt; 1 s is achievable; tweezer photon scattering erodes it.</p>
+        </div>
+        <div class="dv-box">
+          <div class="dv-num">4️⃣</div>
+          <div class="dv-title">Universal Gates</div>
+          <p>High-fidelity single-qubit rotations + at least one entangling two-qubit gate (e.g. Rydberg blockade for neutral atoms).</p>
+        </div>
+        <div class="dv-box">
+          <div class="dv-num">5️⃣</div>
+          <div class="dv-title">Qubit Readout</div>
+          <p>Site-specific measurement in the computational basis with near-unity fidelity, without disturbing neighbours.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. Analog vs Digital ────────────────────────────────── -->
+    <section class="section-block anim-in delay-2">
+      <h2 class="section-title">Analog vs. Digital Quantum Computing</h2>
+      <p class="section-sub">Two fundamentally different approaches — and why neutral atoms can do both.</p>
+      <div class="two-col">
+        <div class="plat-card">
+          <h4>🔢 Digital (Gate-Based)</h4>
+          <p>Programs decomposed into discrete unitary gates from a universal gate set, applied to qubits, then measured.
+          Mathematically clean and compatible with quantum error correction.<br><br>
+          <strong style="color:var(--text-secondary)">Cost:</strong> Error correction needs 100s–1000s of physical qubits per logical qubit.
+          Every gate must exceed the fault-tolerance threshold (~10⁻³ for surface codes).<br><br>
+          <strong style="color:var(--text-secondary)">Who:</strong> IBM, Google, IonQ, Quantinuum, QuEra (Rydberg gates)</p>
+        </div>
+        <div class="plat-card">
+          <h4>🌊 Analog (Simulation / Annealing)</h4>
+          <p>Engineer a Hamiltonian whose ground state encodes the answer, then adiabatically evolve from an easy initial state.
+          Special-purpose, not universally programmable, but far larger system sizes are accessible in the NISQ era.<br><br>
+          <strong style="color:var(--text-secondary)">Examples:</strong> D-Wave's 5000+ superconducting flux qubit annealers;
+          neutral-atom arrays studying quantum magnetism on 2D lattices of hundreds of atoms.<br><br>
+          <strong style="color:var(--text-secondary)">Neutral atoms are unique:</strong> the same array can run Rydberg gates (digital) OR evolve
+          a programmable spin Hamiltonian (analog) — just by changing the control protocol.
+          <em>Pasqal &amp; QuEra exploit this dual capability as a near-term strategy.</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. Platform Comparison ──────────────────────────────── -->
+    <section class="section-block anim-in delay-2">
+      <h2 class="section-title">Platform Comparison</h2>
+      <p class="section-sub">Scores normalised 0–10 across six dimensions. Hover for details.</p>
+
+      <!-- Radar chart -->
+      <div class="chart-box" style="max-width:680px; margin:0 auto 2rem auto;">
+        <canvas id="radarChart" height="380"></canvas>
+      </div>
+
+      <!-- Bar charts: tabbed -->
+      <h3 style="font-size:1.1rem; font-weight:600; color:var(--text-secondary); margin:0 0 .75rem 0;">
+        Current Qubit Counts &amp; Gate Fidelities (≈ 2024–25)
+      </h3>
+      <div data-tabs-wrap>
+        <div class="tab-bar" data-group="charts">
+          <button class="tab-btn active" data-tab="qubits">Qubit Count</button>
+          <button class="tab-btn" data-tab="fidelity">2-Qubit Gate Fidelity (%)</button>
+        </div>
+        <div class="tab-panel active" data-tab="qubits" data-group="charts">
+          <div class="chart-box">
+            <canvas id="qubitChart" height="260"></canvas>
+          </div>
+          <p class="chart-caption">
+            Note: Atom Computing Phoenix (1,180 atoms) demonstrated array loading; not all atoms used as qubits simultaneously.
+            PsiQuantum uses photonic fusion gates — qubit count metric is not directly comparable.
+          </p>
+        </div>
+        <div class="tab-panel" data-tab="fidelity" data-group="charts">
+          <div class="chart-box">
+            <canvas id="fidelityChart" height="260"></canvas>
+          </div>
+          <p class="chart-caption">
+            Best published values. Superconducting: IBM Heron/Google Willow. Trapped ions: Quantinuum H-series.
+            Neutral atoms: individual atom pair demos (Evered et al. 2023, Harvard).
+            Silicon spins: isotopically-purified ²⁸Si.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5. Platform Deep Dives ──────────────────────────────── -->
+    <section class="section-block anim-in delay-3">
+      <h2 class="section-title">Platform Deep Dives</h2>
+      <p class="section-sub">How each technology works, key metrics, bottlenecks, leading companies, and key papers.</p>
+
+      <div data-tabs-wrap>
+        <div class="tab-bar" data-group="platforms" style="flex-wrap:wrap; gap:.4rem;">
+          <button class="tab-btn active" data-tab="sc">🔵 Superconducting</button>
+          <button class="tab-btn" data-tab="ti">🟢 Trapped Ions</button>
+          <button class="tab-btn" data-tab="na">🟣 Neutral Atoms</button>
+          <button class="tab-btn" data-tab="si">🟡 Silicon Spins</button>
+          <button class="tab-btn" data-tab="ph">🩷 Photonic</button>
+          <button class="tab-btn" data-tab="def">🩵 Defects &amp; Topo</button>
+        </div>
+
+        <!-- Superconducting -->
+        <div class="tab-panel active" data-tab="sc" data-group="platforms">
+          <div class="plat-deep">
+            <div>
+              <h3 style="color:#60a5fa; margin:0 0 .75rem 0;">Superconducting Qubits</h3>
+              <div class="plat-card">
+                <h4>How it works</h4>
+                <p>Transmon qubits — Josephson junction circuits cooled to ~10 mK in dilution refrigerators.
+                Anharmonic oscillators whose two lowest energy levels form the qubit. Microwave pulses drive
+                single- and two-qubit gates. The Josephson junction provides the nonlinearity that makes the
+                energy ladder anharmonic, isolating the |0⟩↔|1⟩ transition.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Key Metrics (≈ 2024)</h4>
+                <p>
+                  <span class="badge-m green">Gate time: 10–200 ns</span>
+                  <span class="badge-m green">1Q fidelity: &gt;99.9%</span>
+                  <span class="badge-m yellow">2Q fidelity: ~99.5%</span>
+                  <span class="badge-m yellow">T₁, T₂: 50–500 µs</span>
+                  <span class="badge-m yellow">Ops/T₂: ~10³</span>
+                  <span class="badge-m green">Qubit count: 100–1000+</span>
+                </p>
+              </div>
+              <div class="plat-card">
+                <h4>Principal Bottleneck</h4>
+                <p>Classical wiring infrastructure inside the dilution refrigerator. Each qubit needs multiple coaxial
+                lines for control and readout. Heat load + cable density become prohibitive beyond ~few thousand qubits.
+                Solutions: cryo-CMOS multiplexing inside the fridge, microwave-to-optical transduction for remote coupling.</p>
+              </div>
+              <div class="formula-box">
+<span style="color:#6ee7b7"># Josephson energy sets qubit frequency</span>
+E_J = (Φ₀/2π)² / (2L_J)   [Josephson inductance]
+ω_q ≈ √(8 E_J E_C) / ℏ    [transmon frequency]
+where E_C = e²/2C_Σ        [charging energy]
+Anharmonicity: α = ω₁₂ − ω₀₁ ≈ −E_C/ℏ ≈ −200 to −350 MHz</div>
+            </div>
+            <div>
+              <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
+              <div class="plat-card">
+                <h4><a href="https://quantum.ibm.com" target="_blank" rel="noopener" style="color:#93c5fd;">IBM Quantum ↗</a></h4>
+                <p>Eagle (127Q), Osprey (433Q), Condor (1121Q), Heron r2 (156Q, 2024). Quantum volume roadmap. Cloud access via IBM Quantum Platform.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://quantumai.google" target="_blank" rel="noopener" style="color:#93c5fd;">Google Quantum AI ↗</a></h4>
+                <p>Sycamore (53Q, 2019 supremacy), Willow (105Q, 2024 — below threshold error correction demonstration).</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://rigetti.com" target="_blank" rel="noopener" style="color:#93c5fd;">Rigetti Computing ↗</a></h4>
+                <p>Aspen/Ankaa series. Publicly traded, cloud hybrid classical–quantum.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://meetiqm.com" target="_blank" rel="noopener" style="color:#93c5fd;">IQM Quantum Computers ↗</a></h4>
+                <p>Finnish startup. Resonance (20Q), modular architecture. Focus on HPC integration.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://alice-bob.com" target="_blank" rel="noopener" style="color:#93c5fd;">Alice &amp; Bob ↗</a></h4>
+                <p>Cat qubit approach — biased noise qubits to reduce overhead for error correction.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://dwavesys.com" target="_blank" rel="noopener" style="color:#93c5fd;">D-Wave ↗</a></h4>
+                <p>Quantum annealing (5000+ flux qubits). Advantage2 processor. Not gate-based.</p>
+              </div>
+              <div class="key-papers">
+                <h4>Key Papers</h4>
+                <ul>
+                  <li><a href="https://www.nature.com/articles/s41586-019-1666-5" target="_blank" rel="noopener">Google supremacy (Arute et al., <em>Nature</em> 2019)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-022-05434-1" target="_blank" rel="noopener">Surface code logical qubit (Google, <em>Nature</em> 2023)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-024-08449-y" target="_blank" rel="noopener">Willow — below-threshold error correction (Google, <em>Nature</em> 2024)</a></li>
+                  <li><a href="https://research.ibm.com/blog/ibm-quantum-heron" target="_blank" rel="noopener">IBM Heron r2 — 156Q heavy-hex (2024)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trapped Ions -->
+        <div class="tab-panel" data-tab="ti" data-group="platforms">
+          <div class="plat-deep">
+            <div>
+              <h3 style="color:#34d399; margin:0 0 .75rem 0;">Trapped Ion Qubits</h3>
+              <div class="plat-card">
+                <h4>How it works</h4>
+                <p>Hyperfine "clock" states of ¹⁷¹Yb⁺ or ⁴³Ca⁺ ions confined in radiofrequency Paul traps. Ions are laser-cooled
+                to the motional ground state; shared vibrational modes of the ion chain act as a quantum bus. The Mølmer–Sørensen
+                gate drives an entangling operation via collective phonon modes.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Key Metrics (≈ 2024)</h4>
+                <p>
+                  <span class="badge-m green">Coherence T₂: 1 s – minutes</span>
+                  <span class="badge-m green">2Q fidelity: ~99.9%</span>
+                  <span class="badge-m yellow">Gate time: 20–200 µs</span>
+                  <span class="badge-m green">1Q fidelity: &lt;10⁻⁴ error</span>
+                  <span class="badge-m yellow">Qubit count: 30–56</span>
+                  <span class="badge-m green">Ops/T₂: &gt;10⁴</span>
+                </p>
+              </div>
+              <div class="plat-card">
+                <h4>Principal Bottleneck</h4>
+                <p>Motional-mode crowding: adding ions to a linear chain increases shared vibrational modes, making gates
+                slower and harder to address selectively. Scaling path: the quantum charge-coupled device (QCCD) architecture —
+                ions shuttled between storage and gate zones in segmented traps. Photonic interconnects link separate traps
+                into a modular network.</p>
+              </div>
+              <div class="formula-box">
+<span style="color:#6ee7b7"># Mølmer–Sørensen gate (bichromatic light)</span>
+H_MS = ℏΩ(σ⁺ₐσ⁺ᵦ + σ⁻ₐσ⁻ᵦ) · cos(δt)
+where δ = ω_laser − ω_qubit − ω_phonon  (sideband detuning)
+Gate time: τ_g ~ 2π/η²Ω  [η = Lamb-Dicke parameter]
+Fidelity limited by: Rabi freq. stability, heating rate, mode crowding</div>
+            </div>
+            <div>
+              <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
+              <div class="plat-card">
+                <h4><a href="https://ionq.com" target="_blank" rel="noopener" style="color:#6ee7b7;">IonQ ↗</a></h4>
+                <p>Forte (36 qubits). NASDAQ-listed (IONQ). #AQ metric for algorithmic performance. Partners with AWS, Azure.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://quantinuum.com" target="_blank" rel="noopener" style="color:#6ee7b7;">Quantinuum ↗</a></h4>
+                <p>H2 (56 trapped Yb⁺ qubits). Joint venture Honeywell + Cambridge Quantum. Highest algorithmic fidelity demonstrated. H-series roadmap.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://oxfordionics.com" target="_blank" rel="noopener" style="color:#6ee7b7;">Oxford Ionics ↗</a></h4>
+                <p>Uses electronic microwave signals (no lasers). Built on existing semiconductor fab lines. Quieter than laser-driven gates.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://aqt.eu" target="_blank" rel="noopener" style="color:#6ee7b7;">AQT (Alpine Quantum Technologies) ↗</a></h4>
+                <p>Ca⁺ ion trap systems. European focus. Partners with CERN for HPC integration.</p>
+              </div>
+              <div class="key-papers">
+                <h4>Key Papers</h4>
+                <ul>
+                  <li><a href="https://link.aps.org/doi/10.1103/PhysRevLett.82.1971" target="_blank" rel="noopener">Mølmer–Sørensen gate (<em>PRL</em> 1999)</a></li>
+                  <li><a href="https://arxiv.org/abs/2305.03828" target="_blank" rel="noopener">Quantinuum H2 — 99.9% 2Q fidelity (2023)</a></li>
+                  <li><a href="https://www.nature.com/articles/nature00784" target="_blank" rel="noopener">QCCD architecture (Kielpinski et al., <em>Nature</em> 2002)</a></li>
+                  <li><a href="https://arxiv.org/abs/2404.14989" target="_blank" rel="noopener">56-qubit Quantinuum H2 demonstration (2024)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Neutral Atoms -->
+        <div class="tab-panel" data-tab="na" data-group="platforms">
+          <div class="plat-deep">
+            <div>
+              <h3 style="color:#c4b5fd; margin:0 0 .75rem 0;">Neutral Atom Qubits (Optical Tweezers) ⭐</h3>
+              <div class="plat-card">
+                <h4>How it works</h4>
+                <p>Individual neutral atoms (Rb, Cs, Yb, Sr) trapped in tightly focused laser beams (optical tweezers) —
+                intensity gradient provides a restoring force. Hyperfine ground states form the qubit. Two-qubit gates use the
+                <strong>Rydberg blockade</strong>: transient excitation to highly-excited Rydberg states (n ~ 60–100) whose
+                strong dipole-dipole interaction (V_dd ~ n⁷) prevents simultaneous excitation of two nearby atoms.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Key Metrics (≈ 2024)</h4>
+                <p>
+                  <span class="badge-m green">Qubit count: 50–1000+</span>
+                  <span class="badge-m green">Coherence T₂: 1–10 s</span>
+                  <span class="badge-m yellow">2Q fidelity: 97–99.5%</span>
+                  <span class="badge-m green">Gate time: 0.2–5 µs</span>
+                  <span class="badge-m green">Identical qubits: atoms are perfect copies</span>
+                  <span class="badge-m green">Reconfigurable geometry: real-time rearrangement</span>
+                </p>
+              </div>
+              <div class="plat-card">
+                <h4>Three Bottlenecks — from this thesis</h4>
+                <p>
+                  <strong style="color:var(--text-secondary)">① Imaging fidelity:</strong> Must scatter photons for readout while atom survives.
+                  Prior work on ⁶Li: 90–97% per-image survival. Chapter 3 achieves 99.950(2)% survival over 2000 consecutive images via Λ-enhanced gray molasses.<br><br>
+                  <strong style="color:var(--text-secondary)">② Qubit temperature:</strong> Rydberg gate fidelity ∝ 1 − α⟨n⟩. At ω_trap ~ 2π×100 kHz,
+                  going from 20 µK → 5 µK cuts motional error by 4×. Chapter 4 demonstrates ⟨n⟩ ≈ 0.01 for Cs via narrow-line
+                  sideband cooling on the 685 nm quadrupole transition.<br><br>
+                  <strong style="color:var(--text-secondary)">③ Precision benchmarking:</strong> τ(5D₅/₂) for Cs measured to 1% accuracy (Chapter 5),
+                  pinning the saturation intensity, scattering rate, and magic-trap condition to the level needed for systematic gate optimisation.
+                </p>
+              </div>
+              <div class="formula-box">
+<span style="color:#6ee7b7"># Rydberg blockade condition</span>
+V_dd(r) = C₆/r⁶   [van der Waals interaction, C₆ ∝ n¹¹]
+Blockade radius: r_b = (C₆/Ω_Ryd)^(1/6)
+Typical r_b ~ 5–15 µm for n = 60–100
+
+<span style="color:#6ee7b7"># Gate fidelity vs temperature (Phatak 2025, §8.5.2)</span>
+F ≈ 1 − α·⟨n⟩   [motional error per Rydberg π-pulse]
+⟨n⟩ = k_B T / (ℏ ω_trap)
+
+<span style="color:#6ee7b7"># Thesis result (Cs, Chapter 4):</span>
+T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
+              <div class="thesis-quote">
+                "Neutral-atom optical tweezer arrays have evolved from a laboratory curiosity to a commercial quantum computing
+                platform in less than a decade. The platform's appeal rests on several features that are structurally difficult
+                to replicate with other technologies: the atoms are perfectly identical, ground-state hyperfine coherence times
+                exceed 1 second, and the array geometry is reconfigurable in real time." — Phatak (2025), §8.5
+              </div>
+            </div>
+            <div>
+              <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
+              <div class="plat-card">
+                <h4><a href="https://quera.com" target="_blank" rel="noopener" style="color:#c4b5fd;">QuEra Computing ↗</a></h4>
+                <p>Aquila (256 atoms). Spin-out from Harvard/MIT (Lukin/Greiner groups). Analog + digital modes. AWS partnership. Largest publicly accessible neutral-atom QPU.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://pasqal.com" target="_blank" rel="noopener" style="color:#c4b5fd;">Pasqal ↗</a></h4>
+                <p>Fresnel (100 Rb atoms). French startup (Browaeys/Lahaye group). Hybrid analog-digital. HPC integration via EDF, BASF partnerships.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://atom-computing.com" target="_blank" rel="noopener" style="color:#c4b5fd;">Atom Computing ↗</a></h4>
+                <p>Phoenix (1180 Sr atoms demonstrated). Focus on ⁸⁷Sr nuclear spin qubits (longer T₂). Modular architecture.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://infleqtion.com" target="_blank" rel="noopener" style="color:#c4b5fd;">Infleqtion ↗</a></h4>
+                <p>Formerly ColdQuanta. Rb &amp; Cs platforms. Acquired SuperTech. Cloud access &amp; quantum networking.</p>
+              </div>
+              <div class="key-papers">
+                <h4>Key Papers</h4>
+                <ul>
+                  <li><a href="https://arxiv.org/abs/2109.10087" target="_blank" rel="noopener">Tweezer arrays review (Kaufman &amp; Ni, <em>Annu. Rev. Chem.</em> 2021)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-023-06481-y" target="_blank" rel="noopener">Rydberg blockade gate 99.5% fidelity (Evered et al., Harvard <em>Nature</em> 2023)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-021-03582-4" target="_blank" rel="noopener">QuEra 256-qubit analog (Ebadi et al., <em>Nature</em> 2021)</a></li>
+                  <li><a href="https://link.aps.org/doi/10.1103/PhysRevLett.131.083001" target="_blank" rel="noopener">⁶Li imaging 2000× (Blodgett, Phatak et al., <em>PRL</em> 2023)</a></li>
+                  <li><a href="https://arxiv.org/abs/2505.10540" target="_blank" rel="noopener">Cs quadrupole cooling (Blodgett, Phatak et al., <em>PRA</em> 2025)</a></li>
+                  <li><a href="https://link.aps.org/doi/10.1103/PhysRevA.110.043116" target="_blank" rel="noopener">Generalized cooling theory (Phatak et al., <em>PRA</em> 2024)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Silicon Spins -->
+        <div class="tab-panel" data-tab="si" data-group="platforms">
+          <div class="plat-deep">
+            <div>
+              <h3 style="color:#fbbf24; margin:0 0 .75rem 0;">Silicon Spin Qubits</h3>
+              <div class="plat-card">
+                <h4>How it works</h4>
+                <p>Electron or hole spins confined in silicon/silicon-germanium quantum dots. An electrostatic gate defines a
+                potential well holding a single electron; its spin-up/down states form the qubit. Single-qubit gates:
+                microwave-driven electron spin resonance. Two-qubit gates: exchange interaction tuned by gate voltage.
+                In isotopically purified ²⁸Si (nuclear-spin-free), the dominant dephasing source (background ²⁹Si nuclear
+                spins) is eliminated.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Key Metrics (≈ 2024)</h4>
+                <p>
+                  <span class="badge-m green">Gate time: 20–50 ns</span>
+                  <span class="badge-m green">2Q fidelity: 99.8% (²⁸Si)</span>
+                  <span class="badge-m green">T₂: &gt;1 ms in ²⁸Si</span>
+                  <span class="badge-m green">Ops/T₂: ~10⁴–10⁵</span>
+                  <span class="badge-m red">Qubit count: 6–12 (2024)</span>
+                  <span class="badge-m red">Variability: no two dots are identical</span>
+                </p>
+              </div>
+              <div class="plat-card">
+                <h4>Why it's compelling long-term</h4>
+                <p>Integration density: millions of quantum dots can in principle be fabricated using existing CMOS processes
+                (same fabs that make Intel chips). This is the most credible path to millions of physical qubits if variability
+                can be solved. Automated tuning protocols — machine learning for quantum dot tuning — are the active research frontier.</p>
+              </div>
+            </div>
+            <div>
+              <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
+              <div class="plat-card">
+                <h4><a href="https://intel.com/quantumcomputing" target="_blank" rel="noopener" style="color:#fcd34d;">Intel ↗</a></h4>
+                <p>Tunnel Falls (12Q, 2023). Fab-compatible process. Cryo-CMOS Horse Ridge controller chip. Integration with Intel's existing 300mm fabs.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://quantummotion.tech" target="_blank" rel="noopener" style="color:#fcd34d;">Quantum Motion ↗</a></h4>
+                <p>UK startup. CMOS-compatible Si/SiO₂ platform. Raises Series B 2023. Focus on scalable qubit arrays.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://sqc.com.au" target="_blank" rel="noopener" style="color:#fcd34d;">Silicon Quantum Computing ↗</a></h4>
+                <p>Australian national initiative (UNSW). Precision atom placement in Si:P. Sub-nm gate control.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://equal1.com" target="_blank" rel="noopener" style="color:#fcd34d;">Equal1 ↗</a></h4>
+                <p>Irish startup. Full stack on a single CMOS chip — qubits + classical control at 4K.</p>
+              </div>
+              <div class="key-papers">
+                <h4>Key Papers</h4>
+                <ul>
+                  <li><a href="https://www.nature.com/articles/s41586-022-04903-3" target="_blank" rel="noopener">Six-qubit Si/SiGe processor (Philips et al., <em>Nature</em> 2022)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-022-04566-0" target="_blank" rel="noopener">99.8% 2Q fidelity in ²⁸Si (Noiri et al., <em>Nature</em> 2022)</a></li>
+                  <li><a href="https://arxiv.org/abs/2309.14781" target="_blank" rel="noopener">Intel Tunnel Falls 12-qubit (2023)</a></li>
+                  <li><a href="https://link.aps.org/doi/10.1103/PhysRevApplied.15.034011" target="_blank" rel="noopener">ML-assisted dot tuning (Zwolak et al., <em>PRApplied</em> 2021)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photonic -->
+        <div class="tab-panel" data-tab="ph" data-group="platforms">
+          <div class="plat-deep">
+            <div>
+              <h3 style="color:#f472b6; margin:0 0 .75rem 0;">Photonic Qubits</h3>
+              <div class="plat-card">
+                <h4>How it works</h4>
+                <p>Qubits encoded in polarisation, path, or time-bin modes of single photons propagating through integrated
+                waveguide chips. Decoherence is negligible in transmission; photonic chips can integrate millions of modes
+                on a wafer. Single-qubit gates: beam splitters and phase shifters. The fundamental difficulty: photons don't
+                interact — entangling gates must be probabilistic (linear optical quantum computing, KLM protocol) or mediated
+                through engineered nonlinearities.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Fusion-Based QC (PsiQuantum approach)</h4>
+                <p>Rather than deterministic gates, resource states (small entangled photon clusters) are fused by Bell
+                measurements. Failures are heralded and corrected by the architecture itself. Key advantage: photons are
+                naturally flying qubits — perfect for quantum networking and modular QC with optical interconnects.
+                Error rates per fusion: ~1–10%.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Near-term Value</h4>
+                <p>Quantum communication / QKD; optical interconnects between otherwise isolated qubit modules; Gaussian
+                boson sampling demonstrations (Xanadu Borealis, ~216 squeezed modes, 2022 — beyond-classical throughput
+                on specific sampling problems).</p>
+              </div>
+            </div>
+            <div>
+              <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
+              <div class="plat-card">
+                <h4><a href="https://psiquantum.com" target="_blank" rel="noopener" style="color:#f9a8d4;">PsiQuantum ↗</a></h4>
+                <p>Largest-funded photonic QC startup (~$700M). Fusion-based QC on GlobalFoundries silicon photonics. Target: 1M+ photonic qubits.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://xanadu.ai" target="_blank" rel="noopener" style="color:#f9a8d4;">Xanadu ↗</a></h4>
+                <p>Borealis (216 squeezed modes). PennyLane open-source framework. Gaussian boson sampling. Amazon Braket partner.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://quixquantum.com" target="_blank" rel="noopener" style="color:#f9a8d4;">QuiX Quantum ↗</a></h4>
+                <p>Boson sampling processors. Si₃N₄ waveguide chips. European quantum flagship.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://quandela.com" target="_blank" rel="noopener" style="color:#f9a8d4;">Quandela ↗</a></h4>
+                <p>Semiconductor quantum dot single-photon sources (InGaAs). Muse cloud platform.</p>
+              </div>
+              <div class="key-papers">
+                <h4>Key Papers</h4>
+                <ul>
+                  <li><a href="https://www.nature.com/articles/35106030" target="_blank" rel="noopener">KLM linear optical QC (Knill et al., <em>Nature</em> 2001)</a></li>
+                  <li><a href="https://www.science.org/doi/10.1126/science.abe8770" target="_blank" rel="noopener">Photonic quantum advantage: GBS (Zhong et al., <em>Science</em> 2020)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-022-04725-x" target="_blank" rel="noopener">Borealis — programmable photonic advantage (Madsen et al., <em>Nature</em> 2022)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41467-023-36493-1" target="_blank" rel="noopener">Fusion-based QC (Bartolucci et al., <em>Nature Commun.</em> 2023)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Defects & Topological -->
+        <div class="tab-panel" data-tab="def" data-group="platforms">
+          <div class="plat-deep">
+            <div>
+              <h3 style="color:#67e8f9; margin:0 0 .75rem 0;">Solid-State Defects &amp; Topological Qubits</h3>
+              <div class="plat-card">
+                <h4>NV Centres &amp; Diamond Defects</h4>
+                <p>Nitrogen-vacancy centres in diamond — a nitrogen atom adjacent to a lattice vacancy — have an electron
+                spin with millisecond-to-hour coherence at <em>room temperature</em>. Unique among qubit platforms. Optically
+                addressable; near-room-temperature operation. Principal near-term role: quantum repeater nodes in distributed
+                networks and precision sensing (magnetometry at nanoscale), rather than dense on-chip processors.
+                Related: SiV centres in diamond (Lukin group, Harvard), defects in SiC.</p>
+              </div>
+              <div class="plat-card">
+                <h4>Topological Qubits (Majorana)</h4>
+                <p>Theoretically compelling — Majorana zero modes at the ends of 1D topological superconductors encode quantum
+                information non-locally, giving intrinsic protection from local perturbations. Error rates theoretically far
+                below 10⁻⁶. Huge overhead reduction for fault-tolerance.<br><br>
+                <strong style="color:var(--text-secondary)">Status:</strong> Unambiguous Majorana detection remains
+                controversial; no braiding operation has been demonstrated. Physics frontier, not yet an engineering option.
+                Microsoft announced topological qubit progress (2023–2025) but peer-reviewed braiding demonstrations
+                are awaited.</p>
+              </div>
+              <div class="warn-box">
+                ⚠️ <strong>Topological qubits remain undemonstrated at the computational level.</strong>
+                Microsoft's announcements have faced scrutiny; independent confirmation of Majorana modes is ongoing (2025).
+                Treat timelines with appropriate skepticism.
+              </div>
+            </div>
+            <div>
+              <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies &amp; Groups</h4>
+              <div class="plat-card">
+                <h4><a href="https://azure.microsoft.com/en-us/solutions/quantum-computing" target="_blank" rel="noopener" style="color:#67e8f9;">Microsoft Azure Quantum ↗</a></h4>
+                <p>Topological qubit programme (Station Q). InAs/Al heterostructures. Announced topological qubit chip (2025). Also partners with IonQ, Quantinuum on Azure.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://quantumbrilliance.com" target="_blank" rel="noopener" style="color:#67e8f9;">Quantum Brilliance ↗</a></h4>
+                <p>Room-temperature NV-centre quantum accelerators. Diamond-based QPU. Partnered with Oak Ridge National Lab.</p>
+              </div>
+              <div class="plat-card">
+                <h4><a href="https://q-next.org" target="_blank" rel="noopener" style="color:#67e8f9;">Q-Next / Argonne ↗</a></h4>
+                <p>US DOE quantum center. NV centres for quantum repeaters. Quantum network testbed Chicago–Argonne.</p>
+              </div>
+              <div class="key-papers">
+                <h4>Key Papers</h4>
+                <ul>
+                  <li><a href="https://www.sciencedirect.com/science/article/pii/S0370157313000562" target="_blank" rel="noopener">NV centre qubit review (Doherty et al., <em>Phys. Rep.</em> 2013)</a></li>
+                  <li><a href="https://www.nature.com/articles/nature15759" target="_blank" rel="noopener">Diamond NV quantum network (Hensen et al., <em>Nature</em> 2015)</a></li>
+                  <li><a href="https://arxiv.org/abs/cond-mat/0010440" target="_blank" rel="noopener">Topological superconductor theory (Kitaev 2001)</a></li>
+                  <li><a href="https://arxiv.org/abs/2503.12097" target="_blank" rel="noopener">Microsoft topological qubit chip (2025)</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /data-tabs-wrap platforms -->
+    </section>
+
+    <!-- ── 6. Fault-Tolerance Roadmap ─────────────────────────── -->
+    <section class="section-block anim-in delay-4">
+      <h2 class="section-title">Road to Fault-Tolerant Quantum Computing</h2>
+      <p class="section-sub">Milestone timeline across the three leading platforms (2019–2033).</p>
+
+      <div class="concept-box" style="margin-bottom:1.25rem;">
+        <div class="concept-box-label">🛡️ Surface Code</div>
+        <p>The leading error correction scheme. Encodes 1 logical qubit in d² physical qubits (d = code distance). Can correct
+        any error affecting fewer than d/2 qubits per syndrome round. At physical error rate ~10⁻³, a distance-21 surface code
+        gives one logical qubit at 10⁻¹⁰ logical error rate — at the cost of 441 physical qubits and continuous syndrome
+        measurement. Running Shor's algorithm on RSA-2048 requires ~4000 logical qubits →
+        <strong>~2×10⁶ physical qubits</strong>.</p>
+      </div>
+
+      <div class="timeline-grid">
+        <!-- Superconducting -->
+        <div class="tl-col">
+          <div class="tl-col-header" style="color:#3b82f6; border-color:#3b82f6;">
+            🔵 Superconducting
+          </div>
+          <div class="tl-event" style="color:#3b82f6;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2019</span>
+            <span class="tl-label">Google 53Q supremacy</span>
+          </div>
+          <div class="tl-event" style="color:#3b82f6;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2023</span>
+            <span class="tl-label">Surface code logical qubit (Google)</span>
+          </div>
+          <div class="tl-event" style="color:#3b82f6;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2024</span>
+            <span class="tl-label">Willow: below-threshold 1 logical qubit</span>
+          </div>
+          <div class="tl-event" style="color:#3b82f6;">
+            <div class="tl-dot open"></div>
+            <span class="tl-year">2027</span>
+            <span class="tl-label projected">~10 logical qubits</span>
+          </div>
+          <div class="tl-event" style="color:#3b82f6;">
+            <div class="tl-dot open"></div>
+            <span class="tl-year">2030</span>
+            <span class="tl-label projected">1000 logical qubits</span>
+          </div>
+        </div>
+
+        <!-- Trapped Ions -->
+        <div class="tl-col">
+          <div class="tl-col-header" style="color:#10b981; border-color:#10b981;">
+            🟢 Trapped Ions
+          </div>
+          <div class="tl-event" style="color:#10b981;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2021</span>
+            <span class="tl-label">IonQ 32-qubit system</span>
+          </div>
+          <div class="tl-event" style="color:#10b981;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2023</span>
+            <span class="tl-label">Quantinuum 99.9% 2Q gate</span>
+          </div>
+          <div class="tl-event" style="color:#10b981;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2024</span>
+            <span class="tl-label">56-qubit H2</span>
+          </div>
+          <div class="tl-event" style="color:#10b981;">
+            <div class="tl-dot open"></div>
+            <span class="tl-year">2027</span>
+            <span class="tl-label projected">Modular QCCD network</span>
+          </div>
+          <div class="tl-event" style="color:#10b981;">
+            <div class="tl-dot open"></div>
+            <span class="tl-year">2032</span>
+            <span class="tl-label projected">Fault-tolerant logical qubits</span>
+          </div>
+        </div>
+
+        <!-- Neutral Atoms -->
+        <div class="tl-col" style="border-color:#7c3aed;">
+          <div class="tl-col-header" style="color:#c4b5fd; border-color:#7c3aed;">
+            🟣 Neutral Atoms ⭐
+          </div>
+          <div class="tl-event" style="color:#a78bfa;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2021</span>
+            <span class="tl-label">QuEra 256-atom analog processor</span>
+          </div>
+          <div class="tl-event" style="color:#a78bfa;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2023</span>
+            <span class="tl-label">Harvard 99.5% Rydberg 2Q gate</span>
+          </div>
+          <div class="tl-event" style="color:#a78bfa;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2023</span>
+            <span class="tl-label">Li 2000× imaging (Phatak et al.)</span>
+          </div>
+          <div class="tl-event" style="color:#a78bfa;">
+            <div class="tl-dot solid"></div>
+            <span class="tl-year">2025</span>
+            <span class="tl-label">Cs ground-state cooling ⟨n⟩≈0.01 (Phatak et al.)</span>
+          </div>
+          <div class="tl-event" style="color:#a78bfa;">
+            <div class="tl-dot open"></div>
+            <span class="tl-year">2026</span>
+            <span class="tl-label projected">Mid-circuit measurement arrays</span>
+          </div>
+          <div class="tl-event" style="color:#a78bfa;">
+            <div class="tl-dot open"></div>
+            <span class="tl-year">2029</span>
+            <span class="tl-label projected">Surface code on neutral atoms</span>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:.8rem; color:var(--text-muted); margin-top:.75rem;">
+        Open circles = projected milestones. Projected dates are speculative estimates based on current roadmaps (2025).
+        ⭐ = platform studied in this thesis.
+      </p>
+    </section>
+
+    <!-- ── 7. Platform Snapshot Table ─────────────────────────── -->
+    <section class="section-block anim-in delay-4">
+      <h2 class="section-title">Platform Snapshot Table (≈ 2024)</h2>
+      <p class="section-sub">
+        Reproduced and updated from Table 8.1 in Phatak (2025). Gate times and fidelities are for two-qubit operations
+        unless noted. T₂ is the dephasing time; ops/T₂ is two-qubit gates per coherence time.
+      </p>
+      <div class="qt-wrap">
+        <table class="qt">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Qubits (2024)</th>
+              <th>Gate time (2Q)</th>
+              <th>2Q Fidelity</th>
+              <th>T₂</th>
+              <th>Ops / T₂</th>
+              <th>Key Bottleneck</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Superconducting</td>
+              <td>100–1000+</td>
+              <td>50–200 ns</td>
+              <td>99.5%</td>
+              <td>50 µs – 0.5 ms</td>
+              <td>~10³</td>
+              <td>Classical wiring at mK</td>
+            </tr>
+            <tr>
+              <td>Trapped Ions</td>
+              <td>30–56</td>
+              <td>20–200 µs</td>
+              <td>99.9%</td>
+              <td>1 s – minutes</td>
+              <td>&gt;10⁴</td>
+              <td>Mode crowding &amp; gate speed</td>
+            </tr>
+            <tr class="highlight">
+              <td>⭐ Neutral Atoms</td>
+              <td>50–1180</td>
+              <td>0.2–5 µs</td>
+              <td>97–99.5%</td>
+              <td>1–10 s</td>
+              <td>10³–10⁴</td>
+              <td>Gate fidelity, mid-circuit readout</td>
+            </tr>
+            <tr>
+              <td>Silicon Spins</td>
+              <td>6–12</td>
+              <td>20–50 ns</td>
+              <td>99.8%</td>
+              <td>&gt;1 ms (²⁸Si)</td>
+              <td>~10⁴–10⁵</td>
+              <td>Variability &amp; tuning</td>
+            </tr>
+            <tr>
+              <td>Photonic</td>
+              <td>&gt;100 modes</td>
+              <td>probabilistic</td>
+              <td>90–97%</td>
+              <td>N/A</td>
+              <td>limited</td>
+              <td>No photon-photon interaction</td>
+            </tr>
+            <tr>
+              <td>NV / Topological</td>
+              <td>1–few</td>
+              <td>µs–ms</td>
+              <td>~99% (NV)</td>
+              <td>ms – hours</td>
+              <td>varies</td>
+              <td>Scale / Majorana undemonstrated</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.82rem; color:var(--text-muted); margin-top:.5rem;">
+        ⭐ = Neutral atoms: the platform studied in this thesis (Phatak 2025, Purdue Hood Lab).
+      </p>
+    </section>
+
+    <!-- ── 8. Neutral Atom Roadmap ─────────────────────────────── -->
+    <section class="section-block anim-in delay-5">
+      <h2 class="section-title">Neutral Atom Roadmap: What Needs to Happen</h2>
+      <p class="section-sub">Five engineering milestones on the path from today's demonstrations to fault-tolerant neutral-atom QC.</p>
+
+      <div class="roadmap-item" style="background:#064e3b; border-left:4px solid #059669;">
+        <div style="flex:1;">
+          <div class="ri-title" style="color:#6ee7b7;">① Gate Fidelity → 99.9%</div>
+          <p class="ri-desc">Optimal-control pulse shaping + ground-state-cooled atoms (⟨n⟩ &lt; 0.1). Chapters 3 &amp; 4 address this directly for Li and Cs.</p>
+        </div>
+        <span class="ri-badge" style="background:#05966922; color:#6ee7b7; border:1px solid #059669;">Active</span>
+      </div>
+
+      <div class="roadmap-item" style="background:#1c1007; border-left:4px solid #d97706;">
+        <div style="flex:1;">
+          <div class="ri-title" style="color:#fcd34d;">② Scale to ~10⁴ atoms</div>
+          <p class="ri-desc">Multiplexed AOD arrays + parallel imaging. Atom Computing Phoenix demonstrated 1180 atoms loaded (2023).</p>
+        </div>
+        <span class="ri-badge" style="background:#d9770622; color:#fcd34d; border:1px solid #d97706;">Near-term</span>
+      </div>
+
+      <div class="roadmap-item" style="background:#1c1007; border-left:4px solid #d97706;">
+        <div style="flex:1;">
+          <div class="ri-title" style="color:#fcd34d;">③ Mid-circuit measurement</div>
+          <p class="ri-desc">Feed-forward operations demonstrated at few-qubit level. Essential for active error correction.</p>
+        </div>
+        <span class="ri-badge" style="background:#d9770622; color:#fcd34d; border:1px solid #d97706;">Near-term</span>
+      </div>
+
+      <div class="roadmap-item" style="background:#1e1b4b; border-left:4px solid #7c3aed;">
+        <div style="flex:1;">
+          <div class="ri-title" style="color:#a78bfa;">④ Photonic interconnects</div>
+          <p class="ri-desc">Modular scaling beyond a single array. Photonic links between tweezer modules. Research stage.</p>
+        </div>
+        <span class="ri-badge" style="background:#7c3aed22; color:#a78bfa; border:1px solid #7c3aed;">Future</span>
+      </div>
+
+      <div class="roadmap-item" style="background:#1e1b4b; border-left:4px solid #7c3aed;">
+        <div style="flex:1;">
+          <div class="ri-title" style="color:#a78bfa;">⑤ Surface code demonstration</div>
+          <p class="ri-desc">First demonstrations expected following similar achievements on superconducting (Google 2023) and trapped-ion systems.</p>
+        </div>
+        <span class="ri-badge" style="background:#7c3aed22; color:#a78bfa; border:1px solid #7c3aed;">Future</span>
+      </div>
+    </section>
+
+    <!-- ── 9. References ──────────────────────────────────────── -->
+    <section class="section-block anim-in delay-5">
+      <h2 class="section-title">References &amp; Further Reading</h2>
+      <div class="refs-grid">
+        <div class="ref-col">
+          <h4>Neutral Atoms</h4>
+          <ul>
+            <li><a href="https://arxiv.org/abs/2109.10087" target="_blank" rel="noopener">Kaufman &amp; Ni, Annu. Rev. Chem. 2021</a></li>
+            <li><a href="https://www.nature.com/articles/s41586-023-06481-y" target="_blank" rel="noopener">Evered et al. (Harvard), Nature 2023 — 99.5% Rydberg gate</a></li>
+            <li><a href="https://www.nature.com/articles/s41586-021-03582-4" target="_blank" rel="noopener">Ebadi et al. (QuEra), Nature 2021</a></li>
+            <li><a href="https://link.aps.org/doi/10.1103/PhysRevLett.131.083001" target="_blank" rel="noopener">Blodgett, Phatak et al., PRL 2023 — ⁶Li 2000× imaging</a></li>
+            <li><a href="https://arxiv.org/abs/2505.10540" target="_blank" rel="noopener">Blodgett, Phatak et al., PRA 2025 — Cs cooling</a></li>
+            <li><a href="https://link.aps.org/doi/10.1103/PhysRevA.110.043116" target="_blank" rel="noopener">Phatak et al., PRA 2024 — Cooling theory</a></li>
+          </ul>
+        </div>
+        <div class="ref-col">
+          <h4>Superconducting &amp; Trapped Ions</h4>
+          <ul>
+            <li><a href="https://www.nature.com/articles/s41586-019-1666-5" target="_blank" rel="noopener">Arute et al. (Google), Nature 2019 — Supremacy</a></li>
+            <li><a href="https://www.nature.com/articles/s41586-024-08449-y" target="_blank" rel="noopener">Google Willow, Nature 2024</a></li>
+            <li><a href="https://arxiv.org/abs/2305.03828" target="_blank" rel="noopener">Quantinuum H2 99.9% 2Q, 2023</a></li>
+            <li><a href="https://link.aps.org/doi/10.1103/PhysRevLett.82.1971" target="_blank" rel="noopener">Sørensen &amp; Mølmer, PRL 1999</a></li>
+            <li><a href="https://www.nature.com/articles/nature00784" target="_blank" rel="noopener">Kielpinski et al. (QCCD), Nature 2002</a></li>
+          </ul>
+        </div>
+        <div class="ref-col">
+          <h4>Review &amp; Theory</h4>
+          <ul>
+            <li><a href="https://arxiv.org/abs/quant-ph/9708004" target="_blank" rel="noopener">DiVincenzo (2000) — Five criteria</a></li>
+            <li><a href="https://arxiv.org/abs/1801.00862" target="_blank" rel="noopener">Preskill (2018) — NISQ era</a></li>
+            <li><a href="https://www.nature.com/articles/s41586-022-04903-3" target="_blank" rel="noopener">Philips et al. (Si), Nature 2022</a></li>
+            <li><a href="https://www.nature.com/articles/s41586-022-04725-x" target="_blank" rel="noopener">Madsen et al. (Xanadu), Nature 2022</a></li>
+            <li><a href="https://arxiv.org/abs/2503.12097" target="_blank" rel="noopener">Microsoft topological qubit, 2025</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="text-align:center; padding:2rem; color:var(--text-muted); font-size:.82rem; border-top:1px solid #1a2236; margin-top:1rem;">
+    AMO Career · Based on Phatak (2025) PhD Thesis, Purdue University Hood Lab ·
+    Platform data ≈ 2024–25 values · Open markers in timeline = projected
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    renderNav({ active: 'qc-landscape', root: '../' });
+
+    // ── Colour helpers ─────────────────────────────────────────────────────
+    function hexToRgba(hex, a) {
+      const r = parseInt(hex.slice(1,3),16);
+      const g = parseInt(hex.slice(3,5),16);
+      const b = parseInt(hex.slice(5,7),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    const PLATFORM_COLORS = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ec4899','#14b8a6'];
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // ── Radar Chart ────────────────────────────────────────────────────────
+    (function() {
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      const labels = ['Gate Fidelity','Coherence Time','Qubit Count','Gate Speed','CMOS Integration','Reconfigurability'];
+      const platforms = [
+        { label: 'Superconducting', data: [9.5, 4,   8.5, 9.5, 6,   3  ] },
+        { label: 'Trapped Ions',    data: [9.9, 9,   4,   3,   2,   5  ] },
+        { label: 'Neutral Atoms',   data: [8.5, 9,   9,   7,   3,   9.5] },
+        { label: 'Silicon Spins',   data: [9.8, 7,   2,   9,   9.5, 2  ] },
+        { label: 'Photonic',        data: [6,   9.5, 7,   9.5, 8,   6  ] },
+        { label: 'NV / Topo',       data: [6,   9.5, 1,   3,   4,   2  ] },
+      ];
+
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels,
+          datasets: platforms.map((p, i) => ({
+            label: p.label,
+            data: p.data,
+            borderColor: PLATFORM_COLORS[i],
+            backgroundColor: hexToRgba(PLATFORM_COLORS[i], 0.12),
+            pointBackgroundColor: PLATFORM_COLORS[i],
+            pointRadius: 4,
+            borderWidth: 2,
+          }))
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              min: 0, max: 10,
+              ticks: { stepSize: 2, color: '#475569', backdropColor: 'transparent', font: { size: 10 } },
+              grid:        { color: '#1e293b' },
+              angleLines:  { color: '#1e293b' },
+              pointLabels: { color: '#c4b5fd', font: { size: 12 } },
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#e2e8f0', boxWidth: 14, padding: 14, font: { size: 11 } }
+            },
+            tooltip: { backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1 }
+          }
+        }
+      });
+    })();
+
+    // ── Qubit Count Bar Chart ──────────────────────────────────────────────
+    (function() {
+      const ctx = document.getElementById('qubitChart').getContext('2d');
+      const systems = [
+        { name: 'IBM Condor',           type: 'Superconducting', count: 1121 },
+        { name: 'Atom Computing Phoenix',type: 'Neutral Atoms',   count: 1180 },
+        { name: 'IBM Heron r2',         type: 'Superconducting', count: 156  },
+        { name: 'QuEra Aquila',         type: 'Neutral Atoms',   count: 256  },
+        { name: 'Quantinuum H2',        type: 'Trapped Ions',    count: 56   },
+        { name: 'Google Willow',        type: 'Superconducting', count: 105  },
+        { name: 'Pasqal Fresnel',       type: 'Neutral Atoms',   count: 100  },
+        { name: 'IonQ Forte',          type: 'Trapped Ions',    count: 36   },
+        { name: 'Intel Tunnel Falls',   type: 'Silicon Spins',   count: 12   },
+        { name: 'PsiQuantum',           type: 'Photonic',        count: 0    },
+      ];
+      const colorMap = {
+        'Superconducting': '#3b82f6',
+        'Neutral Atoms':   '#8b5cf6',
+        'Trapped Ions':    '#10b981',
+        'Silicon Spins':   '#f59e0b',
+        'Photonic':        '#ec4899',
+      };
+      // Sort by count descending
+      systems.sort((a,b) => b.count - a.count);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: systems.map(s => s.name),
+          datasets: [{
+            data: systems.map(s => s.count),
+            backgroundColor: systems.map(s => hexToRgba(colorMap[s.type], 0.75)),
+            borderColor:     systems.map(s => colorMap[s.type]),
+            borderWidth: 1.5,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+              callbacks: {
+                label: (ctx) => {
+                  const s = systems[ctx.dataIndex];
+                  return ` ${s.count} qubits — ${s.type}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { maxRotation: 35, font: { size: 10 } }, grid: { color: '#1e293b' } },
+            y: { title: { display: true, text: 'Physical Qubits', color: '#94a3b8' }, grid: { color: '#1e293b' } }
+          }
+        }
+      });
+    })();
+
+    // ── Fidelity Bar Chart with threshold line ─────────────────────────────
+    (function() {
+      const ctx = document.getElementById('fidelityChart').getContext('2d');
+      const platforms = [
+        { name: 'Superconducting\n(IBM/Google)',    val: 99.5, color: '#3b82f6' },
+        { name: 'Trapped Ions\n(Quantinuum)',        val: 99.9, color: '#10b981' },
+        { name: 'Neutral Atoms\n(best demo)',         val: 99.5, color: '#8b5cf6' },
+        { name: 'Silicon Spins\n(²⁸Si)',             val: 99.8, color: '#f59e0b' },
+        { name: 'Photonic\n(linear optical)',         val: 93.0, color: '#ec4899' },
+      ];
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: platforms.map(p => p.name),
+          datasets: [
+            {
+              type: 'bar',
+              label: '2-Qubit Gate Fidelity (%)',
+              data: platforms.map(p => p.val),
+              backgroundColor: platforms.map(p => hexToRgba(p.color, 0.75)),
+              borderColor:     platforms.map(p => p.color),
+              borderWidth: 1.5,
+            },
+            {
+              type: 'line',
+              label: 'Surface code threshold ~99.9%',
+              data: platforms.map(() => 99.9),
+              borderColor: '#ef4444',
+              borderDash: [6, 4],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: '#e2e8f0', font: { size: 11 } }, position: 'bottom' },
+            tooltip: { backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1 }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' } },
+            y: {
+              min: 88, max: 100.5,
+              title: { display: true, text: '2-Qubit Gate Fidelity (%)', color: '#94a3b8' },
+              grid: { color: '#1e293b' }
+            }
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
