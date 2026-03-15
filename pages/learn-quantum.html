@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn Quantum — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-qc); }
+
+    /* ─── Sticky anchor nav ──────────────────────────── */
+    .topic-nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(2,8,15,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e293b;
+      overflow-x: auto; white-space: nowrap;
+      padding: .45rem 1rem; display: flex; gap: .35rem;
+    }
+    .topic-nav a {
+      display: inline-block; padding: .3rem .65rem; border-radius: 6px;
+      font-size: .75rem; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; transition: background .15s, color .15s;
+    }
+    .topic-nav a:hover, .topic-nav a.active { background: #1e293b; color: var(--c-qc); }
+
+    /* ─── Section layout ─────────────────────────────── */
+    .topic-section { padding: 2.5rem 0 1rem 0; }
+    .topic-header {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.25rem;
+      border-left: 4px solid var(--c-qc); padding-left: .85rem;
+    }
+    .topic-header .t-icon { font-size: 1.5rem; }
+    .topic-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .topic-header .t-tag {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      background: rgba(167,139,250,.12); color: var(--c-qc);
+      border: 1px solid rgba(167,139,250,.25); border-radius: 5px;
+      padding: .15rem .5rem;
+    }
+    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 2.5rem 0 0 0; }
+
+    /* ─── Theory / formula boxes ─────────────────────── */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-left: 4px solid var(--c-qc); border-radius: 10px;
+      padding: 1rem 1.3rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .93rem; font-weight: 700; color: var(--c-qc); margin: 0 0 .5rem 0; }
+    .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+
+    .formula-box {
+      background: #080f0a; border: 1px solid #1a3a1a; border-radius: 8px;
+      padding: .7rem 1rem; margin: .6rem 0;
+      font-family: var(--mono); color: #86efac; font-size: .82rem;
+      line-height: 1.85; white-space: pre; overflow-x: auto;
+    }
+    .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc;
+          display: block; margin: .4rem 0; text-align: center; }
+
+    /* ─── Two / three col ────────────────────────────── */
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 800px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* ─── Bloch sphere canvas ────────────────────────── */
+    .bloch-wrap {
+      background: #060e1c; border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1rem; text-align: center;
+    }
+    canvas#blochCanvas, canvas#gatesBlochCanvas {
+      display: block; margin: 0 auto;
+    }
+    .bloch-state {
+      font-family: var(--mono); font-size: .82rem; color: var(--text-muted);
+      margin-top: .4rem;
+    }
+
+    /* ─── Controls ───────────────────────────────────── */
+    .ctrl-row { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: .75rem; }
+    .ctrl-group label { font-size: .78rem; color: var(--text-muted); display: block; margin-bottom: .25rem; }
+    .ctrl-group input[type=range] { width: 160px; accent-color: var(--c-qc); display: block; }
+    .ctrl-val { color: var(--c-qc); font-family: var(--mono); font-size: .82rem; }
+
+    .ctrl-select {
+      background: #0a1628; border: 1px solid #1e3a5f; border-radius: 7px;
+      padding: .35rem .7rem; color: var(--text-primary);
+      font-size: .85rem; font-family: var(--mono);
+    }
+    .ctrl-select:focus { outline: none; border-color: var(--c-qc); }
+
+    .action-btn {
+      background: var(--c-qc); color: #fff; border: none;
+      border-radius: 7px; padding: .45rem 1rem;
+      font-size: .85rem; font-weight: 600; cursor: pointer;
+    }
+    .action-btn:hover { opacity: .85; }
+    .action-btn.sec {
+      background: #1e293b; color: var(--c-qc); border: 1px solid var(--c-qc);
+    }
+
+    /* Gate buttons */
+    .gate-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .75rem; }
+    .gate-btn {
+      background: #1e293b; border: 1px solid #334155; border-radius: 6px;
+      padding: .35rem .75rem; font-family: var(--mono); font-size: .82rem;
+      color: var(--text-secondary); cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .gate-btn:hover { border-color: var(--c-qc); color: var(--c-qc); }
+
+    /* Chart cards */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1rem;
+    }
+    .chart-card h5 {
+      font-size: .8rem; font-weight: 600; color: var(--text-muted);
+      margin: 0 0 .6rem 0; text-align: center; text-transform: uppercase; letter-spacing: .05em;
+    }
+
+    /* Matrix display */
+    .matrix-wrap {
+      display: inline-block; background: #0a1628; border: 1px solid #1e293b;
+      border-radius: 8px; padding: .75rem 1rem; font-family: var(--mono); font-size: .85rem;
+    }
+    .matrix-wrap table { border-collapse: collapse; }
+    .matrix-wrap td { padding: .2rem .5rem; color: var(--text-secondary); text-align: center; }
+    .matrix-wrap td.val { color: #a78bfa; font-weight: 600; }
+
+    /* Truth table */
+    .truth-table { border-collapse: collapse; font-family: var(--mono); font-size: .83rem; }
+    .truth-table th { background: #0a1628; color: var(--text-muted); padding: .45rem .7rem;
+      border: 1px solid #1e293b; font-weight: 600; }
+    .truth-table td { padding: .4rem .7rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
+    .truth-table .hilite { color: var(--c-qc); font-weight: 700; }
+
+    /* Bell state cards */
+    .bell-card {
+      background: var(--bg-card); border: 2px solid transparent; border-radius: 10px;
+      padding: .9rem 1rem; cursor: pointer; transition: border-color .2s;
+    }
+    .bell-card.selected { border-color: var(--c-qc); }
+    .bell-card h5 { font-size: .95rem; font-weight: 700; color: var(--text-primary); margin: 0 0 .3rem 0; }
+    .bell-card p  { font-family: var(--mono); font-size: .82rem; color: var(--c-qc); margin: 0; }
+
+    /* Rydberg */
+    .result-box {
+      background: #020b04; border: 1px solid #15803d;
+      border-radius: 8px; padding: .65rem 1rem;
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      font-family: var(--mono); font-size: .82rem;
+    }
+    .r-pair { display: flex; flex-direction: column; }
+    .r-lbl { color: #86efac; font-size: .75rem; }
+    .r-val { color: #4ade80; font-size: 1rem; font-weight: 700; }
+
+    /* Wigner canvas */
+    canvas.wigner-canvas {
+      display: block; margin: 0 auto;
+      image-rendering: pixelated; border-radius: 8px;
+    }
+
+    /* MZI SVG */
+    .mzi-svg { display: block; margin: 0 auto; }
+
+    /* Measurement histogram */
+    .shot-info { font-family: var(--mono); font-size: .82rem; color: var(--text-muted); margin-top: .4rem; }
+
+    /* Info/good banners */
+    .info-banner { background: #0a1020; border: 1px solid #1e3a6e; border-radius: 8px;
+      padding: .6rem 1rem; margin: .5rem 0; color: #93c5fd; font-size: .84rem; }
+    .good-banner { background: #052e16; border: 1px solid #15803d; border-radius: 8px;
+      padding: .6rem 1rem; margin: .5rem 0; color: #86efac; font-size: .84rem; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ─── Hero ─────────────────────────────────────────── -->
+<section class="page-hero" style="--hero-accent: var(--c-qc);">
+  <div class="container">
+    <div class="hero-badge anim-in">QUANTUM FUNDAMENTALS</div>
+    <h1 class="page-title anim-in delay-1">
+      Learn <span class="grad-text" style="--ga: var(--c-qc); --gb: #38bdf8;">Quantum Physics</span>
+    </h1>
+    <p class="page-desc anim-in delay-2">
+      Interactive visualizations from single qubits on the Bloch sphere to Rydberg blockade and
+      Wigner functions. No prior quantum background required.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">11</span><span class="stat-lbl">topics</span></div>
+      <div class="stat"><span class="stat-val">Bloch</span><span class="stat-lbl">sphere sim</span></div>
+      <div class="stat"><span class="stat-val">FFT</span><span class="stat-lbl">Wigner function</span></div>
+      <div class="stat"><span class="stat-val">Rydberg</span><span class="stat-lbl">blockade calc</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Sticky nav ────────────────────────────────────── -->
+<nav class="topic-nav" id="topicNav">
+  <a href="#bloch">🔵 Bloch</a>
+  <a href="#gates">⚡ Gates</a>
+  <a href="#superposition">〰️ Superposition</a>
+  <a href="#measurement">📏 Measurement</a>
+  <a href="#entanglement">🔗 Entanglement</a>
+  <a href="#rydberg">⚛️ Rydberg</a>
+  <a href="#twoqubit">🔀 Two-Qubit</a>
+  <a href="#rabi">🌀 Rabi</a>
+  <a href="#decoherence">📉 Decoherence</a>
+  <a href="#cooling">🌡️ Cooling</a>
+  <a href="#wigner">🌊 Wigner</a>
+</nav>
+
+<main class="container">
+
+<!-- ══════════ 1. BLOCH SPHERE ══════════ -->
+<section class="topic-section" id="bloch">
+  <div class="topic-header">
+    <span class="t-icon">🔵</span>
+    <h2>Bloch Sphere</h2>
+    <span class="t-tag">single qubit</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Single-qubit state space</h4>
+    <p>Any pure single-qubit state can be written as
+      |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ} sin(θ/2)|1⟩,
+      mapping to a point on the unit sphere (Bloch sphere) with polar angle θ ∈ [0,π]
+      and azimuthal angle φ ∈ [0,2π]. The Bloch vector 𝐧 = (sin θ cos φ, sin θ sin φ, cos θ)
+      represents the expectation values ⟨σx⟩, ⟨σy⟩, ⟨σz⟩.
+    </p>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="ctrl-row" style="flex-direction:column; align-items:flex-start;">
+        <div class="ctrl-group">
+          <label>θ (polar): <span class="ctrl-val" id="thetaLbl">90°</span></label>
+          <input type="range" id="thetaSlide" min="0" max="180" value="90" step="1"
+            oninput="document.getElementById('thetaLbl').textContent=this.value+'°'; drawBloch('blochCanvas',+this.value*Math.PI/180, +document.getElementById('phiSlide').value*Math.PI/180)">
+        </div>
+        <div class="ctrl-group" style="margin-top:.6rem;">
+          <label>φ (azimuthal): <span class="ctrl-val" id="phiLbl">0°</span></label>
+          <input type="range" id="phiSlide" min="0" max="360" value="0" step="1"
+            oninput="document.getElementById('phiLbl').textContent=this.value+'°'; drawBloch('blochCanvas',+document.getElementById('thetaSlide').value*Math.PI/180, +this.value*Math.PI/180)">
+        </div>
+      </div>
+
+      <div class="theory-box" style="margin-top:.75rem;">
+        <h4>Special states</h4>
+        <p>
+          <strong>|0⟩</strong> (north pole): θ=0, Bloch vector = (0,0,+1)<br>
+          <strong>|1⟩</strong> (south pole): θ=π, Bloch vector = (0,0,−1)<br>
+          <strong>|+⟩ = (|0⟩+|1⟩)/√2</strong>: θ=π/2, φ=0 → (+x equator)<br>
+          <strong>|+i⟩ = (|0⟩+i|1⟩)/√2</strong>: θ=π/2, φ=π/2 → (+y equator)<br>
+          <strong>Mixed state</strong>: ρ = I/2 → Bloch vector = origin (not on sphere)
+        </p>
+      </div>
+
+      <div class="formula-box">|ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩
+
+Bloch vector:
+  ⟨σx⟩ = sin θ cos φ
+  ⟨σy⟩ = sin θ sin φ
+  ⟨σz⟩ = cos θ
+
+P(|0⟩) = cos²(θ/2)   P(|1⟩) = sin²(θ/2)</div>
+    </div>
+
+    <div class="bloch-wrap">
+      <canvas id="blochCanvas" width="260" height="280"></canvas>
+      <div class="bloch-state" id="blochState"></div>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 2. QUANTUM GATES ══════════ -->
+<section class="topic-section" id="gates">
+  <div class="topic-header">
+    <span class="t-icon">⚡</span>
+    <h2>Quantum Gates</h2>
+    <span class="t-tag">unitary operations</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Unitary transformations on the Bloch sphere</h4>
+    <p>
+      Single-qubit gates are 2×2 unitary matrices acting on |ψ⟩. Geometrically they are
+      rotations of the Bloch sphere. Pauli gates rotate by π around x, y, or z axes.
+      The Hadamard H swaps the |0⟩/|1⟩ basis with |±⟩. Phase gates (S, T) rotate around z.
+    </p>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div style="margin-bottom:.6rem; font-size:.8rem; color:var(--text-muted);">
+        Start state: θ = <span id="gatesThLbl">90</span>°, φ = <span id="gatesPhLbl">0</span>°
+      </div>
+      <div class="ctrl-row">
+        <div class="ctrl-group">
+          <label>θ: <span class="ctrl-val" id="gThLbl">90°</span></label>
+          <input type="range" id="gThSlide" min="0" max="180" value="90" step="1"
+            oninput="document.getElementById('gThLbl').textContent=this.value+'°'; setGateState()">
+        </div>
+        <div class="ctrl-group">
+          <label>φ: <span class="ctrl-val" id="gPhLbl">0°</span></label>
+          <input type="range" id="gPhSlide" min="0" max="360" value="0" step="1"
+            oninput="document.getElementById('gPhLbl').textContent=this.value+'°'; setGateState()">
+        </div>
+      </div>
+
+      <div style="margin-bottom:.4rem; font-size:.8rem; color:var(--text-muted);">Click a gate to apply:</div>
+      <div class="gate-row">
+        <button class="gate-btn" onclick="applyGateBtn('I')">I</button>
+        <button class="gate-btn" onclick="applyGateBtn('X')">X</button>
+        <button class="gate-btn" onclick="applyGateBtn('Y')">Y</button>
+        <button class="gate-btn" onclick="applyGateBtn('Z')">Z</button>
+        <button class="gate-btn" onclick="applyGateBtn('H')">H</button>
+        <button class="gate-btn" onclick="applyGateBtn('S')">S</button>
+        <button class="gate-btn" onclick="applyGateBtn('T')">T</button>
+        <button class="gate-btn" onclick="applyGateBtn('Rx')">Rx(π/2)</button>
+        <button class="gate-btn" onclick="applyGateBtn('Ry')">Ry(π/2)</button>
+        <button class="gate-btn" onclick="applyGateBtn('Rz')">Rz(π/2)</button>
+        <button class="gate-btn sec" onclick="resetGateState()" style="border-color:#f87171;color:#f87171;">Reset</button>
+      </div>
+
+      <div id="gateMatrix" class="matrix-wrap" style="margin-top:.75rem;"></div>
+      <div style="font-family:var(--mono); font-size:.78rem; color:var(--text-muted); margin-top:.4rem;" id="gateDesc"></div>
+    </div>
+
+    <div class="bloch-wrap">
+      <canvas id="gatesBlochCanvas" width="260" height="280"></canvas>
+      <div class="bloch-state" id="gatesBlochState"></div>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 3. SUPERPOSITION ══════════ -->
+<section class="topic-section" id="superposition">
+  <div class="topic-header">
+    <span class="t-icon">〰️</span>
+    <h2>Superposition &amp; Interference</h2>
+    <span class="t-tag">Mach-Zehnder</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Mach-Zehnder Interferometer</h4>
+    <p>
+      A single photon enters a 50/50 beamsplitter (H gate), acquires a phase φ on one arm,
+      then hits a second beamsplitter. The output probabilities are:
+    </p>
+  </div>
+
+  <div class="formula-box">Unitary:   U_MZI = H · Rz(φ) · H
+
+P(|0⟩) = cos²(φ/2)     P(|1⟩) = sin²(φ/2)
+
+Constructive interference at φ = 0   (all into |0⟩)
+Destructive interference  at φ = π   (all into |1⟩)</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <!-- MZI SVG diagram -->
+      <svg class="mzi-svg" width="320" height="180" viewBox="0 0 320 180">
+        <!-- Input -->
+        <line x1="10" y1="90" x2="70" y2="90" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="5" y="87" fill="#60a5fa" font-size="11">|0⟩</text>
+        <!-- BS1 -->
+        <rect x="70" y="75" width="30" height="30" fill="#0c1e3a" stroke="#a78bfa" stroke-width="1.5" rx="4"/>
+        <text x="77" y="94" fill="#a78bfa" font-size="10">H</text>
+        <!-- Upper arm -->
+        <line x1="100" y1="80" x2="185" y2="60" stroke="#34d399" stroke-width="1.5"/>
+        <!-- Lower arm -->
+        <line x1="100" y1="100" x2="185" y2="120" stroke="#fbbf24" stroke-width="1.5"/>
+        <!-- Phase element -->
+        <rect x="185" y="112" width="28" height="18" fill="#0c1e3a" stroke="#fbbf24" stroke-width="1" rx="3"/>
+        <text x="188" y="125" fill="#fbbf24" font-size="9">e^iφ</text>
+        <!-- BS2 -->
+        <line x1="213" y1="121" x2="225" y2="110" stroke="#fbbf24" stroke-width="1.5"/>
+        <line x1="185" y1="60" x2="225" y2="80" stroke="#34d399" stroke-width="1.5"/>
+        <rect x="225" y="75" width="30" height="30" fill="#0c1e3a" stroke="#a78bfa" stroke-width="1.5" rx="4"/>
+        <text x="232" y="94" fill="#a78bfa" font-size="10">H</text>
+        <!-- Outputs -->
+        <line x1="255" y1="80" x2="305" y2="60" stroke="#60a5fa" stroke-width="1.5"/>
+        <line x1="255" y1="100" x2="305" y2="120" stroke="#f87171" stroke-width="1.5"/>
+        <text x="308" y="63" fill="#60a5fa" font-size="11">|0⟩</text>
+        <text x="308" y="123" fill="#f87171" font-size="11">|1⟩</text>
+        <!-- Detector labels -->
+        <text x="140" y="57" fill="#34d399" font-size="9">arm 0</text>
+        <text x="140" y="135" fill="#fbbf24" font-size="9">arm 1 (phase φ)</text>
+      </svg>
+
+      <div class="ctrl-row" style="margin-top:1rem;">
+        <div class="ctrl-group">
+          <label>Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
+          <input type="range" id="mziPhi" min="0" max="360" value="0" step="1"
+            oninput="document.getElementById('mziPhiLbl').textContent=this.value+'°'; updateMZI()">
+        </div>
+      </div>
+      <div class="info-banner" id="mziBanner"></div>
+    </div>
+
+    <div class="chart-card">
+      <h5>Output Probabilities</h5>
+      <canvas id="mziChart" height="240"></canvas>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 4. MEASUREMENT ══════════ -->
+<section class="topic-section" id="measurement">
+  <div class="topic-header">
+    <span class="t-icon">📏</span>
+    <h2>Measurement &amp; Born Rule</h2>
+    <span class="t-tag">projection, statistics</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Born rule</h4>
+    <p>
+      Measuring |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩ in the computational basis
+      yields |0⟩ with probability P₀ = cos²(θ/2) and |1⟩ with probability P₁ = sin²(θ/2),
+      <em>regardless of φ</em>. The post-measurement state collapses to the measured outcome.
+    </p>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="ctrl-row" style="flex-direction:column; align-items:flex-start;">
+        <div class="ctrl-group">
+          <label>θ: <span class="ctrl-val" id="measThLbl">90°</span> → P(|0⟩) = <span class="ctrl-val" id="measP0">50.0%</span></label>
+          <input type="range" id="measTh" min="0" max="180" value="90" step="1"
+            oninput="updateMeasTh()">
+        </div>
+        <div class="ctrl-group" style="margin-top:.6rem;">
+          <label>Number of shots</label>
+          <select class="ctrl-select" id="measShots">
+            <option>100</option><option>500</option>
+            <option selected>1000</option><option>5000</option><option>10000</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; gap:.5rem; margin-top:.5rem;">
+        <button class="action-btn" onclick="runMeasurement()">▶ Shoot N times</button>
+        <button class="action-btn sec" onclick="clearMeasurement()">Clear</button>
+      </div>
+      <div class="shot-info" id="shotInfo" style="margin-top:.5rem;"></div>
+    </div>
+
+    <div class="chart-card">
+      <h5>Measurement histogram</h5>
+      <canvas id="measChart" height="240"></canvas>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 5. ENTANGLEMENT ══════════ -->
+<section class="topic-section" id="entanglement">
+  <div class="topic-header">
+    <span class="t-icon">🔗</span>
+    <h2>Entanglement &amp; Bell States</h2>
+    <span class="t-tag">non-separability</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Bell states — maximally entangled two-qubit states</h4>
+    <p>
+      A state is entangled if it cannot be written as |ψ_A⟩⊗|ψ_B⟩.
+      The four Bell states form an orthonormal basis for the two-qubit Hilbert space
+      and are maximally entangled: measuring one qubit instantly determines the other's outcome,
+      regardless of separation — "spooky action at a distance" (Einstein, 1935).
+    </p>
+  </div>
+
+  <div class="three-col" style="margin-bottom:1rem;">
+    <div class="bell-card selected" id="bell0" onclick="selectBell(0)">
+      <h5>|Φ⁺⟩</h5>
+      <p>(|00⟩ + |11⟩)/√2</p>
+    </div>
+    <div class="bell-card" id="bell1" onclick="selectBell(1)">
+      <h5>|Φ⁻⟩</h5>
+      <p>(|00⟩ − |11⟩)/√2</p>
+    </div>
+    <div class="bell-card" id="bell2" onclick="selectBell(2)">
+      <h5>|Ψ⁺⟩</h5>
+      <p>(|01⟩ + |10⟩)/√2</p>
+    </div>
+  </div>
+  <div class="three-col" style="margin-bottom:1rem;">
+    <div class="bell-card" id="bell3" onclick="selectBell(3)">
+      <h5>|Ψ⁻⟩</h5>
+      <p>(|01⟩ − |10⟩)/√2</p>
+    </div>
+    <div class="bell-card" id="bell4" onclick="selectBell(4)">
+      <h5>|00⟩ (separable)</h5>
+      <p>|0⟩⊗|0⟩ — not entangled</p>
+    </div>
+    <div class="bell-card" id="bell5" onclick="selectBell(5)">
+      <h5>|++⟩ (separable)</h5>
+      <p>(|0⟩+|1⟩)/√2 ⊗ same</p>
+    </div>
+  </div>
+
+  <div id="bellInfo" class="two-col"></div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 6. RYDBERG ══════════ -->
+<section class="topic-section" id="rydberg">
+  <div class="topic-header">
+    <span class="t-icon">⚛️</span>
+    <h2>Rydberg Atoms &amp; Blockade</h2>
+    <span class="t-tag">neutral-atom QC</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Rydberg blockade mechanism</h4>
+    <p>
+      Exciting two nearby atoms to Rydberg states shifts one atom's resonance by
+      V(R) = C₆/R⁶ due to van der Waals interactions. When V(R) ≫ ℏΩ_R,
+      the double excitation |rr⟩ is off-resonant — this is the <strong>Rydberg blockade</strong>.
+      Within the blockade radius R_b, only one atom can be excited at a time,
+      enabling two-qubit entangling gates.
+    </p>
+  </div>
+
+  <div class="formula-box">C₆  ∝  n*¹¹     (n* = effective principal quantum number)
+R_b  =  (C₆ / ℏΩ_R)^{1/6}     [blockade radius]
+V(R) =  C₆ / R⁶               [van der Waals interaction]
+
+Gate fidelity:  ℱ ≈ 1 − (Γ/Ω_R) − α⟨n_motion⟩</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <div class="ctrl-row" style="flex-direction:column; align-items:flex-start; gap:.6rem;">
+        <div class="ctrl-group">
+          <label>Principal quantum number n: <span class="ctrl-val" id="rydNlbl">70</span></label>
+          <input type="range" id="rydN" min="30" max="120" value="70" step="1"
+            oninput="document.getElementById('rydNlbl').textContent=this.value; updateRydberg()">
+        </div>
+        <div class="ctrl-group">
+          <label>Rabi frequency Ω_R/2π (MHz): <span class="ctrl-val" id="rydOmlbl">1.0</span></label>
+          <input type="range" id="rydOm" min="0.1" max="10" value="1.0" step="0.1"
+            oninput="document.getElementById('rydOmlbl').textContent=(+this.value).toFixed(1); updateRydberg()">
+        </div>
+        <div class="ctrl-group">
+          <label>Atom: <select class="ctrl-select" id="rydAtom" onchange="updateRydberg()" style="margin-top:.2rem; padding:.25rem .5rem;">
+            <option value="Cs">¹³³Cs</option>
+            <option value="Rb">⁸⁷Rb</option>
+          </select></label>
+        </div>
+      </div>
+      <div class="result-box" id="rydResult" style="margin-top:.75rem;"></div>
+      <div class="info-banner" style="margin-top:.6rem;" id="rydBanner"></div>
+    </div>
+
+    <div class="chart-card">
+      <h5>V(R) = C₆/R⁶ interaction potential</h5>
+      <canvas id="rydChart" height="230"></canvas>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 7. TWO-QUBIT GATES ══════════ -->
+<section class="topic-section" id="twoqubit">
+  <div class="topic-header">
+    <span class="t-icon">🔀</span>
+    <h2>Two-Qubit Gates</h2>
+    <span class="t-tag">entangling operations</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Entangling gates</h4>
+    <p>
+      Two-qubit gates act on the 4D Hilbert space spanned by |00⟩, |01⟩, |10⟩, |11⟩.
+      CNOT, CZ, and iSWAP can generate maximal entanglement from product states — they are
+      universal when combined with single-qubit gates.
+    </p>
+  </div>
+
+  <div class="ctrl-row">
+    <label style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
+    <select class="ctrl-select" id="tqSel" onchange="updateTwoQubit()">
+      <option value="CNOT">CNOT</option>
+      <option value="CZ">CZ</option>
+      <option value="iSWAP">iSWAP</option>
+      <option value="SWAP">SWAP</option>
+    </select>
+  </div>
+
+  <div class="two-col" style="margin-top:.5rem;">
+    <div>
+      <div id="tqMatrix"></div>
+      <div class="theory-box" style="margin-top:.75rem;" id="tqDesc"></div>
+    </div>
+    <div>
+      <div style="margin-bottom:.6rem; font-size:.83rem; font-weight:600; color:var(--text-muted);">Truth table</div>
+      <table class="truth-table" id="tqTruth"></table>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 8. RABI ══════════ -->
+<section class="topic-section" id="rabi">
+  <div class="topic-header">
+    <span class="t-icon">🌀</span>
+    <h2>Rabi Oscillations</h2>
+    <span class="t-tag">coherent drive</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Driven two-level system</h4>
+    <p>
+      A resonant laser drive with Rabi frequency Ω causes coherent oscillations between |0⟩ and |1⟩.
+      Off-resonance (detuning Δ), the generalised Rabi frequency is Ω' = √(Ω²+Δ²)
+      and the oscillation amplitude is reduced to (Ω/Ω')².
+    </p>
+  </div>
+
+  <div class="formula-box">P₁(t) = (Ω/Ω')² sin²(Ω't/2)   where  Ω' = √(Ω² + Δ²)
+
+Resonance (Δ=0): P₁ = sin²(Ωt/2)   [full population transfer]
+π-pulse time:    t_π = π/Ω          [|0⟩ → |1⟩ exactly]</div>
+
+  <div class="ctrl-row" style="margin-top:1rem;">
+    <div class="ctrl-group">
+      <label>Ω/2π (MHz): <span class="ctrl-val" id="rabiOmlbl">1.0</span></label>
+      <input type="range" id="rabiOm" min="0.1" max="5" value="1.0" step="0.1"
+        oninput="document.getElementById('rabiOmlbl').textContent=(+this.value).toFixed(1); updateRabi()">
+    </div>
+    <div class="ctrl-group">
+      <label>Δ/2π (MHz): <span class="ctrl-val" id="rabiDlbl">0.0</span></label>
+      <input type="range" id="rabiD" min="0" max="5" value="0" step="0.1"
+        oninput="document.getElementById('rabiDlbl').textContent=(+this.value).toFixed(1); updateRabi()">
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h5>P₁(t) — population in |1⟩</h5>
+    <canvas id="rabiChart" height="230"></canvas>
+  </div>
+  <div style="font-family:var(--mono); font-size:.8rem; color:var(--text-muted); margin-top:.4rem;" id="rabiInfo"></div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 9. DECOHERENCE ══════════ -->
+<section class="topic-section" id="decoherence">
+  <div class="topic-header">
+    <span class="t-icon">📉</span>
+    <h2>Decoherence: T₁ &amp; T₂</h2>
+    <span class="t-tag">open quantum systems</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Bloch sphere collapse</h4>
+    <p>
+      Real qubits interact with their environment. <strong>T₁</strong> (relaxation time) is how long
+      the excited state population survives — the qubit decays from |1⟩ to |0⟩.
+      <strong>T₂</strong> (coherence/dephasing time) is how long superpositions survive.
+      Always T₂ ≤ 2T₁. The off-diagonal density matrix element |ρ₀₁| decays as e^{−t/T₂}.
+    </p>
+  </div>
+
+  <div class="formula-box">Bloch equations (Lindblad master equation):
+  ṡz(t) = −(sz + 1)/T₁           → sz(t) = −1 + (sz₀+1)e^{−t/T₁}
+  ṡ⊥(t) = −s⊥/T₂                → |ρ₀₁(t)| = |ρ₀₁(0)| e^{−t/T₂}
+
+Typical values (Rydberg tweezers):
+  T₁ ≈ 10 ms  (Rydberg lifetime limited)
+  T₂* ≈ 1–5 ms (technical noise limited)
+  T₂ ≈ 100 ms  (echo / dynamical decoupling)</div>
+
+  <div class="ctrl-row" style="margin-top:1rem;">
+    <div class="ctrl-group">
+      <label>T₁ (ms): <span class="ctrl-val" id="T1lbl">10</span></label>
+      <input type="range" id="T1slide" min="1" max="50" value="10" step="0.5"
+        oninput="document.getElementById('T1lbl').textContent=(+this.value).toFixed(1); updateDecohere()">
+    </div>
+    <div class="ctrl-group">
+      <label>T₂ (ms): <span class="ctrl-val" id="T2lbl">3</span></label>
+      <input type="range" id="T2slide" min="0.5" max="20" value="3" step="0.5"
+        oninput="document.getElementById('T2lbl').textContent=(+this.value).toFixed(1); updateDecohere()">
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h5>Population P₁(t) and Coherence |ρ₀₁(t)|</h5>
+    <canvas id="decohChart" height="230"></canvas>
+  </div>
+  <div class="info-banner" id="decohInfo" style="margin-top:.6rem;"></div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 10. LASER COOLING ══════════ -->
+<section class="topic-section" id="cooling">
+  <div class="topic-header">
+    <span class="t-icon">🌡️</span>
+    <h2>Laser Cooling Physics</h2>
+    <span class="t-tag">Doppler, tweezers</span>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="theory-box">
+        <h4>Doppler Cooling</h4>
+        <p>
+          A red-detuned laser (δ &lt; 0) preferentially scatters photons from atoms moving
+          toward the beam (Doppler blueshift → resonance). Each scatter kick opposes motion →
+          viscous "optical molasses" force F = −αv. Minimum temperature:
+        </p>
+        <span class="eq">T_D = ℏΓ / (2k_B)</span>
+        <p>
+          For Cs D₂ (Γ/2π = 5.234 MHz): T_D = 125 μK.
+          Sub-Doppler cooling (gray molasses, PGC) reaches the photon recoil limit T_r ≈ 100s of nK.
+        </p>
+      </div>
+
+      <div class="theory-box">
+        <h4>Optical Tweezer Trapping</h4>
+        <p>
+          A tightly focused, red-detuned laser (e.g. 1064 nm for Cs) creates an AC Stark shift
+          potential well at the intensity maximum. Trap depth U₀ = α·I_peak/(cε₀).
+          Atoms trapped in the ground motional state ⟨n⟩ &lt; 0.1 via resolved-sideband
+          or EIT cooling.
+        </p>
+        <span class="eq">ω_r/2π = √(4U₀/mw₀²) / (2π)  →  tens to hundreds of kHz</span>
+        <p>
+          Radial trap frequencies 50–200 kHz, axial 10–50 kHz for typical tweezer parameters.
+          Arrays of 1000+ individually controlled tweezers are now routinely operated.
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <!-- Simple temperature ladder SVG -->
+      <div class="chart-card">
+        <h5>Cooling stages</h5>
+        <svg width="100%" viewBox="0 0 280 300" style="display:block;">
+          <!-- Stages -->
+          <rect x="20" y="20" width="240" height="30" rx="5" fill="#ef444440" stroke="#ef4444" stroke-width="1"/>
+          <text x="140" y="40" fill="#ef4444" font-size="11" text-anchor="middle">Room temperature — 300 K</text>
+
+          <rect x="20" y="65" width="200" height="26" rx="5" fill="#f9731640" stroke="#f97316" stroke-width="1"/>
+          <text x="120" y="82" fill="#f97316" font-size="11" text-anchor="middle">Zeeman slower / 2D MOT — ~10 mK</text>
+
+          <rect x="20" y="104" width="170" height="26" rx="5" fill="#eab30840" stroke="#eab308" stroke-width="1"/>
+          <text x="105" y="121" fill="#eab308" font-size="11" text-anchor="middle">3D MOT — 100–200 μK</text>
+
+          <rect x="20" y="142" width="140" height="26" rx="5" fill="#84cc1640" stroke="#84cc16" stroke-width="1"/>
+          <text x="90" y="159" fill="#84cc16" font-size="11" text-anchor="middle">PGC / Gray molasses — ~10 μK</text>
+
+          <rect x="20" y="180" width="110" height="26" rx="5" fill="#60a5fa40" stroke="#60a5fa" stroke-width="1"/>
+          <text x="75" y="197" fill="#60a5fa" font-size="11" text-anchor="middle">Loaded tweezer — ~20 μK</text>
+
+          <rect x="20" y="219" width="80" height="26" rx="5" fill="#818cf840" stroke="#818cf8" stroke-width="1"/>
+          <text x="60" y="236" fill="#818cf8" font-size="11" text-anchor="middle">RSB cooled — ~100 nK</text>
+
+          <rect x="20" y="256" width="55" height="26" rx="5" fill="#e879f940" stroke="#e879f9" stroke-width="1"/>
+          <text x="47" y="273" fill="#e879f9" font-size="11" text-anchor="middle">⟨n⟩&lt;0.1 — GS</text>
+
+          <!-- Scale label -->
+          <text x="270" y="40" fill="#475569" font-size="9" text-anchor="end">↓ colder</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section><hr class="section-divider">
+
+<!-- ══════════ 11. WIGNER ══════════ -->
+<section class="topic-section" id="wigner">
+  <div class="topic-header">
+    <span class="t-icon">🌊</span>
+    <h2>Wigner Function</h2>
+    <span class="t-tag">phase-space portrait</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Phase-space quasi-probability distribution</h4>
+    <p>
+      The Wigner function W(x,p) is the quantum analogue of a classical phase-space distribution.
+      It can take <strong>negative values</strong> — a signature of non-classical states.
+      Classical coherent states are Gaussians (W ≥ 0). Fock states |n⟩ show oscillating rings
+      with n negative regions. Cat states exhibit interference fringes.
+    </p>
+  </div>
+
+  <div class="formula-box">Coherent state |α⟩:    W(x,p) = (2/π) exp(−2(x−x₀)² − 2(p−p₀)²)
+
+Fock state |n⟩:        W_n(x,p) = (2/π)(−1)^n exp(−2r²) L_n(4r²)   r² = x²+p²
+
+Cat state |α⟩+|−α⟩:   W ∝ W_α + W_{−α} + 2 exp(−2r²) cos(4 Im(α)·x − 4 Re(α)·p)
+
+Negativity ↔ non-classical!  Wigner negativity → quantum advantage</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <div class="field-row" style="margin-bottom:.7rem;">
+        <label style="font-size:.8rem; color:var(--text-muted); display:block; margin-bottom:.3rem;">Quantum state</label>
+        <select class="ctrl-select" id="wigState" onchange="updateWigner()">
+          <option value="coherent">Coherent state |α=2⟩</option>
+          <option value="vacuum">Vacuum |0⟩ (coherent α=0)</option>
+          <option value="fock1">Fock state |n=1⟩</option>
+          <option value="fock2">Fock state |n=2⟩</option>
+          <option value="fock3">Fock state |n=3⟩</option>
+          <option value="cat">Cat state |α=2⟩ + |−2⟩</option>
+        </select>
+      </div>
+
+      <div class="theory-box">
+        <h4>Reading the Wigner function</h4>
+        <p>
+          <span style="color:#4ade80">Green/positive</span>: regions where the state is "more classical".<br>
+          <span style="color:#f87171">Red/negative</span>: quantum interference — impossible for any classical distribution.<br>
+          <strong>Coherent state</strong>: single Gaussian blob → minimal uncertainty.<br>
+          <strong>Fock state |n⟩</strong>: concentric rings, central sign (−1)^n → strongly non-classical.<br>
+          <strong>Cat state</strong>: two blobs + oscillating interference fringes between them.
+        </p>
+      </div>
+
+      <div class="good-banner" id="wigInfo"></div>
+    </div>
+
+    <div>
+      <div style="background:#060e1c; border:1px solid #1e293b; border-radius:12px; padding:1rem; text-align:center;">
+        <div style="font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:.5rem;">
+          Wigner W(x,p) — RdBu: red=negative, white=0, blue=positive
+        </div>
+        <canvas class="wigner-canvas" id="wigCanvas" width="240" height="240"></canvas>
+        <div style="display:flex; justify-content:space-between; margin-top:.3rem; font-size:.73rem; color:var(--text-muted);">
+          <span>x = −4</span><span>x axis →</span><span>x = +4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add extra bottom padding -->
+  <div style="height:2rem;"></div>
+</section>
+
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'learn-quantum', root: '../' });
+initScrollReveal();
+
+/* ═══════════════════════════════════════════════
+   STICKY NAV HIGHLIGHT
+   ═══════════════════════════════════════════════ */
+const sections = ['bloch','gates','superposition','measurement','entanglement',
+                  'rydberg','twoqubit','rabi','decoherence','cooling','wigner'];
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.topic-nav a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.topic-nav a[href="#${e.target.id}"]`);
+      if (link) { link.classList.add('active'); link.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(id => { const el=document.getElementById(id); if(el) observer.observe(el); });
+
+/* ═══════════════════════════════════════════════
+   BLOCH SPHERE DRAWING
+   ═══════════════════════════════════════════════ */
+const BS_R = 95, BS_CX = 130, BS_CY = 140;
+const BS_A = Math.PI/6, BS_B = Math.PI/5;   // azimuth 30°, tilt 36°
+
+function bsProject(x, y, z) {
+  const xr = x*Math.cos(BS_A) - y*Math.sin(BS_A);
+  const yr = x*Math.sin(BS_A) + y*Math.cos(BS_A);
+  return [
+    BS_CX + BS_R * xr,
+    BS_CY - BS_R * (z*Math.cos(BS_B) + yr*Math.sin(BS_B))
+  ];
+}
+
+function drawBloch(canvasId, theta, phi, label) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Sphere outline
+  ctx.beginPath(); ctx.arc(BS_CX, BS_CY, BS_R, 0, 2*Math.PI);
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Equator (dashed)
+  ctx.setLineDash([4,4]); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let t=0; t<=2*Math.PI; t+=0.05) {
+    const [sx,sy] = bsProject(Math.cos(t), Math.sin(t), 0);
+    t===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
+  }
+  ctx.stroke();
+
+  // Meridian at phi=0 (dashed)
+  ctx.beginPath();
+  for (let t=0; t<=Math.PI; t+=0.05) {
+    const [sx,sy] = bsProject(Math.sin(t), 0, Math.cos(t));
+    t===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Axes
+  const axes = [[1,0,0,'x'],[0,1,0,'y'],[0,0,1,'z']];
+  axes.forEach(([ax,ay,az,name]) => {
+    const [sx,sy] = bsProject(ax*1.3, ay*1.3, az*1.3);
+    const [ox,oy] = bsProject(-ax*.6, -ay*.6, -az*.6);
+    ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(sx,sy);
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#64748b'; ctx.font = '11px Inter'; ctx.fillText(name, sx+4, sy+4);
+  });
+
+  // |0⟩ and |1⟩ labels
+  const [z0x,z0y] = bsProject(0,0,1.15); ctx.fillStyle='#94a3b8'; ctx.font='12px Inter'; ctx.fillText('|0⟩',z0x+4,z0y);
+  const [z1x,z1y] = bsProject(0,0,-1.15); ctx.fillText('|1⟩',z1x+4,z1y);
+
+  // State vector
+  const bx = Math.sin(theta)*Math.cos(phi);
+  const by = Math.sin(theta)*Math.sin(phi);
+  const bz = Math.cos(theta);
+  const [sx,sy] = bsProject(bx, by, bz);
+  ctx.beginPath(); ctx.moveTo(BS_CX,BS_CY); ctx.lineTo(sx,sy);
+  ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.arc(sx,sy,6,0,2*Math.PI);
+  ctx.fillStyle = '#a78bfa'; ctx.fill();
+
+  // Dotted projection lines
+  const [prx,pry] = bsProject(bx,by,0);
+  ctx.setLineDash([2,3]); ctx.strokeStyle='#475569'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(prx,pry); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(BS_CX,BS_CY); ctx.lineTo(prx,pry); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // State info
+  const stateEl = document.getElementById(canvasId==='blochCanvas' ? 'blochState' : 'gatesBlochState');
+  if (stateEl) {
+    stateEl.textContent = `|ψ⟩: bx=${bx.toFixed(2)}, by=${by.toFixed(2)}, bz=${bz.toFixed(2)} | P(0)=${(Math.cos(theta/2)**2*100).toFixed(1)}%`;
+  }
+}
+
+// Initial Bloch sphere draw
+drawBloch('blochCanvas', Math.PI/2, 0);
+
+/* ═══════════════════════════════════════════════
+   QUANTUM GATES
+   ═══════════════════════════════════════════════ */
+// State as [alpha_re, alpha_im, beta_re, beta_im]
+let gState = [1/Math.SQRT2, 0, 1/Math.SQRT2, 0]; // |+⟩
+
+function stateToBloch(s) {
+  const [ar,ai,br,bi] = s;
+  return [2*(ar*br+ai*bi), 2*(ar*bi-ai*br), ar*ar+ai*ai-br*br-bi*bi];
+}
+function blochToAngles(bx,by,bz) {
+  const theta = Math.acos(Math.max(-1,Math.min(1,bz)));
+  const phi   = Math.atan2(by,bx);
+  return [theta, phi < 0 ? phi+2*Math.PI : phi];
+}
+
+const s2 = 1/Math.SQRT2;
+const p8 = Math.cos(Math.PI/4), q8 = Math.sin(Math.PI/4);
+
+const GATES = {
+  I:   { mat:[1,0,0,0,0,0,1,0],          label:'Identity',   desc:'No operation. Leaves state unchanged.' },
+  X:   { mat:[0,0,1,0,1,0,0,0],          label:'Pauli X',    desc:'Bit-flip: |0⟩↔|1⟩. π rotation around x-axis.' },
+  Y:   { mat:[0,0,0,-1,0,1,0,0],         label:'Pauli Y',    desc:'|0⟩→i|1⟩, |1⟩→-i|0⟩. π rotation around y-axis.' },
+  Z:   { mat:[1,0,0,0,0,0,-1,0],         label:'Pauli Z',    desc:'Phase flip: |0⟩→|0⟩, |1⟩→-|1⟩. π rotation around z-axis.' },
+  H:   { mat:[s2,0,s2,0,s2,0,-s2,0],     label:'Hadamard',   desc:'|0⟩→|+⟩, |1⟩→|−⟩. Creates superposition.' },
+  S:   { mat:[1,0,0,0,0,0,0,1],          label:'S gate',     desc:'π/2 rotation around z. S² = Z.' },
+  T:   { mat:[1,0,0,0,0,0,p8,q8],        label:'T gate',     desc:'π/4 rotation around z. T² = S, T⁴ = Z.' },
+  Rx:  { mat:[p8,0,0,-p8,0,-p8,p8,0],    label:'Rx(π/2)',    desc:'π/2 rotation around x-axis.' },
+  Ry:  { mat:[p8,0,-p8,0,p8,0,p8,0],     label:'Ry(π/2)',    desc:'π/2 rotation around y-axis.' },
+  Rz:  { mat:[p8,-q8,0,0,0,0,p8,q8],     label:'Rz(π/2)',    desc:'π/2 rotation around z-axis.' },
+};
+
+const GATE_LABELS = {
+  I:'[[1,0],[0,1]]',X:'[[0,1],[1,0]]',Y:'[[0,−i],[i,0]]',Z:'[[1,0],[0,−1]]',
+  H:'1/√2[[1,1],[1,−1]]',S:'[[1,0],[0,i]]',T:'[[1,0],[0,e^{iπ/4}]]',
+  Rx:'[[cos(π/4),−i sin(π/4)],[−i sin(π/4),cos(π/4)]]',
+  Ry:'[[cos(π/4),−sin(π/4)],[sin(π/4),cos(π/4)]]',
+  Rz:'[[e^{−iπ/4},0],[0,e^{iπ/4}]]',
+};
+
+function applyMat(state, mat) {
+  const [ar,ai,br,bi] = state;
+  const [m00r,m00i,m01r,m01i,m10r,m10i,m11r,m11i] = mat;
+  return [
+    m00r*ar-m00i*ai+m01r*br-m01i*bi,
+    m00r*ai+m00i*ar+m01r*bi+m01i*br,
+    m10r*ar-m10i*ai+m11r*br-m11i*bi,
+    m10r*ai+m10i*ar+m11r*bi+m11i*br,
+  ];
+}
+
+function setGateState() {
+  const th = +document.getElementById('gThSlide').value * Math.PI/180;
+  const ph = +document.getElementById('gPhSlide').value * Math.PI/180;
+  gState = [Math.cos(th/2), 0, Math.sin(th/2)*Math.cos(ph), Math.sin(th/2)*Math.sin(ph)];
+  redrawGateBloch();
+}
+
+function applyGateBtn(name) {
+  const g = GATES[name];
+  gState = applyMat(gState, g.mat);
+  document.getElementById('gateMatrix').innerHTML =
+    `<strong style="font-size:.8rem;color:var(--c-qc)">${g.label}</strong><br>
+     <span style="color:#94a3b8;font-size:.78rem">${GATE_LABELS[name]}</span>`;
+  document.getElementById('gateDesc').textContent = g.desc;
+  redrawGateBloch();
+}
+
+function resetGateState() { setGateState(); document.getElementById('gateMatrix').innerHTML=''; document.getElementById('gateDesc').textContent=''; }
+
+function redrawGateBloch() {
+  const [bx,by,bz] = stateToBloch(gState);
+  const [th,ph] = blochToAngles(bx,by,bz);
+  drawBloch('gatesBlochCanvas', th, ph);
+}
+setGateState();
+
+/* ═══════════════════════════════════════════════
+   MZI / SUPERPOSITION
+   ═══════════════════════════════════════════════ */
+let mziChart;
+(function() {
+  const ctx = document.getElementById('mziChart').getContext('2d');
+  mziChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels:['P(|0⟩)','P(|1⟩)'], datasets:[{
+      data:[1,0], backgroundColor:['#60a5faaa','#f87171aa'],
+      borderColor:['#60a5fa','#f87171'], borderWidth:2, borderRadius:6
+    }]},
+    options: { responsive:true, plugins:{legend:{display:false}},
+      scales: { y:{min:0,max:1,ticks:{color:'#64748b',callback:v=>(v*100).toFixed(0)+'%'},grid:{color:'#1e293b'}},
+                x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}} } }
+  });
+  updateMZI();
+})();
+
+function updateMZI() {
+  const phi = +document.getElementById('mziPhi').value * Math.PI/180;
+  const P0 = Math.cos(phi/2)**2, P1 = Math.sin(phi/2)**2;
+  mziChart.data.datasets[0].data = [P0, P1];
+  mziChart.update('none');
+  const b = document.getElementById('mziBanner');
+  if (P0 > 0.99) { b.textContent='Constructive interference into |0⟩ — all photons in upper output.'; b.style.background='#052e16'; }
+  else if (P1 > 0.99) { b.textContent='Destructive interference — all photons into |1⟩.'; b.style.background='#1c1007'; }
+  else { b.textContent=`P(|0⟩)=${(P0*100).toFixed(1)}%,  P(|1⟩)=${(P1*100).toFixed(1)}% — partial interference.`; b.style.background='#0a1020'; }
+}
+
+/* ═══════════════════════════════════════════════
+   MEASUREMENT
+   ═══════════════════════════════════════════════ */
+let measChart;
+(function() {
+  const ctx = document.getElementById('measChart').getContext('2d');
+  measChart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels:['|0⟩','|1⟩'], datasets:[
+      {label:'Expected (Born)',data:[50,50],backgroundColor:['#60a5fa33','#f8717133'],borderColor:['#60a5fa','#f87171'],borderWidth:2,borderRadius:5},
+      {label:'Measured',data:[0,0],backgroundColor:['#60a5faaa','#f87171aa'],borderColor:['#60a5fa','#f87171'],borderWidth:2,borderRadius:5}
+    ]},
+    options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+      scales:{y:{min:0,ticks:{color:'#64748b'},grid:{color:'#1e293b'}},x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}}}}
+  });
+})();
+
+let measCumulative = [0, 0];
+function updateMeasTh() {
+  const th = +document.getElementById('measTh').value * Math.PI/180;
+  const P0 = Math.cos(th/2)**2;
+  document.getElementById('measP0').textContent = (P0*100).toFixed(1)+'%';
+  measCumulative = [0,0];
+  measChart.data.datasets[0].data = [P0*100, (1-P0)*100];
+  measChart.data.datasets[1].data = [0,0];
+  measChart.options.scales.y.max = 100;
+  measChart.update('none');
+  document.getElementById('shotInfo').textContent = '';
+}
+
+function runMeasurement() {
+  const th  = +document.getElementById('measTh').value * Math.PI/180;
+  const P0  = Math.cos(th/2)**2;
+  const N   = parseInt(document.getElementById('measShots').value);
+  let cnt0  = 0;
+  for (let i=0; i<N; i++) if (Math.random() < P0) cnt0++;
+  measCumulative[0] += cnt0;
+  measCumulative[1] += N - cnt0;
+  const tot = measCumulative[0]+measCumulative[1];
+  measChart.data.datasets[1].data = [measCumulative[0], measCumulative[1]];
+  measChart.options.scales.y.max = Math.max(tot*0.7, N*0.7);
+  measChart.update('none');
+  document.getElementById('shotInfo').textContent =
+    `Total: ${tot} shots — |0⟩: ${measCumulative[0]} (${(measCumulative[0]/tot*100).toFixed(1)}%), |1⟩: ${measCumulative[1]} (${(measCumulative[1]/tot*100).toFixed(1)}%)`;
+}
+
+function clearMeasurement() { measCumulative=[0,0]; measChart.data.datasets[1].data=[0,0]; measChart.update('none'); document.getElementById('shotInfo').textContent=''; }
+
+updateMeasTh();
+
+/* ═══════════════════════════════════════════════
+   ENTANGLEMENT / BELL STATES
+   ═══════════════════════════════════════════════ */
+const BELL_STATES = [
+  { name:'|Φ⁺⟩', vec:'(|00⟩ + |11⟩)/√2', amps:[s2,0,0,s2], desc:'Maximally entangled. Measuring qubit A in |0⟩ → qubit B collapses to |0⟩. Measuring |1⟩ → |1⟩.', type:'entangled' },
+  { name:'|Φ⁻⟩', vec:'(|00⟩ − |11⟩)/√2', amps:[s2,0,0,-s2], desc:'Maximally entangled. Same correlated outcomes as |Φ⁺⟩ but with relative phase −1 — distinguishable via interference, not single-qubit measurement.', type:'entangled' },
+  { name:'|Ψ⁺⟩', vec:'(|01⟩ + |10⟩)/√2', amps:[0,s2,s2,0], desc:'Maximally entangled. Measuring |0⟩ on A → B collapses to |1⟩ (anti-correlated). Used in quantum teleportation.', type:'entangled' },
+  { name:'|Ψ⁻⟩', vec:'(|01⟩ − |10⟩)/√2', amps:[0,s2,-s2,0], desc:'Singlet state. Antisymmetric under exchange. Total spin 0. Violates Bell inequality maximally.', type:'entangled' },
+  { name:'|00⟩',  vec:'|0⟩⊗|0⟩ (product)', amps:[1,0,0,0], desc:'Separable product state — not entangled. Can be written as |ψ_A⟩⊗|ψ_B⟩. Measuring A tells you nothing about B beyond what you already knew.', type:'separable' },
+  { name:'|++⟩',  vec:'(|0⟩+|1⟩)/√2 ⊗ (|0⟩+|1⟩)/√2', amps:[0.5,0.5,0.5,0.5], desc:'Separable superposition. |++⟩ = (|00⟩+|01⟩+|10⟩+|11⟩)/2. Each qubit independently in |+⟩.', type:'separable' },
+];
+
+let selBell = 0;
+function selectBell(idx) {
+  selBell = idx;
+  document.querySelectorAll('.bell-card').forEach((c,i)=>c.classList.toggle('selected',i===idx));
+  renderBellInfo();
+}
+function renderBellInfo() {
+  const b = BELL_STATES[selBell];
+  const labels = ['|00⟩','|01⟩','|10⟩','|11⟩'];
+  const absSq = b.amps.map(a=>a*a);
+  document.getElementById('bellInfo').innerHTML = `
+    <div>
+      <div class="theory-box">
+        <h4>${b.name} — ${b.type === 'entangled' ? '🔗 Entangled' : '✓ Separable'}</h4>
+        <p>${b.desc}</p>
+      </div>
+      <div class="formula-box">${b.vec}
+
+Ket coefficients:
+${labels.map((l,i)=>`  ${l}: amplitude = ${b.amps[i]>=0?'+':''}${b.amps[i].toFixed(3)},  prob = ${(absSq[i]*100).toFixed(0)}%`).join('\n')}</div>
+    </div>
+    <div class="chart-card">
+      <h5>Measurement probabilities P(outcome)</h5>
+      <canvas id="bellChart" height="200"></canvas>
+    </div>`;
+  setTimeout(()=>{
+    const ctx = document.getElementById('bellChart').getContext('2d');
+    new Chart(ctx,{type:'bar',data:{labels,datasets:[{
+      data:absSq.map(v=>v*100),
+      backgroundColor:['#60a5faaa','#34d399aa','#fbbf24aa','#f87171aa'],
+      borderColor:['#60a5fa','#34d399','#fbbf24','#f87171'],
+      borderWidth:2, borderRadius:5}]},
+      options:{responsive:true,plugins:{legend:{display:false}},
+        scales:{y:{min:0,max:100,ticks:{color:'#64748b',callback:v=>v+'%'},grid:{color:'#1e293b'}},
+                x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}}}}});
+  },20);
+}
+renderBellInfo();
+
+/* ═══════════════════════════════════════════════
+   RYDBERG
+   ═══════════════════════════════════════════════ */
+let rydChart;
+(function(){
+  const ctx = document.getElementById('rydChart').getContext('2d');
+  rydChart = new Chart(ctx,{type:'line',data:{labels:[],datasets:[
+    {label:'V(R) = C₆/R⁶',data:[],borderColor:'#f87171',borderWidth:2,pointRadius:0},
+    {label:'ℏΩ_R (blockade threshold)',data:[],borderColor:'#fbbf24',borderWidth:1.5,borderDash:[5,4],pointRadius:0}
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+    scales:{x:{title:{display:true,text:'Atom separation R (μm)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
+            y:{title:{display:true,text:'Energy / h (MHz)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'},type:'logarithmic'}}}});
+  updateRydberg();
+})();
+
+function updateRydberg() {
+  const n    = parseInt(document.getElementById('rydN').value);
+  const OmMHz = parseFloat(document.getElementById('rydOm').value);
+  const atom = document.getElementById('rydAtom').value;
+
+  // C6 scales as n^11 — calibrate to known Cs values (n=70, C6 ≈ 800 GHz·μm^6)
+  const C6_70 = atom === 'Cs' ? 800e3 : 500e3;  // MHz·μm^6
+  const C6    = C6_70 * Math.pow(n/70, 11);
+
+  // Blockade radius (C6 / (ℏΩ))^{1/6} = (C6 / Ω_MHz * 1e6)^{1/6} μm... be careful with units
+  // C6 in MHz·μm^6, Ω in MHz → R_b = (C6/Ω)^(1/6) μm
+  const Rb = Math.pow(C6 / OmMHz, 1/6);
+
+  document.getElementById('rydResult').innerHTML = `
+    <div class="r-pair"><span class="r-lbl">n</span><span class="r-val">${n}</span></div>
+    <div class="r-pair"><span class="r-lbl">C₆ (MHz·μm⁶)</span><span class="r-val">${C6>=1e6?(C6/1e6).toFixed(1)+'T':(C6>=1e3?(C6/1e3).toFixed(1)+'G':C6.toFixed(0)+'M')}</span></div>
+    <div class="r-pair"><span class="r-lbl">R_blockade</span><span class="r-val">${Rb.toFixed(1)} μm</span></div>
+    <div class="r-pair"><span class="r-lbl">Typical spacing</span><span class="r-val">${(Rb*0.6).toFixed(1)} μm</span></div>`;
+  document.getElementById('rydBanner').textContent =
+    `Blockade radius R_b = ${Rb.toFixed(1)} μm at n=${n}. Tweezer spacing ≈ ${(Rb*0.6).toFixed(1)} μm.  C₆ scales as n*¹¹.`;
+
+  const Rs=[], Vs=[], thresh=[];
+  for (let R=1; R<=20; R+=0.2) {
+    Rs.push(R.toFixed(1));
+    Vs.push(Math.max(C6/Math.pow(R,6), 0.01));
+    thresh.push(OmMHz);
+  }
+  rydChart.data.labels = Rs;
+  rydChart.data.datasets[0].data = Vs;
+  rydChart.data.datasets[1].data = thresh;
+  rydChart.update('none');
+}
+
+/* ═══════════════════════════════════════════════
+   TWO-QUBIT GATES
+   ═══════════════════════════════════════════════ */
+const TQ_GATES = {
+  CNOT: {
+    matrix: ['1','0','0','0', '0','1','0','0', '0','0','0','1', '0','0','1','0'],
+    truth: [['|00⟩','→','|00⟩'],['|01⟩','→','|01⟩'],['|10⟩','→','|11⟩'],['|11⟩','→','|10⟩']],
+    desc: '<h4>CNOT — Controlled-NOT</h4><p>Flips the target qubit if and only if the control qubit is |1⟩. Together with single-qubit gates, CNOT is universal for quantum computing. Applied to |+0⟩ → Bell state |Φ⁺⟩.</p>',
+  },
+  CZ: {
+    matrix: ['1','0','0','0', '0','1','0','0', '0','0','1','0', '0','0','0','−1'],
+    truth: [['|00⟩','→','|00⟩'],['|01⟩','→','|01⟩'],['|10⟩','→','|10⟩'],['|11⟩','→','−|11⟩']],
+    desc: '<h4>CZ — Controlled-Z</h4><p>Adds a phase of −1 to |11⟩. Symmetric in the two qubits. Equivalent to CNOT via Hadamards: CZ = (I⊗H)·CNOT·(I⊗H). Natural two-qubit gate for Rydberg atoms.</p>',
+  },
+  iSWAP: {
+    matrix: ['1','0','0','0', '0','0','i','0', '0','i','0','0', '0','0','0','1'],
+    truth: [['|00⟩','→','|00⟩'],['|01⟩','→','i|10⟩'],['|10⟩','→','i|01⟩'],['|11⟩','→','|11⟩']],
+    desc: '<h4>iSWAP</h4><p>Swaps the two qubits and adds a phase of i. Natural for superconducting transmon qubits (capacitive coupling). Can generate maximal entanglement: (iSWAP)^{1/2} is a "√iSWAP" entangling gate.</p>',
+  },
+  SWAP: {
+    matrix: ['1','0','0','0', '0','0','1','0', '0','1','0','0', '0','0','0','1'],
+    truth: [['|00⟩','→','|00⟩'],['|01⟩','→','|10⟩'],['|10⟩','→','|01⟩'],['|11⟩','→','|11⟩']],
+    desc: '<h4>SWAP</h4><p>Exchanges the two qubit states. Not itself entangling but needed for routing in architectures with limited connectivity. SWAP = 3 × CNOT.</p>',
+  },
+};
+
+function updateTwoQubit() {
+  const key = document.getElementById('tqSel').value;
+  const g = TQ_GATES[key];
+  const labels = ['|00⟩','|01⟩','|10⟩','|11⟩'];
+  const hilite = g.matrix.map(v => v!=='0' && v!=='1');
+
+  document.getElementById('tqMatrix').innerHTML = `
+    <div style="margin-bottom:.5rem; font-size:.82rem; font-weight:600; color:var(--text-muted);">${key} matrix (basis: |00⟩,|01⟩,|10⟩,|11⟩)</div>
+    <div class="matrix-wrap"><table>
+    ${[0,1,2,3].map(r=>`<tr>${[0,1,2,3].map(c=>`<td class="${g.matrix[r*4+c]!=='0'?'val':''}">${g.matrix[r*4+c]}</td>`).join('')}</tr>`).join('')}
+    </table></div>`;
+
+  const rows = g.truth.map(([inp,,out]) =>
+    `<tr><td>${inp}</td><td>→</td><td class="hilite">${out}</td></tr>`).join('');
+  document.getElementById('tqTruth').innerHTML =
+    `<thead><tr><th>Input</th><th></th><th>Output</th></tr></thead><tbody>${rows}</tbody>`;
+  document.getElementById('tqDesc').innerHTML = g.desc;
+}
+updateTwoQubit();
+
+/* ═══════════════════════════════════════════════
+   RABI OSCILLATIONS
+   ═══════════════════════════════════════════════ */
+let rabiChart;
+(function(){
+  const ctx = document.getElementById('rabiChart').getContext('2d');
+  rabiChart = new Chart(ctx,{type:'line',data:{labels:[],datasets:[
+    {label:'P₁(t)',data:[],borderColor:'#a78bfa',borderWidth:2,pointRadius:0,fill:true,backgroundColor:'#a78bfa18'},
+    {label:'P₀(t)',data:[],borderColor:'#60a5fa',borderWidth:1.5,pointRadius:0,borderDash:[4,3]}
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+    scales:{x:{title:{display:true,text:'Time (μs)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
+            y:{min:0,max:1,title:{display:true,text:'Population',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}}}}});
+  updateRabi();
+})();
+
+function updateRabi() {
+  const Om = parseFloat(document.getElementById('rabiOm').value);
+  const De = parseFloat(document.getElementById('rabiD').value);
+  const OmP = Math.sqrt(Om*Om + De*De);
+  const A = (Om/OmP)**2;
+  const t_pi = 1/(2*Om);  // in μs
+  const ts=[], P1=[], P0=[];
+  for (let t=0; t<=6/Om; t+=0.02/Om) {
+    ts.push((t*1e6).toFixed(2) + '');  // just use counter
+    const p1 = A * Math.sin(Math.PI*OmP*t)**2;
+    P1.push(p1); P0.push(1-p1);
+  }
+  // Re-label as μs
+  const tArr = [];
+  const dt = 6/Om / (ts.length-1);
+  for (let i=0;i<ts.length;i++) tArr.push((i*dt).toFixed(3));
+  rabiChart.data.labels = tArr;
+  rabiChart.data.datasets[0].data = P1;
+  rabiChart.data.datasets[1].data = P0;
+  rabiChart.update('none');
+  document.getElementById('rabiInfo').textContent =
+    `Ω' = √(Ω²+Δ²) = ${OmP.toFixed(2)} MHz,  amplitude = ${(A*100).toFixed(1)}%,  π-pulse t = ${(t_pi*1e3).toFixed(0)} ns`;
+}
+
+/* ═══════════════════════════════════════════════
+   DECOHERENCE
+   ═══════════════════════════════════════════════ */
+let decohChart;
+(function(){
+  const ctx = document.getElementById('decohChart').getContext('2d');
+  decohChart = new Chart(ctx,{type:'line',data:{labels:[],datasets:[
+    {label:'P₁(t) = e^{−t/T₁}/2 + ½',data:[],borderColor:'#f87171',borderWidth:2,pointRadius:0},
+    {label:'|ρ₀₁(t)| = ½ e^{−t/T₂}',data:[],borderColor:'#a78bfa',borderWidth:2,pointRadius:0,borderDash:[5,3]},
+    {label:'P₁ steady state = 0',data:[],borderColor:'#334155',borderWidth:1,borderDash:[2,4],pointRadius:0}
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+    scales:{x:{title:{display:true,text:'Time (ms)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
+            y:{min:0,max:1,ticks:{color:'#64748b'},grid:{color:'#1e293b'}}}}});
+  updateDecohere();
+})();
+
+function updateDecohere() {
+  const T1 = parseFloat(document.getElementById('T1slide').value);
+  const T2 = parseFloat(document.getElementById('T2slide').value);
+  const tmax = Math.max(T1, T2) * 4;
+  const ts=[], P1=[], coh=[], zero=[];
+  for (let i=0; i<=100; i++) {
+    const t = tmax * i/100;
+    ts.push(t.toFixed(1));
+    P1.push(0.5 * Math.exp(-t/T1) + 0);   // starting from |1⟩, decays to thermal ~0
+    coh.push(0.5 * Math.exp(-t/T2));
+    zero.push(0);
+  }
+  decohChart.data.labels = ts;
+  decohChart.data.datasets[0].data = P1;
+  decohChart.data.datasets[1].data = coh;
+  decohChart.data.datasets[2].data = zero;
+  decohChart.update('none');
+
+  const info = document.getElementById('decohInfo');
+  if (T2 > 2*T1) {
+    info.className='info-banner'; info.textContent=`⚠ T₂ > 2T₁ is non-physical (T₂ ≤ 2T₁ always). Adjust sliders.`;
+  } else {
+    info.className='good-banner'; info.textContent=`T₁ = ${T1} ms, T₂ = ${T2} ms, T₂/T₁ = ${(T2/T1).toFixed(2)} (max = 2.0, pure dephasing = 1.0). Gate time must satisfy t_gate ≪ T₂.`;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   WIGNER FUNCTION
+   ═══════════════════════════════════════════════ */
+function laguerre(n, x) {
+  if (n===0) return 1;
+  if (n===1) return 1-x;
+  let Lm1=1, L=1-x;
+  for (let k=2;k<=n;k++) { const Ln=((2*k-1-x)*L-(k-1)*Lm1)/k; Lm1=L; L=Ln; }
+  return L;
+}
+
+function lerp3(a,b,t) { return [a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1]),a[2]+t*(b[2]-a[2])].map(Math.round); }
+function colorRdBu(t) {
+  t=Math.max(0,Math.min(1,t));
+  const s=[[59,76,192],[180,196,228],[245,245,245],[220,150,130],[180,4,38]];
+  const pos=t*4; const i=Math.min(3,Math.floor(pos)); return lerp3(s[i],s[i+1],pos-i);
+}
+
+function updateWigner() {
+  const state = document.getElementById('wigState').value;
+  const N = 240;
+  const canvas = document.getElementById('wigCanvas');
+  canvas.width = N; canvas.height = N;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(N,N);
+  const d = img.data;
+
+  const data = new Float32Array(N*N);
+  let vmin=Infinity, vmax=-Infinity;
+  const scale = 4; // axis range [-scale, scale]
+
+  for (let i=0;i<N;i++) {
+    const p = -scale + 2*scale*i/(N-1);
+    for (let j=0;j<N;j++) {
+      const x = -scale + 2*scale*j/(N-1);
+      let W = 0;
+      const twoPI = 2/Math.PI;
+
+      if (state==='vacuum') {
+        W = twoPI * Math.exp(-2*(x*x+p*p));
+      } else if (state==='coherent') {
+        const x0=2, p0=0;
+        W = twoPI * Math.exp(-2*((x-x0)**2+(p-p0)**2));
+      } else if (state.startsWith('fock')) {
+        const n = parseInt(state.replace('fock',''));
+        const r2 = x*x+p*p;
+        W = twoPI * Math.pow(-1,n) * Math.exp(-2*r2) * laguerre(n, 4*r2);
+      } else if (state==='cat') {
+        // Cat state: |2⟩ + |-2⟩, real alpha
+        const a=2;
+        const N2 = 1/(2*(1+Math.exp(-2*a*a)));  // normalisation
+        const W1 = Math.exp(-2*((x-a)**2+p*p));
+        const W2 = Math.exp(-2*((x+a)**2+p*p));
+        const Wint = Math.exp(-2*(x*x+p*p)) * Math.cos(4*a*p);
+        W = twoPI * N2 * (W1+W2+2*Wint);
+      }
+
+      data[i*N+j] = W;
+      if (W<vmin) vmin=W; if (W>vmax) vmax=W;
+    }
+  }
+
+  // Symmetric color range (0 centered)
+  const absMax = Math.max(Math.abs(vmin), Math.abs(vmax));
+  for (let k=0;k<N*N;k++) {
+    const t = (data[k]+absMax) / (2*absMax);
+    const rgb = colorRdBu(t);
+    d[4*k]=rgb[0]; d[4*k+1]=rgb[1]; d[4*k+2]=rgb[2]; d[4*k+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+
+  const isNeg = vmin < -0.001;
+  const info = document.getElementById('wigInfo');
+  if (isNeg) {
+    info.textContent = `W_min = ${vmin.toFixed(3)} < 0 — non-classical state! Wigner negativity indicates quantum interference.`;
+    info.style.background='#1c1007'; info.style.borderColor='#92400e'; info.style.color='#fde68a';
+  } else {
+    info.textContent = `W_min = ${vmin.toFixed(3)} ≥ 0 — classical-like state. No Wigner negativity.`;
+    info.style.background='#052e16'; info.style.borderColor='#15803d'; info.style.color='#86efac';
+  }
+}
+
+updateWigner();
+</script>
+</body>
+</html>
