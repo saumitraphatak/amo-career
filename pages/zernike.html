@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zernike Polynomials — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-zern); }
+
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .25rem 0;
+      border-left: 3px solid var(--c-zern); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.25rem .85rem; }
+    .section-block { margin-bottom: 3rem; }
+
+    /* Theory */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #0f2d2d;
+      border-left: 4px solid var(--c-zern); border-radius: 10px;
+      padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--c-zern); margin: 0 0 .6rem 0; }
+    .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+    .eq { font-family: var(--mono); font-size: .85rem; color: #f0abfc; display: block;
+          margin: .5rem 0; text-align: center; }
+
+    .formula-box {
+      background: #080f08; border: 1px solid #1a3a1a; border-radius: 8px;
+      padding: .75rem 1.1rem; margin: .7rem 0;
+      font-family: var(--mono); color: #86efac; font-size: .82rem;
+      line-height: 1.85; white-space: pre; overflow-x: auto;
+    }
+
+    /* Mode chips */
+    .mode-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .75rem 0 1rem 0; }
+    .mode-chip {
+      background: #0c1e3a; border: 1px solid #1e3a5f;
+      border-radius: 20px; padding: .2rem .65rem;
+      color: var(--c-zern); font-size: .78rem; font-family: var(--mono);
+    }
+
+    /* Canvas containers */
+    .canvas-wrap {
+      background: #060e1c; border: 1px solid #1e293b;
+      border-radius: 10px; padding: .75rem; text-align: center;
+    }
+    .canvas-wrap h5 {
+      font-size: .8rem; font-weight: 600; color: var(--text-muted);
+      margin: 0 0 .5rem 0; text-align: center; text-transform: uppercase; letter-spacing: .05em;
+    }
+    canvas.zernike-canvas {
+      width: 100%; aspect-ratio: 1;
+      image-rendering: pixelated;
+      display: block; border-radius: 6px;
+    }
+    .canvas-info { font-family: var(--mono); font-size: .78rem; color: var(--text-muted); margin-top: .4rem; }
+
+    /* Two/three-col */
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 800px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* Controls */
+    .ctrl-panel {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1.1rem;
+    }
+    .ctrl-panel h5 { font-size: .9rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .85rem 0; }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label { font-size: .8rem; color: var(--text-muted); display: block; margin-bottom: .28rem; }
+    .field-row select, .field-row input[type=number] {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .7rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row select:focus, .field-row input:focus { outline: none; border-color: var(--c-zern); }
+    .field-row input[type=range] { width: 100%; accent-color: var(--c-zern); }
+    .lbl-val { color: var(--c-zern); margin-left: .3rem; font-family: var(--mono); }
+
+    /* Results strip */
+    .result-strip {
+      background: #020b04; border: 1px solid #15803d;
+      border-radius: 8px; padding: .6rem 1rem;
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      font-family: var(--mono); font-size: .82rem; margin-top: .75rem;
+    }
+    .r-pair { display: flex; flex-direction: column; }
+    .r-lbl { color: #86efac; font-size: .75rem; }
+    .r-val { color: #4ade80; font-size: 1rem; font-weight: 700; }
+
+    /* Wavefront builder mode rows */
+    .wf-modes { margin-bottom: 1rem; }
+    .wf-row {
+      display: grid; grid-template-columns: 80px 1fr 100px 32px;
+      gap: .5rem; align-items: center; margin-bottom: .45rem;
+    }
+    .wf-row label { font-size: .78rem; color: var(--text-muted); }
+    .wf-row select, .wf-row input {
+      background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 5px; padding: .3rem .5rem;
+      color: var(--text-primary); font-size: .82rem; font-family: var(--mono); width: 100%;
+    }
+    .wf-row button {
+      background: #1e293b; border: none; border-radius: 5px;
+      color: #64748b; cursor: pointer; font-size: .9rem; padding: .3rem;
+    }
+    .wf-row button:hover { color: #ef4444; }
+
+    .add-mode-btn, .compute-btn {
+      border: none; border-radius: 7px; padding: .5rem 1rem;
+      font-size: .85rem; font-weight: 600; cursor: pointer; margin-right: .5rem;
+    }
+    .add-mode-btn { background: #1e3a5f; color: var(--c-zern); }
+    .add-mode-btn:hover { background: #1e4a6f; }
+    .compute-btn { background: var(--c-zern); color: #000; }
+    .compute-btn:hover { opacity: .9; }
+
+    /* Status */
+    .compute-status { font-family: var(--mono); font-size: .8rem; color: var(--text-muted); margin-left: .5rem; }
+    .compute-status.ok { color: #34d399; }
+
+    /* Strehl indicator */
+    .strehl-bar-wrap { height: 6px; background: #1e293b; border-radius: 3px; margin-top: .4rem; }
+    .strehl-bar { height: 100%; border-radius: 3px; transition: width .3s; }
+
+    /* SLM info banner */
+    .info-banner { background: #0a1020; border: 1px solid #1e3a6e; border-radius: 8px;
+      padding: .65rem 1rem; margin: .6rem 0; color: #93c5fd; font-size: .85rem; }
+
+    /* LG table */
+    .lg-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .5rem; }
+    .lg-table th { background: #0a1628; color: var(--text-muted); font-weight: 600;
+      padding: .5rem .8rem; border: 1px solid #1e293b; text-align: left; }
+    .lg-table td { padding: .5rem .8rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
+
+    /* SLM controls horizontal */
+    .slm-ctrl { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem; }
+    .slm-field { min-width: 150px; }
+    .slm-field label { font-size: .79rem; color: var(--text-muted); display: block; margin-bottom: .25rem; }
+    .slm-field select, .slm-field input {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .65rem;
+      color: var(--text-primary); font-size: .83rem; font-family: var(--mono);
+    }
+    .slm-field input[type=range] { accent-color: var(--c-zern); margin-top: .2rem; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-zern);">
+  <div class="container">
+    <div class="hero-badge anim-in">WAVEFRONT OPTICS</div>
+    <h1 class="page-title anim-in delay-1">
+      Zernike <span class="grad-text" style="--ga: var(--c-zern); --gb: #60a5fa;">Polynomials</span>
+    </h1>
+    <p class="page-desc anim-in delay-2">
+      The orthonormal basis for optical wavefront aberrations over a circular pupil.
+      Visualise Zernike modes, build arbitrary wavefronts, and explore SLM phase-to-far-field
+      Fourier optics — LG beams, OAM, PSF.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">Z_n^m</span><span class="stat-lbl">OSA/ANSI basis</span></div>
+      <div class="stat"><span class="stat-val">PSF</span><span class="stat-lbl">FFT computed</span></div>
+      <div class="stat"><span class="stat-val">SLM</span><span class="stat-lbl">phase patterns</span></div>
+      <div class="stat"><span class="stat-val">LG modes</span><span class="stat-lbl">OAM beams</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top: 2.5rem;">
+  <section class="section-block anim-in delay-1">
+    <div data-tabs-wrap>
+      <div class="tab-bar" data-group="zern-main">
+        <button class="tab-btn active" data-tab="single">🌀 Single Mode</button>
+        <button class="tab-btn" data-tab="wavefront">🔧 Wavefront Builder</button>
+        <button class="tab-btn" data-tab="slm">📡 SLM &amp; Far Field</button>
+      </div>
+
+      <!-- ══════════════ TAB 1: SINGLE MODE ══════════════ -->
+      <div class="tab-panel active" data-tab="single">
+
+        <!-- Definition (collapsed) -->
+        <div class="theory-box">
+          <h4>Zernike Polynomial Definition (OSA/ANSI)</h4>
+          <p>Orthonormal over the unit disk ρ ≤ 1 in polar coordinates (ρ, θ):</p>
+          <div class="formula-box">Z_n^m(ρ,θ) =  √(2(n+1)) · R_n^|m|(ρ) · cos(m·θ)     m > 0
+            =  √(2(n+1)) · R_n^|m|(ρ) · sin(|m|·θ)   m < 0
+            =  √(n+1)    · R_n^0(ρ)                    m = 0
+
+R_n^|m|(ρ) = Σ_{s=0}^{(n-|m|)/2}  (−1)^s · (n−s)! · ρ^{n−2s}
+             ──────────────────────────────────────────────────
+             s! · ((n+|m|)/2−s)! · ((n−|m|)/2−s)!</div>
+          <p>Orthonormality: ∫|Z_n^m|² ρ dρ dθ / π = 1.  Any wavefront W(ρ,θ) = Σ c_n^m Z_n^m;
+          RMS WFE = √(Σ c²).</p>
+        </div>
+
+        <!-- Mode chips -->
+        <div class="section-title" style="font-size:1rem; margin:.75rem 0 .25rem 0;">Standard mode names</div>
+        <div class="mode-chips" id="modeChips"></div>
+
+        <!-- Mode selector + canvas -->
+        <div class="two-col" style="margin-top:.75rem;">
+          <div class="ctrl-panel">
+            <h5>Mode selector</h5>
+            <div class="field-row">
+              <label>Radial order n: <span class="lbl-val" id="nVal">2</span></label>
+              <input type="range" id="nSlide" min="0" max="7" value="2"
+                oninput="document.getElementById('nVal').textContent=this.value; rebuildMSel(); updateSingle()">
+            </div>
+            <div class="field-row">
+              <label>Azimuthal order m</label>
+              <select id="mSel" onchange="updateSingle()"></select>
+            </div>
+            <div style="font-family:var(--mono); font-size:.9rem; color:var(--c-zern); margin-bottom:1rem;" id="modeName">Defocus</div>
+
+            <div class="field-row">
+              <label><input type="checkbox" id="showRadial" checked> Show radial cross-section</label>
+            </div>
+
+            <div class="result-strip" id="singleResult">
+              <div class="r-pair"><span class="r-lbl">RMS (unit disk)</span><span class="r-val" id="singleRMS">—</span></div>
+              <div class="r-pair"><span class="r-lbl">Peak-to-valley</span><span class="r-val" id="singlePV">—</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="canvas-wrap">
+              <h5>Z_n^m (OSA, units λ)</h5>
+              <canvas class="zernike-canvas" id="singleCanvas"></canvas>
+              <div class="canvas-info" id="singleInfo">RdBu: blue=min, white=0, red=max</div>
+            </div>
+            <div class="canvas-wrap" id="radialWrap" style="margin-top:.75rem;">
+              <h5>Radial cross-section at θ=0</h5>
+              <canvas id="radialChart" height="130"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 2: WAVEFRONT BUILDER ══════════════ -->
+      <div class="tab-panel" data-tab="wavefront">
+        <div class="theory-box">
+          <h4>Wavefront from Zernike Expansion</h4>
+          <p>
+            Any wavefront over a circular aperture: <strong>W(ρ,θ) = Σ c_n^m · Z_n^m(ρ,θ)</strong>,
+            coefficients in waves (λ). RMS WFE = √(Σ c²). Strehl ratio (Maréchal approximation):
+          </p>
+          <span class="eq">S ≈ exp[−(2π · σ_W)²]</span>
+          <p>
+            Strehl &gt; 0.8 → diffraction-limited (Rayleigh criterion). The PSF is computed via
+            2D FFT of the pupil function: P(ρ,θ) = A(ρ) · exp[i·2π·W(ρ,θ)].
+          </p>
+        </div>
+
+        <div class="two-col">
+          <div class="ctrl-panel">
+            <h5>Zernike expansion coefficients</h5>
+            <div class="wf-modes" id="wfModes"><!-- rows rendered by JS --></div>
+
+            <div style="margin-bottom:.75rem;">
+              <button class="add-mode-btn" onclick="addWFMode()">+ Add term</button>
+              <button class="add-mode-btn" onclick="clearWFModes()" style="color:#f87171;">Clear</button>
+            </div>
+
+            <button class="compute-btn" onclick="computeWavefront()">▶ Compute Wavefront + PSF</button>
+            <span class="compute-status" id="wfStatus">—</span>
+
+            <div class="result-strip" id="wfResult" style="margin-top:.75rem; display:none;">
+              <div class="r-pair"><span class="r-lbl">RMS WFE</span><span class="r-val" id="wfRMS">—</span></div>
+              <div class="r-pair"><span class="r-lbl">Peak-to-valley</span><span class="r-val" id="wfPV">—</span></div>
+              <div class="r-pair"><span class="r-lbl">Strehl</span><span class="r-val" id="wfStrehl">—</span></div>
+            </div>
+            <div style="margin-top:.4rem;" id="wfStrehlBar" style="display:none;">
+              <div class="strehl-bar-wrap"><div class="strehl-bar" id="strehlBarFill"></div></div>
+              <div id="strehlMsg" style="font-size:.8rem; color:var(--text-muted); margin-top:.3rem;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="two-col" style="gap:.75rem;">
+              <div class="canvas-wrap">
+                <h5>Wavefront W(ρ,θ) (λ)</h5>
+                <canvas class="zernike-canvas" id="wfCanvas"></canvas>
+                <div class="canvas-info">RdBu colormap</div>
+              </div>
+              <div class="canvas-wrap">
+                <h5>PSF = |FT{P}|²</h5>
+                <canvas class="zernike-canvas" id="psfCanvas"></canvas>
+                <div class="canvas-info">Inferno colormap</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 3: SLM ══════════════ -->
+      <div class="tab-panel" data-tab="slm">
+        <div class="theory-box">
+          <h4>SLM Phase → Far-Field Intensity</h4>
+          <p>
+            A spatial light modulator (SLM) imprints a programmable phase φ(x,y) on an input Gaussian
+            beam. In the focal plane of a lens, the field is the Fourier transform of the modulated input:
+          </p>
+          <span class="eq">E_ff(u,v) = FT{ E_in(x,y) · exp[iφ(x,y)] }    →    I_ff = |E_ff|²</span>
+          <p>
+            Helical phase φ = l·θ converts a Gaussian to a Laguerre–Gaussian LG₀ˡ donut
+            (for l ≠ 0), carrying orbital angular momentum l·ℏ per photon.
+          </p>
+        </div>
+
+        <!-- Controls -->
+        <div class="ctrl-panel" style="margin-bottom:1rem;">
+          <h5>SLM Parameters</h5>
+          <div class="slm-ctrl">
+            <div class="slm-field" style="min-width:200px;">
+              <label>Preset phase pattern</label>
+              <select id="slmPreset" onchange="slmPresetChange()">
+                <option value="flat">Flat (no phase)</option>
+                <option value="oam">Helical — OAM</option>
+                <option value="oam_defocus">Helical + Defocus</option>
+                <option value="oam_astig">Helical + Astigmatism</option>
+                <option value="grating">Blazed Grating</option>
+                <option value="custom">Custom Zernike</option>
+              </select>
+            </div>
+            <div class="slm-field" id="slmOAMField">
+              <label>OAM order l: <span class="lbl-val" id="slmLval">1</span></label>
+              <input type="range" id="slmL" min="-4" max="4" value="1" step="1"
+                oninput="document.getElementById('slmLval').textContent=this.value">
+            </div>
+            <div class="slm-field" id="slmZernField" style="display:none;">
+              <label>Aberration amplitude (λ): <span class="lbl-val" id="slmAval">0.5</span></label>
+              <input type="range" id="slmA" min="-3" max="3" value="0.5" step="0.05"
+                oninput="document.getElementById('slmAval').textContent=(+this.value).toFixed(2)">
+            </div>
+            <div class="slm-field" id="slmGratField" style="display:none;">
+              <label>Grating freq (cyc/pupil): <span class="lbl-val" id="slmKval">3.0</span></label>
+              <input type="range" id="slmK" min="0.5" max="8" value="3.0" step="0.5"
+                oninput="document.getElementById('slmKval').textContent=(+this.value).toFixed(1)">
+            </div>
+            <div class="slm-field" id="slmCustNField" style="display:none;">
+              <label>Custom Z n</label>
+              <select id="slmCustN" onchange="rebuildCustM()">
+                <option>0</option><option>1</option><option>2</option><option>3</option>
+                <option>4</option><option>5</option>
+              </select>
+            </div>
+            <div class="slm-field" id="slmCustMField" style="display:none;">
+              <label>Custom Z m</label>
+              <select id="slmCustM"></select>
+            </div>
+            <div class="slm-field">
+              <label>Beam width w (× pupil R): <span class="lbl-val" id="slmWval">0.65</span></label>
+              <input type="range" id="slmW" min="0.15" max="1.5" value="0.65" step="0.05"
+                oninput="document.getElementById('slmWval').textContent=(+this.value).toFixed(2)">
+            </div>
+          </div>
+          <button class="compute-btn" onclick="computeSLM()">▶ Compute Far Field</button>
+          <span class="compute-status" id="slmStatus">Configure and press Compute.</span>
+        </div>
+
+        <!-- Three canvases -->
+        <div class="three-col" style="gap:.75rem;">
+          <div class="canvas-wrap">
+            <h5>Input intensity |E_in|²</h5>
+            <canvas class="zernike-canvas" id="slmInCanvas"></canvas>
+            <div class="canvas-info">Inferno colormap</div>
+          </div>
+          <div class="canvas-wrap">
+            <h5>SLM phase φ (mod 2π)</h5>
+            <canvas class="zernike-canvas" id="slmPhaseCanvas"></canvas>
+            <div class="canvas-info">HSV cyclic: 0→2π = red→red</div>
+          </div>
+          <div class="canvas-wrap">
+            <h5>Far-field intensity |FT{E}|²</h5>
+            <canvas class="zernike-canvas" id="slmFFCanvas"></canvas>
+            <div class="canvas-info">Inferno colormap</div>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:1.5rem;">
+          <div class="theory-box">
+            <h4>Laguerre–Gaussian LG₀ˡ beams</h4>
+            <p>
+              Carry OAM l·ℏ per photon. At the beam waist (p=0):
+              <span class="eq">|LG₀ˡ| ∝ (r√2/w)^|l| · exp(−r²/w²)</span>
+              Intensity ring at r = w√(|l|/2). Larger ring for larger |l|.
+            </p>
+            <div class="formula-box">SLM recipe for LG₀ˡ:
+  1. Input: Gaussian beam
+  2. Phase:  φ = l·θ  (helical/vortex phase)
+  3. Far field ≈ LG₀ˡ  (donut for l≠0)
+
+Blazed grating l·θ + k·x:
+  Shifts donut off-axis — separates OAM orders spatially</div>
+          </div>
+          <div>
+            <table class="lg-table">
+              <thead><tr><th>l</th><th>Name</th><th>Far-field shape</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>Gaussian (LG₀⁰)</td><td>Central Airy peak</td></tr>
+                <tr><td>±1</td><td>First-order vortex</td><td>Single donut ring</td></tr>
+                <tr><td>±2</td><td>Second-order vortex</td><td>Larger donut ring</td></tr>
+                <tr><td>±3</td><td>Third-order vortex</td><td>Even larger ring</td></tr>
+                <tr><td>0 + defocus</td><td>Defocused Gaussian</td><td>Broadened central peak</td></tr>
+                <tr><td>0 + astigmatism</td><td>Astigmatic Gaussian</td><td>Elongated / elliptical</td></tr>
+                <tr><td>0 + grating</td><td>Blazed diffraction</td><td>Off-axis Gaussian spot</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /data-tabs-wrap -->
+  </section>
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'zernike', root: '../' });
+initScrollReveal();
+initTabs();
+
+/* ═══════════════════════════════════════════════════════
+   ZERNIKE ENGINE
+   ═══════════════════════════════════════════════════════ */
+// Precomputed factorials (0..24)
+const FACT = [1];
+for (let i = 1; i <= 24; i++) FACT[i] = FACT[i-1] * i;
+
+function zernikeRadial(n, mAbs, rho) {
+  let R = 0;
+  for (let s = 0; s <= (n - mAbs) / 2; s++) {
+    const c = Math.pow(-1, s) * FACT[n-s]
+      / (FACT[s] * FACT[(n+mAbs)/2 - s] * FACT[(n-mAbs)/2 - s]);
+    R += c * Math.pow(rho, n - 2*s);
+  }
+  return R;
+}
+
+function zernikeAt(n, m, rho, theta) {
+  if (rho > 1) return NaN;
+  const mAbs = Math.abs(m);
+  const norm = m !== 0 ? Math.sqrt(2*(n+1)) : Math.sqrt(n+1);
+  const R = zernikeRadial(n, mAbs, rho);
+  if (m > 0) return norm * R * Math.cos(m * theta);
+  if (m < 0) return norm * R * Math.sin(mAbs * theta);
+  return norm * R;
+}
+
+function validM(n) {
+  const ms = [];
+  for (let m = -n; m <= n; m += 2) ms.push(m);
+  return ms;
+}
+
+/* ─── Aberration names ────────────────────────────── */
+const NAMES = {
+  '0,0':'Piston',
+  '1,-1':'Tilt Y','1,1':'Tilt X',
+  '2,-2':'Astig 45°','2,0':'Defocus','2,2':'Astig 0°',
+  '3,-3':'Trefoil Y','3,-1':'Coma Y','3,1':'Coma X','3,3':'Trefoil X',
+  '4,-4':'Tetrafoil Y','4,-2':'Sec.Astig Y','4,0':'Prim.Spherical',
+  '4,2':'Sec.Astig X','4,4':'Tetrafoil X',
+  '5,-5':'Pentafoil Y','5,-3':'Sec.Trefoil Y','5,-1':'Sec.Coma Y',
+  '5,1':'Sec.Coma X','5,3':'Sec.Trefoil X','5,5':'Pentafoil X',
+  '6,0':'Sec.Spherical',
+};
+function modeName(n, m) { return NAMES[`${n},${m}`] || `Z_${n}^${m}`; }
+
+// Populate mode chips
+(function() {
+  const wrap = document.getElementById('modeChips');
+  Object.entries(NAMES).forEach(([key, name]) => {
+    const [n, m] = key.split(',').map(Number);
+    const chip = document.createElement('span');
+    chip.className = 'mode-chip';
+    chip.textContent = `Z_${n}^${m≥0?'+':''}${m} ${name}`;
+    wrap.appendChild(chip);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════
+   COLORMAPS
+   ═══════════════════════════════════════════════════════ */
+function lerp3(a, b, t) {
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1]), a[2]+t*(b[2]-a[2])].map(Math.round);
+}
+function colorRdBu(t) {
+  t = Math.max(0, Math.min(1, t));
+  const stops = [[59,76,192],[180,196,228],[245,245,245],[220,150,130],[180,4,38]];
+  const pos = t * 4; const i = Math.min(3, Math.floor(pos));
+  return lerp3(stops[i], stops[i+1], pos-i);
+}
+function colorInferno(t) {
+  t = Math.max(0, Math.min(1, t));
+  const stops = [[0,0,4],[40,11,84],[101,21,110],[159,42,99],[212,72,66],[252,255,164]];
+  const pos = t * 5; const i = Math.min(4, Math.floor(pos));
+  return lerp3(stops[i], stops[i+1], pos-i);
+}
+function colorHSV(t) {
+  t = ((t % 1) + 1) % 1;
+  const stops = [[255,0,0],[255,165,0],[255,255,0],[0,200,80],[0,120,255],[180,0,255],[255,0,0]];
+  const pos = t * 6; const i = Math.min(5, Math.floor(pos));
+  return lerp3(stops[i], stops[i+1], pos-i);
+}
+
+/* ─── Canvas renderer ─────────────────────────────── */
+const BG = [6, 14, 28];
+function renderCanvas(canvas, data, N, colorFunc, vmin, vmax) {
+  canvas.width = N; canvas.height = N;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(N, N);
+  const d = img.data;
+  const range = (vmax - vmin) || 1;
+  for (let i = 0; i < N*N; i++) {
+    const v = data[i];
+    let rgb;
+    if (isNaN(v)) rgb = BG;
+    else rgb = colorFunc((v - vmin) / range);
+    d[4*i]=rgb[0]; d[4*i+1]=rgb[1]; d[4*i+2]=rgb[2]; d[4*i+3]=255;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+/* ─── Precompute polar grids ─────────────────────── */
+function makePolarGrid(N) {
+  const rho = new Float32Array(N*N);
+  const theta = new Float32Array(N*N);
+  for (let i = 0; i < N; i++) {
+    const y = -1 + 2*i/(N-1);
+    for (let j = 0; j < N; j++) {
+      const x = -1 + 2*j/(N-1);
+      rho[i*N+j] = Math.sqrt(x*x+y*y);
+      theta[i*N+j] = Math.atan2(y, x);
+    }
+  }
+  return { rho, theta };
+}
+
+const G180 = makePolarGrid(180);
+const G128 = makePolarGrid(128);
+
+/* ─── Compute Zernike on grid ─────────────────────── */
+function computeZernike(n, m, grid, N) {
+  const data = new Float32Array(N*N);
+  for (let i = 0; i < N*N; i++) {
+    const r = grid.rho[i];
+    data[i] = r <= 1 ? (() => {
+      const mAbs = Math.abs(m);
+      const norm = m !== 0 ? Math.sqrt(2*(n+1)) : Math.sqrt(n+1);
+      let R = 0;
+      for (let s = 0; s <= (n-mAbs)/2; s++) {
+        R += Math.pow(-1,s)*FACT[n-s]/(FACT[s]*FACT[(n+mAbs)/2-s]*FACT[(n-mAbs)/2-s])
+           * Math.pow(r, n-2*s);
+      }
+      const t = grid.theta[i];
+      if (m > 0) return norm*R*Math.cos(m*t);
+      if (m < 0) return norm*R*Math.sin(mAbs*t);
+      return norm*R;
+    })() : NaN;
+  }
+  return data;
+}
+
+/* ─── Stats ───────────────────────────────────────── */
+function nanStats(data) {
+  let sum=0, sum2=0, cnt=0, mn=Infinity, mx=-Infinity;
+  for (let i=0; i<data.length; i++) {
+    const v=data[i]; if(isNaN(v)) continue;
+    sum+=v; sum2+=v*v; cnt++;
+    mn=Math.min(mn,v); mx=Math.max(mx,v);
+  }
+  return { rms: Math.sqrt(sum2/cnt), pv: mx-mn, min: mn, max: mx };
+}
+
+/* ═══════════════════════════════════════════════════════
+   FFT ENGINE (Cooley-Tukey)
+   ═══════════════════════════════════════════════════════ */
+function fft1d(re, im, n) {
+  for (let i=1,j=0; i<n; i++) {
+    let bit=n>>1;
+    for (; j&bit; bit>>=1) j^=bit;
+    j^=bit;
+    if (i<j) {
+      let t=re[i]; re[i]=re[j]; re[j]=t;
+      t=im[i]; im[i]=im[j]; im[j]=t;
+    }
+  }
+  for (let len=2; len<=n; len<<=1) {
+    const ang = -2*Math.PI/len;
+    const wR=Math.cos(ang), wI=Math.sin(ang);
+    for (let i=0; i<n; i+=len) {
+      let curR=1, curI=0;
+      for (let j=0; j<len>>1; j++) {
+        const uR=re[i+j], uI=im[i+j];
+        const vR=re[i+j+len/2]*curR-im[i+j+len/2]*curI;
+        const vI=re[i+j+len/2]*curI+im[i+j+len/2]*curR;
+        re[i+j]=uR+vR; im[i+j]=uI+vI;
+        re[i+j+len/2]=uR-vR; im[i+j+len/2]=uI-vI;
+        const nR=curR*wR-curI*wI; curI=curR*wI+curI*wR; curR=nR;
+      }
+    }
+  }
+}
+
+function fft2d(re, im, Nfft) {
+  const row_re=new Float64Array(Nfft), row_im=new Float64Array(Nfft);
+  for (let i=0; i<Nfft; i++) {
+    for (let j=0; j<Nfft; j++) { row_re[j]=re[i*Nfft+j]; row_im[j]=im[i*Nfft+j]; }
+    fft1d(row_re, row_im, Nfft);
+    for (let j=0; j<Nfft; j++) { re[i*Nfft+j]=row_re[j]; im[i*Nfft+j]=row_im[j]; }
+  }
+  const col_re=new Float64Array(Nfft), col_im=new Float64Array(Nfft);
+  for (let j=0; j<Nfft; j++) {
+    for (let i=0; i<Nfft; i++) { col_re[i]=re[i*Nfft+j]; col_im[i]=im[i*Nfft+j]; }
+    fft1d(col_re, col_im, Nfft);
+    for (let i=0; i<Nfft; i++) { re[i*Nfft+j]=col_re[i]; im[i*Nfft+j]=col_im[i]; }
+  }
+}
+
+function computePSF(E_re_N, E_im_N, Nin, Nfft) {
+  // Zero-pad Nin×Nin input to Nfft×Nfft
+  const re=new Float64Array(Nfft*Nfft), im=new Float64Array(Nfft*Nfft);
+  for (let i=0; i<Nin; i++) for (let j=0; j<Nin; j++) {
+    re[i*Nfft+j]=E_re_N[i*Nin+j]; im[i*Nfft+j]=E_im_N[i*Nin+j];
+  }
+  fft2d(re, im, Nfft);
+  // fftshift: swap quadrants, crop central Nin×Nin
+  const c0=Nfft>>1, hw=Nin>>1;
+  const psf=new Float32Array(Nin*Nin);
+  let mx=0;
+  for (let i=0; i<Nin; i++) {
+    const si=(i-hw+Nfft)%Nfft;
+    for (let j=0; j<Nin; j++) {
+      const sj=(j-hw+Nfft)%Nfft;
+      const idx_s=((si+c0)%Nfft)*Nfft+((sj+c0)%Nfft);
+      const v=re[idx_s]*re[idx_s]+im[idx_s]*im[idx_s];
+      psf[i*Nin+j]=v; if(v>mx) mx=v;
+    }
+  }
+  const inv=1/(mx||1);
+  for (let i=0; i<Nin*Nin; i++) psf[i]*=inv;
+  return psf;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 1: SINGLE MODE
+   ═══════════════════════════════════════════════════════ */
+let radialChart = null;
+
+function rebuildMSel() {
+  const n = parseInt(document.getElementById('nSlide').value);
+  const sel = document.getElementById('mSel');
+  sel.innerHTML = '';
+  validM(n).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = `m = ${m >= 0 ? '+' : ''}${m}  ${modeName(n,m)}`;
+    if (m === 0) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function updateSingle() {
+  const n  = parseInt(document.getElementById('nSlide').value);
+  const m  = parseInt(document.getElementById('mSel').value);
+  const N  = 180;
+  document.getElementById('modeName').textContent =
+    `n = ${n},  m = ${m >= 0 ? '+' : ''}${m}  —  ${modeName(n,m)}`;
+
+  const data = computeZernike(n, m, G180, N);
+  const { rms, pv, min, max } = nanStats(data);
+
+  // Symmetric color range for diverging map
+  const absMax = Math.max(Math.abs(min), Math.abs(max));
+  renderCanvas(document.getElementById('singleCanvas'), data, N, colorRdBu,
+    -absMax, absMax);
+
+  document.getElementById('singleRMS').textContent = rms.toFixed(4) + ' λ';
+  document.getElementById('singlePV').textContent  = pv.toFixed(4)  + ' λ';
+
+  // Radial cross-section
+  if (document.getElementById('showRadial').checked) {
+    document.getElementById('radialWrap').style.display = 'block';
+    const angle = m >= 0 ? 0 : Math.PI/4;
+    const rhos = [], zvals = [];
+    for (let k = 0; k <= 300; k++) {
+      const r = k/300;
+      rhos.push(r.toFixed(3));
+      zvals.push(zernikeAt(n, m, r, angle));
+    }
+    if (!radialChart) {
+      radialChart = new Chart(document.getElementById('radialChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: rhos, datasets: [{
+          label: 'Z(ρ)', data: zvals, borderColor: '#2dd4bf', borderWidth: 2, pointRadius: 0
+        }]},
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { title: { display: true, text: 'ρ', color: '#94a3b8' },
+                 ticks: { color: '#64748b', maxTicksLimit: 6 }, grid: { color: '#1e293b' } },
+            y: { title: { display: true, text: 'Z (λ)', color: '#94a3b8' },
+                 ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+          }
+        }
+      });
+    } else {
+      radialChart.data.labels = rhos;
+      radialChart.data.datasets[0].data = zvals;
+      radialChart.update('none');
+    }
+  } else {
+    document.getElementById('radialWrap').style.display = 'none';
+  }
+}
+
+rebuildMSel();
+updateSingle();
+
+/* ═══════════════════════════════════════════════════════
+   TAB 2: WAVEFRONT BUILDER
+   ═══════════════════════════════════════════════════════ */
+let wfModes = [
+  { n: 2, m: 0,  c:  0.5 },
+  { n: 2, m: 2,  c: -0.3 },
+  { n: 3, m: 1,  c:  0.2 },
+];
+
+function renderWFRows() {
+  const wrap = document.getElementById('wfModes');
+  wrap.innerHTML = '';
+  wfModes.forEach((mode, idx) => {
+    const row = document.createElement('div');
+    row.className = 'wf-row';
+    // n select
+    let nOpts = Array.from({length:8},(_,i)=>
+      `<option value="${i}" ${i===mode.n?'selected':''}>${i}</option>`).join('');
+    // m select
+    const ms = validM(mode.n);
+    let mOpts = ms.map(mm =>
+      `<option value="${mm}" ${mm===mode.m?'selected':''}>${mm>=0?'+':''}${mm} ${modeName(mode.n,mm)}</option>`).join('');
+    row.innerHTML = `
+      <select onchange="wfSetN(${idx}, this.value)">${nOpts}</select>
+      <select id="wfm${idx}" onchange="wfSetM(${idx}, this.value)">${mOpts}</select>
+      <input type="number" value="${mode.c}" step="0.05" style="font-size:.8rem"
+        onchange="wfModes[${idx}].c=parseFloat(this.value)">
+      <button onclick="removeWFMode(${idx})">×</button>`;
+    wrap.appendChild(row);
+  });
+}
+function wfSetN(idx, val) {
+  wfModes[idx].n = parseInt(val);
+  const ms = validM(wfModes[idx].n);
+  wfModes[idx].m = ms.includes(wfModes[idx].m) ? wfModes[idx].m : ms[0];
+  renderWFRows();
+}
+function wfSetM(idx, val) { wfModes[idx].m = parseInt(val); }
+function addWFMode() {
+  if (wfModes.length >= 8) return;
+  wfModes.push({ n: 2, m: 0, c: 0.1 });
+  renderWFRows();
+}
+function removeWFMode(idx) { wfModes.splice(idx, 1); renderWFRows(); }
+function clearWFModes() { wfModes = []; renderWFRows(); }
+
+renderWFRows();
+
+function computeWavefront() {
+  const status = document.getElementById('wfStatus');
+  status.className = 'compute-status';
+  status.textContent = 'Computing…';
+
+  setTimeout(() => {
+    const N = 128, Nfft = 256;
+    const W = new Float32Array(N*N);
+    for (const { n, m, c } of wfModes) {
+      const Z = computeZernike(n, m, G128, N);
+      for (let i=0; i<N*N; i++) { if (!isNaN(Z[i])) W[i] += c * Z[i]; }
+    }
+    // Apply mask
+    for (let i=0; i<N*N; i++) if (G128.rho[i] > 1) W[i] = NaN;
+
+    // Stats
+    const { rms, pv, min, max } = nanStats(W);
+    const absMax = Math.max(Math.abs(min||0), Math.abs(max||0)) || 1;
+    renderCanvas(document.getElementById('wfCanvas'), W, N, colorRdBu, -absMax, absMax);
+
+    // PSF
+    const E_re = new Float32Array(N*N), E_im = new Float32Array(N*N);
+    for (let i=0; i<N*N; i++) {
+      if (G128.rho[i] > 1) { E_re[i]=0; E_im[i]=0; }
+      else {
+        const phi = 2*Math.PI * (isNaN(W[i]) ? 0 : W[i]);
+        E_re[i] = Math.cos(phi); E_im[i] = Math.sin(phi);
+      }
+    }
+    const psf = computePSF(E_re, E_im, N, Nfft);
+    renderCanvas(document.getElementById('psfCanvas'), psf, N, colorInferno, 0, 1);
+
+    // Strehl
+    const strehl = Math.exp(-Math.pow(2*Math.PI*rms, 2));
+    document.getElementById('wfRMS').textContent   = rms.toFixed(4) + ' λ';
+    document.getElementById('wfPV').textContent    = pv.toFixed(4)  + ' λ';
+    document.getElementById('wfStrehl').textContent = strehl.toFixed(4);
+    document.getElementById('wfResult').style.display = 'flex';
+    document.getElementById('wfStrehlBar').style.display = 'block';
+
+    const bar = document.getElementById('strehlBarFill');
+    bar.style.width = (strehl*100).toFixed(1)+'%';
+    bar.style.background = strehl > 0.8 ? '#34d399' : strehl > 0.3 ? '#fbbf24' : '#ef4444';
+
+    const msg = document.getElementById('strehlMsg');
+    if (strehl > 0.8)      msg.textContent = `Strehl = ${strehl.toFixed(3)} > 0.8 — diffraction-limited (Rayleigh criterion)`;
+    else if (strehl > 0.3) msg.textContent = `Strehl = ${strehl.toFixed(3)} — moderate aberration, PSF broadened`;
+    else                   msg.textContent = `Strehl = ${strehl.toFixed(3)} — strong aberration, PSF severely degraded`;
+
+    status.className = 'compute-status ok';
+    status.textContent = `Done (${N}×${N} grid, ${Nfft}×${Nfft} FFT)`;
+  }, 20);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TAB 3: SLM
+   ═══════════════════════════════════════════════════════ */
+function slmPresetChange() {
+  const preset = document.getElementById('slmPreset').value;
+  const showOAM   = ['oam','oam_defocus','oam_astig','custom'].includes(preset);
+  const showZern  = ['oam_defocus','oam_astig','custom'].includes(preset);
+  const showGrat  = preset === 'grating';
+  const showCust  = preset === 'custom';
+  document.getElementById('slmOAMField').style.display  = showOAM   ? '' : 'none';
+  document.getElementById('slmZernField').style.display = showZern  ? '' : 'none';
+  document.getElementById('slmGratField').style.display = showGrat  ? '' : 'none';
+  document.getElementById('slmCustNField').style.display = showCust ? '' : 'none';
+  document.getElementById('slmCustMField').style.display = showCust ? '' : 'none';
+}
+slmPresetChange();
+
+function rebuildCustM() {
+  const n = parseInt(document.getElementById('slmCustN').value);
+  const sel = document.getElementById('slmCustM');
+  sel.innerHTML = '';
+  validM(n).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = `m=${m>=0?'+':''}${m} ${modeName(n,m)}`;
+    sel.appendChild(opt);
+  });
+}
+rebuildCustM();
+
+function computeSLM() {
+  const status = document.getElementById('slmStatus');
+  status.className = 'compute-status';
+  status.textContent = 'Computing FFT…';
+
+  setTimeout(() => {
+    const N = 128, Nfft = 256;
+    const preset = document.getElementById('slmPreset').value;
+    const l_oam  = parseInt(document.getElementById('slmL').value);
+    const amp    = parseFloat(document.getElementById('slmA').value);
+    const grat_k = parseFloat(document.getElementById('slmK').value);
+    const beam_w = parseFloat(document.getElementById('slmW').value);
+    const cust_n = parseInt(document.getElementById('slmCustN').value);
+    const cust_m = parseInt(document.getElementById('slmCustM').value);
+
+    // Input amplitude: Gaussian × mask
+    const E_in = new Float32Array(N*N);
+    for (let i=0; i<N*N; i++) {
+      const r = G128.rho[i];
+      E_in[i] = r <= 1 ? Math.exp(-r*r/(beam_w*beam_w)) : 0;
+    }
+    // I_in = E_in^2
+    const I_in = E_in.map(v => v*v);
+    renderCanvas(document.getElementById('slmInCanvas'), I_in, N, colorInferno, 0, 1);
+
+    // Phase pattern
+    const phase = new Float32Array(N*N);
+    for (let i=0; i<N*N; i++) {
+      const r = G128.rho[i], t = G128.theta[i];
+      if (r > 1) continue;
+      let phi = 0;
+      if (['oam','oam_defocus','oam_astig','custom'].includes(preset)) phi += l_oam * t;
+      if (preset === 'oam_defocus') {
+        phi += amp * 2*Math.PI * zernikeAt(2, 0, r, t);
+      } else if (preset === 'oam_astig') {
+        phi += amp * 2*Math.PI * zernikeAt(2, 2, r, t);
+      } else if (preset === 'grating') {
+        const x = -1 + 2*(i % N)/(N-1);  // column → x
+        phi += grat_k * Math.PI * x;
+      } else if (preset === 'custom') {
+        phi += amp * 2*Math.PI * zernikeAt(cust_n, cust_m, r, t);
+      }
+      phase[i] = phi;
+    }
+
+    // Phase display (mod 2π, NaN outside mask)
+    const phase_disp = new Float32Array(N*N);
+    for (let i=0; i<N*N; i++) {
+      if (G128.rho[i] > 1) { phase_disp[i] = NaN; continue; }
+      phase_disp[i] = ((phase[i] % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+    }
+    renderCanvas(document.getElementById('slmPhaseCanvas'), phase_disp, N, colorHSV, 0, 2*Math.PI);
+
+    // SLM output field
+    const E_re = new Float32Array(N*N), E_im = new Float32Array(N*N);
+    for (let i=0; i<N*N; i++) {
+      if (G128.rho[i] > 1) continue;
+      E_re[i] = E_in[i] * Math.cos(phase[i]);
+      E_im[i] = E_in[i] * Math.sin(phase[i]);
+    }
+    const psf = computePSF(E_re, E_im, N, Nfft);
+    renderCanvas(document.getElementById('slmFFCanvas'), psf, N, colorInferno, 0, 1);
+
+    status.className = 'compute-status ok';
+    status.textContent = `Done — ${N}×${N} → ${Nfft}×${Nfft} FFT.`;
+  }, 20);
+}
+</script>
+</body>
+</html>

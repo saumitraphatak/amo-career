@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laser Locking — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-lock); }
+
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .25rem 0;
+      border-left: 3px solid var(--c-lock); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.25rem .85rem; }
+    .section-block { margin-bottom: 3rem; }
+
+    /* Theory */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #2d1515;
+      border-left: 4px solid var(--c-lock); border-radius: 10px;
+      padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--c-lock); margin: 0 0 .6rem 0; }
+    .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+
+    .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc; display: block;
+          margin: .5rem 0; text-align: center; }
+
+    /* Step boxes */
+    .step-box {
+      background: #12101a; border-left: 3px solid #7c3aed;
+      border-radius: 0 8px 8px 0; padding: .8rem 1.1rem;
+      margin: .6rem 0; color: #ddd6fe; font-size: .87rem; line-height: 1.65;
+    }
+    .step-box strong { color: #a78bfa; }
+
+    /* Formula boxes */
+    .formula-box {
+      background: #080f08; border: 1px solid #1a3a1a;
+      border-radius: 8px; padding: .75rem 1.1rem; margin: .7rem 0;
+      font-family: var(--mono); color: #86efac; font-size: .82rem; line-height: 1.85;
+      white-space: pre; overflow-x: auto;
+    }
+
+    /* Info / good / warn banners */
+    .info-banner { background: #0a1020; border: 1px solid #1e3a6e; border-radius: 8px;
+      padding: .65rem 1rem; margin: .6rem 0; color: #93c5fd; font-size: .85rem; }
+    .good-banner { background: #052e16; border: 1px solid #15803d; border-radius: 8px;
+      padding: .65rem 1rem; margin: .6rem 0; color: #86efac; font-size: .85rem; }
+    .warn-banner { background: #1c1007; border: 1px solid #92400e; border-radius: 8px;
+      padding: .65rem 1rem; margin: .6rem 0; color: #fde68a; font-size: .85rem; }
+
+    /* Layouts */
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 800px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* Calculator controls */
+    .calc-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1.2rem;
+    }
+    .calc-card h5 { font-size: .9rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 1rem 0; }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label { font-size: .8rem; color: var(--text-muted); display: block; margin-bottom: .3rem; }
+    .field-row select, .field-row input {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .4rem .75rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row select:focus, .field-row input:focus { outline: none; border-color: var(--c-lock); }
+    .result-box {
+      background: #020b04; border: 1px solid #15803d; border-radius: 8px;
+      padding: .65rem 1rem; margin-top: .75rem; font-family: var(--mono); font-size: .83rem;
+    }
+    .result-box .r-row { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: baseline; margin-bottom: .2rem; }
+    .r-lbl { color: #86efac; }
+    .r-val { color: #4ade80; font-size: 1.05rem; font-weight: 700; }
+
+    /* Chart cards */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: 1rem; margin-top: 1rem;
+    }
+    .chart-card h5 { font-size: .82rem; font-weight: 600; color: var(--text-muted);
+      margin: 0 0 .6rem 0; text-align: center; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Summary table */
+    .sum-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .sum-table th {
+      background: #0a1628; color: var(--text-muted); font-weight: 600;
+      padding: .6rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
+    }
+    .sum-table td {
+      padding: .55rem .9rem; border-bottom: 1px solid #0f1e35;
+      color: var(--text-secondary); vertical-align: top;
+    }
+    .sum-table tr:hover td { background: #0c1a2e; }
+    .tick { color: #34d399; }
+    .cross { color: #f87171; }
+
+    /* Hierarchy display */
+    .hier-box {
+      background: #050c18; border: 1px solid #1e3a5f; border-radius: 10px;
+      padding: 1rem 1.25rem; font-family: var(--mono); font-size: .82rem;
+      color: #94a3b8; white-space: pre; overflow-x: auto; line-height: 1.75;
+    }
+    .hier-box .hl0 { color: #f87171; }
+    .hier-box .hl1 { color: #60a5fa; }
+    .hier-box .hl2 { color: #a78bfa; }
+
+    /* Lab example */
+    .lab-card {
+      background: linear-gradient(135deg, #0d1f3c, #0a1528);
+      border: 1px solid #1e3a5f; border-radius: 10px; padding: 1.1rem 1.4rem;
+    }
+    .lab-card h5 { font-size: .9rem; font-weight: 700; color: #60a5fa; margin: 0 0 .7rem 0; }
+    .lab-card ul { padding-left: 1.2rem; margin: 0; }
+    .lab-card li { font-size: .85rem; color: var(--text-secondary); line-height: 1.8; }
+
+    /* Practical notes accordion */
+    .prac-toggle {
+      background: #0a1628; border: 1px solid #1e293b; border-radius: 8px;
+      padding: .6rem 1rem; cursor: pointer; width: 100%; text-align: left;
+      color: var(--text-muted); font-size: .85rem; margin-top: .75rem;
+    }
+    .prac-body { display: none; }
+    .prac-body.open { display: block; }
+    .prac-body ul { padding-left: 1.2rem; margin: .75rem 0 0 0; }
+    .prac-body li { font-size: .84rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: .3rem; }
+
+    /* Slope table */
+    .slope-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .75rem; }
+    .slope-table th { background: #0a1628; color: var(--text-muted); font-weight: 600;
+      padding: .5rem .8rem; border: 1px solid #1e293b; text-align: left; }
+    .slope-table td { padding: .5rem .8rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-lock);">
+  <div class="container">
+    <div class="hero-badge anim-in">FREQUENCY STABILISATION</div>
+    <h1 class="page-title anim-in delay-1">
+      Laser <span class="grad-text" style="--ga: var(--c-lock); --gb: #fbbf24;">Frequency Locking</span>
+    </h1>
+    <p class="page-desc anim-in delay-2">
+      Free-running diode lasers drift by MHz on minute timescales — comparable to atomic linewidths.
+      Three complementary techniques solve this: SAS for absolute references, beat-note for precise
+      offsets, and PDH for sub-kHz linewidths.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">~MHz</span><span class="stat-lbl">free-running drift</span></div>
+      <div class="stat"><span class="stat-val">SAS</span><span class="stat-lbl">absolute reference</span></div>
+      <div class="stat"><span class="stat-val">BNL</span><span class="stat-lbl">tunable offset</span></div>
+      <div class="stat"><span class="stat-val">&lt;1 kHz</span><span class="stat-lbl">PDH linewidth</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top: 2.5rem;">
+
+  <div class="info-banner anim-in" style="margin-bottom: 2rem;">
+    Running example: Cs D₂ at 852 nm (Γ/2π = 5.234 MHz) for SAS and beat-note;
+    685 nm Cs E₂ quadrupole line (Γ/2π ≈ 117 kHz) to motivate PDH locking.
+  </div>
+
+  <!-- ═══ TABS ═══ -->
+  <section class="section-block anim-in delay-1">
+    <div data-tabs-wrap>
+      <div class="tab-bar" data-group="lock-main">
+        <button class="tab-btn active" data-tab="sas">📡 SAS Lock</button>
+        <button class="tab-btn" data-tab="beat">🎵 Beat-Note Lock</button>
+        <button class="tab-btn" data-tab="pdh">🏛️ PDH Cavity Lock</button>
+        <button class="tab-btn" data-tab="summary">🗺️ Summary</button>
+      </div>
+
+      <!-- ══════════════ TAB 1: SAS ══════════════ -->
+      <div class="tab-panel active" data-tab="sas">
+        <div class="theory-box">
+          <h4>Saturated-Absorption Spectroscopy (SAS) Locking</h4>
+          <p>
+            SAS provides an <strong>absolute optical frequency reference</strong> tied directly to an
+            atomic transition — no external frequency standard needed. The technique exploits the narrow
+            Lamb dip hidden beneath the broad Doppler-broadened absorption profile of a room-temperature
+            vapour cell.
+          </p>
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem; margin:.75rem 0 .5rem 0;">How it works</div>
+        <div class="two-col">
+          <div>
+            <div class="step-box">
+              <strong>Step 1 — Counter-propagating beams.</strong><br>
+              A strong pump beam and weak probe beam travel in opposite directions through the vapour cell.
+              An atom moving at velocity v sees the pump Doppler-shifted to ν₀ − v/λ and the probe to ν₀ + v/λ.
+            </div>
+            <div class="step-box">
+              <strong>Step 2 — Velocity selectivity.</strong><br>
+              Only atoms with v ≈ 0 (zero-velocity class) are simultaneously resonant with both beams at
+              the unshifted line centre ν₀. The pump saturates these atoms, burning a population inversion hole.
+            </div>
+          </div>
+          <div>
+            <div class="step-box">
+              <strong>Step 3 — Lamb dip.</strong><br>
+              Because zero-velocity atoms are partially saturated by the pump, they absorb less of the probe
+              at ν₀ → a narrow Lamb dip appears in the probe transmission, on the broad Gaussian Doppler background.
+            </div>
+            <div class="step-box">
+              <strong>Step 4 — FM error signal.</strong><br>
+              The laser frequency is weakly modulated (via current or EOM). Lock-in demodulation of the probe
+              signal yields a dispersive derivative of the Lamb dip, with a zero-crossing at ν₀.
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box">V_err  ∝  dS(ν)/dν      [first-harmonic demodulation]
+
+Lamb dip FWHM  ≈  Γ/2π × √(1 + I/Iₛₐₜ)
+Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)</div>
+
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
+          Calculator — Doppler vs Lamb dip widths
+        </div>
+        <div class="two-col">
+          <div class="calc-card">
+            <h5>Parameters</h5>
+            <div class="field-row">
+              <label>Species</label>
+              <select id="sasSpecies" onchange="updateSAS()">
+                <option value="Cs">Cs D₂ (852 nm)</option>
+                <option value="Rb">Rb D₂ (780 nm)</option>
+                <option value="Na">Na D₂ (589 nm)</option>
+                <option value="Li">⁶Li D₂ (671 nm)</option>
+                <option value="K">⁴⁰K D₂ (767 nm)</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label>Vapour cell temperature (K): <span id="sasTlbl">300</span></label>
+              <input type="range" id="sasT" min="20" max="500" value="300" step="10"
+                oninput="document.getElementById('sasTlbl').textContent=this.value; updateSAS()">
+            </div>
+            <div class="field-row">
+              <label>Saturation I/Iₛₐₜ: <span id="sasSatlbl">1.0</span></label>
+              <input type="range" id="sasSat" min="0.0" max="10.0" value="1.0" step="0.1"
+                oninput="document.getElementById('sasSatlbl').textContent=(+this.value).toFixed(1); updateSAS()">
+            </div>
+            <div class="field-row">
+              <label>FM mod. freq. (MHz): <span id="sasModlbl">5.0</span></label>
+              <input type="range" id="sasMod" min="0.1" max="50" value="5.0" step="0.1"
+                oninput="document.getElementById('sasModlbl').textContent=(+this.value).toFixed(1); updateSAS()">
+            </div>
+            <div class="result-box" id="sasResult"></div>
+            <div id="sasBanner" style="margin-top:.6rem;"></div>
+          </div>
+
+          <div>
+            <div class="chart-card">
+              <h5>SAS Transmission</h5>
+              <canvas id="sasChart1" height="180"></canvas>
+            </div>
+            <div class="chart-card">
+              <h5>FM Error Signal dS/dν</h5>
+              <canvas id="sasChart2" height="140"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
+        <div class="prac-body">
+          <ul>
+            <li><strong>Vapour cell temperature:</strong> 20–60 °C gives good SNR for alkali D lines. Higher T → stronger signal but broader Doppler background and higher collisional broadening.</li>
+            <li><strong>Pump power:</strong> needs I ≳ Iₛₐₜ to produce a visible Lamb dip. Excess power broadens the dip.</li>
+            <li><strong>Modulation frequency:</strong> typically 1–50 MHz. Higher frequencies push technical noise below the shot-noise floor.</li>
+            <li><strong>Cross-over resonances:</strong> at ν = (ν₁+ν₂)/2, both zero-velocity and ±v classes contribute — extra dips, often the sharpest features in multi-level spectra.</li>
+            <li><strong>SAS is impractical</strong> for very weak transitions (E2, M1) where I_sat is W/cm² — the Lamb dip signal is too small.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 2: BEAT-NOTE ══════════════ -->
+      <div class="tab-panel" data-tab="beat">
+        <div class="theory-box">
+          <h4>Beat-Note (Offset) Locking</h4>
+          <p>
+            Many experiments need two lasers separated by a <strong>precise and stable frequency offset</strong>
+            — for example, a cooling laser and a repumper, or a Raman beam pair. Beat-note locking
+            stabilises the <em>difference frequency</em> between a well-stabilised master laser and a
+            slave laser, without locking each independently to an atomic reference.
+          </p>
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem; margin:.75rem 0 .5rem 0;">Physics of the beat note</div>
+        <div class="formula-box">E₁(t) = E₀₁ cos(2π ν₁ t + φ₁)
+E₂(t) = E₀₂ cos(2π ν₂ t + φ₂)
+
+→  i_PD(t)  ∝  cos[2π(ν₂ − ν₁)t + (φ₂ − φ₁)]
+
+V_err  ∝  (ν₂ − ν₁) − ν_ref        [frequency discriminator]
+OPLL:   d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ ν_ref  (phase coherent)</div>
+
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
+          Calculator — Beat-note frequency &amp; detector requirements
+        </div>
+        <div class="two-col">
+          <div class="calc-card">
+            <h5>Parameters</h5>
+            <div class="field-row">
+              <label>Master laser wavelength (nm)</label>
+              <input type="number" id="bnMaster" value="670.977" step="0.001" min="400" max="1200"
+                oninput="updateBeat()">
+            </div>
+            <div class="field-row">
+              <label>Desired offset (MHz) [slave − master]</label>
+              <input type="number" id="bnOffset" value="228.2" step="0.1" min="-5000" max="5000"
+                oninput="updateBeat()">
+            </div>
+            <div class="field-row">
+              <label>
+                <input type="checkbox" id="bnOPLL" onchange="updateBeat()"> OPLL mode (phase lock)
+              </label>
+            </div>
+            <div class="result-box" id="beatResult"></div>
+            <div id="beatBanner" style="margin-top:.6rem;"></div>
+          </div>
+
+          <div>
+            <div class="theory-box">
+              <h4>RF Signal Chain</h4>
+              <p>Typical implementation for a beat-note lock:</p>
+            </div>
+            <div class="formula-box">Slave + Master  →  fast PD (1–3 GHz BW)  →  amplifier
+→  RF power splitter
+→  mixer × local oscillator (RF synthesiser at ν_ref)
+→  low-pass filter  →  error signal
+→  PID controller  →  slave laser current / PZT</div>
+
+            <div class="theory-box" style="margin-top:.75rem;">
+              <h4>Signal-to-Noise</h4>
+              <p>Beat SNR in a bandwidth B:</p>
+              <span class="eq">SNR = P₁·P₂·R² / (2e·I_dc·B)</span>
+              <p>Typically need ≳ 20 dBm RF power at the detector to lock cleanly.
+              Responsivity R ≈ 0.5–0.8 A/W for Si/InGaAs fast photodiodes at these wavelengths.</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
+        <div class="prac-body">
+          <ul>
+            <li><strong>Master must already be well-locked</strong> (SAS or PDH). The slave inherits the master's long-term stability.</li>
+            <li><strong>RF synthesiser sets the offset:</strong> changing ν_ref tunes the slave frequency without touching the master.</li>
+            <li><strong>OPLL vs frequency lock:</strong> phase-locked loops require ~1 MHz servo bandwidth but provide phase coherence — essential for Raman spectroscopy and atom interferometry.</li>
+            <li><strong>Very small offsets (&lt;10 MHz):</strong> beat note may fall within 1/f noise. Use a double-pass AOM to increase the offset before detecting.</li>
+            <li><strong>Offsets &gt;3 GHz:</strong> may exceed standard fast PD bandwidth. Consider wavemeter pre-stabilisation.</li>
+            <li><strong>Vescent D2-125:</strong> widely used electronics that handle both SAS and beat-note locking from a single unit.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 3: PDH ══════════════ -->
+      <div class="tab-panel" data-tab="pdh">
+        <div class="theory-box">
+          <h4>Pound–Drever–Hall (PDH) Cavity Locking</h4>
+          <p>
+            When no convenient atomic reference exists — or when the required short-term linewidth is
+            narrower than SAS can provide — the laser is locked to a <strong>high-finesse Fabry–Pérot
+            cavity</strong>. The PDH technique generates an error signal from the reflected field using
+            RF phase modulation, achieving much higher signal slope than simple transmission locking.
+          </p>
+        </div>
+
+        <div class="formula-box">Free spectral range:     ν_FSR = c / (2 n L)
+Finesse:                 𝒻 = π √R / (1 − R)  ≈  π/(1−R)   [R ≈ 1]
+Cavity linewidth (FWHM): δν_cav = ν_FSR / 𝒻
+Fractional freq. drift:  δν / ν  =  −δL / L = −α_CTE · δT</div>
+
+        <div class="section-title" style="font-size:1.1rem; margin:1rem 0 .5rem 0;">PDH error signal — how it works</div>
+
+        <div class="step-box">
+          <strong>Step 1 — Phase modulation.</strong> An EOM imprints weak sidebands at ±Ω on the carrier field:<br>
+          E_in ≈ E₀ e^{iωt} + (β/2)E₀ e^{i(ω+Ω)t} − (β/2)E₀ e^{i(ω−Ω)t}   [β ≪ 1]
+        </div>
+        <div class="step-box">
+          <strong>Step 2 — Frequency placement.</strong> Choose Ω ≫ δν_cav so the sidebands sit outside
+          the cavity resonance — they reflect unchanged. The carrier acquires a strongly frequency-dependent
+          phase shift near resonance.
+        </div>
+        <div class="step-box">
+          <strong>Step 3 — Demodulation.</strong> Detect the reflected field on a fast photodiode.
+          The carrier beats against the sidebands at Ω. Demodulate at Ω → bipolar error signal:
+        </div>
+
+        <div class="formula-box">V_err  ∝  Im[r(ω)]      [imaginary part of reflection coefficient]
+
+Near resonance:  V_err ≈ K · δ       (δ = ω − ω_cavity)
+
+Discriminator slope:  K ∝ √(P_carrier · P_sideband) · 𝒻 / δν_cav
+  (P_sideband ≈ β² P_carrier / 4)</div>
+
+        <div class="two-col" style="margin-top:1.25rem;">
+          <div class="calc-card">
+            <h5>Cavity Parameters Calculator</h5>
+            <div class="field-row">
+              <label>Cavity length L (mm)</label>
+              <input type="number" id="pdhL" value="77.5" step="0.5" min="1" max="500" oninput="updatePDH()">
+            </div>
+            <div class="field-row">
+              <label>Finesse 𝒻</label>
+              <input type="number" id="pdhF" value="15000" step="100" min="100" max="1000000" oninput="updatePDH()">
+            </div>
+            <div class="field-row">
+              <label>Laser wavelength (nm)</label>
+              <input type="number" id="pdhLam" value="685.0" step="0.1" min="400" max="1200" oninput="updatePDH()">
+            </div>
+            <div class="field-row">
+              <label>EOM modulation Ω (MHz)</label>
+              <input type="number" id="pdhOmega" value="27" step="1" min="1" max="500" oninput="updatePDH()">
+            </div>
+            <div class="field-row">
+              <label>Target linewidth (Hz)</label>
+              <input type="number" id="pdhTarget" value="1000" step="100" min="100" max="1000000" oninput="updatePDH()">
+            </div>
+            <div class="field-row">
+              <label>Spacer material</label>
+              <select id="pdhMat" onchange="updatePDH()">
+                <option value="5e-9">ULE glass (near zero-crossing) — 5 ppb/K</option>
+                <option value="2e-8">ULE glass (room temp) — 20 ppb/K</option>
+                <option value="5.5e-7">Fused silica — 550 ppb/K</option>
+                <option value="5e-9">Zerodur — 5 ppb/K</option>
+                <option value="1e-6">Invar — 1 ppm/K</option>
+              </select>
+            </div>
+            <div class="result-box" id="pdhResult"></div>
+            <div id="pdhBanner" style="margin-top:.6rem;"></div>
+          </div>
+
+          <div>
+            <div class="chart-card">
+              <h5>Cavity Reflection (Airy Dip)</h5>
+              <canvas id="pdhChart1" height="170"></canvas>
+            </div>
+            <div class="chart-card">
+              <h5>PDH Error Signal Im[r(ω)]</h5>
+              <canvas id="pdhChart2" height="150"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box" style="margin-top:1.25rem;">Typical optical chain:
+
+diode laser  →  prism pair (astigmatism corr.)  →  optical isolator (30–40 dB)
+→  EOM (phase mod. at Ω)  →  mode-matching telescope  →  ULE cavity
+
+Reflected beam:  PBS + QWP  →  fast PD  →  RF mixer at Ω  →  LPF
+Error signal:  fast path → laser current  (high BW, small range)
+              slow path → PZT             (low BW, large range)</div>
+
+        <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
+        <div class="prac-body" id="pdhPractical">
+          <ul>
+            <li><strong>ULE zero-crossing temperature:</strong> ULE has CTE ≈ 0 near a specific temperature (5–25 °C depending on blank). Operating at the zero-crossing dramatically reduces thermal drift.</li>
+            <li><strong>Vacuum and vibration isolation:</strong> cavity must be in vacuum (P &lt; 10⁻⁵ mbar) to avoid refractive-index fluctuations. Mount on vibration-isolated platform.</li>
+            <li><strong>Two-stage servo:</strong> fast path (current) compensates high-frequency noise; slow path (PZT) compensates slow drift.</li>
+            <li><strong>PDH does not provide absolute frequency:</strong> the cavity resonance drifts. Beat the locked laser against a frequency comb or SAS reference for absolute knowledge.</li>
+            <li><strong>Finesse measurement:</strong> scan laser across a resonance and fit Airy function, or measure ring-down time τ_c = 𝒻/(π·FSR).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 4: SUMMARY ══════════════ -->
+      <div class="tab-panel" data-tab="summary">
+        <div class="theory-box">
+          <h4>The Locking Hierarchy</h4>
+          <p>
+            In practice, the three techniques form a hierarchy. SAS provides the absolute anchor;
+            beat-note locks propagate stability to other lasers at controllable offsets; PDH locks
+            provide narrow-linewidth operation wherever no atomic reference is available.
+          </p>
+        </div>
+
+        <div style="overflow-x:auto; margin-bottom:1.5rem;">
+          <table class="sum-table">
+            <thead>
+              <tr>
+                <th>Technique</th>
+                <th>Absolute?</th>
+                <th>Typical linewidth</th>
+                <th>Tunable offset?</th>
+                <th>Best for</th>
+                <th>Limitation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>SAS lock</strong></td>
+                <td class="tick">✓ Atomic line</td>
+                <td>100 kHz – 1 MHz</td>
+                <td class="cross">✗ Fixed to transition</td>
+                <td>Primary absolute reference (D lines)</td>
+                <td>Needs strong transition; vapour-cell lines only</td>
+              </tr>
+              <tr>
+                <td><strong>Beat-note lock</strong></td>
+                <td>Via master</td>
+                <td>Same as master</td>
+                <td class="tick">✓ RF synthesiser</td>
+                <td>Cooling/repump pairs, Raman beams</td>
+                <td>Needs pre-stabilised master; fast PD + RF chain</td>
+              </tr>
+              <tr>
+                <td><strong>PDH cavity lock</strong></td>
+                <td class="cross">✗ Cavity drifts</td>
+                <td>1 Hz – 10 kHz</td>
+                <td>Via AOM after lock</td>
+                <td>Narrow-linewidth spectroscopy, weak transitions</td>
+                <td>Thermal cavity drift; expensive; needs vacuum</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem; margin-bottom:.5rem;">Typical laboratory hierarchy</div>
+        <div class="hier-box">
+<span class="hl0">Layer 0  (Absolute):</span>  D-line laser  →  SAS lock  →  ν known to ~1 MHz
+
+<span class="hl1">Layer 1  (Derived):</span>   Laser B  →  beat-note lock to Layer 0  →  ν₀ ± ν_RF
+                      Laser C  →  beat-note lock to Layer 0  →  ν₀ ± ν_RF'
+
+<span class="hl2">Layer 2  (Narrow):</span>    Spectroscopy laser  →  PDH lock to ULE cavity  →  ~kHz linewidth
+                      (Long-term drift corrected by beating against a Layer 0 laser)</div>
+
+        <div class="section-title" style="font-size:1.1rem; margin-top:1.5rem; margin-bottom:.5rem;">Key equations at a glance</div>
+        <div class="formula-box">SAS:        V_err  ∝  dS(ν)/dν,    Lamb dip FWHM ≈ Γ/2π × √(1 + I/Iₛₐₜ)
+
+Beat-note:  i_PD   ∝  cos[2π(ν₂−ν₁)t],   V_err ∝ (ν₂−ν₁) − ν_ref
+
+PDH:        V_err  ∝  Im[r(ω)]  ≈  K·δ,
+            δν_cav = c/(2LF),   δν/ν = −δL/L = −α_CTE · δT</div>
+
+        <div class="section-title" style="font-size:1.1rem; margin-top:1.5rem; margin-bottom:.5rem;">Error signal slopes compared</div>
+        <table class="slope-table">
+          <thead>
+            <tr><th>Technique</th><th>Slope K (typical)</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SAS (direct lock-in)</td><td>~0.1–1 mV/MHz</td><td>Limited by Doppler background contrast</td></tr>
+            <tr><td>SAS (modulation transfer)</td><td>~1–10 mV/MHz</td><td>Better baseline; uses four-wave mixing</td></tr>
+            <tr><td>Beat-note (freq. discriminator)</td><td>~1–10 mV/MHz</td><td>Scales with RF power and mixer gain</td></tr>
+            <tr><td>PDH (high finesse)</td><td>~10–1000 mV/MHz</td><td>Scales as √(P_c·P_s) × 𝒻/δν_cav</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-title" style="font-size:1.1rem; margin-top:1.5rem; margin-bottom:.5rem;">Our lab: Cs + Li system</div>
+        <div class="lab-card">
+          <h5>Lab Laser Hierarchy (Cs/Li Tweezer Experiment)</h5>
+          <ul>
+            <li><strong>852 nm Cs D₂:</strong> SAS-locked in Cs vapour cell → primary absolute reference.</li>
+            <li><strong>685 nm Cs E₂ (6S→5D₅/₂):</strong> PDH-locked to ULE cavity (L = 77.5 mm, 𝒻 ≈ 1.5×10⁴). FSR ≈ 1.93 GHz, δν_cav ≈ 130 kHz, laser linewidth ≈ 1 kHz. Thermal drift ≈ 2.5 kHz per 10 mK.</li>
+            <li><strong>671 nm Li D₁:</strong> SAS-locked in heated Li vapour cell.</li>
+            <li><strong>671 nm Li D₂:</strong> Beat-note locked to Li D₁ (Vescent D2-125), offset set by RF synthesiser.</li>
+          </ul>
+        </div>
+      </div>
+    </div><!-- /data-tabs-wrap -->
+  </section>
+
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'laser-locking', root: '../' });
+initScrollReveal();
+initTabs();
+
+/* ─── Practical notes toggle ───────────────────────── */
+function togglePrac(btn) {
+  const body = btn.nextElementSibling;
+  body.classList.toggle('open');
+  btn.textContent = body.classList.contains('open')
+    ? btn.textContent.replace('▾','▴')
+    : btn.textContent.replace('▴','▾');
+}
+
+/* ─── Constants ────────────────────────────────────── */
+const c_l = 299792458, kB = 1.380649e-23, amu = 1.66053906e-27, ln2 = Math.LN2;
+
+const ATOMS = {
+  Cs: { lam: 852.347e-9, Gamma: 5.234e6, A: 133 },
+  Rb: { lam: 780.241e-9, Gamma: 6.065e6, A: 87  },
+  Na: { lam: 589.000e-9, Gamma: 9.795e6, A: 23  },
+  Li: { lam: 670.977e-9, Gamma: 5.874e6, A: 6   },
+  K:  { lam: 766.700e-9, Gamma: 6.035e6, A: 40  },
+};
+
+function doppler_MHz(lam, T_K, A) {
+  const m = A * amu;
+  return (1/lam) * Math.sqrt(8 * kB * T_K * ln2 / m) / 1e6;
+}
+function fmtFreq(Hz) {
+  const a = Math.abs(Hz);
+  if (a >= 1e9) return `${(Hz/1e9).toFixed(3)} GHz`;
+  if (a >= 1e6) return `${(Hz/1e6).toFixed(3)} MHz`;
+  if (a >= 1e3) return `${(Hz/1e3).toFixed(3)} kHz`;
+  return `${Hz.toFixed(1)} Hz`;
+}
+
+/* ─── SAS ──────────────────────────────────────────── */
+let sasChart1, sasChart2;
+function buildSASCharts() {
+  const ctx1 = document.getElementById('sasChart1').getContext('2d');
+  const ctx2 = document.getElementById('sasChart2').getContext('2d');
+  const commonOpts = {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+    scales: {
+      x: { ticks: { color: '#64748b', maxTicksLimit: 7 }, grid: { color: '#1e293b' } },
+      y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+    }
+  };
+  sasChart1 = new Chart(ctx1, { type: 'line', data: { labels: [], datasets: [
+    { label: 'SAS transmission', data: [], borderColor: '#38bdf8', borderWidth: 1.5, pointRadius: 0 }
+  ]}, options: { ...commonOpts, scales: { ...commonOpts.scales,
+    x: { ...commonOpts.scales.x, title: { display: false } },
+    y: { ...commonOpts.scales.y, title: { display: true, text: 'Transmission', color: '#94a3b8' } }
+  }}});
+  sasChart2 = new Chart(ctx2, { type: 'line', data: { labels: [], datasets: [
+    { label: 'Error signal', data: [], borderColor: '#f59e0b', borderWidth: 1.5, pointRadius: 0 }
+  ]}, options: { ...commonOpts, scales: { ...commonOpts.scales,
+    x: { ...commonOpts.scales.x, title: { display: true, text: 'Detuning from line centre (MHz)', color: '#94a3b8' } },
+    y: { ...commonOpts.scales.y, title: { display: true, text: 'Error (norm.)', color: '#94a3b8' } }
+  }}});
+}
+function updateSAS() {
+  const key  = document.getElementById('sasSpecies').value;
+  const T_K  = parseFloat(document.getElementById('sasT').value);
+  const sat  = parseFloat(document.getElementById('sasSat').value);
+  const mod  = parseFloat(document.getElementById('sasMod').value);
+  const a    = ATOMS[key];
+
+  const dnu_D_MHz  = doppler_MHz(a.lam, T_K, a.A);
+  const Gamma_MHz  = a.Gamma / 1e6;
+  const dnu_lamb   = Gamma_MHz * Math.sqrt(1 + sat);
+  const contrast   = dnu_D_MHz / Gamma_MHz;
+
+  // Result box
+  document.getElementById('sasResult').innerHTML = `
+    <div class="r-row">
+      <span class="r-lbl">Doppler FWHM:</span><span class="r-val">${dnu_D_MHz.toFixed(0)} MHz</span>
+      <span class="r-lbl">Natural Γ/2π:</span><span class="r-val">${Gamma_MHz.toFixed(3)} MHz</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Lamb dip FWHM:</span><span class="r-val">${dnu_lamb.toFixed(3)} MHz</span>
+      <span class="r-lbl">Contrast:</span><span class="r-val">${contrast.toFixed(0)} : 1</span>
+    </div>`;
+
+  // Banner
+  const banner = document.getElementById('sasBanner');
+  if (mod < 0.05 * dnu_lamb) {
+    banner.className = 'good-banner';
+    banner.textContent = `✓ Mod freq ${mod} MHz ≪ Lamb dip FWHM ${dnu_lamb.toFixed(2)} MHz — pure FM regime, good slope.`;
+  } else if (mod < dnu_lamb) {
+    banner.className = 'info-banner';
+    banner.textContent = `ℹ Mod freq ${mod} MHz < Lamb dip FWHM — within feature, signal slightly reduced.`;
+  } else {
+    banner.className = 'warn-banner';
+    banner.textContent = `⚠ Mod freq ${mod} MHz > Lamb dip FWHM ${dnu_lamb.toFixed(2)} MHz — sidebands outside feature, reduced slope.`;
+  }
+
+  // SAS spectrum
+  const sigma_D = dnu_D_MHz / (2 * Math.sqrt(2 * ln2));
+  const kap = Gamma_MHz / 2;
+  const N = 500;
+  const nu_max = 2 * dnu_D_MHz;
+  const labels = [], S_vals = [], dS_vals = [];
+  for (let i = 0; i < N; i++) {
+    const nu = -nu_max + 2 * nu_max * i / (N - 1);
+    const alpha_D  = 0.45 * Math.exp(-nu*nu / (2*sigma_D*sigma_D));
+    const alpha_L  = 0.45 * 0.35 * kap*kap / (nu*nu + kap*kap);
+    const S = 1.0 - alpha_D + alpha_L;
+    labels.push(nu.toFixed(1));
+    S_vals.push(S);
+  }
+  // Numerical derivative
+  for (let i = 0; i < N; i++) {
+    const dv = (i > 0 && i < N-1)
+      ? (S_vals[i+1] - S_vals[i-1]) / (2 * 2 * nu_max / (N-1))
+      : 0;
+    dS_vals.push(dv);
+  }
+  const maxErr = Math.max(...dS_vals.map(Math.abs)) || 1;
+  const dS_norm = dS_vals.map(v => v / maxErr);
+
+  sasChart1.data.labels = labels;
+  sasChart1.data.datasets[0].data = S_vals;
+  sasChart1.update('none');
+  sasChart2.data.labels = labels;
+  sasChart2.data.datasets[0].data = dS_norm;
+  sasChart2.update('none');
+}
+
+/* ─── BEAT-NOTE ────────────────────────────────────── */
+function updateBeat() {
+  const lam   = parseFloat(document.getElementById('bnMaster').value) * 1e-9;
+  const off   = parseFloat(document.getElementById('bnOffset').value);
+  const opll  = document.getElementById('bnOPLL').checked;
+
+  const nu1   = c_l / lam;
+  const nu2   = nu1 + off * 1e6;
+  const lam2  = c_l / nu2 * 1e9;
+  const beat  = Math.abs(off);
+
+  document.getElementById('beatResult').innerHTML = `
+    <div class="r-row">
+      <span class="r-lbl">Master ν₁:</span><span class="r-val">${(nu1/1e12).toFixed(6)} THz</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Slave ν₂:</span><span class="r-val">${(nu2/1e12).toFixed(6)} THz</span>
+      <span class="r-lbl">λ₂:</span><span class="r-val">${lam2.toFixed(4)} nm</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Beat |Δν|:</span><span class="r-val">${fmtFreq(beat*1e6)}</span>
+    </div>`;
+
+  const banner = document.getElementById('beatBanner');
+  const req_bw = beat * 1.5;
+  if (beat > 3000) {
+    banner.className = 'warn-banner';
+    banner.textContent = `⚠ Offset > 3 GHz — may exceed standard fast PD bandwidth. Consider wavemeter pre-stabilisation.`;
+  } else if (beat < 10) {
+    banner.className = 'warn-banner';
+    banner.textContent = `⚠ Very small offset (<10 MHz) — beat note may fall within 1/f noise. Use double-pass AOM to increase.`;
+  } else {
+    banner.className = 'info-banner';
+    banner.textContent = `ℹ PD bandwidth required: ≳ ${req_bw.toFixed(0)} MHz. ${opll ? 'OPLL: servo bandwidth must exceed laser linewidth.' : 'Frequency lock: a few MHz servo BW suffices.'}`;
+  }
+}
+
+/* ─── PDH ──────────────────────────────────────────── */
+let pdhChart1, pdhChart2;
+function buildPDHCharts() {
+  const ctx1 = document.getElementById('pdhChart1').getContext('2d');
+  const ctx2 = document.getElementById('pdhChart2').getContext('2d');
+  const base = {
+    type: 'line',
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+      scales: {
+        x: { ticks: { color: '#64748b', maxTicksLimit: 7 }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+      }
+    }
+  };
+  pdhChart1 = new Chart(ctx1, { ...base, data: { labels: [], datasets: [
+    { label: 'Reflected power', data: [], borderColor: '#38bdf8', borderWidth: 1.5, pointRadius: 0 }
+  ]}});
+  pdhChart2 = new Chart(ctx2, { ...base, data: { labels: [], datasets: [
+    { label: 'PDH error signal', data: [], borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0 },
+    { label: 'Zero', data: [], borderColor: '#334155', borderWidth: 1, borderDash: [4,4], pointRadius: 0 }
+  ]}, options: { ...base.options, scales: { ...base.options.scales,
+    x: { ...base.options.scales.x, title: { display: true, text: 'Detuning (kHz)', color: '#94a3b8' } }
+  }}});
+}
+function updatePDH() {
+  const L     = parseFloat(document.getElementById('pdhL').value) * 1e-3;
+  const F     = parseFloat(document.getElementById('pdhF').value);
+  const lam   = parseFloat(document.getElementById('pdhLam').value) * 1e-9;
+  const Omega = parseFloat(document.getElementById('pdhOmega').value) * 1e6;
+  const target = parseFloat(document.getElementById('pdhTarget').value);
+  const alpha = parseFloat(document.getElementById('pdhMat').value);
+
+  const fsr    = c_l / (2 * L);
+  const dnu_c  = fsr / F;
+  const kap    = dnu_c / 2;
+  const nu0    = c_l / lam;
+
+  const frac_stab  = target / nu0;
+  const delta_L_pm = frac_stab * L * 1e12;
+  const dT_mK      = (target / (nu0 * alpha)) * 1e3;
+
+  document.getElementById('pdhResult').innerHTML = `
+    <div class="r-row">
+      <span class="r-lbl">FSR:</span><span class="r-val">${fmtFreq(fsr)}</span>
+      <span class="r-lbl">δν_cav:</span><span class="r-val">${fmtFreq(dnu_c)}</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Ω/δν_cav:</span><span class="r-val">${(Omega/dnu_c).toFixed(1)}</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">δL/L needed:</span><span class="r-val">${frac_stab.toExponential(2)}</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Length stability:</span><span class="r-val">${delta_L_pm.toFixed(2)} pm</span>
+      <span class="r-lbl">Max ΔT:</span><span class="r-val">${dT_mK.toFixed(2)} mK</span>
+    </div>`;
+
+  const banner = document.getElementById('pdhBanner');
+  if (Omega < 5 * dnu_c) {
+    banner.className = 'warn-banner';
+    banner.textContent = `⚠ Ω = ${Omega/1e6} MHz is only ${(Omega/dnu_c).toFixed(1)}×δν_cav — sidebands inside cavity. Increase to ≥ ${(5*dnu_c/1e6).toFixed(0)} MHz.`;
+  } else {
+    banner.className = 'good-banner';
+    banner.textContent = `✓ Ω/δν_cav = ${(Omega/dnu_c).toFixed(0)} ≫ 1 — sidebands well outside cavity.`;
+  }
+
+  // PDH charts
+  const N = 400;
+  const rng = 6 * kap;
+  const labels = [], Vrefl = [], Verr = [], zero = [];
+  for (let i = 0; i < N; i++) {
+    const d = -rng + 2*rng*i/(N-1);
+    Vrefl.push(1 - 1/(1 + (d/kap)*(d/kap)));
+    const Ve = -(d/kap) / (1 + (d/kap)*(d/kap));
+    Verr.push(Ve);
+    zero.push(0);
+    labels.push((d/1e3).toFixed(1));
+  }
+  pdhChart1.data.labels = labels;
+  pdhChart1.data.datasets[0].data = Vrefl;
+  pdhChart1.update('none');
+  pdhChart2.data.labels = labels;
+  pdhChart2.data.datasets[0].data = Verr;
+  pdhChart2.data.datasets[1].data = zero;
+  pdhChart2.update('none');
+}
+
+/* ─── Init ──────────────────────────────────────────── */
+buildSASCharts(); updateSAS();
+buildPDHCharts(); updatePDH();
+updateBeat();
+</script>
+</body>
+</html>
