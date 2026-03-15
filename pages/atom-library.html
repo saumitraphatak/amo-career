@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atom Library — AMO Career</title>
+  <meta name="description" content="Spectroscopic data for 15 laser-coolable atoms, canonical data sheets, and US research groups in neutral-atom quantum science.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <style>
+    /* ── Page-specific styles ── */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: var(--sp-5);
+      align-items: center;
+    }
+    .filter-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-right: var(--sp-2);
+    }
+    .filter-btn {
+      padding: 5px 14px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border-med);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--t);
+      font-family: var(--font-sans);
+    }
+    .filter-btn:hover  { color: var(--text-primary); border-color: var(--border-strong); }
+    .filter-btn.active { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.3); color: var(--c-atom); }
+
+    /* Atom table tweaks */
+    .atom-sym  { font-family: var(--font-mono); color: var(--c-atom) !important; font-weight: 700 !important; font-size: 1rem !important; }
+    .tbl-note  { font-family: var(--font-sans); font-size: 0.78rem; color: var(--text-secondary); max-width: 280px; }
+    .table-caption {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: var(--sp-3);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-6);
+      margin-bottom: var(--sp-6);
+    }
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: var(--sp-5);
+    }
+    .chart-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--sp-4);
+      text-align: center;
+    }
+    .chart-wrap { position: relative; height: 260px; }
+    .chart-legend {
+      display: flex;
+      gap: var(--sp-5);
+      justify-content: center;
+      margin-top: var(--sp-3);
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+    .chart-legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    /* Atom detail cards inside accordions */
+    .atom-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-6);
+    }
+    .atom-detail-block { font-size: 0.875rem; }
+    .atom-detail-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: var(--sp-2);
+    }
+    .atom-detail-val {
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .atom-detail-val strong { color: var(--text-primary); }
+    .lines-code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #67e8f9;
+      background: rgba(56,189,248,0.06);
+      border: 1px solid rgba(56,189,248,0.12);
+      border-radius: var(--r-sm);
+      padding: var(--sp-3) var(--sp-4);
+      line-height: 1.8;
+      display: block;
+      margin-top: var(--sp-2);
+    }
+    .resource-links { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-2); }
+    .resource-link {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: 0.8125rem;
+      color: var(--c-atom);
+      transition: color var(--t);
+    }
+    .resource-link:hover { color: #fff; }
+
+    /* Research group cards */
+    .group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-top: var(--sp-2); }
+    .group-card {
+      background: var(--bg-surface);
+      border-left: 3px solid var(--c-atom);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      padding: var(--sp-3) var(--sp-4);
+    }
+    .group-name { font-size: 0.875rem; font-weight: 600; color: var(--c-atom); }
+    .group-inst { font-size: 0.8rem; color: var(--text-secondary); margin: 2px 0; }
+    .group-focus { font-size: 0.775rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* Resources section */
+    .resources-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+    .res-col-head {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--sp-4);
+      padding-bottom: var(--sp-2);
+      border-bottom: 1px solid var(--border);
+    }
+    .res-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .res-link {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-2);
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      transition: color var(--t);
+    }
+    .res-link:hover { color: var(--text-primary); }
+    .res-link-icon { flex-shrink: 0; margin-top: 1px; }
+    .res-subhead { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.07em; margin: var(--sp-4) 0 var(--sp-2); }
+
+    /* Narrow-line note box */
+    .narrow-note {
+      background: rgba(52,211,153,0.05);
+      border: 1px solid rgba(52,211,153,0.15);
+      border-radius: var(--r);
+      padding: var(--sp-4) var(--sp-5);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-top: var(--sp-4);
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid     { grid-template-columns: 1fr; }
+      .atom-detail-grid{ grid-template-columns: 1fr; }
+      .group-grid      { grid-template-columns: 1fr; }
+      .resources-3col  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrap">
+
+    <!-- ── Page Hero ──────────────────────────────── -->
+    <div class="page-hero" style="
+      --page-color: var(--c-atom);
+      --page-bg: rgba(56,189,248,0.07);
+      --page-border: rgba(56,189,248,0.2);
+    ">
+      <div class="container">
+        <div class="page-hero-eyebrow">⚛️ Tool 01 · Atom Library</div>
+        <h1>🧪 Laser-Coolable Atoms</h1>
+        <p class="page-hero-desc">
+          Spectroscopic data for 15 atoms · canonical data sheets · US research groups in neutral-atom quantum science.
+          A starting-point reference for anyone entering the field of ultracold atoms.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Page Content ───────────────────────────── -->
+    <div class="page-content">
+      <div class="container">
+
+        <!-- Intro -->
+        <div class="concept-box anim-in">
+          This page is a starting-point resource for anyone entering the field of ultracold atoms
+          and neutral-atom quantum science. Choose an atom family below to explore key spectroscopic
+          properties, download canonical data sheets (Steck and others), and find the leading
+          US research groups working with each species. A quick comparison table lets you see
+          all atoms side-by-side.
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             QUICK COMPARISON TABLE
+             ══════════════════════════════════════════ -->
+        <h2 class="mt-8 mb-4 anim-in">📊 Quick Comparison</h2>
+
+        <div class="filter-bar anim-in delay-1">
+          <span class="filter-label">Filter:</span>
+          <button class="filter-btn active" data-family="all">All (15)</button>
+          <button class="filter-btn" data-family="Alkali">Alkali (9)</button>
+          <button class="filter-btn" data-family="Alkaline Earth">Alkaline Earth (4)</button>
+          <button class="filter-btn" data-family="Magnetic">Magnetic (2)</button>
+        </div>
+
+        <div class="data-table-wrap anim-in delay-2">
+          <table class="data-table" id="atom-table">
+            <thead>
+              <tr>
+                <th>Atom</th>
+                <th>Z</th>
+                <th>A</th>
+                <th>Statistics</th>
+                <th>Family</th>
+                <th>Cool. λ (nm)</th>
+                <th>Γ/2π (MHz)</th>
+                <th>T_D (μK)</th>
+                <th>T_r (μK)</th>
+                <th>Nuclear spin I</th>
+                <th>HF split (GHz)</th>
+                <th>Key notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ALKALI -->
+              <tr data-family="Alkali">
+                <td class="atom-sym">⁶Li</td>
+                <td>3</td><td>6</td>
+                <td><span class="badge badge-fermion">Fermion</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>671.0</td><td>5.87</td><td>141</td><td>3.54</td>
+                <td>1</td><td>0.228</td>
+                <td class="tbl-note">Strong Feshbach res.; Li-Cs molecules</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">⁷Li</td>
+                <td>3</td><td>7</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>671.0</td><td>5.87</td><td>141</td><td>3.54</td>
+                <td>3/2</td><td>0.804</td>
+                <td class="tbl-note">Early BEC; light mass → large recoil</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">²³Na</td>
+                <td>11</td><td>23</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>589.0</td><td>9.80</td><td>235</td><td>2.40</td>
+                <td>3/2</td><td>1.772</td>
+                <td class="tbl-note">First BEC (Ketterle 1995, Nobel 2001)</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">³⁹K</td>
+                <td>19</td><td>39</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>767.0</td><td>6.04</td><td>145</td><td>0.42</td>
+                <td>3/2</td><td>0.462</td>
+                <td class="tbl-note">Feshbach res.; Fermi-Hubbard model</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">⁴⁰K</td>
+                <td>19</td><td>40</td>
+                <td><span class="badge badge-fermion">Fermion</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>767.0</td><td>6.04</td><td>145</td><td>0.42</td>
+                <td>4</td><td>—</td>
+                <td class="tbl-note">Fermionic isotope; degenerate Fermi gas</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">⁴¹K</td>
+                <td>19</td><td>41</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>767.0</td><td>6.04</td><td>145</td><td>0.42</td>
+                <td>3/2</td><td>0.254</td>
+                <td class="tbl-note">Less common; BEC demonstrated</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">⁸⁵Rb</td>
+                <td>37</td><td>85</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>780.2</td><td>6.07</td><td>146</td><td>0.36</td>
+                <td>5/2</td><td>3.036</td>
+                <td class="tbl-note">Feshbach res. for tuneable interactions</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">⁸⁷Rb</td>
+                <td>37</td><td>87</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>780.2</td><td>6.07</td><td>146</td><td>0.36</td>
+                <td>3/2</td><td>6.835</td>
+                <td class="tbl-note">Most popular qubit (6.8 GHz clock)</td>
+              </tr>
+              <tr data-family="Alkali">
+                <td class="atom-sym">¹³³Cs</td>
+                <td>55</td><td>133</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-alkali">Alkali</span></td>
+                <td>852.3</td><td>5.23</td><td>125</td><td>0.20</td>
+                <td>7/2</td><td>9.193</td>
+                <td class="tbl-note">Defines the SI second; Li-Cs molecules</td>
+              </tr>
+              <!-- ALKALINE EARTH -->
+              <tr data-family="Alkaline Earth">
+                <td class="atom-sym">⁸⁸Sr</td>
+                <td>38</td><td>88</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-ae">Alkaline Earth</span></td>
+                <td>461.0</td><td>32.0</td><td>770</td><td>0.46</td>
+                <td>0</td><td>—</td>
+                <td class="tbl-note">Narrow 689 nm line → T_D = 0.18 μK; optical clock</td>
+              </tr>
+              <tr data-family="Alkaline Earth">
+                <td class="atom-sym">⁸⁷Sr</td>
+                <td>38</td><td>87</td>
+                <td><span class="badge badge-fermion">Fermion</span></td>
+                <td><span class="badge badge-ae">Alkaline Earth</span></td>
+                <td>461.0</td><td>32.0</td><td>770</td><td>0.46</td>
+                <td>9/2</td><td>—</td>
+                <td class="tbl-note">10 nuclear spin states; SU(N) physics</td>
+              </tr>
+              <tr data-family="Alkaline Earth">
+                <td class="atom-sym">¹⁷⁴Yb</td>
+                <td>70</td><td>174</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-ae">Alkaline Earth</span></td>
+                <td>399.0</td><td>28.0</td><td>4.4</td><td>0.20</td>
+                <td>0</td><td>—</td>
+                <td class="tbl-note">556 nm narrow line; mHz clock transition</td>
+              </tr>
+              <tr data-family="Alkaline Earth">
+                <td class="atom-sym">¹⁷¹Yb</td>
+                <td>70</td><td>171</td>
+                <td><span class="badge badge-fermion">Fermion</span></td>
+                <td><span class="badge badge-ae">Alkaline Earth</span></td>
+                <td>399.0</td><td>28.0</td><td>4.4</td><td>0.20</td>
+                <td>1/2</td><td>—</td>
+                <td class="tbl-note">Effective spin-1/2 qubit; clock QC</td>
+              </tr>
+              <!-- MAGNETIC -->
+              <tr data-family="Magnetic">
+                <td class="atom-sym">¹⁶⁴Dy</td>
+                <td>66</td><td>164</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-mag">Magnetic</span></td>
+                <td>421.0</td><td>—</td><td>—</td><td>—</td>
+                <td>0</td><td>—</td>
+                <td class="tbl-note">Largest magnetic moment (10 μ_B); dipolar physics</td>
+              </tr>
+              <tr data-family="Magnetic">
+                <td class="atom-sym">¹⁶⁸Er</td>
+                <td>68</td><td>168</td>
+                <td><span class="badge badge-boson">Boson</span></td>
+                <td><span class="badge badge-mag">Magnetic</span></td>
+                <td>401.0</td><td>—</td><td>—</td><td>—</td>
+                <td>0</td><td>—</td>
+                <td class="tbl-note">Large magnetic moment (7 μ_B); anisotropic interactions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption anim-in">
+          T_D = Doppler temperature limit &nbsp;|&nbsp; T_r = single-photon recoil temperature &nbsp;|&nbsp;
+          HF = ground-state hyperfine splitting &nbsp;|&nbsp; — = not applicable or varies by isotope.
+          Broad-line values shown for alkaline-earth atoms; narrow intercombination lines give much lower T_D.
+        </p>
+
+        <!-- ══════════════════════════════════════════
+             VISUAL COMPARISON — Bar Charts
+             ══════════════════════════════════════════ -->
+        <h2 class="mt-12 mb-4 anim-in">📈 Visual Comparison</h2>
+
+        <div class="charts-grid anim-in delay-1">
+          <div class="chart-card">
+            <div class="chart-title">Doppler Temperature T_D (μK) — broad cooling line</div>
+            <div class="chart-wrap">
+              <canvas id="chart-td"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Natural Linewidth Γ/2π (MHz) — broad cooling line</div>
+            <div class="chart-wrap">
+              <canvas id="chart-gamma"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-legend anim-in delay-2">
+          <span><span class="chart-legend-dot" style="background:#a78bfa"></span>Alkali</span>
+          <span><span class="chart-legend-dot" style="background:#38bdf8"></span>Alkaline Earth</span>
+        </div>
+
+        <div class="narrow-note anim-in delay-3">
+          <strong style="color:var(--text-primary)">Note on alkaline-earth narrow lines:</strong>
+          Sr-88 and Sr-87 have a narrow 689 nm intercombination line with Γ/2π = 7.6 kHz,
+          giving a Doppler limit of <strong style="color:var(--c-lab)">T_D = 0.18 μK</strong> — far below the broad-line value shown above.
+          Yb has a 556 nm line with Γ/2π = 182 kHz. These narrow lines enable sub-Doppler temperatures
+          without requiring sub-Doppler stages (polarization-gradient cooling etc.).
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             ATOM FAMILY TABS
+             ══════════════════════════════════════════ -->
+        <h2 class="mt-12 mb-6 anim-in">🔬 Atom Details</h2>
+
+        <div data-tabs-wrap class="anim-in delay-1">
+          <div class="tab-bar" data-group="atoms" style="--page-color: var(--c-atom)">
+            <button class="tab-btn active" data-tab="alkali">⚗️ Alkali Atoms</button>
+            <button class="tab-btn" data-tab="ae">🌟 Alkaline-Earth &amp; Yb</button>
+            <button class="tab-btn" data-tab="magnetic">🧲 Magnetic Atoms</button>
+          </div>
+
+          <!-- ── ALKALI ────────────────────────────── -->
+          <div class="tab-panel active" data-tab="alkali" data-group="atoms">
+            <div class="concept-box">
+              Alkali atoms (Li, Na, K, Rb, Cs) have a single valence electron, giving a simple
+              hydrogen-like level structure. Their D1 and D2 lines in the visible/near-IR are
+              accessible with diode lasers. Hyperfine ground states form natural two-level qubits.
+              <strong>Rb-87</strong> (6.8 GHz clock) and <strong>Cs-133</strong> (9.2 GHz, defines
+              the SI second) are the two most widely used qubit atoms today.
+            </div>
+
+            <!-- Li -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#fb923c;font-family:var(--font-mono);font-size:1.1rem">⁶Li / ⁷Li</span>
+                  — Lithium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      Lightest alkali. Large recoil energy enables efficient sub-Doppler cooling.
+                      Strong Feshbach resonances allow tunable interactions.
+                      <strong>Li-6</strong> is the primary fermionic atom for strongly-correlated physics
+                      and BEC-BCS crossover experiments. Used in Li-Cs molecular assembly (Hood Lab, Purdue).
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">D1: 670.992 nm  |  D2: 670.977 nm  |  Γ/2π = 5.87 MHz</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">
+                      ⁷Li: |F=1⟩ ↔ |F=2⟩ hyperfine qubit (803 MHz).
+                      ⁶Li: fermionic spin states used for many-body qubits.
+                    </p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Data sheets</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://jet.physics.ncsu.edu/techdocs/pdf/PropertiesOfLi.pdf" target="_blank" rel="noopener">📄 ⁶Li properties — Gehm (NCSU)</a>
+                      <a class="resource-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">📚 Steck alkali data index</a>
+                      <a class="resource-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener">🔗 NIST Atomic Spectra Database</a>
+                    </div>
+                    <div class="atom-detail-label mt-4">Further reading</div>
+                    <p class="atom-detail-val">Gehm (2003) — Properties of ⁶Li [NCSU tech doc]</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Na -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#fbbf24;font-family:var(--font-mono);font-size:1.1rem">²³Na</span>
+                  — Sodium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      First atom used to achieve BEC (Ketterle group, MIT, 1995 — Nobel Prize 2001).
+                      Yellow D-line at 589 nm. Larger scattering length suitable for BEC studies.
+                      Being revisited for molecule formation: NaLi, NaK, NaRb, NaCs.
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">D1: 589.756 nm  |  D2: 588.995 nm  |  Γ/2π = 9.80 MHz</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">|F=1⟩ ↔ |F=2⟩ hyperfine qubit (1772 MHz)</p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Data sheets</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://steck.us/alkalidata/sodiumnumbers.pdf" target="_blank" rel="noopener">📄 Na-23 — Steck data sheet</a>
+                      <a class="resource-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">📚 Steck alkali data index</a>
+                      <a class="resource-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener">🔗 NIST Atomic Spectra Database</a>
+                    </div>
+                    <div class="atom-detail-label mt-4">Note</div>
+                    <p class="atom-detail-val">The Steck data sheet above is the canonical reference. Steck (2019, updated continuously).</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- K -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#a78bfa;font-family:var(--font-mono);font-size:1.1rem">³⁹K / ⁴⁰K / ⁴¹K</span>
+                  — Potassium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      <strong>K-40</strong> is the only naturally abundant fermionic alkali; the standard atom for
+                      Fermi-Hubbard model simulations in optical lattices.
+                      <strong>K-39</strong> has accessible Feshbach resonances for tuning interactions.
+                      All isotopes share the same 767/770 nm D-lines — diode laser accessible.
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">D1: 770.108 nm  |  D2: 766.701 nm  |  Γ/2π = 6.04 MHz</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">K-39: |1,−1⟩ ↔ |2,2⟩ clock-like transition</p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Data sheets</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="http://www.tobiastiecke.nl/archive/PotassiumProperties.pdf" target="_blank" rel="noopener">📄 K properties — Tiecke (2010)</a>
+                      <a class="resource-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">📚 Steck alkali data index</a>
+                      <a class="resource-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener">🔗 NIST Atomic Spectra Database</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rb -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#38bdf8;font-family:var(--font-mono);font-size:1.1rem">⁸⁵Rb / ⁸⁷Rb</span>
+                  — Rubidium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      <strong>Rb-87</strong> is the most widely used quantum computing atom —
+                      large 6.835 GHz hyperfine splitting, convenient 780 nm lasers, and
+                      well-understood collisional properties. The backbone of most Rydberg tweezer
+                      quantum computers today (Atom Computing, QuEra, Pasqal all use Rb or Sr).
+                      <strong>Rb-85</strong> has a Feshbach resonance for tunable interaction experiments.
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">D1: 794.979 nm  |  D2: 780.241 nm  |  Γ/2π = 6.07 MHz</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">Rb-87: |0,0⟩ ↔ |1,1⟩ or |1,−1⟩ ↔ |2,1⟩ "clock" qubit (6835 MHz)</p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Data sheets</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://steck.us/alkalidata/rubidium87numbers.pdf" target="_blank" rel="noopener">📄 Rb-87 — Steck data sheet (v2.2)</a>
+                      <a class="resource-link" href="https://steck.us/alkalidata/rubidium85numbers.pdf" target="_blank" rel="noopener">📄 Rb-85 — Steck data sheet</a>
+                      <a class="resource-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">📚 Steck alkali data index</a>
+                      <a class="resource-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener">🔗 NIST Atomic Spectra Database</a>
+                    </div>
+                    <div class="atom-detail-label mt-4">arXiv</div>
+                    <p class="atom-detail-val"><a href="https://arxiv.org/abs/1312.3632" target="_blank" rel="noopener" style="color:var(--c-atom)">arXiv:1312.3632</a> — Steck Rb-87 data sheet (v2.2)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cs -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#34d399;font-family:var(--font-mono);font-size:1.1rem">¹³³Cs</span>
+                  — Caesium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      Largest hyperfine splitting of the alkalis (9.193 GHz — defines the SI second).
+                      Excellent for optical tweezer work: heavy mass → low recoil → tighter confinement.
+                      Used in Li-Cs molecular assembly experiments (Hood Lab, Purdue).
+                      The 852 nm D2 line sits in a convenient region for diode lasers (DFB, ECDL).
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">D1: 894.593 nm  |  D2: 852.347 nm  |  Γ/2π = 5.23 MHz</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">|3,0⟩ ↔ |4,0⟩ "clock" transition (9193 MHz, field-insensitive at zero B-field)</p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Data sheets</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener">📄 Cs-133 — Steck data sheet</a>
+                      <a class="resource-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">📚 Steck alkali data index</a>
+                      <a class="resource-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener">🔗 NIST Atomic Spectra Database</a>
+                    </div>
+                    <div class="atom-detail-label mt-4">arXiv</div>
+                    <p class="atom-detail-val"><a href="https://arxiv.org/abs/1601.06691" target="_blank" rel="noopener" style="color:var(--c-atom)">arXiv:1601.06691</a> — Steck Cs data sheet</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /tab alkali -->
+
+          <!-- ── ALKALINE EARTH ─────────────────────── -->
+          <div class="tab-panel" data-tab="ae" data-group="atoms">
+            <div class="concept-box">
+              Alkaline-earth and alkaline-earth-like atoms (Ca, Sr, Yb) have two valence electrons,
+              giving rich level structures including ultra-narrow <em>intercombination</em> and
+              <em>clock</em> transitions. These enable <strong>sub-recoil cooling</strong> on the narrow
+              line, exceptional coherence times, and optical-lattice clocks accurate to 1 part in 10¹⁸.
+              Fermionic isotopes (Sr-87, Yb-171) offer nuclear spin qubits decoupled from the
+              electronic state — ideal for optical-clock quantum computing.
+            </div>
+
+            <!-- Sr -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#60a5fa;font-family:var(--font-mono);font-size:1.1rem">⁸⁸Sr / ⁸⁷Sr</span>
+                  — Strontium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      Sr has two laser-cooling stages: the broad 461 nm blue line (Doppler limit 770 μK)
+                      and the 689 nm red intercombination line (Γ/2π = 7.6 kHz, T_D = 0.18 μK).
+                      The 698 nm clock transition has a linewidth of ~1 mHz.
+                      <strong>Sr-87</strong> (I = 9/2) gives 10 nuclear spin states for SU(N) physics
+                      and quantum simulation. Used in world-leading optical lattice clocks (Ye Lab, JILA).
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">Broad:  461 nm (Γ/2π = 32 MHz, T_D = 770 μK)
+Narrow: 689 nm (Γ/2π = 7.6 kHz, T_D = 0.18 μK)
+Clock:  698 nm (~1 mHz linewidth)</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">Sr-87 nuclear spin qubit: |m_I = −9/2⟩ ↔ |m_I = −7/2⟩ via the 698 nm clock transition</p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Resources</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://jila.colorado.edu/sites/default/files/2019-05/boyd_thesis.pdf" target="_blank" rel="noopener">📄 Boyd PhD thesis (Ye Lab) — Sr spectroscopy</a>
+                      <a class="resource-link" href="https://arxiv.org/abs/1307.0601" target="_blank" rel="noopener">📄 Stellmer review — Sr BEC and degenerate gases</a>
+                      <a class="resource-link" href="https://physics.nist.gov/cgi-bin/ASD/lines1.pl?spectra=Sr" target="_blank" rel="noopener">🔗 NIST Atomic Spectra — Sr</a>
+                      <a class="resource-link" href="https://arc-alkali-rydberg-calculator.readthedocs.io/" target="_blank" rel="noopener">📦 ARC library (Python)</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Yb -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#2dd4bf;font-family:var(--font-mono);font-size:1.1rem">¹⁷⁴Yb / ¹⁷¹Yb</span>
+                  — Ytterbium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      Yb combines broad (399 nm, Γ/2π = 28 MHz) and narrow (556 nm, Γ/2π = 182 kHz)
+                      cooling lines with a mHz-linewidth clock transition at 578 nm.
+                      <strong>Yb-171</strong> (I = 1/2) is effectively a perfect two-level nuclear-spin qubit.
+                      Magic wavelengths at 759 nm make optical lattice clocks insensitive to light shifts.
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">Broad:  399 nm (Γ/2π = 28 MHz)
+Narrow: 556 nm (Γ/2π = 182 kHz)
+Clock:  578 nm (mHz linewidth)</span>
+                    <div class="atom-detail-label mt-4">Qubit transition</div>
+                    <p class="atom-detail-val">Yb-171: |m_I = +1/2⟩ ↔ |m_I = −1/2⟩ nuclear spin qubit (zero-field insensitive)</p>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Resources</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://arxiv.org/abs/1407.3493" target="_blank" rel="noopener">📄 Ludlow et al. — Optical atomic clocks (RMP 2015)</a>
+                      <a class="resource-link" href="https://arxiv.org/abs/physics/0512084" target="_blank" rel="noopener">📄 Barber et al. — Direct excitation of Yb clock</a>
+                      <a class="resource-link" href="https://physics.nist.gov/cgi-bin/ASD/lines1.pl?spectra=Yb" target="_blank" rel="noopener">🔗 NIST Atomic Spectra — Yb</a>
+                      <a class="resource-link" href="https://arc-alkali-rydberg-calculator.readthedocs.io/" target="_blank" rel="noopener">📦 ARC library (Python)</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /tab ae -->
+
+          <!-- ── MAGNETIC ────────────────────────────── -->
+          <div class="tab-panel" data-tab="magnetic" data-group="atoms">
+            <div class="concept-box">
+              Highly magnetic atoms (Cr, Dy, Er) have large magnetic moments (6–10 μ_B), making
+              their inter-particle interactions strongly anisotropic and long-range. This opens
+              the door to <strong>dipolar quantum simulation</strong> — phenomena impossible with contact-
+              interaction BECs. Dy has the largest magnetic moment of any element (10 μ_B).
+            </div>
+
+            <!-- Dy -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#f472b6;font-family:var(--font-mono);font-size:1.1rem">¹⁶⁴Dy</span>
+                  — Dysprosium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      Dy-164 has the largest magnetic moment of any element (<strong>10 μ_B</strong>),
+                      enabling strong dipolar interactions and anisotropic collisional physics.
+                      Used for dipolar BEC, quantum droplets, and supersolid phases.
+                      Cooled on a broad 421 nm line; also has intercombination lines at 598 nm and 626 nm.
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">Main:   421 nm (broad)
+Narrow: 598 nm, 626 nm (intercombination lines)</span>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Resources</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://arxiv.org/abs/1108.5993" target="_blank" rel="noopener">📄 Lu et al. (Lev) — Strongly dipolar BEC</a>
+                      <a class="resource-link" href="https://arxiv.org/abs/2201.02672" target="_blank" rel="noopener">📄 Chomaz et al. — Dipolar physics review (RMP 2023)</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Er -->
+            <div class="accordion">
+              <div class="accordion-header" aria-expanded="false">
+                <div class="accordion-title">
+                  <span style="color:#fbbf24;font-family:var(--font-mono);font-size:1.1rem">¹⁶⁸Er</span>
+                  — Erbium
+                </div>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </div>
+              <div class="accordion-body">
+                <div class="atom-detail-grid">
+                  <div>
+                    <div class="atom-detail-label">Why it's used</div>
+                    <p class="atom-detail-val">
+                      Er-168 has a magnetic moment of <strong>7 μ_B</strong> and a rich level structure.
+                      Dipolar BEC demonstrated by Ferrier-Barbut/Pfau group (Stuttgart) and Grimm group (Innsbruck).
+                      Anisotropic scattering leads to distinctive many-body phases. Being explored for
+                      dipolar quantum droplets alongside Dy.
+                    </p>
+                    <div class="atom-detail-label mt-4">Key spectral lines</div>
+                    <span class="lines-code">Main:   401 nm
+Narrow: 583 nm (intercombination line)</span>
+                  </div>
+                  <div>
+                    <div class="atom-detail-label">Resources</div>
+                    <div class="resource-links">
+                      <a class="resource-link" href="https://arxiv.org/abs/1204.1725" target="_blank" rel="noopener">📄 Aikawa et al. — BEC of erbium</a>
+                      <a class="resource-link" href="https://arxiv.org/abs/2201.02672" target="_blank" rel="noopener">📄 Chomaz et al. — Dipolar physics review (RMP 2023)</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /tab magnetic -->
+
+        </div><!-- /tabs wrap -->
+
+        <!-- ══════════════════════════════════════════
+             US RESEARCH GROUPS
+             ══════════════════════════════════════════ -->
+        <hr class="divider mt-12 mb-8">
+        <h2 class="mb-4 anim-in">🏛️ US Research Groups in Neutral-Atom Quantum Science</h2>
+        <div class="concept-box anim-in delay-1">
+          The following groups work on neutral-atom experiments — quantum computing, quantum simulation,
+          precision measurement, and ultracold chemistry — organized by their primary atom(s).
+          Click any group name to visit the lab website.
+        </div>
+
+        <!-- Rb -->
+        <div class="accordion anim-in delay-2">
+          <div class="accordion-header">
+            <div class="accordion-title">⁸⁷Rb — Quantum Computing &amp; Simulation <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(6 groups)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="https://lukin.physics.harvard.edu" target="_blank" rel="noopener">🔗 Lukin Lab</a><div class="group-inst">Harvard</div><div class="group-focus">Rydberg tweezer quantum processor; many-body physics</div></div>
+              <div class="group-card"><a class="group-name" href="https://greiner.physics.harvard.edu" target="_blank" rel="noopener">🔗 Greiner Lab</a><div class="group-inst">Harvard</div><div class="group-focus">Quantum simulation, Hubbard model, quantum gas microscope</div></div>
+              <div class="group-card"><a class="group-name" href="https://qpal.physics.wisc.edu" target="_blank" rel="noopener">🔗 Saffman Lab</a><div class="group-inst">Wisconsin</div><div class="group-focus">Rydberg two-qubit gates, trapped-atom qubits</div></div>
+              <div class="group-card"><a class="group-name" href="https://jila.colorado.edu/kaufman" target="_blank" rel="noopener">🔗 Kaufman Lab</a><div class="group-inst">Colorado / JILA</div><div class="group-focus">Tweezer arrays, quantum optics with atoms</div></div>
+              <div class="group-card"><a class="group-name" href="https://bernienlab.com" target="_blank" rel="noopener">🔗 Bernien Lab</a><div class="group-inst">UChicago</div><div class="group-focus">Programmable quantum matter, Rydberg arrays</div></div>
+              <div class="group-card"><a class="group-name" href="https://sites.psu.edu/dsweiss/" target="_blank" rel="noopener">🔗 Weiss Lab</a><div class="group-inst">Penn State</div><div class="group-focus">Neutral atom qubits, quantum computing</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cs -->
+        <div class="accordion anim-in delay-3">
+          <div class="accordion-header">
+            <div class="accordion-title">¹³³Cs — Quantum Computing &amp; Molecules <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(2 groups)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="https://ultracold.uchicago.edu" target="_blank" rel="noopener">🔗 Chin Lab</a><div class="group-inst">UChicago</div><div class="group-focus">Strongly correlated gases, Efimov physics, BEC</div></div>
+              <div class="group-card" style="border-left-color:var(--c-lab)"><a class="group-name" href="https://hoodlab.physics.purdue.edu" target="_blank" rel="noopener" style="color:var(--c-lab)">🔗 Hood Lab</a><div class="group-inst">Purdue ★</div><div class="group-focus">Li-Cs molecule assembly, optical tweezers, single-atom control</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Li -->
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">⁶Li / ⁷Li — Fermi Gases &amp; Molecules <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(4 groups)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="http://atomcool.rice.edu" target="_blank" rel="noopener">🔗 Hulet Lab</a><div class="group-inst">Rice</div><div class="group-focus">Li-6 Fermi gases, BEC-BCS crossover, solitons</div></div>
+              <div class="group-card"><a class="group-name" href="https://quantumgas.mit.edu" target="_blank" rel="noopener">🔗 Zwierlein Lab</a><div class="group-inst">MIT</div><div class="group-focus">Degenerate Fermi gases, fermionic superfluidity</div></div>
+              <div class="group-card"><a class="group-name" href="https://research.physics.illinois.edu/demarco/research.htm" target="_blank" rel="noopener">🔗 DeMarco Lab</a><div class="group-inst">UIUC</div><div class="group-focus">Fermi-Hubbard model, disordered lattices</div></div>
+              <div class="group-card" style="border-left-color:var(--c-lab)"><a class="group-name" href="https://hoodlab.physics.purdue.edu" target="_blank" rel="noopener" style="color:var(--c-lab)">🔗 Hood Lab</a><div class="group-inst">Purdue ★</div><div class="group-focus">Li-Cs molecules in tweezers</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Na/K -->
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">²³Na &amp; ¹⁹K — Molecules &amp; BEC <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(3 groups)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="https://cua.mit.edu/groups/ketterle-group/" target="_blank" rel="noopener">🔗 Ketterle Lab</a><div class="group-inst">MIT</div><div class="group-focus">First BEC (Nobel 2001); spinor BECs; NaLi molecules</div></div>
+              <div class="group-card"><a class="group-name" href="https://quantumgas.mit.edu" target="_blank" rel="noopener">🔗 Zwierlein Lab</a><div class="group-inst">MIT</div><div class="group-focus">NaLi and NaK ultracold molecules; Fermi gases</div></div>
+              <div class="group-card"><a class="group-name" href="https://kni.faculty.chemistry.harvard.edu" target="_blank" rel="noopener">🔗 Ni Lab</a><div class="group-inst">Harvard</div><div class="group-focus">Ultracold polar molecules (NaCs, KRb)</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sr -->
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">⁸⁸Sr / ⁸⁷Sr — Optical Clocks &amp; Simulation <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(5 groups)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="https://jila.colorado.edu/yelabs" target="_blank" rel="noopener">🔗 Ye Lab</a><div class="group-inst">JILA / Colorado</div><div class="group-focus">World-leading optical lattice clock; Sr tweezer arrays; quantum simulation</div></div>
+              <div class="group-card"><a class="group-name" href="https://ultracold.rice.edu" target="_blank" rel="noopener">🔗 Killian Lab</a><div class="group-inst">Rice</div><div class="group-focus">Sr BEC and tweezer arrays, Rydberg excitation</div></div>
+              <div class="group-card"><a class="group-name" href="https://sites.google.com/site/thompsonlabq/home" target="_blank" rel="noopener">🔗 Thompson Lab</a><div class="group-inst">Princeton</div><div class="group-focus">Sr cavity QED, quantum networking</div></div>
+              <div class="group-card"><a class="group-name" href="https://sites.google.com/view/coveylab/" target="_blank" rel="noopener">🔗 Covey Lab</a><div class="group-inst">UIUC</div><div class="group-focus">Tweezer arrays with alkaline-earth atoms</div></div>
+              <div class="group-card"><a class="group-name" href="https://jila.colorado.edu/arey" target="_blank" rel="noopener">🔗 Rey Lab (theory)</a><div class="group-inst">JILA / Colorado</div><div class="group-focus">AMO theory for Sr, Yb quantum simulation</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Yb -->
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">¹⁷⁴Yb / ¹⁷¹Yb — Clocks &amp; Quantum Computing <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(4 groups)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="https://jila.colorado.edu/yelabs" target="_blank" rel="noopener">🔗 Ye Lab</a><div class="group-inst">JILA / Colorado</div><div class="group-focus">Yb optical lattice clock; quantum simulation with Yb</div></div>
+              <div class="group-card"><a class="group-name" href="https://jila.colorado.edu/kaufman" target="_blank" rel="noopener">🔗 Kaufman Lab</a><div class="group-inst">Colorado / JILA</div><div class="group-focus">Yb tweezer arrays; quantum optics</div></div>
+              <div class="group-card"><a class="group-name" href="https://www.nist.gov/people/ian-spielman" target="_blank" rel="noopener">🔗 Spielman Lab</a><div class="group-inst">NIST / Maryland</div><div class="group-focus">Optical lattices, synthetic gauge fields</div></div>
+              <div class="group-card"><a class="group-name" href="https://sites.google.com/site/thompsonlabq/home" target="_blank" rel="noopener">🔗 Thompson Lab</a><div class="group-inst">Princeton</div><div class="group-focus">Yb cavity QED</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dy/Er -->
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">¹⁶⁴Dy / ¹⁶⁸Er — Dipolar Physics <span style="color:var(--text-muted);font-size:0.8rem;margin-left:8px">(1 group)</span></div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="group-grid">
+              <div class="group-card"><a class="group-name" href="https://levlab.stanford.edu" target="_blank" rel="noopener">🔗 Lev Lab</a><div class="group-inst">Stanford</div><div class="group-focus">Dy and Er dipolar gases, quantum magnetism</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             RESOURCES
+             ══════════════════════════════════════════ -->
+        <hr class="divider mt-12 mb-8">
+        <h2 class="mb-6 anim-in">📚 Essential Resources &amp; Tools</h2>
+
+        <div class="resources-3col anim-in delay-1">
+
+          <!-- Data Sheets -->
+          <div>
+            <div class="res-col-head">📄 Data Sheets</div>
+            <div class="res-subhead">Alkali Data Sheets</div>
+            <div class="res-list">
+              <a class="res-link" href="https://jet.physics.ncsu.edu/techdocs/pdf/PropertiesOfLi.pdf" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Li-6 properties — Gehm (NCSU)</a>
+              <a class="res-link" href="https://steck.us/alkalidata/sodiumnumbers.pdf" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Na-23 — Steck</a>
+              <a class="res-link" href="http://www.tobiastiecke.nl/archive/PotassiumProperties.pdf" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>K properties — Tiecke</a>
+              <a class="res-link" href="https://steck.us/alkalidata/rubidium85numbers.pdf" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Rb-85 — Steck</a>
+              <a class="res-link" href="https://steck.us/alkalidata/rubidium87numbers.pdf" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Rb-87 — Steck</a>
+              <a class="res-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Cs-133 — Steck</a>
+              <a class="res-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener"><span class="res-link-icon">📚</span>All Steck sheets →</a>
+            </div>
+          </div>
+
+          <!-- Databases & Tools -->
+          <div>
+            <div class="res-col-head">🔧 Databases &amp; Tools</div>
+            <div class="res-subhead">Spectroscopy Databases</div>
+            <div class="res-list">
+              <a class="res-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener"><span class="res-link-icon">🔗</span>NIST Atomic Spectra Database</a>
+              <a class="res-link" href="https://physics.nist.gov/PhysRefData/" target="_blank" rel="noopener"><span class="res-link-icon">🔗</span>NIST Physical Reference Data</a>
+            </div>
+            <div class="res-subhead">Python Libraries</div>
+            <div class="res-list">
+              <a class="res-link" href="https://arc-alkali-rydberg-calculator.readthedocs.io/" target="_blank" rel="noopener"><span class="res-link-icon">📦</span>ARC — Alkali Rydberg Calculator</a>
+              <a class="res-link" href="https://qutip.org" target="_blank" rel="noopener"><span class="res-link-icon">📦</span>QuTiP — Open quantum systems</a>
+              <a class="res-link" href="https://python-laser-cooling-physics.readthedocs.io/" target="_blank" rel="noopener"><span class="res-link-icon">📦</span>pylcp — Laser cooling physics</a>
+            </div>
+            <div class="res-subhead">arXiv searches</div>
+            <div class="res-list">
+              <a class="res-link" href="https://arxiv.org/search/?query=neutral+atom+qubit&searchtype=all" target="_blank" rel="noopener"><span class="res-link-icon">🔍</span>quant-ph: neutral atom qubits</a>
+              <a class="res-link" href="https://arxiv.org/list/cond-mat.quant-gas/recent" target="_blank" rel="noopener"><span class="res-link-icon">🔍</span>cond-mat.quant-gas (recent)</a>
+            </div>
+          </div>
+
+          <!-- Textbooks -->
+          <div>
+            <div class="res-col-head">📖 Textbooks &amp; Reviews</div>
+            <div class="res-subhead">Textbooks</div>
+            <div class="res-list" style="color:var(--text-muted);font-size:0.825rem;gap:var(--sp-3)">
+              <span>Metcalf &amp; van der Straten — <em>Laser Cooling and Trapping</em> (1999)</span>
+              <span>Foot — <em>Atomic Physics</em> (2005)</span>
+              <span>Pethick &amp; Smith — <em>BEC in Dilute Gases</em> (2008)</span>
+            </div>
+            <div class="res-subhead">Review Articles</div>
+            <div class="res-list">
+              <a class="res-link" href="https://arxiv.org/abs/0909.4777" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Saffman — Rydberg atom QC (RMP 2010)</a>
+              <a class="res-link" href="https://arxiv.org/abs/2009.07073" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Kaufman &amp; Ni — Tweezer arrays (Nat. Phys. 2021)</a>
+              <a class="res-link" href="https://arxiv.org/abs/1407.3493" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Ludlow et al. — Optical clocks (RMP 2015)</a>
+              <a class="res-link" href="https://arxiv.org/abs/2201.02672" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Chomaz et al. — Dipolar physics (RMP 2023)</a>
+              <a class="res-link" href="https://arxiv.org/abs/2002.07413" target="_blank" rel="noopener"><span class="res-link-icon">📄</span>Browaeys &amp; Lahaye — Rydberg physics (Nat. Phys. 2020)</a>
+            </div>
+          </div>
+
+        </div><!-- /resources-3col -->
+
+        <p style="font-size:0.775rem;color:var(--text-muted);margin-top:var(--sp-8);text-align:center">
+          Data compiled from Steck data sheets, NIST ASD, and primary literature · All links open in a new tab
+        </p>
+
+      </div><!-- /container -->
+    </div><!-- /page-content -->
+  </div><!-- /page-wrap -->
+
+  <!-- Scripts -->
+  <script src="../js/main.js"></script>
+  <script>
+    renderNav({ active: 'atom-library', root: '../' });
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script>
+    /* ── Bar chart data ── */
+    const chartLabels = ['⁶Li','⁷Li','²³Na','³⁹K','⁴⁰K','⁴¹K','⁸⁵Rb','⁸⁷Rb','¹³³Cs','⁸⁸Sr','⁸⁷Sr','¹⁷⁴Yb','¹⁷¹Yb'];
+    const tdData     = [141, 141, 235, 145, 145, 145, 146, 146, 125, 770, 770, 4.4, 4.4];
+    const gammaData  = [5.87, 5.87, 9.80, 6.04, 6.04, 6.04, 6.07, 6.07, 5.23, 32.0, 32.0, 28.0, 28.0];
+    // purple = alkali (9), cyan = alkaline earth (4)
+    const barColors = [
+      '#a78bfa','#a78bfa','#a78bfa','#a78bfa','#a78bfa','#a78bfa','#a78bfa','#a78bfa','#a78bfa',
+      '#38bdf8','#38bdf8','#38bdf8','#38bdf8',
+    ];
+
+    const sharedOpts = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#0c1526',
+        borderColor: 'rgba(56,189,248,0.3)',
+        borderWidth: 1,
+        titleColor: '#e2e8f0',
+        bodyColor: '#94a3b8',
+      }},
+      scales: {
+        x: {
+          ticks: { color: '#e2e8f0', font: { size: 11, family: "'JetBrains Mono', monospace" } },
+          grid:  { color: 'rgba(100,100,150,0.12)' },
+        },
+        y: {
+          ticks: { color: '#94a3b8', font: { size: 11 } },
+          grid:  { color: 'rgba(100,100,150,0.12)' },
+        },
+      },
+    };
+
+    new Chart(document.getElementById('chart-td'), {
+      type: 'bar',
+      data: {
+        labels: chartLabels,
+        datasets: [{ data: tdData, backgroundColor: barColors, borderRadius: 4, borderSkipped: false }],
+      },
+      options: { ...sharedOpts, plugins: { ...sharedOpts.plugins, tooltip: { ...sharedOpts.plugins.tooltip, callbacks: {
+        label: ctx => ` ${ctx.parsed.y} μK`,
+      }}}},
+    });
+
+    new Chart(document.getElementById('chart-gamma'), {
+      type: 'bar',
+      data: {
+        labels: chartLabels,
+        datasets: [{ data: gammaData, backgroundColor: barColors, borderRadius: 4, borderSkipped: false }],
+      },
+      options: { ...sharedOpts, plugins: { ...sharedOpts.plugins, tooltip: { ...sharedOpts.plugins.tooltip, callbacks: {
+        label: ctx => ` ${ctx.parsed.y} MHz`,
+      }}}},
+    });
+
+    /* ── Family filter ── */
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const family = btn.dataset.family;
+        document.querySelectorAll('#atom-table tbody tr').forEach(row => {
+          row.style.display = (family === 'all' || row.dataset.family === family) ? '' : 'none';
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
