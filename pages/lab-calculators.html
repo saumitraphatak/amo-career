@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Calculators — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <style>
+    /* ── page-specific ─────────────────────────────────────────── */
+    .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:768px) { .calc-grid { grid-template-columns: 1fr; } }
+
+    .calc-card {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: .75rem;
+    }
+    .calc-card h4 { color: var(--text-primary); font-size: .97rem; margin: 0 0 .15rem 0; }
+    .calc-card .sub { color: #64748b; font-size: .81rem; margin-bottom: .9rem; line-height: 1.5; }
+
+    /* inputs */
+    .field-row { display: flex; align-items: center; gap: .6rem; margin-bottom: .45rem; flex-wrap: wrap; }
+    .field-row label { font-size: .82rem; color: var(--text-muted); min-width: 200px; }
+    .field-row input[type="number"], .field-row select {
+      background: #0c1526;
+      border: 1px solid #2a3a52;
+      color: var(--text-primary);
+      border-radius: 6px;
+      padding: .3rem .6rem;
+      font-size: .85rem;
+      font-family: var(--font-mono);
+      width: 130px;
+    }
+    .field-row input[type="number"]:focus, .field-row select:focus {
+      outline: none;
+      border-color: var(--c-calc);
+    }
+    .field-row .unit { font-size: .78rem; color: #475569; }
+
+    /* radio group */
+    .radio-group { display: flex; gap: 1rem; margin-bottom: .6rem; }
+    .radio-group label { font-size: .83rem; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; gap: .35rem; }
+
+    /* result row */
+    .result-row {
+      background: #052e16;
+      border: 1px solid #15803d;
+      border-radius: 8px;
+      padding: .65rem 1rem;
+      margin-top: .6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem 1.5rem;
+      align-items: baseline;
+    }
+    .result-val { color: #4ade80; font-size: 1.15rem; font-weight: 700; font-family: var(--font-mono); }
+    .result-lbl { color: #86efac; font-size: .8rem; }
+    .result-warn { color: #fcd34d; font-size: .85rem; }
+
+    /* section title */
+    .sec-title {
+      font-size: 1.45rem; font-weight: 700; color: var(--text-primary);
+      border-left: 3px solid var(--c-calc); padding-left: .75rem;
+      margin: 0 0 .25rem 0;
+    }
+    .sec-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.1rem .85rem; }
+
+    .divider { border: none; border-top: 1px solid #1e293b; margin: 1.5rem 0; }
+  </style>
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <!-- ── Page Hero ─────────────────────────────────────────────── -->
+  <section class="page-hero" style="--page-color: var(--c-calc)">
+    <div class="container">
+      <span class="page-hero-badge" style="background:rgba(251,191,36,.1); border-color:rgba(251,191,36,.35); color:#fde68a;">
+        4 Tabs · 12 Calculators
+      </span>
+      <h1 class="page-hero-title">AMO Lab Calculators</h1>
+      <p class="page-hero-desc">
+        Quick-reference calculators for everyday experimental AMO physics.
+        Optics &amp; beams, power &amp; RF, atomic physics, trap &amp; cavity — results update instantly.
+      </p>
+    </div>
+  </section>
+
+  <main class="container" style="padding: 2rem var(--gap, 1.5rem);">
+
+    <div data-tabs-wrap>
+      <div class="tab-bar" data-group="main">
+        <button class="tab-btn active" data-tab="optics">🔭 Optics &amp; Beams</button>
+        <button class="tab-btn" data-tab="power">📡 Power &amp; RF</button>
+        <button class="tab-btn" data-tab="atomic">⚛️ Atomic Physics</button>
+        <button class="tab-btn" data-tab="trap">🪤 Trap &amp; Cavity</button>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 1 — OPTICS & BEAMS
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel active" data-tab="optics" data-group="main">
+        <h2 class="sec-title">Optics &amp; Beam Calculations</h2>
+        <p class="sec-sub">Gaussian beam propagation, collimation, focusing, NA, telescope magnification.</p>
+
+        <div class="calc-grid">
+          <!-- 1a. Fiber → Collimated → Focused -->
+          <div>
+            <div class="calc-card">
+              <h4>Fiber → Collimated → Focused Spot</h4>
+              <div class="sub">Given the fiber MFD and collimating lens focal length, computes the collimated beam radius and (optionally) the focused spot after a second lens.</div>
+              <div class="formula-box">w_col = f₁ · λ / (π · MFR)
+<span style="color:#6ee7b7">[optional]</span> w_foc = f₂ · λ / (π · w_col)
+z_R = π w_foc² / λ</div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="fib_lam" value="852" min="400" max="2000" step="1" oninput="calcFiber()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>Fiber MFD (µm)</label><input type="number" id="fib_mfd" value="5.3" min="1" max="50" step="0.1" oninput="calcFiber()"><span class="unit">µm</span></div>
+              <div class="field-row"><label>Collimating lens f₁ (mm)</label><input type="number" id="fib_f1" value="11" min="1" max="200" step="0.5" oninput="calcFiber()"><span class="unit">mm</span></div>
+              <div id="fib_res1" class="result-row"></div>
+              <hr class="divider" style="margin:.9rem 0 .6rem 0;">
+              <div class="field-row"><label style="font-weight:600; color:var(--text-secondary)">Optional: focusing lens f₂ (mm)</label><input type="number" id="fib_f2" value="200" min="1" max="1000" step="1" oninput="calcFiber()"><span class="unit">mm</span></div>
+              <div id="fib_res2" class="result-row"></div>
+            </div>
+          </div>
+
+          <!-- 1b. NA ↔ Beam Waist -->
+          <div>
+            <div class="calc-card">
+              <h4>NA ↔ Gaussian Beam Waist</h4>
+              <div class="sub">For a Gaussian beam, NA = λ/(πw₀). Also gives the Abbe resolution limit.</div>
+              <div class="radio-group">
+                <label><input type="radio" name="na_mode" value="na" checked onchange="calcNA()"> Specify NA</label>
+                <label><input type="radio" name="na_mode" value="w0" onchange="calcNA()"> Specify w₀</label>
+              </div>
+              <div class="formula-box">w₀ = λ / (π · NA)       [Gaussian]
+d_Abbe = λ / (2 · NA)   [Abbe resolution]
+NA = λ / (π · w₀)</div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="na_lam" value="852" min="400" max="2000" step="1" oninput="calcNA()"><span class="unit">nm</span></div>
+              <div id="na_spec_na">
+                <div class="field-row"><label>Numerical aperture (NA)</label><input type="number" id="na_val" value="0.5" min="0.01" max="1.0" step="0.01" oninput="calcNA()"></div>
+              </div>
+              <div id="na_spec_w0" style="display:none;">
+                <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="na_w0" value="0.95" min="0.1" max="1000" step="0.05" oninput="calcNA()"><span class="unit">µm</span></div>
+              </div>
+              <div id="na_res" class="result-row"></div>
+            </div>
+
+            <div class="calc-card">
+              <h4>Rayleigh Range &amp; Divergence</h4>
+              <div class="sub">Gaussian beam propagation from waist w₀ and wavelength.</div>
+              <div class="formula-box">z_R = π w₀² / λ
+θ_div = λ / (π w₀)    (far-field half-angle)</div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rr_lam" value="1064" min="400" max="2000" step="1" oninput="calcRayleigh()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="rr_w0" value="950" min="0.1" max="5000" step="1" oninput="calcRayleigh()"><span class="unit">µm</span></div>
+              <div id="rr_res" class="result-row"></div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="calc-grid">
+          <!-- 1c. Telescope -->
+          <div class="calc-card">
+            <h4>Beam Telescope Magnification</h4>
+            <div class="sub">2-lens Galilean / Keplerian expander. Output beam waist and divergence.</div>
+            <div class="formula-box">M = f₂ / f₁
+w₀_out = M · w₀_in
+θ_out = θ_in / M</div>
+            <div class="field-row"><label>Input lens f₁ (mm)</label><input type="number" id="tel_f1" value="25" min="1" max="1000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
+            <div class="field-row"><label>Output lens f₂ (mm)</label><input type="number" id="tel_f2" value="200" min="1" max="2000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
+            <div class="field-row"><label>Input beam waist w₀_in (mm)</label><input type="number" id="tel_w" value="0.5" min="0.01" max="50" step="0.01" oninput="calcTelescope()"><span class="unit">mm</span></div>
+            <div id="tel_res" class="result-row"></div>
+          </div>
+
+          <!-- 1d. f-number -->
+          <div class="calc-card">
+            <h4>f-number → Spot Size</h4>
+            <div class="sub">For a Gaussian beam: w₀ ≈ λf/(πw_in). For plane wave (overfilled): d_Airy = 2.44 λ (f/D).</div>
+            <div class="formula-box">w₀ = λ f / (π w_in)       [Gaussian]
+d_Airy = 2.44 λ (f/D)    [overfilled]</div>
+            <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="fn_lam" value="1064" min="400" max="2000" step="1" oninput="calcFnum()"><span class="unit">nm</span></div>
+            <div class="field-row"><label>Focal length f (mm)</label><input type="number" id="fn_f" value="100" min="1" max="1000" step="1" oninput="calcFnum()"><span class="unit">mm</span></div>
+            <div class="field-row"><label>Input beam 1/e² diameter (mm)</label><input type="number" id="fn_d" value="10" min="0.1" max="200" step="0.1" oninput="calcFnum()"><span class="unit">mm</span></div>
+            <div id="fn_res" class="result-row"></div>
+          </div>
+        </div>
+      </div><!-- /optics -->
+
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 2 — POWER & RF
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel" data-tab="power" data-group="main">
+        <h2 class="sec-title">Power, RF &amp; AOM Calculators</h2>
+        <p class="sec-sub">mW / dBm, gain/loss chains, AOM Bragg angles, shot noise.</p>
+
+        <div class="calc-grid">
+          <div>
+            <!-- 2a. mW ↔ dBm -->
+            <div class="calc-card">
+              <h4>mW ↔ dBm Conversion</h4>
+              <div class="sub">1 mW = 0 dBm. Used everywhere: AOM drivers, amplifiers, photodetectors, VCOs.</div>
+              <div class="formula-box">P [dBm] = 10 · log₁₀(P [mW])
+P [mW]  = 10^(P [dBm] / 10)</div>
+              <div class="radio-group">
+                <label><input type="radio" name="pw_dir" value="mw" checked onchange="calcPower()"> mW → dBm</label>
+                <label><input type="radio" name="pw_dir" value="dbm" onchange="calcPower()"> dBm → mW</label>
+              </div>
+              <div id="pw_mw_field">
+                <div class="field-row"><label>Power (mW)</label><input type="number" id="pw_mw" value="1" min="0.0001" max="100000" step="0.1" oninput="calcPower()"><span class="unit">mW</span></div>
+              </div>
+              <div id="pw_dbm_field" style="display:none;">
+                <div class="field-row"><label>Power (dBm)</label><input type="number" id="pw_dbm" value="0" min="-60" max="60" step="0.5" oninput="calcPower()"><span class="unit">dBm</span></div>
+              </div>
+              <div id="pw_res" class="result-row"></div>
+            </div>
+
+            <!-- 2b. dB chain -->
+            <div class="calc-card">
+              <h4>dB Gain / Loss Chain</h4>
+              <div class="sub">Enter input power and gains/losses in dB (negative = loss). E.g. AOM −10 dB, amplifier +30 dB.</div>
+              <div class="formula-box">P_out [dBm] = P_in [dBm] + Σ gains [dB]</div>
+              <div class="field-row"><label>Input power (dBm)</label><input type="number" id="gain_in" value="-10" min="-60" max="60" step="1" oninput="calcGain()"><span class="unit">dBm</span></div>
+              <div class="field-row" style="align-items:flex-start;">
+                <label style="padding-top:.3rem;">Gains/losses (dB), comma-sep</label>
+                <input type="text" id="gain_list" value="-10, +30, -3, -6" oninput="calcGain()" style="width:180px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem; font-family:var(--font-mono);">
+              </div>
+              <div id="gain_res" class="result-row"></div>
+            </div>
+          </div>
+
+          <div>
+            <!-- 2c. AOM Deflection -->
+            <div class="calc-card">
+              <h4>AOM / AOD Deflection</h4>
+              <div class="sub">Bragg diffraction angle for a given optical wavelength and AOM drive frequency.</div>
+              <div class="formula-box">Λ = v_s / f_AOM          (acoustic wavelength)
+θ_B = λ_opt / (2Λ)       (Bragg angle)
+θ_def = n·λ·f_AOM / v_s  (n-th order)</div>
+              <div class="field-row"><label>Optical wavelength λ (nm)</label><input type="number" id="aom_lam" value="852" min="400" max="2000" step="1" oninput="calcAOM()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>AOM drive frequency (MHz)</label><input type="number" id="aom_freq" value="80" min="1" max="3000" step="1" oninput="calcAOM()"><span class="unit">MHz</span></div>
+              <div class="field-row">
+                <label>Sound velocity v_s (m/s)</label>
+                <select id="aom_vs" onchange="calcAOM()" style="width:180px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.83rem;">
+                  <option value="613">TeO₂ slow shear 613 m/s</option>
+                  <option value="617">TeO₂ slow shear 617 m/s</option>
+                  <option value="5960">SiO₂ 5960 m/s</option>
+                  <option value="3630">PbMoO₄ 3630 m/s</option>
+                  <option value="custom">Custom…</option>
+                </select>
+              </div>
+              <div id="aom_custom_row" style="display:none;" class="field-row">
+                <label>Custom v_s (m/s)</label><input type="number" id="aom_vs_custom" value="613" min="100" max="10000" step="1" oninput="calcAOM()"><span class="unit">m/s</span>
+              </div>
+              <div class="field-row">
+                <label>Diffraction order n</label>
+                <select id="aom_ord" onchange="calcAOM()" style="width:80px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem;">
+                  <option value="1" selected>+1</option>
+                  <option value="-1">−1</option>
+                  <option value="2">+2</option>
+                </select>
+              </div>
+              <div id="aom_res" class="result-row"></div>
+            </div>
+
+            <!-- 2d. Shot noise -->
+            <div class="calc-card">
+              <h4>Shot Noise on Photodetector</h4>
+              <div class="sub">Photon shot noise sets the quantum noise floor for a given detection bandwidth.</div>
+              <div class="formula-box">I_dc = η · e · P / (hν)
+i_shot = √(2 e I_dc BW)  [A_rms]
+NEP = i_shot / R          [W]</div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="sn_lam" value="852" min="400" max="2000" step="1" oninput="calcShot()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>Detected power P (µW)</label><input type="number" id="sn_P" value="10" min="0.001" max="100000" step="0.1" oninput="calcShot()"><span class="unit">µW</span></div>
+              <div class="field-row"><label>Quantum efficiency η</label><input type="number" id="sn_eta" value="0.85" min="0.01" max="1.0" step="0.01" oninput="calcShot()"></div>
+              <div class="field-row"><label>Detection bandwidth (Hz)</label><input type="number" id="sn_bw" value="1000000" min="1" max="1e9" step="10000" oninput="calcShot()"><span class="unit">Hz</span></div>
+              <div id="sn_res" class="result-row"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /power -->
+
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 3 — ATOMIC PHYSICS
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel" data-tab="atomic" data-group="main">
+        <h2 class="sec-title">Atomic Physics Calculators</h2>
+        <p class="sec-sub">Recoil, Doppler, de Broglie, Zeeman, saturation intensity, Maxwell–Boltzmann velocities.</p>
+
+        <div class="calc-grid">
+          <div>
+            <!-- 3a. Recoil -->
+            <div class="calc-card">
+              <h4>Photon Recoil</h4>
+              <div class="sub">Recoil velocity &amp; temperature from one photon kick. Sets the energy scale for laser cooling.</div>
+              <div class="formula-box">v_rec = ħk / m = h / (mλ)
+T_rec = m·v_rec² / k_B = (ħk)² / (m·k_B)
+E_rec/h = ħk² / (4πm)  [kHz]</div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rec_lam" value="852" min="400" max="2000" step="1" oninput="calcRecoil()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="rec_A" value="133" min="1" max="250" step="1" oninput="calcRecoil()"><span class="unit">amu</span></div>
+              <div id="rec_res" class="result-row"></div>
+            </div>
+
+            <!-- 3b. Doppler shift -->
+            <div class="calc-card">
+              <h4>Doppler Shift</h4>
+              <div class="sub">Frequency shift from atom/mirror velocity. Used to find which velocity class a detuned laser addresses.</div>
+              <div class="radio-group">
+                <label><input type="radio" name="dop_mode" value="vtof" checked onchange="calcDoppler()"> v → Δf</label>
+                <label><input type="radio" name="dop_mode" value="ftov" onchange="calcDoppler()"> Δf → v</label>
+              </div>
+              <div class="formula-box">Δf = v / λ   (counter-propagating)
+v = Δf · λ</div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="dop_lam" value="852" min="400" max="2000" step="1" oninput="calcDoppler()"><span class="unit">nm</span></div>
+              <div id="dop_v_field">
+                <div class="field-row"><label>Atom velocity v (m/s)</label><input type="number" id="dop_v" value="1.0" min="-1000" max="1000" step="0.1" oninput="calcDoppler()"><span class="unit">m/s</span></div>
+              </div>
+              <div id="dop_df_field" style="display:none;">
+                <div class="field-row"><label>Laser detuning Δf (MHz)</label><input type="number" id="dop_df" value="10" min="-2000" max="2000" step="1" oninput="calcDoppler()"><span class="unit">MHz</span></div>
+              </div>
+              <div id="dop_res" class="result-row"></div>
+            </div>
+
+            <!-- 3c. de Broglie -->
+            <div class="calc-card">
+              <h4>Thermal de Broglie Wavelength</h4>
+              <div class="sub">λ_dB ≫ inter-particle spacing → quantum degeneracy. Also for matter-wave interferometry.</div>
+              <div class="formula-box">λ_dB = h / √(2π m k_B T)</div>
+              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="ddb_A" value="133" min="1" max="250" step="1" oninput="calcDeBroglie()"><span class="unit">amu</span></div>
+              <div class="field-row"><label>Temperature T (µK)</label><input type="number" id="ddb_T" value="100" min="0.01" max="1e6" step="1" oninput="calcDeBroglie()"><span class="unit">µK</span></div>
+              <div id="ddb_res" class="result-row"></div>
+            </div>
+          </div>
+
+          <div>
+            <!-- 3d. Zeeman -->
+            <div class="calc-card">
+              <h4>Zeeman Shift (Linear Regime)</h4>
+              <div class="sub">Valid for |B| where Zeeman energy ≪ HF splitting (typically B ≪ few hundred Gauss for alkalis).</div>
+              <div class="formula-box">ΔE = g_F · m_F · μ_B · B
+Δf = ΔE / h  [MHz]</div>
+              <div class="field-row"><label>Landé g_F factor</label><input type="number" id="zee_gF" value="0.25" min="-5" max="5" step="0.01" oninput="calcZeeman()"><span class="unit">(Cs F=4: +1/4)</span></div>
+              <div class="field-row"><label>Magnetic sublevel m_F</label><input type="number" id="zee_mF" value="4" min="-10" max="10" step="1" oninput="calcZeeman()"></div>
+              <div class="field-row"><label>Magnetic field B (Gauss)</label><input type="number" id="zee_B" value="10" min="0" max="10000" step="0.1" oninput="calcZeeman()"><span class="unit">G</span></div>
+              <div id="zee_res" class="result-row"></div>
+            </div>
+
+            <!-- 3e. Saturation intensity -->
+            <div class="calc-card">
+              <h4>Saturation Intensity</h4>
+              <div class="sub">I_sat for a dipole-allowed transition. Above I_sat, the transition is power-broadened.</div>
+              <div class="formula-box">I_sat = π h c Γ / (3 λ³)   (cycling transition)
+τ = 1 / (Γ/2π)</div>
+              <div class="field-row">
+                <label>Preset transition</label>
+                <select id="sat_preset" onchange="applySatPreset()" style="width:220px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.82rem;">
+                  <option value="852,5.23">¹³³Cs D2 852 nm (Γ/2π=5.23 MHz)</option>
+                  <option value="780,6.07">⁸⁷Rb D2 780 nm (Γ/2π=6.07 MHz)</option>
+                  <option value="589,9.80">²³Na D2 589 nm (Γ/2π=9.80 MHz)</option>
+                  <option value="671,5.87">⁶Li D2 671 nm (Γ/2π=5.87 MHz)</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="sat_lam" value="852" min="400" max="2000" step="1" oninput="calcSat()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>Linewidth Γ/2π (MHz)</label><input type="number" id="sat_G" value="5.23" min="0.001" max="100" step="0.01" oninput="calcSat()"><span class="unit">MHz</span></div>
+              <div id="sat_res" class="result-row"></div>
+            </div>
+
+            <!-- 3f. Thermal velocities -->
+            <div class="calc-card">
+              <h4>Thermal Velocity Distribution</h4>
+              <div class="sub">Maxwell–Boltzmann rms, most-probable, and mean speeds.</div>
+              <div class="formula-box">v_rms  = √(3k_BT/m)
+v_prob = √(2k_BT/m)   (most probable)
+v_mean = √(8k_BT/πm)  (mean speed)</div>
+              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="thv_A" value="133" min="1" max="250" step="1" oninput="calcThermVel()"><span class="unit">amu</span></div>
+              <div class="field-row"><label>Temperature T (µK)</label><input type="number" id="thv_T" value="100" min="0.01" max="1e9" step="1" oninput="calcThermVel()"><span class="unit">µK</span></div>
+              <div id="thv_res" class="result-row"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /atomic -->
+
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 4 — TRAP & CAVITY
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel" data-tab="trap" data-group="main">
+        <h2 class="sec-title">Trap &amp; Cavity Calculators</h2>
+        <p class="sec-sub">Optical tweezer frequencies, Lamb–Dicke parameter, Fabry–Pérot cavity, mode matching.</p>
+
+        <div class="calc-grid">
+          <div>
+            <!-- 4a. Tweezer trap frequencies -->
+            <div class="calc-card">
+              <h4>Optical Tweezer Trap Frequencies</h4>
+              <div class="sub">Harmonic approximation near the trap minimum. Radial and axial frequencies from trap depth and beam waist.</div>
+              <div class="formula-box">ω_r = √(4 U₀ / m w₀²)   [radial]
+ω_z = √(2 U₀ / m z_R²)  [axial]
+z_R = π w₀² / λ</div>
+              <div class="field-row"><label>Trap depth U₀ (mK)</label><input type="number" id="tf_U0" value="0.5" min="0.001" max="100" step="0.001" oninput="calcTrap()"><span class="unit">mK</span></div>
+              <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="tf_w0" value="0.95" min="0.1" max="50" step="0.01" oninput="calcTrap()"><span class="unit">µm</span></div>
+              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="tf_A" value="133" min="1" max="250" step="1" oninput="calcTrap()"><span class="unit">amu</span></div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="tf_lam" value="1064" min="400" max="2000" step="1" oninput="calcTrap()"><span class="unit">nm</span></div>
+              <div id="tf_res" class="result-row"></div>
+            </div>
+
+            <!-- 4b. Lamb–Dicke -->
+            <div class="calc-card">
+              <h4>Lamb–Dicke Parameter</h4>
+              <div class="sub">η = k x_zpf. Resolved sideband cooling requires η ≪ 1. x_zpf = √(ħ/2mω) is the zero-point motion.</div>
+              <div class="formula-box">x_zpf = √(ħ / 2mω_trap)
+η = k · cos(θ) · x_zpf
+⟨n⟩_min ≈ (Γ/2ω)²   [RSB cooling limit]</div>
+              <div class="field-row"><label>Probe wavelength λ (nm)</label><input type="number" id="ld_lam" value="852" min="400" max="2000" step="1" oninput="calcLD()"><span class="unit">nm</span></div>
+              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="ld_A" value="133" min="1" max="250" step="1" oninput="calcLD()"><span class="unit">amu</span></div>
+              <div class="field-row"><label>Trap frequency f_trap (kHz)</label><input type="number" id="ld_f" value="100" min="0.01" max="5000" step="1" oninput="calcLD()"><span class="unit">kHz</span></div>
+              <div class="field-row"><label>Beam angle to trap axis θ (°)</label><input type="number" id="ld_th" value="45" min="0" max="90" step="1" oninput="calcLD()"><span class="unit">°</span></div>
+              <div id="ld_res" class="result-row"></div>
+            </div>
+          </div>
+
+          <div>
+            <!-- 4c. Fabry–Pérot cavity -->
+            <div class="calc-card">
+              <h4>Optical Cavity / Fabry–Pérot</h4>
+              <div class="sub">FSR, finesse, linewidth, round-trip time. Used for laser locking, ULE cavities, transfer cavities.</div>
+              <div class="formula-box">FSR = c / (2nL)
+F = π√R / (1−R)
+δν = FSR / F   (linewidth FWHM)</div>
+              <div class="field-row"><label>Cavity length L (mm)</label><input type="number" id="cav_L" value="100" min="0.1" max="1e6" step="0.1" oninput="calcCavity()"><span class="unit">mm</span></div>
+              <div class="field-row"><label>Mirror reflectivity R</label><input type="number" id="cav_R" value="0.9999" min="0.001" max="0.99999" step="0.0001" oninput="calcCavity()"></div>
+              <div class="field-row"><label>Refractive index n</label><input type="number" id="cav_n" value="1.0" min="1.0" max="5.0" step="0.01" oninput="calcCavity()"></div>
+              <div id="cav_res" class="result-row"></div>
+            </div>
+
+            <!-- 4d. Mode matching -->
+            <div class="calc-card">
+              <h4>Gaussian Mode Matching</h4>
+              <div class="sub">Coupling efficiency into a fiber or cavity mode via overlap integral of two Gaussian modes.</div>
+              <div class="formula-box">η = (2w₁w₂/(w₁²+w₂²))²     [Δz=0]
+Reduced by wavefront curvature for Δz≠0</div>
+              <div class="field-row"><label>Mode 1 waist w₁ (µm)</label><input type="number" id="mm_w1" value="5.0" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
+              <div class="field-row"><label>Mode 2 waist w₂ (µm)</label><input type="number" id="mm_w2" value="4.8" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
+              <div class="field-row"><label>Waist separation Δz (µm)</label><input type="number" id="mm_dz" value="0" min="0" max="10000" step="1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
+              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="mm_lam" value="852" min="400" max="2000" step="1" oninput="calcModeMatch()"><span class="unit">nm</span></div>
+              <div id="mm_res" class="result-row"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="color:#64748b; font-size:.82rem; line-height:1.7; margin-top:1.5rem; padding:.75rem 1rem; background:var(--bg-card); border-radius:8px; border:1px solid #1e293b;">
+          <strong>References:</strong>
+          Foot (2005) <em>Atomic Physics</em> ·
+          Grimm et al. (2000) Adv. At. Mol. Opt. Phys. 42 ·
+          Yariv (1989) <em>Quantum Electronics</em> ·
+          Saleh &amp; Teich (2019) <em>Fundamentals of Photonics</em> ·
+          NIST CODATA 2018 constants.
+        </div>
+      </div><!-- /trap -->
+
+    </div><!-- /data-tabs-wrap -->
+  </main>
+
+  <footer style="text-align:center; padding:2rem; color:var(--text-muted); font-size:.82rem; border-top:1px solid #1a2236; margin-top:1rem;">
+    AMO Career · Quick-reference calculators for experimental AMO physics · Results computed in your browser
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    renderNav({ active: 'lab-calculators', root: '../' });
+
+    // ── Physical constants ──────────────────────────────────────────
+    const h    = 6.62607015e-34;
+    const hbar = 1.054571817e-34;
+    const c    = 299792458.0;
+    const kB   = 1.380649e-23;
+    const amu  = 1.66053906660e-27;
+    const muB  = 9.2740100783e-24;
+    const e_ch = 1.602176634e-19;
+
+    // ── Helpers ─────────────────────────────────────────────────────
+    const nm  = x => x * 1e-9;
+    const um  = x => x * 1e-6;
+    const mm  = x => x * 1e-3;
+    const MHz = x => x * 1e6;
+
+    function fmtSI(v, unit, prec=4) {
+      if (!isFinite(v)) return 'N/A';
+      const abs = Math.abs(v);
+      if (abs >= 1e9)  return (v/1e9).toFixed(prec) + ' G' + unit;
+      if (abs >= 1e6)  return (v/1e6).toFixed(prec) + ' M' + unit;
+      if (abs >= 1e3)  return (v/1e3).toFixed(prec) + ' k' + unit;
+      if (abs >= 1)    return v.toFixed(prec) + ' ' + unit;
+      if (abs >= 1e-3) return (v*1e3).toFixed(prec) + ' m' + unit;
+      if (abs >= 1e-6) return (v*1e6).toFixed(prec) + ' µ' + unit;
+      if (abs >= 1e-9) return (v*1e9).toFixed(prec) + ' n' + unit;
+      if (abs >= 1e-12)return (v*1e12).toFixed(prec) + ' p' + unit;
+      return v.toExponential(3) + ' ' + unit;
+    }
+
+    function resHTML(pairs) {
+      return pairs.map(([lbl, val]) =>
+        `<span class="result-lbl">${lbl}</span>&nbsp;<span class="result-val">${val}</span>`
+      ).join('');
+    }
+
+    function setRes(id, pairs) {
+      document.getElementById(id).innerHTML = resHTML(pairs);
+    }
+
+    // ── Radio switch helpers ────────────────────────────────────────
+    function getRadio(name) {
+      return document.querySelector(`input[name="${name}"]:checked`)?.value;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB 1 — OPTICS
+    // ══════════════════════════════════════════════════════════════
+
+    function calcFiber() {
+      const lam_m = nm(+document.getElementById('fib_lam').value);
+      const mfr_m = um(+document.getElementById('fib_mfd').value) / 2;
+      const f1_m  = mm(+document.getElementById('fib_f1').value);
+      const f2_mm = +document.getElementById('fib_f2').value;
+
+      const w_col = f1_m * lam_m / (Math.PI * mfr_m);
+      setRes('fib_res1', [
+        ['Collimated 1/e² radius', (w_col*1e3).toFixed(3) + ' mm'],
+        ['Full 1/e² diameter',     (2*w_col*1e3).toFixed(3) + ' mm'],
+      ]);
+
+      const f2_m = mm(f2_mm);
+      const w_foc = f2_m * lam_m / (Math.PI * w_col);
+      const zR    = Math.PI * w_foc**2 / lam_m;
+      setRes('fib_res2', [
+        ['Focused 1/e² waist', (w_foc*1e6).toFixed(3) + ' µm'],
+        ['Rayleigh range z_R', (zR*1e3).toFixed(2) + ' mm'],
+      ]);
+    }
+
+    // NA ↔ w0
+    function calcNA() {
+      const mode  = getRadio('na_mode');
+      const lam_m = nm(+document.getElementById('na_lam').value);
+      document.getElementById('na_spec_na').style.display = mode === 'na' ? '' : 'none';
+      document.getElementById('na_spec_w0').style.display = mode === 'w0' ? '' : 'none';
+
+      if (mode === 'na') {
+        const NA   = +document.getElementById('na_val').value;
+        const w0   = lam_m / (Math.PI * NA);
+        const abbe = lam_m / (2 * NA);
+        setRes('na_res', [
+          ['Gaussian w₀', (w0*1e6).toFixed(3) + ' µm'],
+          ['Abbe resolution', (abbe*1e6).toFixed(3) + ' µm'],
+        ]);
+      } else {
+        const w0_m  = um(+document.getElementById('na_w0').value);
+        const NA    = lam_m / (Math.PI * w0_m);
+        const theta = (Math.atan(NA) * 180 / Math.PI);
+        setRes('na_res', [
+          ['Numerical aperture', NA.toFixed(4)],
+          ['Half-angle θ', theta.toFixed(3) + '°'],
+        ]);
+      }
+    }
+
+    function calcRayleigh() {
+      const lam_m = nm(+document.getElementById('rr_lam').value);
+      const w0_m  = um(+document.getElementById('rr_w0').value);
+      const zR    = Math.PI * w0_m**2 / lam_m;
+      const div   = lam_m / (Math.PI * w0_m);
+      setRes('rr_res', [
+        ['Rayleigh range z_R', (zR*1e3).toFixed(2) + ' mm  (' + (zR*1e6).toFixed(1) + ' µm)'],
+        ['Far-field divergence', (div*180/Math.PI).toFixed(4) + '°  =  ' + (div*1e3).toFixed(3) + ' mrad'],
+      ]);
+    }
+
+    function calcTelescope() {
+      const f1   = +document.getElementById('tel_f1').value;
+      const f2   = +document.getElementById('tel_f2').value;
+      const w_in = +document.getElementById('tel_w').value;
+      const M    = f2 / f1;
+      setRes('tel_res', [
+        ['Magnification M', M.toFixed(3) + '×'],
+        ['Output waist w₀_out', (M * w_in).toFixed(3) + ' mm'],
+        ['Divergence ratio', '1/' + M.toFixed(3)],
+      ]);
+    }
+
+    function calcFnum() {
+      const lam_m = nm(+document.getElementById('fn_lam').value);
+      const f_m   = mm(+document.getElementById('fn_f').value);
+      const d_m   = mm(+document.getElementById('fn_d').value);
+      const w_in  = d_m / 2;
+      const w0    = lam_m * f_m / (Math.PI * w_in);
+      const airy  = 2.44 * lam_m * (f_m / (2 * w_in));
+      setRes('fn_res', [
+        ['Gaussian w₀', (w0*1e6).toFixed(3) + ' µm'],
+        ['Airy disk diameter', (airy*1e6).toFixed(3) + ' µm'],
+      ]);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB 2 — POWER & RF
+    // ══════════════════════════════════════════════════════════════
+
+    function calcPower() {
+      const dir = getRadio('pw_dir');
+      document.getElementById('pw_mw_field').style.display  = dir === 'mw'  ? '' : 'none';
+      document.getElementById('pw_dbm_field').style.display = dir === 'dbm' ? '' : 'none';
+
+      if (dir === 'mw') {
+        const mW  = +document.getElementById('pw_mw').value;
+        const dBm = 10 * Math.log10(mW);
+        setRes('pw_res', [
+          ['dBm', dBm.toFixed(3)],
+          ['Watts', (mW*1e-3).toPrecision(4) + ' W'],
+        ]);
+      } else {
+        const dBm = +document.getElementById('pw_dbm').value;
+        const mW  = Math.pow(10, dBm / 10);
+        setRes('pw_res', [
+          ['mW', mW.toPrecision(4) + ' mW'],
+          ['W', (mW*1e-3).toPrecision(4) + ' W'],
+        ]);
+      }
+    }
+
+    function calcGain() {
+      const p_in  = +document.getElementById('gain_in').value;
+      const str   = document.getElementById('gain_list').value;
+      try {
+        const gains   = str.split(',').map(s => parseFloat(s.trim()));
+        const total   = gains.reduce((a, b) => a + b, 0);
+        const p_out   = p_in + total;
+        const p_mW    = Math.pow(10, p_out / 10);
+        setRes('gain_res', [
+          ['Total gain/loss', (total >= 0 ? '+' : '') + total.toFixed(1) + ' dB'],
+          ['Output power', p_out.toFixed(2) + ' dBm'],
+          ['Output power', p_mW.toPrecision(4) + ' mW'],
+        ]);
+      } catch(e) {
+        document.getElementById('gain_res').innerHTML = '<span class="result-warn">⚠️ Could not parse gain list</span>';
+      }
+    }
+
+    function calcAOM() {
+      const lam_m = nm(+document.getElementById('aom_lam').value);
+      const f_Hz  = MHz(+document.getElementById('aom_freq').value);
+      const sel   = document.getElementById('aom_vs');
+      let vs;
+      const aom_cr = document.getElementById('aom_custom_row');
+      if (sel.value === 'custom') {
+        aom_cr.style.display = '';
+        vs = +document.getElementById('aom_vs_custom').value;
+      } else {
+        aom_cr.style.display = 'none';
+        vs = +sel.value;
+      }
+      const ord     = +document.getElementById('aom_ord').value;
+      const lam_ac  = vs / f_Hz;
+      const theta_B = lam_m / (2 * lam_ac);
+      const theta_d = Math.abs(ord) * lam_m * f_Hz / vs;
+      setRes('aom_res', [
+        ['Acoustic wavelength Λ', (lam_ac*1e6).toFixed(2) + ' µm'],
+        ['Bragg angle θ_B', (theta_B*180/Math.PI).toFixed(4) + '°  =  ' + (theta_B*1e3).toFixed(3) + ' mrad'],
+        ['Order ' + (ord >= 0 ? '+' : '') + ord + ' deflection', (theta_d*180/Math.PI).toFixed(4) + '°  =  ' + (theta_d*1e3).toFixed(3) + ' mrad'],
+      ]);
+    }
+
+    function calcShot() {
+      const lam_m = nm(+document.getElementById('sn_lam').value);
+      const P_W   = +document.getElementById('sn_P').value * 1e-6;
+      const eta   = +document.getElementById('sn_eta').value;
+      const BW    = +document.getElementById('sn_bw').value;
+      const nu    = c / lam_m;
+      const R_det = eta * e_ch * lam_m / (h * c);
+      const I_dc  = R_det * P_W;
+      const i_sn  = Math.sqrt(2 * e_ch * I_dc * BW);
+      const NEP   = R_det > 0 ? i_sn / R_det : NaN;
+      setRes('sn_res', [
+        ['Photocurrent I_dc', (I_dc*1e6).toFixed(3) + ' µA'],
+        ['Shot noise i_shot', (i_sn*1e12).toFixed(3) + ' pA_rms'],
+        ['NEP (noise equiv. power)', (NEP*1e12).toFixed(3) + ' pW'],
+      ]);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB 3 — ATOMIC PHYSICS
+    // ══════════════════════════════════════════════════════════════
+
+    function calcRecoil() {
+      const lam_m = nm(+document.getElementById('rec_lam').value);
+      const m     = +document.getElementById('rec_A').value * amu;
+      const k     = 2 * Math.PI / lam_m;
+      const v_rec = hbar * k / m;
+      const T_rec = m * v_rec**2 / kB;
+      const E_kHz = hbar * k**2 / (2 * m) / h / 1e3;
+      setRes('rec_res', [
+        ['Recoil velocity v_rec', (v_rec*1e3).toFixed(4) + ' mm/s'],
+        ['Recoil temperature T_rec', (T_rec*1e9).toFixed(4) + ' nK  =  ' + (T_rec*1e6).toFixed(4) + ' µK'],
+        ['Recoil frequency E_rec/h', E_kHz.toFixed(4) + ' kHz'],
+      ]);
+    }
+
+    function calcDoppler() {
+      const mode  = getRadio('dop_mode');
+      const lam_m = nm(+document.getElementById('dop_lam').value);
+      document.getElementById('dop_v_field').style.display  = mode === 'vtof' ? '' : 'none';
+      document.getElementById('dop_df_field').style.display = mode === 'ftov' ? '' : 'none';
+
+      if (mode === 'vtof') {
+        const v  = +document.getElementById('dop_v').value;
+        const df = v / lam_m;
+        setRes('dop_res', [
+          ['Doppler shift Δf', (df/1e6).toFixed(4) + ' MHz'],
+          ['', df.toFixed(2) + ' Hz'],
+        ]);
+      } else {
+        const df  = MHz(+document.getElementById('dop_df').value);
+        const v   = df * lam_m;
+        setRes('dop_res', [
+          ['Addressed velocity', v.toFixed(4) + ' m/s'],
+          ['', (v*100).toFixed(4) + ' cm/s'],
+        ]);
+      }
+    }
+
+    function calcDeBroglie() {
+      const m   = +document.getElementById('ddb_A').value * amu;
+      const T_K = +document.getElementById('ddb_T').value * 1e-6;
+      const ldb = h / Math.sqrt(2 * Math.PI * m * kB * T_K);
+      setRes('ddb_res', [
+        ['de Broglie wavelength', (ldb*1e9).toFixed(4) + ' nm'],
+        ['', (ldb*1e6).toFixed(6) + ' µm'],
+      ]);
+    }
+
+    function calcZeeman() {
+      const gF  = +document.getElementById('zee_gF').value;
+      const mF  = +document.getElementById('zee_mF').value;
+      const B_T = +document.getElementById('zee_B').value * 1e-4;
+      const B_G = +document.getElementById('zee_B').value;
+      const dE  = gF * mF * muB * B_T;
+      const df  = dE / h / 1e6;
+      setRes('zee_res', [
+        ['Zeeman shift Δf', df.toFixed(4) + ' MHz'],
+        ['Shift per Gauss', B_G !== 0 ? (df/B_G).toFixed(4) + ' MHz/G' : '—'],
+      ]);
+    }
+
+    function applySatPreset() {
+      const val = document.getElementById('sat_preset').value;
+      if (val !== 'custom') {
+        const [lam, G] = val.split(',').map(Number);
+        document.getElementById('sat_lam').value = lam;
+        document.getElementById('sat_G').value   = G;
+      }
+      calcSat();
+    }
+
+    function calcSat() {
+      const lam_m = nm(+document.getElementById('sat_lam').value);
+      const Gam   = MHz(+document.getElementById('sat_G').value) * 2 * Math.PI;
+      const I_sat = Math.PI * h * c * Gam / (3 * lam_m**3);
+      const tau   = 1.0 / (Gam / (2 * Math.PI));
+      setRes('sat_res', [
+        ['I_sat', I_sat.toFixed(2) + ' W/m²  =  ' + (I_sat*0.1).toFixed(4) + ' mW/cm²'],
+        ['Lifetime τ', (tau*1e9).toFixed(2) + ' ns'],
+      ]);
+    }
+
+    function calcThermVel() {
+      const m   = +document.getElementById('thv_A').value * amu;
+      const T_K = +document.getElementById('thv_T').value * 1e-6;
+      const v_rms  = Math.sqrt(3 * kB * T_K / m);
+      const v_prob = Math.sqrt(2 * kB * T_K / m);
+      const v_mean = Math.sqrt(8 * kB * T_K / (Math.PI * m));
+      setRes('thv_res', [
+        ['v_rms',  v_rms.toFixed(4) + ' m/s'],
+        ['v_prob', v_prob.toFixed(4) + ' m/s'],
+        ['v_mean', v_mean.toFixed(4) + ' m/s'],
+      ]);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB 4 — TRAP & CAVITY
+    // ══════════════════════════════════════════════════════════════
+
+    function calcTrap() {
+      const U0_J  = +document.getElementById('tf_U0').value * 1e-3 * kB;
+      const w0_m  = um(+document.getElementById('tf_w0').value);
+      const m_kg  = +document.getElementById('tf_A').value * amu;
+      const lam_m = nm(+document.getElementById('tf_lam').value);
+      const zR    = Math.PI * w0_m**2 / lam_m;
+      const om_r  = Math.sqrt(4 * U0_J / (m_kg * w0_m**2));
+      const om_z  = Math.sqrt(2 * U0_J / (m_kg * zR**2));
+      const fr    = om_r / (2 * Math.PI);
+      const fz    = om_z / (2 * Math.PI);
+      setRes('tf_res', [
+        ['Radial ω_r/2π', (fr/1e3).toFixed(2) + ' kHz'],
+        ['Axial ω_z/2π',  fz.toFixed(1) + ' Hz  =  ' + (fz/1e3).toFixed(4) + ' kHz'],
+        ['Rayleigh range z_R', (zR*1e3).toFixed(2) + ' mm'],
+      ]);
+    }
+
+    function calcLD() {
+      const lam_m  = nm(+document.getElementById('ld_lam').value);
+      const m_kg   = +document.getElementById('ld_A').value * amu;
+      const f_trap = +document.getElementById('ld_f').value * 1e3;
+      const theta  = +document.getElementById('ld_th').value * Math.PI / 180;
+      const k      = 2 * Math.PI / lam_m;
+      const om     = 2 * Math.PI * f_trap;
+      const x_zpf  = Math.sqrt(hbar / (2 * m_kg * om));
+      const eta    = k * x_zpf * Math.cos(theta);
+      const regime = eta < 0.3 ? '✅ Lamb–Dicke (η≪1)' : '⚠️ Beyond Lamb–Dicke';
+      setRes('ld_res', [
+        ['x_zpf (zero-point motion)', (x_zpf*1e12).toFixed(2) + ' pm'],
+        ['Lamb–Dicke parameter η', eta.toFixed(4)],
+        ['Regime', regime],
+      ]);
+    }
+
+    function calcCavity() {
+      const L_m  = +document.getElementById('cav_L').value * 1e-3;
+      const R    = +document.getElementById('cav_R').value;
+      const n    = +document.getElementById('cav_n').value;
+      const FSR  = c / (2 * n * L_m);
+      const F    = Math.PI * Math.sqrt(R) / (1 - R);
+      const lw   = FSR / F;
+      const T_rt = 2 * n * L_m / c;
+      setRes('cav_res', [
+        ['FSR', (FSR/1e9).toFixed(4) + ' GHz  =  ' + (FSR/1e6).toFixed(2) + ' MHz'],
+        ['Finesse F', F.toFixed(0)],
+        ['Linewidth δν', (lw/1e6).toFixed(4) + ' MHz  =  ' + (lw/1e3).toFixed(2) + ' kHz'],
+        ['Round-trip time', (T_rt*1e9).toFixed(3) + ' ns'],
+      ]);
+    }
+
+    function calcModeMatch() {
+      const w1_m   = um(+document.getElementById('mm_w1').value);
+      const w2_m   = um(+document.getElementById('mm_w2').value);
+      const dz_m   = um(+document.getElementById('mm_dz').value);
+      const lam_m  = nm(+document.getElementById('mm_lam').value);
+      const zR2    = Math.PI * w2_m**2 / lam_m;
+      let eta;
+      if (dz_m === 0) {
+        eta = (2 * w1_m * w2_m / (w1_m**2 + w2_m**2))**2;
+      } else {
+        const w2_z = w2_m * Math.sqrt(1 + (dz_m/zR2)**2);
+        const R2_z = Math.abs(dz_m) > 0 ? dz_m * (1 + (zR2/dz_m)**2) : Infinity;
+        const A = (w1_m/w2_z + w2_z/w1_m)**2;
+        const B = isFinite(R2_z) ? (Math.PI * w1_m * w2_z / (lam_m * R2_z))**2 : 0;
+        eta = 4.0 / (A + B);
+      }
+      const qual = eta > 0.9 ? '✅ Good (>90%)' : (eta > 0.5 ? '⚠️ Moderate' : '❌ Poor (<50%)');
+      setRes('mm_res', [
+        ['Mode overlap η', (eta*100).toFixed(2) + ' %'],
+        ['Expected coupling', qual],
+      ]);
+    }
+
+    // ── Initial computation ─────────────────────────────────────────
+    calcFiber(); calcNA(); calcRayleigh(); calcTelescope(); calcFnum();
+    calcPower(); calcGain(); calcAOM(); calcShot();
+    calcRecoil(); calcDoppler(); calcDeBroglie(); calcZeeman(); calcSat(); calcThermVel();
+    calcTrap(); calcLD(); calcCavity(); calcModeMatch();
+
+    // ── NA radio sync ───────────────────────────────────────────────
+    document.querySelectorAll('input[name="na_mode"]').forEach(r =>
+      r.addEventListener('change', calcNA));
+    document.querySelectorAll('input[name="pw_dir"]').forEach(r =>
+      r.addEventListener('change', calcPower));
+    document.querySelectorAll('input[name="dop_mode"]').forEach(r =>
+      r.addEventListener('change', calcDoppler));
+  </script>
+</body>
+</html>
