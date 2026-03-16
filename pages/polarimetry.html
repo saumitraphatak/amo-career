@@ -816,7 +816,7 @@ Inverse (S₀=1):
     const gc=(ax,bx,ay,by,az,bz)=>{const gx=[],gy=[],gz=[];for(let i=0;i<=80;i++){const a=i/80*2*Math.PI;gx.push(ax*Math.cos(a)+bx*Math.sin(a));gy.push(ay*Math.cos(a)+by*Math.sin(a));gz.push(az*Math.cos(a)+bz*Math.sin(a));}return{type:'scatter3d',x:gx,y:gy,z:gz,mode:'lines',line:{color:'rgba(100,150,200,0.18)',width:1},hoverinfo:'none',showlegend:false};};
     data.push(gc(1,0,0,1,0,0));data.push(gc(1,0,0,0,0,1));data.push(gc(0,1,1,0,0,0));
     // Pole labels
-    const poles=[[1,0,0,'H'],[−1,0,0,'V'],[0,1,0,'+45'],[0,-1,0,'−45'],[0,0,1,'RCP'],[0,0,-1,'LCP']];
+    const poles=[[1,0,0,'H'],[-1,0,0,'V'],[0,1,0,'+45'],[0,-1,0,'-45'],[0,0,1,'RCP'],[0,0,-1,'LCP']];
     data.push({type:'scatter3d',mode:'markers+text',x:poles.map(p=>p[0]),y:poles.map(p=>p[1]),z:poles.map(p=>p[2]),text:poles.map(p=>p[3]),textfont:{size:8,color:'rgba(200,210,230,0.5)'},textposition:'top center',marker:{size:3.5,color:'rgba(100,150,200,0.45)'},hoverinfo:'text',showlegend:false});
     // Current point
     const r=Math.sqrt(s1n**2+s2n**2+s3n**2);
@@ -1038,7 +1038,7 @@ Inverse (S₀=1):
   /* ── Init ── */
   renderNav({ active: 'polarimetry', root: '../' });
   polStartEfield('efieldCanvas', 1, 0, 0, '#06b6d4');
-  setTimeout(polUpdateSim, 350); // after Plotly loads
+  // polUpdateSim called on tab switch only (simulator tab starts hidden)
   </script>
 </body>
 </html>
