@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polarimetry Explorer — AMO Career</title>
+  <meta name="description" content="Interactive Stokes polarimetry simulator. Visualize any polarization state, simulate the rotating-QWP method (Schaefer 2007), extract Stokes parameters via Fourier analysis, and explore Mueller matrices.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <style>
+    /* ── Polarimetry-specific design tokens ── */
+    :root {
+      --c-pol: #e879f9;          /* fuchsia accent for this page */
+      --c-pol-dim: rgba(232,121,249,0.12);
+      --c-pol-border: rgba(232,121,249,0.25);
+      /* local aliases for simulator components */
+      --pol-bg: #02080f;
+      --pol-card: #0c1526;
+      --pol-card2: #0e1a2e;
+      --pol-border: rgba(255,255,255,0.07);
+      --pol-border2: rgba(255,255,255,0.12);
+      --pol-text: #e2e8f0;
+      --pol-text2: #94a3b8;
+      --pol-cyan: #06b6d4;
+      --pol-cyan2: #67e8f9;
+      --pol-purple: #8b5cf6;
+      --pol-green: #10b981;
+      --pol-orange: #f59e0b;
+      --pol-red: #f87171;
+      --pol-yellow: #facc15;
+    }
+
+    /* ── Tab navigation (custom, no conflict with main.js) ── */
+    .pol-tab-nav {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid rgba(232,121,249,0.15);
+      margin-bottom: 28px;
+      overflow-x: auto;
+      padding-bottom: 0;
+    }
+    .pol-tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.18s;
+      white-space: nowrap;
+      font-family: var(--font-sans);
+    }
+    .pol-tab-btn:hover { color: var(--text-primary); }
+    .pol-tab-btn.active { color: var(--c-pol); border-bottom-color: var(--c-pol); }
+    .pol-section { display: none; }
+    .pol-section.active { display: block; }
+
+    /* ── Typography ── */
+    .pol-h2 { font-size: 18px; font-weight: 600; color: var(--c-pol); margin: 24px 0 12px; }
+    .pol-h2:first-child { margin-top: 0; }
+    .pol-h3 { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .pol-h4 { font-size: 13px; font-weight: 600; color: var(--pol-cyan2); margin-bottom: 6px; }
+    .pol-p { color: var(--text-secondary); font-size: 14px; line-height: 1.65; margin-bottom: 10px; }
+    .pol-p strong { color: var(--text-primary); }
+    .pol-intro { font-size: 14.5px; color: var(--text-secondary); margin-bottom: 24px; max-width: 680px; }
+
+    /* ── Cards ── */
+    .pol-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+    .pol-card-pol { border-left: 3px solid var(--c-pol); }
+    .pol-card-cyan { border-left: 3px solid var(--pol-cyan); }
+    .pol-card-purple { border-left: 3px solid var(--pol-purple); }
+    .pol-card-green { border-left: 3px solid var(--pol-green); }
+    .pol-card-orange { border-left: 3px solid var(--pol-orange); }
+    .pol-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .pol-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .pol-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 14px; }
+
+    /* ── Formula boxes ── */
+    .pol-formula {
+      background: rgba(6,182,212,0.04);
+      border: 1px solid rgba(6,182,212,0.15);
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--pol-cyan2);
+      margin: 10px 0;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.7;
+    }
+    .pol-formula .fc { color: var(--text-secondary); font-style: italic; font-family: var(--font-sans); font-size: 12px; }
+    .pol-formula .fh { color: var(--pol-yellow); }
+    .pol-formula .fs1 { color: var(--pol-cyan); }
+    .pol-formula .fs2 { color: var(--pol-purple); }
+    .pol-formula .fs3 { color: var(--pol-green); }
+
+    /* ── Badges ── */
+    .pol-badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+    .pbc { background: rgba(6,182,212,0.1); color: var(--pol-cyan); }
+    .pbp { background: rgba(139,92,246,0.1); color: var(--pol-purple); }
+    .pbg { background: rgba(16,185,129,0.1); color: var(--pol-green); }
+    .pbo { background: rgba(245,158,11,0.1); color: var(--pol-orange); }
+    .pbpol { background: var(--c-pol-dim); color: var(--c-pol); }
+
+    /* ── Info boxes ── */
+    .pol-info { background: rgba(6,182,212,0.05); border: 1px solid rgba(6,182,212,0.15); border-radius: 6px; padding: 10px 14px; margin: 8px 0; font-size: 13px; color: var(--text-secondary); }
+    .pol-info strong { color: var(--pol-cyan); }
+    .pol-warn { background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.18); border-radius: 6px; padding: 10px 14px; margin: 8px 0; font-size: 13px; color: var(--text-secondary); }
+    .pol-warn strong { color: var(--pol-orange); }
+    .pol-good { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.18); border-radius: 6px; padding: 10px 14px; margin: 8px 0; font-size: 13px; color: var(--text-secondary); }
+    .pol-good strong { color: var(--pol-green); }
+
+    /* ── Optical path diagrams ── */
+    .pol-oppath { display: flex; align-items: center; flex-wrap: nowrap; overflow-x: auto; padding: 10px 0; margin: 12px 0; gap: 0; }
+    .pol-beam { flex: 1; height: 2px; background: linear-gradient(90deg,var(--pol-orange),var(--pol-cyan)); min-width: 16px; }
+    .pol-el { background: var(--bg-card); border: 1.5px solid var(--border-med); border-radius: 7px; padding: 7px 11px; text-align: center; min-width: 72px; flex-shrink: 0; }
+    .pol-el .en { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .pol-el .ed { font-size: 10.5px; color: var(--text-secondary); margin-top: 1px; }
+    .pol-el .ea { font-family: var(--font-mono); font-size: 10.5px; color: var(--pol-cyan); margin-top: 3px; }
+    .pol-el-src { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.04); }
+    .pol-el-det { border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.04); }
+    .pol-el-rot { border-color: var(--pol-cyan); animation: polpulse 2s infinite; }
+    @keyframes polpulse { 0%,100%{box-shadow:0 0 0 0 rgba(6,182,212,0.2)} 50%{box-shadow:0 0 0 5px rgba(6,182,212,0)} }
+
+    /* ── Tables ── */
+    .pol-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .pol-table th { background: rgba(232,121,249,0.06); padding: 9px 12px; text-align: left; font-weight: 600; color: var(--c-pol); border-bottom: 1px solid var(--border-med); }
+    .pol-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .pol-table td:first-child { color: var(--text-primary); font-weight: 500; }
+    .pol-table td .m { font-family: var(--font-mono); font-size: 12px; color: var(--pol-cyan2); }
+    .pol-table tr:last-child td { border-bottom: none; }
+    .pol-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tc { text-align: center; }
+    .ck { color: var(--pol-green); font-size: 15px; }
+    .cr { color: var(--pol-red); font-size: 15px; }
+
+    /* ── Sliders ── */
+    .pol-srow { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+    .pol-slbl { font-family: var(--font-mono); font-size: 12px; color: var(--pol-cyan2); width: 62px; flex-shrink: 0; }
+    .pol-sval { font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); width: 55px; text-align: right; flex-shrink: 0; }
+    input[type=range].pol-range { flex: 1; -webkit-appearance: none; height: 4px; border-radius: 2px; background: var(--pol-border2); outline: none; }
+    input[type=range].pol-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--pol-cyan); cursor: pointer; }
+    input[type=range].pol-range.purple::-webkit-slider-thumb { background: var(--pol-purple); }
+    input[type=range].pol-range.green::-webkit-slider-thumb { background: var(--pol-green); }
+    input[type=range].pol-range.orange::-webkit-slider-thumb { background: var(--pol-orange); }
+
+    /* ── Preset buttons ── */
+    .pol-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .pol-pbtn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: all 0.18s; font-family: var(--font-sans); }
+    .pol-pbtn:hover { border-color: var(--c-pol); color: var(--c-pol); background: var(--c-pol-dim); }
+    .pol-pbtn.active { border-color: var(--c-pol); color: var(--c-pol); background: var(--c-pol-dim); }
+
+    /* ── Stokes readout ── */
+    .pol-sreadout { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 12px 0; }
+    .pol-sp { background: var(--pol-card2); border-radius: 7px; padding: 10px; text-align: center; border: 1px solid var(--pol-border); }
+    .pol-sp-lbl { font-family: var(--font-mono); font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+    .pol-sp-val { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-primary); }
+    .psp0 .pol-sp-lbl { color: var(--text-primary); }
+    .psp1 .pol-sp-lbl { color: var(--pol-cyan); }
+    .psp2 .pol-sp-lbl { color: var(--pol-purple); }
+    .psp3 .pol-sp-lbl { color: var(--pol-green); }
+
+    /* ── Canvas ── */
+    .pol-canvas-wrap { background: var(--pol-card2); border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 10px; }
+    canvas { display: block; }
+
+    /* ── Simulator layout ── */
+    .pol-sim-layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
+    .pol-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+    .pol-panel-head { font-size: 11px; font-weight: 600; color: var(--c-pol); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+
+    /* ── Method buttons ── */
+    .pol-mbtn-row { display: flex; gap: 7px; margin-bottom: 12px; }
+    .pol-mbtn { flex: 1; padding: 7px 10px; border-radius: 7px; border: 1.5px solid var(--border-med); background: var(--bg-card); color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: all 0.18s; font-family: var(--font-sans); text-align: center; }
+    .pol-mbtn:hover { border-color: var(--c-pol); color: var(--text-primary); }
+    .pol-mbtn.active { border-color: var(--c-pol); color: var(--c-pol); background: var(--c-pol-dim); }
+
+    /* ── Toggle ── */
+    .pol-trow { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+    .pol-tlbl { font-size: 12.5px; color: var(--text-secondary); }
+    .pol-tgl { position: relative; width: 34px; height: 19px; cursor: pointer; }
+    .pol-tgl input { display: none; }
+    .pol-tgl-s { position: absolute; inset: 0; background: var(--border-med); border-radius: 9px; transition: 0.18s; }
+    .pol-tgl-s:before { content:''; position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; background: var(--text-secondary); border-radius: 50%; transition: 0.18s; }
+    .pol-tgl input:checked + .pol-tgl-s { background: rgba(232,121,249,0.3); }
+    .pol-tgl input:checked + .pol-tgl-s:before { background: var(--c-pol); transform: translateX(15px); }
+
+    /* ── State info grid ── */
+    .pol-si-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 10px 0; }
+    .pol-si { background: var(--pol-card2); border-radius: 6px; padding: 7px 11px; }
+    .pol-si-l { font-size: 10.5px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+    .pol-si-v { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text-primary); margin-top: 2px; }
+
+    /* ── Extraction result ── */
+    .pol-ex { background: var(--pol-card2); border-radius: 7px; padding: 12px; margin-top: 8px; }
+    .pol-ex-row { display: grid; grid-template-columns: 46px 1fr 65px 65px; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--pol-border); font-size: 12.5px; }
+    .pol-ex-row:last-child { border-bottom: none; }
+    .pol-ex-lbl { font-family: var(--font-mono); font-weight: 700; }
+    .pol-ex-bw { background: rgba(255,255,255,0.05); border-radius: 3px; height: 5px; overflow: hidden; }
+    .pol-ex-b { height: 5px; border-radius: 3px; transition: width 0.3s; }
+    .pol-ex-v { font-family: var(--font-mono); font-size: 11.5px; text-align: right; }
+    .pol-ex-d { font-family: var(--font-mono); font-size: 10.5px; text-align: right; opacity: 0.75; }
+
+    /* ── Fourier breakdown ── */
+    .pol-fb { background: var(--pol-card2); border-radius: 7px; padding: 12px 14px; margin-top: 8px; }
+    .pol-fb-row { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; border-bottom: 1px solid var(--pol-border); font-size: 12.5px; }
+    .pol-fb-row:last-child { border-bottom: none; }
+    .pol-fb-lbl { font-family: var(--font-mono); color: var(--text-secondary); }
+    .pol-fb-eq { font-family: var(--font-mono); color: var(--pol-cyan2); font-size: 11.5px; }
+    .pol-fb-val { font-family: var(--font-mono); color: var(--text-primary); }
+
+    /* ── Sphere labels ── */
+    .pol-sphere-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .pol-sphere-item { background: var(--pol-card2); border-radius: 5px; padding: 7px 10px; text-align: center; font-size: 12px; }
+    .pol-sphere-item .pl { color: var(--pol-cyan); font-family: var(--font-mono); font-weight: 600; font-size: 11px; }
+    .pol-sphere-item .pn { color: var(--text-secondary); font-size: 11.5px; }
+
+    /* ── Divider ── */
+    .pol-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    @media (max-width: 820px) {
+      .pol-sim-layout { grid-template-columns: 1fr; }
+      .pol-grid2, .pol-grid3 { grid-template-columns: 1fr 1fr; }
+      .pol-sreadout { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="nav-root"></div>
+
+  <div class="page-wrap">
+
+    <!-- ── Page Hero ── -->
+    <div class="page-hero" style="
+      --page-color: var(--c-pol);
+      --page-bg: rgba(232,121,249,0.06);
+      --page-border: rgba(232,121,249,0.2);
+    ">
+      <div class="container">
+        <div class="page-hero-eyebrow" style="background:rgba(232,121,249,0.08);border-color:rgba(232,121,249,0.2);color:var(--c-pol)">🔭 Tool 10 · Polarimetry Explorer</div>
+        <h1>🔭 Stokes Polarimetry Explorer</h1>
+        <p class="page-hero-desc">
+          Interactive learning tool for optical polarimetry. Visualize any polarization state,
+          simulate the rotating-QWP measurement (Schaefer et al. 2007), extract Stokes parameters
+          via Fourier analysis, and understand why S₃ (circular) requires a QWP — not just an HWP.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Page Content ── -->
+    <div class="page-content">
+      <div class="container">
+
+        <!-- TAB NAVIGATION -->
+        <nav class="pol-tab-nav" aria-label="Polarimetry sections">
+          <button class="pol-tab-btn active" onclick="polTab('basics',this)">1. Polarization Basics</button>
+          <button class="pol-tab-btn" onclick="polTab('stokes',this)">2. Stokes Parameters</button>
+          <button class="pol-tab-btn" onclick="polTab('methods',this)">3. Measurement Methods</button>
+          <button class="pol-tab-btn" onclick="polTab('simulator',this)">4. Interactive Simulator</button>
+          <button class="pol-tab-btn" onclick="polTab('matrices',this)">5. Reference & Matrices</button>
+        </nav>
+
+        <!-- ════════════ TAB 1: BASICS ════════════ -->
+        <div id="pol-basics" class="pol-section active">
+          <p class="pol-intro">Light is an electromagnetic wave. <strong>Polarization</strong> describes how the electric field vector <strong>E</strong> oscillates as the wave propagates. Click below to see the E-field for each type.</p>
+
+          <div class="pol-grid2" style="align-items:start">
+            <div>
+              <div class="pol-canvas-wrap">
+                <canvas id="efieldCanvas" width="270" height="270"></canvas>
+              </div>
+              <div class="pol-presets" style="margin-top:10px; justify-content:center">
+                <button class="pol-pbtn active" onclick="setEF('linear0',this)">Linear 0°</button>
+                <button class="pol-pbtn" onclick="setEF('linear45',this)">Linear 45°</button>
+                <button class="pol-pbtn" onclick="setEF('linear90',this)">Linear 90°</button>
+                <button class="pol-pbtn" onclick="setEF('rcp',this)">Right Circular</button>
+                <button class="pol-pbtn" onclick="setEF('lcp',this)">Left Circular</button>
+                <button class="pol-pbtn" onclick="setEF('elliptical',this)">Elliptical</button>
+              </div>
+              <div id="efieldDesc" class="pol-info" style="margin-top:8px;font-size:12.5px">
+                <strong>Linear 0° (Horizontal):</strong> E-field oscillates along x-axis. Stokes: S=[1,1,0,0].
+              </div>
+            </div>
+            <div>
+              <div class="pol-h2" style="margin-top:0">Types of Polarization</div>
+              <div class="pol-card pol-card-cyan">
+                <div class="pol-h3">Linear Polarization</div>
+                <p class="pol-p">E-field oscillates in a fixed plane at angle α. Created by a linear polarizer or PBS.</p>
+                <div class="pol-formula">S = [1, <span class="fs1">cos 2α</span>, <span class="fs2">sin 2α</span>, 0]</div>
+              </div>
+              <div class="pol-card pol-card-purple">
+                <div class="pol-h3">Circular Polarization</div>
+                <p class="pol-p">E-field rotates in a circle. <strong>RCP</strong>: clockwise looking into beam. Created by linear + QWP at 45°.</p>
+                <div class="pol-formula">S = [1, 0, 0, <span class="fs3">±1</span>]</div>
+              </div>
+              <div class="pol-card pol-card-green" style="margin-bottom:0">
+                <div class="pol-h3">Elliptical Polarization</div>
+                <p class="pol-p">Most general case. Described by orientation ψ and ellipticity χ. Linear/circular are special cases.</p>
+                <div class="pol-formula">S = [1, <span class="fs1">cos2χ·cos2ψ</span>, <span class="fs2">cos2χ·sin2ψ</span>, <span class="fs3">sin2χ</span>]</div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">Key Optical Components</div>
+          <div class="pol-grid3">
+            <div class="pol-card pol-card-orange">
+              <div class="pol-h3">PBS — Polarizing Beam Splitter</div>
+              <p class="pol-p">Splits light into orthogonal linear polarizations. Extinction ratio: <strong>~1:1,000</strong> (cube) or <strong>~1:100,000</strong> (GT PBS).</p>
+              <p class="pol-p"><span class="pol-badge pbo">Transmit</span> Horizontal &nbsp; <span class="pol-badge pbc">Reflect</span> Vertical</p>
+            </div>
+            <div class="pol-card pol-card-cyan">
+              <div class="pol-h3">HWP — Half-Wave Plate</div>
+              <p class="pol-p">Phase retardance <strong>π</strong>. Rotates linear polarization by 2θ (fast axis at θ). Flips circular handedness.</p>
+              <p class="pol-p">Used in Scenario 1 & 2 (rotating HWP + PBS). <strong>Cannot detect S₃!</strong></p>
+            </div>
+            <div class="pol-card pol-card-purple" style="margin-bottom:0">
+              <div class="pol-h3">QWP — Quarter-Wave Plate</div>
+              <p class="pol-p">Phase retardance <strong>π/2</strong>. Converts linear ↔ circular. QWP at 45° converts RCP/LCP to linear.</p>
+              <p class="pol-p">Central element in the <strong>rotating QWP method</strong> — detects all four Stokes parameters.</p>
+            </div>
+          </div>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">Lab Scenarios (from your notes)</div>
+          <div class="pol-card">
+            <p class="pol-p"><strong>Scenario 1 — Linear polarization input:</strong></p>
+            <div class="pol-oppath">
+              <div class="pol-el pol-el-src"><div class="en">SOURCE</div><div class="ed">Unknown linear</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-rot"><div class="en">HWP</div><div class="ed">Half-wave plate</div><div class="ea">θ: 0→180°</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el"><div class="en">PBS</div><div class="ed">Fixed horizontal</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
+            </div>
+            <p class="pol-p">Sinusoidal I(θ) curve. <span class="pol-badge pbc">Formula:</span> I(θ) = ½[1 + cos(4θ − 2α)]. Maximum at θ = α/2 reveals polarization angle.</p>
+
+            <p class="pol-p" style="margin-top:14px"><strong>Scenario 2 — Circular polarization input:</strong></p>
+            <div class="pol-oppath">
+              <div class="pol-el pol-el-src"><div class="en">SOURCE</div><div class="ed">Circular pol.</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el"><div class="en">QWP</div><div class="ed">at 45° (fixed)</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-rot"><div class="en">HWP</div><div class="ed">rotating</div><div class="ea">θ: 0→180°</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el"><div class="en">PBS</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
+            </div>
+            <p class="pol-p">Without QWP: circular gives a <strong>flat line</strong>. QWP at 45° converts RCP/LCP → linear, then HWP+PBS sees a sinusoidal curve.</p>
+          </div>
+        </div>
+
+        <!-- ════════════ TAB 2: STOKES ════════════ -->
+        <div id="pol-stokes" class="pol-section">
+          <p class="pol-intro">The Stokes formulation represents polarization using <strong>four intensity measurements</strong> — no complex math needed. All values are directly measurable with a power meter.</p>
+
+          <div class="pol-h2">The Four Parameters</div>
+          <div class="pol-grid2" style="align-items:start">
+            <div>
+              <div class="pol-card pol-card-cyan">
+                <div class="pol-h4">S₀ — Total Intensity</div>
+                <p class="pol-p">Total beam power. For normalized states, S₀ = 1.</p>
+                <div class="pol-formula">S₀ = I_H + I_V</div>
+              </div>
+              <div class="pol-card pol-card-cyan">
+                <div class="pol-h4">S₁ (Q) — Horizontal vs Vertical</div>
+                <p class="pol-p">+1 = fully horizontal, −1 = fully vertical, 0 = equal.</p>
+                <div class="pol-formula">S₁ = I(0°) − I(90°)</div>
+              </div>
+              <div class="pol-card pol-card-purple">
+                <div class="pol-h4">S₂ (U) — Diagonal Preference</div>
+                <p class="pol-p">+1 = fully +45°, −1 = fully −45°, 0 = symmetric.</p>
+                <div class="pol-formula">S₂ = I(45°) − I(135°)</div>
+              </div>
+              <div class="pol-card pol-card-green" style="margin-bottom:0">
+                <div class="pol-h4">S₃ (V) — Circular Handedness</div>
+                <p class="pol-p">+1 = fully RCP, −1 = fully LCP. <strong>Cannot be measured with HWP+PBS alone!</strong></p>
+                <div class="pol-formula">S₃ = I_RCP − I_LCP</div>
+              </div>
+            </div>
+            <div>
+              <div class="pol-h2" style="margin-top:0">Poincaré Sphere</div>
+              <p class="pol-p" style="font-size:12.5px;margin-bottom:6px">Every fully polarized state maps to a point on the unit sphere. Drag to rotate.</p>
+              <div id="pol-poincare-s2" style="height:320px"></div>
+              <div class="pol-sphere-grid">
+                <div class="pol-sphere-item"><div class="pl">+S₁ equator</div><div class="pn">Linear 0°</div></div>
+                <div class="pol-sphere-item"><div class="pl">+S₂ equator</div><div class="pn">Linear +45°</div></div>
+                <div class="pol-sphere-item"><div class="pl">+S₃ north</div><div class="pn">Right Circular</div></div>
+                <div class="pol-sphere-item"><div class="pl">−S₁ equator</div><div class="pn">Linear 90°</div></div>
+                <div class="pol-sphere-item"><div class="pl">−S₂ equator</div><div class="pn">Linear −45°</div></div>
+                <div class="pol-sphere-item"><div class="pl">−S₃ south</div><div class="pn">Left Circular</div></div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">Common States Table</div>
+          <table class="pol-table">
+            <thead><tr><th>State</th><th>S₀</th><th>S₁</th><th>S₂</th><th>S₃</th><th>Location</th></tr></thead>
+            <tbody>
+              <tr><td>Horizontal (0°)</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m" style="color:var(--pol-cyan)">+1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>+S₁ equator</td></tr>
+              <tr><td>Vertical (90°)</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m" style="color:var(--pol-cyan)">−1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>−S₁ equator</td></tr>
+              <tr><td>Linear +45°</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m" style="color:var(--pol-purple)">+1</span></td><td class="tc"><span class="m">0</span></td><td>+S₂ equator</td></tr>
+              <tr><td>Linear −45°</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m" style="color:var(--pol-purple)">−1</span></td><td class="tc"><span class="m">0</span></td><td>−S₂ equator</td></tr>
+              <tr><td>Right Circular (RCP)</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m" style="color:var(--pol-green)">+1</span></td><td>North pole</td></tr>
+              <tr><td>Left Circular (LCP)</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m" style="color:var(--pol-green)">−1</span></td><td>South pole</td></tr>
+              <tr><td>Linear at angle α</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">cos 2α</span></td><td class="tc"><span class="m">sin 2α</span></td><td class="tc"><span class="m">0</span></td><td>Equator at 2α</td></tr>
+              <tr><td>Unpolarized</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>Center (inside)</td></tr>
+            </tbody>
+          </table>
+
+          <hr class="pol-divider">
+          <div class="pol-grid2">
+            <div>
+              <div class="pol-h3">Fully Polarized Light</div>
+              <div class="pol-formula">S₀² = S₁² + S₂² + S₃²
+
+DOP = √(S₁²+S₂²+S₃²) / S₀
+  1.0 = fully polarized
+  0.0 = unpolarized</div>
+            </div>
+            <div>
+              <div class="pol-h3">Ellipse Parameters</div>
+              <div class="pol-formula">ψ = ½ atan2(S₂, S₁)   <span class="fc">[orientation 0–180°]</span>
+χ = ½ arcsin(S₃/S₀)  <span class="fc">[ellipticity ±45°]</span>
+
+χ = 0    → Linear
+χ = ±45° → Circular</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════════════ TAB 3: METHODS ════════════ -->
+        <div id="pol-methods" class="pol-section">
+          <p class="pol-intro">Three approaches with increasing sophistication. The rotating QWP method (Schaefer 2007) recovers <strong>all four Stokes parameters</strong> from a single continuous rotation.</p>
+
+          <div class="pol-h2">Method A: Classical (6 Separate Measurements)</div>
+          <div class="pol-card">
+            <p class="pol-p">Directly measure I with a linear polarizer at 0°, 45°, 90°, 135°, and with a QWP for circular.</p>
+            <div class="pol-formula">S₀ = I(0°) + I(90°)
+S₁ = I(0°) − I(90°)
+S₂ = I(45°) − I(135°)
+S₃ = I_RCP − I_LCP   <span class="fc">← requires QWP at 45°</span></div>
+            <div class="pol-warn"><strong>Limitation:</strong> Six separate alignments. Drift between shots introduces error. Tedious for S₃.</div>
+          </div>
+
+          <div class="pol-h2">Method B: Rotating HWP + PBS</div>
+          <div class="pol-card">
+            <div class="pol-oppath">
+              <div class="pol-el pol-el-src"><div class="en">SOURCE</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-rot"><div class="en">HWP</div><div class="ea">θ: 0→360°</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el"><div class="en">PBS</div><div class="ed">Fixed horizontal</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
+            </div>
+            <div class="pol-formula">I(θ) = ½ [S₀ + <span class="fs1">S₁</span>·cos(4θ) + <span class="fs2">S₂</span>·sin(4θ)]
+
+<span class="fc">Note: No S₃ term — circular component is INVISIBLE!</span>
+<span class="fc">For circular input [S₁=S₂=0]: I(θ) = S₀/2 = FLAT LINE</span></div>
+            <div class="pol-warn"><strong>Key limitation:</strong> HWP flips S₃ but PBS transmits only linear — so S₃ cancels out. To detect circular, you need a fixed QWP at 45° first (Scenario 2), or use Method C below.</div>
+          </div>
+
+          <div class="pol-h2">Method C: Rotating QWP + LP (Schaefer 2007) ★</div>
+          <div class="pol-card pol-card-pol">
+            <div class="pol-oppath">
+              <div class="pol-el pol-el-src"><div class="en">SOURCE</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-rot"><div class="en">QWP</div><div class="ed">Fast axis at θ</div><div class="ea">θ: 0→360°</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el"><div class="en">LP</div><div class="ed">Linear polarizer</div><div class="ea">Fixed (horiz.)</div></div>
+              <div class="pol-beam"></div>
+              <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
+            </div>
+            <div class="pol-formula">I(θ) = ½ [S₀ + S₁·cos²(2θ) + S₂·sin(2θ)cos(2θ) − S₃·sin(2θ)]
+
+Using trig identities:
+
+I(θ) = <span class="fh">a₀</span> + <span class="fs3">b₂</span>·sin(2θ) + <span class="fs1">a₄</span>·cos(4θ) + <span class="fs2">b₄</span>·sin(4θ)
+
+where:
+  <span class="fh">a₀</span> = S₀/2 + S₁/4     <span class="fc">← DC offset</span>
+  <span class="fs3">b₂</span> = −S₃/2           <span class="fc">← 2nd harmonic encodes S₃!</span>
+  <span class="fs1">a₄</span> = S₁/4            <span class="fc">← 4th harmonic cosine</span>
+  <span class="fs2">b₄</span> = S₂/4            <span class="fc">← 4th harmonic sine</span>
+
+Recovery:
+  <span class="fs1">S₁ = 4·a₄</span>     <span class="fs2">S₂ = 4·b₄</span>     <span class="fs3">S₃ = −2·b₂</span>     S₀ = 2·a₀ − 2·a₄</div>
+            <div class="pol-good"><strong>Why this wins:</strong> S₃ appears in the 2nd harmonic — unique to the QWP method. A single continuous rotation gives all four parameters via Fourier analysis. Noise averages out across the full sweep.</div>
+          </div>
+
+          <div class="pol-h2">Comparison</div>
+          <table class="pol-table">
+            <thead><tr><th>Method</th><th class="tc">S₁</th><th class="tc">S₂</th><th class="tc">S₃</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Classical (6 shots)</td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td>6 separate alignments, drift-prone</td></tr>
+              <tr><td>Rotating HWP + PBS</td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="cr">✗</span></td><td>Cannot detect S₃ (circular)</td></tr>
+              <tr><td><strong>Rotating QWP + LP ★</strong></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td>Single rotation, Fourier fit, all 4 params</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ════════════ TAB 4: SIMULATOR ════════════ -->
+        <div id="pol-simulator" class="pol-section">
+          <p class="pol-intro">Set any input polarization state, choose the measurement method, and see the exact I(θ) curve live. Fourier analysis extracts all Stokes parameters automatically.</p>
+
+          <div class="pol-sim-layout">
+            <!-- LEFT: Controls -->
+            <div>
+              <div class="pol-panel">
+                <div class="pol-panel-head">Input Polarization State</div>
+                <div class="pol-presets" id="pol-presets">
+                  <button class="pol-pbtn active" data-s="1,1,0,0" onclick="polSetPreset(this)">H Linear</button>
+                  <button class="pol-pbtn" data-s="1,-1,0,0" onclick="polSetPreset(this)">V Linear</button>
+                  <button class="pol-pbtn" data-s="1,0,1,0" onclick="polSetPreset(this)">+45°</button>
+                  <button class="pol-pbtn" data-s="1,0,-1,0" onclick="polSetPreset(this)">−45°</button>
+                  <button class="pol-pbtn" data-s="1,0,0,1" onclick="polSetPreset(this)">RCP</button>
+                  <button class="pol-pbtn" data-s="1,0,0,-1" onclick="polSetPreset(this)">LCP</button>
+                  <button class="pol-pbtn" data-s="1,0.5,0.5,0.707" onclick="polSetPreset(this)">Elliptical</button>
+                </div>
+                <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Or use sliders (ψ=orientation, χ=ellipticity):</p>
+                <div class="pol-srow">
+                  <span class="pol-slbl">ψ (orient)</span>
+                  <input type="range" id="pol-sl-psi" class="pol-range" min="0" max="180" value="0" oninput="polOnSlider()">
+                  <span class="pol-sval" id="pol-sv-psi">0°</span>
+                </div>
+                <div class="pol-srow">
+                  <span class="pol-slbl">χ (ellip.)</span>
+                  <input type="range" id="pol-sl-chi" class="pol-range purple" min="-45" max="45" value="0" oninput="polOnSlider()">
+                  <span class="pol-sval" id="pol-sv-chi">0°</span>
+                </div>
+                <div class="pol-srow">
+                  <span class="pol-slbl">DOP</span>
+                  <input type="range" id="pol-sl-dop" class="pol-range green" min="0" max="100" value="100" oninput="polOnSlider()">
+                  <span class="pol-sval" id="pol-sv-dop">100%</span>
+                </div>
+                <div class="pol-sreadout">
+                  <div class="pol-sp psp0"><div class="pol-sp-lbl">S₀</div><div class="pol-sp-val" id="pol-v0">1.000</div></div>
+                  <div class="pol-sp psp1"><div class="pol-sp-lbl">S₁</div><div class="pol-sp-val" id="pol-v1">1.000</div></div>
+                  <div class="pol-sp psp2"><div class="pol-sp-lbl">S₂</div><div class="pol-sp-val" id="pol-v2">0.000</div></div>
+                  <div class="pol-sp psp3"><div class="pol-sp-lbl">S₃</div><div class="pol-sp-val" id="pol-v3">0.000</div></div>
+                </div>
+                <div class="pol-si-grid">
+                  <div class="pol-si"><div class="pol-si-l">Orientation ψ</div><div class="pol-si-v" id="pol-info-psi">0.0°</div></div>
+                  <div class="pol-si"><div class="pol-si-l">Ellipticity χ</div><div class="pol-si-v" id="pol-info-chi">0.0°</div></div>
+                  <div class="pol-si"><div class="pol-si-l">DOP</div><div class="pol-si-v" id="pol-info-dop">100%</div></div>
+                  <div class="pol-si"><div class="pol-si-l">Type</div><div class="pol-si-v" id="pol-info-type">Linear</div></div>
+                </div>
+              </div>
+
+              <div class="pol-panel">
+                <div class="pol-panel-head">Measurement Setup</div>
+                <div class="pol-mbtn-row">
+                  <button class="pol-mbtn active" id="pol-mb-qwp" onclick="polSetMethod('qwp')">Rotating QWP + LP</button>
+                  <button class="pol-mbtn" id="pol-mb-hwp" onclick="polSetMethod('hwp')">Rotating HWP + PBS</button>
+                </div>
+                <div id="pol-method-note" class="pol-info" style="font-size:12px"></div>
+                <div class="pol-trow" style="margin-top:10px">
+                  <label class="pol-tgl"><input type="checkbox" id="pol-noise-tgl" onchange="polUpdateSim()"><span class="pol-tgl-s"></span></label>
+                  <span class="pol-tlbl">Add measurement noise</span>
+                </div>
+                <div class="pol-srow" id="pol-snr-row" style="display:none">
+                  <span class="pol-slbl">SNR (dB)</span>
+                  <input type="range" id="pol-sl-snr" class="pol-range orange" min="5" max="40" value="20" oninput="polUpdateSim()">
+                  <span class="pol-sval" id="pol-sv-snr">20 dB</span>
+                </div>
+                <div class="pol-trow">
+                  <label class="pol-tgl"><input type="checkbox" id="pol-fit-tgl" checked onchange="polUpdateSim()"><span class="pol-tgl-s"></span></label>
+                  <span class="pol-tlbl">Show Fourier fit overlay</span>
+                </div>
+              </div>
+
+              <div class="pol-panel">
+                <div class="pol-panel-head">E-Field (xy-plane view)</div>
+                <div class="pol-canvas-wrap" style="padding:6px">
+                  <canvas id="pol-sim-canvas" width="256" height="200"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Plots -->
+            <div>
+              <div class="pol-card" style="margin-bottom:14px">
+                <div class="pol-h3" style="margin-bottom:3px">I(θ) — Intensity vs. Waveplate Angle</div>
+                <p class="pol-p" style="font-size:12px;margin-bottom:6px">Raw measurement signal. The Plotly toolbar (top-right) lets you download as PNG or SVG.</p>
+                <div id="pol-plot-intensity" style="height:270px"></div>
+                <div id="pol-fourier-breakdown" class="pol-fb" style="margin-top:8px"></div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div class="pol-card">
+                  <div class="pol-h3" style="margin-bottom:3px">Extracted Stokes Parameters</div>
+                  <p class="pol-p" style="font-size:12px;margin-bottom:6px">Recovered via Fourier analysis. Compare with input.</p>
+                  <div id="pol-extraction" class="pol-ex"></div>
+                </div>
+                <div class="pol-card">
+                  <div class="pol-h3" style="margin-bottom:3px">Poincaré Sphere</div>
+                  <p class="pol-p" style="font-size:12px;margin-bottom:3px">Current state (cyan dot). Drag to rotate.</p>
+                  <div id="pol-poincare-sim" style="height:210px"></div>
+                </div>
+              </div>
+
+              <div class="pol-card">
+                <div class="pol-h3" style="margin-bottom:3px">Fourier Decomposition of I(θ)</div>
+                <p class="pol-p" style="font-size:12px;margin-bottom:6px">The I(θ) curve broken into its harmonic components. Each encodes a Stokes parameter.</p>
+                <div id="pol-plot-fourier" style="height:210px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════════════ TAB 5: REFERENCE ════════════ -->
+        <div id="pol-matrices" class="pol-section">
+          <p class="pol-intro">Mueller matrices operate on Stokes vectors [S₀,S₁,S₂,S₃]. Jones matrices operate on the complex E-field vector [Ex, Ey·e^iδ].</p>
+
+          <div class="pol-grid2">
+            <div>
+              <div class="pol-h2" style="margin-top:0">Mueller Matrices</div>
+              <div class="pol-h3">Horizontal Linear Polarizer</div>
+              <div class="pol-formula">M_LP = ½ | 1  1  0  0 |
+           | 1  1  0  0 |
+           | 0  0  0  0 |
+           | 0  0  0  0 |</div>
+              <div class="pol-h3" style="margin-top:14px">HWP (fast axis at θ)</div>
+              <div class="pol-formula">M_HWP = | 1      0         0       0  |
+         | 0   cos4θ      sin4θ    0  |
+         | 0   sin4θ     −cos4θ   0  |
+         | 0      0         0      −1 |
+<span class="fc">Note: S₃ → −S₃  (flips circular handedness, but PBS still loses it)</span></div>
+              <div class="pol-h3" style="margin-top:14px">QWP (fast axis at θ)</div>
+              <div class="pol-formula">M_QWP = | 1       0           0         0    |
+         | 0    cos²2θ    sin2θcos2θ  −sin2θ |
+         | 0  sin2θcos2θ   sin²2θ     cos2θ  |
+         | 0    sin2θ       −cos2θ      0    |
+<span class="fc">This matrix generates the S₃ → sin(2θ) term in I(θ)</span></div>
+            </div>
+            <div>
+              <div class="pol-h2" style="margin-top:0">Jones Vectors & Matrices</div>
+              <div class="pol-formula"><span class="fc">H linear:  </span>[1, 0]ᵀ
+<span class="fc">V linear:  </span>[0, 1]ᵀ
+<span class="fc">+45°:      </span>1/√2 · [1,  1]ᵀ
+<span class="fc">−45°:      </span>1/√2 · [1, −1]ᵀ
+<span class="fc">RCP:       </span>1/√2 · [1, −i]ᵀ
+<span class="fc">LCP:       </span>1/√2 · [1, +i]ᵀ</div>
+              <div class="pol-h3" style="margin-top:14px">Jones → Stokes</div>
+              <div class="pol-formula">For [Ex, Ey·e^(iδ)] normalized to S₀=1:
+
+S₀ = |Ex|² + |Ey|²
+S₁ = |Ex|² − |Ey|²
+S₂ = 2|Ex||Ey|·cos(δ)
+S₃ = 2|Ex||Ey|·sin(δ)
+
+Inverse (S₀=1):
+|Ex| = √[(1+S₁)/2]
+|Ey| = √[(1−S₁)/2]
+ δ   = atan2(S₃, S₂)</div>
+            </div>
+          </div>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">Key Formulas Cheatsheet</div>
+          <table class="pol-table">
+            <thead><tr><th>Formula</th><th>What it gives</th></tr></thead>
+            <tbody>
+              <tr><td><span class="m">I_QWP(θ) = ½[S₀+S₁cos²2θ+S₂sin2θcos2θ−S₃sin2θ]</span></td><td>Rotating QWP + LP intensity</td></tr>
+              <tr><td><span class="m">I_HWP(θ) = ½[S₀+S₁cos4θ+S₂sin4θ]</span></td><td>Rotating HWP + PBS (no S₃ term!)</td></tr>
+              <tr><td><span class="m">I(θ) = a₀ + b₂sin2θ + a₄cos4θ + b₄sin4θ</span></td><td>QWP Fourier expansion</td></tr>
+              <tr><td><span class="m">S₁=4a₄, S₂=4b₄, S₃=−2b₂, S₀=2a₀−2a₄</span></td><td>Stokes from Fourier coefficients</td></tr>
+              <tr><td><span class="m">DOP = √(S₁²+S₂²+S₃²)/S₀</span></td><td>Degree of polarization</td></tr>
+              <tr><td><span class="m">ψ = ½·atan2(S₂,S₁)</span></td><td>Polarization orientation (0–180°)</td></tr>
+              <tr><td><span class="m">χ = ½·arcsin(S₃/S₀·DOP)</span></td><td>Ellipticity angle (±45°)</td></tr>
+              <tr><td><span class="m">I_linear(θ)|_HWP = ½[1+cos(4θ−2α)]</span></td><td>HWP scan for linear pol. at angle α</td></tr>
+            </tbody>
+          </table>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">Step-by-Step: Rotating QWP Method</div>
+          <div class="pol-grid3">
+            <div class="pol-card pol-card-cyan"><div class="pol-h4">Step 1 — Setup</div><p class="pol-p">Place rotating QWP (motorized or manual) followed by a fixed horizontal linear polarizer. Connect output to a power meter or photodiode.</p></div>
+            <div class="pol-card pol-card-purple"><div class="pol-h4">Step 2 — Measure I(θ)</div><p class="pol-p">Rotate QWP 0°→360°, recording intensity at each angle. Need ≥50 points for good SNR. More points = better Fourier resolution.</p></div>
+            <div class="pol-card pol-card-green" style="margin-bottom:0"><div class="pol-h4">Step 3 — Fourier Extract</div><p class="pol-p">Fit I(θ) = a₀ + b₂sin2θ + a₄cos4θ + b₄sin4θ. Apply: S₁=4a₄, S₂=4b₄, S₃=−2b₂, S₀=2a₀−2a₄.</p></div>
+          </div>
+        </div>
+
+      </div><!-- /container -->
+    </div><!-- /page-content -->
+  </div><!-- /page-wrap -->
+
+  <script src="../js/main.js"></script>
+  <script>
+  /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
+  'use strict';
+
+  const POL_DEG = Math.PI / 180;
+  let polS = [1, 1, 0, 0];          // Current Stokes vector
+  let polMethod = 'qwp';
+  let polAnimEfield = null, polAnimSim = null;
+  let polSimInited = { intensity: false, fourier: false };
+  let polPoincareSimInited = false, polPoincareS2Inited = false;
+
+  /* ── Tab switching ── */
+  function polTab(id, btn) {
+    document.querySelectorAll('.pol-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.pol-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('pol-' + id).classList.add('active');
+    btn.classList.add('active');
+    if (id === 'stokes') polInitPoincareS2();
+    if (id === 'simulator') polUpdateSim();
+  }
+
+  /* ── Physics ── */
+  function polStokesToEfield(S) {
+    const s1n = S[1]/S[0], s3n = S[3]/S[0], s2n = S[2]/S[0];
+    const Ex = Math.sqrt(Math.max(0, (1+s1n)/2));
+    const Ey = Math.sqrt(Math.max(0, (1-s1n)/2));
+    const delta = Math.atan2(s3n, s2n);
+    return { Ex, Ey, delta };
+  }
+
+  function polStokesToAngles(S) {
+    const dop = Math.sqrt(S[1]**2+S[2]**2+S[3]**2)/(S[0]||1);
+    const s1n=S[1]/S[0], s2n=S[2]/S[0], s3n=S[3]/S[0];
+    const psi = 0.5*Math.atan2(s2n,s1n)/POL_DEG;
+    const chi = 0.5*Math.asin(Math.max(-1,Math.min(1,dop>0?S[3]/(S[0]*dop):0)))/POL_DEG;
+    return { psi, chi, dop };
+  }
+
+  function polIqwp(t_deg, S) {
+    const t=t_deg*POL_DEG, c2=Math.cos(2*t), s2=Math.sin(2*t);
+    return 0.5*(S[0]+S[1]*c2*c2+S[2]*s2*c2-S[3]*s2);
+  }
+  function polIhwp(t_deg, S) {
+    const t=t_deg*POL_DEG;
+    return 0.5*(S[0]+S[1]*Math.cos(4*t)+S[2]*Math.sin(4*t));
+  }
+
+  function polFourier(thetas, Is) {
+    const N=thetas.length; let a0=0,a2=0,b2=0,a4=0,b4=0;
+    for(let i=0;i<N;i++){const t=thetas[i]*POL_DEG;a0+=Is[i];a2+=Is[i]*Math.cos(2*t);b2+=Is[i]*Math.sin(2*t);a4+=Is[i]*Math.cos(4*t);b4+=Is[i]*Math.sin(4*t);}
+    a0/=N; a2=2*a2/N; b2=2*b2/N; a4=2*a4/N; b4=2*b4/N;
+    return { a0, a2, b2, a4, b4, extracted:[2*a0-2*a4, 4*a4, 4*b4, -2*b2] };
+  }
+
+  function polAddNoise(arr, snrDB) {
+    const sig=arr.reduce((m,v)=>Math.max(m,v),0), noiseAmp=sig/Math.pow(10,snrDB/20);
+    return arr.map(v=>v+noiseAmp*(Math.random()-0.5)*2);
+  }
+
+  /* ── E-field animation ── */
+  const POL_EF_DATA = {
+    linear0:    {Ex:1,Ey:0,delta:0,clr:'#06b6d4',title:'Linear 0° (Horizontal)',desc:'Stokes S=[1,1,0,0]. E-field oscillates only along x-axis.'},
+    linear45:   {Ex:0.707,Ey:0.707,delta:0,clr:'#8b5cf6',title:'Linear +45°',desc:'Stokes S=[1,0,1,0]. Equal x and y, same phase.'},
+    linear90:   {Ex:0,Ey:1,delta:0,clr:'#ec4899',title:'Linear 90° (Vertical)',desc:'Stokes S=[1,−1,0,0]. E-field along y-axis only.'},
+    rcp:        {Ex:0.707,Ey:0.707,delta:Math.PI/2,clr:'#10b981',title:'Right Circular (RCP)',desc:'Stokes S=[1,0,0,1]. E-field rotates clockwise looking into beam.'},
+    lcp:        {Ex:0.707,Ey:0.707,delta:-Math.PI/2,clr:'#f59e0b',title:'Left Circular (LCP)',desc:'Stokes S=[1,0,0,−1]. E-field rotates counter-clockwise.'},
+    elliptical: {Ex:0.85,Ey:0.52,delta:Math.PI/3,clr:'#f87171',title:'Elliptical (general)',desc:'Most general case — tip traces an ellipse. Described by ψ and χ.'},
+  };
+
+  function setEF(key, btn) {
+    document.querySelectorAll('#pol-basics .pol-pbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const d=POL_EF_DATA[key];
+    document.getElementById('efieldDesc').innerHTML=`<strong>${d.title}:</strong> ${d.desc}`;
+    polStartEfield('efieldCanvas', d.Ex, d.Ey, d.delta, d.clr);
+  }
+
+  function polStartEfield(id, Ex, Ey, delta, clr) {
+    if(polAnimEfield) cancelAnimationFrame(polAnimEfield);
+    const canvas=document.getElementById(id); if(!canvas) return;
+    const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
+    const cx=W/2, cy=H/2, sc=Math.min(W,H)/2*0.78; let t=0;
+    function frame() {
+      ctx.clearRect(0,0,W,H);
+      ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
+      for(let g=-sc;g<=sc;g+=sc/2){ctx.beginPath();ctx.moveTo(cx+g,10);ctx.lineTo(cx+g,H-10);ctx.stroke();ctx.beginPath();ctx.moveTo(10,cy+g);ctx.lineTo(W-10,cy+g);ctx.stroke();}
+      ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(12,cy);ctx.lineTo(W-12,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,12);ctx.lineTo(cx,H-12);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='11px Inter';ctx.fillText('x',W-20,cy-5);ctx.fillText('y',cx+5,20);
+      // Ellipse trace
+      ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;ctx.beginPath();
+      for(let i=0;i<=100;i++){const a=i/100*2*Math.PI;const x=cx+sc*Ex*Math.cos(a);const y=cy-sc*Ey*Math.cos(a+delta);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+      ctx.closePath();ctx.stroke();
+      // E-field vector
+      const ex=cx+sc*Ex*Math.cos(t), ey=cy-sc*Ey*Math.cos(t+delta);
+      const grad=ctx.createLinearGradient(cx,cy,ex,ey);grad.addColorStop(0,'rgba(6,182,212,0)');grad.addColorStop(1,clr||'#06b6d4');
+      ctx.strokeStyle=grad;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.shadowBlur=10;ctx.shadowColor=clr||'#06b6d4';ctx.fillStyle=clr||'#06b6d4';ctx.beginPath();ctx.arc(ex,ey,5,0,2*Math.PI);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(255,255,255,0.25)';ctx.beginPath();ctx.arc(cx,cy,3,0,2*Math.PI);ctx.fill();
+      t+=0.04;polAnimEfield=requestAnimationFrame(frame);
+    }
+    frame();
+  }
+
+  /* ── Poincaré Sphere ── */
+  function polBuildSphereData(s1n, s2n, s3n) {
+    const phi_a=[],theta_a=[];
+    for(let i=0;i<=30;i++) phi_a.push(i*Math.PI/30);
+    for(let j=0;j<=60;j++) theta_a.push(j*2*Math.PI/60);
+    const xs=[],ys=[],zs=[];
+    for(let p of phi_a){xs.push([]);ys.push([]);zs.push([]);for(let t of theta_a){xs[xs.length-1].push(Math.sin(p)*Math.cos(t));ys[ys.length-1].push(Math.sin(p)*Math.sin(t));zs[zs.length-1].push(Math.cos(p));}}
+    const data=[{type:'surface',x:xs,y:ys,z:zs,opacity:0.07,colorscale:[[0,'#1e3a5f'],[1,'#2563eb']],showscale:false,hoverinfo:'none',lighting:{ambient:1}}];
+    // Great circles
+    const gc=(ax,bx,ay,by,az,bz)=>{const gx=[],gy=[],gz=[];for(let i=0;i<=80;i++){const a=i/80*2*Math.PI;gx.push(ax*Math.cos(a)+bx*Math.sin(a));gy.push(ay*Math.cos(a)+by*Math.sin(a));gz.push(az*Math.cos(a)+bz*Math.sin(a));}return{type:'scatter3d',x:gx,y:gy,z:gz,mode:'lines',line:{color:'rgba(100,150,200,0.18)',width:1},hoverinfo:'none',showlegend:false};};
+    data.push(gc(1,0,0,1,0,0));data.push(gc(1,0,0,0,0,1));data.push(gc(0,1,1,0,0,0));
+    // Pole labels
+    const poles=[[1,0,0,'H'],[−1,0,0,'V'],[0,1,0,'+45'],[0,-1,0,'−45'],[0,0,1,'RCP'],[0,0,-1,'LCP']];
+    data.push({type:'scatter3d',mode:'markers+text',x:poles.map(p=>p[0]),y:poles.map(p=>p[1]),z:poles.map(p=>p[2]),text:poles.map(p=>p[3]),textfont:{size:8,color:'rgba(200,210,230,0.5)'},textposition:'top center',marker:{size:3.5,color:'rgba(100,150,200,0.45)'},hoverinfo:'text',showlegend:false});
+    // Current point
+    const r=Math.sqrt(s1n**2+s2n**2+s3n**2);
+    if(r>0.01) data.push({type:'scatter3d',x:[0,s1n],y:[0,s2n],z:[0,s3n],mode:'lines',line:{color:'#06b6d4',width:3},hoverinfo:'none',showlegend:false});
+    data.push({type:'scatter3d',x:[s1n],y:[s2n],z:[s3n],mode:'markers',marker:{size:9,color:'#06b6d4',line:{color:'#67e8f9',width:2}},hovertemplate:'S₁=%{x:.3f}<br>S₂=%{y:.3f}<br>S₃=%{z:.3f}<extra></extra>',showlegend:false});
+    return data;
+  }
+
+  const POL_SPH_LAYOUT = ()=>({
+    paper_bgcolor:'rgba(0,0,0,0)',margin:{l:0,r:0,t:0,b:0},
+    scene:{bgcolor:'rgba(0,0,0,0)',
+      xaxis:{title:{text:'S₁',font:{size:9}},range:[-1.3,1.3],showgrid:true,gridcolor:'rgba(100,150,200,0.07)',zeroline:false,tickfont:{size:7}},
+      yaxis:{title:{text:'S₂',font:{size:9}},range:[-1.3,1.3],showgrid:true,gridcolor:'rgba(100,150,200,0.07)',zeroline:false,tickfont:{size:7}},
+      zaxis:{title:{text:'S₃',font:{size:9}},range:[-1.3,1.3],showgrid:true,gridcolor:'rgba(100,150,200,0.07)',zeroline:false,tickfont:{size:7}},
+      camera:{eye:{x:1.4,y:1.4,z:0.9}},aspectmode:'cube'}
+  });
+
+  function polInitPoincareS2() {
+    if(polPoincareS2Inited) return; polPoincareS2Inited=true;
+    Plotly.newPlot('pol-poincare-s2', polBuildSphereData(1,0,0), POL_SPH_LAYOUT(), {responsive:true,displayModeBar:false});
+  }
+
+  function polUpdatePoincare(s1n,s2n,s3n) {
+    const data=polBuildSphereData(s1n,s2n,s3n);
+    if(!polPoincareSimInited){Plotly.newPlot('pol-poincare-sim',data,POL_SPH_LAYOUT(),{responsive:true,displaylogo:false});polPoincareSimInited=true;}
+    else Plotly.react('pol-poincare-sim',data,POL_SPH_LAYOUT());
+  }
+
+  /* ── Simulator controls ── */
+  function polSetPreset(btn) {
+    document.querySelectorAll('#pol-presets .pol-pbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    polS=btn.dataset.s.split(',').map(Number);
+    const {psi,chi,dop}=polStokesToAngles(polS);
+    document.getElementById('pol-sl-psi').value=((psi%180)+180)%180;
+    document.getElementById('pol-sl-chi').value=chi;
+    document.getElementById('pol-sl-dop').value=Math.round(dop*100);
+    polUpdateSim();
+  }
+
+  function polOnSlider() {
+    document.querySelectorAll('#pol-presets .pol-pbtn').forEach(b=>b.classList.remove('active'));
+    const psi=parseFloat(document.getElementById('pol-sl-psi').value)*POL_DEG;
+    const chi=parseFloat(document.getElementById('pol-sl-chi').value)*POL_DEG;
+    const dop=parseFloat(document.getElementById('pol-sl-dop').value)/100;
+    polS=[1, dop*Math.cos(2*chi)*Math.cos(2*psi), dop*Math.cos(2*chi)*Math.sin(2*psi), dop*Math.sin(2*chi)];
+    polUpdateSim();
+  }
+
+  function polSetMethod(m) {
+    polMethod=m;
+    document.getElementById('pol-mb-qwp').classList.toggle('active',m==='qwp');
+    document.getElementById('pol-mb-hwp').classList.toggle('active',m==='hwp');
+    polUpdateSim();
+  }
+
+  function polUpdateSim() {
+    const S=polS;
+    const useNoise=document.getElementById('pol-noise-tgl').checked;
+    const snrRow=document.getElementById('pol-snr-row');
+    snrRow.style.display=useNoise?'flex':'none';
+    const snr=parseFloat(document.getElementById('pol-sl-snr').value);
+    document.getElementById('pol-sv-snr').textContent=snr+' dB';
+    const showFit=document.getElementById('pol-fit-tgl').checked;
+    // Slider readout
+    document.getElementById('pol-sv-psi').textContent=document.getElementById('pol-sl-psi').value+'°';
+    document.getElementById('pol-sv-chi').textContent=document.getElementById('pol-sl-chi').value+'°';
+    document.getElementById('pol-sv-dop').textContent=document.getElementById('pol-sl-dop').value+'%';
+    // Stokes display
+    ['0','1','2','3'].forEach(i=>document.getElementById('pol-v'+i).textContent=S[i].toFixed(3));
+    // State info
+    const {psi,chi,dop}=polStokesToAngles(S);
+    document.getElementById('pol-info-psi').textContent=psi.toFixed(1)+'°';
+    document.getElementById('pol-info-chi').textContent=chi.toFixed(1)+'°';
+    document.getElementById('pol-info-dop').textContent=(dop*100).toFixed(0)+'%';
+    document.getElementById('pol-info-type').textContent=Math.abs(chi)<1?'Linear':Math.abs(chi)>44?'Circular':'Elliptical';
+    // Method note
+    const mn=document.getElementById('pol-method-note');
+    if(polMethod==='qwp') mn.innerHTML='<strong>Rotating QWP + LP:</strong> Detects all S₀–S₃. S₃ appears in the 2nd harmonic of I(θ).';
+    else mn.innerHTML='<strong>Rotating HWP + PBS:</strong> Detects S₁, S₂ only.'+(Math.abs(S[3])>0.01?` <span style="color:var(--pol-orange)">⚠ S₃=${S[3].toFixed(3)} is non-zero but won't appear!</span>`:'');
+
+    // Compute I(θ)
+    const thetas=[]; for(let i=0;i<=360;i++) thetas.push(i);
+    const intFn=polMethod==='qwp'?polIqwp:polIhwp;
+    const rawI=thetas.map(t=>intFn(t,S));
+    const noisyI=useNoise?polAddNoise(rawI,snr):rawI;
+
+    // Fourier
+    const fr=polMethod==='qwp'?polFourier(thetas,noisyI):null;
+
+    // Fit overlay
+    let fitI=null;
+    if(showFit&&fr){const{a0,b2,a4,b4}=fr;fitI=thetas.map(t=>a0+b2*Math.sin(2*t*POL_DEG)+a4*Math.cos(4*t*POL_DEG)+b4*Math.sin(4*t*POL_DEG));}
+
+    // Plot intensity
+    const tracs=[{x:thetas,y:noisyI,mode:'lines',name:'Measured I(θ)',line:{color:'#e879f9',width:useNoise?1.5:2},hovertemplate:'θ=%{x}°<br>I=%{y:.4f}<extra></extra>'}];
+    if(fitI) tracs.push({x:thetas,y:fitI,mode:'lines',name:'Fourier fit',line:{color:'#f59e0b',width:2,dash:'dot'},hovertemplate:'θ=%{x}°<br>fit=%{y:.4f}<extra></extra>'});
+    const iLay={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:'Inter',color:'#94a3b8',size:10},
+      xaxis:{title:'QWP Angle θ (°)',gridcolor:'rgba(255,255,255,0.04)',tickvals:[0,90,180,270,360],range:[0,360]},
+      yaxis:{title:'I(θ)',gridcolor:'rgba(255,255,255,0.04)',rangemode:'tozero'},
+      margin:{l:45,r:12,t:12,b:40},legend:{orientation:'h',y:1.08,x:0,font:{size:10}}};
+    if(!polSimInited.intensity){Plotly.newPlot('pol-plot-intensity',tracs,iLay,{responsive:true,displaylogo:false,toImageButtonOptions:{filename:'intensity_curve',scale:2,format:'png'}});polSimInited.intensity=true;}
+    else Plotly.react('pol-plot-intensity',tracs,iLay);
+
+    // Fourier breakdown
+    if(fr&&polMethod==='qwp'){
+      const{a0,b2,a4,b4}=fr, Se=fr.extracted;
+      document.getElementById('pol-fourier-breakdown').innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:10.5px;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">Fourier Coefficients</div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-yellow)">a₀</span><span class="pol-fb-eq">= S₀/2+S₁/4</span><span class="pol-fb-val">${a0.toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-green)">b₂</span><span class="pol-fb-eq">= −S₃/2</span><span class="pol-fb-val">${b2.toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-cyan)">a₄</span><span class="pol-fb-eq">= S₁/4</span><span class="pol-fb-val">${a4.toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-purple)">b₄</span><span class="pol-fb-eq">= S₂/4</span><span class="pol-fb-val">${b4.toFixed(4)}</span></div>
+          </div>
+          <div>
+            <div style="font-size:10.5px;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">Stokes Recovery</div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl">S₀</span><span class="pol-fb-eq">= 2a₀−2a₄</span><span class="pol-fb-val">${Se[0].toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-cyan)">S₁</span><span class="pol-fb-eq">= 4a₄</span><span class="pol-fb-val">${Se[1].toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-purple)">S₂</span><span class="pol-fb-eq">= 4b₄</span><span class="pol-fb-val">${Se[2].toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-green)">S₃</span><span class="pol-fb-eq">= −2b₂</span><span class="pol-fb-val">${Se[3].toFixed(4)}</span></div>
+          </div>
+        </div>`;
+      polUpdateExtraction(S,Se,'qwp');
+    } else if(polMethod==='hwp'){
+      const N=thetas.length;let a0h=0,a4h=0,b4h=0;
+      for(let i=0;i<N;i++){const t=thetas[i]*POL_DEG;a0h+=noisyI[i];a4h+=noisyI[i]*Math.cos(4*t);b4h+=noisyI[i]*Math.sin(4*t);}
+      a0h/=N;a4h=2*a4h/N;b4h=2*b4h/N;
+      document.getElementById('pol-fourier-breakdown').innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:10.5px;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">Fourier Coefficients (HWP)</div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-yellow)">a₀</span><span class="pol-fb-eq">= S₀/2</span><span class="pol-fb-val">${a0h.toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-cyan)">a₄</span><span class="pol-fb-eq">= S₁/2</span><span class="pol-fb-val">${a4h.toFixed(4)}</span></div>
+            <div class="pol-fb-row"><span class="pol-fb-lbl" style="color:var(--pol-purple)">b₄</span><span class="pol-fb-eq">= S₂/2</span><span class="pol-fb-val">${b4h.toFixed(4)}</span></div>
+          </div>
+          <div>
+            <div style="font-size:10.5px;color:var(--text-secondary);margin-bottom:5px">
+              <strong style="color:var(--pol-orange)">S₃ not detectable with HWP method.</strong><br>
+              Recovered: S₀=${(2*a0h).toFixed(3)}, S₁=${(2*a4h).toFixed(3)}, S₂=${(2*b4h).toFixed(3)}, S₃=<span style="color:var(--pol-orange)">UNKNOWN</span>
+            </div>
+          </div>
+        </div>`;
+      polUpdateExtraction(S,[2*a0h,2*a4h,2*b4h,null],'hwp');
+    }
+
+    polUpdateFourierPlot(thetas,rawI);
+    // E-field sim canvas
+    const ef=polStokesToEfield(S);
+    polStartSimCanvas(ef.Ex,ef.Ey,ef.delta);
+    polUpdatePoincare(S[1]/S[0],S[2]/S[0],S[3]/S[0]);
+  }
+
+  function polUpdateExtraction(Sin, Sext, method) {
+    const lbl=['S₀','S₁','S₂','S₃'], clr=['var(--text-primary)','var(--pol-cyan)','var(--pol-purple)','var(--pol-green)'];
+    let html='';
+    for(let i=0;i<4;i++){
+      if(method==='hwp'&&i===3){html+=`<div class="pol-ex-row"><span class="pol-ex-lbl" style="color:${clr[i]}">${lbl[i]}</span><div class="pol-ex-bw"><div class="pol-ex-b" style="width:0"></div></div><span class="pol-ex-v" style="color:var(--pol-orange)">N/A</span><span class="pol-ex-d">−</span></div>`;continue;}
+      const vin=Sin[i],vex=Sext[i],bw=Math.min(100,Math.abs(vex)/(Math.max(Math.abs(Sin[0]),1))*100),diff=Math.abs(vin-vex);
+      const dclr=diff<0.005?'var(--pol-green)':diff<0.05?'var(--pol-orange)':'var(--pol-red)';
+      html+=`<div class="pol-ex-row"><span class="pol-ex-lbl" style="color:${clr[i]}">${lbl[i]}</span><div class="pol-ex-bw"><div class="pol-ex-b" style="width:${bw}%;background:${clr[i]}"></div></div><span class="pol-ex-v">${vex.toFixed(3)}</span><span class="pol-ex-d" style="color:${dclr}">${diff<0.001?'≈0 ✓':'Δ'+diff.toFixed(3)}</span></div>`;
+    }
+    document.getElementById('pol-extraction').innerHTML=html;
+  }
+
+  function polUpdateFourierPlot(thetas, Is) {
+    const layo={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:'Inter',color:'#94a3b8',size:10},
+      xaxis:{title:'θ (°)',gridcolor:'rgba(255,255,255,0.04)',tickvals:[0,90,180,270,360],range:[0,360]},
+      yaxis:{title:'Component value',gridcolor:'rgba(255,255,255,0.04)'},
+      margin:{l:45,r:12,t:12,b:40},legend:{orientation:'h',y:-0.3,x:0,font:{size:9}}};
+
+    if(polMethod!=='qwp'){
+      const N=thetas.length;let a0h=0,a4h=0,b4h=0;
+      for(let i=0;i<N;i++){const t=thetas[i]*POL_DEG;a0h+=Is[i];a4h+=Is[i]*Math.cos(4*t);b4h+=Is[i]*Math.sin(4*t);}
+      a0h/=N;a4h=2*a4h/N;b4h=2*b4h/N;
+      const tr=[{x:['DC (a₀→S₀)','4th cos (a₄→S₁)','4th sin (b₄→S₂)','S₃ (absent)'],y:[a0h,a4h,b4h,0],type:'bar',
+        marker:{color:['#f59e0b','#06b6d4','#8b5cf6','rgba(100,100,100,0.2)']},hovertemplate:'%{x}<br>%{y:.4f}<extra></extra>'}];
+      if(!polSimInited.fourier){Plotly.newPlot('pol-plot-fourier',tr,layo,{responsive:true,displaylogo:false,toImageButtonOptions:{filename:'fourier_components',scale:2}});polSimInited.fourier=true;}
+      else Plotly.react('pol-plot-fourier',tr,layo);
+      return;
+    }
+    const{a0,b2,a4,b4}=polFourier(thetas,Is);
+    const clrs=['rgba(245,158,11,0.8)','rgba(16,185,129,0.7)','rgba(6,182,212,0.7)','rgba(139,92,246,0.7)'];
+    const nms=['DC: a₀ (S₀,S₁)','b₂·sin2θ (S₃)','a₄·cos4θ (S₁)','b₄·sin4θ (S₂)'];
+    const comps=[thetas.map(()=>a0),thetas.map(t=>b2*Math.sin(2*t*POL_DEG)),thetas.map(t=>a4*Math.cos(4*t*POL_DEG)),thetas.map(t=>b4*Math.sin(4*t*POL_DEG))];
+    const tracs=comps.map((c,k)=>({x:thetas,y:c,mode:'lines',name:nms[k],line:{color:clrs[k],width:1.8},fill:k>0?'tozeroy':undefined,fillcolor:clrs[k].replace('0.7','0.07').replace('0.8','0.07'),hovertemplate:'θ=%{x}°<br>'+nms[k]+': %{y:.4f}<extra></extra>'}));
+    const tot=thetas.map(t=>a0+b2*Math.sin(2*t*POL_DEG)+a4*Math.cos(4*t*POL_DEG)+b4*Math.sin(4*t*POL_DEG));
+    tracs.push({x:thetas,y:tot,mode:'lines',name:'Total fit',line:{color:'rgba(232,121,249,0.5)',width:1.5,dash:'dot'},hovertemplate:'θ=%{x}°<br>fit=%{y:.4f}<extra></extra>'});
+    if(!polSimInited.fourier){Plotly.newPlot('pol-plot-fourier',tracs,layo,{responsive:true,displaylogo:false,toImageButtonOptions:{filename:'fourier_components',scale:2}});polSimInited.fourier=true;}
+    else Plotly.react('pol-plot-fourier',tracs,layo);
+  }
+
+  function polStartSimCanvas(Ex, Ey, delta) {
+    if(polAnimSim) cancelAnimationFrame(polAnimSim);
+    const canvas=document.getElementById('pol-sim-canvas'); if(!canvas) return;
+    const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+    const cx=W/2,cy=H/2,sc=Math.min(W,H)/2*0.76; let t=0;
+    function frame() {
+      ctx.clearRect(0,0,W,H);
+      ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(12,cy);ctx.lineTo(W-12,cy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,8);ctx.lineTo(cx,H-8);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='10px Inter';ctx.fillText('x',W-18,cy-4);ctx.fillText('y',cx+4,15);
+      // Ellipse
+      ctx.strokeStyle='rgba(232,121,249,0.15)';ctx.lineWidth=1;ctx.beginPath();
+      for(let i=0;i<=100;i++){const a=i/100*2*Math.PI;const x=cx+sc*Ex*Math.cos(a);const y=cy-sc*Ey*Math.cos(a+delta);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+      ctx.closePath();ctx.stroke();
+      // E-vector
+      const ex=cx+sc*Ex*Math.cos(t),ey=cy-sc*Ey*Math.cos(t+delta);
+      const g=ctx.createLinearGradient(cx,cy,ex,ey);g.addColorStop(0,'rgba(232,121,249,0)');g.addColorStop(1,'#e879f9');
+      ctx.strokeStyle=g;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.shadowBlur=10;ctx.shadowColor='#e879f9';ctx.fillStyle='#e879f9';ctx.beginPath();ctx.arc(ex,ey,4.5,0,2*Math.PI);ctx.fill();ctx.shadowBlur=0;
+      t+=0.04;polAnimSim=requestAnimationFrame(frame);
+    }
+    frame();
+  }
+
+  /* ── Init ── */
+  renderNav({ active: 'polarimetry', root: '../' });
+  polStartEfield('efieldCanvas', 1, 0, 0, '#06b6d4');
+  setTimeout(polUpdateSim, 350); // after Plotly loads
+  </script>
+</body>
+</html>

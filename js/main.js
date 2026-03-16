@@ -19,6 +19,7 @@ const NAV = {
     { key: 'clebsch-gordan',    label: 'Clebsch-Gordan',     icon: '🔢',  color: '#f472b6', href: 'pages/clebsch-gordan.html'    },
     { key: 'laser-locking',     label: 'Laser Locking',      icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'     },
     { key: 'zernike',           label: 'Zernike Polynomials',icon: '🌊',  color: '#2dd4bf', href: 'pages/zernike.html'           },
+    { key: 'polarimetry',       label: 'Polarimetry Explorer',icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'        },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
