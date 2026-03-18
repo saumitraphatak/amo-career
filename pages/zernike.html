@@ -859,6 +859,8 @@ function slmPresetChange() {
   document.getElementById('slmGratField').style.display = showGrat  ? '' : 'none';
   document.getElementById('slmCustNField').style.display = showCust ? '' : 'none';
   document.getElementById('slmCustMField').style.display = showCust ? '' : 'none';
+  // Auto-recompute when preset changes (only if computeSLM is defined)
+  if (typeof computeSLM === 'function') computeSLM();
 }
 slmPresetChange();
 
@@ -941,6 +943,9 @@ function computeSLM() {
     status.textContent = `Done — ${N}×${N} → ${Nfft}×${Nfft} FFT.`;
   }, 20);
 }
+
+// Auto-compute on load so canvases are never empty
+computeSLM();
 </script>
 </body>
 </html>
