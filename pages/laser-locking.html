@@ -216,35 +216,201 @@
             <div class="step-box">
               <strong>Step 1 — Counter-propagating beams.</strong><br>
               A strong pump beam and weak probe beam travel in opposite directions through the vapour cell.
-              An atom moving at velocity v sees the pump Doppler-shifted to ν₀ − v/λ and the probe to ν₀ + v/λ.
+              An atom moving at velocity v sees the pump Doppler-shifted to ν₀(1 − v/c) and the probe to
+              ν₀(1 + v/c).
             </div>
             <div class="step-box">
               <strong>Step 2 — Velocity selectivity.</strong><br>
               Only atoms with v ≈ 0 (zero-velocity class) are simultaneously resonant with both beams at
-              the unshifted line centre ν₀. The pump saturates these atoms, burning a population inversion hole.
+              the unshifted line centre ν₀. The pump saturates these atoms, depleting the ground-state
+              population and creating a "Bennett hole" in the velocity distribution.
             </div>
           </div>
           <div>
             <div class="step-box">
               <strong>Step 3 — Lamb dip.</strong><br>
-              Because zero-velocity atoms are partially saturated by the pump, they absorb less of the probe
-              at ν₀ → a narrow Lamb dip appears in the probe transmission, on the broad Gaussian Doppler background.
+              The saturated zero-velocity atoms absorb less probe power at ν₀. A narrow Lamb dip appears
+              in probe transmission, with FWHM ≈ Γ√(1 + I/Iₛₐₜ) — set by the natural linewidth, not
+              by the 300–500 MHz Doppler envelope.
             </div>
             <div class="step-box">
               <strong>Step 4 — FM error signal.</strong><br>
-              The laser frequency is weakly modulated (via current or EOM). Lock-in demodulation of the probe
-              signal yields a dispersive derivative of the Lamb dip, with a zero-crossing at ν₀.
+              The laser frequency (or probe EOM) is weakly frequency-modulated. Lock-in demodulation
+              at the modulation frequency yields a dispersive first derivative of the Lamb dip — a
+              zero-crossing exactly at ν₀ to use as the servo error signal.
             </div>
           </div>
         </div>
 
         <div class="formula-box">V_err  ∝  dS(ν)/dν      [first-harmonic demodulation]
 
-Lamb dip FWHM  ≈  Γ/2π × √(1 + I/Iₛₐₜ)
-Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)</div>
+Lamb dip FWHM  ≈  Γ/2π × √(1 + I/Iₛₐₜ)   [power-broadened]
+Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)
+Saturation intensity:  Iₛₐₜ = (π h c Γ) / (3 λ³)    [two-level, natural linewidth]</div>
 
+        <!-- ─── Crossover resonances ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">Crossover resonances</div>
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Why they appear</h4>
+              <p>
+                In multi-level atoms (real alkalis), multiple excited states ν<sub>a</sub>, ν<sub>b</sub>
+                share a common ground state. An atom moving at velocity v* = c(ν<sub>b</sub>−ν<sub>a</sub>)/(ν<sub>a</sub>+ν<sub>b</sub>)
+                sees the pump resonant with ν<sub>a</sub> and the counter-propagating probe resonant with
+                ν<sub>b</sub> (or vice versa). This produces an extra Lamb dip at the <em>midpoint</em>
+                between the two transitions.
+              </p>
+            </div>
+            <div class="formula-box">ν_cross = (ν_a + ν_b) / 2
+
+For pump resonant with ν_a:  v* = c·(ν_laser − ν_a)/ν_a
+Probe seen by same atom at v*:  ν_probe = ν_laser + ν_a·v*/c = ν_b  ✓</div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Key properties</h4>
+              <p>
+                Crossover features are often <strong>stronger and narrower</strong> than true Lamb dips
+                because <em>two</em> velocity classes contribute — one class has pump resonant with ν<sub>a</sub>
+                and probe with ν<sub>b</sub>; a second class has the roles reversed. Both pathways deplete
+                the same ground state, doubling the effective saturation.
+              </p>
+              <p>
+                In Cs D₂, the crossover at (F=4→F'=3 + F=4→F'=5)/2 is the most commonly used lock
+                point: it is sharp, high-contrast, and well-separated from neighbours.
+              </p>
+            </div>
+            <div class="info-banner">
+              💡 <strong>Practical:</strong> Cs D₂ has 3 allowed transitions (F=4→F'=3,4,5) plus
+              3 crossovers at (3+4)/2, (4+5)/2, and (3+5)/2. Map them with a wavemeter before
+              choosing your lock point — crossovers are ~2× stronger in many cases.
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── MTS ─── -->
         <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
-          Calculator — Doppler vs Lamb dip widths
+          Modulation Transfer Spectroscopy (MTS) — superior alternative
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>How MTS differs from FM-SAS</h4>
+              <p>
+                In standard FM-SAS, the <em>laser frequency</em> is modulated — the derivative of the
+                entire absorption profile is detected, including the broad Doppler background. Residual
+                amplitude modulation (RAM) and etalon fringes superimpose on the useful signal.
+              </p>
+              <p>
+                In MTS, the <em>pump beam</em> is phase-modulated at Ω via an EOM. Through
+                <strong>four-wave mixing</strong> in the resonant medium, the pump modulation transfers
+                to the probe beam <em>only</em> at atomic resonances — the Doppler background does not
+                participate. Demodulating the probe at Ω gives a <em>dispersive signal on a near-zero
+                baseline</em>.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Four-wave mixing origin</h4>
+              <p>
+                The modulated pump (fields at ω±Ω) drives a coherent population grating at Ω.
+                A counter-propagating probe scatters off this grating, acquiring sidebands at ω±Ω.
+                Beat detection at Ω produces the dispersive error signal without a lock-in amplifier.
+              </p>
+              <p>
+                <strong>Advantages:</strong> no Doppler pedestal, immune to laser FM-to-AM conversion
+                (RAM), 5–20× better SNR than FM-SAS in practice.
+              </p>
+              <p>
+                <strong>Limitation:</strong> requires a pump EOM and collinear geometry. Not all
+                transitions support efficient four-wave mixing (weak ones don't).
+              </p>
+            </div>
+          </div>
+        </div>
+        <div style="overflow-x:auto; margin:.5rem 0 1.25rem 0;">
+          <table class="sum-table">
+            <thead>
+              <tr><th>Method</th><th>Baseline</th><th>Typical SNR</th><th>Setup complexity</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Direct absorption</td>
+                <td>Doppler envelope</td>
+                <td>Low (~1:100)</td>
+                <td>Simplest — beamsplitter + PD</td>
+              </tr>
+              <tr>
+                <td>FM-SAS (current/freq. mod.)</td>
+                <td>Doppler slope + Lamb dip derivative</td>
+                <td>Medium (~1:20)</td>
+                <td>Modulate laser current, demodulate PD</td>
+              </tr>
+              <tr>
+                <td><strong>MTS (pump EOM)</strong></td>
+                <td><strong>Near-zero (flat)</strong></td>
+                <td><strong>High (~1:3)</strong></td>
+                <td>Pump EOM + demodulate probe at Ω</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ─── Species table ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">Species-specific considerations</div>
+        <div style="overflow-x:auto; margin:.5rem 0 1.25rem 0;">
+          <table class="sum-table">
+            <thead>
+              <tr>
+                <th>Species</th><th>Wavelength</th><th>Γ/2π</th>
+                <th>Iₛₐₜ</th><th>Cell temp.</th><th>Key notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Cs</strong></td>
+                <td>852 nm (D₂)</td><td>5.23 MHz</td><td>1.1 mW/cm²</td><td>25–40 °C</td>
+                <td>Rich HFS; (3+5)/2 crossover is best lock; 9192 MHz GS splitting (primary standard)</td>
+              </tr>
+              <tr>
+                <td><strong>⁸⁷Rb</strong></td>
+                <td>780 nm (D₂)</td><td>6.07 MHz</td><td>1.67 mW/cm²</td><td>25–50 °C</td>
+                <td>Most used BEC species; 6.835 GHz GS split; easy SAS at room temperature</td>
+              </tr>
+              <tr>
+                <td><strong>Na</strong></td>
+                <td>589 nm (D₂)</td><td>9.80 MHz</td><td>6.3 mW/cm²</td><td>100–130 °C</td>
+                <td>High Iₛₐₜ → needs more pump power; yellow → dye laser or SHG; 1772 MHz GS split</td>
+              </tr>
+              <tr>
+                <td><strong>⁶Li</strong></td>
+                <td>671 nm (D₁+D₂)</td><td>5.87 MHz</td><td>2.54 mW/cm²</td><td>300–400 °C</td>
+                <td>D₁/D₂ only 228 MHz apart; excited-state HFS only 1.7 MHz (barely resolved);
+                  <strong>heated oven cell essential</strong>; MTS strongly preferred; congested spectrum</td>
+              </tr>
+              <tr>
+                <td><strong>⁴⁰K</strong></td>
+                <td>767 nm (D₂)</td><td>6.04 MHz</td><td>1.75 mW/cm²</td><td>60–100 °C</td>
+                <td>Natural abundance 0.012% → use enriched cell or long path length; 1286 MHz GS split</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ─── Why E2/M1 fails ─── -->
+        <div class="warn-banner" style="margin-bottom:1.25rem;">
+          <strong>⚠ Why SAS fails for weak (E2, M1) transitions:</strong>
+          Saturation intensity scales as I<sub>sat</sub> ∝ Γ. For an E2 transition with Γ/2π ~ 100 kHz,
+          I<sub>sat</sub> reaches ~100 W/cm². A 1 mW pump in a 1 mm² beam gives only ~100 mW/cm² →
+          I/I<sub>sat</sub> ~ 10⁻³ → Lamb dip depth ~ 0.1% — invisible above noise.
+          The only viable approach is PDH locking to a high-finesse cavity.
+        </div>
+
+        <!-- ─── Calculator ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
+          Calculator — Doppler, Lamb dip, saturation &amp; pump power
         </div>
         <div class="two-col">
           <div class="calc-card">
@@ -261,12 +427,12 @@ Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)</div>
             </div>
             <div class="field-row">
               <label>Vapour cell temperature (K): <span id="sasTlbl">300</span></label>
-              <input type="range" id="sasT" min="20" max="500" value="300" step="10"
+              <input type="range" id="sasT" min="20" max="700" value="300" step="10"
                 oninput="document.getElementById('sasTlbl').textContent=this.value; updateSAS()">
             </div>
             <div class="field-row">
               <label>Saturation I/Iₛₐₜ: <span id="sasSatlbl">1.0</span></label>
-              <input type="range" id="sasSat" min="0.0" max="10.0" value="1.0" step="0.1"
+              <input type="range" id="sasSat" min="0.0" max="20.0" value="1.0" step="0.1"
                 oninput="document.getElementById('sasSatlbl').textContent=(+this.value).toFixed(1); updateSAS()">
             </div>
             <div class="field-row">
@@ -274,13 +440,18 @@ Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)</div>
               <input type="range" id="sasMod" min="0.1" max="50" value="5.0" step="0.1"
                 oninput="document.getElementById('sasModlbl').textContent=(+this.value).toFixed(1); updateSAS()">
             </div>
+            <div class="field-row">
+              <label>Pump beam diameter (mm): <span id="sasBDlbl">1.0</span></label>
+              <input type="range" id="sasBD" min="0.1" max="5.0" value="1.0" step="0.1"
+                oninput="document.getElementById('sasBDlbl').textContent=(+this.value).toFixed(1); updateSAS()">
+            </div>
             <div class="result-box" id="sasResult"></div>
             <div id="sasBanner" style="margin-top:.6rem;"></div>
           </div>
 
           <div>
             <div class="chart-card">
-              <h5>SAS Transmission</h5>
+              <h5>SAS Transmission (Doppler + Lamb dip)</h5>
               <canvas id="sasChart1" height="180"></canvas>
             </div>
             <div class="chart-card">
@@ -293,11 +464,14 @@ Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)</div>
         <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
         <div class="prac-body">
           <ul>
-            <li><strong>Vapour cell temperature:</strong> 20–60 °C gives good SNR for alkali D lines. Higher T → stronger signal but broader Doppler background and higher collisional broadening.</li>
-            <li><strong>Pump power:</strong> needs I ≳ Iₛₐₜ to produce a visible Lamb dip. Excess power broadens the dip.</li>
-            <li><strong>Modulation frequency:</strong> typically 1–50 MHz. Higher frequencies push technical noise below the shot-noise floor.</li>
-            <li><strong>Cross-over resonances:</strong> at ν = (ν₁+ν₂)/2, both zero-velocity and ±v classes contribute — extra dips, often the sharpest features in multi-level spectra.</li>
-            <li><strong>SAS is impractical</strong> for very weak transitions (E2, M1) where I_sat is W/cm² — the Lamb dip signal is too small.</li>
+            <li><strong>Vapour cell temperature:</strong> 25–60 °C for Cs/Rb; 300–400 °C for Li (oven cell). Higher T → stronger absorption but broader Doppler, more collisional broadening, and risk of alkali deposition on windows.</li>
+            <li><strong>Pump power:</strong> needs I ≳ Iₛₐₜ to produce a visible Lamb dip. Excess power broadens the dip (FWHM ∝ √(1 + I/Iₛₐₜ)). Optimum: 3–10× Iₛₐₜ.</li>
+            <li><strong>Pump:probe ratio:</strong> probe should be ~10–20% of pump to avoid probe saturation. Route pump through a retro-reflector or PBS to generate counter-propagating beams.</li>
+            <li><strong>Polarisation:</strong> σ⁺ pump + σ⁻ probe (or vice versa) works well for MTS; linear polarisations work for FM-SAS. Tilt beams 5–10 mrad to avoid pump back-scatter into probe path.</li>
+            <li><strong>Modulation frequency:</strong> 1–50 MHz typical. Higher pushes 1/f noise below shot-noise floor. For FM-SAS: Ω should be ≤ Lamb dip FWHM for maximum slope. MTS can use Ω up to ~Γ/2 for an optimum.</li>
+            <li><strong>Crossover resonances:</strong> often strongest features (2× signal contribution); Cs F=4→(3+5)/2 and Rb F=2→(2+3)/2 are common lock points.</li>
+            <li><strong>Li-6 special case:</strong> D₁ and D₂ are only 228 MHz apart; excited-state HFS barely resolved at 1.7 MHz. Use heated cell at ~350°C. MTS strongly preferred. Alternative: SAS-lock the D₁ line, then beat-note lock D₂ at 228 MHz offset.</li>
+            <li><strong>SAS fails for E2/M1 transitions</strong> where I<sub>sat</sub> is ≫ W/cm² — use PDH cavity locking.</li>
           </ul>
         </div>
       </div>
@@ -308,23 +482,176 @@ Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)</div>
           <h4>Beat-Note (Offset) Locking</h4>
           <p>
             Many experiments need two lasers separated by a <strong>precise and stable frequency offset</strong>
-            — for example, a cooling laser and a repumper, or a Raman beam pair. Beat-note locking
+            — for example, a cooling laser and repumper pair, or two Raman beams. Beat-note locking
             stabilises the <em>difference frequency</em> between a well-stabilised master laser and a
             slave laser, without locking each independently to an atomic reference.
           </p>
         </div>
 
-        <div class="section-title" style="font-size:1.1rem; margin:.75rem 0 .5rem 0;">Physics of the beat note</div>
+        <!-- ─── Discriminator vs OPLL ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:.75rem 0 .5rem 0;">
+          Frequency discriminator vs optical phase-locked loop (OPLL)
+        </div>
+        <div class="two-col">
+          <div class="theory-box">
+            <h4>Frequency discriminator lock</h4>
+            <p>
+              An RF chain converts the instantaneous beat frequency to a voltage.
+              Error signal: V<sub>err</sub> ∝ (ν<sub>beat</sub> − ν<sub>ref</sub>).
+              The servo corrects <em>frequency</em> but does not track <em>phase</em> —
+              slave and master are not phase-coherent.
+            </p>
+            <p>
+              <strong>Servo bandwidth:</strong> a few hundred kHz suffices.<br>
+              <strong>Slave linewidth:</strong> inherits master's long-term frequency stability;
+              short-term phase wanders freely.<br>
+              <strong>Applications:</strong> cooling + repumper pairs, probe lasers, any
+              non-interferometric use where absolute phase doesn't matter.
+            </p>
+          </div>
+          <div class="theory-box">
+            <h4>Optical phase-locked loop (OPLL)</h4>
+            <p>
+              The servo tracks the <em>phase</em> of the beat:
+              d(φ<sub>beat</sub> − φ<sub>ref</sub>)/dt = 0.
+              The slave becomes a <strong>phase-coherent offset copy</strong> of the master —
+              their relative phase is constant and set entirely by the RF reference.
+            </p>
+            <p>
+              <strong>Servo bandwidth:</strong> must exceed the free-running laser linewidth
+              (500 kHz – 5 MHz for ECDLs → bandwidth ≥ 5–20 MHz).<br>
+              <strong>Slave linewidth:</strong> transfers master's linewidth at the offset.<br>
+              <strong>Applications:</strong> Raman spectroscopy, atom interferometry,
+              STIRAP, EIT, optical lattice clocks, quantum gates.
+            </p>
+            <div class="info-banner" style="margin-top:.5rem;">
+              💡 OPLL requires fast current modulation (not just PZT), careful RF cable length
+              matching to minimise loop delay, and typically a DDS-driven RF reference for
+              agile frequency control.
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem; margin:1.25rem 0 .5rem 0;">Physics of the beat note</div>
         <div class="formula-box">E₁(t) = E₀₁ cos(2π ν₁ t + φ₁)
 E₂(t) = E₀₂ cos(2π ν₂ t + φ₂)
 
-→  i_PD(t)  ∝  cos[2π(ν₂ − ν₁)t + (φ₂ − φ₁)]
+→  i_PD(t)  ∝  E₀₁·E₀₂ · cos[2π(ν₂ − ν₁)t + (φ₂ − φ₁)]
 
-V_err  ∝  (ν₂ − ν₁) − ν_ref        [frequency discriminator]
-OPLL:   d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ ν_ref  (phase coherent)</div>
+Freq. discriminator:  V_err  ∝  (ν₂ − ν₁) − ν_ref
+OPLL:                 d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ ν_ref  (phase-coherent)</div>
 
+        <!-- ─── SNR and detector ─── -->
         <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
-          Calculator — Beat-note frequency &amp; detector requirements
+          Signal-to-noise ratio &amp; detector requirements
+        </div>
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Beat SNR formula</h4>
+              <p>
+                The beat photocurrent has a DC component I<sub>dc</sub> = R(P₁+P₂) and an AC
+                component at Δν. Shot-noise-limited SNR in bandwidth B:
+              </p>
+              <span class="eq">SNR = (P₁ · P₂ · R²) / (2e · I_dc · B)</span>
+              <p style="margin-top:.5rem;">
+                where R is responsivity (A/W) and e is the electron charge. In RF power terms
+                at 50 Ω:
+              </p>
+              <span class="eq">P_RF (dBm) = 10 log₁₀[½ · R² · P₁ · P₂ · Z₀ / 1 mW]</span>
+              <p style="margin-top:.5rem;">
+                <strong>Rule of thumb:</strong> need ≥ 20 dB SNR (linear factor 100) for a
+                reliable lock. With 0.5 mW on each arm and R = 0.5 A/W, you get ~+5 dBm RF
+                power in 1 MHz bandwidth — typically sufficient.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div style="overflow-x:auto;">
+              <table class="sum-table">
+                <thead>
+                  <tr><th>Beat freq.</th><th>Req. PD BW</th><th>Detector type</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1–100 MHz</td><td>≥ 300 MHz</td><td>Si PIN</td><td>Thorlabs FDS010</td></tr>
+                  <tr><td>100 MHz–1 GHz</td><td>≥ 1.5 GHz</td><td>Si/InGaAs PIN fast</td><td>Hamamatsu G4176</td></tr>
+                  <tr><td>1–3 GHz</td><td>≥ 5 GHz</td><td>InGaAs PIN</td><td>Thorlabs DET08CFC</td></tr>
+                  <tr><td>3–10 GHz</td><td>≥ 15 GHz</td><td>InGaAs balanced</td><td>Discovery DSC-R402</td></tr>
+                  <tr><td>&gt;10 GHz</td><td>≥ 25 GHz</td><td>UTC-PD or resonant</td><td>NTT IOD-PMF-22</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="info-banner" style="margin-top:.75rem;">
+              💡 PD bandwidth ≥ 3–5× beat frequency. Add a 10–20 dB low-noise RF amplifier
+              (e.g. Mini-Circuits ZX60-3018G) before the mixer — it pays off immediately in SNR
+              for sub-mW optical powers.
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── Phase noise ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
+          Phase noise &amp; coherence transfer
+        </div>
+        <div class="two-col">
+          <div class="theory-box">
+            <h4>Phase noise in a frequency lock</h4>
+            <p>
+              In a frequency discriminator lock, the slave phase drifts freely relative to the master
+              outside the servo bandwidth. The slave linewidth is roughly equal to the free-running slave
+              linewidth reduced by the servo suppression within its bandwidth.
+            </p>
+            <p>
+              <strong>Phase noise PSD</strong> S<sub>φ</sub>(f): characterises phase fluctuations at
+              offset frequency f from the carrier. The servo suppresses S<sub>φ</sub>(f) for f below the
+              unity-gain frequency, at the cost of a "servo bump" near the bandwidth edge.
+            </p>
+          </div>
+          <div class="theory-box">
+            <h4>Coherence transfer in OPLL</h4>
+            <p>
+              The OPLL forces φ<sub>slave</sub>(t) = φ<sub>master</sub>(t) + φ<sub>ref</sub>(t).
+              If φ<sub>ref</sub> comes from a low-noise DDS or RF synthesiser, the slave's coherence
+              length equals the master's — the two beams interfere with long coherence even separated
+              by GHz.
+            </p>
+            <p>
+              <strong>Raman transitions</strong> require Δφ = φ₁ − φ₂ stable over the pulse duration
+              (μs–ms scale). With OPLL, Δφ is set by the RF synthesiser (≪ 1 mrad noise), enabling
+              high-contrast Rabi oscillations.
+            </p>
+          </div>
+        </div>
+
+        <!-- ─── AOM offsets ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">AOM-based frequency offsets</div>
+        <div class="two-col">
+          <div class="theory-box">
+            <h4>When to use an AOM for offsets</h4>
+            <p>
+              For offsets &lt;30 MHz or when the beat falls in 1/f noise, route one arm through a
+              <strong>double-pass AOM</strong> at ν<sub>AOM</sub> ≈ 80–110 MHz. This shifts the optical
+              frequency by 2ν<sub>AOM</sub> ≈ 160–220 MHz, placing the beat note well into the
+              shot-noise-limited region.
+            </p>
+          </div>
+          <div class="theory-box">
+            <h4>AOM + beat combination</h4>
+            <p>
+              Route one arm through a double-pass AOM, then beat against master. The beat is
+              |Δν<sub>laser</sub> + 2ν<sub>AOM</sub>|. Lock to that beat. Then:
+            </p>
+            <span class="eq">ν_slave = ν_master + ν_RF_ref − 2ν_AOM</span>
+            <p style="margin-top:.5rem;">
+              Tuning the AOM RF frequency scans the slave without changing the lock point —
+              powerful for spectroscopy scans without mode hops.
+            </p>
+          </div>
+        </div>
+
+        <!-- ─── Calculator ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
+          Calculator — beat-note frequency, SNR &amp; detector recommendation
         </div>
         <div class="two-col">
           <div class="calc-card">
@@ -337,6 +664,21 @@ OPLL:   d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ ν_ref  (phase 
             <div class="field-row">
               <label>Desired offset (MHz) [slave − master]</label>
               <input type="number" id="bnOffset" value="228.2" step="0.1" min="-5000" max="5000"
+                oninput="updateBeat()">
+            </div>
+            <div class="field-row">
+              <label>Optical power on PD: P₁ (mW)</label>
+              <input type="number" id="bnP1" value="0.5" step="0.1" min="0.01" max="10"
+                oninput="updateBeat()">
+            </div>
+            <div class="field-row">
+              <label>Optical power on PD: P₂ (mW)</label>
+              <input type="number" id="bnP2" value="0.5" step="0.1" min="0.01" max="10"
+                oninput="updateBeat()">
+            </div>
+            <div class="field-row">
+              <label>PD responsivity R (A/W)</label>
+              <input type="number" id="bnR" value="0.5" step="0.05" min="0.1" max="1.0"
                 oninput="updateBeat()">
             </div>
             <div class="field-row">
@@ -353,31 +695,95 @@ OPLL:   d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ ν_ref  (phase 
               <h4>RF Signal Chain</h4>
               <p>Typical implementation for a beat-note lock:</p>
             </div>
-            <div class="formula-box">Slave + Master  →  fast PD (1–3 GHz BW)  →  amplifier
-→  RF power splitter
-→  mixer × local oscillator (RF synthesiser at ν_ref)
+            <div class="formula-box">Master + Slave  →  fibre combiner or PBS  →  fast PD
+→  RF amplifier (+10 to +20 dB, low noise)
+→  RF power splitter  (monitor + lock paths)
+→  mixer × DDS reference (at ν_ref)
 →  low-pass filter  →  error signal
-→  PID controller  →  slave laser current / PZT</div>
-
-            <div class="theory-box" style="margin-top:.75rem;">
-              <h4>Signal-to-Noise</h4>
-              <p>Beat SNR in a bandwidth B:</p>
-              <span class="eq">SNR = P₁·P₂·R² / (2e·I_dc·B)</span>
-              <p>Typically need ≳ 20 dBm RF power at the detector to lock cleanly.
-              Responsivity R ≈ 0.5–0.8 A/W for Si/InGaAs fast photodiodes at these wavelengths.</p>
-            </div>
+→  PID controller (Vescent D2-125 or Toptica FALC)
+→  slave: fast current path (MHz BW) + PZT (slow)</div>
           </div>
+        </div>
+
+        <!-- ─── Electronics ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">Commercial electronics</div>
+        <div class="three-col">
+          <div class="theory-box">
+            <h4>Vescent D2-125</h4>
+            <p>All-in-one laser locking module. Accepts PD input (SAS or beat), provides servo outputs
+            for current + PZT. Built-in lock-in and frequency discriminator. Beat input: 10 MHz–4.5 GHz.
+            Servo BW: up to 10 MHz. Widely used in AMO labs as a single-box solution.</p>
+          </div>
+          <div class="theory-box">
+            <h4>Toptica FALC 110</h4>
+            <p>Fast analog laser controller. Bandwidth: DC–10 MHz (current), DC–1 MHz (PZT). Accepts
+            any external error signal — used when you generate your own discriminator or PDH error.
+            High dynamic range, differential inputs reduce RF pickup. Standard in high-finesse PDH
+            setups and OPLLs.</p>
+          </div>
+          <div class="theory-box">
+            <h4>Vescent D2-105 / D2-135</h4>
+            <p>D2-105: SAS servo only (no beat-note input). D2-135: adds fast modulation input for PDH.
+            For beat-note locking, pair with an external frequency discriminator (Mini-Circuits FM
+            discriminator or custom DDS + mixer board).</p>
+          </div>
+        </div>
+
+        <!-- ─── Applications ─── -->
+        <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
+          Applications &amp; typical offset frequencies
+        </div>
+        <div style="overflow-x:auto; margin:.5rem 0 1rem 0;">
+          <table class="sum-table">
+            <thead>
+              <tr><th>Application</th><th>Species</th><th>Offset</th><th>Lock type</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cooling + repumper</td><td>⁶Li</td><td>228 MHz (D₁/D₂)</td>
+                <td>Freq. discriminator</td>
+                <td>Lock D₂ repumper to D₁ SAS-locked master</td>
+              </tr>
+              <tr>
+                <td>Cooling + repumper</td><td>⁸⁷Rb</td><td>6835 MHz</td>
+                <td>OPLL or chain</td>
+                <td>Large offset → 10 GHz PD or divide-by-N prescaler chain</td>
+              </tr>
+              <tr>
+                <td>Raman pair (2-photon)</td><td>⁸⁷Rb / Cs</td><td>6.8 / 9.2 GHz</td>
+                <td><strong>OPLL required</strong></td>
+                <td>Phase coherence essential for Rabi contrast</td>
+              </tr>
+              <tr>
+                <td>EIT / STIRAP</td><td>Rb / Cs / Li</td><td>100 MHz – 1 GHz</td>
+                <td>OPLL preferred</td>
+                <td>Phase noise limits dark-state contrast and transfer efficiency</td>
+              </tr>
+              <tr>
+                <td>Probe laser offset</td><td>Any</td><td>Arbitrary</td>
+                <td>Freq. discriminator</td>
+                <td>AOM-accessible range: 40–400 MHz; convenient for scanning</td>
+              </tr>
+              <tr>
+                <td>PDH transfer cavity</td><td>Any</td><td>FSR multiple</td>
+                <td>Freq. discriminator</td>
+                <td>Lock two lasers to same ULE cavity via beat against anchor laser</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
         <div class="prac-body">
           <ul>
-            <li><strong>Master must already be well-locked</strong> (SAS or PDH). The slave inherits the master's long-term stability.</li>
-            <li><strong>RF synthesiser sets the offset:</strong> changing ν_ref tunes the slave frequency without touching the master.</li>
-            <li><strong>OPLL vs frequency lock:</strong> phase-locked loops require ~1 MHz servo bandwidth but provide phase coherence — essential for Raman spectroscopy and atom interferometry.</li>
-            <li><strong>Very small offsets (&lt;10 MHz):</strong> beat note may fall within 1/f noise. Use a double-pass AOM to increase the offset before detecting.</li>
-            <li><strong>Offsets &gt;3 GHz:</strong> may exceed standard fast PD bandwidth. Consider wavemeter pre-stabilisation.</li>
-            <li><strong>Vescent D2-125:</strong> widely used electronics that handle both SAS and beat-note locking from a single unit.</li>
+            <li><strong>Master must already be well-locked</strong> (SAS or PDH). The slave inherits the master's long-term stability — no reference means the whole chain drifts.</li>
+            <li><strong>Fibre combiner vs free-space:</strong> single-mode 50:50 fibre combiner gives automatic mode overlap; free-space PBS requires careful polarisation alignment. Fibre adds ~3 dB loss per arm but produces cleaner spectra.</li>
+            <li><strong>RF amplifier chain:</strong> always amplify before the mixer — mixers need +10 to +20 dBm LO. A 20 dB low-noise amp pays off immediately in SNR for sub-mW optical powers.</li>
+            <li><strong>OPLL bandwidth requirement:</strong> servo bandwidth must exceed the free-running laser linewidth (typically 0.5–5 MHz for ECDLs). Fast current modulation (not PZT alone) is mandatory for OPLL.</li>
+            <li><strong>Very small offsets (&lt;30 MHz):</strong> beat note falls within 1/f noise. Use a double-pass AOM to shift one arm by 160–220 MHz before detecting; lock to the shifted beat note.</li>
+            <li><strong>Offsets &gt;3 GHz:</strong> need fast InGaAs PD (≥ 10 GHz BW) or a microwave prescaler chain to divide the beat to a more manageable frequency. For &gt;10 GHz, consider a frequency comb reference.</li>
+            <li><strong>AOM frequency scanning:</strong> scan the AOM RF frequency to scan the slave laser continuously while keeping the beat lock engaged — ideal for high-resolution spectroscopy without mode hops.</li>
+            <li><strong>RF synthesiser sets the offset:</strong> changing ν_ref tunes the slave without touching the master. A DDS (direct digital synthesiser) allows agile, phase-continuous frequency changes.</li>
           </ul>
         </div>
       </div>
@@ -621,11 +1027,11 @@ function togglePrac(btn) {
 const c_l = 299792458, kB = 1.380649e-23, amu = 1.66053906e-27, ln2 = Math.LN2;
 
 const ATOMS = {
-  Cs: { lam: 852.347e-9, Gamma: 5.234e6, A: 133 },
-  Rb: { lam: 780.241e-9, Gamma: 6.065e6, A: 87  },
-  Na: { lam: 589.000e-9, Gamma: 9.795e6, A: 23  },
-  Li: { lam: 670.977e-9, Gamma: 5.874e6, A: 6   },
-  K:  { lam: 766.700e-9, Gamma: 6.035e6, A: 40  },
+  Cs: { lam: 852.347e-9, Gamma: 5.234e6, A: 133, Isat: 1.10 },
+  Rb: { lam: 780.241e-9, Gamma: 6.065e6, A: 87,  Isat: 1.67 },
+  Na: { lam: 589.000e-9, Gamma: 9.795e6, A: 23,  Isat: 6.26 },
+  Li: { lam: 670.977e-9, Gamma: 5.874e6, A: 6,   Isat: 2.54 },
+  K:  { lam: 766.700e-9, Gamma: 6.035e6, A: 40,  Isat: 1.75 },
 };
 
 function doppler_MHz(lam, T_K, A) {
@@ -671,12 +1077,18 @@ function updateSAS() {
   const T_K  = parseFloat(document.getElementById('sasT').value);
   const sat  = parseFloat(document.getElementById('sasSat').value);
   const mod  = parseFloat(document.getElementById('sasMod').value);
+  const bd   = parseFloat(document.getElementById('sasBD').value); // mm, 1/e² diameter
   const a    = ATOMS[key];
 
   const dnu_D_MHz  = doppler_MHz(a.lam, T_K, a.A);
   const Gamma_MHz  = a.Gamma / 1e6;
   const dnu_lamb   = Gamma_MHz * Math.sqrt(1 + sat);
   const contrast   = dnu_D_MHz / Gamma_MHz;
+
+  // Pump power needed to achieve I/Isat at given beam diameter
+  const r_cm = (bd / 2) * 0.1;               // radius in cm
+  const beam_area_cm2 = Math.PI * r_cm * r_cm;
+  const pump_mW = sat * a.Isat * beam_area_cm2;
 
   // Result box
   document.getElementById('sasResult').innerHTML = `
@@ -687,13 +1099,17 @@ function updateSAS() {
     <div class="r-row">
       <span class="r-lbl">Lamb dip FWHM:</span><span class="r-val">${dnu_lamb.toFixed(3)} MHz</span>
       <span class="r-lbl">Contrast:</span><span class="r-val">${contrast.toFixed(0)} : 1</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Iₛₐₜ:</span><span class="r-val">${a.Isat.toFixed(2)} mW/cm²</span>
+      <span class="r-lbl">Pump needed (${bd} mm φ):</span><span class="r-val">${pump_mW.toFixed(2)} mW</span>
     </div>`;
 
   // Banner
   const banner = document.getElementById('sasBanner');
   if (mod < 0.05 * dnu_lamb) {
     banner.className = 'good-banner';
-    banner.textContent = `✓ Mod freq ${mod} MHz ≪ Lamb dip FWHM ${dnu_lamb.toFixed(2)} MHz — pure FM regime, good slope.`;
+    banner.textContent = `✓ Mod freq ${mod} MHz ≪ Lamb dip FWHM ${dnu_lamb.toFixed(2)} MHz — pure FM regime, maximum slope.`;
   } else if (mod < dnu_lamb) {
     banner.className = 'info-banner';
     banner.textContent = `ℹ Mod freq ${mod} MHz < Lamb dip FWHM — within feature, signal slightly reduced.`;
@@ -738,12 +1154,32 @@ function updateSAS() {
 function updateBeat() {
   const lam   = parseFloat(document.getElementById('bnMaster').value) * 1e-9;
   const off   = parseFloat(document.getElementById('bnOffset').value);
+  const P1    = parseFloat(document.getElementById('bnP1').value) * 1e-3;  // W
+  const P2    = parseFloat(document.getElementById('bnP2').value) * 1e-3;  // W
+  const R     = parseFloat(document.getElementById('bnR').value);           // A/W
   const opll  = document.getElementById('bnOPLL').checked;
+  const e_c   = 1.602176634e-19, Z0 = 50;
 
   const nu1   = c_l / lam;
   const nu2   = nu1 + off * 1e6;
   const lam2  = c_l / nu2 * 1e9;
   const beat  = Math.abs(off);
+
+  // Shot-noise-limited SNR in 1 MHz bandwidth
+  const B_Hz    = 1e6;
+  const I_dc    = R * (P1 + P2);
+  const i_ac_sq = 0.5 * R * R * P1 * P2;          // mean-square AC photocurrent
+  const i_sn_sq = 2 * e_c * I_dc * B_Hz;           // shot-noise variance
+  const snr_dB  = 10 * Math.log10(i_ac_sq / i_sn_sq);
+  const rf_dBm  = 10 * Math.log10(i_ac_sq * Z0 / 1e-3);
+
+  // PD recommendation
+  let pd_rec;
+  if      (beat <   100) pd_rec = 'Si PIN (300 MHz BW)';
+  else if (beat <  1000) pd_rec = 'Si/InGaAs PIN (1.5 GHz BW)';
+  else if (beat <  3000) pd_rec = 'InGaAs PIN (5 GHz BW)';
+  else if (beat < 10000) pd_rec = 'InGaAs balanced (15 GHz BW)';
+  else                   pd_rec = 'UTC-PD / resonant (≥ 25 GHz)';
 
   document.getElementById('beatResult').innerHTML = `
     <div class="r-row">
@@ -755,19 +1191,31 @@ function updateBeat() {
     </div>
     <div class="r-row">
       <span class="r-lbl">Beat |Δν|:</span><span class="r-val">${fmtFreq(beat*1e6)}</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">RF power:</span><span class="r-val">${rf_dBm.toFixed(1)} dBm</span>
+      <span class="r-lbl">SNR (1 MHz BW):</span><span class="r-val">${snr_dB.toFixed(1)} dB</span>
+    </div>
+    <div class="r-row">
+      <span class="r-lbl">Rec. PD:</span><span class="r-val">${pd_rec}</span>
     </div>`;
 
   const banner = document.getElementById('beatBanner');
-  const req_bw = beat * 1.5;
-  if (beat > 3000) {
+  if (beat > 10000) {
     banner.className = 'warn-banner';
-    banner.textContent = `⚠ Offset > 3 GHz — may exceed standard fast PD bandwidth. Consider wavemeter pre-stabilisation.`;
+    banner.textContent = `⚠ Offset > 10 GHz — requires UTC-PD or optical frequency division. Consider frequency comb reference.`;
+  } else if (beat > 3000) {
+    banner.className = 'warn-banner';
+    banner.textContent = `⚠ Offset > 3 GHz — need fast InGaAs PD (≥ 10 GHz BW). Consider AOM pre-shift to lower beat frequency.`;
   } else if (beat < 10) {
     banner.className = 'warn-banner';
-    banner.textContent = `⚠ Very small offset (<10 MHz) — beat note may fall within 1/f noise. Use double-pass AOM to increase.`;
+    banner.textContent = `⚠ Offset < 10 MHz — beat note in 1/f noise floor. Use double-pass AOM to shift by ~160–220 MHz before detecting.`;
+  } else if (snr_dB < 20) {
+    banner.className = 'warn-banner';
+    banner.textContent = `⚠ SNR ${snr_dB.toFixed(1)} dB < 20 dB — increase optical power or add RF amplifier. Need ≥ 20 dB for reliable locking.`;
   } else {
-    banner.className = 'info-banner';
-    banner.textContent = `ℹ PD bandwidth required: ≳ ${req_bw.toFixed(0)} MHz. ${opll ? 'OPLL: servo bandwidth must exceed laser linewidth.' : 'Frequency lock: a few MHz servo BW suffices.'}`;
+    banner.className = 'good-banner';
+    banner.textContent = `✓ SNR ${snr_dB.toFixed(1)} dB — good for locking. PD BW needed: ≥ ${(beat*3).toFixed(0)} MHz. ${opll ? 'OPLL: servo BW must exceed laser linewidth (~1–5 MHz).' : 'Freq. lock: ~200 kHz servo BW suffices.'}`;
   }
 }
 
