@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDH Locking — Complete Derivation | AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false})"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <style>
+    :root { --page-color: var(--c-lock); --accent: #f87171; }
+
+    /* ── Section layout ─────────────────────────── */
+    .pdh-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 80px;
+    }
+    .sec-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: .4rem;
+    }
+    .sec-h2 {
+      font-size: 1.55rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .3rem 0; line-height: 1.3;
+    }
+    .sec-desc {
+      font-size: .9rem; color: var(--text-muted);
+      margin: 0 0 1.5rem 0; max-width: 780px;
+    }
+
+    /* ── Theory / prose boxes ───────────────────── */
+    .theory {
+      background: var(--bg-card); border: 1px solid #2d1515;
+      border-left: 4px solid var(--accent); border-radius: 10px;
+      padding: 1.2rem 1.5rem; margin-bottom: 1.1rem;
+    }
+    .theory h4 { font-size: .95rem; font-weight: 700; color: var(--accent); margin: 0 0 .6rem; }
+    .theory p  { font-size: .88rem; color: var(--text-secondary); line-height: 1.8; margin: 0 0 .6rem; }
+    .theory p:last-child { margin-bottom: 0; }
+    .theory ul { padding-left: 1.3rem; margin: .4rem 0 0; }
+    .theory li { font-size: .87rem; color: var(--text-secondary); line-height: 1.75; margin-bottom: .25rem; }
+
+    /* ── Math display ───────────────────────────── */
+    .math-block {
+      background: #06101e; border: 1px solid #1e3a5f;
+      border-radius: 8px; padding: .9rem 1.4rem;
+      margin: .75rem 0; overflow-x: auto; text-align: center;
+    }
+    .math-block .katex-display { margin: 0; }
+    .math-inline { font-size: .92em; }
+
+    /* ── Step-by-step derivation ────────────────── */
+    .derive-step {
+      display: flex; gap: 1rem; align-items: flex-start;
+      margin-bottom: .9rem;
+    }
+    .step-num {
+      min-width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent); color: #000;
+      font-size: .78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: .15rem; flex-shrink: 0;
+    }
+    .step-body { font-size: .87rem; color: var(--text-secondary); line-height: 1.75; }
+    .step-body strong { color: var(--text-primary); }
+
+    /* ── Highlight / info / warn banners ────────── */
+    .info  { background: #071528; border: 1px solid #1e4080; border-radius: 8px;
+             padding: .65rem 1rem; color: #93c5fd; font-size: .85rem; margin: .6rem 0; }
+    .good  { background: #061a0f; border: 1px solid #15803d; border-radius: 8px;
+             padding: .65rem 1rem; color: #86efac; font-size: .85rem; margin: .6rem 0; }
+    .warn  { background: #1c0f07; border: 1px solid #92400e; border-radius: 8px;
+             padding: .65rem 1rem; color: #fde68a; font-size: .85rem; margin: .6rem 0; }
+    .key   { background: #180a1f; border: 1px solid #7c3aed; border-radius: 8px;
+             padding: .65rem 1rem; color: #ddd6fe; font-size: .85rem; margin: .6rem 0; }
+
+    /* ── Plot / canvas cards ────────────────────── */
+    .plot-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.1rem; margin-top: 1rem;
+    }
+    .plot-card h5 {
+      font-size: .8rem; font-weight: 600; color: var(--text-muted);
+      margin: 0 0 .7rem; text-transform: uppercase; letter-spacing: .06em;
+      text-align: center;
+    }
+    .plot-wrap { width: 100%; }
+
+    /* ── Control rows ───────────────────────────── */
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; gap: .75rem 1.5rem;
+      align-items: center; margin-bottom: .6rem;
+    }
+    .ctrl-item { display: flex; flex-direction: column; gap: .2rem; min-width: 160px; }
+    .ctrl-item label { font-size: .75rem; color: var(--text-muted); }
+    .ctrl-item input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    .ctrl-item select {
+      background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 5px; padding: .3rem .6rem;
+      color: var(--text-primary); font-size: .82rem; font-family: var(--mono);
+    }
+    .ctrl-val { font-size: .82rem; color: var(--accent); font-family: var(--mono); }
+
+    /* ── Two-column layout ──────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 820px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* ── SVG circuit diagram ────────────────────── */
+    .circuit-wrap {
+      background: #020b14; border: 1px solid #1e3a5f;
+      border-radius: 12px; padding: 1.25rem; overflow-x: auto;
+    }
+    .circuit-wrap svg { display: block; margin: auto; }
+
+    /* ── FAQ accordion ──────────────────────────── */
+    .faq-item { margin-bottom: .6rem; }
+    .faq-q {
+      background: var(--bg-card); border: 1px solid #2d2d3f;
+      border-radius: 8px; padding: .75rem 1.1rem;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      font-size: .88rem; font-weight: 600; color: var(--text-primary);
+      transition: border-color .2s;
+    }
+    .faq-q:hover { border-color: var(--accent); }
+    .faq-q .faq-icon { color: var(--accent); font-size: 1.1rem; transition: transform .25s; }
+    .faq-q.open .faq-icon { transform: rotate(45deg); }
+    .faq-a {
+      display: none; background: #06101e; border: 1px solid #1e2d4f;
+      border-top: none; border-radius: 0 0 8px 8px;
+      padding: 1rem 1.1rem; font-size: .86rem;
+      color: var(--text-secondary); line-height: 1.8;
+    }
+    .faq-a.open { display: block; }
+    .faq-a p { margin: 0 0 .5rem; }
+    .faq-a p:last-child { margin-bottom: 0; }
+    .faq-a ul { padding-left: 1.2rem; margin: .4rem 0; }
+    .faq-a li { margin-bottom: .3rem; }
+
+    /* ── TOC pills ──────────────────────────────── */
+    .toc-bar {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      margin-bottom: 2.5rem; padding: 1rem;
+      background: var(--bg-card); border-radius: 10px;
+      border: 1px solid #1e293b;
+    }
+    .toc-pill {
+      background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 20px; padding: .3rem .85rem;
+      font-size: .78rem; color: var(--text-muted); text-decoration: none;
+      transition: all .2s; white-space: nowrap;
+    }
+    .toc-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Phasor canvas ──────────────────────────── */
+    #phasorCanvas { border-radius: 8px; background: #020b14; display: block; }
+    .phasor-legend { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin-top: .6rem; }
+    .leg-item { display: flex; align-items: center; gap: .4rem; font-size: .78rem; color: var(--text-muted); }
+    .leg-dot { width: 12px; height: 3px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-lock);">
+  <div class="container">
+    <div class="hero-badge anim-in">ADVANCED LASER STABILISATION</div>
+    <h1 class="page-title anim-in delay-1">
+      Pound–Drever–Hall <span class="grad-text" style="--ga: var(--c-lock); --gb: #fbbf24;">Locking</span>
+    </h1>
+    <p class="page-desc anim-in delay-2">
+      A complete derivation — from the Fabry–Pérot cavity reflection coefficient through
+      phase modulation, the phasor picture, and all the way to the electronic servo chain.
+      Every step interactive. Based on E. D. Black, <em>Am. J. Phys.</em> 69, 79 (2001).
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">&lt;1 kHz</span><span class="stat-lbl">achievable linewidth</span></div>
+      <div class="stat"><span class="stat-val">PDH</span><span class="stat-lbl">Pound–Drever–Hall</span></div>
+      <div class="stat"><span class="stat-val">Im[F]</span><span class="stat-lbl">error signal origin</span></div>
+      <div class="stat"><span class="stat-val">∞ BW</span><span class="stat-lbl">not cavity-limited</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+  <!-- TOC -->
+  <div class="toc-bar anim-in">
+    <span style="font-size:.78rem;color:var(--text-muted);padding:.3rem .4rem;">Jump to:</span>
+    <a class="toc-pill" href="#sec-fp">FP Cavity</a>
+    <a class="toc-pill" href="#sec-circle">Complex Plane</a>
+    <a class="toc-pill" href="#sec-why">Why Intensity Fails</a>
+    <a class="toc-pill" href="#sec-sidebands">Phase Modulation</a>
+    <a class="toc-pill" href="#sec-derive">Error Signal</a>
+    <a class="toc-pill" href="#sec-phasor">Phasor Picture</a>
+    <a class="toc-pill" href="#sec-master">PDH Explorer</a>
+    <a class="toc-pill" href="#sec-circuit">Electronics</a>
+    <a class="toc-pill" href="#sec-practical">Practical</a>
+    <a class="toc-pill" href="#sec-offset">Offset Lock</a>
+    <a class="toc-pill" href="#sec-noise">Noise</a>
+    <a class="toc-pill" href="#sec-faq">Deep Questions</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 0 — MOTIVATION
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in">
+    <div class="sec-label">§0 — The Problem</div>
+    <h2 class="sec-h2">Why Lock a Laser to a Cavity?</h2>
+    <p class="sec-desc">Free-running diode lasers are notoriously unstable — they drift, they jitter, and they cannot achieve the spectral purity demanded by precision AMO experiments.</p>
+
+    <div class="two-col">
+      <div class="theory">
+        <h4>Free-Running Laser Noise</h4>
+        <p>A free-running external-cavity diode laser (ECDL) typically drifts by
+        <strong>1–10 MHz on minute timescales</strong> due to fluctuations in injection
+        current, chip temperature, and external-cavity mechanical length.
+        The instantaneous linewidth (coherence time ~μs) is 100 kHz–1 MHz.</p>
+        <p>For comparison: the Cs D₂ natural linewidth is Γ/2π = 5.2 MHz, the Li D₁
+        linewidth is 5.9 MHz, and the Cs electric-quadrupole transition at 685 nm
+        is only <strong>Γ/2π ≈ 117 Hz</strong> — six orders of magnitude narrower.</p>
+        <p>Unstabilised operation means you cannot reliably sit on a transition, cannot
+        do coherent spectroscopy, and cannot reproduce results day-to-day.</p>
+      </div>
+      <div class="theory">
+        <h4>The PDH Solution</h4>
+        <p>The Pound–Drever–Hall technique (Drever et al. 1983; Black 2001) stabilises
+        the laser to a <strong>reference Fabry–Pérot cavity</strong> whose length is
+        mechanically and thermally isolated. The cavity acts as a flywheel, providing
+        a stable short-term frequency reference.</p>
+        <p>A key insight: the cavity's <em>reflected field</em> — not its transmission —
+        carries a dispersive (antisymmetric) error signal. Using RF phase modulation
+        and heterodyne detection, the PDH scheme extracts a signal whose slope is
+        set by the cavity finesse: <strong>higher finesse = steeper slope = tighter lock</strong>.</p>
+        <p>Achieved linewidths: 1 kHz for commercial ECDL + moderate cavity; sub-Hz
+        for research-grade setups. Our 685 nm laser achieves ~1 kHz locked to a
+        ULE cavity with finesse 𝒻 ≈ 1.5 × 10⁴.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 1 — FABRY-PÉROT CAVITY
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-fp">
+    <div class="sec-label">§1 — The Reference</div>
+    <h2 class="sec-h2">The Fabry–Pérot Cavity</h2>
+    <p class="sec-desc">Before deriving the PDH error signal, we need to understand exactly how a Fabry–Pérot cavity reflects and transmits light as a function of frequency.</p>
+
+    <div class="theory">
+      <h4>Cavity Geometry and Round-Trip Phase</h4>
+      <p>A linear cavity of length \(L\) with two mirrors (amplitude reflectivity \(r\),
+      transmissivity \(t = \sqrt{1-r^2}\) for a lossless mirror) supports
+      resonant modes separated by the <strong>free spectral range</strong>:</p>
+    </div>
+    <div class="math-block">$$\nu_{\rm FSR} = \frac{c}{2nL}$$</div>
+    <div class="theory">
+      <p>Light accumulates a round-trip phase \(\phi = 2\pi\nu/\nu_{\rm FSR}\).
+      Resonance occurs when this phase is a multiple of \(2\pi\), constructing
+      a standing wave inside the cavity. The <strong>finesse</strong> \(\mathcal{F}\)
+      measures the sharpness of these resonances:</p>
+    </div>
+    <div class="math-block">$$\mathcal{F} = \frac{\pi\sqrt{R}}{1-R} = \frac{\pi r}{1-r^2} \approx \frac{\pi}{1-R} \quad (R \to 1)$$</div>
+    <div class="theory">
+      <p>where \(R = r^2\) is the power reflectivity. The cavity linewidth (FWHM) is:</p>
+    </div>
+    <div class="math-block">$$\delta\nu_{\rm cav} = \frac{\nu_{\rm FSR}}{\mathcal{F}}$$</div>
+
+    <div class="theory">
+      <h4>Reflection Coefficient</h4>
+      <p>The total reflected field is the coherent sum of the <em>promptly reflected</em>
+      beam (bounces off the first mirror without entering) and the <em>leakage field</em>
+      (cavity field that leaks back through the input mirror). For a lossless symmetric
+      cavity, the complex reflection coefficient is:</p>
+    </div>
+    <div class="math-block">$$F(\nu) = \frac{r\left(e^{i\phi} - 1\right)}{1 - r^2 e^{i\phi}}, \qquad \phi = \frac{2\pi\nu}{\nu_{\rm FSR}}$$</div>
+    <div class="theory">
+      <p>The <strong>reflected power</strong> \(|F(\nu)|^2\) is the familiar Airy function
+      — it reaches zero at each resonance (complete destructive interference) and approaches
+      \(r^2 \approx 1\) far between resonances. The transmitted power is \(T(\nu) = 1 - |F(\nu)|^2\)
+      (Airy transmission function) peaked at resonance.</p>
+    </div>
+
+    <!-- Airy function interactive plot -->
+    <div class="plot-card">
+      <h5>Fig 1 — Airy Function: Cavity Reflection &amp; Transmission</h5>
+      <div class="ctrl-row">
+        <div class="ctrl-item">
+          <label>Finesse 𝒻: <span class="ctrl-val" id="airyFVal">300</span></label>
+          <input type="range" id="airyF" min="1" max="5" step="1" value="3"
+            oninput="updateAiry()">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;color:#475569">
+            <span>10</span><span>100</span><span>300</span><span>2000</span><span>10k</span><span>100k</span>
+          </div>
+        </div>
+        <div class="ctrl-item">
+          <label>Show sidebands at Ω/δν: <span class="ctrl-val" id="airyOmegaVal">5</span></label>
+          <input type="range" id="airyOmega" min="1" max="20" step="0.5" value="5"
+            oninput="updateAiry()">
+        </div>
+      </div>
+      <div class="plot-wrap" id="airyPlot" style="height:320px;"></div>
+      <div class="info" id="airyInfo" style="margin-top:.6rem;"></div>
+    </div>
+
+    <div class="theory" style="margin-top:1.2rem;">
+      <h4>Physical Interpretation of the Airy Dip</h4>
+      <p>At resonance, the promptly reflected beam and the leakage beam are equal in
+      amplitude and exactly 180° out of phase — they cancel completely. Off resonance,
+      the phase mismatch is incomplete, and some light reflects. The high-finesse cavity
+      makes this cancellation exquisitely sensitive to frequency, giving a very narrow
+      dip. The <strong>ring-down time</strong> \(\tau_c = \mathcal{F}/(π\,\nu_{\rm FSR})\)
+      is the 1/e decay time of the cavity field — it sets how long the cavity "remembers"
+      the incident frequency.</p>
+    </div>
+    <div class="math-block">$$\tau_c = \frac{\mathcal{F}}{\pi\,\nu_{\rm FSR}} = \frac{\mathcal{F}\cdot 2L}{\pi c}$$</div>
+    <div class="key">
+      <strong>Key number:</strong> For our 685 nm ULE cavity:
+      L = 77.5 mm, 𝒻 = 1.5 × 10⁴, ν_FSR ≈ 1.93 GHz, δν_cav ≈ 130 kHz, τ_c ≈ 2.5 μs.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 2 — COMPLEX PLANE / CIRCLE THEOREM
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-circle">
+    <div class="sec-label">§2 — Geometry of Reflection</div>
+    <h2 class="sec-h2">F(ν) in the Complex Plane</h2>
+    <p class="sec-desc">One of the most elegant properties of the Fabry–Pérot reflection coefficient is that as the frequency varies, F(ν) traces a perfect circle in the complex plane.</p>
+
+    <div class="theory">
+      <h4>The Circle Theorem</h4>
+      <p>As the laser frequency \(\nu\) is tuned continuously, the complex number
+      \(F(\nu)\) traces a circle in the complex plane. For our symmetric lossless cavity,
+      this circle passes through the origin (\(F = 0\) at resonance) and through
+      \(-r^2/(1+r^2) \cdot 2 \approx -1\) at half-FSR (completely anti-resonant).</p>
+      <p>The magnitude \(|F(\nu)|\) gives the reflected amplitude, and the
+      <strong>phase of \(F\)</strong> is antisymmetric about resonance — this is
+      what allows us to determine which side of resonance the laser is on.</p>
+    </div>
+
+    <div class="math-block">$$F(\nu) \in \left\{\,z \in \mathbb{C} \;:\; \left|z - z_0\right| = \rho\,\right\} \quad \text{(a circle in } \mathbb{C}\text{)}$$</div>
+
+    <div class="two-col">
+      <div>
+        <div class="plot-card">
+          <h5>Fig 2a — F(ν) Tracing a Circle (Complex Plane)</h5>
+          <div class="ctrl-row">
+            <div class="ctrl-item">
+              <label>Finesse: <span class="ctrl-val" id="circFVal">300</span></label>
+              <input type="range" id="circF" min="1" max="5" step="1" value="3"
+                oninput="updateCircle()">
+            </div>
+            <div class="ctrl-item">
+              <label>Detuning Δν/δν: <span class="ctrl-val" id="circDetVal">0.00</span></label>
+              <input type="range" id="circDet" min="-300" max="300" step="1" value="0"
+                oninput="updateCircle()">
+            </div>
+          </div>
+          <div class="plot-wrap" id="circlePlot" style="height:300px;"></div>
+        </div>
+      </div>
+      <div>
+        <div class="plot-card">
+          <h5>Fig 2b — Phase of F(ν): The Antisymmetric Discriminator</h5>
+          <div class="ctrl-row">
+            <div class="ctrl-item">
+              <label>Finesse: <span class="ctrl-val" id="phaseFVal">300</span></label>
+              <input type="range" id="phaseF" min="1" max="5" step="1" value="3"
+                oninput="updatePhase()">
+            </div>
+          </div>
+          <div class="plot-wrap" id="phasePlot" style="height:300px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory" style="margin-top:1.1rem;">
+      <h4>Why Phase is the Key Quantity</h4>
+      <p>Look at Fig 2b: the phase of \(F(\nu)\) is <strong>antisymmetric</strong>
+      about the resonance — it is positive above resonance, negative below, and zero
+      exactly on resonance. This antisymmetry is exactly what we need for a
+      frequency discriminator. The reflected power \(|F|^2\) (Fig 1) is symmetric
+      and cannot distinguish left from right. The phase breaks this symmetry.</p>
+      <p>The PDH technique is essentially a method to <em>measure the phase of
+      \(F(\nu)\)</em> using RF heterodyne detection. Near resonance, the
+      imaginary part of \(F(\nu)\) linearises:</p>
+    </div>
+    <div class="math-block">$$\mathrm{Im}[F(\nu)] \approx \frac{r}{1-r^2} \cdot \frac{2\pi\Delta\nu}{\nu_{\rm FSR}} = \frac{\mathcal{F}}{\pi} \cdot \frac{\Delta\nu}{\nu_{\rm FSR}} \quad (\Delta\nu \ll \delta\nu_{\rm cav})$$</div>
+    <div class="info">
+      <strong>Note:</strong> Near resonance, Re[F] ≈ 0 (it's quadratic in Δν) while Im[F] is linear.
+      The PDH error signal measures Im[F] — so it's automatically linear near lock.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 3 — WHY INTENSITY FAILS
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-why">
+    <div class="sec-label">§3 — The Symmetry Problem</div>
+    <h2 class="sec-h2">Why Reflected Intensity Alone Fails</h2>
+    <p class="sec-desc">A natural first idea: lock the laser to the minimum of reflected power. This doesn't work — and understanding why leads directly to the PDH solution.</p>
+
+    <div class="two-col">
+      <div class="theory">
+        <h4>The Symmetry Argument</h4>
+        <p>The Airy dip in reflected power (Fig 1) is <strong>symmetric</strong>
+        about resonance: \(|F(\nu_{\rm res} + \delta)| = |F(\nu_{\rm res} - \delta)|\).
+        Sitting exactly on the minimum, a small frequency perturbation \(\delta\nu\)
+        changes the reflected power by \(\propto \delta\nu^2\) — the first derivative
+        is zero at resonance.</p>
+        <p>This means: (a) the error signal has zero slope at the lock point —
+        terrible for servo gain; (b) you cannot tell whether the laser has drifted
+        above or below resonance from the intensity alone — no sign information.</p>
+        <p>What you need is a signal that is <em>odd</em> in frequency detuning —
+        positive on one side, negative on the other, with a steep slope through zero
+        at resonance. This is the derivative of the reflected power, or equivalently,
+        Im[F(ν)].</p>
+      </div>
+      <div>
+        <div class="theory">
+          <h4>The Conceptual Fix: Frequency Dithering</h4>
+          <p>The simplest solution: modulate the laser frequency sinusoidally at a
+          low frequency Ω, and look at how the reflected power responds.</p>
+          <ul>
+            <li><strong>Above resonance</strong>: reflected power increases with ν → response is <em>in-phase</em> with the dither.</li>
+            <li><strong>Below resonance</strong>: reflected power decreases with ν → response is <em>180° out-of-phase</em>.</li>
+            <li><strong>On resonance</strong>: dP/dν = 0 → <em>no response</em> at Ω (but response at 2Ω).</li>
+          </ul>
+          <p>Demodulating the reflected signal at Ω recovers a signal proportional
+          to \(dP_{\rm ref}/d\nu\) — an antisymmetric error signal. This is the
+          "slow modulation" (adiabatic) limit of PDH.</p>
+        </div>
+        <div class="warn">
+          <strong>Limitation of slow modulation:</strong> If the dither frequency Ω is
+          comparable to the cavity linewidth δν_cav, the cavity cannot respond fast enough —
+          the standing wave doesn't have time to build up/decay. The PDH insight is to use
+          <em>fast</em> modulation (Ω ≫ δν_cav) and RF detection, which bypasses this limitation entirely.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 4 — PHASE MODULATION & SIDEBANDS
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-sidebands">
+    <div class="sec-label">§4 — Creating the Probe</div>
+    <h2 class="sec-h2">Phase Modulation and Sidebands</h2>
+    <p class="sec-desc">Instead of slowly dithering the laser frequency, PDH uses an EOM to imprint RF phase modulation — creating sidebands that act as a fixed phase reference.</p>
+
+    <div class="theory">
+      <h4>The Electro-Optic Modulator (EOM)</h4>
+      <p>An EOM (or Pockels cell) applies a sinusoidally varying voltage \(V = V_0\sin\Omega t\)
+      across an electro-optic crystal, modulating the crystal's refractive index
+      and hence the optical path length. The transmitted field acquires a phase modulation:</p>
+    </div>
+    <div class="math-block">$$E_{\rm in}(t) = E_0\, e^{i(\omega t + \beta\sin\Omega t)}$$</div>
+    <div class="theory">
+      <p>where \(\beta = \pi V_0/V_\pi\) is the <strong>modulation depth</strong>
+      (typically 0.1–1 rad) and \(V_\pi\) is the half-wave voltage of the EOM.
+      Expanding using the Jacobi–Anger identity:</p>
+    </div>
+    <div class="math-block">$$e^{i\beta\sin\Omega t} = \sum_{n=-\infty}^{\infty} J_n(\beta)\, e^{in\Omega t}$$</div>
+    <div class="theory">
+      <p>For small modulation depth \(\beta \ll 1\), only the zeroth and first-order
+      Bessel functions matter:</p>
+    </div>
+    <div class="math-block">$$E_{\rm in} \approx E_0\left[\underbrace{J_0(\beta)\,e^{i\omega t}}_{\rm carrier} + \underbrace{J_1(\beta)\,e^{i(\omega+\Omega)t}}_{\rm upper\;sideband} - \underbrace{J_1(\beta)\,e^{i(\omega-\Omega)t}}_{\rm lower\;sideband}\right]$$</div>
+    <div class="theory">
+      <p>We now have <strong>three distinct frequency components</strong> incident on the cavity:
+      the carrier at \(\omega\), and two sidebands at \(\omega \pm \Omega\).
+      Their powers are \(P_c = J_0^2(\beta)P_0\) and \(P_s = J_1^2(\beta)P_0\) each.
+      For \(\beta \ll 1\): \(J_0(\beta) \approx 1 - \beta^2/4\), \(J_1(\beta) \approx \beta/2\),
+      so the sideband power fraction is approximately \(P_s/P_0 \approx \beta^2/4\).</p>
+    </div>
+
+    <!-- Interactive sideband spectrum -->
+    <div class="plot-card">
+      <h5>Fig 3 — Sideband Spectrum: Carrier + Sidebands</h5>
+      <div class="ctrl-row">
+        <div class="ctrl-item">
+          <label>Modulation depth β: <span class="ctrl-val" id="sbBetaVal">0.50</span></label>
+          <input type="range" id="sbBeta" min="0.05" max="2.5" step="0.05" value="0.5"
+            oninput="updateSidebands()">
+        </div>
+        <div class="ctrl-item">
+          <label>Sideband freq Ω/δν_cav: <span class="ctrl-val" id="sbOmegaVal">8</span></label>
+          <input type="range" id="sbOmega" min="1" max="30" step="0.5" value="8"
+            oninput="updateSidebands()">
+        </div>
+        <div class="ctrl-item">
+          <label>Finesse: <span class="ctrl-val" id="sbFVal">300</span></label>
+          <input type="range" id="sbF" min="1" max="5" step="1" value="3"
+            oninput="updateSidebands()">
+        </div>
+      </div>
+      <div class="plot-wrap" id="sidebandsPlot" style="height:280px;"></div>
+      <div class="info" id="sbInfo" style="margin-top:.6rem;"></div>
+    </div>
+
+    <div class="theory" style="margin-top:1.1rem;">
+      <h4>The Critical Frequency Placement</h4>
+      <p>The PDH scheme works best when the sidebands are placed <em>outside</em>
+      the cavity resonance: \(\Omega \gg \delta\nu_{\rm cav}\). In this regime:</p>
+      <ul>
+        <li>The <strong>carrier</strong> at \(\omega\) is near resonance and interacts
+        strongly with the cavity — its reflection is frequency-dependent.</li>
+        <li>The <strong>sidebands</strong> at \(\omega \pm \Omega\) are far from any
+        resonance — they are totally reflected with reflection coefficient \(F \approx -1\)
+        (the minus sign comes from the prompt reflection phase).</li>
+      </ul>
+      <p>The sidebands thus act as a <em>fixed phase reference</em> that does not
+      depend on the carrier frequency. The beat between the reflected carrier and
+      the reflected sidebands carries the phase information we need.</p>
+    </div>
+    <div class="good">
+      <strong>Design rule:</strong> Choose Ω such that Ω/δν_cav ≫ 1 (typically Ω ≈ 5–50 × δν_cav).
+      For our 685 nm cavity (δν_cav ≈ 130 kHz), Ω = 27 MHz gives Ω/δν_cav ≈ 200 — well in the fast-modulation regime.
+      For a lower-finesse cavity (δν_cav ~ 10 MHz), you need Ω > 100 MHz.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 5 — DERIVING THE ERROR SIGNAL
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-derive">
+    <div class="sec-label">§5 — The Core Calculation</div>
+    <h2 class="sec-h2">Deriving the PDH Error Signal</h2>
+    <p class="sec-desc">With the three-component incident field and the cavity reflection coefficient in hand, we can compute the exact reflected power and extract the error signal.</p>
+
+    <div class="theory">
+      <h4>Reflected Field</h4>
+      <p>Each spectral component is reflected with its own reflection coefficient
+      \(F(\omega)\), \(F(\omega+\Omega)\), \(F(\omega-\Omega)\). The total reflected
+      field is:</p>
+    </div>
+    <div class="math-block">$$E_{\rm ref} = E_0\!\left[F(\omega)\,J_0(\beta)\,e^{i\omega t} + F(\omega{+}\Omega)\,J_1(\beta)\,e^{i(\omega+\Omega)t} - F(\omega{-}\Omega)\,J_1(\beta)\,e^{i(\omega-\Omega)t}\right]$$</div>
+
+    <div class="theory">
+      <h4>Reflected Power and Beat Terms</h4>
+      <p>The photodetector measures the power \(P_{\rm ref} = |E_{\rm ref}|^2\).
+      Expanding and collecting terms by oscillation frequency:</p>
+    </div>
+    <div class="math-block">$$P_{\rm ref}(t) = \underbrace{P_c|F(\omega)|^2 + P_s|F(\omega+\Omega)|^2 + P_s|F(\omega-\Omega)|^2}_{\rm DC} + \underbrace{2\sqrt{P_c P_s}\,\mathrm{Re}\!\left[\left(F(\omega)F^*(\omega{+}\Omega) - F^*(\omega)F(\omega{-}\Omega)\right)e^{i\Omega t}\right]}_{\rm beat\;at\;\Omega} + \underbrace{\cdots}_{2\Omega\;\rm terms}$$</div>
+
+    <div class="theory">
+      <p>The term oscillating at \(\Omega\) is the one we want. Writing
+      \(\mathcal{Z} \equiv F(\omega)F^*(\omega{+}\Omega) - F^*(\omega)F(\omega{-}\Omega)\):</p>
+    </div>
+    <div class="math-block">$$P_\Omega(t) = 2\sqrt{P_c P_s}\left[\mathrm{Re}(\mathcal{Z})\cos\Omega t - \mathrm{Im}(\mathcal{Z})\sin\Omega t\right]$$</div>
+
+    <div class="theory">
+      <h4>Demodulation: Mixing with the Local Oscillator</h4>
+      <p>We multiply the photodetector output by a reference \(\cos(\Omega t + \varphi)\)
+      from the same local oscillator that drives the EOM, then low-pass filter.
+      Using \(\langle\cos\Omega t\cdot\cos(\Omega t+\varphi)\rangle_{\rm LPF} = \tfrac{1}{2}\cos\varphi\)
+      and \(\langle\sin\Omega t\cdot\cos(\Omega t+\varphi)\rangle_{\rm LPF} = -\tfrac{1}{2}\sin\varphi\):</p>
+    </div>
+    <div class="math-block">$$\boxed{\varepsilon(\omega,\varphi) = \sqrt{P_c P_s}\left[\mathrm{Re}(\mathcal{Z})\cos\varphi + \mathrm{Im}(\mathcal{Z})\sin\varphi\right]}$$</div>
+
+    <div class="theory">
+      <h4>Fast-Modulation Limit: \(\Omega \gg \delta\nu_{\rm cav}\)</h4>
+      <p>When the sidebands are far outside the cavity resonance,
+      \(F(\omega\pm\Omega) \approx -1\) (fully reflected with a \(\pi\) phase shift for a high-finesse lossless cavity). Then:</p>
+    </div>
+    <div class="math-block">$$\mathcal{Z} \approx F(\omega)(-1) - F^*(\omega)(-1) = -F(\omega) + F^*(\omega) = -2i\,\mathrm{Im}[F(\omega)]$$</div>
+
+    <div class="theory">
+      <p>So \(\mathrm{Re}(\mathcal{Z}) \approx 0\) and \(\mathrm{Im}(\mathcal{Z}) \approx -2\,\mathrm{Im}[F(\omega)]\).
+      With optimal demodulation phase \(\varphi = \pi/2\) (sine demodulation):</p>
+    </div>
+    <div class="math-block">$$\varepsilon(\omega) \approx -2\sqrt{P_c P_s}\cdot\mathrm{Im}(\mathcal{Z})\cdot\sin\frac{\pi}{2} = 4\sqrt{P_c P_s}\,\mathrm{Im}[F(\omega)]$$</div>
+
+    <div class="theory">
+      <h4>Linear Region Near Resonance</h4>
+      <p>Near resonance, \(\mathrm{Im}[F(\omega)] \approx \frac{\mathcal{F}}{\pi}\frac{\Delta\nu}{\nu_{\rm FSR}}\),
+      giving a <strong>linear error signal</strong>:</p>
+    </div>
+    <div class="math-block">$$\varepsilon \approx \frac{4\mathcal{F}}{\pi\nu_{\rm FSR}}\sqrt{P_c P_s}\cdot\Delta\nu = \underbrace{\frac{8\sqrt{P_c P_s}}{\delta\nu_{\rm cav}}}_{D \;=\;\rm discriminant}\cdot\Delta\nu$$</div>
+    <div class="key">
+      <strong>The discriminant \(D\) has units of V/Hz.</strong>
+      It grows with finesse (smaller \(\delta\nu_{\rm cav}\)) and with optical power.
+      For \(P_c = 1\,\text{mW}\), \(P_s = 0.1\,\text{mW}\), \(\delta\nu_{\rm cav} = 130\,\text{kHz}\):
+      \(D = 8\sqrt{10^{-3}\times 10^{-4}}/130\times10^3 \approx 1.7\,\mu\text{V/Hz}\).
+    </div>
+
+    <div class="theory">
+      <h4>Slow-Modulation Limit: \(\Omega \ll \delta\nu_{\rm cav}\)</h4>
+      <p>When \(\Omega\) is much smaller than the cavity linewidth, the cavity
+      can follow adiabatically. In this limit:</p>
+    </div>
+    <div class="math-block">$$\mathcal{Z} \approx \frac{d|F|^2}{d\nu}\cdot\Omega \quad\Rightarrow\quad \varepsilon \approx 2\sqrt{P_c P_s}\,\frac{d|F(\omega)|^2}{d\nu}\cdot\Omega$$</div>
+    <div class="info">
+      The slow-modulation error signal is proportional to the <em>derivative of reflected power</em> —
+      exactly the conceptual model from §3. The fast-modulation PDH signal goes beyond this,
+      accessing frequencies faster than the cavity storage time.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 6 — PHASOR PICTURE
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-phasor">
+    <div class="sec-label">§6 — Rotating Frame Intuition</div>
+    <h2 class="sec-h2">The Phasor Picture</h2>
+    <p class="sec-desc">Black's paper offers a beautiful geometric picture in the rotating reference frame that makes the physics immediately clear without any algebra.</p>
+
+    <div class="theory">
+      <h4>The Rotating Reference Frame</h4>
+      <p>Boost to a frame rotating at the carrier frequency \(\omega\). In this frame,
+      the incident carrier appears as a fixed vector along the real axis. The sidebands
+      at \(\omega \pm \Omega\) become vectors rotating at \(\pm\Omega\):</p>
+      <ul>
+        <li><strong>Upper sideband</strong> \((\omega+\Omega)\): rotates counter-clockwise (CCW) at \(\Omega\).</li>
+        <li><strong>Lower sideband</strong> \((\omega-\Omega)\): rotates clockwise (CW) at \(\Omega\).</li>
+      </ul>
+      <p>When both sidebands are totally reflected (\(F = -1\)), they each acquire a \(\pi\)
+      phase flip. Their vector sum oscillates along the <em>imaginary axis</em>:</p>
+    </div>
+    <div class="math-block">$$E_{\rm sidebands}(t) = -J_1 e^{i\Omega t} + J_1 e^{-i\Omega t} = -2i J_1 \sin\Omega t \quad \text{(purely imaginary oscillation)}$$</div>
+    <div class="theory">
+      <p>Now add the <strong>reflected carrier</strong>. Near resonance with the laser
+      slightly above resonance, \(F(\omega) \approx i\,\mathrm{Im}[F]\) (purely imaginary,
+      positive). This small imaginary vector <em>adds to</em> the sideband oscillation
+      during half its cycle and <em>subtracts</em> in the other half —
+      creating an asymmetry in the intensity that oscillates at \(\Omega\).</p>
+      <p>Below resonance, Im\([F] < 0\) and the asymmetry flips sign — giving the
+      opposite phase at \(\Omega\). This is the origin of the antisymmetric error signal.</p>
+    </div>
+
+    <!-- Phasor animation -->
+    <div class="plot-card">
+      <h5>Fig 5 — Phasor Animation: Rotating Frame at Carrier Frequency</h5>
+      <div class="ctrl-row">
+        <div class="ctrl-item">
+          <label>Detuning Δν/δν_cav: <span class="ctrl-val" id="phDetVal">+1.0</span></label>
+          <input type="range" id="phDet" min="-30" max="30" step="1" value="10"
+            oninput="document.getElementById('phDetVal').textContent=(this.value/10>0?'+':'')+((+this.value/10).toFixed(1)); updatePhasorParams()">
+        </div>
+        <div class="ctrl-item">
+          <label>Ω/δν_cav: <span class="ctrl-val" id="phOmVal">8</span></label>
+          <input type="range" id="phOm" min="1" max="20" step="0.5" value="8"
+            oninput="document.getElementById('phOmVal').textContent=this.value; updatePhasorParams()">
+        </div>
+        <div class="ctrl-item">
+          <label>β (mod depth): <span class="ctrl-val" id="phBetaVal">0.50</span></label>
+          <input type="range" id="phBeta" min="0.1" max="1.5" step="0.05" value="0.5"
+            oninput="document.getElementById('phBetaVal').textContent=(+this.value).toFixed(2); updatePhasorParams()">
+        </div>
+        <div class="ctrl-item">
+          <label>Speed: <span class="ctrl-val" id="phSpeedVal">1×</span></label>
+          <input type="range" id="phSpeed" min="0.2" max="4" step="0.2" value="1"
+            oninput="document.getElementById('phSpeedVal').textContent=(+this.value).toFixed(1)+'×'">
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;">
+        <canvas id="phasorCanvas" width="360" height="360"></canvas>
+        <div style="flex:1;min-width:220px;">
+          <canvas id="phasorTimeCanvas" width="300" height="180" style="background:#020b14;border-radius:8px;display:block;"></canvas>
+          <div style="margin-top:.5rem;font-size:.8rem;color:var(--text-muted);">
+            Photodetector signal (reflected power) vs time. The Ω-frequency component is the PDH beat signal.
+          </div>
+          <div id="phasorInfo" style="margin-top:.6rem;" class="key"></div>
+        </div>
+      </div>
+      <div class="phasor-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#60a5fa;"></div> Upper sideband (+Ω)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f87171;"></div> Lower sideband (−Ω)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#a78bfa;"></div> Sideband sum</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fbbf24;"></div> Reflected carrier</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#34d399;"></div> Total reflected field</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 7 — MASTER INTERACTIVE EXPLORER
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-master">
+    <div class="sec-label">§7 — Everything Together</div>
+    <h2 class="sec-h2">PDH Explorer: Full Interactive Tool</h2>
+    <p class="sec-desc">Adjust all parameters simultaneously and see how the Airy dip, reflected signal, and PDH error signal change.</p>
+
+    <div class="plot-card">
+      <h5>Fig 6 — PDH Master Explorer</h5>
+      <div class="ctrl-row" style="gap:.7rem 1.2rem;">
+        <div class="ctrl-item" style="min-width:140px;">
+          <label>Finesse 𝒻: <span class="ctrl-val" id="mFVal">300</span></label>
+          <input type="range" id="mF" min="1" max="5" step="1" value="3" oninput="updateMaster()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:#475569">
+            <span>10</span><span>100</span><span>300</span><span>2k</span><span>10k</span><span>100k</span>
+          </div>
+        </div>
+        <div class="ctrl-item" style="min-width:130px;">
+          <label>β: <span class="ctrl-val" id="mBetaVal">0.50</span></label>
+          <input type="range" id="mBeta" min="0.05" max="2.0" step="0.05" value="0.5" oninput="updateMaster()">
+        </div>
+        <div class="ctrl-item" style="min-width:130px;">
+          <label>Ω/δν_cav: <span class="ctrl-val" id="mOmVal">8</span></label>
+          <input type="range" id="mOm" min="0.5" max="30" step="0.5" value="8" oninput="updateMaster()">
+        </div>
+        <div class="ctrl-item" style="min-width:140px;">
+          <label>Demod phase φ (°): <span class="ctrl-val" id="mPhiVal">90</span></label>
+          <input type="range" id="mPhi" min="0" max="180" step="5" value="90" oninput="updateMaster()">
+        </div>
+        <div class="ctrl-item" style="min-width:130px;">
+          <label>View range (δν): <span class="ctrl-val" id="mRangeVal">8</span></label>
+          <input type="range" id="mRange" min="2" max="50" step="1" value="8" oninput="updateMaster()">
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.4rem;">
+        <button onclick="setMasterPreset('narrow')"
+          style="background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:.3rem .8rem;color:#93c5fd;font-size:.78rem;cursor:pointer;">
+          Narrow view (near resonance)
+        </button>
+        <button onclick="setMasterPreset('wide')"
+          style="background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:.3rem .8rem;color:#93c5fd;font-size:.78rem;cursor:pointer;">
+          Wide view (multi-resonance)
+        </button>
+        <button onclick="setMasterPreset('slow')"
+          style="background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:.3rem .8rem;color:#fde68a;font-size:.78rem;cursor:pointer;">
+          Slow modulation (Ω=0.5 δν)
+        </button>
+        <button onclick="setMasterPreset('highF')"
+          style="background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:.3rem .8rem;color:#86efac;font-size:.78rem;cursor:pointer;">
+          High finesse (like 685 nm lab)
+        </button>
+      </div>
+      <div class="plot-wrap" id="masterPlot" style="height:420px;"></div>
+      <div class="info" id="masterInfo" style="margin-top:.6rem;"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 8 — ELECTRONICS CHAIN
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-circuit">
+    <div class="sec-label">§8 — Implementation</div>
+    <h2 class="sec-h2">The Electronic Chain</h2>
+    <p class="sec-desc">From laser to lock: every component in the PDH signal chain has a specific role.</p>
+
+    <div class="circuit-wrap">
+      <svg viewBox="0 0 900 370" width="900" height="370" style="max-width:100%;height:auto;" font-family="Inter,sans-serif" font-size="11">
+        <!-- ── Optical path (red dashed) ── -->
+        <!-- Laser box -->
+        <rect x="10" y="50" width="80" height="46" rx="6" fill="#1a0a0a" stroke="#f87171" stroke-width="1.5"/>
+        <text x="50" y="70" fill="#f87171" text-anchor="middle" font-weight="700">LASER</text>
+        <text x="50" y="85" fill="#94a3b8" text-anchor="middle" font-size="9">ECDL</text>
+        <!-- arrow laser → isolator -->
+        <line x1="90" y1="73" x2="130" y2="73" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowR)"/>
+        <!-- Optical Isolator -->
+        <rect x="130" y="50" width="80" height="46" rx="6" fill="#1a0f0a" stroke="#fb923c" stroke-width="1.5"/>
+        <text x="170" y="70" fill="#fb923c" text-anchor="middle" font-weight="700">Isolator</text>
+        <text x="170" y="85" fill="#94a3b8" text-anchor="middle" font-size="9">30–40 dB</text>
+        <!-- arrow isolator → EOM -->
+        <line x1="210" y1="73" x2="250" y2="73" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowR)"/>
+        <!-- EOM -->
+        <rect x="250" y="50" width="80" height="46" rx="6" fill="#160a1a" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="290" y="68" fill="#a78bfa" text-anchor="middle" font-weight="700">EOM</text>
+        <text x="290" y="81" fill="#94a3b8" text-anchor="middle" font-size="9">phase mod.</text>
+        <text x="290" y="91" fill="#94a3b8" text-anchor="middle" font-size="9">at Ω</text>
+        <!-- arrow EOM → telescope -->
+        <line x1="330" y1="73" x2="370" y2="73" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowR)"/>
+        <!-- Mode-matching telescope -->
+        <rect x="370" y="50" width="90" height="46" rx="6" fill="#0a120a" stroke="#34d399" stroke-width="1.5"/>
+        <text x="415" y="68" fill="#34d399" text-anchor="middle" font-weight="700">Mode Match</text>
+        <text x="415" y="81" fill="#94a3b8" text-anchor="middle" font-size="9">2-lens telescope</text>
+        <text x="415" y="91" fill="#94a3b8" text-anchor="middle" font-size="9">TEM₀₀ → cavity</text>
+        <!-- arrow telescope → cavity -->
+        <line x1="460" y1="73" x2="510" y2="73" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowR)"/>
+        <!-- Cavity -->
+        <rect x="510" y="25" width="120" height="95" rx="8" fill="#0a0a1a" stroke="#60a5fa" stroke-width="2"/>
+        <text x="570" y="48" fill="#60a5fa" text-anchor="middle" font-weight="700" font-size="12">ULE CAVITY</text>
+        <text x="570" y="64" fill="#94a3b8" text-anchor="middle" font-size="9">L = 77.5 mm</text>
+        <text x="570" y="78" fill="#94a3b8" text-anchor="middle" font-size="9">𝒻 = 1.5 × 10⁴</text>
+        <text x="570" y="92" fill="#94a3b8" text-anchor="middle" font-size="9">δν ≈ 130 kHz</text>
+        <text x="570" y="106" fill="#94a3b8" text-anchor="middle" font-size="9">in vacuum + vibrational iso.</text>
+
+        <!-- ── Reflected beam (optical, going down then left) ── -->
+        <!-- Down from cavity -->
+        <line x1="520" y1="120" x2="520" y2="160" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowD)"/>
+        <!-- QWP + PBS -->
+        <rect x="460" y="160" width="115" height="46" rx="6" fill="#141208" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="517" y="179" fill="#fbbf24" text-anchor="middle" font-weight="700">QWP + PBS</text>
+        <text x="517" y="193" fill="#94a3b8" text-anchor="middle" font-size="9">deflect reflected beam</text>
+        <!-- arrow QWP → FastPD -->
+        <line x1="460" y1="183" x2="415" y2="183" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowL)"/>
+        <!-- Fast PD -->
+        <rect x="310" y="160" width="105" height="46" rx="6" fill="#0a0f14" stroke="#38bdf8" stroke-width="1.5"/>
+        <text x="362" y="178" fill="#38bdf8" text-anchor="middle" font-weight="700">Fast PD</text>
+        <text x="362" y="192" fill="#94a3b8" text-anchor="middle" font-size="9">~GHz bandwidth</text>
+
+        <!-- ── RF/Electronic path (blue solid) ── -->
+        <!-- PD → Mixer -->
+        <line x1="310" y1="183" x2="250" y2="183" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowL2)"/>
+        <!-- Mixer -->
+        <rect x="155" y="160" width="95" height="46" rx="6" fill="#0a1020" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="202" y="178" fill="#60a5fa" text-anchor="middle" font-weight="700">Mixer ×</text>
+        <text x="202" y="192" fill="#94a3b8" text-anchor="middle" font-size="9">RF demodulate</text>
+        <!-- LPF -->
+        <line x1="155" y1="183" x2="105" y2="183" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowL2)"/>
+        <rect x="20" y="160" width="85" height="46" rx="6" fill="#0a1020" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="62" y="178" fill="#60a5fa" text-anchor="middle" font-weight="700">LPF</text>
+        <text x="62" y="192" fill="#94a3b8" text-anchor="middle" font-size="9">error signal ε</text>
+
+        <!-- Local Oscillator (drives both EOM and Mixer) -->
+        <rect x="155" y="270" width="130" height="50" rx="6" fill="#120c00" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="220" y="290" fill="#fbbf24" text-anchor="middle" font-weight="700">Local Oscillator</text>
+        <text x="220" y="305" fill="#94a3b8" text-anchor="middle" font-size="9">RF synth at Ω (e.g. 27 MHz)</text>
+        <!-- LO → EOM (up) -->
+        <line x1="270" y1="270" x2="290" y2="96" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowD2)"/>
+        <!-- LO → Mixer (up) -->
+        <line x1="202" y1="270" x2="202" y2="206" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowD2)"/>
+        <!-- Phase shifter -->
+        <text x="210" y="248" fill="#f59e0b" text-anchor="middle" font-size="9" font-style="italic">+ phase shifter φ</text>
+
+        <!-- Servo -->
+        <line x1="20" y1="183" x2="20" y2="270" stroke="#60a5fa" stroke-width="2"/>
+        <line x1="20" y1="270" x2="70" y2="270" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrowR2)"/>
+        <rect x="70" y="248" width="80" height="44" rx="6" fill="#0a1020" stroke="#34d399" stroke-width="1.5"/>
+        <text x="110" y="266" fill="#34d399" text-anchor="middle" font-weight="700">PID Servo</text>
+        <text x="110" y="279" fill="#94a3b8" text-anchor="middle" font-size="9">fast + slow</text>
+        <!-- Servo → Laser current (fast) -->
+        <line x1="110" y1="248" x2="50" y2="100" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrowD3)"/>
+        <text x="60" y="180" fill="#34d399" font-size="9" transform="rotate(-60,60,180)">fast (current)</text>
+        <!-- Servo → Laser PZT (slow) -->
+        <line x1="150" y1="270" x2="90" y2="96" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="125" y="190" fill="#34d399" font-size="9" transform="rotate(-70,125,190)">slow (PZT)</text>
+
+        <!-- Labels / annotations -->
+        <text x="570" y="148" fill="#94a3b8" text-anchor="middle" font-size="9" font-style="italic">transmitted beam (not used for PDH)</text>
+        <text x="450" y="150" fill="#fbbf24" text-anchor="middle" font-size="9">reflected beam</text>
+
+        <!-- Arrow markers -->
+        <defs>
+          <marker id="arrowR"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f87171"/></marker>
+          <marker id="arrowD"  markerWidth="8" markerHeight="8" refX="3" refY="6" orient="auto"><path d="M0,0 L6,0 L3,8 z" fill="#fbbf24"/></marker>
+          <marker id="arrowL"  markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto"><path d="M8,0 L8,6 L0,3 z" fill="#fbbf24"/></marker>
+          <marker id="arrowL2" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto"><path d="M8,0 L8,6 L0,3 z" fill="#60a5fa"/></marker>
+          <marker id="arrowD2" markerWidth="8" markerHeight="8" refX="3" refY="2" orient="auto"><path d="M0,8 L6,8 L3,0 z" fill="#fbbf24"/></marker>
+          <marker id="arrowR2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#60a5fa"/></marker>
+          <marker id="arrowD3" markerWidth="8" markerHeight="8" refX="3" refY="2" orient="auto"><path d="M0,8 L6,8 L3,0 z" fill="#34d399"/></marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="two-col" style="margin-top:1.2rem;">
+      <div class="theory">
+        <h4>Component-by-Component</h4>
+        <ul>
+          <li><strong>Faraday isolator (30–40 dB):</strong> blocks retro-reflected light from reaching the laser diode. Without it, back-reflections destabilise the laser's mode and make locking impossible.</li>
+          <li><strong>EOM (electro-optic modulator):</strong> a Pockels cell driven at Ω (typically 10–100 MHz) imprints phase modulation. The RF drive voltage \(V_0\) sets \(\beta = \pi V_0/V_\pi\). Keep β small (0.2–0.5 rad) to maximise carrier power.</li>
+          <li><strong>Mode-matching telescope:</strong> two lenses that transform the free-space Gaussian beam to match the cavity's TEM₀₀ mode (same waist size and position). Poor mode matching reduces coupling, signal size, and PDH slope.</li>
+          <li><strong>QWP + PBS reflector:</strong> picks off the reflected beam without interfering with the input. QWP rotates the polarisation by 90° after two passes (reflection), allowing the PBS to separate the reflected beam cleanly. Acts as a "Faraday-free" optical isolator — see §9.</li>
+          <li><strong>Fast photodetector:</strong> bandwidth must exceed Ω. For Ω = 27 MHz, need BW ≥ 50 MHz; for Ω = 200 MHz, need BW ~ 500 MHz. InGaAs or Si PIN detectors typical.</li>
+          <li><strong>Mixer (RF multiplier):</strong> multiplies PD signal × LO signal. Output contains sum and difference frequencies — LPF keeps only the DC / low-frequency difference (the error signal).</li>
+          <li><strong>Phase shifter:</strong> adjusts relative phase between PD signal and LO before mixing. Critical for extracting the Im[F] dispersive component; wrong phase gives absorptive (Re[F]) signal with worse properties.</li>
+          <li><strong>LPF (low-pass filter):</strong> cuts the 2Ω component, passing only the audio-frequency error signal to the servo.</li>
+          <li><strong>PID servo:</strong> two feedback paths — fast (current modulation, bandwidth 100 kHz–1 MHz) and slow (PZT, bandwidth 100 Hz–10 kHz). See §9 for servo design.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="theory">
+          <h4>Why \(\varphi = 90°\) for PDH?</h4>
+          <p>The carrier-sideband beat produces both cosine and sine terms at Ω
+          (Re[ℤ] and Im[ℤ] respectively). In the fast-modulation limit:</p>
+          <ul>
+            <li>\(\varphi = 90°\) (sine demodulation): extracts Im[ℤ] ∝ Im[F] — the <strong>dispersive</strong> signal, antisymmetric, linear at resonance. ✓ PDH-optimal.</li>
+            <li>\(\varphi = 0°\) (cosine demodulation): extracts Re[ℤ] ≈ 0 near resonance — the <strong>absorptive</strong> signal, nearly zero at the lock point. ✗</li>
+          </ul>
+          <p>In practice, path-length delays between the EOM drive and the photodetector shift the effective phase. You scan the laser across a resonance, adjust the phase shifter until you see a clean antisymmetric (dispersive) error signal, and you're done.</p>
+        </div>
+        <div class="warn" style="margin-top:.75rem;">
+          <strong>Common pitfall — wrong demodulation phase:</strong>
+          If φ is off by 45°, you get a mixture of absorptive and dispersive features.
+          At 90° offset from optimal you see the absorptive signal (zero slope at resonance — the lock will be very noisy).
+          <br><br>
+          Try it in Fig 6: set φ = 0° and watch the error signal shape change.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 9 — PRACTICAL IMPLEMENTATION
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-practical">
+    <div class="sec-label">§9 — In the Lab</div>
+    <h2 class="sec-h2">Practical Implementation Guide</h2>
+    <p class="sec-desc">Everything that matters when you actually set up a PDH lock.</p>
+
+    <div class="two-col">
+      <div>
+        <div class="theory">
+          <h4>Spatial Mode Matching to the Cavity</h4>
+          <p>The cavity only accepts its own TEM₀₀ mode. The fraction of power
+          coupled into the cavity mode is the mode-matching efficiency:</p>
+        </div>
+        <div class="math-block">$$\eta_{\rm MM} = \left(\frac{2 w_1 w_2}{w_1^2 + w_2^2}\right)^2$$</div>
+        <div class="theory">
+          <p>where \(w_1\) is the incident beam waist and \(w_2\) is the cavity
+          waist at the input mirror. This formula applies when the waist positions
+          are coincident; any longitudinal offset reduces \(\eta\) further.</p>
+          <p><strong>Practical procedure:</strong></p>
+          <ul>
+            <li>Calculate the cavity waist: for a plano-plano linear cavity, \(w_{\rm cav} = \sqrt{\lambda L/\pi} \cdot (g_1 g_2 (1-g_1 g_2))^{1/4}\) where \(g_i = 1 - L/R_i\), but for a plano-concave cavity the waist sits at the flat mirror.</li>
+            <li>Use an ABCD matrix to propagate your beam from the fiber/collimator output through the telescope lenses to the cavity input. Adjust lens positions to minimise beam waist mismatch.</li>
+            <li>A quick check: scan the laser across the cavity and look at the transmitted power. If you see only one strong resonance and very weak higher-order modes (HG₁₀, etc.), mode matching is good.</li>
+          </ul>
+        </div>
+        <div class="good">
+          <strong>Target:</strong> Mode-matching efficiency η > 80%. Below 50%, the PDH signal is weak and lock acquisition is unreliable.
+        </div>
+      </div>
+      <div>
+        <div class="theory">
+          <h4>The QWP as a Faraday-Free Reflector</h4>
+          <p>Why not just use a normal beamsplitter to pick off the reflected beam?
+          Because a 50:50 BS wastes half the input power. Instead:</p>
+          <ul>
+            <li>Start with PBS (linearly polarised input, say H-polarisation).</li>
+            <li>After PBS, place a QWP with fast axis at 45° to H. The beam is converted to circular polarisation going into the cavity.</li>
+            <li>The cavity reflects with the same handedness. The reflected beam passes through the QWP again, rotating the polarisation by another 45° → now V-polarised.</li>
+            <li>V-polarised light is reflected by the PBS into the detector path. The input H-beam and the reflected V-beam are now completely separated.</li>
+          </ul>
+          <p>This works because two passes through a QWP at 45° = one HWP (90° rotation). It's efficient (no power wasted) but not as robust as a true Faraday isolator (it's sensitive to the QWP orientation).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory" style="margin-top:1rem;">
+      <h4>Choosing the Cavity Finesse</h4>
+      <p>Higher finesse gives a steeper PDH discriminant (larger D) — but there are trade-offs:</p>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:.84rem;">
+        <thead>
+          <tr style="background:#0a1628;">
+            <th style="padding:.6rem .9rem;border-bottom:1px solid #1e293b;color:var(--text-muted);text-align:left;">Finesse 𝒻</th>
+            <th style="padding:.6rem .9rem;border-bottom:1px solid #1e293b;color:var(--text-muted);text-align:left;">δν_cav (𝒻_FSR=1.93 GHz)</th>
+            <th style="padding:.6rem .9rem;border-bottom:1px solid #1e293b;color:var(--text-muted);text-align:left;">D slope ∝ 1/δν</th>
+            <th style="padding:.6rem .9rem;border-bottom:1px solid #1e293b;color:var(--text-muted);text-align:left;">Pros</th>
+            <th style="padding:.6rem .9rem;border-bottom:1px solid #1e293b;color:var(--text-muted);text-align:left;">Cons</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #0f1e35;">
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">100–500</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">4–20 MHz</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">×1</td>
+            <td style="padding:.55rem .9rem;color:#86efac;">Easy mode-matching; large capture range</td>
+            <td style="padding:.55rem .9rem;color:#f87171;">Weak signal; limited linewidth reduction</td>
+          </tr>
+          <tr style="border-bottom:1px solid #0f1e35;">
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">1,000–5,000</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">400 kHz–2 MHz</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">×10</td>
+            <td style="padding:.55rem .9rem;color:#86efac;">Good for locking near D-lines; compatible with SAS pre-lock</td>
+            <td style="padding:.55rem .9rem;color:#f87171;">Requires vacuum isolation</td>
+          </tr>
+          <tr style="border-bottom:1px solid #0f1e35;">
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">10,000–50,000</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">40–200 kHz</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">×100</td>
+            <td style="padding:.55rem .9rem;color:#86efac;">Sub-kHz linewidth; our 685 nm laser</td>
+            <td style="padding:.55rem .9rem;color:#f87171;">Small capture range; sensitive to alignment; higher mirror cost</td>
+          </tr>
+          <tr>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">&gt;100,000</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">&lt;20 kHz</td>
+            <td style="padding:.55rem .9rem;color:var(--text-secondary);">×1000+</td>
+            <td style="padding:.55rem .9rem;color:#86efac;">Sub-Hz linewidth; frequency comb / gravitational wave detectors</td>
+            <td style="padding:.55rem .9rem;color:#f87171;">Alignment extremely critical; cavity thermal drift dominates; superpolished mirrors</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="theory" style="margin-top:1.2rem;">
+      <h4>Servo Design: Fast and Slow Paths</h4>
+      <p>The PDH error signal goes to a servo (PID) that feeds back to the laser.
+      Two feedback paths are almost always used:</p>
+      <ul>
+        <li><strong>Fast path → injection current:</strong> The laser frequency shifts by ~3–5 MHz/mA. Current modulation has a bandwidth of several MHz (limited by the diode's response time). This path suppresses high-frequency noise.</li>
+        <li><strong>Slow path → external-cavity PZT:</strong> The grating angle tunes the frequency more coarsely (~1 GHz/V) but with much larger dynamic range. PZT actuators are limited to ~kHz bandwidth but can compensate slow thermal drift, keeping the fast path within its range.</li>
+      </ul>
+      <p>Setting the crossover frequency between fast and slow paths requires careful Bode plot analysis. A common approach: set the slow integrator's corner frequency at ~10–100 Hz, fast path flat gain up to ~100 kHz with a roll-off above the cavity linewidth.</p>
+    </div>
+    <div class="theory">
+      <h4>Lock Acquisition</h4>
+      <p>The PDH error signal is only well-defined near a cavity resonance (within ~±3δν_cav). Acquiring the lock requires the laser to first be brought close enough to resonance:</p>
+      <ul>
+        <li>Use a wavemeter to coarse-tune the laser to within a few cavity FSRs of the target resonance.</li>
+        <li>Ramp the slow PZT slowly while monitoring the transmitted power. When you see the Airy peak, the cavity is in transmission.</li>
+        <li>Enable the servo with the fast path only, and check that the error signal zeroes with the expected dispersive shape.</li>
+        <li>Once locked, engage the slow path to remove long-term drift from the fast path.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 10 — OFFSET LOCKING
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-offset">
+    <div class="sec-label">§10 — Tuning the Lock Point</div>
+    <h2 class="sec-h2">Offset Locking to the Cavity</h2>
+    <p class="sec-desc">A PDH lock fixes the laser to a cavity mode — but what if you need the laser at a specific frequency offset from that mode?</p>
+
+    <div class="two-col">
+      <div class="theory">
+        <h4>Method 1: AOM in the Feedback Path</h4>
+        <p>Place an AOM between the laser and the cavity.
+        The laser frequency is \(\nu_{\rm laser}\), but the light entering the cavity
+        is at \(\nu_{\rm laser} + \nu_{\rm AOM}\) (double-pass AOM: \(\nu_{\rm laser} + 2\nu_{\rm AOM}\)).</p>
+        <p>The PDH lock zeros the <em>cavity input frequency</em> to a resonance,
+        so \(\nu_{\rm laser} + 2\nu_{\rm AOM} = \nu_{\rm cav}\), giving
+        \(\nu_{\rm laser} = \nu_{\rm cav} - 2\nu_{\rm AOM}\).
+        Tuning \(\nu_{\rm AOM}\) (typically 50–250 MHz) shifts the laser frequency
+        continuously by up to ~500 MHz, while the PDH lock remains active.</p>
+        <p><strong>Advantage:</strong> Smooth, electronically controlled tuning without breaking the lock.</p>
+        <p><strong>Limitation:</strong> Tuning range limited by AOM bandwidth (~50–100 MHz from centre).</p>
+      </div>
+      <div class="theory">
+        <h4>Method 2: EOM Sideband Lock</h4>
+        <p>Add a second EOM (or use the first at high modulation depth) to create a
+        sideband at frequency \(\nu_{\rm laser} + \Omega_{\rm offset}\). Lock this
+        sideband to the cavity resonance instead of the carrier.</p>
+        <p>The carrier then sits at \(\nu_{\rm cav} - \Omega_{\rm offset}\), which
+        is tunable by adjusting \(\Omega_{\rm offset}\) over a large range
+        (potentially many GHz if the EOM supports it).</p>
+        <p><strong>Advantage:</strong> Large tuning range (GHz scale).</p>
+        <p><strong>Limitation:</strong> Only a fraction of the power is in the sideband being locked, so SNR is reduced.</p>
+      </div>
+    </div>
+    <div class="info" style="margin-top:.5rem;">
+      <strong>In our lab (685 nm):</strong> The PDH lock fixes the laser to the ULE cavity mode.
+      A double-pass AOM in the beam path then shifts the frequency to the target
+      \(6S_{1/2} \to 5D_{5/2}\) transition frequency for each experimental sequence.
+      This cleanly separates the frequency stabilisation function (PDH) from the tuning function (AOM).
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 11 — NOISE AND FUNDAMENTAL LIMITS
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-noise">
+    <div class="sec-label">§11 — Fundamental Limits</div>
+    <h2 class="sec-h2">Noise and Performance Limits</h2>
+    <p class="sec-desc">How good can a PDH lock actually be? Several noise sources set the floor.</p>
+
+    <div class="three-col">
+      <div class="theory">
+        <h4>Shot Noise</h4>
+        <p>The fundamental quantum limit. Photon shot noise on the photodetector
+        current produces a frequency noise floor:</p>
+        <div class="math-block" style="font-size:.85em;">$$S_\nu^{1/2} = \frac{\delta\nu_{\rm cav}}{2\mathcal{F}}\sqrt{\frac{h\nu}{P_c}}$$</div>
+        <p>Achievable shot-noise limited linewidth:
+        \(\lesssim 1\,\text{mHz}/\sqrt{\text{Hz}}\) for mW-class power and
+        finesse \(\sim 10^4\).</p>
+      </div>
+      <div class="theory">
+        <h4>RAM (Residual Amplitude Modulation)</h4>
+        <p>An EOM that is not purely a phase modulator also amplitude-modulates
+        the beam (due to etalon effects, birefringence, etc.). This RAM appears
+        as a DC offset in the error signal, shifting the lock point away from
+        the cavity resonance.</p>
+        <p>Suppression: temperature-control the EOM crystal; use an amplitude-stabilisation loop on the RAM signal.</p>
+      </div>
+      <div class="theory">
+        <h4>Cavity Thermal Noise</h4>
+        <p>Brownian motion of the mirror coatings and spacer causes length
+        fluctuations even in a perfect vacuum. For a ULE spacer at 300 K:</p>
+        <div class="math-block" style="font-size:.85em;">$$S_L^{1/2} \sim 10^{-16}\,\text{m}/\sqrt{\text{Hz}}$$</div>
+        <p>This sets an ultimate limit of ~0.1–1 Hz/√Hz for sub-Hz laser stabilisation. Cryogenic cooling or crystalline coating mirrors push this lower.</p>
+      </div>
+    </div>
+
+    <div class="theory" style="margin-top:.75rem;">
+      <h4>Insensitivity of PDH to Common-Mode Noise Sources</h4>
+      <p>One remarkable property of the PDH scheme (Black 2001, §V) is that the error signal
+      is <em>first-order insensitive</em> to: laser power fluctuations, photodetector responsivity
+      variations, modulation depth \(\beta\), the relative phase of the two LO signals,
+      and the modulation frequency \(\Omega\). These would all affect a simple
+      intensity-based lock significantly. The PDH scheme suppresses them because the
+      error signal depends on the ratio of the beat signal to the total power — a
+      normalised quantity — to first order.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SECTION 12 — DEEP QUESTIONS
+  ══════════════════════════════════════════════════════════ -->
+  <section class="pdh-section anim-in" id="sec-faq">
+    <div class="sec-label">§12 — Go Deeper</div>
+    <h2 class="sec-h2">Deep Questions</h2>
+    <p class="sec-desc">Things you should be able to answer if you've really understood PDH locking.</p>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What phase exactly is applied for demodulation — sine or cosine? And how do you choose?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>In the fast-modulation regime, the beat term in the reflected power oscillates as
+        \(\propto \mathrm{Im}(\mathcal{Z})\sin\Omega t\) near resonance (the cos term vanishes
+        because Re[ℤ] ≈ 0 there). To extract this sin Ωt component, you need to demodulate
+        with sin Ωt — i.e., multiply by \(\sin(\Omega t + \varphi)\) and low-pass filter, with \(\varphi = 0\)
+        (relative to the signal). In practice people label this a "90° phase shift" because the EOM
+        drive is a cosine, so the LO needs a 90° shift to become a sine.</p>
+        <p>How to choose: scan the laser and adjust the phase shifter until the error signal looks
+        like a clean antisymmetric dispersive curve (Fig 6). If the phase is 90° off, you'll see
+        an absorptive (symmetric, going-negative-on-both-sides) signal instead.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How do you perform an offset lock to the cavity — i.e., lock the laser to a point that's not exactly on a resonance?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>There are two main methods: (1) Place an AOM in the beam path between the laser and the
+        cavity. The PDH lock zeros the cavity-input frequency to a resonance, but the actual laser
+        frequency is shifted by the AOM frequency. Tuning the AOM tunes the laser while keeping the
+        lock active. (2) Use the EOM to create a sideband at the desired offset, and lock that
+        sideband to the cavity instead of the carrier. Both methods are described in §10 above.</p>
+        <p>A common subtle point: if you put the AOM before the cavity in the input path, the
+        reflected beam returns without the AOM shift. This breaks the PDH logic unless you either
+        double-pass the AOM (so the reflected beam is shifted back) or put the AOM in the
+        modulation path only.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What happens if you increase the modulation depth β beyond ~1 rad?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>For \(\beta \ll 1\): almost all power is in the carrier, with \(P_s/P_0 \approx \beta^2/4\).
+        The error signal amplitude grows as \(\sqrt{P_c P_s} \approx \beta/2 \cdot P_0\) — linearly in β.
+        For larger β, higher-order Bessel functions (J₂, J₃, ...) start carrying significant power,
+        and the "sideband power" J₁²(β) actually begins to decrease after β ≈ 1.84 rad (where J₁ is maximum).
+        Beyond β ≈ 2.4 rad, J₀ ≈ 0 — almost no power in the carrier, PDH slope collapses.</p>
+        <p>Additionally, second-order sidebands at ω ± 2Ω can land inside the cavity linewidth if
+        2Ω ≈ ν_FSR, which causes extra noise. In practice, β = 0.3–0.5 is optimal for PDH.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Why is a QWP needed — what exactly goes wrong without it?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>The purpose of the QWP + PBS combination is to cleanly separate the forward-going
+        input beam from the backward-going reflected beam. Without the QWP:</p>
+        <ul>
+          <li>If you use a 50:50 BS: you lose 75% of your useful power (50% on the way in, 50% on the way back to the detector).</li>
+          <li>If you use a PBS (input is H): the reflected beam from the cavity is also H-polarised (assuming no polarisation mixing in the cavity), and the PBS transmits it — both beams share the same path, so you can't easily pick off the reflected beam without also blocking the input.</li>
+        </ul>
+        <p>The QWP converts H to circular on the way in. After reflection from the cavity, the
+        circular polarisation is unchanged in handedness (for a metal-free dielectric mirror) but
+        has now been reflected, which reverses its handedness. On the return pass through the QWP,
+        the opposite handedness rotates to V-polarisation, which is reflected by the PBS into the
+        detector arm. The 90° rotation from two QWP passes is the key: it converts an undetectable
+        same-polarisation beam into an orthogonally-polarised beam that the PBS can route away.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How do you spatially mode-match to the cavity? What tools do you use?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p><strong>Theoretical approach:</strong> Use ABCD matrices (or the Gaussian beam propagation
+        tool at RP Photonics) to propagate your beam through the optical system. Your goal: match the
+        incoming beam's waist size and position to the cavity's fundamental mode.
+        The cavity waist can be calculated from the mirror radii of curvature using the cavity stability criterion.</p>
+        <p><strong>Practical approach:</strong></p>
+        <ul>
+          <li>Scan the laser across the cavity resonance and monitor the transmitted power on an oscilloscope.</li>
+          <li>Adjust the telescope (lens positions and beam size) until the TEM₀₀ peak is dominant and all TEM_{mn} higher-order mode peaks are minimised. These appear at frequencies shifted by \((m+n)\cdot\nu_{\rm FSR}/\mathcal{F}\cdot(\text{Gouy phase})\) — they show up as satellite peaks near the main resonance.</li>
+          <li>A cavity scan that shows only clean Airy peaks with no shoulders or satellite peaks indicates good mode matching (η > 90%).</li>
+        </ul>
+        <p>The Lab Calculators page has a Gaussian beam propagation tool and cavity mode-matching calculator.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What determines the achievable linewidth? Is it always limited by the cavity?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>No — the cavity linewidth \(\delta\nu_{\rm cav}\) sets the <em>slope</em> of the
+        error signal (higher finesse → steeper slope → tighter servo → narrower linewidth),
+        but the achievable linewidth is also determined by:</p>
+        <ul>
+          <li><strong>Servo bandwidth:</strong> The servo must respond faster than the noise. A 1 MHz servo can suppress noise at up to ~100 kHz (due to finite gain margin). Beyond the servo bandwidth, noise is unsuppressed.</li>
+          <li><strong>Shot noise floor:</strong> The error signal has a fundamental shot-noise floor that limits how precisely you can determine the frequency (see §11).</li>
+          <li><strong>RAM (residual amplitude modulation):</strong> A DC offset in the error signal shifts the lock point by \(\Delta\nu_{\rm RAM} = \epsilon_{\rm RAM}/(D)\), where \(\epsilon_{\rm RAM}\) is the RAM amplitude and D is the discriminant slope.</li>
+          <li><strong>Cavity thermal drift:</strong> Even with the laser locked, the cavity length drifts thermally, dragging the locked laser frequency with it. This is corrected by beating against an absolute reference (SAS or frequency comb) with a slow drift-correction loop.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        PDH locks the laser to the cavity — but the cavity itself drifts. How do you get an absolute frequency reference?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>Correct — PDH provides a <em>relative</em> lock: the laser tracks the cavity. The cavity
+        resonance itself drifts due to thermal expansion (CTE of the spacer), air pressure changes
+        (even in vacuum, below mTorr), and mirror coating creep.</p>
+        <p>Solutions:</p>
+        <ul>
+          <li><strong>ULE glass spacer at zero-crossing temperature:</strong> ULE has a CTE that passes through zero near 5–25 °C depending on the batch. Operating at the zero-crossing dramatically reduces thermal sensitivity.</li>
+          <li><strong>Beat against a frequency comb:</strong> Optical frequency combs (Ti:Sapphire or fibre) provide an absolute frequency reference. Beat the locked laser against the nearest comb tooth to measure and correct long-term drift.</li>
+          <li><strong>Beat against a SAS-locked laser:</strong> If another laser in the same spectral region is SAS-locked, their beat note tells you the absolute frequency of the PDH-locked laser. A slow loop corrects residual cavity drift by feeding back to the PZT (or to an AOM in the path).</li>
+        </ul>
+        <p>In our lab: the 685 nm PDH-locked laser is occasionally checked by scanning it across the
+        \(6S_{1/2} \to 5D_{5/2}\) transition directly, which provides an absolute calibration to within the natural linewidth (~117 Hz). For day-to-day operation, the PDH lock alone provides sufficient stability.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        The PDH signal uses the reflected beam — but what about the transmitted beam? Can you do PDH on the transmission?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>In principle, yes — but it performs worse. The transmitted power follows the Airy function
+        and is symmetric about resonance (like the reflected power dip). To get a dispersive signal
+        from transmission, you would still need phase-sensitive detection (FM spectroscopy), but you
+        lose several advantages of PDH:</p>
+        <ul>
+          <li>The transmitted signal falls to zero far from resonance, giving a noisy baseline.</li>
+          <li>For a high-finesse cavity, very little power is transmitted (T ≈ 1−R ~ 10⁻⁴ for R = 99.99%). You'd be detecting very few photons.</li>
+          <li>Transmission-based FM spectroscopy (frequency-modulation spectroscopy) works well for moderate-finesse cavities or for spectroscopy of atomic/molecular transitions.</li>
+        </ul>
+        <p>The reflection-based PDH scheme is preferred because the reflected power near resonance is
+        small but nonzero (it's the difference between prompt reflection and leakage), giving a
+        high-slope dispersive signal against a low background — optimal for signal-to-noise.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        How do you measure the cavity finesse in the lab?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>Three standard methods:</p>
+        <ul>
+          <li><strong>Cavity scan + Airy fit:</strong> Ramp the laser PZT linearly across a resonance; measure the transmitted (or reflected) power on an oscilloscope. Fit the Airy function to extract δν_cav and ν_FSR. This requires knowing the PZT tuning rate in Hz/V, calibrated from the known FSR.</li>
+          <li><strong>Ring-down measurement:</strong> Quickly switch off the input beam while the cavity is resonating (using an AOM). The transmitted power decays exponentially with time constant τ_c = 𝒻/(π·ν_FSR). Measuring τ_c directly gives the finesse. For our cavity: τ_c = 15000/(π × 1.93×10⁹) ≈ 2.5 μs.</li>
+          <li><strong>PDH discriminant calibration:</strong> With the laser locked, inject a known frequency modulation (e.g., scan the AOM by a known amount) and measure the resulting error signal amplitude. From ε = D × Δν, you can extract D and hence 𝒻.</li>
+        </ul>
+        <p>Ring-down is usually most reliable and doesn't require calibration of other parameters.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        What is "Pound locking" and how does it relate to PDH? Why is the technique named after three people?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">
+        <p>R. V. Pound (1946) invented the original technique for microwave cavities: he used
+        RF sidebands and reflection detection to stabilise a microwave oscillator to a cavity.
+        The concept is identical to PDH, but applied at microwave frequencies where electronics
+        can directly detect the phase of the oscillation.</p>
+        <p>R. W. P. Drever and J. L. Hall (independently, early 1980s) extended Pound's idea
+        to optical frequencies. The challenge is that optical frequencies (~10¹⁴ Hz) are far
+        too high for electronics to follow directly — you can't just look at the phase of a
+        visible light field. Their key insight: use RF phase modulation to create sidebands at
+        frequencies accessible to electronics, then use the beating of those sidebands with the
+        reflected carrier to recover the phase information.</p>
+        <p>The name "Pound–Drever–Hall" honours all three: Pound for the original microwave concept,
+        Drever for applying it to lasers and high-finesse cavities (primarily in the context of
+        gravitational wave detection), and Hall for the precision measurement physics and for
+        demonstrating it could achieve sub-Hz linewidths.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'laser-locking', root: '../' });
+initScrollReveal();
+
+/* ═══════════════════════════════════════════════════════
+   MASTER PDH EXPLORER
+═══════════════════════════════════════════════════════ */
+function updateMaster() {
+  const fi    = parseInt(document.getElementById('mF').value);
+  const F     = FINESSE_LEVELS[fi - 1];
+  const beta  = parseFloat(document.getElementById('mBeta').value);
+  const omR   = parseFloat(document.getElementById('mOm').value);
+  const phi_d = parseFloat(document.getElementById('mPhi').value) * Math.PI / 180;
+  const span  = parseFloat(document.getElementById('mRange').value);
+
+  document.getElementById('mFVal').textContent    = F >= 1000 ? (F/1000).toFixed(0)+'k' : F;
+  document.getElementById('mBetaVal').textContent = beta.toFixed(2);
+  document.getElementById('mOmVal').textContent   = omR;
+  document.getElementById('mPhiVal').textContent  = Math.round(parseFloat(document.getElementById('mPhi').value));
+  document.getElementById('mRangeVal').textContent = span;
+
+  const r    = rFromFinesse(F);
+  const dnu  = 1 / F;
+  const Omega = omR * dnu;
+  const N = 1000;
+
+  const x = [], refl = [], errSig = [];
+  const b0 = J0(beta), b1 = J1(beta);
+  const Pc = b0*b0, Ps = b1*b1;
+  const D = 8 * Math.sqrt(Pc * Ps) / dnu;  // discriminant (normalized)
+
+  for (let i = 0; i < N; i++) {
+    const nu = -span * dnu + 2 * span * dnu * i / (N-1);
+    refl.push(cavPower(nu, 0, 1, r));
+    errSig.push(pdhError(nu, 0, 1, r, Omega, beta, phi_d));
+    x.push(nu / dnu);
+  }
+
+  // Normalise error signal
+  const maxErr = Math.max(...errSig.map(Math.abs)) || 1;
+  const errNorm = errSig.map(v => v / maxErr);
+
+  // Linear approximation near resonance
+  const linApprox = x.map(xv => Math.abs(xv) < 2 ? -xv / 1 : null);
+
+  const traces = [
+    { x, y: refl,     name: 'Reflection |F|²',  line:{color:'#64748b',width:1.5}, mode:'lines', yaxis:'y' },
+    { x, y: errNorm,  name: 'PDH error (norm)', line:{color:'#f87171',width:2.5}, mode:'lines', yaxis:'y2' },
+    { x, y: linApprox, name: 'Linear approx (|Δν|<2δν)', line:{color:'#fbbf24',width:1.5,dash:'dot'}, mode:'lines', yaxis:'y2', connectgaps:false },
+  ];
+
+  // Mark sideband positions
+  for (const sg of [1, -1]) {
+    traces.push({
+      x: [sg*omR, sg*omR], y: [-1.1, 1.1], name: sg>0 ? '±Ω sidebands' : null,
+      line:{color:'#a78bfa',width:1.2,dash:'dash'}, mode:'lines', yaxis:'y2',
+      showlegend: sg > 0,
+    });
+  }
+
+  Plotly.react('masterPlot', traces, {
+    ...darkLayout(),
+    xaxis:  { ...PL.xaxis, title:{text:'Detuning Δν / δν_cav',font:{size:10}}, zeroline:true },
+    yaxis:  { ...PL.yaxis, title:{text:'Reflected power',font:{size:10}}, side:'left', range:[-0.05,1.15] },
+    yaxis2: { ...PL.yaxis, title:{text:'Error signal (norm.)',font:{size:10}}, overlaying:'y', side:'right', zeroline:true, zerolinecolor:'#475569', range:[-1.3,1.3] },
+    legend: { ...PL.legend, x:0.01, y:0.99 },
+    margin: { t:14, r:58, b:48, l:58 },
+  }, PL_CFG);
+
+  const regime = omR > 3 ? 'Fast-modulation regime (Ω ≫ δν_cav) — optimal PDH' : omR < 1 ? 'Slow-modulation regime — error signal ∝ d|F|²/dν' : 'Intermediate regime';
+  document.getElementById('masterInfo').innerHTML =
+    `<strong>𝒻 = ${F}, β = ${beta.toFixed(2)}, Ω = ${omR}×δν_cav, φ = ${Math.round(parseFloat(document.getElementById('mPhi').value))}°</strong>. ` +
+    `${regime}. Discriminant slope D ∝ ${(D).toFixed(1)} × (P_carrier·P_sideband)^½ / ν_FSR. ` +
+    (omR < 2 ? '⚠ Sidebands inside linewidth — sidebands interact with cavity, signal shape distorted.' : '');
+}
+
+function setMasterPreset(name) {
+  const presets = {
+    narrow: { fi: 3, beta: 0.5, om: 8,  phi: 90, range: 5 },
+    wide:   { fi: 3, beta: 0.5, om: 8,  phi: 90, range: 30 },
+    slow:   { fi: 3, beta: 0.5, om: 0.5,phi: 0,  range: 8 },
+    highF:  { fi: 5, beta: 0.4, om: 15, phi: 90, range: 8 },
+  };
+  const p = presets[name];
+  document.getElementById('mF').value    = p.fi;
+  document.getElementById('mBeta').value = p.beta;
+  document.getElementById('mOm').value   = p.om;
+  document.getElementById('mPhi').value  = p.phi;
+  document.getElementById('mRange').value = p.range;
+  updateMaster();
+}
+
+/* ═══════════════════════════════════════════════════════
+   PHASOR ANIMATION
+═══════════════════════════════════════════════════════ */
+let phAngle = 0, phAnimId = null;
+let phParams = { det: 1.0, om: 8, beta: 0.5, F: 300 };
+let phTimeData = [];
+
+function updatePhasorParams() {
+  const det = parseFloat(document.getElementById('phDet').value) / 10;
+  const om  = parseFloat(document.getElementById('phOm').value);
+  const beta = parseFloat(document.getElementById('phBeta').value);
+  const fi  = 3; // fixed finesse for animation
+  phParams = { det, om, beta, F: FINESSE_LEVELS[fi-1] };
+  phTimeData = [];
+}
+
+function phasorStep(ts) {
+  const speed = parseFloat(document.getElementById('phSpeed').value);
+  phAngle += 0.035 * speed;
+  drawPhasor(phAngle);
+  phAnimId = requestAnimationFrame(phasorStep);
+}
+
+function drawPhasor(angle) {
+  const canvas  = document.getElementById('phasorCanvas');
+  const canvasT = document.getElementById('phasorTimeCanvas');
+  if (!canvas || !canvasT) return;
+
+  const ctx  = canvas.getContext('2d');
+  const ctxT = canvasT.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2, scale = W * 0.35;
+
+  // ── Physics ─────────────────────────────────────
+  const { det, om, beta, F } = phParams;
+  const r    = rFromFinesse(F);
+  const dnu  = 1 / F;
+  const Omega = om * dnu;
+  const b0 = J0(beta), b1 = J1(beta);
+  const sqPc = Math.abs(b0), sqPs = Math.abs(b1);
+
+  // Reflected carrier (complex, imaginary near resonance)
+  const Fc = cavF(det * dnu, 0, 1, r);
+  // Carrier field amplitude times J0
+  const cRe = b0 * Fc.re, cIm = b0 * Fc.im;
+
+  // Sidebands (totally reflected: F ≈ -1 for high-finesse when Omega >> dnu)
+  const Fp = cavF(det*dnu + Omega, 0, 1, r);
+  const Fm = cavF(det*dnu - Omega, 0, 1, r);
+  // Upper sideband in rotating frame: rotates at +Omega -> in our "slow" animation time = angle
+  const upRe =  b1 * (Fp.re * Math.cos(angle) - Fp.im * Math.sin(angle));
+  const upIm =  b1 * (Fp.re * Math.sin(angle) + Fp.im * Math.cos(angle));
+  // Lower sideband: rotates at -Omega -> angle flipped (in our simplified animation)
+  const loRe = -b1 * (Fm.re * Math.cos(angle) + Fm.im * Math.sin(angle));
+  const loIm = -b1 * (-Fm.re * Math.sin(angle) + Fm.im * Math.cos(angle));
+
+  // Sum of sidebands
+  const sumRe = upRe + loRe, sumIm = upIm + loIm;
+  // Total field
+  const totRe = cRe + sumRe, totIm = cIm + sumIm;
+  // PD power
+  const Pdet = (totRe * totRe + totIm * totIm);
+
+  // Store time data
+  phTimeData.push(Pdet);
+  if (phTimeData.length > canvasT.width) phTimeData.shift();
+
+  // ── Draw complex plane ───────────────────────────
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#020b14';
+  ctx.fillRect(0, 0, W, H);
+
+  // Axes
+  ctx.strokeStyle = '#1e3a5f';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx - scale*1.1, cy); ctx.lineTo(cx + scale*1.1, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy - scale*1.1); ctx.lineTo(cx, cy + scale*1.1); ctx.stroke();
+  ctx.fillStyle = '#475569'; ctx.font = '10px Inter';
+  ctx.fillText('Re', cx + scale*1.05, cy - 6);
+  ctx.fillText('Im', cx + 5, cy - scale*1.0);
+
+  // F(ω) circle (dim background)
+  const xt = [], yt = [];
+  for (let i = 0; i <= 120; i++) {
+    const nu = -0.5 + i/120;
+    const f = cavF(nu, 0, 1, r);
+    xt.push(f.re); yt.push(f.im);
+  }
+  ctx.strokeStyle = '#2d1010'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for (let i = 0; i < xt.length; i++) {
+    const px = cx + xt[i]*scale, py = cy - yt[i]*scale;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  // Reflected carrier dot
+  ctx.fillStyle = '#6b21a8';
+  ctx.beginPath();
+  ctx.arc(cx + cRe*scale, cy - cIm*scale, 5, 0, 2*Math.PI);
+  ctx.fill();
+
+  function drawArrow(ctx, x0, y0, x1, y1, color, label) {
+    const dx = x1-x0, dy = y1-y0;
+    const angle = Math.atan2(dy, dx);
+    const len = Math.sqrt(dx*dx+dy*dy);
+    if (len < 1) return;
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x1 - 9*Math.cos(angle-0.4), y1 - 9*Math.sin(angle-0.4));
+    ctx.lineTo(x1 - 9*Math.cos(angle+0.4), y1 - 9*Math.sin(angle+0.4));
+    ctx.closePath(); ctx.fill();
+    if (label && len > 15) {
+      ctx.font = '9px Inter'; ctx.fillStyle = color;
+      ctx.fillText(label, x1 + 5, y1 - 5);
+    }
+  }
+
+  // Draw arrows from origin
+  const O = {x: cx, y: cy};
+  // Carrier (purple)
+  drawArrow(ctx, O.x, O.y, O.x + cRe*scale, O.y - cIm*scale, '#c084fc', 'carrier');
+  // Upper sideband (blue)
+  drawArrow(ctx, O.x, O.y, O.x + upRe*scale, O.y - upIm*scale, '#60a5fa', 'upper SB');
+  // Lower sideband (red)
+  drawArrow(ctx, O.x, O.y, O.x + loRe*scale, O.y - loIm*scale, '#f87171', 'lower SB');
+  // Sideband sum (orange)
+  drawArrow(ctx, O.x, O.y, O.x + sumRe*scale, O.y - sumIm*scale, '#fb923c', '');
+  // Total (green)
+  drawArrow(ctx, O.x, O.y, O.x + totRe*scale, O.y - totIm*scale, '#34d399', 'total');
+
+  // Label detuning
+  ctx.fillStyle = '#94a3b8'; ctx.font = '9px Inter';
+  ctx.fillText(`Δν/δν = ${det.toFixed(1)}`, 8, H-8);
+  ctx.fillText(`|F| = ${(Math.sqrt(Fc.re**2+Fc.im**2)).toFixed(3)}`, 8, H-20);
+
+  // ── Draw time trace ──────────────────────────────
+  ctxT.clearRect(0, ctxT.height*0, canvasT.width, ctxT.height);
+  ctxT.fillStyle = '#020b14';
+  ctxT.fillRect(0, 0, canvasT.width, canvasT.height);
+  // Axes
+  ctxT.strokeStyle = '#1e3a5f'; ctxT.lineWidth = 1;
+  ctxT.beginPath(); ctxT.moveTo(0, canvasT.height/2); ctxT.lineTo(canvasT.width, canvasT.height/2); ctxT.stroke();
+
+  const maxP = Math.max(...phTimeData, 0.01);
+  const minP = Math.min(...phTimeData, 0);
+  const rangeP = maxP - minP + 0.001;
+
+  ctxT.strokeStyle = '#f87171'; ctxT.lineWidth = 1.5;
+  ctxT.beginPath();
+  for (let i = 0; i < phTimeData.length; i++) {
+    const px = i;
+    const py = canvasT.height - 10 - ((phTimeData[i] - minP) / rangeP) * (canvasT.height - 20);
+    i === 0 ? ctxT.moveTo(px, py) : ctxT.lineTo(px, py);
+  }
+  ctxT.stroke();
+
+  ctxT.fillStyle = '#94a3b8'; ctxT.font = '9px Inter';
+  ctxT.fillText('P_det(t) ∝ |E_refl|²', 6, 14);
+  ctxT.fillText('→ time', canvasT.width - 45, canvasT.height - 4);
+
+  // Info box
+  const ImF = Fc.im.toFixed(4);
+  const signStr = parseFloat(ImF) >= 0 ? 'positive (above resonance)' : 'negative (below resonance)';
+  document.getElementById('phasorInfo').innerHTML =
+    `Im[F] = ${ImF} → ${signStr}<br>
+     PDH signal ∝ ${(4 * sqPc * sqPs * Fc.im).toFixed(4)} (proportional to detuning sign)`;
+}
+
+/* ─── FAQ toggle ────────────────── */
+function toggleFaq(el) {
+  el.classList.toggle('open');
+  const ans = el.nextElementSibling;
+  ans.classList.toggle('open');
+}
+
+/* ── Init everything ─────────────── */
+window.addEventListener('load', () => {
+  updateAiry();
+  updateCircle();
+  updatePhase();
+  updateSidebands();
+  updateMaster();
+  updatePhasorParams();
+  phAnimId = requestAnimationFrame(phasorStep);
+});
+
+/* ═══════════════════════════════════════════════════════
+   PHYSICS FUNCTIONS (shared with chunk-1 plots above)
+═══════════════════════════════════════════════════════ */
+const FINESSE_LEVELS = [10, 100, 300, 2000, 10000, 100000];
+
+function rFromFinesse(F) {
+  // F*(1-r^2) = pi*r  =>  r = (-pi + sqrt(pi^2 + 4F^2)) / (2F)
+  return (-Math.PI + Math.sqrt(Math.PI * Math.PI + 4 * F * F)) / (2 * F);
+}
+
+function J0(x) {
+  let s = 1, t = 1, z = x * x / 4;
+  for (let k = 1; k <= 30; k++) {
+    t *= -z / (k * k);
+    s += t;
+    if (Math.abs(t) < 1e-16) break;
+  }
+  return s;
+}
+function J1(x) {
+  let s = x / 2, t = x / 2, z = x * x / 4;
+  for (let k = 1; k <= 30; k++) {
+    t *= -z / (k * (k + 1));
+    s += t;
+    if (Math.abs(t) < 1e-16) break;
+  }
+  return s;
+}
+
+// Complex reflection coefficient F(nu)
+// nu, nu_res, nu_FSR in same units; r = amplitude reflectivity
+function cavF(nu, nu_res, nu_FSR, r) {
+  const phi = 2 * Math.PI * (nu - nu_res) / nu_FSR;
+  const cp = Math.cos(phi), sp = Math.sin(phi), r2 = r * r;
+  const nr = r * (cp - 1), ni = r * sp;
+  const dr = 1 - r2 * cp,  di = -r2 * sp;
+  const d2 = dr * dr + di * di;
+  return { re: (nr * dr + ni * di) / d2, im: (ni * dr - nr * di) / d2 };
+}
+
+function cavPower(nu, nu_res, nu_FSR, r) {
+  const f = cavF(nu, nu_res, nu_FSR, r);
+  return f.re * f.re + f.im * f.im;
+}
+
+// PDH error signal (general demodulation phase phi_d in radians)
+function pdhError(nu, nu_res, nu_FSR, r, Omega, beta, phi_d) {
+  const b0 = J0(beta), b1 = J1(beta);
+  const Pc = b0 * b0, Ps = b1 * b1;
+  const Fc  = cavF(nu,         nu_res, nu_FSR, r);
+  const Fp  = cavF(nu + Omega, nu_res, nu_FSR, r);
+  const Fm  = cavF(nu - Omega, nu_res, nu_FSR, r);
+  // Z = Fc*conj(Fp) - conj(Fc)*Fm
+  const t1re =  Fc.re * Fp.re + Fc.im * Fp.im;
+  const t1im =  Fc.im * Fp.re - Fc.re * Fp.im;
+  const t2re =  Fc.re * Fm.re + Fc.im * Fm.im;
+  const t2im =  Fc.re * Fm.im - Fc.im * Fm.re;
+  const Xre  = t1re - t2re;  // Re[Z]
+  const Xim  = t1im - t2im;  // Im[Z]
+  // demodulate: eps = 2*sqrt(Pc*Ps)*Re[Z*exp(i*phi_d)]
+  //   = 2*sqrt(Pc*Ps)*(Xre*cos(phi_d) - Xim*sin(phi_d))
+  const cp = Math.cos(phi_d), sp = Math.sin(phi_d);
+  return 2 * Math.sqrt(Pc * Ps) * (Xre * cp - Xim * sp);
+}
+
+/* ─── Plotly dark theme defaults ───────────── */
+const PL = {
+  paper_bgcolor: 'transparent',
+  plot_bgcolor:  '#020b14',
+  font:  { family: 'Inter, sans-serif', color: '#94a3b8', size: 11 },
+  xaxis: { gridcolor: '#1e293b', zerolinecolor: '#334155', linecolor: '#1e293b', tickcolor: '#475569' },
+  yaxis: { gridcolor: '#1e293b', zerolinecolor: '#334155', linecolor: '#1e293b', tickcolor: '#475569' },
+  margin: { t: 10, r: 18, b: 46, l: 52 },
+  hovermode: 'closest',
+  legend: { bgcolor: 'transparent', font: { size: 10, color: '#94a3b8' } },
+};
+function darkLayout(overrides = {}) {
+  return Object.assign({}, PL,
+    overrides.xaxis ? { ...PL, xaxis: { ...PL.xaxis, ...overrides.xaxis } } : {},
+    overrides.yaxis ? { ...PL, yaxis: { ...PL.yaxis, ...overrides.yaxis } } : {},
+    overrides
+  );
+}
+
+const PL_CFG = { responsive: true, displayModeBar: false };
+
+/* ══════════════════════════════
+   AIRY FUNCTION PLOT
+══════════════════════════════ */
+function updateAiry() {
+  const fi  = parseInt(document.getElementById('airyF').value);
+  const F   = FINESSE_LEVELS[fi - 1];
+  const omR = parseFloat(document.getElementById('airyOmega').value);
+  document.getElementById('airyFVal').textContent = F >= 1000 ? (F/1000).toFixed(0)+'k' : F;
+  document.getElementById('airyOmegaVal').textContent = omR;
+
+  const r     = rFromFinesse(F);
+  const nu_FSR = 1;                   // normalize
+  const dnu   = 1 / F;               // linewidth in FSR units
+  const N = 1200;
+  const x = [], refl = [], trans = [];
+  // show from -1.5 FSR to +1.5 FSR (shows 2 full resonances)
+  for (let i = 0; i < N; i++) {
+    const nu = -1.5 + 3 * i / (N - 1);   // in FSR units
+    const ref = cavPower(nu, 0, 1, r);
+    x.push(nu / dnu);                     // in linewidth units
+    refl.push(ref);
+    trans.push(1 - ref);
+  }
+
+  // Sideband marker positions (±Omega linewidths from resonance)
+  const omPos = [omR, -omR];
+  const sbX = omPos.flatMap(o => [o, o]);
+  const sbY = [0, 1, 0, 1];
+
+  const traces = [
+    { x, y: refl,  name: 'Reflection |F|²', line: { color: '#f87171', width: 2 }, mode: 'lines' },
+    { x, y: trans, name: 'Transmission 1−|F|²', line: { color: '#34d399', width: 2 }, mode: 'lines' },
+  ];
+
+  // sideband markers
+  traces.push({
+    x: [omR, omR], y: [0, 0.7],
+    name: `+Ω sideband`, line: { color: '#a78bfa', width: 2, dash: 'dot' }, mode: 'lines'
+  });
+  traces.push({
+    x: [-omR, -omR], y: [0, 0.7],
+    name: `−Ω sideband`, line: { color: '#a78bfa', width: 2, dash: 'dot' }, mode: 'lines',
+    showlegend: false
+  });
+
+  const layout = darkLayout({
+    xaxis: { ...PL.xaxis, title: { text: 'Detuning Δν / δν_cav', font: { size: 10 } },
+             zeroline: true, range: [-1.5/dnu, 1.5/dnu] },
+    yaxis: { ...PL.yaxis, title: { text: 'Normalised power', font: { size: 10 } }, range: [-0.05, 1.1] },
+    margin: { t: 12, r: 12, b: 48, l: 56 },
+  });
+
+  Plotly.react('airyPlot', traces, layout, PL_CFG);
+
+  const ring_down = (F / (Math.PI * 1e9)).toFixed(3);
+  document.getElementById('airyInfo').innerHTML =
+    `𝒻 = ${F} → r = ${rFromFinesse(F).toFixed(5)},  δν_cav = ν_FSR/${F},  τ_c = 𝒻/(π·ν_FSR).  ` +
+    `Sideband ratio Ω/δν_cav = ${omR} — sidebands ${omR >= 3 ? 'well outside' : 'inside'} the linewidth.`;
+}
+
+/* ══════════════════════════════
+   COMPLEX PLANE CIRCLE
+══════════════════════════════ */
+function updateCircle() {
+  const fi  = parseInt(document.getElementById('circF').value);
+  const F   = FINESSE_LEVELS[fi - 1];
+  const det = parseFloat(document.getElementById('circDet').value) / 100; // in linewidths
+  document.getElementById('circFVal').textContent = F >= 1000 ? (F/1000).toFixed(0)+'k' : F;
+  document.getElementById('circDetVal').textContent = (parseFloat(document.getElementById('circDet').value) / 100).toFixed(2);
+
+  const r = rFromFinesse(F);
+  const N = 800;
+  const reC = [], imC = [];
+  // Trace full circle (one FSR)
+  for (let i = 0; i <= N; i++) {
+    const nu = -0.5 + i / N;   // -0.5 FSR to +0.5 FSR
+    const f  = cavF(nu, 0, 1, r);
+    reC.push(f.re);
+    imC.push(f.im);
+  }
+
+  // Current detuning dot
+  const dnu = 1 / F;
+  const fDot = cavF(det * dnu, 0, 1, r);
+  const phase_deg = (Math.atan2(fDot.im, fDot.re) * 180 / Math.PI).toFixed(1);
+  const amp = Math.sqrt(fDot.re ** 2 + fDot.im ** 2).toFixed(4);
+
+  const traces = [
+    {
+      x: reC, y: imC, name: 'F(ν) locus',
+      line: { color: '#f87171', width: 2 }, mode: 'lines',
+    },
+    {
+      x: [fDot.re], y: [fDot.im], name: `Δν/δν = ${(det * dnu / dnu).toFixed(2)}`,
+      marker: { color: '#fbbf24', size: 12, symbol: 'circle' },
+      mode: 'markers',
+    },
+    {
+      x: [0, fDot.re], y: [0, fDot.im], name: 'F vector',
+      line: { color: '#fbbf24', width: 1.5, dash: 'dot' }, mode: 'lines',
+      showlegend: false,
+    },
+    {
+      x: [0], y: [0], name: 'origin', marker: { color: '#334155', size: 8, symbol: 'cross' },
+      mode: 'markers', showlegend: false,
+    },
+  ];
+
+  const lim = Math.max(1.05, r * 1.1);
+  Plotly.react('circlePlot', traces, darkLayout({
+    xaxis: { ...PL.xaxis, title: { text: 'Re[F]', font: { size: 10 } }, range: [-lim, lim], zeroline: true, scaleanchor: 'y' },
+    yaxis: { ...PL.yaxis, title: { text: 'Im[F]', font: { size: 10 } }, range: [-lim, lim], zeroline: true },
+    annotations: [{
+      x: fDot.re + 0.08, y: fDot.im + 0.08,
+      text: `|F|=${amp}<br>∠F=${phase_deg}°`,
+      font: { size: 9, color: '#fbbf24' }, showarrow: false,
+      bgcolor: '#0a1628', bordercolor: '#fbbf24', borderwidth: 1,
+    }],
+    margin: { t: 12, r: 12, b: 48, l: 56 },
+  }), PL_CFG);
+}
+
+function updatePhase() {
+  const fi  = parseInt(document.getElementById('phaseF').value);
+  const F   = FINESSE_LEVELS[fi - 1];
+  document.getElementById('phaseFVal').textContent = F >= 1000 ? (F/1000).toFixed(0)+'k' : F;
+
+  const r = rFromFinesse(F);
+  const dnu = 1 / F;
+  const N = 800, span = 5;
+  const x = [], ph = [], imF = [], refl = [];
+  for (let i = 0; i < N; i++) {
+    const nu = -span * dnu + 2 * span * dnu * i / (N - 1);
+    const f  = cavF(nu, 0, 1, r);
+    x.push(nu / dnu);
+    ph.push(Math.atan2(f.im, f.re) * 180 / Math.PI);
+    imF.push(f.im);
+    refl.push(f.re * f.re + f.im * f.im);
+  }
+
+  const traces = [
+    { x, y: ph,   name: '∠F(ν) [deg]', line: { color: '#f87171', width: 2 }, mode: 'lines', yaxis: 'y' },
+    { x, y: imF,  name: 'Im[F(ν)]',    line: { color: '#a78bfa', width: 2, dash: 'dash' }, mode: 'lines', yaxis: 'y2' },
+    { x, y: refl, name: '|F|²',        line: { color: '#64748b', width: 1.5 }, mode: 'lines', yaxis: 'y2' },
+  ];
+
+  Plotly.react('phasePlot', traces, {
+    ...darkLayout(),
+    xaxis: { ...PL.xaxis, title: { text: 'Detuning Δν / δν_cav', font: { size: 10 } } },
+    yaxis:  { ...PL.yaxis, title: { text: 'Phase (deg)', font: { size: 10 } }, side: 'left' },
+    yaxis2: { ...PL.yaxis, title: { text: 'Im[F], |F|²', font: { size: 10 } },
+              overlaying: 'y', side: 'right' },
+    legend: { ...PL.legend, x: 0.02, y: 0.98 },
+    margin: { t: 12, r: 52, b: 48, l: 56 },
+  }, PL_CFG);
+}
+
+/* ══════════════════════════════
+   SIDEBAND SPECTRUM
+══════════════════════════════ */
+function updateSidebands() {
+  const beta  = parseFloat(document.getElementById('sbBeta').value);
+  const omR   = parseFloat(document.getElementById('sbOmega').value);
+  const fi    = parseInt(document.getElementById('sbF').value);
+  const F     = FINESSE_LEVELS[fi - 1];
+  document.getElementById('sbBetaVal').textContent  = beta.toFixed(2);
+  document.getElementById('sbOmegaVal').textContent = omR;
+  document.getElementById('sbFVal').textContent     = F >= 1000 ? (F/1000).toFixed(0)+'k' : F;
+
+  const b0 = J0(beta), b1 = J1(beta);
+  const Pc = b0 * b0, Ps = b1 * b1;
+  const Ptot = Pc + 2 * Ps;
+
+  const r    = rFromFinesse(F);
+  const dnu  = 1 / F;
+  const N    = 1000, span = Math.max(omR * 1.5, 5);
+  const x    = [], refl = [];
+  for (let i = 0; i < N; i++) {
+    const nu = -span * dnu + 2 * span * dnu * i / (N - 1);
+    refl.push(cavPower(nu, 0, 1, r));
+    x.push(nu / dnu);
+  }
+
+  const traces = [
+    { x, y: refl, name: '|F|² cavity', line: { color: '#334155', width: 1.5 }, mode: 'lines',
+      fill: 'tozeroy', fillcolor: 'rgba(51,65,85,0.2)' },
+    // Carrier
+    { x: [0, 0], y: [0, Pc], name: `Carrier  J₀²(β) = ${Pc.toFixed(3)}`,
+      line: { color: '#f87171', width: 5 }, mode: 'lines' },
+    // Upper sideband
+    { x: [omR, omR], y: [0, Ps], name: `+Ω sideband  J₁²(β) = ${Ps.toFixed(3)}`,
+      line: { color: '#a78bfa', width: 5 }, mode: 'lines' },
+    // Lower sideband
+    { x: [-omR, -omR], y: [0, Ps], name: `−Ω sideband  J₁²(β) = ${Ps.toFixed(3)}`,
+      line: { color: '#a78bfa', width: 5 }, mode: 'lines', showlegend: false },
+  ];
+
+  Plotly.react('sidebandsPlot', traces, darkLayout({
+    xaxis: { ...PL.xaxis, title: { text: 'Frequency offset Δν / δν_cav', font:{size:10} } },
+    yaxis: { ...PL.yaxis, title: { text: 'Relative power', font:{size:10} }, range:[0,1.1] },
+    margin: { t:12, r:12, b:48, l:56 },
+  }), PL_CFG);
+
+  const outsideCav = omR > 2;
+  document.getElementById('sbInfo').innerHTML =
+    `β = ${beta.toFixed(2)}: P_carrier = ${(Pc*100).toFixed(1)}%, each sideband = ${(Ps*100).toFixed(1)}%.  ` +
+    `Total power check: ${(Ptot*100).toFixed(1)}% (higher harmonics absorb the rest for large β).  ` +
+    (outsideCav ? '✓ Sidebands are well outside the cavity linewidth — PDH fast-modulation regime.' :
+                  '⚠ Sidebands are INSIDE the cavity linewidth — slow-modulation regime, reduced slope.');
+}
+
+/* ── Plots initialised by the load handler above ── */
+
+/* ── Sync circle + phase to same finesse slider visually ── */
+document.getElementById('circF').addEventListener('input', function() {
+  document.getElementById('phaseF').value = this.value;
+  updatePhase();
+});
+document.getElementById('phaseF').addEventListener('input', function() {
+  document.getElementById('circF').value = this.value;
+  updateCircle();
+});
+</script>
+</body>
+</html>
