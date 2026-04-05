@@ -98,7 +98,7 @@ function renderNav({ active = '', root = '' } = {}) {
               </svg>
             </button>
             <div class="nav-drop" role="menu">
-              <div class="nav-drop-section">9 Primary Tools</div>
+              <div class="nav-drop-section">10 Primary Tools</div>
               ${toolsHTML}
             </div>
           </div>
