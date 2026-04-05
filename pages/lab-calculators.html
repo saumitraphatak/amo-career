@@ -84,6 +84,46 @@
     .sec-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.1rem .85rem; }
 
     .divider { border: none; border-top: 1px solid #1e293b; margin: 1.5rem 0; }
+
+    /* ── CG calculator (tab 5) ───────────────────────────────────── */
+    .cg-tab .field-row label { min-width: unset; width: 50px; }
+    .input-grid-cg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
+    @media(max-width:600px) { .input-grid-cg { grid-template-columns: 1fr; } }
+    .inp-card { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem 1.1rem; }
+    .inp-card h4 { font-size: .87rem; font-weight: 600; color: var(--text-secondary); margin: 0 0 .7rem 0; }
+    .computed-M { font-size: .9rem; color: #c4b5fd; font-family: var(--font-mono); margin-top: .4rem; font-weight: 600; }
+    .cg-result {
+      background: #052e16; border: 1px solid #15803d; border-radius: 10px;
+      padding: 1.1rem 1.4rem; margin: 1rem 0;
+      display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.5rem;
+    }
+    .cg-bra  { font-size: 1rem; color: #86efac; font-family: var(--font-mono); }
+    .cg-exact { font-size: 1.4rem; font-weight: 700; color: #4ade80; font-family: var(--font-mono); }
+    .cg-dec  { font-size: 1rem; color: #86efac; font-family: var(--font-mono); }
+    .cg-zero { font-size: 1.4rem; font-weight: 700; color: #475569; font-family: var(--font-mono); }
+    .cg-note { font-size: .82rem; color: var(--text-muted); font-style: italic; }
+    .sym-details { margin-top: .75rem; }
+    .sym-details summary { cursor: pointer; font-size: .85rem; color: var(--c-cg); font-weight: 600; margin-bottom: .5rem; }
+    .sym-details[open] summary { color: #e879f9; }
+    .cg-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #1e293b; margin-top: .75rem; }
+    table.cgt { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    table.cgt th { background: #1e1b4b; color: #c4b5fd; padding: .5rem .7rem; text-align: center; border-bottom: 2px solid #312e81; font-family: var(--font-mono); white-space: nowrap; }
+    table.cgt th:first-child { text-align: left; }
+    table.cgt td { padding: .4rem .7rem; text-align: center; border-bottom: 1px solid #1a2236; font-family: var(--font-mono); font-size: .84rem; }
+    table.cgt tr:hover td { background: #0c1526; }
+    table.cgt td.zero { color: #334155; }
+    table.cgt td.pos  { color: #4ade80; font-weight: 600; }
+    table.cgt td.neg  { color: #f87171; font-weight: 600; }
+    table.cgt td.row-label { color: var(--text-secondary); text-align: left; font-weight: 600; background: var(--bg-card); }
+    .tbl-controls-cg { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; align-items: center; }
+    .tbl-controls-cg label { font-size: .83rem; color: var(--text-muted); }
+    .tbl-controls-cg input[type="number"], .tbl-controls-cg select {
+      background: #0c1526; border: 1px solid #2a3a52; color: var(--text-primary);
+      border-radius: 6px; padding: .28rem .55rem; font-size: .85rem;
+      font-family: var(--font-mono); width: 90px;
+    }
+    .we-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .75rem; }
+    @media(max-width:600px) { .we-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -111,6 +151,7 @@
         <button class="tab-btn" data-tab="power">📡 Power &amp; RF</button>
         <button class="tab-btn" data-tab="atomic">⚛️ Atomic Physics</button>
         <button class="tab-btn" data-tab="trap">🪤 Trap &amp; Cavity</button>
+        <button class="tab-btn" data-tab="cg">🔢 Clebsch–Gordan</button>
       </div>
 
       <!-- ══════════════════════════════════════════════════════════
@@ -473,6 +514,102 @@ Reduced by wavefront curvature for Δz≠0</div>
           NIST CODATA 2018 constants.
         </div>
       </div><!-- /trap -->
+
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 5 — CLEBSCH-GORDAN
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel cg-tab" data-tab="cg" data-group="main">
+        <h2 class="sec-title">Clebsch–Gordan Coefficients</h2>
+        <p class="sec-sub">⟨j₁m₁; j₂m₂ | JM⟩ via Racah formula — exact ±√(p/q) results, CG tables, and Wigner–Eckart reference.</p>
+
+        <!-- Background accordion -->
+        <div class="accordion" style="margin-bottom:1.5rem;">
+          <div class="accordion-header">📖 Background &amp; Selection Rules</div>
+          <div class="accordion-body">
+            <div class="formula-box">|J, M⟩ = Σ_{m₁,m₂}  ⟨j₁m₁; j₂m₂ | J M⟩  |j₁,m₁⟩|j₂,m₂⟩</div>
+            <h4 style="color:var(--text-secondary); margin:1rem 0 .4rem 0;">Selection rules — coefficient is zero unless:</h4>
+            <ul style="color:var(--text-muted); font-size:.88rem; padding-left:1.3rem; line-height:1.8;">
+              <li><strong style="color:var(--text-secondary)">M = m₁ + m₂</strong> (z-component conservation)</li>
+              <li><strong style="color:var(--text-secondary)">|j₁ − j₂| ≤ J ≤ j₁ + j₂</strong> (triangle rule)</li>
+              <li><strong style="color:var(--text-secondary)">|mᵢ| ≤ jᵢ</strong> for i = 1, 2</li>
+            </ul>
+            <div class="formula-box" style="margin-top:.75rem;">J  ∈  { |j₁−j₂|,  |j₁−j₂|+1,  …,  j₁+j₂ }
+Σ_J (2J+1)  =  (2j₁+1)(2j₂+1)     [dimension check]
+Exchange:  ⟨j₁m₁;j₂m₂|JM⟩ = (−1)^{j₁+j₂−J} ⟨j₂m₂;j₁m₁|JM⟩
+Time-rev:  ⟨j₁m₁;j₂m₂|JM⟩ = (−1)^{j₁+j₂−J} ⟨j₁−m₁;j₂−m₂|J−M⟩</div>
+          </div>
+        </div>
+
+        <div data-tabs-wrap>
+          <div class="tab-bar" data-group="cg-inner" style="--page-color: var(--c-cg)">
+            <button class="tab-btn active" data-tab="cg-single">🎯 Single Coefficient</button>
+            <button class="tab-btn" data-tab="cg-table">📊 CG Table</button>
+            <button class="tab-btn" data-tab="cg-we">🔮 Wigner–Eckart</button>
+          </div>
+
+          <!-- Single coefficient -->
+          <div class="tab-panel active" data-tab="cg-single" data-group="cg-inner">
+            <h3 style="color:var(--text-secondary); font-size:1.05rem; margin:1rem 0 .3rem 0;">Compute ⟨j₁m₁; j₂m₂ | JM⟩</h3>
+            <p style="color:var(--text-muted); font-size:.85rem; margin-bottom:.75rem;">M is fixed automatically as m₁ + m₂. Results as exact ±√(p/q).</p>
+            <div class="input-grid-cg">
+              <div class="inp-card">
+                <h4>First angular momentum</h4>
+                <div class="field-row"><label>j₁</label><input type="number" id="s_j1" value="1" min="0" max="10" step="0.5" oninput="onJ1Change()"></div>
+                <div class="field-row"><label>m₁</label><select id="s_m1" onchange="computeSingle()"></select></div>
+              </div>
+              <div class="inp-card">
+                <h4>Second angular momentum</h4>
+                <div class="field-row"><label>j₂</label><input type="number" id="s_j2" value="0.5" min="0" max="10" step="0.5" oninput="onJ2Change()"></div>
+                <div class="field-row"><label>m₂</label><select id="s_m2" onchange="computeSingle()"></select></div>
+              </div>
+              <div class="inp-card">
+                <h4>Total angular momentum</h4>
+                <div class="field-row"><label>J</label><select id="s_J" onchange="computeSingle()"></select></div>
+                <div class="computed-M" id="s_M_display">M = —</div>
+              </div>
+            </div>
+            <div id="single_result" class="cg-result"><span class="cg-note">Adjust inputs above to compute</span></div>
+            <details class="sym-details" id="sym_details" style="display:none;">
+              <summary>Symmetry-related coefficients</summary>
+              <div id="sym_content" class="formula-box" style="white-space:pre-wrap;"></div>
+            </details>
+          </div>
+
+          <!-- CG table -->
+          <div class="tab-panel" data-tab="cg-table" data-group="cg-inner">
+            <h3 style="color:var(--text-secondary); font-size:1.05rem; margin:1rem 0 .3rem 0;">CG Table for fixed j₁, j₂, J</h3>
+            <p style="color:var(--text-muted); font-size:.85rem; margin-bottom:.75rem;">Rows = m₁, columns = m₂. Cell: ⟨j₁m₁; j₂m₂ | J, m₁+m₂⟩. Keep j ≤ 4 for fast computation.</p>
+            <div class="tbl-controls-cg">
+              <span><label>j₁ </label><input type="number" id="t_j1" value="1" min="0" max="6" step="0.5" oninput="onTJ1Change()"></span>
+              <span><label>j₂ </label><input type="number" id="t_j2" value="0.5" min="0" max="6" step="0.5" oninput="onTJ2Change()"></span>
+              <span><label>J </label><select id="t_J" onchange="buildTable()" style="width:70px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.28rem .55rem; font-size:.85rem; font-family:var(--font-mono);"></select></span>
+            </div>
+            <div class="cg-table-wrap"><div id="cg_table_container" style="padding:.25rem;"></div></div>
+            <div id="cg_decomp" class="formula-box" style="margin-top:1rem; white-space:pre-wrap;"></div>
+          </div>
+
+          <!-- Wigner-Eckart -->
+          <div class="tab-panel" data-tab="cg-we" data-group="cg-inner">
+            <h3 style="color:var(--text-secondary); font-size:1.05rem; margin:1rem 0 .3rem 0;">Wigner–Eckart Theorem</h3>
+            <div class="formula-box">⟨α′, j′, m′ | T(k)_q | α, j, m⟩
+    =  ⟨j, m; k, q | j′, m′⟩  ×  ⟨α′j′ ‖ T(k) ‖ αj⟩ / √(2j′+1)
+
+The CG coefficient carries ALL m-dependence.
+The reduced matrix element is independent of m, m′, q.</div>
+            <div class="we-grid">
+              <div class="formula-box"><strong style="color:#a78bfa">E1 (k=1): </strong> Δj = 0,±1 (no 0→0); Δm = 0 (π), ±1 (σ±)
+<strong style="color:#a78bfa">M1 (k=1): </strong> Same Δj, Δm; Δl = 0</div>
+              <div class="formula-box"><strong style="color:#a78bfa">E2 (k=2): </strong> Δj = 0,±1,±2; Δm = 0,±1,±2
+<strong style="color:#a78bfa">Hyperfine: </strong> All ⟨F,m_F|T|F′,m_F′⟩ reduce to
+one ⟨F‖T‖F′⟩ via Wigner–Eckart</div>
+            </div>
+            <div class="formula-box" style="margin-top:.75rem;">Wigner 3j relation:
+⟨j₁m₁; j₂m₂ | J M⟩  =  (−1)^{j₁−j₂+M} √(2J+1)  ×  ⎛ j₁   j₂   J  ⎞
+                                                      ⎝ m₁   m₂  −M  ⎠
+In Python: sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</div>
+          </div>
+        </div>
+      </div><!-- /cg tab -->
 
     </div><!-- /data-tabs-wrap -->
   </main>
@@ -889,6 +1026,146 @@ Reduced by wavefront curvature for Δz≠0</div>
       r.addEventListener('change', calcPower));
     document.querySelectorAll('input[name="dop_mode"]').forEach(r =>
       r.addEventListener('change', calcDoppler));
+
+    // ══════════════════════════════════════════════════════════════
+    // Clebsch–Gordan via Racah formula (Tab 5)
+    // ══════════════════════════════════════════════════════════════
+    const FACT = [1];
+    for (let i = 1; i <= 60; i++) FACT[i] = FACT[i-1] * i;
+    function F(x) { const n = Math.round(x); return (n >= 0 && n <= 60) ? FACT[n] : null; }
+
+    function cgFloat(j1, m1, j2, m2, J, M) {
+      if (Math.abs(Math.round(2*(m1+m2)) - Math.round(2*M)) !== 0) return 0;
+      if (J < Math.abs(j1-j2) - 1e-9 || J > j1+j2+1e-9) return 0;
+      if (Math.abs(m1) > j1+1e-9 || Math.abs(m2) > j2+1e-9 || Math.abs(M) > J+1e-9) return 0;
+      const fs = [F(j1+j2-J), F(j1-j2+J), F(-j1+j2+J), F(j1+j2+J+1)];
+      if (fs.some(f => f === null) || fs[3] === 0) return 0;
+      const delta = fs[0]*fs[1]*fs[2] / fs[3];
+      const pf = [F(j1+m1), F(j1-m1), F(j2+m2), F(j2-m2), F(J+M), F(J-M)];
+      if (pf.some(f => f === null)) return 0;
+      let pref_sq = (2*J+1) * delta;
+      for (const f of pf) pref_sq *= f;
+      const nu_min = Math.max(0, Math.round(j2-J-m1), Math.round(j1-J+m2));
+      const nu_max = Math.round(Math.min(j1+j2-J, j1-m1, j2+m2));
+      let total = 0;
+      for (let nu = nu_min; nu <= nu_max; nu++) {
+        const terms = [F(nu), F(j1+j2-J-nu), F(j1-m1-nu), F(j2+m2-nu), F(J-j2+m1+nu), F(J-j1-m2+nu)];
+        if (terms.some(t => t === null)) continue;
+        let denom = 1; for (const t of terms) denom *= t;
+        total += Math.pow(-1, nu) / denom;
+      }
+      return Math.abs(total) < 1e-15 ? 0 : Math.sqrt(Math.abs(pref_sq)) * total;
+    }
+
+    function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+    function limitDenom(x, maxD=10000) {
+      if (x === 0) return [0, 1];
+      let bestP = Math.round(x), bestQ = 1, bestErr = Math.abs(Math.round(x) - x);
+      for (let q = 1; q <= maxD; q++) {
+        const p = Math.round(x * q);
+        const err = Math.abs(p/q - x);
+        if (err < bestErr) { bestP = p; bestQ = q; bestErr = err; }
+        if (err < 1e-10) break;
+      }
+      return [bestP, bestQ];
+    }
+    function exactStr(value) {
+      if (Math.abs(value) < 1e-10) return '0';
+      const sign = value < 0 ? '−' : '';
+      const vSq = value * value;
+      const [pRaw, qRaw] = limitDenom(vSq, 10000);
+      if (pRaw <= 0) return sign + Math.abs(value).toFixed(6);
+      const g = gcd(pRaw, qRaw); let P = pRaw/g, Q = qRaw/g;
+      if (Math.abs(Math.sqrt(P/Q) - Math.abs(value)) > 5e-7) return sign + Math.abs(value).toFixed(6);
+      if (P === Q) return sign + '1';
+      const sqP = Math.round(Math.sqrt(P)), sqQ = Math.round(Math.sqrt(Q));
+      if (sqP*sqP === P && sqQ*sqQ === Q) { const g2 = gcd(sqP, sqQ); return sign + (sqP/g2) + '/' + (sqQ/g2); }
+      if (sqP*sqP === P) return sign + (sqP === 1 ? '1/√' + Q : sqP + '/√' + Q);
+      if (sqQ*sqQ === Q) return sign + (sqQ === 1 ? '√' + P : '√' + P + '/' + sqQ);
+      return sign + '√(' + P + '/' + Q + ')';
+    }
+    function fmtJ(x) { const n2 = Math.round(2*x); const sign = n2 < 0 ? '-' : ''; const a = Math.abs(n2); return sign + (a % 2 === 0 ? String(a/2) : a + '/2'); }
+    function mRange(j) { const out = []; for (let m2 = Math.round(-2*j); m2 <= Math.round(2*j); m2++) out.push(m2/2); return out; }
+    function allowedJ(j1, j2) { const out = []; let J = Math.abs(j1-j2); while (J <= j1+j2+1e-9) { out.push(Math.round(J*2)/2); J += 1.0; } return out; }
+    function cg(j1, m1, j2, m2, J, M) { const val = cgFloat(j1, m1, j2, m2, J, M); return { exact: exactStr(val), val }; }
+
+    function populateMSelect(selId, j, defaultLast=false) {
+      const sel = document.getElementById(selId); const ms = mRange(j); const prev = sel.value;
+      sel.innerHTML = '';
+      ms.forEach(m => { const opt = document.createElement('option'); opt.value = m; opt.textContent = fmtJ(m); if (String(m) === prev) opt.selected = true; sel.appendChild(opt); });
+      if (defaultLast && !ms.some(m => String(m) === prev)) sel.selectedIndex = sel.options.length - 1;
+    }
+    function populateJSelect(selId, j1, j2) {
+      const sel = document.getElementById(selId); const Js = allowedJ(j1, j2); const prev = sel.value;
+      sel.innerHTML = '';
+      Js.forEach(J => { const opt = document.createElement('option'); opt.value = J; opt.textContent = fmtJ(J); if (String(J) === prev) opt.selected = true; sel.appendChild(opt); });
+    }
+    function onJ1Change() { const j1 = parseFloat(document.getElementById('s_j1').value)||0; populateMSelect('s_m1', j1, true); const j2 = parseFloat(document.getElementById('s_j2').value)||0; populateJSelect('s_J', j1, j2); computeSingle(); }
+    function onJ2Change() { const j2 = parseFloat(document.getElementById('s_j2').value)||0; populateMSelect('s_m2', j2); const j1 = parseFloat(document.getElementById('s_j1').value)||0; populateJSelect('s_J', j1, j2); computeSingle(); }
+    function computeSingle() {
+      const j1 = parseFloat(document.getElementById('s_j1').value)||0;
+      const m1 = parseFloat(document.getElementById('s_m1').value);
+      const j2 = parseFloat(document.getElementById('s_j2').value)||0;
+      const m2 = parseFloat(document.getElementById('s_m2').value);
+      const J  = parseFloat(document.getElementById('s_J').value);
+      const M  = Math.round((m1+m2)*2)/2;
+      document.getElementById('s_M_display').textContent = 'M = m₁ + m₂ = ' + fmtJ(M);
+      const bra = `⟨${fmtJ(j1)},${fmtJ(m1)}; ${fmtJ(j2)},${fmtJ(m2)} | ${fmtJ(J)},${fmtJ(M)}⟩`;
+      const {exact, val} = cg(j1, m1, j2, m2, J, M);
+      const resEl = document.getElementById('single_result');
+      const symEl = document.getElementById('sym_details');
+      if (exact === '0') {
+        resEl.innerHTML = `<span class="cg-bra">${bra}</span><span style="color:#94a3b8; font-size:1.2rem; font-family:var(--font-mono);">=</span><span class="cg-zero">0</span><span class="cg-note">(selection rule)</span>`;
+        symEl.style.display = 'none';
+      } else {
+        resEl.innerHTML = `<span class="cg-bra">${bra} =</span><span class="cg-exact">${exact}</span><span class="cg-bra">≈</span><span class="cg-dec">${val.toFixed(8)}</span>`;
+        symEl.style.display = '';
+        const phase_exp = j1+j2-J;
+        const {exact: ex_ex} = cg(j2, m2, j1, m1, J, M);
+        const {exact: tr_ex} = cg(j1, -m1, j2, -m2, J, -M);
+        document.getElementById('sym_content').textContent =
+          `Exchange:      ⟨${fmtJ(j2)},${fmtJ(m2)}; ${fmtJ(j1)},${fmtJ(m1)} | ${fmtJ(J)},${fmtJ(M)}⟩  =  (−1)^{${fmtJ(phase_exp)}} × ${exact}  =  ${ex_ex}\n` +
+          `Time-reversal: ⟨${fmtJ(j1)},${fmtJ(-m1)}; ${fmtJ(j2)},${fmtJ(-m2)} | ${fmtJ(J)},${fmtJ(-M)}⟩  =  (−1)^{${fmtJ(phase_exp)}} × ${exact}  =  ${tr_ex}`;
+      }
+    }
+    function onTJ1Change() { const j1 = parseFloat(document.getElementById('t_j1').value)||0; const j2 = parseFloat(document.getElementById('t_j2').value)||0; populateJSelect('t_J', j1, j2); buildTable(); }
+    function onTJ2Change() { const j1 = parseFloat(document.getElementById('t_j1').value)||0; const j2 = parseFloat(document.getElementById('t_j2').value)||0; populateJSelect('t_J', j1, j2); buildTable(); }
+    function buildTable() {
+      const j1 = parseFloat(document.getElementById('t_j1').value)||0;
+      const j2 = parseFloat(document.getElementById('t_j2').value)||0;
+      const J  = parseFloat(document.getElementById('t_J').value);
+      const m1s = mRange(j1); const m2s = mRange(j2);
+      let html = '<table class="cgt"><thead><tr><th>m₁ \\ m₂</th>';
+      for (const m2 of m2s) html += `<th>${fmtJ(m2)}</th>`;
+      html += '</tr></thead><tbody>';
+      for (const m1 of m1s) {
+        html += `<tr><td class="row-label">${fmtJ(m1)}</td>`;
+        for (const m2 of m2s) {
+          const M = Math.round((m1+m2)*2)/2;
+          const {exact} = cg(j1, m1, j2, m2, J, M);
+          let cls = 'zero'; if (exact !== '0') cls = exact.startsWith('−') ? 'neg' : 'pos';
+          html += `<td class="${cls}">${exact}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      document.getElementById('cg_table_container').innerHTML = html;
+      const Jlist = allowedJ(j1, j2);
+      const total_dim = (2*j1+1)*(2*j2+1);
+      document.getElementById('cg_decomp').textContent =
+        `j₁=${fmtJ(j1)}  ⊗  j₂=${fmtJ(j2)}   →   ${Jlist.map(Jv => 'J='+fmtJ(Jv)).join('  ⊕  ')}\nDimension:  ${Math.round(total_dim)}  =  ${Jlist.map(Jv => String(Math.round(2*Jv+1))).join(' + ')}  ✓`;
+    }
+    document.getElementById('t_j1').addEventListener('input', onTJ1Change);
+    document.getElementById('t_j2').addEventListener('input', onTJ2Change);
+    // Init CG
+    (function initCG() {
+      const j1 = parseFloat(document.getElementById('s_j1').value)||1;
+      const j2 = parseFloat(document.getElementById('s_j2').value)||0.5;
+      populateMSelect('s_m1', j1, true); populateMSelect('s_m2', j2); populateJSelect('s_J', j1, j2); computeSingle();
+      const tj1 = parseFloat(document.getElementById('t_j1').value)||1;
+      const tj2 = parseFloat(document.getElementById('t_j2').value)||0.5;
+      populateJSelect('t_J', tj1, tj2); buildTable();
+    })();
   </script>
 </body>
 </html>

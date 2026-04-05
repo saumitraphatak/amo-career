@@ -99,19 +99,6 @@
     .badge-m.yellow { background: #451a03; color: #fcd34d; border: 1px solid #d97706; }
     .badge-m.red    { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; }
 
-    /* ── thesis quote ───────────────────────────────────────────── */
-    .thesis-quote {
-      background: linear-gradient(90deg, #1e1b4b 0%, #0f172a 100%);
-      border-left: 4px solid #7c3aed;
-      border-radius: 0 8px 8px 0;
-      padding: 1rem 1.4rem;
-      margin: 1rem 0;
-      color: #c4b5fd;
-      font-style: italic;
-      font-size: .9rem;
-      line-height: 1.65;
-    }
-
     /* ── company pill ───────────────────────────────────────────── */
     .company-pill {
       display: inline-block;
@@ -269,7 +256,7 @@
   <section class="page-hero" style="--page-color: var(--c-qc)">
     <div class="container">
       <span class="page-hero-badge" style="background:rgba(167,139,250,.12); border-color:rgba(167,139,250,.35); color:#c4b5fd;">
-        Chapter 8 · Phatak (2025)
+        Platform Overview · 2024–25
       </span>
       <h1 class="page-hero-title">Quantum Computing Landscape</h1>
       <p class="page-hero-desc">
@@ -574,7 +561,7 @@ Fidelity limited by: Rabi freq. stability, heating rate, mode crowding</div>
         <div class="tab-panel" data-tab="na" data-group="platforms">
           <div class="plat-deep">
             <div>
-              <h3 style="color:#c4b5fd; margin:0 0 .75rem 0;">Neutral Atom Qubits (Optical Tweezers) ⭐</h3>
+              <h3 style="color:#c4b5fd; margin:0 0 .75rem 0;">Neutral Atom Qubits (Optical Tweezers)</h3>
               <div class="plat-card">
                 <h4>How it works</h4>
                 <p>Individual neutral atoms (Rb, Cs, Yb, Sr) trapped in tightly focused laser beams (optical tweezers) —
@@ -594,35 +581,25 @@ Fidelity limited by: Rabi freq. stability, heating rate, mode crowding</div>
                 </p>
               </div>
               <div class="plat-card">
-                <h4>Three Bottlenecks — from this thesis</h4>
+                <h4>Current Engineering Challenges</h4>
                 <p>
-                  <strong style="color:var(--text-secondary)">① Imaging fidelity:</strong> Must scatter photons for readout while atom survives.
-                  Prior work on ⁶Li: 90–97% per-image survival. Chapter 3 achieves 99.950(2)% survival over 2000 consecutive images via Λ-enhanced gray molasses.<br><br>
-                  <strong style="color:var(--text-secondary)">② Qubit temperature:</strong> Rydberg gate fidelity ∝ 1 − α⟨n⟩. At ω_trap ~ 2π×100 kHz,
-                  going from 20 µK → 5 µK cuts motional error by 4×. Chapter 4 demonstrates ⟨n⟩ ≈ 0.01 for Cs via narrow-line
-                  sideband cooling on the 685 nm quadrupole transition.<br><br>
-                  <strong style="color:var(--text-secondary)">③ Precision benchmarking:</strong> τ(5D₅/₂) for Cs measured to 1% accuracy (Chapter 5),
-                  pinning the saturation intensity, scattering rate, and magic-trap condition to the level needed for systematic gate optimisation.
+                  <strong style="color:var(--text-secondary)">① Gate fidelity:</strong> Native CZ/CCZ gate fidelities of 97–99.5% are achieved (Evered et al. 2023), but reaching 99.9%+ consistently across large arrays remains the primary target for fault tolerance.<br><br>
+                  <strong style="color:var(--text-secondary)">② Mid-circuit measurement:</strong> Measuring a subset of atoms without disturbing the rest is essential for quantum error correction. Demonstrated at small scale (Bluvstein et al. 2022); extending to 100+ qubit arrays is an active area.<br><br>
+                  <strong style="color:var(--text-secondary)">③ Scaling and connectivity:</strong> Moving atoms between zones (Atom Computing, QuEra) and maintaining coherence during transport is needed for >1000-qubit fault-tolerant operation.
                 </p>
               </div>
-              <div class="formula-box">
-<span style="color:#6ee7b7"># Rydberg blockade condition</span>
-V_dd(r) = C₆/r⁶   [van der Waals interaction, C₆ ∝ n¹¹]
+              <div class="formula-box" style="font-size:.82rem; line-height:1.8;">
+<span style="color:#6ee7b7"># Rydberg blockade physics</span>
+V_blockade(r) = C₆ / r⁶   [van der Waals, n &gt;&gt; 1]
+C₆ ∝ n¹¹   [scales steeply with principal quantum number]
+
 Blockade radius: r_b = (C₆/Ω_Ryd)^(1/6)
 Typical r_b ~ 5–15 µm for n = 60–100
 
-<span style="color:#6ee7b7"># Gate fidelity vs temperature (Phatak 2025, §8.5.2)</span>
+<span style="color:#6ee7b7"># Gate fidelity vs motional state</span>
 F ≈ 1 − α·⟨n⟩   [motional error per Rydberg π-pulse]
 ⟨n⟩ = k_B T / (ℏ ω_trap)
-
-<span style="color:#6ee7b7"># Thesis result (Cs, Chapter 4):</span>
-T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
-              <div class="thesis-quote">
-                "Neutral-atom optical tweezer arrays have evolved from a laboratory curiosity to a commercial quantum computing
-                platform in less than a decade. The platform's appeal rests on several features that are structurally difficult
-                to replicate with other technologies: the atoms are perfectly identical, ground-state hyperfine coherence times
-                exceed 1 second, and the array geometry is reconfigurable in real time." — Phatak (2025), §8.5
-              </div>
+State-of-art: ⟨n⟩ &lt; 0.1 via resolved-sideband cooling</div>
             </div>
             <div>
               <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
@@ -648,9 +625,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
                   <li><a href="https://www.nature.com/articles/s41567-021-01357-2" target="_blank" rel="noopener">Tweezer arrays review (Kaufman &amp; Ni, <em>Nat. Phys.</em> 2021)</a></li>
                   <li><a href="https://www.nature.com/articles/s41586-023-06481-y" target="_blank" rel="noopener">Rydberg blockade gate 99.5% fidelity (Evered et al., Harvard <em>Nature</em> 2023)</a></li>
                   <li><a href="https://www.nature.com/articles/s41586-021-03582-4" target="_blank" rel="noopener">QuEra 256-qubit analog (Ebadi et al., <em>Nature</em> 2021)</a></li>
-                  <li><a href="https://link.aps.org/doi/10.1103/PhysRevLett.131.083001" target="_blank" rel="noopener">⁶Li imaging 2000× (Blodgett, Phatak et al., <em>PRL</em> 2023)</a></li>
-                  <li><a href="https://arxiv.org/abs/2505.10540" target="_blank" rel="noopener">Cs quadrupole cooling (Blodgett, Phatak et al., <em>PRA</em> 2025)</a></li>
-                  <li><a href="https://link.aps.org/doi/10.1103/PhysRevA.110.043116" target="_blank" rel="noopener">Generalized cooling theory (Phatak et al., <em>PRA</em> 2024)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-023-06927-3" target="_blank" rel="noopener">48 logical qubits, error-corrected operations (Bluvstein et al., Harvard <em>Nature</em> 2024)</a></li>
                 </ul>
               </div>
             </div>
@@ -917,7 +892,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
         <!-- Neutral Atoms -->
         <div class="tl-col" style="border-color:#7c3aed;">
           <div class="tl-col-header" style="color:#c4b5fd; border-color:#7c3aed;">
-            🟣 Neutral Atoms ⭐
+            🟣 Neutral Atoms
           </div>
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot solid"></div>
@@ -932,12 +907,12 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot solid"></div>
             <span class="tl-year">2023</span>
-            <span class="tl-label">Li 2000× imaging (Phatak et al.)</span>
+            <span class="tl-label">99.5% Rydberg gate (Evered et al., Harvard)</span>
           </div>
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot solid"></div>
-            <span class="tl-year">2025</span>
-            <span class="tl-label">Cs ground-state cooling ⟨n⟩≈0.01 (Phatak et al.)</span>
+            <span class="tl-year">2024</span>
+            <span class="tl-label">48 logical qubits demonstrated (Bluvstein et al.)</span>
           </div>
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot open"></div>
@@ -953,7 +928,6 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
       </div>
       <p style="font-size:.8rem; color:var(--text-muted); margin-top:.75rem;">
         Open circles = projected milestones. Projected dates are speculative estimates based on current roadmaps (2025).
-        ⭐ = platform studied in this thesis.
       </p>
     </section>
 
@@ -961,8 +935,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
     <section class="section-block anim-in delay-4">
       <h2 class="section-title">Platform Snapshot Table (≈ 2024)</h2>
       <p class="section-sub">
-        Reproduced and updated from Table 8.1 in Phatak (2025). Gate times and fidelities are for two-qubit operations
-        unless noted. T₂ is the dephasing time; ops/T₂ is two-qubit gates per coherence time.
+        Gate times and fidelities are for two-qubit operations unless noted. T₂ is the dephasing time; ops/T₂ is two-qubit gates per coherence time. Values approximate 2024–25.
       </p>
       <div class="qt-wrap">
         <table class="qt">
@@ -997,7 +970,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
               <td>Mode crowding &amp; gate speed</td>
             </tr>
             <tr class="highlight">
-              <td>⭐ Neutral Atoms</td>
+              <td>Neutral Atoms</td>
               <td>50–1180</td>
               <td>0.2–5 µs</td>
               <td>97–99.5%</td>
@@ -1035,9 +1008,6 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
           </tbody>
         </table>
       </div>
-      <p style="font-size:.82rem; color:var(--text-muted); margin-top:.5rem;">
-        ⭐ = Neutral atoms: the platform studied in this thesis (Phatak 2025, Purdue Hood Lab).
-      </p>
     </section>
 
     <!-- ── 8. Neutral Atom Roadmap ─────────────────────────────── -->
@@ -1048,7 +1018,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
       <div class="roadmap-item" style="background:#064e3b; border-left:4px solid #059669;">
         <div style="flex:1;">
           <div class="ri-title" style="color:#6ee7b7;">① Gate Fidelity → 99.9%</div>
-          <p class="ri-desc">Optimal-control pulse shaping + ground-state-cooled atoms (⟨n⟩ &lt; 0.1). Chapters 3 &amp; 4 address this directly for Li and Cs.</p>
+          <p class="ri-desc">Optimal-control pulse shaping + ground-state-cooled atoms (⟨n⟩ &lt; 0.1). State of the art: 99.5% native CZ gates (Evered et al. 2023); targeting 99.9%+ for fault tolerance.</p>
         </div>
         <span class="ri-badge" style="background:#05966922; color:#6ee7b7; border:1px solid #059669;">Active</span>
       </div>
@@ -1096,9 +1066,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
             <li><a href="https://www.nature.com/articles/s41567-021-01357-2" target="_blank" rel="noopener">Kaufman &amp; Ni, Nat. Phys. 2021</a></li>
             <li><a href="https://www.nature.com/articles/s41586-023-06481-y" target="_blank" rel="noopener">Evered et al. (Harvard), Nature 2023 — 99.5% Rydberg gate</a></li>
             <li><a href="https://www.nature.com/articles/s41586-021-03582-4" target="_blank" rel="noopener">Ebadi et al. (QuEra), Nature 2021</a></li>
-            <li><a href="https://link.aps.org/doi/10.1103/PhysRevLett.131.083001" target="_blank" rel="noopener">Blodgett, Phatak et al., PRL 2023 — ⁶Li 2000× imaging</a></li>
-            <li><a href="https://arxiv.org/abs/2505.10540" target="_blank" rel="noopener">Blodgett, Phatak et al., PRA 2025 — Cs cooling</a></li>
-            <li><a href="https://link.aps.org/doi/10.1103/PhysRevA.110.043116" target="_blank" rel="noopener">Phatak et al., PRA 2024 — Cooling theory</a></li>
+            <li><a href="https://www.nature.com/articles/s41586-023-06927-3" target="_blank" rel="noopener">Bluvstein et al. (Harvard/QuEra), Nature 2024 — 48 logical qubits</a></li>
           </ul>
         </div>
         <div class="ref-col">
@@ -1127,7 +1095,7 @@ T ≈ 5 µK,  ⟨n⟩ ≈ 0.01,  ~99% ground-state population</div>
   </main>
 
   <footer style="text-align:center; padding:2rem; color:var(--text-muted); font-size:.82rem; border-top:1px solid #1a2236; margin-top:1rem;">
-    AMO Career · Based on Phatak (2025) PhD Thesis, Purdue University Hood Lab ·
+    AMO Career · Quantum Computing Landscape ·
     Platform data ≈ 2024–25 values · Open markers in timeline = projected
   </footer>
 

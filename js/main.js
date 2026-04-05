@@ -16,7 +16,6 @@ const NAV = {
     { key: 'cooling-simulator', label: 'Cooling Simulator',  icon: '❄️',  color: '#60a5fa', href: 'pages/cooling-simulator.html' },
     { key: 'release-recapture', label: 'Release-Recapture',  icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html' },
     { key: 'lab-calculators',   label: 'Lab Calculators',    icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'   },
-    { key: 'clebsch-gordan',    label: 'Clebsch-Gordan',     icon: '🔢',  color: '#f472b6', href: 'pages/clebsch-gordan.html'    },
     { key: 'laser-locking',     label: 'Laser Locking',      icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'     },
     { key: 'zernike',           label: 'Zernike Polynomials',icon: '🌊',  color: '#2dd4bf', href: 'pages/zernike.html'           },
     { key: 'polarimetry',       label: 'Polarimetry Explorer',icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'        },
@@ -98,7 +97,7 @@ function renderNav({ active = '', root = '' } = {}) {
               </svg>
             </button>
             <div class="nav-drop" role="menu">
-              <div class="nav-drop-section">10 Primary Tools</div>
+              <div class="nav-drop-section">9 Primary Tools</div>
               ${toolsHTML}
             </div>
           </div>

@@ -531,155 +531,28 @@
               </div>
             </div><!-- /tech-section polarimetry -->
 
-            <!-- 4. Laser Freq Stabilization (nested tabs) -->
+            <!-- 4. Laser Freq Stabilisation → cross-reference -->
             <div class="tech-section">
               <div class="tech-section-title">4 · Laser Frequency Stabilisation</div>
-              <div class="concept-box">
-                Free-running diode lasers drift by ~MHz per minute due to temperature and current fluctuations.
-                Atomic transitions have natural linewidths of 5–6 MHz (D1, D2 lines) or even ~3.5 Hz
-                (Cs 5D₅/₂ quadrupole). Three complementary strategies cover all stabilisation needs in the lab, forming a hierarchy.
+              <div class="concept-box" style="display:flex; align-items:flex-start; gap:var(--sp-5);">
+                <span style="font-size:2rem; flex-shrink:0;">🔐</span>
+                <div>
+                  <p style="margin:0 0 var(--sp-3) 0;">
+                    Laser frequency stabilisation (SAS, beat-note, and PDH cavity locking) is covered in full on the
+                    dedicated <strong>Laser Locking</strong> page — including interactive error-signal simulators,
+                    a lock-hierarchy diagram, and cavity design calculators.
+                  </p>
+                  <a href="laser-locking.html" class="btn-link" style="
+                    display:inline-flex; align-items:center; gap:.4rem;
+                    background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3);
+                    color:#f87171; border-radius:6px; padding:.45rem 1rem;
+                    font-size:.88rem; font-weight:600; text-decoration:none;
+                    transition:background .2s;">
+                    Laser Locking page →
+                  </a>
+                </div>
               </div>
-
-              <div data-tabs-wrap>
-                <div class="tab-bar" data-group="lock" style="--page-color: var(--c-lab)">
-                  <button class="tab-btn active" data-tab="sas">🔬 SAS Locking</button>
-                  <button class="tab-btn" data-tab="beat">🎵 Beat-Note Locking</button>
-                  <button class="tab-btn" data-tab="pdh">🏗️ PDH Cavity Locking</button>
-                  <button class="tab-btn" data-tab="hierarchy">🗺️ Lock Hierarchy</button>
-                </div>
-
-                <!-- SAS -->
-                <div class="tab-panel active" data-tab="sas" data-group="lock" style="padding-top:var(--sp-5)">
-                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Saturated-Absorption Spectroscopy (SAS) Locking</h3>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
-                    Two counter-propagating beams through a <strong>heated vapour cell</strong> create a Doppler-free
-                    Lamb dip: only atoms with near-zero velocity see both beams resonantly, so a narrow (~linewidth)
-                    feature appears on the Doppler-broadened background.
-                  </p>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
-                    <strong>Error signal generation:</strong> FM dithering (current modulation or EOM sideband) +
-                    phase-sensitive detection (lock-in) converts the Lamb dip into an error signal that crosses zero at line centre.
-                  </p>
-                  <div class="tip-box">
-                    <strong>Used for:</strong> Cs 852 nm D2 laser · Li 671 nm D1 laser (direct atomic references).<br>
-                    <strong>Not suitable for:</strong> Cs 685 nm quadrupole line (I_sat ≈ 2.3 W/cm², impractical for SAS) → use PDH cavity lock instead.
-                  </div>
-                  <div class="two-col-half" style="margin-top:var(--sp-4)">
-                    <div class="vendor-card">📦 <strong>Vapour cell suppliers</strong><br>
-                      <a href="https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=6816" target="_blank" rel="noopener">Thorlabs Cs/Rb cells</a> ·
-                      <a href="https://www.alvarezresearch.com/" target="_blank" rel="noopener">Alvarez Research</a>
-                    </div>
-                    <div class="vendor-card">📦 <strong>Lock electronics</strong><br>
-                      <a href="https://vescent.com/products/electronics/d2-125-laser-servo/" target="_blank" rel="noopener">Vescent D2-125</a> laser servo ·
-                      <a href="https://www.toptica.com/products/tunable-diode-lasers/stabilization-accessories/" target="_blank" rel="noopener">Toptica DLC Pro</a>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Beat-note -->
-                <div class="tab-panel" data-tab="beat" data-group="lock" style="padding-top:var(--sp-5)">
-                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Beat-Note (Offset) Locking</h3>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
-                    When two lasers need a fixed frequency difference, overlap them on a <strong>fast photodiode</strong>
-                    and compare the heterodyne beat-note to an RF reference.
-                  </p>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
-                    <strong>Example:</strong> Li D2 laser offset phase-locked to Li D1 laser (Vescent electronics),
-                    inheriting the D1 absolute reference while maintaining ~10–100 Hz relative linewidth for coherent Raman processes.
-                  </p>
-                  <div style="margin-bottom:var(--sp-4)">
-                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-2)">Advantages</div>
-                    <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:1.9;margin-left:var(--sp-5)">
-                      <li>Tunable offset (change RF reference frequency)</li>
-                      <li>Fast relative linewidth (~Hz level)</li>
-                      <li>No vacuum infrastructure required</li>
-                      <li>One well-stabilised master laser as absolute reference</li>
-                    </ul>
-                  </div>
-                  <div class="formula-box" style="text-align:left;line-height:2">
-                    Li D1 (SAS locked, absolute) ──── beat-lock ──→ Li D2<br>
-                    Cs D2 (SAS locked, absolute) ──── beat-lock ──→ Cs repumper
-                  </div>
-                  <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>Beat-note lock electronics</strong><br>
-                    <a href="https://vescent.com/products/electronics/d2-135-offset-phase-lock-servo/" target="_blank" rel="noopener">Vescent D2-135</a> offset PLL ·
-                    <a href="https://www.analog.com/en/products/hmc984.html" target="_blank" rel="noopener">Analog Devices HMC984</a> PFD ·
-                    <a href="https://www.minicircuits.com/WebStore/RF-Mixers.html" target="_blank" rel="noopener">Mini-Circuits</a> RF mixers
-                  </div>
-                </div>
-
-                <!-- PDH -->
-                <div class="tab-panel" data-tab="pdh" data-group="lock" style="padding-top:var(--sp-5)">
-                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Pound-Drever-Hall (PDH) Cavity Locking</h3>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
-                    For wavelengths without accessible atomic references, or when <strong>sub-kHz linewidth</strong>
-                    is required, lock to a high-finesse Fabry-Pérot cavity.
-                  </p>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-4)">
-                    <strong>Principle:</strong> Phase-modulate the input beam (EOM at Ω) → detect reflected light on
-                    fast photodiode → demodulate at Ω → antisymmetric error signal that crosses zero exactly at cavity resonance.
-                  </p>
-                  <div style="margin-bottom:var(--sp-4)">
-                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-3)">Key parameters — 685 nm lock (Phatak 2025)</div>
-                    <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
-                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">77.5 mm</div><div class="calc-metric-label">Cavity length L</div></div>
-                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">1.93 GHz</div><div class="calc-metric-label">ν_FSR</div></div>
-                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">~15 000</div><div class="calc-metric-label">Finesse F</div></div>
-                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">~100 kHz</div><div class="calc-metric-label">Cavity linewidth</div></div>
-                      <div class="calc-metric"><div class="calc-metric-val" style="font-size:0.95rem">~1 kHz</div><div class="calc-metric-label">Laser linewidth</div></div>
-                    </div>
-                  </div>
-                  <div class="formula-box" style="text-align:left;line-height:1.8;font-size:0.85rem">
-                    Diode → prism pair (astigmatism) → isolator (30–40 dB) → EOM (27 MHz)<br>
-                    → mode-matching telescope → ULE cavity (vacuum, mK temp. stabilisation)
-                  </div>
-                  <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.75;margin:var(--sp-4) 0">
-                    <strong>Two-loop feedback:</strong> Fast path to laser current (MHz BW) + slow path to PZT (kHz BW).
-                    Cavity drift ≈ 2.5 kHz per 0.01°C temperature excursion.
-                  </p>
-                  <div class="warn-box">
-                    <strong>Critical:</strong> Fractional length stability for 1 kHz laser linewidth is δL/L ~ 10⁻¹², corresponding to picometer-scale cavity length control. Thermal isolation at the mK level is non-negotiable.
-                  </div>
-                  <div class="two-col-half" style="margin-top:var(--sp-4)">
-                    <div class="vendor-card">📦 <strong>ULE cavities</strong><br>
-                      <a href="https://www.advanced-thin-films.com/products/optical-cavities/" target="_blank" rel="noopener">Advanced Thin Films</a> ·
-                      <a href="https://www.stable-laser.com/" target="_blank" rel="noopener">Stable Laser Systems</a> ·
-                      <a href="https://www.refoc.us/" target="_blank" rel="noopener">REFoc.us</a>
-                    </div>
-                    <div class="vendor-card">📦 <strong>Reference reading</strong><br>
-                      <a href="https://doi.org/10.1119/1.1286663" target="_blank" rel="noopener">Black (2001)</a> — PDH tutorial (Am. J. Phys.) ·
-                      <a href="https://doi.org/10.1103/RevModPhys.87.637" target="_blank" rel="noopener">Ludlow et al. (2015)</a> — Optical atomic clocks
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Hierarchy -->
-                <div class="tab-panel" data-tab="hierarchy" data-group="lock" style="padding-top:var(--sp-5)">
-                  <h3 style="color:var(--text-primary);margin-bottom:var(--sp-4)">Lock hierarchy — how all lasers are referenced</h3>
-                  <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.8;margin-bottom:var(--sp-5)">
-                    The three methods form a complementary hierarchy:
-                  </p>
-                  <table class="aom-table" style="margin-bottom:var(--sp-6)">
-                    <thead><tr><th>Method</th><th>Absolute ref?</th><th>Linewidth</th><th>Infrastructure</th></tr></thead>
-                    <tbody>
-                      <tr><td>SAS</td><td>✅ Yes (atomic line)</td><td>~MHz</td><td>Vapour cell + lock-in</td></tr>
-                      <tr><td>Beat-note</td><td>Via master laser</td><td>~Hz (relative)</td><td>Fast PD + RF electronics</td></tr>
-                      <tr><td>PDH cavity</td><td>Via cavity (ULE)</td><td>~kHz</td><td>Vacuum + thermal control</td></tr>
-                    </tbody>
-                  </table>
-                  <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:var(--sp-3)">Hood Lab hierarchy (Li-Cs experiment)</div>
-                  <div class="hierarchy-block">
-                    <span class="hier-abs">Li D1 (671 nm)</span> ─── <span class="hier-ref">SAS locked</span> ──────────── absolute reference<br>
-                    &nbsp;&nbsp;&nbsp;└── <span class="hier-derived">Li D2 (671 nm)</span> ─────── <span class="hier-ref">beat lock</span> (Vescent D2-135)<br>
-                    <br>
-                    <span class="hier-abs">Cs D2 (852 nm)</span> ─── <span class="hier-ref">SAS locked</span> ──────────── absolute reference<br>
-                    &nbsp;&nbsp;&nbsp;└── <span class="hier-derived">Cs repumper</span> ──────── <span class="hier-ref">beat lock</span><br>
-                    <br>
-                    <span class="hier-derived">Cs 685 nm</span> ──────── <span class="hier-ref">PDH (ULE cavity)</span> ──── &lt;1 kHz linewidth<br>
-                    <span class="hier-derived">1064 nm tweezer</span> ─── free-running (stable Nd:YAG/fiber laser)
-                  </div>
-                </div>
-              </div><!-- /lock sub-tabs -->
-            </div><!-- /tech-section laser stabilization -->
+            </div>
 
           </div><!-- /tab beam -->
 
@@ -1116,7 +989,7 @@ SteadyStateTweezer(
                     <div class="laser-detail-label">Linewidth</div>
                     <p class="laser-detail-val"><code>Γ/2π = 5.87 MHz</code> (D1 and D2 nearly identical)</p>
                     <div class="laser-detail-label">Key challenge</div>
-                    <p class="laser-detail-val">D1 and D2 lines separated by only ~10 GHz — both needed simultaneously. D2 laser offset-locked to D1. Lightest alkali: recoil temperature 3.54 μK, largest recoil in the alkalis.</p>
+                    <p class="laser-detail-val">D1 and D2 lines separated by only ~10 GHz — both needed simultaneously. D2 laser offset-locked to D1. Lightest alkali: recoil temperature 7.1 μK, largest recoil in the alkalis.</p>
                     <div class="laser-detail-label">Locking strategy</div>
                     <p class="laser-detail-val">D1: SAS locked to vapour cell. D2: beat-note locked to D1 (Vescent D2-135).</p>
                   </div>
