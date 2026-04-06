@@ -188,6 +188,38 @@
       padding: .6rem 1rem; margin: .5rem 0; color: #93c5fd; font-size: .84rem; }
     .good-banner { background: #052e16; border: 1px solid #15803d; border-radius: 8px;
       padding: .6rem 1rem; margin: .5rem 0; color: #86efac; font-size: .84rem; }
+
+    /* ─── Further reading links ──────────────────────── */
+    .read-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+    .read-link {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: #0a1628; border: 1px solid #1e3a5f; border-radius: 6px;
+      padding: .28rem .65rem; font-size: .77rem; color: #93c5fd;
+      text-decoration: none; transition: border-color .15s, color .15s;
+    }
+    .read-link:hover { border-color: #60a5fa; color: #e0f2fe; }
+    .read-link .rl-icon { font-size: .9rem; }
+
+    /* ─── Resources section ──────────────────────────── */
+    .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    @media(max-width:700px){ .res-grid { grid-template-columns: 1fr; } }
+    .res-card { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem 1.1rem; }
+    .res-card h4 { font-size: .88rem; font-weight: 700; color: var(--c-qc); margin: 0 0 .65rem 0; }
+    .res-item { display: flex; flex-direction: column; margin-bottom: .55rem; }
+    .res-item a { font-size: .82rem; color: #93c5fd; text-decoration: none; font-weight: 600; transition: color .15s; }
+    .res-item a:hover { color: #e0f2fe; }
+    .res-item span { font-size: .75rem; color: var(--text-muted); margin-top: .1rem; }
+
+    /* ─── QEC styles ─────────────────────────────────── */
+    .qec-threshold { background: #060e1c; border: 1px solid #1e293b; border-radius: 12px; padding: 1rem; }
+
+    /* ─── Hyperfine / QEC tables ─────────────────────── */
+    table.hf-table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+    table.hf-table th { background: #0a1628; color: var(--text-muted); padding: .4rem .6rem; border: 1px solid #1e293b; font-weight: 600; text-align: left; }
+    table.hf-table td { padding: .38rem .6rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
+    table.hf-table tr:hover td { background: #0a1628; }
+    table.hf-table .hi { color: var(--c-qc); font-weight: 700; }
+    table.hf-table .mono { font-family: var(--mono); font-size: .78rem; }
   </style>
 </head>
 <body>
@@ -205,10 +237,10 @@
       Wigner functions. No prior quantum background required.
     </p>
     <div class="hero-stats anim-in delay-3">
-      <div class="stat"><span class="stat-val">11</span><span class="stat-lbl">topics</span></div>
+      <div class="stat"><span class="stat-val">13</span><span class="stat-lbl">topics</span></div>
       <div class="stat"><span class="stat-val">Bloch</span><span class="stat-lbl">sphere sim</span></div>
-      <div class="stat"><span class="stat-val">FFT</span><span class="stat-lbl">Wigner function</span></div>
       <div class="stat"><span class="stat-val">Rydberg</span><span class="stat-lbl">blockade calc</span></div>
+      <div class="stat"><span class="stat-val">QEC</span><span class="stat-lbl">threshold chart</span></div>
     </div>
   </div>
 </section>
@@ -226,6 +258,9 @@
   <a href="#decoherence">📉 Decoherence</a>
   <a href="#cooling">🌡️ Cooling</a>
   <a href="#wigner">🌊 Wigner</a>
+  <a href="#hyperfine">🔑 Hyperfine</a>
+  <a href="#qec">🛡️ QEC</a>
+  <a href="#resources">📚 Resources</a>
 </nav>
 
 <main class="container">
@@ -282,6 +317,11 @@ Bloch vector:
   ⟨σz⟩ = cos θ
 
 P(|0⟩) = cos²(θ/2)   P(|1⟩) = sin²(θ/2)</div>
+      <div class="read-links">
+        <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country — visual intro</a>
+        <a class="read-link" href="https://learning.quantum.ibm.com/tutorial/explore-the-bloch-sphere" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM: Bloch sphere tutorial</a>
+        <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk — interactive circuit/state</a>
+      </div>
     </div>
 
     <div class="bloch-wrap">
@@ -349,6 +389,11 @@ P(|0⟩) = cos²(θ/2)   P(|1⟩) = sin²(θ/2)</div>
       <canvas id="gatesBlochCanvas" width="260" height="280"></canvas>
       <div class="bloch-state" id="gatesBlochState"></div>
     </div>
+  </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk — drag-and-drop gate sandbox</a>
+    <a class="read-link" href="https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: single-qubit gates</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0002039" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Knill et al.: universal gate sets</a>
   </div>
 </section><hr class="section-divider">
 
@@ -422,6 +467,11 @@ Destructive interference  at φ = π   (all into |1⟩)</div>
       <canvas id="mziChart" height="240"></canvas>
     </div>
   </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: superposition &amp; interference</a>
+    <a class="read-link" href="https://en.wikipedia.org/wiki/Mach%E2%80%93Zehnder_interferometer" target="_blank" rel="noopener"><span class="rl-icon">🌐</span>Mach-Zehnder interferometer (Wikipedia)</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0101012" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Nielsen &amp; Chuang: Ch.1 foundations (arXiv)</a>
+  </div>
 </section><hr class="section-divider">
 
 <!-- ══════════ 4. MEASUREMENT ══════════ -->
@@ -468,6 +518,10 @@ Destructive interference  at φ = π   (all into |1⟩)</div>
       <h5>Measurement histogram</h5>
       <canvas id="measChart" height="240"></canvas>
     </div>
+  </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: measurement &amp; Born rule</a>
+    <a class="read-link" href="https://learning.quantum.ibm.com/course/basics-of-quantum-information/single-systems#measurement" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: measurement basics</a>
   </div>
 </section><hr class="section-divider">
 
@@ -519,6 +573,12 @@ Destructive interference  at φ = π   (all into |1⟩)</div>
   </div>
 
   <div id="bellInfo" class="two-col"></div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0504166" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al.: entanglement review</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9508009" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bell / CHSH inequality — original test</a>
+    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: entanglement</a>
+    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk — build Bell states visually</a>
+  </div>
 </section><hr class="section-divider">
 
 <!-- ══════════ 6. RYDBERG ══════════ -->
@@ -575,6 +635,12 @@ Gate fidelity:  ℱ ≈ 1 − (Γ/Ω_R) − α⟨n_motion⟩</div>
       <canvas id="rydChart" height="230"></canvas>
     </div>
   </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9907071" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Jaksch et al. 1999 — original Rydberg gate proposal</a>
+    <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023 — 99.5% CZ gate (Harvard)</a>
+    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
+    <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024 — 48 logical qubits</a>
+  </div>
 </section><hr class="section-divider">
 
 <!-- ══════════ 7. TWO-QUBIT GATES ══════════ -->
@@ -613,6 +679,11 @@ Gate fidelity:  ℱ ≈ 1 − (Γ/Ω_R) − α⟨n_motion⟩</div>
       <div style="margin-bottom:.6rem; font-size:.83rem; font-weight:600; color:var(--text-muted);">Truth table</div>
       <table class="truth-table" id="tqTruth"></table>
     </div>
+  </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk — apply CNOT &amp; CZ visually</a>
+    <a class="read-link" href="https://learning.quantum.ibm.com/course/basics-of-quantum-information/multiple-systems" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0312225" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang et al.: perfect entanglers in SU(4)</a>
   </div>
 </section><hr class="section-divider">
 
@@ -656,6 +727,11 @@ Resonance (Δ=0): P₁ = sin²(Ωt/2)   [full population transfer]
     <canvas id="rabiChart" height="230"></canvas>
   </div>
   <div style="font-family:var(--mono); font-size:.8rem; color:var(--text-muted); margin-top:.4rem;" id="rabiInfo"></div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D-line data (Ω reference)</a>
+    <a class="read-link" href="https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: driven qubit dynamics</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9905052" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Allen &amp; Eberly: two-level systems (optical Bloch)</a>
+  </div>
 </section><hr class="section-divider">
 
 <!-- ══════════ 9. DECOHERENCE ══════════ -->
@@ -703,6 +779,11 @@ Typical values (Rydberg tweezers):
     <canvas id="decohChart" height="230"></canvas>
   </div>
   <div class="info-banner" id="decohInfo" style="margin-top:.6rem;"></div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0301052" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zurek 2003: decoherence review</a>
+    <a class="read-link" href="https://qutip.org/docs/latest/guide/dynamics/dynamics-lindblad.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: Lindblad master equation</a>
+    <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024 — coherence in 48 logical qubits</a>
+  </div>
 </section><hr class="section-divider">
 
 <!-- ══════════ 10. LASER COOLING ══════════ -->
@@ -778,6 +859,11 @@ Typical values (Rydberg tweezers):
       </div>
     </div>
   </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: alkali atom data sheets (all species)</a>
+    <a class="read-link" href="https://arxiv.org/abs/1706.04073" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Kaufman &amp; Ni 2021: atomic array review</a>
+    <a class="read-link" href="https://qutip.org/" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP — simulate cooling dynamics in Python</a>
+  </div>
 </section><hr class="section-divider">
 
 <!-- ══════════ 11. WIGNER ══════════ -->
@@ -847,8 +933,392 @@ Negativity ↔ non-classical!  Wigner negativity → quantum advantage</div>
     </div>
   </div>
 
-  <!-- Add extra bottom padding -->
-  <div style="height:2rem;"></div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0406012" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Leonhardt: phase-space methods review</a>
+    <a class="read-link" href="https://qutip.org/docs/latest/guide/states/wigner.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: Wigner function computation</a>
+    <a class="read-link" href="https://arxiv.org/abs/2103.05530" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Flühmann et al.: Wigner negativity in trapped ions</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 12. HYPERFINE QUBITS ══════════ -->
+<section class="topic-section" id="hyperfine">
+  <div class="topic-header">
+    <span class="t-icon">🔑</span>
+    <h2>Hyperfine Qubits &amp; Atomic Clock States</h2>
+    <span class="t-tag">AMO qubit encoding</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Why atoms are excellent qubits</h4>
+    <p>
+      Neutral alkali atoms encode qubits in their <strong>hyperfine ground states</strong> —
+      two long-lived magnetic sub-levels of the electronic ground state split by the
+      interaction between nuclear spin <em>I</em> and electron spin <em>J</em>.
+      The energy splitting is ΔE = A<sub>hf</sub> · <strong>I</strong>·<strong>J</strong>,
+      where A<sub>hf</sub> is the magnetic dipole hyperfine constant.
+      <strong>Clock states</strong> (|F, m<sub>F</sub> = 0⟩) are first-order insensitive to
+      magnetic field fluctuations, enabling T₂ &gt; 10 seconds — orders of magnitude longer
+      than superconducting qubits (~100 μs).
+    </p>
+  </div>
+
+  <div class="formula-box">Hyperfine Hamiltonian:
+  H_hf = A_hf (I · J) + B_hf [3(I·J)² + ...]   (electric quadrupole term, for I ≥ 1)
+
+Qubit encoding (e.g. ¹³³Cs):
+  |0⟩ = |F=3, mF=0⟩     |1⟩ = |F=4, mF=0⟩
+  Splitting: ΔE/h = 9,192,631,770 Hz  (defines the SI second!)
+
+2nd-order Zeeman shift (clock states — almost B-insensitive):
+  Δν(B) ≈ +427 Hz/G²  (Cs)     Δν(B) ≈ +575 Hz/G²  (Rb-87)
+
+Single-qubit gate: resonant MW or two-photon Raman pulse
+  π-pulse time (Raman, Ω/2π ~ 100 kHz):  t_π ~ 5 μs</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <div class="theory-box">
+        <h4>Qubit encoding strategies</h4>
+        <p>
+          <strong>Clock qubit</strong> (m<sub>F</sub>=0 → m<sub>F</sub>'=0): best coherence,
+          first-order B-insensitive. Used in most neutral-atom QC experiments.<br><br>
+          <strong>Stretched-state qubit</strong> (m<sub>F</sub>=F → m<sub>F</sub>'=F'): strongest
+          coupling to MW field, but first-order B-sensitive — requires ≲1 mG stability.<br><br>
+          <strong>Optical qubit</strong> (ground ↔ metastable excited state, e.g. Sr, Yb):
+          very fast gates via optical fields; coherence limited by excited-state lifetime and
+          photon scattering.<br><br>
+          For Rydberg gate operation, either qubit state is coupled to a Rydberg level |r⟩
+          via a two-photon (IR + UV) or single-photon (UV ~318 nm for Cs) transition.
+          The blockade between two atoms in |rr⟩ enforces a conditional phase on |11⟩.
+        </p>
+      </div>
+
+      <!-- Energy level SVG -->
+      <div class="chart-card" style="margin-top:.75rem;">
+        <h5>¹³³Cs hyperfine ground structure (schematic)</h5>
+        <svg width="100%" viewBox="0 0 290 200" style="display:block;">
+          <!-- F=4 level -->
+          <line x1="30" y1="58" x2="250" y2="58" stroke="#a78bfa" stroke-width="2"/>
+          <text x="140" y="50" fill="#a78bfa" font-size="11" text-anchor="middle">F = 4  (9 sub-levels, m_F = −4…+4)</text>
+          <text x="256" y="62" fill="#a78bfa" font-size="9">|1⟩</text>
+          <!-- F=3 level -->
+          <line x1="30" y1="128" x2="225" y2="128" stroke="#60a5fa" stroke-width="2"/>
+          <text x="127" y="120" fill="#60a5fa" font-size="11" text-anchor="middle">F = 3  (7 sub-levels, m_F = −3…+3)</text>
+          <text x="231" y="132" fill="#60a5fa" font-size="9">|0⟩</text>
+          <!-- MW arrow -->
+          <defs><marker id="mwarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 Z" fill="#fbbf24"/></marker></defs>
+          <line x1="140" y1="60" x2="140" y2="126" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#mwarr)"/>
+          <text x="150" y="97" fill="#fbbf24" font-size="10">9.19 GHz</text>
+          <text x="150" y="110" fill="#fbbf24" font-size="9">(microwave / Raman)</text>
+          <!-- clock state dots -->
+          <circle cx="140" cy="58" r="4" fill="#a78bfa"/>
+          <text x="140" y="74" fill="#a78bfa" font-size="8" text-anchor="middle">m_F=0 clock</text>
+          <circle cx="140" cy="128" r="4" fill="#60a5fa"/>
+          <text x="140" y="145" fill="#60a5fa" font-size="8" text-anchor="middle">m_F=0 clock</text>
+          <!-- Rydberg arrow -->
+          <defs><marker id="rydarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 Z" fill="#f472b6"/></marker></defs>
+          <line x1="205" y1="56" x2="205" y2="18" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#rydarr)"/>
+          <text x="214" y="36" fill="#f472b6" font-size="9">|r⟩</text>
+          <text x="214" y="48" fill="#f472b6" font-size="9">UV / IR</text>
+        </svg>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:.55rem; text-transform:uppercase; letter-spacing:.05em;">Hyperfine qubit comparison</div>
+      <table class="hf-table">
+        <thead>
+          <tr>
+            <th>Atom</th>
+            <th>Hyperfine splitting</th>
+            <th>Clock states</th>
+            <th>T₂ (best)</th>
+            <th>Gate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>⁸⁷Rb</strong></td>
+            <td class="mono">6.835 GHz</td>
+            <td class="mono">|1,0⟩ → |2,0⟩</td>
+            <td>~1 min</td>
+            <td>Rydberg CZ</td>
+          </tr>
+          <tr>
+            <td><strong>¹³³Cs</strong></td>
+            <td class="mono hi">9.193 GHz (SI clock!)</td>
+            <td class="mono">|3,0⟩ → |4,0⟩</td>
+            <td>~10 s</td>
+            <td>Rydberg CZ</td>
+          </tr>
+          <tr>
+            <td><strong>⁶Li</strong></td>
+            <td class="mono">228.2 MHz</td>
+            <td class="mono">|1/2,+1/2⟩ → |1/2,−1/2⟩</td>
+            <td>~100 ms</td>
+            <td>Rydberg / tweezer</td>
+          </tr>
+          <tr>
+            <td><strong>¹⁷¹Yb</strong></td>
+            <td class="mono hi">12.643 GHz</td>
+            <td class="mono">|F=0⟩ → |F=1, m_F=0⟩</td>
+            <td>&gt;10 s</td>
+            <td>Rydberg CZ</td>
+          </tr>
+          <tr>
+            <td><strong>⁸⁸Sr (optical)</strong></td>
+            <td class="mono">429.2 THz (clock line)</td>
+            <td class="mono">¹S₀ → ³P₀</td>
+            <td>&gt;1 min</td>
+            <td>Rydberg / optical</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-banner" style="margin-top:.75rem;">
+        💡 <strong>¹⁷¹Yb</strong> is emerging as a leading neutral-atom qubit: nuclear spin
+        I = 1/2 gives a clean two-level system, and the F=0 → F=1, m<sub>F</sub>=0 transition
+        is insensitive to magnetic fields at all orders near B=0, enabling exceptionally long coherence.
+      </div>
+
+      <div class="good-banner" style="margin-top:.6rem;">
+        🏆 <strong>Record T₂</strong>: Neutral atom clock qubits in optical tweezers have
+        demonstrated T₂ &gt; 40 seconds using dynamical decoupling on ⁸⁷Rb (Evered et al. 2023).
+        For comparison, superconducting transmon qubits: T₂ ~ 100–500 μs.
+      </div>
+    </div>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://steck.us/alkalidata/cesiumd2numbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D₂ data (hyperfine constants)</a>
+    <a class="read-link" href="https://steck.us/alkalidata/rubidium87numbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Rb-87 data</a>
+    <a class="read-link" href="https://arxiv.org/abs/2210.05386" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ma et al. 2022: ¹⁷¹Yb qubit array (Princeton)</a>
+    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
+    <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023 — long T₂ + 99.5% gates</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 13. QUANTUM ERROR CORRECTION ══════════ -->
+<section class="topic-section" id="qec">
+  <div class="topic-header">
+    <span class="t-icon">🛡️</span>
+    <h2>Quantum Error Correction</h2>
+    <span class="t-tag">fault tolerance</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Why QEC is essential</h4>
+    <p>
+      Physical qubits have error rates ~10⁻³–10⁻² per gate. Running a useful algorithm
+      (e.g., Shor factoring a 2048-bit number) requires ~10⁸ logical operations — impossibly
+      many without error correction. QEC encodes one <strong>logical qubit</strong> in many
+      physical qubits so that errors can be <em>detected and corrected</em> without ever measuring
+      the logical state directly (which would collapse it). The key insight: measuring error
+      <em>syndromes</em> (parities) reveals which error occurred without revealing the encoded information.
+    </p>
+  </div>
+
+  <div class="formula-box">3-qubit bit-flip code (simplest):
+  |0_L⟩ = |000⟩     |1_L⟩ = |111⟩
+
+  Single-qubit X error → parity ancillas detect which qubit flipped:
+  Z₁Z₂ ⊗ I  and  I ⊗ Z₂Z₃  → syndrome → correct without measuring |0_L⟩ vs |1_L⟩
+
+Surface code (leading platform candidate for fault tolerance):
+  Distance-d code: encodes 1 logical qubit in d² physical qubits
+  d×d grid of data qubits; X- and Z-stabilizers measured by ancilla qubits each cycle
+
+  Logical error rate:   p_L ≈ A · (p / p_th)^⌈(d+1)/2⌉
+  Threshold:            p_th ≈ 1%   (very forgiving — surface code is "high-threshold")
+
+  Example:  d=7, p = 0.1% physical  →  p_L ≈ (0.001/0.01)⁴ ≈ 10⁻⁸  per logical cycle</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <div class="theory-box">
+        <h4>Key QEC concepts</h4>
+        <p>
+          <strong>Logical qubit</strong>: encoded in d² physical qubits; protected from errors
+          up to weight ⌊(d−1)/2⌋ — any combination of that many physical errors is correctable.<br><br>
+          <strong>Syndrome measurement</strong>: ancilla qubits measure Z<sub>i</sub>Z<sub>j</sub>
+          and X<sub>i</sub>X<sub>j</sub> stabilizers — parities only, never the logical state itself.<br><br>
+          <strong>Threshold theorem</strong>: if physical error rate p &lt; p<sub>th</sub>,
+          increasing code distance d <em>exponentially suppresses</em> logical errors —
+          making arbitrarily reliable computation possible from noisy components.<br><br>
+          <strong>Transversal gates</strong>: some logical gates (Pauli, CNOT, Hadamard for certain codes)
+          can be applied bitwise across physical qubits without spreading errors — critical for fault tolerance.
+        </p>
+      </div>
+
+      <div class="theory-box" style="margin-top:.75rem;">
+        <h4>2024–25 State of the Art</h4>
+        <p>
+          <strong>Google Willow (2024)</strong>: d=5 surface code on 105-qubit superconductor —
+          first demonstration of <em>exponential</em> error suppression below threshold.
+          Logical error rate 4.4×10⁻⁵ per round (d=5).<br><br>
+          <strong>Bluvstein et al. / Harvard (Nature 2024)</strong>: 48 logical qubits in neutral
+          atom tweezer array; transversal logical gates demonstrated with fault-tolerant circuits.<br><br>
+          <strong>Quantinuum H2 (2024)</strong>: 99.9% two-qubit fidelity in trapped ions;
+          100× error suppression on encoded logical qubit vs raw physical qubit.
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <div class="qec-threshold">
+        <div style="font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:.6rem; text-align:center;">
+          Surface code: logical vs physical error rate
+        </div>
+        <canvas id="qecChart" height="250"></canvas>
+        <div style="font-size:.74rem; color:var(--text-muted); margin-top:.5rem; text-align:center;">
+          Below threshold (p &lt; 1%), larger d → exponentially lower p<sub>L</sub>
+        </div>
+      </div>
+      <div class="info-banner" style="margin-top:.75rem;">
+        Current neutral-atom gates: ~99.5% fidelity (Evered 2023) → p ≈ 0.5%, well below the 1% threshold.
+        Target for fault-tolerant useful computation: p &lt; 0.1%.
+      </div>
+    </div>
+  </div>
+
+  <!-- Overhead table -->
+  <div style="margin-top:1.25rem;">
+    <div style="font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:.6rem; text-transform:uppercase; letter-spacing:.05em;">Physical qubit overhead for one logical qubit</div>
+    <table class="hf-table">
+      <thead>
+        <tr><th>Code</th><th>Physical / logical qubit</th><th>Threshold p_th</th><th>Status (2025)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>3-qubit bit-flip</td><td class="mono">3</td><td class="mono">~50%</td><td>Corrects X errors only — not universal</td></tr>
+        <tr><td>Steane [[7,1,3]]</td><td class="mono">7</td><td class="mono">~1%</td><td>All single-qubit errors; CSS code</td></tr>
+        <tr><td class="hi">Surface code d=5</td><td class="mono hi">25</td><td class="mono hi">~1%</td><td>Google Willow 2024 — below threshold ✓</td></tr>
+        <tr><td>Surface code d=7</td><td class="mono">49</td><td class="mono">~1%</td><td>Harvard 2024 tweezer — 48 logical qubits</td></tr>
+        <tr><td>Surface code d=25</td><td class="mono">625</td><td class="mono">~1%</td><td>Target for Shor's algorithm at scale</td></tr>
+        <tr><td>Bivariate bicycle (Google)</td><td class="mono">~10–15×</td><td class="mono">~0.5%</td><td>More compact; demonstrated 2024</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="read-links" style="margin-top:.85rem;">
+    <a class="read-link" href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Fowler et al. 2012 — surface code primer</a>
+    <a class="read-link" href="https://arxiv.org/abs/2408.13229" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Google Willow 2024 (arXiv)</a>
+    <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024 — 48 logical qubits (Harvard)</a>
+    <a class="read-link" href="http://theory.caltech.edu/~preskill/ph229/" target="_blank" rel="noopener"><span class="rl-icon">🎓</span>Preskill QEC lecture notes — Caltech (free)</a>
+    <a class="read-link" href="https://learning.quantum.ibm.com/course/quantum-error-correction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: QEC course (free)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ RESOURCES ══════════ -->
+<section class="topic-section" id="resources" style="padding-bottom:3rem;">
+  <div class="topic-header">
+    <span class="t-icon">📚</span>
+    <h2>Further Reading &amp; Resources</h2>
+    <span class="t-tag">curated library</span>
+  </div>
+
+  <div class="res-grid">
+    <div class="res-card">
+      <h4>📖 Textbooks &amp; Free Courses</h4>
+      <div class="res-item">
+        <a href="https://www.cambridge.org/highereducation/books/quantum-computation-and-quantum-information/01E10196D0A682A6AEFFEA52D53BE9AE" target="_blank" rel="noopener">Nielsen &amp; Chuang — Quantum Computation and Quantum Information</a>
+        <span>The standard reference. Ch. 1–4 for foundations, Ch. 10 for QEC. ("Mike &amp; Ike")</span>
+      </div>
+      <div class="res-item">
+        <a href="https://quantum.country/" target="_blank" rel="noopener">Quantum Country (Matuschak &amp; Nielsen)</a>
+        <span>Free online "mnemonic medium" — read and remember via spaced repetition. Best first read.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://learning.quantum.ibm.com/" target="_blank" rel="noopener">IBM Quantum Learning</a>
+        <span>Free structured courses from IBM: basics → algorithms → error correction → hardware.</span>
+      </div>
+      <div class="res-item">
+        <a href="http://theory.caltech.edu/~preskill/ph229/" target="_blank" rel="noopener">Preskill Ph229 Lecture Notes (Caltech)</a>
+        <span>Free 9-chapter notes on quantum information, error correction, and fault tolerance.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://www.scottaaronson.com/qclec.pdf" target="_blank" rel="noopener">Aaronson: Quantum Computing Since Democritus (lecture notes)</a>
+        <span>Excellent conceptual treatment — complexity theory and quantum foundations.</span>
+      </div>
+    </div>
+
+    <div class="res-card">
+      <h4>⚛️ AMO Physics References</h4>
+      <div class="res-item">
+        <a href="https://steck.us/alkalidata/" target="_blank" rel="noopener">Steck Alkali Data Sheets (all species)</a>
+        <span>Gold standard: Rb, Cs, Li, Na, K — transition frequencies, linewidths, hyperfine constants.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener">Saffman 2016: Neutral Atom Quantum Computing Review</a>
+        <span>Comprehensive review of Rydberg-based QC. Essential reading for AMO PhD students.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/1706.04073" target="_blank" rel="noopener">Kaufman &amp; Ni 2021: Atomic Array Review</a>
+        <span>Optical tweezer arrays — from single-atom loading to many-body entanglement.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://qutip.org/" target="_blank" rel="noopener">QuTiP — Quantum Toolbox in Python</a>
+        <span>Open-source Python: simulate Lindblad dynamics, Rabi oscillations, Wigner functions, and more.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/2006.12326" target="_blank" rel="noopener">Browaeys &amp; Lahaye 2020: Many-body physics with arrays of Rydberg atoms</a>
+        <span>State-of-the-art review of programmable Rydberg simulators and quantum gates.</span>
+      </div>
+    </div>
+
+    <div class="res-card">
+      <h4>📄 Landmark Experimental Papers</h4>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/quant-ph/9907071" target="_blank" rel="noopener">Jaksch et al. 1999 — original Rydberg gate proposal</a>
+        <span>The foundational theory paper proposing Rydberg blockade for neutral-atom two-qubit gates.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener">Evered et al. 2023 (Harvard) — 99.5% Rydberg CZ gate</a>
+        <span>State-of-the-art neutral-atom gate fidelity with Cs atoms; long T₂ via dynamical decoupling.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener">Bluvstein et al. 2024 (Harvard) — 48 logical qubits</a>
+        <span>Fault-tolerant logical circuits in neutral atom arrays; transversal gates demonstrated.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/2408.13229" target="_blank" rel="noopener">Google Willow 2024 — surface code below threshold</a>
+        <span>First exponential suppression of logical errors with increasing code distance.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/abs/1208.0928" target="_blank" rel="noopener">Fowler et al. 2012 — surface code for quantum computation</a>
+        <span>The definitive introduction to surface codes. Essential for understanding fault tolerance.</span>
+      </div>
+    </div>
+
+    <div class="res-card">
+      <h4>🔧 Interactive Tools &amp; Simulators</h4>
+      <div class="res-item">
+        <a href="https://algassert.com/quirk" target="_blank" rel="noopener">Quirk — Browser Quantum Circuit Simulator</a>
+        <span>Drag-and-drop gates; real-time Bloch sphere, probability amplitudes, entanglement display.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://quantum-computing.ibm.com/composer" target="_blank" rel="noopener">IBM Quantum Composer</a>
+        <span>Circuit composer with free access to real IBM quantum hardware (127–433 qubit devices).</span>
+      </div>
+      <div class="res-item">
+        <a href="https://qutip.org/" target="_blank" rel="noopener">QuTiP (Python)</a>
+        <span>Simulate open systems, master equations, Rabi oscillations, Wigner functions in Python.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://quantumcomputing.stackexchange.com/" target="_blank" rel="noopener">Quantum Computing Stack Exchange</a>
+        <span>Q&amp;A forum — expert answers on everything from gate sets to QEC to AMO hardware.</span>
+      </div>
+      <div class="res-item">
+        <a href="https://arxiv.org/list/quant-ph/new" target="_blank" rel="noopener">arXiv quant-ph — daily new papers</a>
+        <span>Stay current — essentially all QC papers appear here before journal publication.</span>
+      </div>
+    </div>
+  </div>
 </section>
 
 </main>
@@ -862,7 +1332,8 @@ initScrollReveal();
    STICKY NAV HIGHLIGHT
    ═══════════════════════════════════════════════ */
 const sections = ['bloch','gates','superposition','measurement','entanglement',
-                  'rydberg','twoqubit','rabi','decoherence','cooling','wigner'];
+                  'rydberg','twoqubit','rabi','decoherence','cooling','wigner',
+                  'hyperfine','qec','resources'];
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -1423,6 +1894,70 @@ function updateWigner() {
 }
 
 updateWigner();
+
+/* ═══════════════════════════════════════════════
+   QEC THRESHOLD CHART
+   ═══════════════════════════════════════════════ */
+(function(){
+  const ctx = document.getElementById('qecChart');
+  if (!ctx) return;
+  const pth = 0.01; // surface code threshold ~1%
+  const nPts = 80;
+  const pPhys = Array.from({length: nPts}, (_, i) => i * 0.015 / (nPts - 1)); // 0..1.5%
+
+  function logicalRate(d, p) {
+    const k = Math.ceil((d + 1) / 2);
+    const ratio = p / pth;
+    return Math.min(1, Math.pow(ratio, k));
+  }
+
+  const palette = { 3:'#60a5fa', 5:'#a78bfa', 7:'#34d399', 9:'#fbbf24', 11:'#f87171' };
+  const datasets = [3, 5, 7, 9, 11].map(d => ({
+    label: `d=${d} (${d*d} qubits)`,
+    data: pPhys.map(p => ({ x: +(p * 100).toFixed(4), y: logicalRate(d, p) })),
+    borderColor: palette[d],
+    borderWidth: 1.8,
+    pointRadius: 0,
+    fill: false,
+    tension: 0,
+  }));
+  // Threshold vertical dashed line
+  datasets.push({
+    label: 'Threshold 1%',
+    data: [{ x: 1, y: 1e-10 }, { x: 1, y: 1 }],
+    borderColor: '#ef4444',
+    borderWidth: 1.5,
+    borderDash: [5, 4],
+    pointRadius: 0,
+    fill: false,
+  });
+
+  new Chart(ctx.getContext('2d'), {
+    type: 'line',
+    data: { datasets },
+    options: {
+      parsing: false,
+      responsive: true,
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 14 } } },
+      scales: {
+        x: {
+          type: 'linear',
+          title: { display: true, text: 'Physical error rate p (%)', color: '#94a3b8' },
+          ticks: { color: '#64748b', callback: v => v.toFixed(2) + '%' },
+          grid: { color: '#1e293b' },
+          min: 0, max: 1.5,
+        },
+        y: {
+          type: 'logarithmic',
+          title: { display: true, text: 'Logical error rate p_L', color: '#94a3b8' },
+          ticks: { color: '#64748b' },
+          grid: { color: '#1e293b' },
+          min: 1e-10, max: 1,
+        },
+      },
+    },
+  });
+})();
 </script>
 </body>
 </html>

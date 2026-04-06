@@ -32,6 +32,8 @@ const NAV = {
     { key: 'decoherence',        label: 'Decoherence',           icon: '📉',  href: 'pages/learn-quantum.html#decoherence'  },
     { key: 'laser-cooling-phy',  label: 'Laser Cooling Physics', icon: '🌡️',  href: 'pages/learn-quantum.html#cooling'      },
     { key: 'wigner-function',    label: 'Wigner Function',       icon: '🌊',  href: 'pages/learn-quantum.html#wigner'       },
+    { key: 'hyperfine-qubits',   label: 'Hyperfine Qubits',      icon: '🔑',  href: 'pages/learn-quantum.html#hyperfine'    },
+    { key: 'qec',                label: 'Error Correction',      icon: '🛡️',  href: 'pages/learn-quantum.html#qec'          },
   ],
 };
 
