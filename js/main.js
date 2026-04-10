@@ -12,13 +12,15 @@ const NAV = {
   tools: [
     { key: 'atom-library',      label: 'Atom Library',       icon: '⚛️',  color: '#38bdf8', href: 'pages/atom-library.html'      },
     { key: 'lab-techniques',    label: 'Lab Techniques',     icon: '🔬',  color: '#34d399', href: 'pages/lab-techniques.html'    },
-    { key: 'qc-landscape',      label: 'QC Landscape',       icon: '💻',  color: '#a78bfa', href: 'pages/qc-landscape.html'      },
     { key: 'cooling-simulator', label: 'Cooling Simulator',  icon: '❄️',  color: '#60a5fa', href: 'pages/cooling-simulator.html' },
     { key: 'release-recapture', label: 'Release-Recapture',  icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html' },
     { key: 'lab-calculators',   label: 'Lab Calculators',    icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'   },
     { key: 'laser-locking',     label: 'Laser Locking',      icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'     },
     { key: 'zernike',           label: 'Zernike Polynomials',icon: '🌊',  color: '#2dd4bf', href: 'pages/zernike.html'           },
     { key: 'polarimetry',       label: 'Polarimetry Explorer',icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'        },
+  ],
+  industry: [
+    { key: 'qc-landscape', label: 'QC Industry Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -59,6 +61,13 @@ function renderNav({ active = '', root = '' } = {}) {
     </a>
   `).join('');
 
+  const industryHTML = NAV.industry.map(t => `
+    <a class="nav-drop-item" href="${root}${t.href}" ${active === t.key ? 'aria-current="page"' : ''}>
+      <span class="nav-drop-dot" style="background:${t.color}"></span>
+      ${t.label}
+    </a>
+  `).join('');
+
   // Mobile tools
   const mobileTools = NAV.tools.map(t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
@@ -70,6 +79,13 @@ function renderNav({ active = '', root = '' } = {}) {
   const mobileLearn = NAV.learn.map(t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
       <span style="font-size:1.1rem">${t.icon}</span>
+      ${t.label}
+    </a>
+  `).join('');
+
+  const mobileIndustry = NAV.industry.map(t => `
+    <a class="nav-mobile-link" href="${root}${t.href}">
+      <span class="nav-drop-dot" style="background:${t.color};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
       ${t.label}
     </a>
   `).join('');
@@ -99,7 +115,7 @@ function renderNav({ active = '', root = '' } = {}) {
               </svg>
             </button>
             <div class="nav-drop" role="menu">
-              <div class="nav-drop-section">9 Primary Tools</div>
+              <div class="nav-drop-section">8 AMO Research Tools</div>
               ${toolsHTML}
             </div>
           </div>
@@ -115,6 +131,20 @@ function renderNav({ active = '', root = '' } = {}) {
             <div class="nav-drop" role="menu" style="min-width:300px">
               <div class="nav-drop-section">Quantum Fundamentals</div>
               ${learnHTML}
+            </div>
+          </div>
+
+          <!-- QC Industry dropdown -->
+          <div class="nav-item" role="none">
+            <button class="nav-btn ${NAV.industry.some(t=>t.key===active)?'active':''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
+              QC Industry
+              <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6l4 4 4-4"/>
+              </svg>
+            </button>
+            <div class="nav-drop" role="menu">
+              <div class="nav-drop-section">Quantum Computing Landscape</div>
+              ${industryHTML}
             </div>
           </div>
 
@@ -143,6 +173,10 @@ function renderNav({ active = '', root = '' } = {}) {
       <div class="nav-mobile-section">
         <div class="nav-mobile-section-title">Learn Quantum</div>
         ${mobileLearn}
+      </div>
+      <div class="nav-mobile-section">
+        <div class="nav-mobile-section-title">QC Industry</div>
+        ${mobileIndustry}
       </div>
       <div class="nav-mobile-section">
         <a class="nav-mobile-link" href="${root}home.html#about">

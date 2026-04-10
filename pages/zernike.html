@@ -165,6 +165,31 @@
       color: var(--text-primary); font-size: .83rem; font-family: var(--mono);
     }
     .slm-field input[type=range] { accent-color: var(--c-zern); margin-top: .2rem; }
+
+    /* ─── Mode Gallery ─────────────────────────────── */
+    .gal-row { display: flex; gap: 6px; align-items: flex-end; margin-bottom: 6px; }
+    .gal-cell {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      flex-shrink: 0;
+    }
+    .gal-cell canvas {
+      display: block; border-radius: 5px;
+      image-rendering: pixelated;
+    }
+    .gal-label {
+      font-family: var(--mono); font-size: .62rem; color: var(--text-muted);
+      text-align: center; white-space: nowrap;
+    }
+    .gal-name {
+      font-size: .58rem; color: #64748b; text-align: center;
+      white-space: nowrap; max-width: 72px; overflow: hidden; text-overflow: ellipsis;
+    }
+    .gal-empty { flex-shrink: 0; }
+    .gal-row-label {
+      font-family: var(--mono); font-size: .68rem; color: var(--c-zern);
+      writing-mode: vertical-lr; transform: rotate(180deg);
+      text-align: center; align-self: center; margin-right: 4px; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -198,6 +223,7 @@
         <button class="tab-btn active" data-tab="single">🌀 Single Mode</button>
         <button class="tab-btn" data-tab="wavefront">🔧 Wavefront Builder</button>
         <button class="tab-btn" data-tab="slm">📡 SLM &amp; Far Field</button>
+        <button class="tab-btn" data-tab="gallery">🗺️ Mode Gallery</button>
       </div>
 
       <!-- ══════════════ TAB 1: SINGLE MODE ══════════════ -->
@@ -433,6 +459,30 @@ Blazed grating l·θ + k·x:
             </table>
           </div>
         </div>
+      </div>
+
+      <!-- ══════════════ TAB 4: MODE GALLERY ══════════════ -->
+      <div class="tab-panel" data-tab="gallery">
+        <div class="theory-box" style="margin-bottom:1.25rem;">
+          <h4>Zernike Pyramid — all modes at a glance</h4>
+          <p>
+            Every Zernike polynomial Z_n^m arranged in the standard pyramid (OSA/ANSI order).
+            Columns index the azimuthal frequency m, rows the radial order n.
+            Cosine modes (m &gt; 0) on the right, sine modes (m &lt; 0) on the left.
+            <strong>Blue</strong> = negative wavefront, <strong>white</strong> = zero,
+            <strong>red</strong> = positive (RdBu colormap).
+          </p>
+        </div>
+
+        <div class="ctrl-panel" style="margin-bottom:1.25rem; max-width:340px;">
+          <div class="field-row">
+            <label>Max radial order n<sub>max</sub>: <span class="lbl-val" id="galNval">6</span></label>
+            <input type="range" id="galNslide" min="1" max="10" value="6"
+              oninput="document.getElementById('galNval').textContent=this.value; renderGallery()">
+          </div>
+        </div>
+
+        <div id="galleryWrap" style="overflow-x:auto;"></div>
       </div>
     </div><!-- /data-tabs-wrap -->
   </section>
@@ -946,6 +996,88 @@ function computeSLM() {
 
 // Auto-compute on load so canvases are never empty
 computeSLM();
+
+/* ═══════════════════════════════════════════════════════
+   TAB 4: MODE GALLERY — Zernike pyramid
+   ═══════════════════════════════════════════════════════ */
+const GAL_SIZE = 72;   // px per thumbnail canvas
+const GAL_GRID = makePolarGrid(GAL_SIZE);
+
+function renderGallery() {
+  const nMax = parseInt(document.getElementById('galNslide').value);
+  const wrap = document.getElementById('galleryWrap');
+  wrap.innerHTML = '';
+
+  // Pyramid: for each radial order n, render all valid m values
+  // m runs from -n to +n in steps of 2
+  // We lay out rows top-to-bottom (n=0 at top)
+  // Within each row, centre the m values symmetrically
+
+  // Find the widest row (n = nMax, has nMax+1 entries)
+  // Each cell = GAL_SIZE + 6px gap. Row label = 40px.
+  const cellWidth = GAL_SIZE + 6;
+  const maxCells = nMax + 1;
+
+  for (let n = 0; n <= nMax; n++) {
+    const ms = validM(n);          // e.g. n=3: [-3,-1,1,3]
+    const numCells = ms.length;    // = n+1
+    const padding = (maxCells - numCells) / 2; // half-cells of offset
+
+    const row = document.createElement('div');
+    row.className = 'gal-row';
+
+    // Row label "n=..."
+    const rowLbl = document.createElement('div');
+    rowLbl.className = 'gal-row-label';
+    rowLbl.textContent = `n=${n}`;
+    row.appendChild(rowLbl);
+
+    // Left padding spacers
+    if (padding > 0) {
+      const spacer = document.createElement('div');
+      spacer.className = 'gal-empty';
+      spacer.style.width = (padding * cellWidth) + 'px';
+      row.appendChild(spacer);
+    }
+
+    ms.forEach(m => {
+      const cell = document.createElement('div');
+      cell.className = 'gal-cell';
+
+      const cv = document.createElement('canvas');
+      cv.width = GAL_SIZE; cv.height = GAL_SIZE;
+      cv.style.width = GAL_SIZE + 'px'; cv.style.height = GAL_SIZE + 'px';
+      cv.title = `Z_${n}^${m>=0?'+':''}${m}  ${modeName(n,m)}`;
+
+      // Render the polynomial
+      const data = computeZernike(n, m, GAL_GRID, GAL_SIZE);
+      const { min, max } = nanStats(data);
+      const absMax = Math.max(Math.abs(min), Math.abs(max)) || 1;
+      renderCanvas(cv, data, GAL_SIZE, colorRdBu, -absMax, absMax);
+
+      const lbl = document.createElement('div');
+      lbl.className = 'gal-label';
+      lbl.textContent = `Z${n}${m>=0?'+':''}${m}`;
+
+      const nm = document.createElement('div');
+      nm.className = 'gal-name';
+      nm.textContent = modeName(n, m);
+
+      cell.appendChild(cv);
+      cell.appendChild(lbl);
+      cell.appendChild(nm);
+      row.appendChild(cell);
+    });
+
+    wrap.appendChild(row);
+  }
+}
+
+// Render gallery when tab is first opened
+document.querySelector('[data-tab="gallery"]').addEventListener('click', () => {
+  // Small delay to let tab panel become visible before rendering canvases
+  setTimeout(renderGallery, 50);
+}, { once: true });
 </script>
 </body>
 </html>
