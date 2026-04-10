@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imaging SNR Calculator — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="Single-atom fluorescence imaging SNR calculator — scattering rate, photon collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/imaging-calculator.html">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-img); }
+
+    /* ─── Override accent refs for this page ─────── */
+    .prop-card:hover  { border-color: rgba(52,211,153,.35); }
+    .ctrl-panel h5    { color: var(--c-img); }
+    .field-row select:focus, .field-row input:focus { border-color: var(--c-img); }
+    .field-row input[type=range]  { accent-color: var(--c-img); }
+    .lbl-val          { color: var(--c-img); font-family: var(--mono); }
+    .approx-tag       { background: rgba(52,211,153,.12); color: var(--c-img); border-color: rgba(52,211,153,.25); }
+
+    /* ─── Result cards grid ──────────────────────── */
+    .prop-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem;
+    }
+    @media(max-width:640px) { .prop-grid { grid-template-columns: 1fr; } }
+
+    .prop-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: .9rem 1.1rem; transition: border-color .2s;
+    }
+    .prop-card-label {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .prop-card-val {
+      font-family: var(--mono); font-size: 1.35rem; font-weight: 700;
+      color: var(--c-img); line-height: 1;
+    }
+    .prop-card-unit { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
+    .prop-card-sub  { font-size: .75rem; color: var(--text-secondary); margin-top: .3rem; }
+
+    /* ─── SNR meter bar ──────────────────────────── */
+    .snr-meter-wrap {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 12px;
+      padding: 1.1rem 1.25rem; margin-bottom: .75rem;
+    }
+    .snr-meter-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: .6rem;
+    }
+    .snr-meter-label { font-size: .78rem; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); font-weight: 600; }
+    .snr-meter-val {
+      font-family: var(--mono); font-size: 2rem; font-weight: 700; color: var(--c-img);
+    }
+    .snr-bar-track {
+      height: 10px; background: #1e293b; border-radius: 5px; overflow: hidden;
+    }
+    .snr-bar-fill {
+      height: 100%; background: linear-gradient(90deg, var(--c-img), #38bdf8);
+      border-radius: 5px; transition: width .4s ease;
+    }
+    .snr-ticks {
+      display: flex; justify-content: space-between;
+      font-size: .65rem; color: var(--text-muted); margin-top: .25rem;
+    }
+
+    /* ─── Fidelity badge ─────────────────────────── */
+    .fidelity-badge {
+      text-align: center; padding: 1rem; border-radius: 10px;
+      border: 1px solid #1e293b; background: var(--bg-card);
+    }
+    .fidelity-num {
+      font-family: var(--mono); font-size: 2.2rem; font-weight: 700; color: var(--c-img);
+    }
+    .fidelity-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem;
+      text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ─── Controls ───────────────────────────────── */
+    .ctrl-panel {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .ctrl-panel h5 {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; margin: 0 0 .9rem 0;
+    }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label {
+      display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .field-row select, .field-row input[type=number] {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .7rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row input[type=range] { width: 100%; margin-top: .2rem; }
+
+    /* ─── Two-col layout ─────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:800px) { .two-col { grid-template-columns: 1fr; } }
+
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; }
+    @media(max-width:700px) { .three-col { grid-template-columns: 1fr; } }
+
+    /* ─── Theory boxes ───────────────────────────── */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-left: 4px solid var(--c-img); border-radius: 10px;
+      padding: 1rem 1.3rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .93rem; font-weight: 700; color: var(--c-img); margin: 0 0 .5rem 0; }
+    .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+
+    .formula-box {
+      background: #060f0a; border: 1px solid #166534; border-radius: 8px;
+      padding: .7rem 1rem; margin: .6rem 0;
+      font-family: var(--mono); color: #6ee7b7; font-size: .82rem;
+      line-height: 1.85; white-space: pre; overflow-x: auto;
+    }
+    .eq { font-family: var(--mono); font-size: .87rem; color: #a7f3d0;
+          display: block; margin: .4rem 0; text-align: center; }
+
+    /* ─── Chart card ─────────────────────────────── */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1rem 1.25rem;
+    }
+    .chart-card h5 {
+      font-size: .78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted); margin: 0 0 .75rem 0;
+    }
+
+    /* ─── Info banner ────────────────────────────── */
+    .info-banner {
+      background: #062010; border: 1px solid #166534;
+      border-radius: 8px; padding: .65rem 1rem;
+      font-size: .8rem; color: #6ee7b7; margin-top: .75rem; line-height: 1.6;
+    }
+
+    /* ─── Section divider ────────────────────────── */
+    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+
+    /* ─── Noise row table ────────────────────────── */
+    .noise-table {
+      width: 100%; border-collapse: collapse; font-size: .82rem;
+    }
+    .noise-table th {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-muted); padding: .5rem .75rem; text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    .noise-table td { padding: .55rem .75rem; border-bottom: 1px solid #111827; }
+    .noise-table td:nth-child(2) { font-family: var(--mono); color: var(--c-img); }
+    .noise-table td:nth-child(3) { font-family: var(--mono); color: var(--text-secondary); }
+    .noise-bar-cell { width: 35%; }
+    .noise-minibar { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+    .noise-minifill { height: 100%; border-radius: 3px; }
+
+    /* ─── Read links ─────────────────────────────── */
+    .read-links { display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
+    .read-link {
+      display: flex; align-items: center; gap: .6rem;
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 8px;
+      padding: .55rem .85rem; font-size: .82rem; color: var(--text-secondary);
+      text-decoration: none; transition: border-color .15s, color .15s;
+    }
+    .read-link:hover { border-color: var(--c-img); color: var(--text-primary); }
+    .rl-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ─── Warn banner ─────────────────────────────── */
+    .warn-banner {
+      background: #1c0f00; border: 1px solid #92400e;
+      border-radius: 8px; padding: .65rem 1rem;
+      font-size: .8rem; color: #fbbf24; margin-top: .75rem; line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-img);">
+  <div class="container">
+    <div class="hero-badge anim-in">SINGLE-ATOM DETECTION</div>
+    <h1 class="page-title anim-in delay-1">
+      Imaging <span class="grad-text" style="--ga: var(--c-img); --gb: #38bdf8;">SNR Calculator</span>
+    </h1>
+    <p class="page-subtitle anim-in delay-2">
+      Fluorescence imaging budget for single atoms in optical tweezers — photon scattering rate,
+      collection efficiency, camera noise model, and detection fidelity for EMCCD and sCMOS systems.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">R_sc</span><span class="stat-lbl">Scattering rate</span></div>
+      <div class="stat"><span class="stat-val">η</span><span class="stat-lbl">Collection efficiency</span></div>
+      <div class="stat"><span class="stat-val">SNR</span><span class="stat-lbl">Signal-to-noise ratio</span></div>
+      <div class="stat"><span class="stat-val">F_det</span><span class="stat-lbl">Detection fidelity</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top:2.5rem;">
+
+  <!-- ═══ SECTION 1: IMAGING BEAM PARAMETERS ════════════════════ -->
+  <section class="section-block anim-in delay-1">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">01 </span>Imaging Beam
+    </h2>
+    <div class="two-col">
+
+      <!-- Controls: atom & beam -->
+      <div class="ctrl-panel">
+        <h5>Atom &amp; Imaging Transition</h5>
+
+        <div class="field-row">
+          <label>Atom species</label>
+          <select id="speciesSel" onchange="onSpeciesChange()">
+            <option value="Rb87">⁸⁷Rb — D2 (780 nm)</option>
+            <option value="Cs133">¹³³Cs — D2 (852 nm)</option>
+            <option value="Li6">⁶Li — D2 (671 nm)</option>
+            <option value="Li7">⁷Li — D2 (671 nm)</option>
+            <option value="Na23">²³Na — D2 (589 nm)</option>
+            <option value="K39">³⁹K — D2 (767 nm)</option>
+            <option value="K40">⁴⁰K — D2 (767 nm)</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Detuning Δ/2π (MHz) — negative = red-detuned
+            <span class="lbl-val" id="detLbl">0</span> MHz</label>
+          <input type="range" id="detSlide" min="-200" max="200" value="0" step="1"
+            oninput="document.getElementById('detLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Saturation parameter s = I/I<sub>sat</sub>:
+            <span class="lbl-val" id="satLbl">1.0</span></label>
+          <input type="range" id="satSlide" min="-20" max="20" value="0" step="1"
+            oninput="document.getElementById('satLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.01×I_sat</span><span>1×I_sat</span><span>100×I_sat</span>
+          </div>
+        </div>
+
+        <div class="info-banner" id="atomBanner">
+          ⁸⁷Rb D2 line: λ = 780.241 nm · Γ/2π = 6.065 MHz · I<sub>sat</sub> = 1.67 mW/cm²
+        </div>
+      </div>
+
+      <!-- Beam result: scattering rate -->
+      <div>
+        <div class="prop-grid">
+          <div class="prop-card">
+            <div class="prop-card-label">Scattering rate</div>
+            <div class="prop-card-val" id="rScatter">—</div>
+            <div class="prop-card-unit">photons / s</div>
+            <div class="prop-card-sub" id="rScatterMs">— photons / ms</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Saturation parameter</div>
+            <div class="prop-card-val" id="sParam">—</div>
+            <div class="prop-card-unit">I / I<sub>sat</sub></div>
+            <div class="prop-card-sub" id="sParamIntensity">—</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Branching / linewidth</div>
+            <div class="prop-card-val" id="gammaVal">—</div>
+            <div class="prop-card-unit">Γ/2π (MHz)</div>
+            <div class="prop-card-sub" id="tauVal">τ = 1/Γ</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">R_max at saturation</div>
+            <div class="prop-card-val" id="rMax">—</div>
+            <div class="prop-card-unit">photons / s (s→∞, Δ=0)</div>
+            <div class="prop-card-sub">= Γ/2</div>
+          </div>
+        </div>
+
+        <div class="theory-box" style="margin-top:.75rem;">
+          <h4>Two-level scattering rate</h4>
+          <p>On resonance (Δ=0) a two-level atom saturates at Γ/2. Off resonance the Lorentzian
+             denominator reduces the rate:</p>
+          <div class="formula-box">R_sc = (Γ/2) · s / [1 + s + (2Δ/Γ)²]
+
+s = I/I_sat,  Γ = natural linewidth,  Δ = laser detuning</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 2: COLLECTION & CAMERA ═══════════════════════ -->
+  <section class="section-block anim-in delay-2">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">02 </span>Collection &amp; Camera
+    </h2>
+    <div class="two-col">
+
+      <div class="ctrl-panel">
+        <h5>Objective &amp; Optics</h5>
+
+        <div class="field-row">
+          <label>Numerical Aperture (NA):
+            <span class="lbl-val" id="naLbl">0.50</span></label>
+          <input type="range" id="naSlide" min="10" max="95" value="50" step="1"
+            oninput="document.getElementById('naLbl').textContent=(this.value/100).toFixed(2); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>NA 0.10</span><span>NA 0.50</span><span>NA 0.95</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Camera quantum efficiency (%):
+            <span class="lbl-val" id="qeLbl">80</span>%</label>
+          <input type="range" id="qeSlide" min="5" max="99" value="80" step="1"
+            oninput="document.getElementById('qeLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Optical transmission T (%):
+            <span class="lbl-val" id="tOptLbl">70</span>%</label>
+          <input type="range" id="tOptSlide" min="10" max="99" value="70" step="1"
+            oninput="document.getElementById('tOptLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Exposure time (ms):
+            <span class="lbl-val" id="tExpLbl">5.0</span> ms</label>
+          <input type="range" id="tExpSlide" min="-10" max="20" value="7" step="1"
+            oninput="document.getElementById('tExpLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.1 ms</span><span>1 ms</span><span>10 ms</span><span>100 ms</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ctrl-panel">
+        <h5>Camera Noise Model</h5>
+
+        <div class="field-row">
+          <label>Camera type</label>
+          <select id="camType" onchange="onCamChange()">
+            <option value="emccd">EMCCD (e.g. Andor iXon)</option>
+            <option value="scmos">sCMOS (e.g. Andor Sona, Hamamatsu Orca)</option>
+            <option value="ideal">Ideal (shot-noise only)</option>
+          </select>
+        </div>
+
+        <div class="field-row" id="emGainRow">
+          <label>EM gain (EMCCD only):
+            <span class="lbl-val" id="emGainLbl">300</span>×</label>
+          <input type="range" id="emGainSlide" min="0" max="240" value="150" step="1"
+            oninput="document.getElementById('emGainLbl').textContent=Math.round(Math.pow(10,this.value/100)); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>1×</span><span>100×</span><span>1000×</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Read noise σ<sub>read</sub> (e⁻ RMS):
+            <span class="lbl-val" id="rnLbl">60</span> e⁻</label>
+          <input type="range" id="rnSlide" min="0" max="60" value="30" step="1"
+            oninput="document.getElementById('rnLbl').textContent=this.value; compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0</span><span>1 e⁻ (sCMOS)</span><span>60 e⁻ (EMCCD CIC)</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Dark count rate (e⁻/px/s):
+            <span class="lbl-val" id="darkLbl">0.001</span></label>
+          <input type="range" id="darkSlide" min="-30" max="20" value="-30" step="1"
+            oninput="document.getElementById('darkLbl').textContent=Math.pow(10,this.value/10).toFixed(4); compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Background photon rate (photons/s collected):
+            <span class="lbl-val" id="bgLbl">100</span></label>
+          <input type="range" id="bgSlide" min="0" max="50" value="20" step="1"
+            oninput="document.getElementById('bgLbl').textContent=Math.round(Math.pow(10,this.value/10)); compute()">
+        </div>
+
+        <div class="info-banner" id="camBanner">
+          EMCCD: excess noise factor √2 applied; read noise divided by EM gain.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 3: RESULTS DASHBOARD ═════════════════════════ -->
+  <section class="section-block anim-in delay-3">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">03 </span>Results
+    </h2>
+
+    <!-- SNR meter -->
+    <div class="snr-meter-wrap">
+      <div class="snr-meter-header">
+        <span class="snr-meter-label">Signal-to-Noise Ratio</span>
+        <span class="snr-meter-val" id="snrDisplay">—</span>
+      </div>
+      <div class="snr-bar-track">
+        <div class="snr-bar-fill" id="snrBar" style="width:0%"></div>
+      </div>
+      <div class="snr-ticks">
+        <span>1</span><span>5</span><span>10</span><span>20</span><span>50</span><span>100+</span>
+      </div>
+    </div>
+
+    <!-- Key metrics grid -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.9rem;">
+      <div class="prop-card">
+        <div class="prop-card-label">Collection efficiency η</div>
+        <div class="prop-card-val" id="etaDisplay">—</div>
+        <div class="prop-card-unit">η = η<sub>geo</sub> × QE × T</div>
+        <div class="prop-card-sub" id="etaGeoDisplay">η<sub>geo</sub> = —</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-card-label">Photons scattered (total)</div>
+        <div class="prop-card-val" id="nScattered">—</div>
+        <div class="prop-card-unit">in exposure time</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-card-label">Photons detected (signal)</div>
+        <div class="prop-card-val" id="nDetected">—</div>
+        <div class="prop-card-unit">N<sub>sig</sub> = R_sc × t × η</div>
+      </div>
+    </div>
+
+    <!-- Fidelity + min exposure -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.9rem;">
+      <div class="fidelity-badge">
+        <div class="fidelity-num" id="fidelityDisplay">—</div>
+        <div class="fidelity-label">Detection fidelity</div>
+        <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem;" id="fidelityDesc">—</div>
+      </div>
+      <div class="fidelity-badge">
+        <div class="fidelity-num" id="tMinDisplay">—</div>
+        <div class="fidelity-label">Min exposure for SNR=10</div>
+        <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem;">target SNR = 10</div>
+      </div>
+      <div class="fidelity-badge">
+        <div class="fidelity-num" id="tMin50Display">—</div>
+        <div class="fidelity-label">Min exposure for SNR=50</div>
+        <div style="font-size:.72rem;color:var(--text-muted);margin-top:.4rem;">target SNR = 50</div>
+      </div>
+    </div>
+
+    <!-- Noise budget table -->
+    <div class="chart-card">
+      <h5>Noise Budget</h5>
+      <table class="noise-table">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>σ² (photons²)</th>
+            <th>Fraction</th>
+            <th class="noise-bar-cell">Contribution</th>
+          </tr>
+        </thead>
+        <tbody id="noiseTbody">
+          <tr><td colspan="4" style="color:var(--text-muted);font-style:italic;text-align:center">
+            Set parameters above to compute noise budget.
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Warn if heating-limited -->
+    <div id="warnBanner" class="warn-banner" style="display:none;">
+      ⚠️ At high scattering rates, atom heating from recoil kicks will limit imaging time.
+      Consider gray molasses or EIT cooling during imaging, or reduce s.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 4: SNR vs EXPOSURE TIME CHART ════════════════ -->
+  <section class="section-block anim-in delay-4">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">04 </span>SNR vs Exposure Time
+    </h2>
+    <div class="chart-card">
+      <h5>SNR as a function of imaging duration</h5>
+      <canvas id="snrChart" height="260"></canvas>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
+        <span style="display:flex;align-items:center;gap:.4rem">
+          <span style="width:20px;height:3px;background:#34d399;display:inline-block"></span>
+          Current settings
+        </span>
+        <span style="display:flex;align-items:center;gap:.4rem">
+          <span style="width:20px;height:2px;border-top:2px dashed #fbbf24;display:inline-block"></span>
+          SNR = 10 target
+        </span>
+        <span style="display:flex;align-items:center;gap:.4rem">
+          <span style="width:20px;height:2px;border-top:2px dashed #f87171;display:inline-block"></span>
+          SNR = 50 target
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 5: THEORY ════════════════════════════════════ -->
+  <section class="section-block anim-in delay-5">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">05 </span>Physics &amp; Formulas
+    </h2>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Collection geometry — solid angle
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Geometric collection fraction η_geo</h4>
+          <p>A high-NA objective collects photons into a cone defined by the half-angle
+             θ_max = arcsin(NA/n), where n is the refractive index of the medium (n=1 in air/vacuum).</p>
+        </div>
+        <div class="formula-box">η_geo = (1 − √(1 − NA²)) / 2        [exact, for n=1]
+
+≈ NA² / 4                              [paraxial approximation, NA ≪ 1]
+
+Example: NA = 0.6  →  η_geo = (1 − 0.8) / 2 = 10%
+         NA = 0.8  →  η_geo = (1 − 0.6) / 2 = 20%</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          Note that isotropic emission into 4π steradians means even NA=0.95 captures only ~26%
+          of photons geometrically. High-NA objectives (0.5–0.85) are typical for tweezer experiments.
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Camera noise model — EMCCD vs sCMOS
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Noise variance per pixel per frame</h4>
+          <p>Each camera type has a distinct noise model. The total variance σ²_total
+             determines the denominator of SNR = N_sig / σ_total.</p>
+        </div>
+        <div class="formula-box">EMCCD  (excess noise factor F = √2):
+  σ² = F²(N_sig + N_bg + N_dark) + (σ_read / G)²
+     = 2(N_sig + N_bg + N_dark) + (σ_read / G)²
+
+sCMOS  (no multiplication noise):
+  σ² = N_sig + N_bg + N_dark + σ_read²
+
+Ideal:
+  σ² = N_sig + N_bg + N_dark
+
+where G = EM gain,  σ_read = read noise (e⁻ RMS)</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          For EMCCD the read noise is divided by EM gain G, making it negligible at high gain
+          (G ≳ 50). The penalty is the √2 excess noise factor that increases shot noise variance
+          by 2×. For sCMOS cameras (1–2 e⁻ read noise), read noise is the dominant term at low
+          photon counts.
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Detection fidelity — Poisson statistics
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Binary atom detection</h4>
+          <p>We distinguish "atom present" (Poisson mean μ<sub>sig</sub>) from "no atom"
+             (Poisson mean μ<sub>bg</sub>) by choosing a threshold θ. The optimal threshold
+             minimises total error probability.</p>
+        </div>
+        <div class="formula-box">For Gaussian approximation (μ ≫ 1):
+
+  P_miss  = Φ(−(μ_sig − θ) / √σ²_sig)    [false negative]
+  P_false = 1 − Φ((θ − μ_bg) / √σ²_bg)   [false positive]
+
+  Optimal θ ≈ (μ_sig + μ_bg) / 2
+
+  Detection fidelity F = 1 − (P_miss + P_false)/2
+                       ≈ Φ(SNR / (2√2))
+
+where Φ is the standard normal CDF, SNR = (μ_sig − μ_bg)/σ</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that fidelity scales as
+          erfc(SNR) — doubling SNR dramatically reduces error. Background suppression (e.g.
+          dark-field or EIT imaging) improves fidelity by reducing μ_bg without reducing μ_sig.
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Recoil heating &amp; imaging limits
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Photon recoil vs trap depth</h4>
+          <p>Every scattered photon imparts a recoil kick ℏk. At scattering rate R_sc the atom
+             heats at rate dE/dt = E_rec × R_sc (in a σ⁺/σ⁻ Sisyphus beam, this is partially
+             cancelled; in a σ beam near resonance it accumulates).</p>
+        </div>
+        <div class="formula-box">Recoil energy: E_rec = ℏ²k² / (2m)
+  Rb-87, D2: E_rec/k_B = 362 nK  (= 3.77 × 10⁻³⁰ J)
+
+Heating rate: dT/dt ≈ 2 E_rec × R_sc / k_B  [3D, no cooling]
+
+Max imaging time (trap depth U_0):
+  t_max ~ U_0 / (E_rec × R_sc)
+
+Example: U_0/k_B = 1 mK, R_sc = 50 kHz → t_max ~ 55 ms</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          In practice, tweezer imaging uses repump + imaging beams in a gray molasses or
+          Λ-enhanced dark SPOT configuration to scatter &gt;1000 photons without losing the atom.
+          This pushes fidelity above 99.5% (Bergamini 2004; Liu 2019).
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 6: REFERENCES ════════════════════════════════ -->
+  <section class="section-block anim-in delay-6">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">06 </span>References &amp; Further Reading
+    </h2>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.93.163602" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Bergamini et al. (2004) — Single-atom detection with EMCCD, Science
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevX.9.021039" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Liu &amp; Bhatt (2019) — High-fidelity single-atom detection in optical tweezers
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.114.213002" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Hutzler et al. (2017) — Eliminating light shifts for single-atom trapping
+      </a>
+      <a class="read-link" href="https://steck.us/alkalidata" target="_blank" rel="noopener">
+        <span class="rl-icon">📊</span>
+        Steck — Alkali Data Sheets (D1/D2 line data for all species)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.87.1419" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Kaufman &amp; Greiner (2021) — Quantum science with optical tweezers (Rev. Mod. Phys.)
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Imaging SNR Calculator · AMO Career · Saumitra Phatak · Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'imaging-calculator', root: '../' });
+
+/* ═══════════════════════════════════════════════════════════════
+   ATOM DATA  (D2 line: λ, Γ, I_sat)
+   Sources: Steck alkali data sheets
+═══════════════════════════════════════════════════════════════ */
+const ATOMS = {
+  Rb87:  { label: '⁸⁷Rb D2',  lambda_nm: 780.241, Gamma_MHz: 6.065,  Isat_mWcm2: 1.669  },
+  Cs133: { label: '¹³³Cs D2', lambda_nm: 852.347, Gamma_MHz: 5.234,  Isat_mWcm2: 1.103  },
+  Li6:   { label: '⁶Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 7.590  },
+  Li7:   { label: '⁷Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 7.590  },
+  Na23:  { label: '²³Na D2',  lambda_nm: 588.996, Gamma_MHz: 9.795,  Isat_mWcm2: 6.260  },
+  K39:   { label: '³⁹K D2',   lambda_nm: 766.701, Gamma_MHz: 6.035,  Isat_mWcm2: 1.750  },
+  K40:   { label: '⁴⁰K D2',   lambda_nm: 766.701, Gamma_MHz: 6.035,  Isat_mWcm2: 1.750  },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   SNR CHART (Chart.js)
+═══════════════════════════════════════════════════════════════ */
+const snrCtx = document.getElementById('snrChart').getContext('2d');
+const SNR_CHART = new Chart(snrCtx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: 'SNR',
+        data: [], borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,.08)',
+        fill: true, tension: 0.35, borderWidth: 2.5, pointRadius: 0,
+      },
+      {
+        label: 'SNR=10',
+        data: [], borderColor: '#fbbf24', borderWidth: 1.5, borderDash: [6,4],
+        pointRadius: 0, fill: false,
+      },
+      {
+        label: 'SNR=50',
+        data: [], borderColor: '#f87171', borderWidth: 1.5, borderDash: [6,4],
+        pointRadius: 0, fill: false,
+      },
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: {
+        title: { display: true, text: 'Exposure time (ms)', color: '#94a3b8', font: { size: 11 } },
+        ticks: { color: '#64748b', maxTicksLimit: 8 },
+        grid: { color: '#1e293b' },
+      },
+      y: {
+        title: { display: true, text: 'SNR', color: '#94a3b8', font: { size: 11 } },
+        ticks: { color: '#64748b' },
+        grid: { color: '#1e293b' },
+        min: 0,
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0c1526',
+        titleColor: '#34d399', bodyColor: '#94a3b8',
+        borderColor: '#1e3a5f', borderWidth: 1,
+        callbacks: {
+          label: ctx => `${ctx.dataset.label}: ${typeof ctx.raw === 'number' ? ctx.raw.toFixed(1) : ctx.raw}`
+        }
+      }
+    }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+function fmt(x, digits=3) {
+  if (!isFinite(x) || x === 0) return '0';
+  const mag = Math.floor(Math.log10(Math.abs(x)));
+  if (mag >= 6)  return (x/1e6).toPrecision(digits) + ' M';
+  if (mag >= 3)  return (x/1e3).toPrecision(digits) + ' k';
+  if (mag >= 0)  return x.toPrecision(digits);
+  if (mag >= -3) return x.toPrecision(digits);
+  return x.toExponential(2);
+}
+
+function fmtShort(x, suffix='') {
+  if (!isFinite(x) || x < 0) return '—';
+  if (x >= 1e6) return (x/1e6).toFixed(2) + ' M' + suffix;
+  if (x >= 1e3) return (x/1e3).toFixed(1) + ' k' + suffix;
+  return x.toFixed(1) + suffix;
+}
+
+// Normal CDF (Abramowitz & Stegun approximation)
+function normCDF(x) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(x));
+  const poly = t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  const p = 1 - (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-x * x / 2) * poly;
+  return x >= 0 ? p : 1 - p;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CORE PHYSICS
+═══════════════════════════════════════════════════════════════ */
+function scatterRate(Gamma_MHz, s, Delta_MHz) {
+  // Returns photons/s
+  const G = Gamma_MHz * 1e6;  // Hz
+  const D = Delta_MHz * 1e6;  // Hz
+  return (G / 2) * s / (1 + s + Math.pow(2 * D / G, 2));
+}
+
+function collectionGeo(NA) {
+  // Exact solid-angle fraction (n=1)
+  return (1 - Math.sqrt(1 - NA * NA)) / 2;
+}
+
+function computeSNR(N_sig, N_bg, N_dark, sigma_read, camType, emGain) {
+  let variance;
+  if (camType === 'emccd') {
+    const rn_eff = sigma_read / emGain;
+    variance = 2 * (N_sig + N_bg + N_dark) + rn_eff * rn_eff;
+  } else if (camType === 'scmos') {
+    variance = N_sig + N_bg + N_dark + sigma_read * sigma_read;
+  } else {
+    // ideal
+    variance = N_sig + N_bg + N_dark;
+  }
+  return variance > 0 ? N_sig / Math.sqrt(variance) : 0;
+}
+
+function noiseComponents(N_sig, N_bg, N_dark, sigma_read, camType, emGain) {
+  const F2 = (camType === 'emccd') ? 2 : 1;
+  const rn2 = (camType === 'emccd') ? Math.pow(sigma_read / emGain, 2)
+             : (camType === 'scmos') ? sigma_read * sigma_read : 0;
+  return {
+    shot: F2 * N_sig,
+    bg:   F2 * N_bg,
+    dark: F2 * N_dark,
+    read: rn2,
+  };
+}
+
+function minExposureForSNR(targetSNR, Rsc, eta, N_bg_rate, N_dark_rate, sigma_read, camType, emGain) {
+  // Binary search for exposure time (ms)
+  const F2 = (camType === 'emccd') ? 2 : 1;
+  const rn2 = (camType === 'emccd') ? Math.pow(sigma_read / emGain, 2)
+             : (camType === 'scmos') ? sigma_read * sigma_read : 0;
+  // SNR² * (F2*(Rsc+Nbg_rate+Ndark_rate)*t + rn2) = (Rsc*eta*t)²
+  // At large t: SNR ~ sqrt(Rsc*eta/F2) * sqrt(t) → always reaches target if Rsc > 0
+  let lo = 1e-6, hi = 1e4; // seconds
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    const Ns = Rsc * eta * mid;
+    const Nb = N_bg_rate * mid;
+    const Nd = N_dark_rate * mid;
+    const snr = computeSNR(Ns, Nb, Nd, sigma_read, camType, emGain);
+    if (snr < targetSNR) lo = mid; else hi = mid;
+  }
+  const t_s = (lo + hi) / 2;
+  return t_s * 1000; // ms
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN COMPUTE
+═══════════════════════════════════════════════════════════════ */
+function compute() {
+  // ── Read inputs ──────────────────────────────────────────────
+  const specKey = document.getElementById('speciesSel').value;
+  const atom    = ATOMS[specKey];
+  const Delta   = parseFloat(document.getElementById('detSlide').value);      // MHz
+  const satExp  = parseFloat(document.getElementById('satSlide').value);
+  const s       = Math.pow(10, satExp / 10);
+  const NA      = parseFloat(document.getElementById('naSlide').value) / 100;
+  const QE      = parseFloat(document.getElementById('qeSlide').value) / 100;
+  const Topt    = parseFloat(document.getElementById('tOptSlide').value) / 100;
+  const tExpExp = parseFloat(document.getElementById('tExpSlide').value);
+  const t_ms    = Math.pow(10, tExpExp / 10);
+  const t_s     = t_ms / 1e3;
+  const camType = document.getElementById('camType').value;
+  const emGainExp = parseFloat(document.getElementById('emGainSlide').value);
+  const emGain  = Math.round(Math.pow(10, emGainExp / 100));
+  const sigma_read = parseFloat(document.getElementById('rnSlide').value);
+  const darkExp = parseFloat(document.getElementById('darkSlide').value);
+  const darkRate = Math.pow(10, darkExp / 10); // e⁻/px/s
+  const bgExp   = parseFloat(document.getElementById('bgSlide').value);
+  const bgRate  = Math.round(Math.pow(10, bgExp / 10)); // photons/s collected
+
+  // ── Scattering rate ──────────────────────────────────────────
+  const Rsc = scatterRate(atom.Gamma_MHz, s, Delta); // photons/s
+  const Rsc_max = atom.Gamma_MHz * 1e6 / 2;
+
+  // ── Collection ───────────────────────────────────────────────
+  const eta_geo = collectionGeo(NA);
+  const eta     = eta_geo * QE * Topt;
+
+  // ── Signal & noise counts ────────────────────────────────────
+  const N_sig  = Rsc * eta * t_s;
+  const N_bg   = bgRate * t_s;         // background already "collected"
+  const N_dark = darkRate * t_s;
+
+  // ── SNR ──────────────────────────────────────────────────────
+  const SNR = computeSNR(N_sig, N_bg, N_dark, sigma_read, camType, emGain);
+
+  // ── Detection fidelity ───────────────────────────────────────
+  // Gaussian approx: threshold at (N_sig + N_bg)/2
+  // Fidelity ≈ 1 − erfc(SNR/(2√2))/2 ≈ Φ(SNR/√2) for symmetric case
+  const fidelity = normCDF(SNR / Math.sqrt(2));
+
+  // ── Min exposure for target SNR ──────────────────────────────
+  let tMin10 = '—', tMin50 = '—';
+  if (Rsc > 0 && eta > 0) {
+    const t10 = minExposureForSNR(10,  Rsc, eta, bgRate, darkRate, sigma_read, camType, emGain);
+    const t50 = minExposureForSNR(50,  Rsc, eta, bgRate, darkRate, sigma_read, camType, emGain);
+    tMin10 = t10 < 10000 ? t10.toFixed(2) + ' ms' : '>10 s';
+    tMin50 = t50 < 10000 ? t50.toFixed(2) + ' ms' : '>10 s';
+  }
+
+  // ── Noise components ─────────────────────────────────────────
+  const nc = noiseComponents(N_sig, N_bg, N_dark, sigma_read, camType, emGain);
+  const totalVar = nc.shot + nc.bg + nc.dark + nc.read;
+
+  // ═══ UPDATE DOM ═══════════════════════════════════════════════
+
+  // Section 1 outputs
+  document.getElementById('rScatter').textContent = fmtShort(Rsc);
+  document.getElementById('rScatterMs').textContent = fmtShort(Rsc / 1000, '/ms');
+  document.getElementById('sParam').textContent = s.toPrecision(3);
+  document.getElementById('sParamIntensity').textContent =
+    `${(s * atom.Isat_mWcm2).toPrecision(3)} mW/cm² actual`;
+  document.getElementById('gammaVal').textContent = atom.Gamma_MHz.toFixed(3);
+  document.getElementById('tauVal').textContent =
+    `τ = ${(1000 / (atom.Gamma_MHz * 2 * Math.PI)).toFixed(1)} ns`;
+  document.getElementById('rMax').textContent = fmtShort(Rsc_max);
+
+  // Collection efficiency
+  document.getElementById('etaDisplay').textContent = (eta * 100).toFixed(2) + '%';
+  document.getElementById('etaGeoDisplay').textContent = `η_geo = ${(eta_geo * 100).toFixed(2)}%`;
+
+  // Photon counts
+  document.getElementById('nScattered').textContent = fmtShort(Rsc * t_s);
+  document.getElementById('nDetected').textContent  = fmtShort(N_sig);
+
+  // SNR meter
+  const snrPct = Math.min(100, (Math.log10(Math.max(1, SNR)) / Math.log10(100)) * 100);
+  document.getElementById('snrDisplay').textContent = SNR.toFixed(1);
+  document.getElementById('snrBar').style.width = snrPct + '%';
+
+  // Fidelity
+  const fPct = (fidelity * 100).toFixed(3);
+  document.getElementById('fidelityDisplay').textContent = fPct + '%';
+  document.getElementById('fidelityDesc').textContent =
+    fidelity > 0.999 ? 'Excellent (>99.9%)' :
+    fidelity > 0.99  ? 'Good (>99%)' :
+    fidelity > 0.95  ? 'Fair (>95%)' : 'Needs improvement';
+
+  document.getElementById('tMinDisplay').textContent  = tMin10;
+  document.getElementById('tMin50Display').textContent = tMin50;
+
+  // Noise budget table
+  const rows = [
+    { label: 'Atom shot noise', v: nc.shot, color: '#34d399' },
+    { label: 'Background noise', v: nc.bg, color: '#fbbf24' },
+    { label: 'Dark count noise',  v: nc.dark, color: '#60a5fa' },
+    { label: 'Read noise²',       v: nc.read, color: '#f87171' },
+  ].filter(r => r.v > 0 || r.label === 'Atom shot noise');
+
+  const tbody = document.getElementById('noiseTbody');
+  tbody.innerHTML = rows.map(r => {
+    const frac = totalVar > 0 ? (r.v / totalVar * 100) : 0;
+    return `<tr>
+      <td>${r.label}</td>
+      <td>${r.v.toFixed(1)}</td>
+      <td>${frac.toFixed(1)}%</td>
+      <td class="noise-bar-cell">
+        <div class="noise-minibar">
+          <div class="noise-minifill" style="width:${frac}%;background:${r.color}"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('') + `<tr style="font-weight:600">
+    <td>Total σ²</td>
+    <td>${totalVar.toFixed(1)}</td>
+    <td>100%</td>
+    <td></td>
+  </tr>`;
+
+  // Heating warning
+  document.getElementById('warnBanner').style.display = (Rsc > 500e3) ? 'block' : 'none';
+
+  // ── Update SNR vs time chart ──────────────────────────────────
+  const tPoints = [];
+  const snrPoints = [];
+  for (let i = -10; i <= 20; i += 0.5) {
+    const t = Math.pow(10, i / 10) / 1e3;  // seconds
+    const Ns = Rsc * eta * t;
+    const Nb = bgRate * t;
+    const Nd = darkRate * t;
+    const s_ = computeSNR(Ns, Nb, Nd, sigma_read, camType, emGain);
+    tPoints.push(Math.pow(10, i / 10).toFixed(2));   // ms
+    snrPoints.push(parseFloat(s_.toFixed(2)));
+  }
+
+  SNR_CHART.data.labels = tPoints;
+  SNR_CHART.data.datasets[0].data = snrPoints;
+  SNR_CHART.data.datasets[1].data = tPoints.map(() => 10);
+  SNR_CHART.data.datasets[2].data = tPoints.map(() => 50);
+  SNR_CHART.update('none');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENT HANDLERS
+═══════════════════════════════════════════════════════════════ */
+function onSpeciesChange() {
+  const atom = ATOMS[document.getElementById('speciesSel').value];
+  document.getElementById('atomBanner').innerHTML =
+    `${atom.label}: λ = ${atom.lambda_nm} nm &middot; Γ/2π = ${atom.Gamma_MHz} MHz &middot; I<sub>sat</sub> = ${atom.Isat_mWcm2} mW/cm²`;
+  compute();
+}
+
+function onCamChange() {
+  const type = document.getElementById('camType').value;
+  document.getElementById('emGainRow').style.display = (type === 'emccd') ? 'block' : 'none';
+  const banner = document.getElementById('camBanner');
+  if (type === 'emccd') {
+    banner.textContent = 'EMCCD: excess noise factor √2 applied; read noise divided by EM gain.';
+    document.getElementById('rnSlide').value = 60;
+    document.getElementById('rnLbl').textContent = '60';
+  } else if (type === 'scmos') {
+    banner.textContent = 'sCMOS: no excess noise; low read noise (~1–3 e⁻ RMS per pixel).';
+    document.getElementById('rnSlide').value = 2;
+    document.getElementById('rnLbl').textContent = '2';
+  } else {
+    banner.textContent = 'Ideal detector: only shot noise and dark counts modelled.';
+    document.getElementById('rnSlide').value = 0;
+    document.getElementById('rnLbl').textContent = '0';
+  }
+  compute();
+}
+
+// Initial render
+compute();
+initAccordions();
+</script>
+</body>
+</html>
