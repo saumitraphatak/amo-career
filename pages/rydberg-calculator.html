@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rydberg Calculator — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="Rydberg atom properties calculator — quantum defect theory, blockade radius, C6 coefficients, and Rydberg gate design for neutral-atom quantum computing.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/rydberg-calculator.html">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-ryd); }
+
+    /* ─── Result cards grid ──────────────────────────── */
+    .prop-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem;
+    }
+    @media(max-width:640px) { .prop-grid { grid-template-columns: 1fr; } }
+
+    .prop-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: .9rem 1.1rem;
+      transition: border-color .2s;
+    }
+    .prop-card:hover { border-color: rgba(129,140,248,.35); }
+    .prop-card-label {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .prop-card-val {
+      font-family: var(--mono); font-size: 1.35rem; font-weight: 700;
+      color: var(--c-ryd); line-height: 1;
+    }
+    .prop-card-unit { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
+    .prop-card-sub  { font-size: .75rem; color: var(--text-secondary); margin-top: .3rem; }
+
+    /* ─── Blockade status banner ─────────────────────── */
+    .blockade-yes {
+      background: #052e16; border: 1px solid #15803d; border-radius: 10px;
+      padding: 1rem 1.25rem; color: #86efac;
+      font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .blockade-no {
+      background: #1c0707; border: 1px solid #7f1d1d; border-radius: 10px;
+      padding: 1rem 1.25rem; color: #fca5a5;
+      font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: .6rem;
+    }
+
+    /* ─── Blockade result strip ──────────────────────── */
+    .blk-strip {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem;
+      margin-bottom: .9rem;
+    }
+    @media(max-width:640px) { .blk-strip { grid-template-columns: 1fr; } }
+
+    .blk-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: .85rem 1rem; text-align: center;
+    }
+    .blk-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: .3rem; }
+    .blk-val   { font-family: var(--mono); font-size: 1.2rem; font-weight: 700; color: var(--c-ryd); }
+    .blk-unit  { font-size: .75rem; color: var(--text-muted); margin-top: .15rem; }
+
+    /* ─── Controls ───────────────────────────────────── */
+    .ctrl-panel {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .ctrl-panel h5 {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--c-ryd); margin: 0 0 .9rem 0;
+    }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label {
+      display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .field-row select, .field-row input[type=number] {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .7rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row select:focus, .field-row input:focus {
+      outline: none; border-color: var(--c-ryd);
+    }
+    .field-row input[type=range] { width: 100%; accent-color: var(--c-ryd); margin-top: .2rem; }
+    .lbl-val { color: var(--c-ryd); font-family: var(--mono); }
+
+    /* ─── Two-col layout ─────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:800px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ─── Theory & formula boxes ─────────────────────── */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-left: 4px solid var(--c-ryd); border-radius: 10px;
+      padding: 1rem 1.3rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .93rem; font-weight: 700; color: var(--c-ryd); margin: 0 0 .5rem 0; }
+    .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+    .formula-box {
+      background: #08070f; border: 1px solid #2d1f6e; border-radius: 8px;
+      padding: .7rem 1rem; margin: .6rem 0;
+      font-family: var(--mono); color: #a5b4fc; font-size: .82rem;
+      line-height: 1.85; white-space: pre; overflow-x: auto;
+    }
+    .eq { font-family: var(--mono); font-size: .87rem; color: #c4b5fd;
+          display: block; margin: .4rem 0; text-align: center; }
+
+    /* ─── Chart card ─────────────────────────────────── */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1rem 1.25rem;
+    }
+    .chart-card h5 {
+      font-size: .78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted); margin: 0 0 .75rem 0;
+    }
+
+    /* ─── Info banner ────────────────────────────────── */
+    .info-banner {
+      background: #0a1020; border: 1px solid #1e3a6e;
+      border-radius: 8px; padding: .65rem 1rem;
+      font-size: .8rem; color: #93c5fd; margin-top: .75rem; line-height: 1.6;
+    }
+
+    /* ─── Section divider ────────────────────────────── */
+    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+
+    /* ─── Read links ─────────────────────────────────── */
+    .read-links { display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
+    .read-link {
+      display: flex; align-items: center; gap: .6rem;
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 8px;
+      padding: .55rem .85rem; font-size: .82rem; color: var(--text-secondary);
+      text-decoration: none; transition: border-color .15s, color .15s;
+    }
+    .read-link:hover { border-color: var(--c-ryd); color: var(--text-primary); }
+    .rl-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ─── Disclaimer tag ─────────────────────────────── */
+    .approx-tag {
+      display: inline-block; font-size: .65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      background: rgba(129,140,248,.12); color: var(--c-ryd);
+      border: 1px solid rgba(129,140,248,.25); border-radius: 4px;
+      padding: .1rem .4rem; vertical-align: middle; margin-left: .4rem;
+    }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="page-hero" style="--hero-accent: var(--c-ryd);">
+  <div class="container">
+    <div class="hero-badge anim-in">RYDBERG PHYSICS</div>
+    <h1 class="page-title anim-in delay-1">
+      Rydberg <span class="grad-text" style="--ga: var(--c-ryd); --gb: #38bdf8;">Calculator</span>
+    </h1>
+    <p class="page-subtitle anim-in delay-2">
+      Quantum defect theory for alkali Rydberg states — effective quantum number, binding energy,
+      orbital radius, radiative lifetime, and van der Waals blockade radius.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">n*</span><span class="stat-lbl">Quantum defect</span></div>
+      <div class="stat"><span class="stat-val">C₆</span><span class="stat-lbl">van der Waals coeff.</span></div>
+      <div class="stat"><span class="stat-val">R_b</span><span class="stat-lbl">Blockade radius</span></div>
+      <div class="stat"><span class="stat-val">5 species</span><span class="stat-lbl">Rb · Cs · Li · Na · K</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top:2.5rem;">
+
+  <!-- ═══════ SECTION 1: STATE PROPERTIES ════════ -->
+  <section class="section-block anim-in delay-1">
+    <div class="two-col">
+
+      <!-- Controls -->
+      <div class="ctrl-panel">
+        <h5>Rydberg State Selector</h5>
+
+        <div class="field-row">
+          <label>Atom species</label>
+          <select id="speciesSel" onchange="onSpeciesChange()">
+            <option value="Rb">⁸⁷Rb — Rubidium</option>
+            <option value="Cs">¹³³Cs — Cesium</option>
+            <option value="Li">⁷Li — Lithium</option>
+            <option value="Na">²³Na — Sodium</option>
+            <option value="K">⁴⁰K — Potassium</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Rydberg series</label>
+          <select id="orbitalSel" onchange="compute()">
+            <option value="nS">nS₁/₂</option>
+            <option value="nP1">nP₁/₂</option>
+            <option value="nP3">nP₃/₂</option>
+            <option value="nD3">nD₃/₂</option>
+            <option value="nD5">nD₅/₂</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Principal quantum number n: <span class="lbl-val" id="nVal">50</span></label>
+          <input type="range" id="nSlide" min="15" max="100" value="50"
+            oninput="document.getElementById('nVal').textContent=this.value; compute()">
+        </div>
+
+        <div class="info-banner" id="stateLabel">
+          Select a state above to see Rydberg properties.
+        </div>
+      </div>
+
+      <!-- Properties display -->
+      <div>
+        <div class="prop-grid">
+          <div class="prop-card">
+            <div class="prop-card-label">Effective quantum number</div>
+            <div class="prop-card-val" id="nStar">—</div>
+            <div class="prop-card-unit">n* = n − δ₀ − δ₂/(n−δ₀)²</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Binding energy</div>
+            <div class="prop-card-val" id="bindEV">—</div>
+            <div class="prop-card-unit" id="bindCM">— cm⁻¹</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Orbital radius ⟨r⟩</div>
+            <div class="prop-card-val" id="orbRadius">—</div>
+            <div class="prop-card-unit" id="orbRadiusNm">— nm</div>
+            <div class="prop-card-sub">≈ n*² a₀ (mean radius, l=0)</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Radiative lifetime</div>
+            <div class="prop-card-val" id="lifetime">—</div>
+            <div class="prop-card-unit">τ ≈ τ₀ × n*³</div>
+          </div>
+        </div>
+
+        <div class="theory-box" style="margin-top:.75rem;">
+          <h4>Quantum defect formula</h4>
+          <p>
+            In alkali atoms the core electrons shift the effective principal quantum number
+            from n to n* = n − δ(n,l,j). The Rydberg–Ritz formula:
+          </p>
+          <span class="eq">δ(n, l, j) = δ₀ + δ₂ / (n − δ₀)²</span>
+          <p>
+            gives the binding energy E_b = R_y / n*² (in eV) with R_y = 13.6057 eV.
+            Orbital radius scales as ⟨r⟩ ≈ n*² a₀ (mean value for s-wave; accurate to ~10%).
+            Radiative lifetime: τ ∝ n*³ for low-l states, ∝ n*⁵ for high-l circular states.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════ SECTION 2: BLOCKADE CALCULATOR ════════ -->
+  <section class="section-block anim-in delay-1">
+    <div style="margin-bottom:1.25rem;">
+      <h3 style="font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:0 0 .3rem 0;">
+        Rydberg Blockade Calculator
+      </h3>
+      <p style="font-size:.87rem; color:var(--text-secondary); margin:0;">
+        Van der Waals blockade radius R<sub>b</sub> for two atoms both driven to the Rydberg state.
+        C₆ values are approximations scaled from published data — use
+        <a href="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator" target="_blank"
+           rel="noopener" style="color:var(--c-ryd);">ARC</a> for precision calculations.
+      </p>
+    </div>
+
+    <div class="two-col">
+      <!-- Blockade controls -->
+      <div class="ctrl-panel">
+        <h5>Blockade Parameters</h5>
+
+        <div class="field-row">
+          <label>Rydberg Rabi frequency Ω/2π: <span class="lbl-val" id="OmegaVal">1.0</span> MHz</label>
+          <input type="range" id="OmegaSlide" min="-2" max="2" step="0.05" value="0"
+            oninput="document.getElementById('OmegaVal').textContent=(Math.pow(10,+this.value)).toFixed(2==+this.value?0:2); compute()">
+        </div>
+        <div style="font-size:.72rem; color:var(--text-muted); margin-top:-.4rem; margin-bottom:.8rem;">
+          Logarithmic scale: 0.01 – 100 MHz
+        </div>
+
+        <div class="field-row">
+          <label>Atom separation r: <span class="lbl-val" id="sepVal">5.0</span> μm</label>
+          <input type="range" id="sepSlide" min="1" max="30" step="0.5" value="5"
+            oninput="document.getElementById('sepVal').textContent=(+this.value).toFixed(1); compute()">
+        </div>
+
+        <div class="info-banner" style="margin-top:.5rem;">
+          💡 <strong>Typical experiment:</strong> Tweezer arrays use atom spacings of 3–10 μm with
+          Rydberg Rabi frequencies of 0.1–10 MHz. For a 2-qubit gate you need r &lt; R<sub>b</sub>.
+        </div>
+      </div>
+
+      <!-- Blockade results -->
+      <div>
+        <div class="blk-strip">
+          <div class="blk-card">
+            <div class="blk-label">|C₆| <span class="approx-tag">approx</span></div>
+            <div class="blk-val" id="C6val">—</div>
+            <div class="blk-unit">GHz · μm⁶</div>
+          </div>
+          <div class="blk-card">
+            <div class="blk-label">Blockade radius R<sub>b</sub></div>
+            <div class="blk-val" id="Rbval">—</div>
+            <div class="blk-unit">μm</div>
+          </div>
+          <div class="blk-card">
+            <div class="blk-label">Interaction at r</div>
+            <div class="blk-val" id="Uval">—</div>
+            <div class="blk-unit">MHz</div>
+          </div>
+        </div>
+
+        <div id="blockadeStatus" class="blockade-yes" style="display:none;"></div>
+
+        <div class="theory-box" style="margin-top:.75rem;">
+          <h4>Van der Waals blockade</h4>
+          <p>
+            Two atoms in |n,l,j⟩ interact via U(r) = −C₆/r⁶ (van der Waals regime, r ≫ r<sub>LeRoy</sub>).
+            When |U(r)| ≫ ℏΩ, double excitation |rr⟩ is energetically forbidden —
+            the Rydberg blockade. The blockade radius is defined by |U(R<sub>b</sub>)| = ℏΩ:
+          </p>
+          <span class="eq">R_b = (|C₆| / ℏΩ)^(1/6)</span>
+          <p>
+            C₆ scales as n*¹¹ — doubling n roughly multiplies R<sub>b</sub> by 2¹¹/⁶ ≈ 3.6.
+            <strong>S states</strong> have weaker (smaller C₆) blockade than <strong>P or D states</strong>
+            due to Förster resonance structure. For Rydberg gates, P₃/₂ and D₅/₂ states
+            are often preferred precisely because of their larger C₆.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════ SECTION 3: R_b vs n PLOT ════════ -->
+  <section class="section-block anim-in delay-1">
+    <div class="chart-card">
+      <h5>Blockade radius R<sub>b</sub> vs. principal quantum number n — <span id="chartTitle">Rb nS₁/₂</span></h5>
+      <canvas id="rbChart" height="200"></canvas>
+      <div style="font-size:.72rem; color:var(--text-muted); margin-top:.5rem;">
+        Shaded region: R<sub>b</sub> for Ω/2π = 0.1 – 10 MHz. Dashed line: current Ω. Dot: selected n.
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════ SECTION 4: SPECIES TABLE ════════ -->
+  <section class="section-block anim-in delay-1">
+    <div class="theory-box">
+      <h4>Quantum defects reference — selected species</h4>
+      <p>Values from published literature (Li et al. 2003 for Rb; Goy et al. 1982 / Weber &amp; Sansonetti 1987 for Cs; Lorenzen &amp; Niemax 1983 for Li, Na, K). n* = n − δ₀ − δ₂/(n−δ₀)².</p>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:.82rem; margin-top:.5rem;">
+        <thead>
+          <tr style="border-bottom:1px solid #1e293b;">
+            <th style="padding:.55rem .8rem; text-align:left; color:var(--text-muted); font-weight:600;">Species</th>
+            <th style="padding:.55rem .8rem; text-align:left; color:var(--text-muted); font-weight:600;">Series</th>
+            <th style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">δ₀</th>
+            <th style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">δ₂</th>
+            <th style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">n*(n=50)</th>
+          </tr>
+        </thead>
+        <tbody id="qd-table-body">
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════ SECTION 5: THEORY ════════ -->
+  <section class="section-block anim-in delay-1">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+      <div>
+        <div class="theory-box">
+          <h4>C₆ scaling and Förster resonances</h4>
+          <p>
+            For like-state pairs |nℓj, nℓj⟩, C₆ arises from second-order dipole-dipole coupling to
+            nearly degenerate pair states |n'l', n''l''⟩. C₆ diverges near a <strong>Förster resonance</strong>
+            (exact degeneracy between initial and intermediate pair states), shifting to a C₃/r³
+            interaction. For <strong>P₃/₂ states in Cs at n ≈ 43</strong> a near-perfect Förster
+            resonance gives anomalously large and controllable interactions — exploited in early
+            blockade experiments by the Browaeys group (Gaëtan et al. 2009).
+          </p>
+        </div>
+        <div class="theory-box">
+          <h4>Blackbody radiation limit</h4>
+          <p>
+            At room temperature (T = 300 K, k_BT/h = 6.25 THz), Rydberg states with
+            ℏω_n,n' &lt; k_BT are strongly mixed by blackbody photons. Effective lifetime
+            drops below the spontaneous emission limit for n &gt; 30–40 at 300 K.
+            Cryogenic environments (4 K, 77 K) extend T₁ by orders of magnitude.
+            For n = 50 Rb at 300 K: τ_eff ~ 50 μs (vs ~100 μs spontaneous-only).
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="theory-box">
+          <h4>Rydberg gate fidelity estimate</h4>
+          <p>
+            A Rydberg CZ gate requires: (1) Ω t_gate = π (π-pulse to |r⟩), (2) blockade U ≫ ℏΩ,
+            (3) gate time t_gate ≪ τ_Rydberg. Key fidelity-limiting errors:
+          </p>
+          <div class="formula-box">Error from spontaneous emission:
+  ε_se ≈ (Γ_Ryd / Ω) × π  ≈ π / (Ω τ_Ryd)
+
+Error from imperfect blockade:
+  ε_blk ≈ (ℏΩ / U(r))²  =  (r / R_b)¹²
+
+Typical: n=70, Ω = 2π×1 MHz, τ ≈ 400 μs → ε_se ~ 10⁻³
+         r = 5 μm, R_b = 10 μm           → ε_blk ~ 10⁻⁴</div>
+        </div>
+        <div class="theory-box">
+          <h4>Two-photon excitation</h4>
+          <p>
+            Direct UV single-photon excitation (e.g., 318 nm for Cs, ~297 nm for Rb) is possible
+            but common experiments use <strong>two-photon excitation</strong> via an intermediate
+            state (e.g., Rb: 780 nm (D2) + 480 nm → nS/nD; Cs: 852 nm + 509 nm → nP).
+            The effective Rabi frequency is Ω_eff = Ω₁Ω₂ / (2Δ) where Δ is the single-photon
+            detuning. Large Δ reduces photon scattering from the intermediate state.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════ REFERENCES ════════ -->
+  <section class="section-block anim-in delay-1" style="padding-bottom:3rem;">
+    <h4 style="font-size:.85rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+               color:var(--text-muted); margin-bottom:.75rem;">References & Tools</h4>
+    <div class="read-links">
+      <a class="read-link" href="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator" target="_blank" rel="noopener">
+        <span class="rl-icon">💻</span>ARC — Alkali Rydberg Calculator (Python, Sibalic et al. 2017) — precision C₆, pair potentials, Stark maps
+      </a>
+      <a class="read-link" href="https://arxiv.org/abs/0909.4777" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>Saffman, Walker &amp; Mølmer — Rev. Mod. Phys. 82, 2313 (2010) — definitive Rydberg QC review
+      </a>
+      <a class="read-link" href="https://arxiv.org/abs/2202.13328" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>Saffman 2022 — Quantum computing with neutral atoms: current status and prospects
+      </a>
+      <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>Evered et al. 2023 — High-fidelity parallel entangling gates (Harvard, 99.5%)
+      </a>
+      <a class="read-link" href="https://www.cambridge.org/core/books/rydberg-atoms/3A696ECE16543AC5CE8B6A7E06ADA95E" target="_blank" rel="noopener">
+        <span class="rl-icon">📖</span>Gallagher — Rydberg Atoms (Cambridge, 1994) — quantum defects, lifetimes, interactions
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'rydberg-calculator', root: '../' });
+initScrollReveal();
+
+/* ═══════════════════════════════════════════════════════════
+   RYDBERG PHYSICS DATA
+   ═══════════════════════════════════════════════════════════ */
+const Ry_eV  = 13.605693;   // eV
+const Ry_cm  = 109737.316;  // cm⁻¹
+const a0_nm  = 0.052918;    // Bohr radius in nm
+const hbar_eVs = 6.582119e-16; // eV·s
+
+/* Quantum defect parameters (δ₀, δ₂) and approximate C₆ anchors.
+   C6_GHz_um6: van der Waals C₆ in units of GHz·μm⁶ at nref_star (n*).
+   Scaling: C₆(n*) = C6_GHz_um6 × (n*/nref_star)¹¹
+   tau0_ns: lifetime prefactor so τ[μs] = tau0_ns×1e-3 × n*³
+   Sources: Li et al. PRA 2003 (Rb); Weber & Sansonetti 1987 (Cs);
+            Lorenzen & Niemax 1983 (Li,Na); Arimondo et al. 1977 (K) */
+const DATA = {
+  Rb: {
+    orbitals: {
+      nS:  { label:'nS₁/₂', d0:3.1311804, d2: 0.1784, tau0_ns:1.43, C6:   15, nref_star:46.87 },
+      nP1: { label:'nP₁/₂', d0:2.6548849, d2: 0.2900, tau0_ns:2.76, C6:  280, nref_star:47.35 },
+      nP3: { label:'nP₃/₂', d0:2.6416737, d2: 0.2950, tau0_ns:2.76, C6:  400, nref_star:47.36 },
+      nD3: { label:'nD₃/₂', d0:1.2480,    d2:-0.0040, tau0_ns:3.80, C6:  200, nref_star:48.75 },
+      nD5: { label:'nD₅/₂', d0:1.2464,    d2:-0.0080, tau0_ns:3.80, C6:  250, nref_star:48.75 },
+    }
+  },
+  Cs: {
+    orbitals: {
+      nS:  { label:'nS₁/₂', d0:4.0493532, d2: 0.2391, tau0_ns:1.80, C6:   25, nref_star:45.95 },
+      nP1: { label:'nP₁/₂', d0:3.5914767, d2: 0.3500, tau0_ns:3.50, C6:  450, nref_star:46.41 },
+      nP3: { label:'nP₃/₂', d0:3.5590268, d2: 0.3740, tau0_ns:3.50, C6:  650, nref_star:46.44 },
+      nD3: { label:'nD₃/₂', d0:2.4754562, d2: 0.0090, tau0_ns:4.50, C6:  350, nref_star:47.52 },
+      nD5: { label:'nD₅/₂', d0:2.4663544, d2: 0.0120, tau0_ns:4.50, C6:  400, nref_star:47.53 },
+    }
+  },
+  Li: {
+    orbitals: {
+      nS:  { label:'nS₁/₂', d0:0.3995101, d2: 0.0290, tau0_ns:0.35, C6:    2, nref_star:49.60 },
+      nP1: { label:'nP₁/₂', d0:0.0471780, d2:-0.0240, tau0_ns:0.80, C6:   60, nref_star:49.95 },
+      nP3: { label:'nP₃/₂', d0:0.0471780, d2:-0.0240, tau0_ns:0.80, C6:   60, nref_star:49.95 },
+      nD3: { label:'nD₃/₂', d0:0.0021290, d2:-0.0120, tau0_ns:1.50, C6:   30, nref_star:49.998},
+      nD5: { label:'nD₅/₂', d0:0.0021290, d2:-0.0120, tau0_ns:1.50, C6:   30, nref_star:49.998},
+    }
+  },
+  Na: {
+    orbitals: {
+      nS:  { label:'nS₁/₂', d0:1.347969,  d2: 0.06137,tau0_ns:0.70, C6:    8, nref_star:48.65 },
+      nP1: { label:'nP₁/₂', d0:0.855424,  d2: 0.11193,tau0_ns:1.50, C6:  180, nref_star:49.14 },
+      nP3: { label:'nP₃/₂', d0:0.854566,  d2: 0.11296,tau0_ns:1.50, C6:  180, nref_star:49.15 },
+      nD3: { label:'nD₃/₂', d0:0.014867,  d2:-0.0410, tau0_ns:2.80, C6:  100, nref_star:49.985},
+      nD5: { label:'nD₅/₂', d0:0.014656,  d2:-0.0400, tau0_ns:2.80, C6:  100, nref_star:49.985},
+    }
+  },
+  K: {
+    orbitals: {
+      nS:  { label:'nS₁/₂', d0:2.1801985, d2: 0.1300, tau0_ns:0.90, C6:   10, nref_star:47.82 },
+      nP1: { label:'nP₁/₂', d0:1.713892,  d2: 0.2330, tau0_ns:2.00, C6:  220, nref_star:48.29 },
+      nP3: { label:'nP₃/₂', d0:1.720168,  d2: 0.1930, tau0_ns:2.00, C6:  220, nref_star:48.28 },
+      nD3: { label:'nD₃/₂', d0:0.276970,  d2:-0.0100, tau0_ns:3.20, C6:  130, nref_star:49.72 },
+      nD5: { label:'nD₅/₂', d0:0.277000,  d2:-0.0100, tau0_ns:3.20, C6:  130, nref_star:49.72 },
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   PHYSICS FUNCTIONS
+   ═══════════════════════════════════════════════════════════ */
+function nStar(n, d0, d2) {
+  return n - d0 - d2 / Math.pow(n - d0, 2);
+}
+
+function bindingEV(ns) {
+  return Ry_eV / (ns * ns);
+}
+
+function orbRadius_nm(ns) {
+  // Mean radial expectation value for l=0: <r> ≈ n*²·a₀ × (3/2 - l(l+1)/(2n*²))
+  // Simplified to n*² × a₀ for quick reference
+  return ns * ns * a0_nm;
+}
+
+function lifetime_us(ns, tau0_ns) {
+  return tau0_ns * 1e-3 * Math.pow(ns, 3); // μs
+}
+
+function C6_GHz(ns, orb) {
+  // Approximate scaling: C₆(n*) = C6_ref × (n*/nref_star)^11
+  return orb.C6 * Math.pow(ns / orb.nref_star, 11);
+}
+
+function blockadeRadius_um(C6_ghz, Omega_MHz) {
+  // R_b = (|C6|[GHz·μm⁶] × 1000 / Ω[MHz])^(1/6)   [μm]
+  return Math.pow(Math.abs(C6_ghz) * 1000 / Omega_MHz, 1 / 6);
+}
+
+function interaction_MHz(C6_ghz, r_um) {
+  // U(r) = C₆/r⁶ in GHz, convert to MHz
+  return Math.abs(C6_ghz) / Math.pow(r_um, 6) * 1000;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UI
+   ═══════════════════════════════════════════════════════════ */
+function getSpecies() { return document.getElementById('speciesSel').value; }
+function getOrbitalKey() { return document.getElementById('orbitalSel').value; }
+function getN()       { return parseInt(document.getElementById('nSlide').value); }
+function getOmega_MHz() {
+  return Math.pow(10, parseFloat(document.getElementById('OmegaSlide').value));
+}
+function getSep_um() {
+  return parseFloat(document.getElementById('sepSlide').value);
+}
+
+function fmt(v, dp) { return v.toFixed(dp); }
+function fmtSI(v) {
+  if (v >= 1000) return (v/1000).toFixed(2) + ' m';
+  if (v >= 1)    return v.toFixed(2) + ' μ';
+  if (v >= 0.001) return (v*1000).toFixed(1) + ' n';
+  return v.toExponential(2) + ' μ';
+}
+
+function onSpeciesChange() {
+  // Rebuild orbital dropdown (all species have same options)
+  compute();
+}
+
+function compute() {
+  const species  = getSpecies();
+  const orbKey   = getOrbitalKey();
+  const n        = getN();
+  const Omega    = getOmega_MHz();
+  const r        = getSep_um();
+
+  const orb = DATA[species].orbitals[orbKey];
+  if (!orb) return;
+
+  const ns        = nStar(n, orb.d0, orb.d2);
+  const Eb_eV     = bindingEV(ns);
+  const Eb_cm     = Eb_eV * 8065.54;
+  const r_nm      = orbRadius_nm(ns);
+  const tau_us    = lifetime_us(ns, orb.tau0_ns);
+  const C6        = C6_GHz(ns, orb);
+  const Rb        = blockadeRadius_um(C6, Omega);
+  const U_MHz     = interaction_MHz(C6, r);
+
+  // Update state properties
+  document.getElementById('nStar').textContent    = ns.toFixed(4);
+  document.getElementById('bindEV').textContent   = Eb_eV.toFixed(4) + ' eV';
+  document.getElementById('bindCM').textContent   = Eb_cm.toFixed(1) + ' cm⁻¹';
+  document.getElementById('orbRadius').textContent = r_nm >= 1000
+    ? (r_nm/1000).toFixed(2) + ' μm' : r_nm.toFixed(1) + ' nm';
+  document.getElementById('orbRadiusNm').textContent = (r_nm / a0_nm).toFixed(0) + ' a₀  =  ' + r_nm.toFixed(1) + ' nm';
+
+  const tauStr = tau_us >= 1000 ? (tau_us/1000).toFixed(2)+' ms'
+               : tau_us >= 0.1  ? tau_us.toFixed(1)+' μs'
+               : (tau_us*1000).toFixed(0)+' ns';
+  document.getElementById('lifetime').textContent = tauStr;
+  document.getElementById('stateLabel').innerHTML =
+    `<strong>${species}</strong> | <strong>${orb.label}</strong>, n = ${n} &nbsp;·&nbsp; n* = ${ns.toFixed(3)}`;
+
+  // Update blockade results
+  document.getElementById('C6val').textContent = Math.abs(C6) >= 1e6
+    ? (C6/1e6).toFixed(1)+'×10⁶' : Math.abs(C6) >= 1e3
+    ? (C6/1e3).toFixed(1)+'×10³' : Math.abs(C6).toFixed(1);
+  document.getElementById('Rbval').textContent  = Rb.toFixed(2);
+  document.getElementById('Uval').textContent   = U_MHz >= 1000
+    ? (U_MHz/1000).toFixed(1)+' GHz' : U_MHz.toFixed(1)+' MHz';
+
+  const blkEl = document.getElementById('blockadeStatus');
+  blkEl.style.display = 'flex';
+  if (r < Rb) {
+    blkEl.className = 'blockade-yes';
+    blkEl.innerHTML = `✅ <strong>In blockade regime</strong> — atom separation r = ${r.toFixed(1)} μm &lt; R<sub>b</sub> = ${Rb.toFixed(2)} μm &nbsp;·&nbsp; Interaction U = ${document.getElementById('Uval').textContent} ≫ ℏΩ`;
+  } else {
+    blkEl.className = 'blockade-no';
+    blkEl.innerHTML = `⚠️ <strong>Not in blockade regime</strong> — r = ${r.toFixed(1)} μm &gt; R<sub>b</sub> = ${Rb.toFixed(2)} μm. Reduce separation or increase n/Ω.`;
+  }
+
+  // Update chart
+  updateChart(species, orbKey, Omega);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CHART: R_b vs n
+   ═══════════════════════════════════════════════════════════ */
+let rbChartObj = null;
+
+function buildCurve(species, orbKey, Omega_MHz) {
+  const orb = DATA[species].orbitals[orbKey];
+  const ns_arr = [], Rb_arr = [], Rb_lo_arr = [], Rb_hi_arr = [];
+  for (let n = 15; n <= 100; n++) {
+    const ns = nStar(n, orb.d0, orb.d2);
+    const C6 = C6_GHz(ns, orb);
+    ns_arr.push(n);
+    Rb_arr.push(blockadeRadius_um(C6, Omega_MHz));
+    Rb_lo_arr.push(blockadeRadius_um(C6, 10));   // Ω/2π = 10 MHz
+    Rb_hi_arr.push(blockadeRadius_um(C6, 0.1));  // Ω/2π = 0.1 MHz
+  }
+  return { ns_arr, Rb_arr, Rb_lo_arr, Rb_hi_arr };
+}
+
+function updateChart(species, orbKey, Omega_MHz) {
+  const { ns_arr, Rb_arr, Rb_lo_arr, Rb_hi_arr } = buildCurve(species, orbKey, Omega_MHz);
+  const n_cur = getN();
+  const orb = DATA[species].orbitals[orbKey];
+  const ns_cur = nStar(n_cur, orb.d0, orb.d2);
+  const C6_cur = C6_GHz(ns_cur, orb);
+  const Rb_cur = blockadeRadius_um(C6_cur, Omega_MHz);
+
+  document.getElementById('chartTitle').textContent =
+    `${species} ${orb.label}, Ω/2π = ${Omega_MHz.toFixed(2)} MHz`;
+
+  const labels = ns_arr.map(String);
+  const shadeData = ns_arr.map((n, i) => ({ x: n, y: Rb_hi_arr[i], y0: Rb_lo_arr[i] }));
+
+  if (!rbChartObj) {
+    rbChartObj = new Chart(document.getElementById('rbChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'R_b (current Ω)',
+            data: Rb_arr,
+            borderColor: '#818cf8', borderWidth: 2, pointRadius: 0,
+            fill: false, tension: 0.3,
+          },
+          {
+            label: 'Shade hi (0.1 MHz)',
+            data: Rb_hi_arr,
+            borderColor: 'transparent', backgroundColor: 'rgba(129,140,248,0.12)',
+            fill: '+1', pointRadius: 0, tension: 0.3,
+          },
+          {
+            label: 'Shade lo (10 MHz)',
+            data: Rb_lo_arr,
+            borderColor: 'transparent', backgroundColor: 'rgba(129,140,248,0.12)',
+            fill: false, pointRadius: 0, tension: 0.3,
+          },
+          {
+            label: 'Selected n',
+            data: labels.map((l,i) => parseInt(l) === n_cur ? Rb_cur : null),
+            borderColor: '#f59e0b', borderWidth: 0,
+            pointRadius: 6, pointBackgroundColor: '#f59e0b',
+            fill: false, spanGaps: false,
+          },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.datasetIndex === 0
+                ? `R_b = ${ctx.parsed.y.toFixed(2)} μm (n=${ctx.label})`
+                : null
+            },
+            filter: item => item.datasetIndex === 0,
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Principal quantum number n', color: '#94a3b8' },
+            ticks: { color: '#64748b', maxTicksLimit: 10 },
+            grid: { color: '#1e293b' }
+          },
+          y: {
+            title: { display: true, text: 'Blockade radius R_b (μm)', color: '#94a3b8' },
+            ticks: { color: '#64748b' },
+            grid: { color: '#1e293b' }
+          }
+        }
+      }
+    });
+  } else {
+    rbChartObj.data.labels = labels;
+    rbChartObj.data.datasets[0].data = Rb_arr;
+    rbChartObj.data.datasets[1].data = Rb_hi_arr;
+    rbChartObj.data.datasets[2].data = Rb_lo_arr;
+    rbChartObj.data.datasets[3].data = labels.map((l,i) => parseInt(l) === n_cur ? Rb_cur : null);
+    rbChartObj.update('none');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   QUANTUM DEFECT TABLE
+   ═══════════════════════════════════════════════════════════ */
+(function buildTable() {
+  const tbody = document.getElementById('qd-table-body');
+  const seriesOrder = ['nS','nP1','nP3','nD3','nD5'];
+  const seriesLabels = { nS:'nS₁/₂', nP1:'nP₁/₂', nP3:'nP₃/₂', nD3:'nD₃/₂', nD5:'nD₅/₂' };
+
+  Object.entries(DATA).forEach(([sp, spData], si) => {
+    seriesOrder.forEach((orbKey, oi) => {
+      const orb = spData.orbitals[orbKey];
+      const ns50 = nStar(50, orb.d0, orb.d2);
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid #0f1e35';
+      tr.innerHTML = `
+        <td style="padding:.45rem .8rem; color:#c084fc; font-weight:600;">${oi===0 ? sp : ''}</td>
+        <td style="padding:.45rem .8rem; font-family:var(--mono); color:var(--text-secondary);">${seriesLabels[orbKey]}</td>
+        <td style="padding:.45rem .8rem; text-align:center; font-family:var(--mono); color:var(--text-primary);">${orb.d0.toFixed(7)}</td>
+        <td style="padding:.45rem .8rem; text-align:center; font-family:var(--mono); color:var(--text-secondary);">${orb.d2.toFixed(4)}</td>
+        <td style="padding:.45rem .8rem; text-align:center; font-family:var(--mono); color:var(--c-ryd);">${ns50.toFixed(4)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+})();
+
+/* ═══ Init ═══ */
+compute();
+</script>
+</body>
+</html>

@@ -10,14 +10,14 @@
    ───────────────────────────────────────────────────── */
 const NAV = {
   tools: [
-    { key: 'atom-library',      label: 'Atom Library',       icon: '⚛️',  color: '#38bdf8', href: 'pages/atom-library.html'      },
-    { key: 'lab-techniques',    label: 'Lab Techniques',     icon: '🔬',  color: '#34d399', href: 'pages/lab-techniques.html'    },
-    { key: 'cooling-simulator', label: 'Cooling Simulator',  icon: '❄️',  color: '#60a5fa', href: 'pages/cooling-simulator.html' },
-    { key: 'release-recapture', label: 'Release-Recapture',  icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html' },
-    { key: 'lab-calculators',   label: 'Lab Calculators',    icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'   },
-    { key: 'laser-locking',     label: 'Laser Locking',      icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'     },
-    { key: 'zernike',           label: 'Zernike Polynomials',icon: '🌊',  color: '#2dd4bf', href: 'pages/zernike.html'           },
-    { key: 'polarimetry',       label: 'Polarimetry Explorer',icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'        },
+    { key: 'atom-library',         label: 'Atom Library',            icon: '⚛️',  color: '#38bdf8', href: 'pages/atom-library.html'         },
+    { key: 'lab-techniques',       label: 'Lab Techniques',          icon: '🔬',  color: '#34d399', href: 'pages/lab-techniques.html'       },
+    { key: 'rydberg-calculator',   label: 'Rydberg Calculator',      icon: '🔮',  color: '#818cf8', href: 'pages/rydberg-calculator.html'   },
+    { key: 'release-recapture',    label: 'Release-Recapture',       icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html'    },
+    { key: 'lab-calculators',      label: 'Lab Calculators',         icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'      },
+    { key: 'laser-locking',        label: 'Laser Locking',           icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'        },
+    { key: 'zernike',              label: 'Zernike Polynomials',     icon: '🌊',  color: '#2dd4bf', href: 'pages/zernike.html'              },
+    { key: 'polarimetry',          label: 'Polarimetry Explorer',    icon: '🔭',  color: '#e879f9', href: 'pages/polarimetry.html'          },
   ],
   industry: [
     { key: 'qc-landscape', label: 'QC Industry Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
