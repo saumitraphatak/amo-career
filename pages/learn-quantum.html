@@ -232,7 +232,7 @@
       Wigner functions. No prior quantum background required.
     </p>
     <div class="hero-stats anim-in delay-3">
-      <div class="stat"><span class="stat-val">13</span><span class="stat-lbl">topics</span></div>
+      <div class="stat"><span class="stat-val">14</span><span class="stat-lbl">topics</span></div>
       <div class="stat"><span class="stat-val">Bloch</span><span class="stat-lbl">sphere sim</span></div>
       <div class="stat"><span class="stat-val">Rydberg</span><span class="stat-lbl">blockade calc</span></div>
       <div class="stat"><span class="stat-val">QEC</span><span class="stat-lbl">threshold chart</span></div>
@@ -251,6 +251,7 @@
   <a href="#twoqubit">🔀 Two-Qubit</a>
   <a href="#rabi">🌀 Rabi</a>
   <a href="#hyperfine">🔑 Hyperfine</a>
+  <a href="#optical-pumping">💡 Opt. Pumping</a>
   <a href="#decoherence">📉 Decoherence</a>
   <a href="#algorithms">⚙️ Algorithms</a>
   <a href="#qec">🛡️ QEC</a>
@@ -905,6 +906,220 @@ Single-qubit gate: resonant MW or two-photon Raman pulse
 
 <hr class="section-divider">
 
+<!-- ══════════ OPTICAL PUMPING ══════════ -->
+<section class="topic-section" id="optical-pumping">
+  <div class="topic-header">
+    <span class="t-icon">💡</span>
+    <h2>Optical Pumping &amp; State Preparation</h2>
+    <span class="t-tag">qubit initialization</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Driving atoms into a single quantum state with light</h4>
+    <p>
+      Optical pumping uses <strong>circularly polarized resonant light</strong> to redistribute atomic population
+      among magnetic sublevels m<sub>F</sub>. A σ⁺ beam drives Δm<sub>F</sub> = +1 transitions —
+      atoms absorb photons and reach excited states inaccessible from the highest m<sub>F</sub> level.
+      After repeated absorption-emission cycles, population accumulates in the
+      <strong>dark state</strong> (the sublevel that cannot absorb) or a <strong>cycling (stretch) state</strong>.
+      This is how we initialize qubits: prepare all atoms in one specific m<sub>F</sub> before
+      coherent manipulation.
+    </p>
+  </div>
+
+  <!-- Level diagram + population visualizer -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1rem 0 1.25rem 0;">
+
+    <!-- SVG level diagram -->
+    <div class="chart-card">
+      <h5>σ⁺ optical pumping — level diagram (F=1 example)</h5>
+      <svg viewBox="0 0 340 240" width="100%" style="display:block;margin:0 auto;">
+
+        <!-- Excited state label -->
+        <text x="20" y="28" fill="#64748b" font-size="11" font-family="Inter,sans-serif">F′ = 2 (excited)</text>
+
+        <!-- Excited sublevels -->
+        <line x1="55"  y1="50" x2="90"  y2="50" stroke="#a78bfa" stroke-width="2"/>
+        <line x1="115" y1="50" x2="150" y2="50" stroke="#a78bfa" stroke-width="2"/>
+        <line x1="175" y1="50" x2="210" y2="50" stroke="#a78bfa" stroke-width="2"/>
+        <line x1="235" y1="50" x2="270" y2="50" stroke="#a78bfa" stroke-width="2"/>
+        <line x1="295" y1="50" x2="330" y2="50" stroke="#a78bfa" stroke-width="2"/>
+
+        <!-- Excited m_F labels -->
+        <text x="63"  y="68" fill="#64748b" font-size="10" font-family="JetBrains Mono,monospace">−2</text>
+        <text x="123" y="68" fill="#64748b" font-size="10" font-family="JetBrains Mono,monospace">−1</text>
+        <text x="186" y="68" fill="#64748b" font-size="10" font-family="JetBrains Mono,monospace">0</text>
+        <text x="245" y="68" fill="#64748b" font-size="10" font-family="JetBrains Mono,monospace">+1</text>
+        <text x="304" y="68" fill="#64748b" font-size="10" font-family="JetBrains Mono,monospace">+2</text>
+
+        <!-- Ground state label -->
+        <text x="20" y="160" fill="#64748b" font-size="11" font-family="Inter,sans-serif">F = 1 (ground)</text>
+
+        <!-- Ground sublevels -->
+        <line x1="95"  y1="185" x2="145" y2="185" stroke="#38bdf8" stroke-width="2.5" id="gnd-m1"/>
+        <line x1="175" y1="185" x2="225" y2="185" stroke="#38bdf8" stroke-width="2.5"/>
+        <line x1="255" y1="185" x2="305" y2="185" stroke="#38bdf8" stroke-width="2.5" id="gnd-p1"/>
+
+        <!-- Ground m_F labels -->
+        <text x="107" y="200" fill="#94a3b8" font-size="11" font-family="JetBrains Mono,monospace" font-weight="600">m=−1</text>
+        <text x="189" y="200" fill="#94a3b8" font-size="11" font-family="JetBrains Mono,monospace" font-weight="600">m=0</text>
+        <text x="266" y="200" fill="#94a3b8" font-size="11" font-family="JetBrains Mono,monospace" font-weight="600">m=+1</text>
+
+        <!-- σ⁺ absorption arrows (ground → excited, Δm=+1) -->
+        <!-- m=-1 → excited m=0 -->
+        <line x1="130" y1="183" x2="187" y2="55" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+        <!-- m=0 → excited m=+1 -->
+        <line x1="210" y1="183" x2="250" y2="55" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+        <!-- m=+1 → excited m=+2 (cycling) -->
+        <line x1="285" y1="183" x2="312" y2="55" stroke="#4ade80" stroke-width="2" marker-end="url(#arr-g)"/>
+
+        <!-- σ⁺ label -->
+        <text x="140" y="125" fill="#38bdf8" font-size="11" font-family="Inter,sans-serif" font-style="italic">σ⁺</text>
+        <text x="215" y="120" fill="#38bdf8" font-size="11" font-family="Inter,sans-serif" font-style="italic">σ⁺</text>
+        <text x="288" y="118" fill="#4ade80" font-size="10" font-family="Inter,sans-serif">cycle</text>
+
+        <!-- Spontaneous emission (dashed, back down) -->
+        <line x1="192" y1="55" x2="120" y2="183" stroke="#f87171" stroke-width="1"
+              stroke-dasharray="4,3" marker-end="url(#arr-r)"/>
+        <line x1="252" y1="55" x2="200" y2="183" stroke="#f87171" stroke-width="1"
+              stroke-dasharray="4,3" marker-end="url(#arr-r)"/>
+        <line x1="314" y1="55" x2="290" y2="183" stroke="#4ade80" stroke-width="1.5"
+              stroke-dasharray="4,3" marker-end="url(#arr-g)"/>
+
+        <!-- spontaneous emission label -->
+        <text x="22" y="115" fill="#f87171" font-size="10" font-family="Inter,sans-serif">spont. emit.</text>
+        <line x1="22" y1="107" x2="22" y2="82" stroke="#f87171" stroke-width="1" stroke-dasharray="3,2"/>
+
+        <!-- Dark state / cycling label -->
+        <text x="248" y="225" fill="#4ade80" font-size="10" font-family="Inter,sans-serif" text-anchor="middle">stretch / dark</text>
+
+        <!-- Arrow markers -->
+        <defs>
+          <marker id="arr-b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+          </marker>
+          <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#f87171"/>
+          </marker>
+          <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#4ade80"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Population bar visualizer -->
+    <div class="chart-card">
+      <h5>Population dynamics — scatter photons interactively</h5>
+      <p style="font-size:.78rem;color:var(--text-muted);margin:0 0 .85rem 0;">
+        Start: equal population in m<sub>F</sub> = −1, 0, +1. σ⁺ light pumps toward m<sub>F</sub> = +1.
+      </p>
+
+      <!-- Population bars -->
+      <div style="margin-bottom:1rem;" id="popBars">
+        <div style="margin-bottom:.65rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;">
+            <span style="font-family:var(--mono);font-size:.8rem;color:#94a3b8;">m<sub>F</sub> = −1</span>
+            <span style="font-family:var(--mono);font-size:.85rem;color:#f87171;font-weight:600;" id="pop-m1">33.3%</span>
+          </div>
+          <div style="height:14px;background:#1e293b;border-radius:7px;overflow:hidden;">
+            <div id="bar-m1" style="height:100%;width:33.3%;background:#f87171;border-radius:7px;transition:width .4s ease;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:.65rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;">
+            <span style="font-family:var(--mono);font-size:.8rem;color:#94a3b8;">m<sub>F</sub> = 0</span>
+            <span style="font-family:var(--mono);font-size:.85rem;color:#fbbf24;font-weight:600;" id="pop-0">33.3%</span>
+          </div>
+          <div style="height:14px;background:#1e293b;border-radius:7px;overflow:hidden;">
+            <div id="bar-0" style="height:100%;width:33.3%;background:#fbbf24;border-radius:7px;transition:width .4s ease;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;">
+            <span style="font-family:var(--mono);font-size:.8rem;color:#94a3b8;">m<sub>F</sub> = +1</span>
+            <span style="font-family:var(--mono);font-size:.85rem;color:#4ade80;font-weight:600;" id="pop-p1">33.3%</span>
+          </div>
+          <div style="height:14px;background:#1e293b;border-radius:7px;overflow:hidden;">
+            <div id="bar-p1" style="height:100%;width:33.3%;background:#4ade80;border-radius:7px;transition:width .4s ease;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem;">
+        <button class="action-btn" onclick="opScatter(1)" style="font-size:.78rem;padding:.35rem .8rem;">+1 photon</button>
+        <button class="action-btn" onclick="opScatter(5)" style="font-size:.78rem;padding:.35rem .8rem;">+5</button>
+        <button class="action-btn" onclick="opScatter(20)" style="font-size:.78rem;padding:.35rem .8rem;">+20</button>
+        <button class="action-btn sec" onclick="opReset()" style="font-size:.78rem;padding:.35rem .8rem;">Reset</button>
+        <span style="font-size:.78rem;color:var(--text-muted);margin-left:.3rem;">
+          Scattered: <span id="opCount" style="color:#38bdf8;font-family:var(--mono);font-weight:600;">0</span>
+        </span>
+      </div>
+
+      <div id="opStatus" class="info-banner" style="font-size:.78rem;">
+        Click "+1 photon" to begin pumping the population toward m<sub>F</sub> = +1.
+      </div>
+    </div>
+  </div>
+
+  <!-- Physics formulas -->
+  <div class="formula-box">Selection rules (electric dipole):
+  σ⁺ light:  Δm_F = +1   (raises m_F by 1 per absorbed photon)
+  σ⁻ light:  Δm_F = −1
+  π  light:  Δm_F =  0
+
+Scattering rate from sublevel m_F (σ⁺ beam):
+  R_m = (Γ/2) · s · |C_m|²  / [1 + s·|C_m|² + (2Δ/Γ)²]
+
+  |C_m|² = squared Clebsch-Gordan coeff. for |F,m_F⟩ → |F′,m_F+1⟩
+
+Dark state condition (σ⁺):   m_F = +F   →   no allowed σ⁺ absorption
+Stretch state (σ⁺ on F→F′=F+1):  |F,+F⟩ → |F+1,+F+1⟩ → cycles back to |F,+F⟩
+
+Pumping time (to reach dark state from m_F = −F):
+  τ_pump ≈ 2F / (R_scatter · ε_branch)
+  ε_branch = branching fraction toward increasing m_F per cycle</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;">
+    <div class="theory-box">
+      <h4>Clock-state preparation (|F, m_F=0⟩)</h4>
+      <p>
+        For qubit encoding in clock states (m<sub>F</sub>=0), a different strategy is used:
+        pump first to a high-field-seeking state with σ⁺, then apply a microwave or RF π-pulse
+        to transfer to |F=2, m<sub>F</sub>=0⟩. Alternatively, use a combination of σ⁺ + π light
+        to create a dark state at m<sub>F</sub>=0. In practice, Rb-87 clock-state qubits are
+        initialized with &gt;99% fidelity in ~100 μs.
+      </p>
+    </div>
+    <div class="theory-box">
+      <h4>EIT &amp; dark states in Λ systems</h4>
+      <p>
+        Coherent population trapping (CPT) is a related phenomenon: two fields in a Λ
+        configuration drive an atom into a <em>coherent dark state</em> — a superposition of
+        two ground states that has zero absorption. This underpins
+        <strong>EIT (electromagnetically induced transparency)</strong> and
+        <strong>STIRAP</strong> transfer. Unlike optical pumping (which is incoherent),
+        CPT/EIT preserves quantum coherence.
+      </p>
+    </div>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://doi.org/10.1103/RevModPhys.44.169" target="_blank" rel="noopener">
+      <span class="rl-icon">📄</span>Happer (1972) — Optical pumping (Rev. Mod. Phys., the canonical review)
+    </a>
+    <a class="read-link" href="https://doi.org/10.1103/RevModPhys.77.633" target="_blank" rel="noopener">
+      <span class="rl-icon">📄</span>Fleischhauer, Imamoglu &amp; Marangos (2005) — EIT review (Rev. Mod. Phys.)
+    </a>
+    <a class="read-link" href="https://steck.us/alkalidata" target="_blank" rel="noopener">
+      <span class="rl-icon">📊</span>Steck alkali data sheets — CG coefficients, branching ratios for all species
+    </a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
 <!-- ══════════ 9. DECOHERENCE ══════════ -->
 <section class="topic-section" id="decoherence">
   <div class="topic-header">
@@ -1328,8 +1543,8 @@ initScrollReveal();
    STICKY NAV HIGHLIGHT
    ═══════════════════════════════════════════════ */
 const sections = ['bloch','gates','superposition','measurement','entanglement',
-                  'rydberg','twoqubit','rabi','hyperfine','decoherence','algorithms',
-                  'qec','analog-sim','resources'];
+                  'rydberg','twoqubit','rabi','hyperfine','optical-pumping',
+                  'decoherence','algorithms','qec','analog-sim','resources'];
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -1871,6 +2086,68 @@ function updateDecohere() {
     },
   });
 })();
+
+/* ═══════════════════════════════════════════════
+   OPTICAL PUMPING SIMULATION
+   Phenomenological 3-sublevel model for F=1 + σ⁺
+   Transition matrix per photon scattered:
+     From m=-1: → {-1: 0.12, 0: 0.38, +1: 0.50}
+     From m= 0: → {-1: 0.00, 0: 0.25, +1: 0.75}
+     From m=+1: → {-1: 0.00, 0: 0.00, +1: 1.00}  (stretch/dark state)
+   ═══════════════════════════════════════════════ */
+const OP_MAT = [
+  [0.12, 0.38, 0.50],   // from m=-1
+  [0.00, 0.25, 0.75],   // from m= 0
+  [0.00, 0.00, 1.00],   // from m=+1
+];
+
+let opPop   = [1/3, 1/3, 1/3];   // populations [m=-1, m=0, m=+1]
+let opTotal = 0;                   // total photons scattered
+
+function opUpdateDisplay() {
+  const ids  = ['m1','0','p1'];
+  const cols = ['#f87171','#fbbf24','#4ade80'];
+  opPop.forEach((p, i) => {
+    document.getElementById('pop-' + ids[i]).textContent = (p * 100).toFixed(1) + '%';
+    document.getElementById('bar-' + ids[i]).style.width = (p * 100) + '%';
+  });
+  document.getElementById('opCount').textContent = opTotal;
+
+  const pEl = document.getElementById('pop-p1');
+  const stat = document.getElementById('opStatus');
+  const p1 = opPop[2];
+  if (p1 > 0.98) {
+    stat.className = 'good-banner';
+    stat.innerHTML = '✅ Pumping complete — &gt;98% population in m<sub>F</sub> = +1 (stretch state). Qubit initialized.';
+  } else if (p1 > 0.80) {
+    stat.className = 'info-banner';
+    stat.innerHTML = `${(p1*100).toFixed(1)}% in m<sub>F</sub> = +1. Almost done — scatter a few more photons.`;
+  } else {
+    stat.className = 'info-banner';
+    stat.innerHTML = `Pumping in progress — ${(p1*100).toFixed(1)}% in m<sub>F</sub> = +1. Keep scattering.`;
+  }
+}
+
+function opScatter(n) {
+  for (let i = 0; i < n; i++) {
+    const next = [0, 0, 0];
+    opPop.forEach((p, from) => {
+      OP_MAT[from].forEach((prob, to) => { next[to] += p * prob; });
+    });
+    opPop = next;
+    opTotal++;
+  }
+  opUpdateDisplay();
+}
+
+function opReset() {
+  opPop   = [1/3, 1/3, 1/3];
+  opTotal = 0;
+  document.getElementById('opStatus').className = 'info-banner';
+  document.getElementById('opStatus').innerHTML =
+    'Click "+1 photon" to begin pumping the population toward m<sub>F</sub> = +1.';
+  opUpdateDisplay();
+}
 </script>
 </body>
 </html>
