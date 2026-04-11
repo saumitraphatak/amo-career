@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="Laser Locking">
   <meta name="twitter:description" content="Laser frequency stabilisation guide for AMO physics: Doppler-free spectroscopy, PDH locking, offset locking, and transfer cavity.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser Locking","description":"Laser frequency stabilisation guide for AMO physics: Doppler-free spectroscopy, PDH locking, offset locking, and transfer cavity.","url":"https://saumitraphatak.github.io/amo-career/pages/laser-locking.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -59,8 +59,6 @@
     .formula-box {
       background: #080f08; border: 1px solid #1a3a1a;
       border-radius: 8px; padding: .75rem 1.1rem; margin: .7rem 0;
-      font-family: var(--mono); color: #86efac; font-size: .82rem; line-height: 1.85;
-      white-space: pre; overflow-x: auto;
     }
 
     /* Info / good / warn banners */
@@ -243,11 +241,11 @@
           </div>
         </div>
 
-        <div class="formula-box">V_err  ∝  dS(ν)/dν      [first-harmonic demodulation]
-
-Lamb dip FWHM  ≈  Γ/2π × √(1 + I/Iₛₐₜ)   [power-broadened]
-Doppler FWHM   =  (ν₀/c) √(8 k_B T ln2 / m)
-Saturation intensity:  Iₛₐₜ = (π h c Γ) / (3 λ³)    [two-level, natural linewidth]</div>
+        <div class="formula-box">
+$$V_{\rm err} \propto \frac{dS(\nu)}{d\nu} \quad \text{[first-harmonic demodulation]}$$
+$$\text{Lamb dip FWHM} \approx \frac{\Gamma}{2\pi}\sqrt{1 + I/I_{\rm sat}} \quad \text{[power-broadened]}$$
+$$\text{Doppler FWHM} = \frac{\nu_0}{c}\sqrt{\frac{8k_{\rm B}T\ln 2}{m}}$$
+$$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[two-level, natural linewidth]}$$</div>
 
         <!-- ─── Crossover resonances ─── -->
         <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">Crossover resonances</div>
@@ -263,10 +261,10 @@ Saturation intensity:  Iₛₐₜ = (π h c Γ) / (3 λ³)    [two-level, natura
                 between the two transitions.
               </p>
             </div>
-            <div class="formula-box">ν_cross = (ν_a + ν_b) / 2
-
-For pump resonant with ν_a:  v* = c·(ν_laser − ν_a)/ν_a
-Probe seen by same atom at v*:  ν_probe = ν_laser + ν_a·v*/c = ν_b  ✓</div>
+            <div class="formula-box">
+$$\nu_{\rm cross} = \frac{\nu_a + \nu_b}{2}$$
+For pump resonant with $\nu_a$: $v^* = c(\nu_{\rm laser} - \nu_a)/\nu_a$<br>
+Probe seen by same atom at $v^*$: $\nu_{\rm probe} = \nu_{\rm laser} + \nu_a v^*/c = \nu_b$ ✓</div>
           </div>
           <div>
             <div class="theory-box">
@@ -534,13 +532,11 @@ Probe seen by same atom at v*:  ν_probe = ν_laser + ν_a·v*/c = ν_b  ✓</di
         </div>
 
         <div class="section-title" style="font-size:1.1rem; margin:1.25rem 0 .5rem 0;">Physics of the beat note</div>
-        <div class="formula-box">E₁(t) = E₀₁ cos(2π ν₁ t + φ₁)
-E₂(t) = E₀₂ cos(2π ν₂ t + φ₂)
-
-→  i_PD(t)  ∝  E₀₁·E₀₂ · cos[2π(ν₂ − ν₁)t + (φ₂ − φ₁)]
-
-Freq. discriminator:  V_err  ∝  (ν₂ − ν₁) − ν_ref
-OPLL:                 d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ ν_ref  (phase-coherent)</div>
+        <div class="formula-box">
+$$E_1(t) = E_{01}\cos(2\pi\nu_1 t + \varphi_1) \qquad E_2(t) = E_{02}\cos(2\pi\nu_2 t + \varphi_2)$$
+$$i_{\rm PD}(t) \propto E_{01}\cdot E_{02}\cdot\cos\!\left[2\pi(\nu_2 - \nu_1)t + (\varphi_2 - \varphi_1)\right]$$
+Freq. discriminator: $V_{\rm err} \propto (\nu_2 - \nu_1) - \nu_{\rm ref}$<br>
+OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\; \nu_2 - \nu_1 \equiv \nu_{\rm ref}$ (phase-coherent)</div>
 
         <!-- ─── SNR and detector ─── -->
         <div class="section-title" style="font-size:1.1rem; margin:1.5rem 0 .5rem 0;">
@@ -696,11 +692,11 @@ OPLL:                 d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ �
               <h4>RF Signal Chain</h4>
               <p>Typical implementation for a beat-note lock:</p>
             </div>
-            <div class="formula-box">Master + Slave  →  fibre combiner or PBS  →  fast PD
-→  RF amplifier (+10 to +20 dB, low noise)
-→  RF power splitter  (monitor + lock paths)
-→  mixer × DDS reference (at ν_ref)
-→  low-pass filter  →  error signal
+            <div class="formula-box">Master + Slave → fibre combiner or PBS → fast PD<br>
+→ RF amplifier (+10 to +20 dB, low noise)<br>
+→ RF power splitter (monitor + lock paths)<br>
+→ mixer $\times$ DDS reference (at $\nu_{\rm ref}$)<br>
+→ low-pass filter → error signal
 →  PID controller (Vescent D2-125 or Toptica FALC)
 →  slave: fast current path (MHz BW) + PZT (slow)</div>
           </div>
@@ -812,10 +808,11 @@ OPLL:                 d/dt [φ_beat − φ_ref] = 0   →  ν₂ − ν₁ ≡ �
           </p>
         </div>
 
-        <div class="formula-box">Free spectral range:     ν_FSR = c / (2 n L)
-Finesse:                 𝒻 = π √R / (1 − R)  ≈  π/(1−R)   [R ≈ 1]
-Cavity linewidth (FWHM): δν_cav = ν_FSR / 𝒻
-Fractional freq. drift:  δν / ν  =  −δL / L = −α_CTE · δT</div>
+        <div class="formula-box">
+$$\nu_{\rm FSR} = \frac{c}{2nL} \quad \text{[free spectral range]}$$
+$$\mathcal{F} = \frac{\pi\sqrt{R}}{1-R} \approx \frac{\pi}{1-R} \quad [R \approx 1]$$
+$$\delta\nu_{\rm cav} = \frac{\nu_{\rm FSR}}{\mathcal{F}} \quad \text{[cavity linewidth FWHM]}$$
+$$\frac{\delta\nu}{\nu} = -\frac{\delta L}{L} = -\alpha_{\rm CTE}\,\delta T \quad \text{[fractional freq. drift]}$$</div>
 
         <div class="section-title" style="font-size:1.1rem; margin:1rem 0 .5rem 0;">PDH error signal — how it works</div>
 
@@ -833,12 +830,11 @@ Fractional freq. drift:  δν / ν  =  −δL / L = −α_CTE · δT</div>
           The carrier beats against the sidebands at Ω. Demodulate at Ω → bipolar error signal:
         </div>
 
-        <div class="formula-box">V_err  ∝  Im[r(ω)]      [imaginary part of reflection coefficient]
-
-Near resonance:  V_err ≈ K · δ       (δ = ω − ω_cavity)
-
-Discriminator slope:  K ∝ √(P_carrier · P_sideband) · 𝒻 / δν_cav
-  (P_sideband ≈ β² P_carrier / 4)</div>
+        <div class="formula-box">
+$$V_{\rm err} \propto \mathrm{Im}[r(\omega)] \quad \text{[imaginary part of reflection coefficient]}$$
+Near resonance: $V_{\rm err} \approx K\cdot\delta$ where $\delta = \omega - \omega_{\rm cavity}$<br>
+Discriminator slope: $K \propto \sqrt{P_{\rm carrier}\cdot P_{\rm sideband}}\cdot\mathcal{F}/\delta\nu_{\rm cav}$<br>
+($P_{\rm sideband} \approx \beta^2 P_{\rm carrier}/4$)</div>
 
         <div class="two-col" style="margin-top:1.25rem;">
           <div class="calc-card">
@@ -889,14 +885,13 @@ Discriminator slope:  K ∝ √(P_carrier · P_sideband) · 𝒻 / δν_cav
           </div>
         </div>
 
-        <div class="formula-box" style="margin-top:1.25rem;">Typical optical chain:
-
-diode laser  →  prism pair (astigmatism corr.)  →  optical isolator (30–40 dB)
-→  EOM (phase mod. at Ω)  →  mode-matching telescope  →  ULE cavity
-
-Reflected beam:  PBS + QWP  →  fast PD  →  RF mixer at Ω  →  LPF
-Error signal:  fast path → laser current  (high BW, small range)
-              slow path → PZT             (low BW, large range)</div>
+        <div class="formula-box" style="margin-top:1.25rem;">
+Typical optical chain:<br>
+diode laser → prism pair (astigmatism corr.) → optical isolator (30–40 dB)<br>
+→ EOM (phase mod. at $\Omega$) → mode-matching telescope → ULE cavity<br><br>
+Reflected beam: PBS + QWP → fast PD → RF mixer at $\Omega$ → LPF<br>
+Error signal: fast path → laser current (high BW, small range)<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;slow path → PZT (low BW, large range)</div>
 
         <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
         <div class="prac-body" id="pdhPractical">
@@ -973,12 +968,11 @@ Error signal:  fast path → laser current  (high BW, small range)
                       (Long-term drift corrected by beating against a Layer 0 laser)</div>
 
         <div class="section-title" style="font-size:1.1rem; margin-top:1.5rem; margin-bottom:.5rem;">Key equations at a glance</div>
-        <div class="formula-box">SAS:        V_err  ∝  dS(ν)/dν,    Lamb dip FWHM ≈ Γ/2π × √(1 + I/Iₛₐₜ)
-
-Beat-note:  i_PD   ∝  cos[2π(ν₂−ν₁)t],   V_err ∝ (ν₂−ν₁) − ν_ref
-
-PDH:        V_err  ∝  Im[r(ω)]  ≈  K·δ,
-            δν_cav = c/(2LF),   δν/ν = −δL/L = −α_CTE · δT</div>
+        <div class="formula-box">
+SAS: $V_{\rm err} \propto dS(\nu)/d\nu$, Lamb dip FWHM $\approx (\Gamma/2\pi)\sqrt{1+I/I_{\rm sat}}$<br><br>
+Beat-note: $i_{\rm PD} \propto \cos[2\pi(\nu_2-\nu_1)t]$, $V_{\rm err} \propto (\nu_2-\nu_1) - \nu_{\rm ref}$<br><br>
+PDH: $V_{\rm err} \propto \mathrm{Im}[r(\omega)] \approx K\cdot\delta$,
+$$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = -\frac{\delta L}{L} = -\alpha_{\rm CTE}\,\delta T$$</div>
 
         <div class="section-title" style="font-size:1.1rem; margin-top:1.5rem; margin-bottom:.5rem;">Error signal slopes compared</div>
         <table class="slope-table">
@@ -1011,7 +1005,7 @@ PDH:        V_err  ∝  Im[r(ω)]  ≈  K·δ,
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
 <script>
 renderNav({ active: 'laser-locking', root: '../' });
 initScrollReveal();

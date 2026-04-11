@@ -10,7 +10,7 @@
   <meta name="description" content="Time-of-flight thermometry calculator for ultracold atoms — ballistic expansion, T extraction by σ² vs t² fit, de Broglie wavelength, phase-space density, and cooling limits.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/tof-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -74,8 +74,6 @@
     .formula-box {
       background: #060d14; border: 1px solid #1e3a5f; border-radius: 8px;
       padding: .7rem 1rem; margin: .6rem 0;
-      font-family: var(--mono); color: #7dd3fc; font-size: .82rem;
-      line-height: 1.85; white-space: pre; overflow-x: auto;
     }
 
     .chart-card {
@@ -352,12 +350,11 @@
           <p>After release from a trap, the atom cloud expands freely. For a thermal gas with
              1D width σ₀ at t=0:</p>
         </div>
-        <div class="formula-box">σ²(t) = σ₀² + (k_B T / m) · t²
-
-→ T = m · (σ²(t) − σ₀²) / (k_B · t²)
-
-For harmonic trap (ω): σ₀ = √(k_B T / m ω²)
-→ σ²(t) = (k_B T / m)(1/ω² + t²)</div>
+        <div class="formula-box">
+$$\sigma^2(t) = \sigma_0^2 + \frac{k_{\rm B} T}{m}\,t^2$$
+$$\Rightarrow T = \frac{m\,(\sigma^2(t) - \sigma_0^2)}{k_{\rm B}\,t^2}$$
+For harmonic trap ($\omega$): $\sigma_0 = \sqrt{k_{\rm B}T/(m\omega^2)}$
+$$\Rightarrow \sigma^2(t) = \frac{k_{\rm B}T}{m}\left(\frac{1}{\omega^2} + t^2\right)$$</div>
 
         <div class="info-banner">
           The slope of σ² vs t² gives k_BT/m directly — plot σ²(t²) and fit a line.
@@ -505,11 +502,9 @@ For harmonic trap (ω): σ₀ = √(k_B T / m ω²)
              recoil occurs at the Doppler temperature. It depends only on the natural linewidth Γ
              and is independent of atomic mass. Typical values: Rb 145 μK, Cs 125 μK, Na 235 μK.</p>
         </div>
-        <div class="formula-box">T_Doppler = ℏΓ / (2 k_B)
-
-Example (⁸⁷Rb, Γ/2π = 6.065 MHz):
-  T_D = (1.055e-34 × 6.065e6 × 2π) / (2 × 1.381e-23)
-      = 145.6 μK</div>
+        <div class="formula-box">
+$$T_{\rm Doppler} = \frac{\hbar\Gamma}{2k_{\rm B}}$$
+Example ($^{87}$Rb, $\Gamma/2\pi = 6.065$ MHz): $T_D = 145.6\,\mu$K</div>
       </div>
     </div>
 
@@ -526,12 +521,9 @@ Example (⁸⁷Rb, Γ/2π = 6.065 MHz):
              on spontaneous emission (e.g. Sisyphus cooling reaches ~T_rec). Sub-recoil cooling
              (VSCPT, Raman cooling, EIT) can go below this limit.</p>
         </div>
-        <div class="formula-box">T_rec = ℏ²k² / (m k_B) = E_rec / k_B
-
-Example (⁸⁷Rb, λ = 780 nm):
-  k = 2π/λ = 8.055e6 m⁻¹
-  E_rec = (1.055e-34)² × (8.055e6)² / (2 × 86.909 × 1.66e-27)
-        = 3.77e-30 J  →  T_rec = E_rec / k_B = 362 nK</div>
+        <div class="formula-box">
+$$T_{\rm rec} = \frac{\hbar^2 k^2}{m k_{\rm B}} = \frac{E_{\rm rec}}{k_{\rm B}}$$
+Example ($^{87}$Rb, $\lambda = 780$ nm): $E_{\rm rec}/k_{\rm B} = 362$ nK</div>
       </div>
     </div>
 
@@ -547,16 +539,12 @@ Example (⁸⁷Rb, λ = 780 nm):
              (the Riemann ζ(3/2) value), a Bose gas in a uniform box reaches Bose-Einstein
              condensation. In a harmonic trap the critical condition is (k_BT_c/ℏω) = (N/ζ(3))^(1/3).</p>
         </div>
-        <div class="formula-box">λ_dB = h / √(2π m k_B T)
-
-PSD = n_peak × λ_dB³
-    = [N / (2π)^(3/2) σ³] × [h / √(2πmk_BT)]³
-
-BEC threshold (uniform 3D box): PSD = 2.612
-
-BEC critical T (harmonic trap):
-  T_c = (ℏω / k_B) × (N / ζ(3))^(1/3)
-  ζ(3) ≈ 1.202   [Apéry's constant]</div>
+        <div class="formula-box">
+$$\lambda_{\rm dB} = \frac{h}{\sqrt{2\pi m k_{\rm B} T}}$$
+$${\rm PSD} = n_{\rm peak}\,\lambda_{\rm dB}^3 = \frac{N}{(2\pi)^{3/2}\sigma^3}\cdot\left(\frac{h}{\sqrt{2\pi m k_{\rm B} T}}\right)^3$$
+BEC threshold (uniform 3D box): PSD $= 2.612$<br>
+BEC critical $T$ (harmonic trap):
+$$T_c = \frac{\hbar\omega}{k_{\rm B}}\left(\frac{N}{\zeta(3)}\right)^{1/3} \qquad \zeta(3) \approx 1.202$$</div>
       </div>
     </div>
   </section>
@@ -604,7 +592,7 @@ BEC critical T (harmonic trap):
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
 <script>
 renderNav({ active: 'tof-calculator', root: '../' });
 

@@ -10,7 +10,7 @@
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator — scattering rate, photon collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/imaging-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -122,8 +122,6 @@
     .formula-box {
       background: #060f0a; border: 1px solid #166534; border-radius: 8px;
       padding: .7rem 1rem; margin: .6rem 0;
-      font-family: var(--mono); color: #6ee7b7; font-size: .82rem;
-      line-height: 1.85; white-space: pre; overflow-x: auto;
     }
     .eq { font-family: var(--mono); font-size: .87rem; color: #a7f3d0;
           display: block; margin: .4rem 0; text-align: center; }
@@ -287,9 +285,9 @@
           <h4>Two-level scattering rate</h4>
           <p>On resonance (Δ=0) a two-level atom saturates at Γ/2. Off resonance the Lorentzian
              denominator reduces the rate:</p>
-          <div class="formula-box">R_sc = (Γ/2) · s / [1 + s + (2Δ/Γ)²]
-
-s = I/I_sat,  Γ = natural linewidth,  Δ = laser detuning</div>
+          <div class="formula-box">
+$$R_{\rm sc} = \frac{\Gamma}{2} \cdot \frac{s}{1 + s + (2\Delta/\Gamma)^2}$$
+$s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</div>
         </div>
       </div>
 
@@ -531,12 +529,10 @@ s = I/I_sat,  Γ = natural linewidth,  Δ = laser detuning</div>
           <p>A high-NA objective collects photons into a cone defined by the half-angle
              θ_max = arcsin(NA/n), where n is the refractive index of the medium (n=1 in air/vacuum).</p>
         </div>
-        <div class="formula-box">η_geo = (1 − √(1 − NA²)) / 2        [exact, for n=1]
-
-≈ NA² / 4                              [paraxial approximation, NA ≪ 1]
-
-Example: NA = 0.6  →  η_geo = (1 − 0.8) / 2 = 10%
-         NA = 0.8  →  η_geo = (1 − 0.6) / 2 = 20%</div>
+        <div class="formula-box">
+$$\eta_{\rm geo} = \frac{1 - \sqrt{1 - {\rm NA}^2}}{2} \quad \text{[exact, for } n=1\text{]}$$
+$$\approx \frac{{\rm NA}^2}{4} \quad \text{[paraxial, NA} \ll 1\text{]}$$
+Example: NA $= 0.6 \Rightarrow \eta_{\rm geo} = 10\%$; NA $= 0.8 \Rightarrow \eta_{\rm geo} = 20\%$</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           Note that isotropic emission into 4π steradians means even NA=0.95 captures only ~26%
           of photons geometrically. High-NA objectives (0.5–0.85) are typical for tweezer experiments.
@@ -555,17 +551,13 @@ Example: NA = 0.6  →  η_geo = (1 − 0.8) / 2 = 10%
           <p>Each camera type has a distinct noise model. The total variance σ²_total
              determines the denominator of SNR = N_sig / σ_total.</p>
         </div>
-        <div class="formula-box">EMCCD  (excess noise factor F = √2):
-  σ² = F²(N_sig + N_bg + N_dark) + (σ_read / G)²
-     = 2(N_sig + N_bg + N_dark) + (σ_read / G)²
-
-sCMOS  (no multiplication noise):
-  σ² = N_sig + N_bg + N_dark + σ_read²
-
-Ideal:
-  σ² = N_sig + N_bg + N_dark
-
-where G = EM gain,  σ_read = read noise (e⁻ RMS)</div>
+        <div class="formula-box">
+EMCCD (excess noise factor $F = \sqrt{2}$):
+$$\sigma^2 = F^2(N_{\rm sig} + N_{\rm bg} + N_{\rm dark}) + (\sigma_{\rm read}/G)^2 = 2(N_{\rm sig} + N_{\rm bg} + N_{\rm dark}) + (\sigma_{\rm read}/G)^2$$
+sCMOS (no multiplication noise):
+$$\sigma^2 = N_{\rm sig} + N_{\rm bg} + N_{\rm dark} + \sigma_{\rm read}^2$$
+Ideal: $\sigma^2 = N_{\rm sig} + N_{\rm bg} + N_{\rm dark}$<br>
+where $G$ = EM gain, $\sigma_{\rm read}$ = read noise (e$^-$ RMS)</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           For EMCCD the read noise is divided by EM gain G, making it negligible at high gain
           (G ≳ 50). The penalty is the √2 excess noise factor that increases shot noise variance
@@ -587,17 +579,13 @@ where G = EM gain,  σ_read = read noise (e⁻ RMS)</div>
              (Poisson mean μ<sub>bg</sub>) by choosing a threshold θ. The optimal threshold
              minimises total error probability.</p>
         </div>
-        <div class="formula-box">For Gaussian approximation (μ ≫ 1):
-
-  P_miss  = Φ(−(μ_sig − θ) / √σ²_sig)    [false negative]
-  P_false = 1 − Φ((θ − μ_bg) / √σ²_bg)   [false positive]
-
-  Optimal θ ≈ (μ_sig + μ_bg) / 2
-
-  Detection fidelity F = 1 − (P_miss + P_false)/2
-                       ≈ Φ(SNR / (2√2))
-
-where Φ is the standard normal CDF, SNR = (μ_sig − μ_bg)/σ</div>
+        <div class="formula-box">
+For Gaussian approximation ($\mu \gg 1$):
+$$P_{\rm miss} = \Phi\!\left(\frac{-(\mu_{\rm sig} - \theta)}{\sqrt{\sigma^2_{\rm sig}}}\right) \quad \text{[false negative]}$$
+$$P_{\rm false} = 1 - \Phi\!\left(\frac{\theta - \mu_{\rm bg}}{\sqrt{\sigma^2_{\rm bg}}}\right) \quad \text{[false positive]}$$
+Optimal $\theta \approx (\mu_{\rm sig} + \mu_{\rm bg})/2$<br>
+Detection fidelity: $\mathcal{F} = 1 - (P_{\rm miss} + P_{\rm false})/2 \approx \Phi({\rm SNR}/(2\sqrt{2}))$<br>
+where $\Phi$ is the standard normal CDF, ${\rm SNR} = (\mu_{\rm sig} - \mu_{\rm bg})/\sigma$</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that fidelity scales as
           erfc(SNR) — doubling SNR dramatically reduces error. Background suppression (e.g.
@@ -618,15 +606,12 @@ where Φ is the standard normal CDF, SNR = (μ_sig − μ_bg)/σ</div>
              heats at rate dE/dt = E_rec × R_sc (in a σ⁺/σ⁻ Sisyphus beam, this is partially
              cancelled; in a σ beam near resonance it accumulates).</p>
         </div>
-        <div class="formula-box">Recoil energy: E_rec = ℏ²k² / (2m)
-  Rb-87, D2: E_rec/k_B = 362 nK  (= 3.77 × 10⁻³⁰ J)
-
-Heating rate: dT/dt ≈ 2 E_rec × R_sc / k_B  [3D, no cooling]
-
-Max imaging time (trap depth U_0):
-  t_max ~ U_0 / (E_rec × R_sc)
-
-Example: U_0/k_B = 1 mK, R_sc = 50 kHz → t_max ~ 55 ms</div>
+        <div class="formula-box">
+$$E_{\rm rec} = \frac{\hbar^2 k^2}{2m}$$
+$^{87}$Rb D2: $E_{\rm rec}/k_{\rm B} = 362$ nK $= 3.77\times10^{-30}$ J<br>
+Heating rate: $\dot{T} \approx 2E_{\rm rec} R_{\rm sc}/k_{\rm B}$ [3D, no cooling]<br>
+Max imaging time ($U_0$ = trap depth): $t_{\rm max} \sim U_0/(E_{\rm rec} R_{\rm sc})$<br>
+Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} \approx 55$ ms</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           In practice, tweezer imaging uses repump + imaging beams in a gray molasses or
           Λ-enhanced dark SPOT configuration to scatter &gt;1000 photons without losing the atom.
@@ -680,7 +665,7 @@ Example: U_0/k_B = 1 mK, R_sc = 50 kHz → t_max ~ 55 ms</div>
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 

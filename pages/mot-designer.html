@@ -10,7 +10,7 @@
   <meta name="description" content="MOT and magnetic trap designer — damping, spring constant, capture velocity, Ioffe-Pritchard trap frequencies, trap depth, and evaporation parameter.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/mot-designer.html">
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -72,8 +72,6 @@
     .formula-box {
       background:#0d0700; border:1px solid #7c2d12; border-radius:8px;
       padding:.7rem 1rem; margin:.6rem 0;
-      font-family:var(--mono); color:#fdba74; font-size:.82rem;
-      line-height:1.85; white-space:pre; overflow-x:auto;
     }
 
     .chart-card {
@@ -267,11 +265,11 @@
             with the quadrupole field create both a velocity-dependent damping force and a
             position-dependent restoring force. In the low-saturation, low-velocity limit:
           </p>
-          <div class="formula-box" style="white-space:normal;font-family:inherit;">
-$$F_{MOT} \approx -\alpha v - \kappa r$$
+          <div class="formula-box">
+$$F_{\rm MOT} \approx -\alpha v - \kappa r$$
 $$\alpha = \frac{8\hbar k^2 s |\Delta|/\Gamma}{(1 + s + (2\Delta/\Gamma)^2)^2} \quad \text{[damping]}$$
-$$\kappa = \alpha \cdot \frac{\mu_{eff}}{\hbar k} \cdot \frac{dB}{dz} \quad \text{[spring via B-field gradient]}$$
-$\mu_{eff} = g_F m_F \mu_B$ (effective magnetic moment)
+$$\kappa = \alpha \cdot \frac{\mu_{\rm eff}}{\hbar k} \cdot \frac{dB}{dz} \quad \text{[spring via B-field gradient]}$$
+$\mu_{\rm eff} = g_F m_F \mu_B$ (effective magnetic moment)
 </div>
         </div>
       </div>
@@ -440,8 +438,8 @@ $\mu_{eff} = g_F m_F \mu_B$ (effective magnetic moment)
             (Doppler) and position (Zeeman) dependent forces.
           </p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
-$$R_{sc} = \frac{\Gamma}{2} \cdot \frac{s}{1 + s + (2\Delta_{eff}/\Gamma)^2}$$
+        <div class="formula-box">
+$$R_{\rm sc} = \frac{\Gamma}{2} \cdot \frac{s}{1 + s + (2\Delta_{\rm eff}/\Gamma)^2}$$
 Net force (two beams, $|kv| \ll |\Delta|$): $F = F_+ - F_- \approx -\alpha v - \kappa r$<br>
 Damping (1D, 2 beams):
 $$\alpha = \frac{8\hbar k^2 s|\Delta|/\Gamma}{(1 + s + (2\Delta/\Gamma)^2)^2}$$
@@ -466,11 +464,11 @@ Optimal damping: $\Delta = -\Gamma/(2\sqrt{3}) \approx -0.29\Gamma \Rightarrow \
             The non-zero field bottom eliminates Majorana spin-flip losses that plague quadrupole traps.
           </p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
+        <div class="formula-box">
 Field magnitude near trap center ($\rho \ll B_0/B'$):
 $$|B(\rho,z)| \approx B_0 + \left(\frac{B'^2}{2B_0} - \frac{B''}{2}\right)\rho^2 + \frac{B''}{2}z^2$$
 Trap frequencies:
-$$\omega_r = \sqrt{\frac{\mu_{eff}(B'^2/B_0 - B'')}{m}} \quad \text{[radial]}, \qquad \omega_z = \sqrt{\frac{\mu_{eff} B''}{m}} \quad \text{[axial]}$$
+$$\omega_r = \sqrt{\frac{\mu_{\rm eff}(B'^2/B_0 - B'')}{m}} \quad \text{[radial]}, \qquad \omega_z = \sqrt{\frac{\mu_{\rm eff} B''}{m}} \quad \text{[axial]}$$
 Stability: $B'^2/B_0 > B''$ (radial trap not cancelled by curvature)<br>
 Trap depth: $U_0 \approx \mu_{eff} \cdot B_0$
 </div>
@@ -495,11 +493,11 @@ Trap depth: $U_0 \approx \mu_{eff} \cdot B_0$
             leave and the cloud rethermalizes via elastic collisions, the temperature drops.
           </p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
+        <div class="formula-box">
 $$\frac{dT}{T} = -\frac{\eta - 4}{\eta - 3 + \ldots}\cdot\frac{dN}{N}$$
-"Runaway evaporation": $\gamma_{el}/\gamma_{inel} &gt; 150$ (Rb-87 3-body limit)<br>
-Good: $\eta \gtrsim 5$; optimal: $\eta \approx 8$–$10$ (BEC achievable); insufficient: $\eta &lt; 4$<br>
-RF evaporation ramp: $\nu_{RF}(t)$ decreases from $\nu_0$ to $\nu_f$
+"Runaway evaporation": $\gamma_{\rm el}/\gamma_{\rm inel} > 150$ (Rb-87 3-body limit)<br>
+Good: $\eta \gtrsim 5$; optimal: $\eta \approx 8$–$10$ (BEC achievable); insufficient: $\eta < 4$<br>
+RF evaporation ramp: $\nu_{\rm RF}(t)$ decreases from $\nu_0$ to $\nu_f$
 $$E_{cut} = h\nu_{RF} - m_F g_F \mu_B B_0$$
 </div>
       </div>
@@ -520,17 +518,12 @@ $$E_{cut} = h\nu_{RF} - m_F g_F \mu_B B_0$$
             cools and atoms approach the zero-field region.
           </p>
         </div>
-        <div class="formula-box">Majorana flip rate (Petrich et al. 1995):
-  Γ_M ≈ ω_r · (ℏ / (m ω_r ⟨r²⟩))
-       ≈ ω_r · (T_rec / T)
-  ω_r = √(μ_B · B′² / (m · B₀))   [for quadrupole: B₀ → 0]
-
-For quadrupole (B₀ = 0): Γ_M → ∞  →  catastrophic losses
-
-Fix: add bias field (IP trap, TOP trap) or optical plug (Rb BEC 1995).
-
-Lifetime in quadrupole (crude estimate):
-  τ_M ~ (m v̄) / (μ_B B′)  where v̄ = √(2k_BT/m)</div>
+        <div class="formula-box">
+$$\Gamma_M \approx \omega_r \cdot \frac{\hbar}{m\omega_r\langle r^2\rangle} \approx \omega_r \cdot \frac{T_{\rm rec}}{T}$$
+$$\omega_r = \sqrt{\frac{\mu_B B'^2}{m B_0}} \quad \text{[for quadrupole: } B_0 \to 0\text{]}$$
+For quadrupole ($B_0 = 0$): $\Gamma_M \to \infty$ — catastrophic losses<br>
+Fix: add bias field (IP trap, TOP trap) or optical plug (Rb BEC 1995).<br>
+Lifetime in quadrupole: $\tau_M \sim m\bar{v}/(\mu_B B')$ where $\bar{v} = \sqrt{2k_{\rm B}T/m}$</div>
       </div>
     </div>
   </section>
@@ -578,7 +571,7 @@ Lifetime in quadrupole (crude estimate):
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
 <script>
 renderNav({ active: 'mot-designer', root: '../' });
 

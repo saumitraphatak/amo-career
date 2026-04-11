@@ -10,7 +10,7 @@
   <meta name="description" content="Rydberg two-qubit gate fidelity budget — spontaneous emission, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, B-field noise, Rabi inhomogeneity.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/fidelity-budget.html">
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -106,8 +106,6 @@
     .formula-box {
       background:#100007; border:1px solid #7f1d1d; border-radius:8px;
       padding:.7rem 1rem; margin:.6rem 0;
-      font-family:var(--mono); color:#fca5a5; font-size:.82rem;
-      line-height:1.85; white-space:pre; overflow-x:auto;
     }
 
     .chart-card {
@@ -420,10 +418,10 @@
           At room temperature, blackbody radiation (BBR) drives transitions to neighbouring Rydberg
           states, effectively halving the lifetime for n ~ 50–70.</p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
-$$\tau_{Ryd} \approx \tau_0 \times n^{*3} \qquad (\tau_0 \sim 1\text{ ns for alkali }nS)$$
-With BBR (300 K): $\Gamma_{total} = \Gamma_{rad} + \Gamma_{BBR} \approx 2\Gamma_{rad}$ ($n \sim 60$)<br>
-Cryogenic (&lt;10 K): $\Gamma_{total} \approx \Gamma_{rad}$ (BBR suppressed)<br>
+        <div class="formula-box">
+$$\tau_{\rm Ryd} \approx \tau_0 \times n^{*3} \qquad (\tau_0 \sim 1\text{ ns for alkali }nS)$$
+With BBR (300 K): $\Gamma_{\rm total} = \Gamma_{\rm rad} + \Gamma_{\rm BBR} \approx 2\Gamma_{\rm rad}$ ($n \sim 60$)<br>
+Cryogenic ($<10$ K): $\Gamma_{\rm total} \approx \Gamma_{\rm rad}$ (BBR suppressed)<br>
 Spontaneous emission error:
 $$\varepsilon_{se} = \Gamma_{total} \times t_{gate} = t_{gate}/\tau_{Ryd}$$
 </div>
@@ -442,11 +440,11 @@ $$\varepsilon_{se} = \Gamma_{total} \times t_{gate} = t_{gate}/\tau_{Ryd}$$
           from the Rydberg excitation laser. For a Gaussian velocity distribution, the gate
           fidelity is reduced by the dephasing factor.</p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
-$$v_{rms} = \sqrt{\frac{k_B T}{m}} \quad \text{[1D thermal velocity]}$$
-Phase uncertainty: $\delta\phi = k_{eff} \cdot v_{rms} \cdot t_{gate}$<br>
+        <div class="formula-box">
+$$v_{\rm rms} = \sqrt{\frac{k_{\rm B} T}{m}} \quad \text{[1D thermal velocity]}$$
+Phase uncertainty: $\delta\phi = k_{\rm eff} \cdot v_{\rm rms} \cdot t_{\rm gate}$<br>
 Dephasing error:
-$$\varepsilon_D = \frac{1}{2}(k_{eff} \cdot v_{rms} \cdot t_{gate})^2$$
+$$\varepsilon_D = \frac{1}{2}(k_{\rm eff} \cdot v_{\rm rms} \cdot t_{\rm gate})^2$$
 Single-photon excitation ($\lambda \sim 300$–$480$ nm): $k_{eff} = 2\pi/\lambda_{Ryd}$<br>
 Example: Rb, $T=5\,\mu$K, $\lambda=480$ nm, $t_{gate}=2\,\mu$s $\Rightarrow$ $v_{rms} = 8.5$ mm/s, $\delta\phi = 0.22$ rad, $\varepsilon \approx 2.4\times10^{-2}$
 </div>
@@ -465,11 +463,11 @@ Example: Rb, $T=5\,\mu$K, $\lambda=480$ nm, $t_{gate}=2\,\mu$s $\Rightarrow$ $v_
           If the gate time t_gate ≳ T_coh, phase noise significantly degrades the fidelity.
           Narrow-linewidth lasers (&lt;1 Hz) are needed for high-fidelity Rydberg gates.</p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
-$$T_{coh} = \frac{1}{\pi\,\Delta\nu}$$
+        <div class="formula-box">
+$$T_{\rm coh} = \frac{1}{\pi\,\Delta\nu}$$
 Phase noise error (white frequency noise):
-$$\varepsilon_\phi \approx \pi\,\Delta\nu\cdot t_{gate}$$
-For $t_{gate} \ll T_{coh}$: $\varepsilon_\phi \ll 1$ ✓; for $t_{gate} = T_{coh}$: $\varepsilon_\phi \approx 1$ ✗<br>
+$$\varepsilon_\phi \approx \pi\,\Delta\nu\cdot t_{\rm gate}$$
+For $t_{\rm gate} \ll T_{\rm coh}$: $\varepsilon_\phi \ll 1$ ✓; for $t_{\rm gate} = T_{\rm coh}$: $\varepsilon_\phi \approx 1$ ✗<br>
 State-of-the-art: $\Delta\nu &lt; 1$ Hz (ULE cavity) $\Rightarrow T_{coh} &gt; 300$ ms $\Rightarrow \varepsilon_\phi &lt; 10^{-5}$ for $t_{gate} = 2\,\mu$s
 </div>
       </div>
@@ -487,10 +485,10 @@ State-of-the-art: $\Delta\nu &lt; 1$ Hz (ULE cavity) $\Rightarrow T_{coh} &gt; 3
           the doubly-excited |rr⟩ state acquires a small amplitude ~ Ω/U, causing gate errors.
           For the standard CZ protocol:</p>
         </div>
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
-$$\varepsilon_{blockade} \approx \left(\frac{\Omega}{U}\right)^2$$
-$U/\Omega \geq 10$: $\varepsilon &lt; 1\%$; $U/\Omega \geq 50$: $\varepsilon &lt; 0.04\%$; $U/\Omega \geq 100$: $\varepsilon &lt; 0.01\%$<br>
-$C_6$ at $n\sim60$ (Rb): $\sim10^5$ GHz·$\mu$m$^6$; $r=5\,\mu$m $\Rightarrow U/2\pi = C_6/r^6 \sim 130$ MHz $\Rightarrow U/\Omega \approx 130$ for $\Omega/2\pi = 1$ MHz ✓
+        <div class="formula-box">
+$$\varepsilon_{\rm blockade} \approx \left(\frac{\Omega}{U}\right)^2$$
+$U/\Omega \geq 10$: $\varepsilon < 1\%$; $U/\Omega \geq 50$: $\varepsilon < 0.04\%$; $U/\Omega \geq 100$: $\varepsilon < 0.01\%$<br>
+$C_6$ at $n\sim60$ (Rb): $\sim10^5$ GHz$\cdot\mu$m$^6$; $r=5\,\mu$m $\Rightarrow U/2\pi = C_6/r^6 \sim 130$ MHz $\Rightarrow U/\Omega \approx 130$ for $\Omega/2\pi = 1$ MHz ✓
 </div>
       </div>
     </div>
@@ -501,14 +499,14 @@ $C_6$ at $n\sim60$ (Rb): $\sim10^5$ GHz·$\mu$m$^6$; $r=5\,\mu$m $\Rightarrow U/
         <span class="accordion-icon">▶</span>
       </button>
       <div class="accordion-body">
-        <div class="formula-box" style="white-space:normal;font-family:inherit;">
+        <div class="formula-box">
 Magnetic field noise ($g_F m_F \sim 1$):
-$$\delta\phi_B = \frac{\mu_B \cdot \Delta B \cdot t_{gate}}{\hbar} \qquad \varepsilon_B = \frac{1}{2}\left(\frac{\mu_B \cdot \Delta B \cdot t_{gate}}{\hbar}\right)^2$$
+$$\delta\phi_B = \frac{\mu_B \cdot \Delta B \cdot t_{\rm gate}}{\hbar} \qquad \varepsilon_B = \frac{1}{2}\left(\frac{\mu_B \cdot \Delta B \cdot t_{\rm gate}}{\hbar}\right)^2$$
 Use clock states ($m_F=0$) to suppress by $\sim10^3$<br>
 Rabi inhomogeneity:
 $$\varepsilon_\Omega = \frac{1}{2}\left(\frac{\pi\,\delta\Omega/\Omega}{2}\right)^2 \quad \text{[suppress with composite pulses/DRAG]}$$
-SPAM: $\varepsilon_{SPAM} = p_{prep} + p_{meas}$<br>
-Atom loss: $\varepsilon_{loss} = t_{gate}/\tau_{trap}$ ($\tau_{trap} \sim 10$–$100$ s in UHV tweezers)
+SPAM: $\varepsilon_{\rm SPAM} = p_{\rm prep} + p_{\rm meas}$<br>
+Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm trap} \sim 10$–$100$ s in UHV tweezers)
 </div>
       </div>
     </div>
@@ -558,7 +556,7 @@ Atom loss: $\varepsilon_{loss} = t_{gate}/\tau_{trap}$ ($\tau_{trap} \sim 10$–
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
 <script>
 renderNav({ active: 'fidelity-budget', root: '../' });
 

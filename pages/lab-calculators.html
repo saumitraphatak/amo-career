@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="Lab Calculators">
   <meta name="twitter:description" content="Essential AMO lab calculators: photon recoil, trap depth, scattering rate, beam waist, and more.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Lab Calculators","description":"Essential AMO lab calculators: photon recoil, trap depth, scattering rate, beam waist, and more.","url":"https://saumitraphatak.github.io/amo-career/pages/lab-calculators.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
   <style>
@@ -168,9 +168,9 @@
             <div class="calc-card">
               <h4>Fiber → Collimated → Focused Spot</h4>
               <div class="sub">Given the fiber MFD and collimating lens focal length, computes the collimated beam radius and (optionally) the focused spot after a second lens.</div>
-              <div class="formula-box">w_col = f₁ · λ / (π · MFR)
-<span style="color:#6ee7b7">[optional]</span> w_foc = f₂ · λ / (π · w_col)
-z_R = π w_foc² / λ</div>
+              <div class="formula-box">
+$$w_{\rm col} = \frac{f_1\,\lambda}{\pi\cdot{\rm MFR}} \qquad w_{\rm foc} = \frac{f_2\,\lambda}{\pi\,w_{\rm col}} \quad \text{[optional focus]}$$
+$$z_R = \frac{\pi\,w_{\rm foc}^2}{\lambda}$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="fib_lam" value="852" min="400" max="2000" step="1" oninput="calcFiber()"><span class="unit">nm</span></div>
               <div class="field-row"><label>Fiber MFD (µm)</label><input type="number" id="fib_mfd" value="5.3" min="1" max="50" step="0.1" oninput="calcFiber()"><span class="unit">µm</span></div>
               <div class="field-row"><label>Collimating lens f₁ (mm)</label><input type="number" id="fib_f1" value="11" min="1" max="200" step="0.5" oninput="calcFiber()"><span class="unit">mm</span></div>
@@ -190,9 +190,9 @@ z_R = π w_foc² / λ</div>
                 <label><input type="radio" name="na_mode" value="na" checked onchange="calcNA()"> Specify NA</label>
                 <label><input type="radio" name="na_mode" value="w0" onchange="calcNA()"> Specify w₀</label>
               </div>
-              <div class="formula-box">w₀ = λ / (π · NA)       [Gaussian]
-d_Abbe = λ / (2 · NA)   [Abbe resolution]
-NA = λ / (π · w₀)</div>
+              <div class="formula-box">
+$$w_0 = \frac{\lambda}{\pi\cdot{\rm NA}} \quad \text{[Gaussian]} \qquad d_{\rm Abbe} = \frac{\lambda}{2\cdot{\rm NA}} \quad \text{[Abbe resolution]}$$
+$${\rm NA} = \frac{\lambda}{\pi\,w_0}$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="na_lam" value="852" min="400" max="2000" step="1" oninput="calcNA()"><span class="unit">nm</span></div>
               <div id="na_spec_na">
                 <div class="field-row"><label>Numerical aperture (NA)</label><input type="number" id="na_val" value="0.5" min="0.01" max="1.0" step="0.01" oninput="calcNA()"></div>
@@ -206,8 +206,8 @@ NA = λ / (π · w₀)</div>
             <div class="calc-card">
               <h4>Rayleigh Range &amp; Divergence</h4>
               <div class="sub">Gaussian beam propagation from waist w₀ and wavelength.</div>
-              <div class="formula-box">z_R = π w₀² / λ
-θ_div = λ / (π w₀)    (far-field half-angle)</div>
+              <div class="formula-box">
+$$z_R = \frac{\pi w_0^2}{\lambda} \qquad \theta_{\rm div} = \frac{\lambda}{\pi w_0} \quad \text{[far-field half-angle]}$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rr_lam" value="1064" min="400" max="2000" step="1" oninput="calcRayleigh()"><span class="unit">nm</span></div>
               <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="rr_w0" value="950" min="0.1" max="5000" step="1" oninput="calcRayleigh()"><span class="unit">µm</span></div>
               <div id="rr_res" class="result-row"></div>
@@ -222,9 +222,8 @@ NA = λ / (π · w₀)</div>
           <div class="calc-card">
             <h4>Beam Telescope Magnification</h4>
             <div class="sub">2-lens Galilean / Keplerian expander. Output beam waist and divergence.</div>
-            <div class="formula-box">M = f₂ / f₁
-w₀_out = M · w₀_in
-θ_out = θ_in / M</div>
+            <div class="formula-box">
+$$M = \frac{f_2}{f_1} \qquad w_{0,{\rm out}} = M\,w_{0,{\rm in}} \qquad \theta_{\rm out} = \frac{\theta_{\rm in}}{M}$$</div>
             <div class="field-row"><label>Input lens f₁ (mm)</label><input type="number" id="tel_f1" value="25" min="1" max="1000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
             <div class="field-row"><label>Output lens f₂ (mm)</label><input type="number" id="tel_f2" value="200" min="1" max="2000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
             <div class="field-row"><label>Input beam waist w₀_in (mm)</label><input type="number" id="tel_w" value="0.5" min="0.01" max="50" step="0.01" oninput="calcTelescope()"><span class="unit">mm</span></div>
@@ -235,8 +234,8 @@ w₀_out = M · w₀_in
           <div class="calc-card">
             <h4>f-number → Spot Size</h4>
             <div class="sub">For a Gaussian beam: w₀ ≈ λf/(πw_in). For plane wave (overfilled): d_Airy = 2.44 λ (f/D).</div>
-            <div class="formula-box">w₀ = λ f / (π w_in)       [Gaussian]
-d_Airy = 2.44 λ (f/D)    [overfilled]</div>
+            <div class="formula-box">
+$$w_0 = \frac{\lambda f}{\pi w_{\rm in}} \quad \text{[Gaussian]} \qquad d_{\rm Airy} = 2.44\,\lambda\,(f/D) \quad \text{[overfilled]}$$</div>
             <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="fn_lam" value="1064" min="400" max="2000" step="1" oninput="calcFnum()"><span class="unit">nm</span></div>
             <div class="field-row"><label>Focal length f (mm)</label><input type="number" id="fn_f" value="100" min="1" max="1000" step="1" oninput="calcFnum()"><span class="unit">mm</span></div>
             <div class="field-row"><label>Input beam 1/e² diameter (mm)</label><input type="number" id="fn_d" value="10" min="0.1" max="200" step="0.1" oninput="calcFnum()"><span class="unit">mm</span></div>
@@ -258,8 +257,8 @@ d_Airy = 2.44 λ (f/D)    [overfilled]</div>
             <div class="calc-card">
               <h4>mW ↔ dBm Conversion</h4>
               <div class="sub">1 mW = 0 dBm. Used everywhere: AOM drivers, amplifiers, photodetectors, VCOs.</div>
-              <div class="formula-box">P [dBm] = 10 · log₁₀(P [mW])
-P [mW]  = 10^(P [dBm] / 10)</div>
+              <div class="formula-box">
+$$P\,[\text{dBm}] = 10\cdot\log_{10}(P\,[\text{mW}]) \qquad P\,[\text{mW}] = 10^{P[\text{dBm}]/10}$$</div>
               <div class="radio-group">
                 <label><input type="radio" name="pw_dir" value="mw" checked onchange="calcPower()"> mW → dBm</label>
                 <label><input type="radio" name="pw_dir" value="dbm" onchange="calcPower()"> dBm → mW</label>
@@ -277,7 +276,7 @@ P [mW]  = 10^(P [dBm] / 10)</div>
             <div class="calc-card">
               <h4>dB Gain / Loss Chain</h4>
               <div class="sub">Enter input power and gains/losses in dB (negative = loss). E.g. AOM −10 dB, amplifier +30 dB.</div>
-              <div class="formula-box">P_out [dBm] = P_in [dBm] + Σ gains [dB]</div>
+              <div class="formula-box">$$P_{\rm out}\,[\text{dBm}] = P_{\rm in}\,[\text{dBm}] + \sum \text{gains}\,[\text{dB}]$$</div>
               <div class="field-row"><label>Input power (dBm)</label><input type="number" id="gain_in" value="-10" min="-60" max="60" step="1" oninput="calcGain()"><span class="unit">dBm</span></div>
               <div class="field-row" style="align-items:flex-start;">
                 <label style="padding-top:.3rem;">Gains/losses (dB), comma-sep</label>
@@ -292,9 +291,9 @@ P [mW]  = 10^(P [dBm] / 10)</div>
             <div class="calc-card">
               <h4>AOM / AOD Deflection</h4>
               <div class="sub">Bragg diffraction angle for a given optical wavelength and AOM drive frequency.</div>
-              <div class="formula-box">Λ = v_s / f_AOM          (acoustic wavelength)
-θ_B = λ_opt / (2Λ)       (Bragg angle)
-θ_def = n·λ·f_AOM / v_s  (n-th order)</div>
+              <div class="formula-box">
+$$\Lambda = \frac{v_s}{f_{\rm AOM}} \quad \text{[acoustic wavelength]}$$
+$$\theta_B = \frac{\lambda_{\rm opt}}{2\Lambda} \quad \text{[Bragg angle]} \qquad \theta_{\rm def} = \frac{n\,\lambda\,f_{\rm AOM}}{v_s} \quad \text{[}n\text{-th order]}$$</div>
               <div class="field-row"><label>Optical wavelength λ (nm)</label><input type="number" id="aom_lam" value="852" min="400" max="2000" step="1" oninput="calcAOM()"><span class="unit">nm</span></div>
               <div class="field-row"><label>AOM drive frequency (MHz)</label><input type="number" id="aom_freq" value="80" min="1" max="3000" step="1" oninput="calcAOM()"><span class="unit">MHz</span></div>
               <div class="field-row">
@@ -325,9 +324,9 @@ P [mW]  = 10^(P [dBm] / 10)</div>
             <div class="calc-card">
               <h4>Shot Noise on Photodetector</h4>
               <div class="sub">Photon shot noise sets the quantum noise floor for a given detection bandwidth.</div>
-              <div class="formula-box">I_dc = η · e · P / (hν)
-i_shot = √(2 e I_dc BW)  [A_rms]
-NEP = i_shot / R          [W]</div>
+              <div class="formula-box">
+$$I_{\rm dc} = \frac{\eta e P}{h\nu} \qquad i_{\rm shot} = \sqrt{2e\,I_{\rm dc}\,{\rm BW}} \quad [{\rm A}_{\rm rms}]$$
+$${\rm NEP} = \frac{i_{\rm shot}}{R} \quad [{\rm W}]$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="sn_lam" value="852" min="400" max="2000" step="1" oninput="calcShot()"><span class="unit">nm</span></div>
               <div class="field-row"><label>Detected power P (µW)</label><input type="number" id="sn_P" value="10" min="0.001" max="100000" step="0.1" oninput="calcShot()"><span class="unit">µW</span></div>
               <div class="field-row"><label>Quantum efficiency η</label><input type="number" id="sn_eta" value="0.85" min="0.01" max="1.0" step="0.01" oninput="calcShot()"></div>
@@ -351,9 +350,9 @@ NEP = i_shot / R          [W]</div>
             <div class="calc-card">
               <h4>Photon Recoil</h4>
               <div class="sub">Recoil velocity &amp; temperature from one photon kick. Sets the energy scale for laser cooling.</div>
-              <div class="formula-box">v_rec = ħk / m = h / (mλ)
-T_rec = m·v_rec² / k_B = (ħk)² / (m·k_B)
-E_rec/h = ħk² / (4πm)  [kHz]</div>
+              <div class="formula-box">
+$$v_{\rm rec} = \frac{\hbar k}{m} = \frac{h}{m\lambda} \qquad T_{\rm rec} = \frac{m v_{\rm rec}^2}{k_{\rm B}} = \frac{(\hbar k)^2}{m k_{\rm B}}$$
+$$E_{\rm rec}/h = \frac{\hbar k^2}{4\pi m} \quad [\text{kHz}]$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rec_lam" value="852" min="400" max="2000" step="1" oninput="calcRecoil()"><span class="unit">nm</span></div>
               <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="rec_A" value="133" min="1" max="250" step="1" oninput="calcRecoil()"><span class="unit">amu</span></div>
               <div id="rec_res" class="result-row"></div>
@@ -367,8 +366,8 @@ E_rec/h = ħk² / (4πm)  [kHz]</div>
                 <label><input type="radio" name="dop_mode" value="vtof" checked onchange="calcDoppler()"> v → Δf</label>
                 <label><input type="radio" name="dop_mode" value="ftov" onchange="calcDoppler()"> Δf → v</label>
               </div>
-              <div class="formula-box">Δf = v / λ   (counter-propagating)
-v = Δf · λ</div>
+              <div class="formula-box">
+$$\Delta f = \frac{v}{\lambda} \quad \text{[counter-propagating]} \qquad v = \Delta f \cdot \lambda$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="dop_lam" value="852" min="400" max="2000" step="1" oninput="calcDoppler()"><span class="unit">nm</span></div>
               <div id="dop_v_field">
                 <div class="field-row"><label>Atom velocity v (m/s)</label><input type="number" id="dop_v" value="1.0" min="-1000" max="1000" step="0.1" oninput="calcDoppler()"><span class="unit">m/s</span></div>
@@ -383,7 +382,7 @@ v = Δf · λ</div>
             <div class="calc-card">
               <h4>Thermal de Broglie Wavelength</h4>
               <div class="sub">λ_dB ≫ inter-particle spacing → quantum degeneracy. Also for matter-wave interferometry.</div>
-              <div class="formula-box">λ_dB = h / √(2π m k_B T)</div>
+              <div class="formula-box">$$\lambda_{\rm dB} = \frac{h}{\sqrt{2\pi m k_{\rm B} T}}$$</div>
               <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="ddb_A" value="133" min="1" max="250" step="1" oninput="calcDeBroglie()"><span class="unit">amu</span></div>
               <div class="field-row"><label>Temperature T (µK)</label><input type="number" id="ddb_T" value="100" min="0.01" max="1e6" step="1" oninput="calcDeBroglie()"><span class="unit">µK</span></div>
               <div id="ddb_res" class="result-row"></div>
@@ -395,8 +394,8 @@ v = Δf · λ</div>
             <div class="calc-card">
               <h4>Zeeman Shift (Linear Regime)</h4>
               <div class="sub">Valid for |B| where Zeeman energy ≪ HF splitting (typically B ≪ few hundred Gauss for alkalis).</div>
-              <div class="formula-box">ΔE = g_F · m_F · μ_B · B
-Δf = ΔE / h  [MHz]</div>
+              <div class="formula-box">
+$$\Delta E = g_F\,m_F\,\mu_B\,B \qquad \Delta f = \frac{\Delta E}{h} \quad [\text{MHz}]$$</div>
               <div class="field-row"><label>Landé g_F factor</label><input type="number" id="zee_gF" value="0.25" min="-5" max="5" step="0.01" oninput="calcZeeman()"><span class="unit">(Cs F=4: +1/4)</span></div>
               <div class="field-row"><label>Magnetic sublevel m_F</label><input type="number" id="zee_mF" value="4" min="-10" max="10" step="1" oninput="calcZeeman()"></div>
               <div class="field-row"><label>Magnetic field B (Gauss)</label><input type="number" id="zee_B" value="10" min="0" max="10000" step="0.1" oninput="calcZeeman()"><span class="unit">G</span></div>
@@ -407,8 +406,8 @@ v = Δf · λ</div>
             <div class="calc-card">
               <h4>Saturation Intensity</h4>
               <div class="sub">I_sat for a dipole-allowed transition. Above I_sat, the transition is power-broadened.</div>
-              <div class="formula-box">I_sat = π h c Γ / (3 λ³)   (cycling transition)
-τ = 1 / (Γ/2π)</div>
+              <div class="formula-box">
+$$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transition]} \qquad \tau = \frac{1}{\Gamma/2\pi}$$</div>
               <div class="field-row">
                 <label>Preset transition</label>
                 <select id="sat_preset" onchange="applySatPreset()" style="width:220px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.82rem;">
@@ -428,9 +427,9 @@ v = Δf · λ</div>
             <div class="calc-card">
               <h4>Thermal Velocity Distribution</h4>
               <div class="sub">Maxwell–Boltzmann rms, most-probable, and mean speeds.</div>
-              <div class="formula-box">v_rms  = √(3k_BT/m)
-v_prob = √(2k_BT/m)   (most probable)
-v_mean = √(8k_BT/πm)  (mean speed)</div>
+              <div class="formula-box">
+$$v_{\rm rms} = \sqrt{\frac{3k_{\rm B}T}{m}} \qquad v_{\rm prob} = \sqrt{\frac{2k_{\rm B}T}{m}} \quad \text{[most probable]}$$
+$$v_{\rm mean} = \sqrt{\frac{8k_{\rm B}T}{\pi m}} \quad \text{[mean speed]}$$</div>
               <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="thv_A" value="133" min="1" max="250" step="1" oninput="calcThermVel()"><span class="unit">amu</span></div>
               <div class="field-row"><label>Temperature T (µK)</label><input type="number" id="thv_T" value="100" min="0.01" max="1e9" step="1" oninput="calcThermVel()"><span class="unit">µK</span></div>
               <div id="thv_res" class="result-row"></div>
@@ -452,9 +451,9 @@ v_mean = √(8k_BT/πm)  (mean speed)</div>
             <div class="calc-card">
               <h4>Optical Tweezer Trap Frequencies</h4>
               <div class="sub">Harmonic approximation near the trap minimum. Radial and axial frequencies from trap depth and beam waist.</div>
-              <div class="formula-box">ω_r = √(4 U₀ / m w₀²)   [radial]
-ω_z = √(2 U₀ / m z_R²)  [axial]
-z_R = π w₀² / λ</div>
+              <div class="formula-box">
+$$\omega_r = \sqrt{\frac{4U_0}{m w_0^2}} \quad \text{[radial]} \qquad \omega_z = \sqrt{\frac{2U_0}{m z_R^2}} \quad \text{[axial]}$$
+$$z_R = \frac{\pi w_0^2}{\lambda}$$</div>
               <div class="field-row"><label>Trap depth U₀ (mK)</label><input type="number" id="tf_U0" value="0.5" min="0.001" max="100" step="0.001" oninput="calcTrap()"><span class="unit">mK</span></div>
               <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="tf_w0" value="0.95" min="0.1" max="50" step="0.01" oninput="calcTrap()"><span class="unit">µm</span></div>
               <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="tf_A" value="133" min="1" max="250" step="1" oninput="calcTrap()"><span class="unit">amu</span></div>
@@ -466,9 +465,9 @@ z_R = π w₀² / λ</div>
             <div class="calc-card">
               <h4>Lamb–Dicke Parameter</h4>
               <div class="sub">η = k x_zpf. Resolved sideband cooling requires η ≪ 1. x_zpf = √(ħ/2mω) is the zero-point motion.</div>
-              <div class="formula-box">x_zpf = √(ħ / 2mω_trap)
-η = k · cos(θ) · x_zpf
-⟨n⟩_min ≈ (Γ/2ω)²   [RSB cooling limit]</div>
+              <div class="formula-box">
+$$x_{\rm zpf} = \sqrt{\frac{\hbar}{2m\omega_{\rm trap}}} \qquad \eta = k\cos\theta\cdot x_{\rm zpf}$$
+$$\langle n\rangle_{\rm min} \approx \left(\frac{\Gamma}{2\omega}\right)^2 \quad \text{[RSB cooling limit]}$$</div>
               <div class="field-row"><label>Probe wavelength λ (nm)</label><input type="number" id="ld_lam" value="852" min="400" max="2000" step="1" oninput="calcLD()"><span class="unit">nm</span></div>
               <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="ld_A" value="133" min="1" max="250" step="1" oninput="calcLD()"><span class="unit">amu</span></div>
               <div class="field-row"><label>Trap frequency f_trap (kHz)</label><input type="number" id="ld_f" value="100" min="0.01" max="5000" step="1" oninput="calcLD()"><span class="unit">kHz</span></div>
@@ -482,9 +481,9 @@ z_R = π w₀² / λ</div>
             <div class="calc-card">
               <h4>Optical Cavity / Fabry–Pérot</h4>
               <div class="sub">FSR, finesse, linewidth, round-trip time. Used for laser locking, ULE cavities, transfer cavities.</div>
-              <div class="formula-box">FSR = c / (2nL)
-F = π√R / (1−R)
-δν = FSR / F   (linewidth FWHM)</div>
+              <div class="formula-box">
+$${\rm FSR} = \frac{c}{2nL} \qquad \mathcal{F} = \frac{\pi\sqrt{R}}{1-R}$$
+$$\delta\nu = \frac{{\rm FSR}}{\mathcal{F}} \quad \text{[linewidth FWHM]}$$</div>
               <div class="field-row"><label>Cavity length L (mm)</label><input type="number" id="cav_L" value="100" min="0.1" max="1e6" step="0.1" oninput="calcCavity()"><span class="unit">mm</span></div>
               <div class="field-row"><label>Mirror reflectivity R</label><input type="number" id="cav_R" value="0.9999" min="0.001" max="0.99999" step="0.0001" oninput="calcCavity()"></div>
               <div class="field-row"><label>Refractive index n</label><input type="number" id="cav_n" value="1.0" min="1.0" max="5.0" step="0.01" oninput="calcCavity()"></div>
@@ -495,8 +494,9 @@ F = π√R / (1−R)
             <div class="calc-card">
               <h4>Gaussian Mode Matching</h4>
               <div class="sub">Coupling efficiency into a fiber or cavity mode via overlap integral of two Gaussian modes.</div>
-              <div class="formula-box">η = (2w₁w₂/(w₁²+w₂²))²     [Δz=0]
-Reduced by wavefront curvature for Δz≠0</div>
+              <div class="formula-box">
+$$\eta = \left(\frac{2w_1 w_2}{w_1^2+w_2^2}\right)^2 \quad [\Delta z=0]$$
+Reduced by wavefront curvature for $\Delta z \neq 0$</div>
               <div class="field-row"><label>Mode 1 waist w₁ (µm)</label><input type="number" id="mm_w1" value="5.0" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
               <div class="field-row"><label>Mode 2 waist w₂ (µm)</label><input type="number" id="mm_w2" value="4.8" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
               <div class="field-row"><label>Waist separation Δz (µm)</label><input type="number" id="mm_dz" value="0" min="0" max="10000" step="1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
@@ -527,17 +527,18 @@ Reduced by wavefront curvature for Δz≠0</div>
         <div class="accordion" style="margin-bottom:1.5rem;">
           <div class="accordion-header">📖 Background &amp; Selection Rules</div>
           <div class="accordion-body">
-            <div class="formula-box">|J, M⟩ = Σ_{m₁,m₂}  ⟨j₁m₁; j₂m₂ | J M⟩  |j₁,m₁⟩|j₂,m₂⟩</div>
+            <div class="formula-box">$$|J,M\rangle = \sum_{m_1,m_2} \langle j_1 m_1;\, j_2 m_2 \mid J M\rangle\; |j_1,m_1\rangle|j_2,m_2\rangle$$</div>
             <h4 style="color:var(--text-secondary); margin:1rem 0 .4rem 0;">Selection rules — coefficient is zero unless:</h4>
             <ul style="color:var(--text-muted); font-size:.88rem; padding-left:1.3rem; line-height:1.8;">
               <li><strong style="color:var(--text-secondary)">M = m₁ + m₂</strong> (z-component conservation)</li>
               <li><strong style="color:var(--text-secondary)">|j₁ − j₂| ≤ J ≤ j₁ + j₂</strong> (triangle rule)</li>
               <li><strong style="color:var(--text-secondary)">|mᵢ| ≤ jᵢ</strong> for i = 1, 2</li>
             </ul>
-            <div class="formula-box" style="margin-top:.75rem;">J  ∈  { |j₁−j₂|,  |j₁−j₂|+1,  …,  j₁+j₂ }
-Σ_J (2J+1)  =  (2j₁+1)(2j₂+1)     [dimension check]
-Exchange:  ⟨j₁m₁;j₂m₂|JM⟩ = (−1)^{j₁+j₂−J} ⟨j₂m₂;j₁m₁|JM⟩
-Time-rev:  ⟨j₁m₁;j₂m₂|JM⟩ = (−1)^{j₁+j₂−J} ⟨j₁−m₁;j₂−m₂|J−M⟩</div>
+            <div class="formula-box" style="margin-top:.75rem;">
+$J \in \{|j_1-j_2|,\;|j_1-j_2|+1,\;\ldots,\;j_1+j_2\}$<br>
+$$\sum_J (2J+1) = (2j_1+1)(2j_2+1) \quad \text{[dimension check]}$$
+Exchange: $\langle j_1 m_1;j_2 m_2|JM\rangle = (-1)^{j_1+j_2-J}\langle j_2 m_2;j_1 m_1|JM\rangle$<br>
+Time-rev: $\langle j_1 m_1;j_2 m_2|JM\rangle = (-1)^{j_1+j_2-J}\langle j_1{-}m_1;j_2{-}m_2|J{-}M\rangle$</div>
           </div>
         </div>
 
@@ -592,22 +593,20 @@ Time-rev:  ⟨j₁m₁;j₂m₂|JM⟩ = (−1)^{j₁+j₂−J} ⟨j₁−m₁;j�
           <!-- Wigner-Eckart -->
           <div class="tab-panel" data-tab="cg-we" data-group="cg-inner">
             <h3 style="color:var(--text-secondary); font-size:1.05rem; margin:1rem 0 .3rem 0;">Wigner–Eckart Theorem</h3>
-            <div class="formula-box">⟨α′, j′, m′ | T(k)_q | α, j, m⟩
-    =  ⟨j, m; k, q | j′, m′⟩  ×  ⟨α′j′ ‖ T(k) ‖ αj⟩ / √(2j′+1)
-
-The CG coefficient carries ALL m-dependence.
-The reduced matrix element is independent of m, m′, q.</div>
+            <div class="formula-box">
+$$\langle \alpha', j', m' \mid T^{(k)}_q \mid \alpha, j, m\rangle = \langle j, m;\, k, q \mid j', m'\rangle \times \frac{\langle \alpha'j' \| T^{(k)} \| \alpha j\rangle}{\sqrt{2j'+1}}$$
+The CG coefficient carries ALL $m$-dependence.<br>
+The reduced matrix element is independent of $m$, $m'$, $q$.</div>
             <div class="we-grid">
-              <div class="formula-box"><strong style="color:#a78bfa">E1 (k=1): </strong> Δj = 0,±1 (no 0→0); Δm = 0 (π), ±1 (σ±)
-<strong style="color:#a78bfa">M1 (k=1): </strong> Same Δj, Δm; Δl = 0</div>
-              <div class="formula-box"><strong style="color:#a78bfa">E2 (k=2): </strong> Δj = 0,±1,±2; Δm = 0,±1,±2
-<strong style="color:#a78bfa">Hyperfine: </strong> All ⟨F,m_F|T|F′,m_F′⟩ reduce to
-one ⟨F‖T‖F′⟩ via Wigner–Eckart</div>
+              <div class="formula-box"><strong style="color:#a78bfa">E1 ($k=1$): </strong> $\Delta j = 0,\pm1$ (no $0\to0$); $\Delta m = 0$ ($\pi$), $\pm1$ ($\sigma^\pm$)<br>
+<strong style="color:#a78bfa">M1 ($k=1$): </strong> Same $\Delta j$, $\Delta m$; $\Delta l = 0$</div>
+              <div class="formula-box"><strong style="color:#a78bfa">E2 ($k=2$): </strong> $\Delta j = 0,\pm1,\pm2$; $\Delta m = 0,\pm1,\pm2$<br>
+<strong style="color:#a78bfa">Hyperfine: </strong> All $\langle F,m_F|T|F',m_{F'}\rangle$ reduce to one $\langle F\|T\|F'\rangle$ via Wigner–Eckart</div>
             </div>
-            <div class="formula-box" style="margin-top:.75rem;">Wigner 3j relation:
-⟨j₁m₁; j₂m₂ | J M⟩  =  (−1)^{j₁−j₂+M} √(2J+1)  ×  ⎛ j₁   j₂   J  ⎞
-                                                      ⎝ m₁   m₂  −M  ⎠
-In Python: sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</div>
+            <div class="formula-box" style="margin-top:.75rem;">
+Wigner 3j relation:
+$$\langle j_1 m_1;\, j_2 m_2 \mid J M\rangle = (-1)^{j_1-j_2+M}\sqrt{2J+1}\begin{pmatrix}j_1 & j_2 & J \\ m_1 & m_2 & -M\end{pmatrix}$$
+In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></div>
           </div>
         </div>
       </div><!-- /cg tab -->
@@ -621,7 +620,7 @@ In Python: sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</div>
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
   <script>
     renderNav({ active: 'lab-calculators', root: '../' });
 

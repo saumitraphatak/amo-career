@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="Zernike Polynomials">
   <meta name="twitter:description" content="Interactive Zernike polynomial visualiser for wavefront analysis and optical aberration characterisation in AMO experiments.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Zernike Polynomials","description":"Interactive Zernike polynomial visualiser for wavefront analysis and optical aberration characterisation in AMO experiments.","url":"https://saumitraphatak.github.io/amo-career/pages/zernike.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -49,8 +49,6 @@
     .formula-box {
       background: #080f08; border: 1px solid #1a3a1a; border-radius: 8px;
       padding: .75rem 1.1rem; margin: .7rem 0;
-      font-family: var(--mono); color: #86efac; font-size: .82rem;
-      line-height: 1.85; white-space: pre; overflow-x: auto;
     }
 
     /* Mode chips */
@@ -234,13 +232,9 @@
         <div class="theory-box">
           <h4>Zernike Polynomial Definition (OSA/ANSI)</h4>
           <p>Orthonormal over the unit disk ρ ≤ 1 in polar coordinates (ρ, θ):</p>
-          <div class="formula-box">Z_n^m(ρ,θ) =  √(2(n+1)) · R_n^|m|(ρ) · cos(m·θ)     m > 0
-            =  √(2(n+1)) · R_n^|m|(ρ) · sin(|m|·θ)   m < 0
-            =  √(n+1)    · R_n^0(ρ)                    m = 0
-
-R_n^|m|(ρ) = Σ_{s=0}^{(n-|m|)/2}  (−1)^s · (n−s)! · ρ^{n−2s}
-             ──────────────────────────────────────────────────
-             s! · ((n+|m|)/2−s)! · ((n−|m|)/2−s)!</div>
+          <div class="formula-box">
+$$Z_n^m(\rho,\theta) = \begin{cases} \sqrt{2(n+1)}\,R_n^{|m|}(\rho)\cos(m\theta) & m > 0 \\ \sqrt{2(n+1)}\,R_n^{|m|}(\rho)\sin(|m|\theta) & m < 0 \\ \sqrt{n+1}\,R_n^0(\rho) & m = 0 \end{cases}$$
+$$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!\;\left(\frac{n+|m|}{2}-s\right)!\;\left(\frac{n-|m|}{2}-s\right)!}$$</div>
           <p>Orthonormality: ∫|Z_n^m|² ρ dρ dθ / π = 1.  Any wavefront W(ρ,θ) = Σ c_n^m Z_n^m;
           RMS WFE = √(Σ c²).</p>
         </div>
@@ -437,13 +431,12 @@ R_n^|m|(ρ) = Σ_{s=0}^{(n-|m|)/2}  (−1)^s · (n−s)! · ρ^{n−2s}
               <span class="eq">|LG₀ˡ| ∝ (r√2/w)^|l| · exp(−r²/w²)</span>
               Intensity ring at r = w√(|l|/2). Larger ring for larger |l|.
             </p>
-            <div class="formula-box">SLM recipe for LG₀ˡ:
-  1. Input: Gaussian beam
-  2. Phase:  φ = l·θ  (helical/vortex phase)
-  3. Far field ≈ LG₀ˡ  (donut for l≠0)
-
-Blazed grating l·θ + k·x:
-  Shifts donut off-axis — separates OAM orders spatially</div>
+            <div class="formula-box">
+SLM recipe for LG$_0^l$:<br>
+1. Input: Gaussian beam<br>
+2. Phase: $\varphi = l\cdot\theta$ (helical/vortex phase)<br>
+3. Far field $\approx$ LG$_0^l$ (donut for $l\neq0$)<br><br>
+Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis — separates OAM orders spatially</div>
           </div>
           <div>
             <table class="lg-table">
@@ -491,7 +484,7 @@ Blazed grating l·θ + k·x:
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=2"></script>
+<script src="../js/main.js?v=3"></script>
 <script>
 renderNav({ active: 'zernike', root: '../' });
 initScrollReveal();
