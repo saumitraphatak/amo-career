@@ -16,6 +16,7 @@ const NAV = {
     { key: 'imaging-calculator',   label: 'Imaging SNR Calculator',  icon: '📷',  color: '#34d399', href: 'pages/imaging-calculator.html'   },
     { key: 'tof-calculator',       label: 'TOF Thermometry',         icon: '🌡️',  color: '#38bdf8', href: 'pages/tof-calculator.html'        },
     { key: 'mot-designer',         label: 'MOT Designer',            icon: '🧲',  color: '#fb923c', href: 'pages/mot-designer.html'          },
+    { key: 'fidelity-budget',      label: 'Gate Fidelity Budget',    icon: '📊',  color: '#f87171', href: 'pages/fidelity-budget.html'       },
     { key: 'release-recapture',    label: 'Release-Recapture',       icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html'    },
     { key: 'lab-calculators',      label: 'Lab Calculators',         icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'      },
     { key: 'laser-locking',        label: 'Laser Locking',           icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'        },
@@ -118,9 +119,11 @@ function renderNav({ active = '', root = '' } = {}) {
                 <path d="M4 6l4 4 4-4"/>
               </svg>
             </button>
-            <div class="nav-drop" role="menu">
-              <div class="nav-drop-section">8 AMO Research Tools</div>
-              ${toolsHTML}
+            <div class="nav-drop" role="menu" style="min-width:520px">
+              <div class="nav-drop-section">${NAV.tools.length} AMO Research Tools</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;">
+                ${toolsHTML}
+              </div>
             </div>
           </div>
 
@@ -132,9 +135,11 @@ function renderNav({ active = '', root = '' } = {}) {
                 <path d="M4 6l4 4 4-4"/>
               </svg>
             </button>
-            <div class="nav-drop" role="menu" style="min-width:300px">
-              <div class="nav-drop-section">Quantum Fundamentals</div>
-              ${learnHTML}
+            <div class="nav-drop" role="menu" style="min-width:520px">
+              <div class="nav-drop-section">Quantum Fundamentals — ${NAV.learn.length} topics</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;">
+                ${learnHTML}
+              </div>
             </div>
           </div>
 

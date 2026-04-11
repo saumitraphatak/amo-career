@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gate Fidelity Budget — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="Rydberg two-qubit gate fidelity budget — spontaneous emission, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, B-field noise, Rabi inhomogeneity.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/fidelity-budget.html">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-lock); }  /* red #f87171 */
+
+    /* ─── Fidelity meter ─────────────────────────── */
+    .fid-meter-wrap {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 14px; padding: 1.5rem 1.75rem; margin-bottom: 1rem;
+    }
+    .fid-meter-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: .75rem;
+    }
+    .fid-label { font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--text-muted); }
+    .fid-value {
+      font-family: var(--mono); font-size: 3rem; font-weight: 700;
+      line-height: 1; transition: color .3s;
+    }
+    .fid-bar-track {
+      height: 14px; background: #1e293b; border-radius: 7px; overflow: hidden; margin-bottom: .35rem;
+    }
+    .fid-bar-fill {
+      height: 100%; border-radius: 7px; transition: width .5s ease, background .3s;
+    }
+    .fid-ticks {
+      display: flex; justify-content: space-between;
+      font-size: .68rem; color: var(--text-muted);
+    }
+
+    /* ─── Error budget table ─────────────────────── */
+    .budget-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    .budget-table th {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted);
+      padding: .55rem .75rem; text-align: left; border-bottom: 1px solid #1e293b;
+    }
+    .budget-table td { padding: .55rem .75rem; border-bottom: 1px solid #111827; }
+    .budget-table td:nth-child(2) { font-family: var(--mono); color: #f87171; }
+    .budget-table td:nth-child(3) { font-family: var(--mono); color: var(--text-secondary); }
+    .budget-table tr.dominant td { background: rgba(248,113,113,.05); }
+    .budget-table tr.dominant td:first-child { font-weight: 600; color: var(--text-primary); }
+    .bbar { height: 6px; background: #1e293b; border-radius:3px; overflow:hidden; min-width:80px; }
+    .bbar-fill { height:100%; border-radius:3px; }
+
+    /* ─── SOTA comparison ────────────────────────── */
+    .sota-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: .85rem 1.1rem; display: flex; flex-direction: column; gap: .3rem;
+    }
+    .sota-label { font-size: .72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted); }
+    .sota-val { font-family: var(--mono); font-size: 1.25rem; font-weight: 700; }
+    .sota-desc { font-size: .75rem; color: var(--text-secondary); }
+
+    /* ─── Controls ───────────────────────────────── */
+    .ctrl-panel {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .ctrl-panel h5 {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: #f87171; margin: 0 0 .9rem 0;
+    }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label {
+      display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .field-row select, .field-row input[type=number] {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .7rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row select:focus, .field-row input:focus { outline:none; border-color:#f87171; }
+    .field-row input[type=range] { width:100%; accent-color:#f87171; margin-top:.2rem; }
+    .lbl-val { color: #f87171; font-family: var(--mono); }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+    @media(max-width:800px){ .two-col { grid-template-columns:1fr; } }
+    .three-col { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; }
+    @media(max-width:640px){ .three-col { grid-template-columns:1fr; } }
+
+    .theory-box {
+      background: var(--bg-card); border:1px solid #1e293b;
+      border-left:4px solid #f87171; border-radius:10px;
+      padding:1rem 1.3rem; margin-bottom:1rem;
+    }
+    .theory-box h4 { font-size:.93rem; font-weight:700; color:#f87171; margin:0 0 .5rem 0; }
+    .theory-box p  { font-size:.86rem; color:var(--text-secondary); line-height:1.7; margin:0; }
+
+    .formula-box {
+      background:#100007; border:1px solid #7f1d1d; border-radius:8px;
+      padding:.7rem 1rem; margin:.6rem 0;
+      font-family:var(--mono); color:#fca5a5; font-size:.82rem;
+      line-height:1.85; white-space:pre; overflow-x:auto;
+    }
+
+    .chart-card {
+      background:var(--bg-card); border:1px solid #1e293b;
+      border-radius:12px; padding:1rem 1.25rem;
+    }
+    .chart-card h5 {
+      font-size:.78rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.06em; color:var(--text-muted); margin:0 0 .75rem 0;
+    }
+
+    .info-banner {
+      background:#100007; border:1px solid #7f1d1d; border-radius:8px;
+      padding:.65rem 1rem; font-size:.8rem; color:#fca5a5; margin-top:.75rem; line-height:1.6;
+    }
+    .good-banner {
+      background:#052e16; border:1px solid #15803d; border-radius:8px;
+      padding:.65rem 1rem; font-size:.8rem; color:#86efac; margin-top:.75rem; line-height:1.6;
+    }
+
+    .section-divider { border:none; border-top:1px solid #1e293b; margin:2rem 0; }
+
+    .read-links { display:flex; flex-direction:column; gap:.5rem; margin-top:.75rem; }
+    .read-link {
+      display:flex; align-items:center; gap:.6rem;
+      background:var(--bg-card); border:1px solid #1e293b; border-radius:8px;
+      padding:.55rem .85rem; font-size:.82rem; color:var(--text-secondary);
+      text-decoration:none; transition:border-color .15s,color .15s;
+    }
+    .read-link:hover { border-color:#f87171; color:var(--text-primary); }
+    .rl-icon { font-size:1rem; flex-shrink:0; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════ HERO ═══════════════════════════ -->
+<section class="page-hero" style="--hero-accent:#f87171;">
+  <div class="container">
+    <div class="hero-badge anim-in">RYDBERG QUANTUM GATES</div>
+    <h1 class="page-title anim-in delay-1">
+      Gate <span class="grad-text" style="--ga:#f87171;--gb:#fbbf24;">Fidelity Budget</span>
+    </h1>
+    <p class="page-subtitle anim-in delay-2">
+      Quantify every error source in a Rydberg two-qubit gate — from spontaneous emission and
+      Doppler dephasing to laser noise, finite blockade, and SPAM. Identify your dominant bottleneck
+      and compare to state-of-the-art experimental fidelities.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">8</span><span class="stat-lbl">error sources</span></div>
+      <div class="stat"><span class="stat-val">F</span><span class="stat-lbl">Total gate fidelity</span></div>
+      <div class="stat"><span class="stat-val">ε_i</span><span class="stat-lbl">Per-source budget</span></div>
+      <div class="stat"><span class="stat-val">99.5%</span><span class="stat-lbl">SOTA benchmark</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top:2.5rem;">
+
+  <!-- ═══ SECTION 1: GATE & ATOM SETUP ═════════════════════════ -->
+  <section class="section-block anim-in delay-1">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#f87171">01 </span>Gate &amp; Atom Setup
+    </h2>
+    <div class="two-col">
+
+      <div class="ctrl-panel">
+        <h5>Rydberg Gate Parameters</h5>
+
+        <div class="field-row">
+          <label>Atom species</label>
+          <select id="speciesSel" onchange="onSpeciesChange()">
+            <option value="Rb87">⁸⁷Rb — 780 nm, Γ/2π = 6.065 MHz</option>
+            <option value="Cs133">¹³³Cs — 852 nm, Γ/2π = 5.234 MHz</option>
+            <option value="Yb171">¹⁷¹Yb — clock qubit (telecoms excitation)</option>
+            <option value="Sr88">⁸⁸Sr — 461/689 nm, narrow-line</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Rydberg n:
+            <span class="lbl-val" id="nLbl">60</span></label>
+          <input type="range" id="nSlide" min="30" max="120" value="60" step="1"
+            oninput="document.getElementById('nLbl').textContent=this.value; compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>n=30</span><span>n=60</span><span>n=100+</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Rabi frequency Ω/2π (MHz):
+            <span class="lbl-val" id="omegaLbl">1.0</span> MHz</label>
+          <input type="range" id="omegaSlide" min="-10" max="20" value="0" step="1"
+            oninput="document.getElementById('omegaLbl').textContent=Math.pow(10,this.value/10).toFixed(3); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.1 MHz</span><span>1 MHz</span><span>10 MHz</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Gate time t_gate (μs):
+            <span class="lbl-val" id="tgateLbl">2.0</span> μs
+            <span style="font-size:.68rem;color:var(--text-muted)">(or set from Ω)</span></label>
+          <input type="range" id="tgateSlide" min="-10" max="20" value="3" step="1"
+            oninput="document.getElementById('tgateLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.1 μs</span><span>2 μs</span><span>100 μs</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Atom temperature T (μK):
+            <span class="lbl-val" id="tempLbl">5</span> μK</label>
+          <input type="range" id="tempSlide" min="1" max="100" value="5" step="1"
+            oninput="document.getElementById('tempLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>BBR environment</label>
+          <select id="bbrSel" onchange="compute()">
+            <option value="1">Room temperature (300 K) — BBR shortens τ_Ryd by ~2×</option>
+            <option value="0">Cryogenic (&lt;10 K) — no BBR enhancement</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ctrl-panel">
+        <h5>Noise Sources</h5>
+
+        <div class="field-row">
+          <label>Laser linewidth Δν (kHz):
+            <span class="lbl-val" id="linewidthLbl">1.0</span> kHz</label>
+          <input type="range" id="linewidthSlide" min="-10" max="30" value="0" step="1"
+            oninput="document.getElementById('linewidthLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.1 Hz</span><span>1 kHz</span><span>1 MHz</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Blockade ratio U/Ω:
+            <span class="lbl-val" id="blockadeLbl">50</span>×</label>
+          <input type="range" id="blockadeSlide" min="1" max="200" value="50" step="1"
+            oninput="document.getElementById('blockadeLbl').textContent=this.value; compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>1× (weak)</span><span>50×</span><span>200× (strong)</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>SPAM error (%):
+            <span class="lbl-val" id="spamLbl">0.5</span>%</label>
+          <input type="range" id="spamSlide" min="1" max="50" value="5" step="1"
+            oninput="document.getElementById('spamLbl').textContent=(this.value/10).toFixed(1); compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Trap lifetime τ_trap (s):
+            <span class="lbl-val" id="trapLbl">10</span> s</label>
+          <input type="range" id="trapSlide" min="1" max="100" value="10" step="1"
+            oninput="document.getElementById('trapLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>B-field noise ΔB (mG):
+            <span class="lbl-val" id="bfieldLbl">1.0</span> mG</label>
+          <input type="range" id="bfieldSlide" min="1" max="100" value="10" step="1"
+            oninput="document.getElementById('bfieldLbl').textContent=(this.value/10).toFixed(1); compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Rabi inhomogeneity δΩ/Ω (%):
+            <span class="lbl-val" id="rabiLbl">1.0</span>%</label>
+          <input type="range" id="rabiSlide" min="1" max="50" value="10" step="1"
+            oninput="document.getElementById('rabiLbl').textContent=(this.value/10).toFixed(1); compute()">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 2: FIDELITY RESULT ══════════════════════════ -->
+  <section class="section-block anim-in delay-2">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#f87171">02 </span>Gate Fidelity &amp; Error Budget
+    </h2>
+
+    <!-- Fidelity meter -->
+    <div class="fid-meter-wrap">
+      <div class="fid-meter-row">
+        <span class="fid-label">Total Gate Fidelity F = 1 − Σεᵢ</span>
+        <span class="fid-value" id="fidDisplay">—</span>
+      </div>
+      <div class="fid-bar-track">
+        <div class="fid-bar-fill" id="fidBar" style="width:0%"></div>
+      </div>
+      <div class="fid-ticks">
+        <span>90%</span><span>95%</span><span>99%</span><span>99.5%</span><span>99.9%</span><span>100%</span>
+      </div>
+      <div id="fidNote" style="margin-top:.75rem;font-size:.82rem;"></div>
+    </div>
+
+    <!-- Rydberg state properties -->
+    <div class="three-col" style="margin-bottom:1rem;">
+      <div style="background:var(--bg-card);border:1px solid #1e293b;border-radius:10px;padding:.85rem 1rem;">
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem">Rydberg lifetime τ</div>
+        <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:#f87171;" id="tauDisplay">—</div>
+        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.2rem;" id="tauNote">—</div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid #1e293b;border-radius:10px;padding:.85rem 1rem;">
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem">Total error Σεᵢ</div>
+        <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:#f87171;" id="totalErrDisplay">—</div>
+        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.2rem">= 1 − F</div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid #1e293b;border-radius:10px;padding:.85rem 1rem;">
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.3rem">Dominant error source</div>
+        <div style="font-family:var(--mono);font-size:1rem;font-weight:700;color:#f87171;" id="dominantErr">—</div>
+        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.2rem;" id="dominantPct">—</div>
+      </div>
+    </div>
+
+    <!-- Budget table -->
+    <div class="chart-card" style="margin-bottom:1rem;">
+      <h5>Per-source error budget</h5>
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>Error source</th>
+            <th>εᵢ</th>
+            <th>Fraction</th>
+            <th style="width:30%">Contribution</th>
+          </tr>
+        </thead>
+        <tbody id="budgetBody">
+          <tr><td colspan="4" style="text-align:center;color:var(--text-muted);font-style:italic">
+            Computing…
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="chart-card">
+      <h5>Error breakdown — relative contributions</h5>
+      <canvas id="errorChart" height="240"></canvas>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 3: SOTA COMPARISON ══════════════════════════ -->
+  <section class="section-block anim-in delay-3">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#f87171">03 </span>State-of-the-Art Comparison
+    </h2>
+    <div class="three-col" style="margin-bottom:1rem;">
+      <div class="sota-card">
+        <div class="sota-label">Evered et al. 2023 (Harvard)</div>
+        <div class="sota-val" style="color:#4ade80">99.5%</div>
+        <div class="sota-desc">Rb-87, n=70 CZ gate. Best published two-qubit Rydberg fidelity. Nature 604, 2023.</div>
+      </div>
+      <div class="sota-card">
+        <div class="sota-label">Ma et al. 2023 (Princeton)</div>
+        <div class="sota-val" style="color:#4ade80">99.3%</div>
+        <div class="sota-desc">¹⁷¹Yb clock qubit, 302 nm Rydberg excitation. Phys. Rev. X 2023.</div>
+      </div>
+      <div class="sota-card">
+        <div class="sota-label">Levine et al. 2022 (QuEra)</div>
+        <div class="sota-val" style="color:#fbbf24">99.0%</div>
+        <div class="sota-desc">Rb-87, n=70, parallel gates in 256-atom array. Nature 2022.</div>
+      </div>
+      <div class="sota-card">
+        <div class="sota-label">FTQC threshold (surface code)</div>
+        <div class="sota-val" style="color:#f87171">99.0%</div>
+        <div class="sota-desc">Typical threshold for fault-tolerant QC with surface codes (~1% physical error rate).</div>
+      </div>
+      <div class="sota-card">
+        <div class="sota-label">Typical lab (optimised)</div>
+        <div class="sota-val" style="color:#fbbf24">97–99%</div>
+        <div class="sota-desc">Well-optimised Rydberg gate without extensive noise reduction (Δν~1 kHz, T~5 μK).</div>
+      </div>
+      <div class="sota-card">
+        <div class="sota-label">Your simulation</div>
+        <div class="sota-val" id="yourFid" style="color:#f87171">—</div>
+        <div class="sota-desc" id="yourFidNote">Set parameters above to compute.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 4: THEORY ════════════════════════════════════ -->
+  <section class="section-block anim-in delay-4">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#f87171">04 </span>Error Source Formulas
+    </h2>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Spontaneous emission from Rydberg state
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Radiative decay during gate</h4>
+          <p>During a Rydberg gate, atoms spend time in the Rydberg state (lifetime τ_Ryd ∝ n*³).
+          Any spontaneous emission event destroys the coherence and constitutes an error.
+          At room temperature, blackbody radiation (BBR) drives transitions to neighbouring Rydberg
+          states, effectively halving the lifetime for n ~ 50–70.</p>
+        </div>
+        <div class="formula-box">Rydberg lifetime:   τ_Ryd ≈ τ₀ × n*³       (τ₀ ~ 1 ns for alkali nS)
+
+With BBR (300 K):   Γ_total = Γ_rad + Γ_BBR ≈ 2 Γ_rad   (n ~ 60)
+Cryogenic (&lt;10 K):  Γ_total ≈ Γ_rad  (BBR suppressed)
+
+Spontaneous emission error (gate time t_gate):
+  ε_se = Γ_total × t_gate = t_gate / τ_Ryd</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Doppler dephasing from thermal motion
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Random Doppler phase accumulated during the gate</h4>
+          <p>A thermal atom moving at speed v accumulates a random phase δφ = k_eff × v × t_gate
+          from the Rydberg excitation laser. For a Gaussian velocity distribution, the gate
+          fidelity is reduced by the dephasing factor.</p>
+        </div>
+        <div class="formula-box">v_rms = √(k_B T / m)     [1D thermal velocity]
+
+Phase uncertainty: δφ = k_eff · v_rms · t_gate
+
+Dephasing error:
+  ε_Doppler = ½ (k_eff · v_rms · t_gate)²
+
+For single-photon Rydberg excitation (λ ~ 300–480 nm):
+  k_eff = 2π / λ_Ryd
+
+Example: Rb, T=5 μK, λ=480 nm, t_gate=2 μs
+  v_rms = 8.5 mm/s  →  δφ = 0.22 rad  →  ε ≈ 2.4×10⁻²</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Laser phase noise (linewidth)
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Laser coherence time vs gate duration</h4>
+          <p>A laser with Lorentzian linewidth Δν has coherence time T_coh = 1/(π Δν).
+          If the gate time t_gate ≳ T_coh, phase noise significantly degrades the fidelity.
+          Narrow-linewidth lasers (&lt;1 Hz) are needed for high-fidelity Rydberg gates.</p>
+        </div>
+        <div class="formula-box">Coherence time:  T_coh = 1 / (π Δν)
+
+Phase noise error (white frequency noise model):
+  ε_phase ≈ π · Δν · t_gate
+
+For t_gate ≪ T_coh:  ε_phase ≪ 1  ✓
+For t_gate = T_coh:  ε_phase ≈ 1   ✗ (complete dephasing)
+
+State-of-the-art: Δν &lt; 1 Hz (stabilised to ULE cavity)
+  → T_coh &gt; 300 ms  →  ε_phase &lt; 10⁻⁵ for t_gate = 2 μs</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Finite Rydberg blockade (leakage error)
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Leakage into doubly-excited |rr⟩ state</h4>
+          <p>The Rydberg blockade assumes the interaction U ≫ Ω. When this is not satisfied,
+          the doubly-excited |rr⟩ state acquires a small amplitude ~ Ω/U, causing gate errors.
+          For the standard CZ protocol:</p>
+        </div>
+        <div class="formula-box">Blockade leakage error:
+  ε_blockade ≈ (Ω / U)²
+
+For U/Ω ≥ 10: ε &lt; 1%
+For U/Ω ≥ 50: ε &lt; 0.04%   ← good blockade regime
+For U/Ω ≥ 100: ε &lt; 0.01%  ← excellent
+
+C₆ coefficient at n~60 (Rb): ~ 10⁵ GHz·μm⁶
+Separation r=5 μm → U/2π = C₆/r⁶ ~ 130 MHz
+→ U/Ω ≈ 130 for Ω/2π = 1 MHz  ✓</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Magnetic field noise, Rabi inhomogeneity, SPAM &amp; atom loss
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="formula-box">Magnetic field noise (magnetically sensitive state, g_F·m_F ~ 1):
+  δφ_B = μ_B · ΔB · t_gate / ℏ
+  ε_B = ½ (μ_B · ΔB · t_gate / ℏ)²
+  [Use clock states (m_F=0) to suppress by ~10³]
+
+Rabi inhomogeneity (intensity variation across array):
+  ε_Ω = ½ (π · δΩ/Ω / 2)²
+  [Suppressed by composite pulses or DRAG techniques]
+
+SPAM (state preparation and measurement):
+  ε_SPAM = p_prep + p_meas  (input directly as %)
+
+Atom loss (background pressure, 3-body):
+  ε_loss = t_gate / τ_trap
+  [τ_trap ~ 10–100 s in UHV tweezers]</div>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 5: REFERENCES ════════════════════════════════ -->
+  <section class="section-block anim-in delay-5">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#f87171">05 </span>Key References
+    </h2>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1038/s41586-022-05094-1" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Evered et al. (2023) — High-fidelity parallel entangling gates on a neutral-atom QC (Nature)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevX.13.041034" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Ma et al. (2023) — High-fidelity gates with ¹⁷¹Yb Rydberg qubits (Phys. Rev. X)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.85.2208" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Jaksch et al. (2000) — Fast quantum gates for neutral atoms (original Rydberg gate proposal)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.82.030306" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Saffman, Walker &amp; Mølmer (2010) — Quantum information with Rydberg atoms (Rev. Mod. Phys.)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1038/s41586-021-03582-4" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Levine et al. (2022) — Dispersive optical systems for scalable Rydberg gates (Nature)
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Gate Fidelity Budget · AMO Career · Saumitra Phatak · Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'fidelity-budget', root: '../' });
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════════════════════════ */
+const kB   = 1.380649e-23;
+const hbar = 1.054572e-34;
+const muB  = 9.274010e-24;
+const amu  = 1.660539e-27;
+
+/* ═══════════════════════════════════════════════════════════════
+   ATOM DATA
+   tau0_ns: radiative lifetime prefactor (nS series, τ ≈ τ₀ × n*³)
+   lambda_Ryd_nm: single-photon Rydberg excitation wavelength
+   mass_u, nstar_offset: quantum defect δ₀ for nS (n* ≈ n − δ₀)
+═══════════════════════════════════════════════════════════════ */
+const ATOMS = {
+  Rb87:  { label:'⁸⁷Rb',  mass_u:86.909,  tau0_ns:1.43, lambda_Ryd_nm:480,  delta0:3.131 },
+  Cs133: { label:'¹³³Cs', mass_u:132.905, tau0_ns:1.50, lambda_Ryd_nm:510,  delta0:4.049 },
+  Yb171: { label:'¹⁷¹Yb', mass_u:170.936, tau0_ns:2.00, lambda_Ryd_nm:302,  delta0:4.279 },
+  Sr88:  { label:'⁸⁸Sr',  mass_u:87.906,  tau0_ns:1.80, lambda_Ryd_nm:317,  delta0:3.269 },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART SETUP
+═══════════════════════════════════════════════════════════════ */
+const errCtx = document.getElementById('errorChart').getContext('2d');
+const ERR_CHART = new Chart(errCtx, {
+  type: 'bar',
+  data: {
+    labels: [],
+    datasets: [{
+      data: [],
+      backgroundColor: [
+        '#f87171','#fb923c','#fbbf24','#4ade80',
+        '#38bdf8','#818cf8','#e879f9','#f472b6'
+      ],
+      borderRadius: 5,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0c1526', titleColor: '#f87171',
+        bodyColor: '#94a3b8', borderColor: '#1e3a5f', borderWidth: 1,
+        callbacks: {
+          label: ctx => ` ε = ${ctx.raw.toExponential(2)}  (${(ctx.raw * 100).toFixed(3)}%)`
+        }
+      }
+    },
+    scales: {
+      x: {
+        type: 'logarithmic',
+        title: { display: true, text: 'Error εᵢ (log scale)', color: '#94a3b8', font: { size: 11 } },
+        ticks: { color: '#64748b' }, grid: { color: '#1e293b' },
+        min: 1e-6, max: 1,
+      },
+      y: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#1e293b' } }
+    }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPUTE
+═══════════════════════════════════════════════════════════════ */
+function compute() {
+  const key    = document.getElementById('speciesSel').value;
+  const atom   = ATOMS[key];
+  const mass   = atom.mass_u * amu;
+
+  const n        = parseInt(document.getElementById('nSlide').value);
+  const nstar    = n - atom.delta0;
+  const Omega_MHz= Math.pow(10, parseFloat(document.getElementById('omegaSlide').value) / 10);
+  const tgate_us = Math.pow(10, parseFloat(document.getElementById('tgateSlide').value) / 10);
+  const T_uK     = parseFloat(document.getElementById('tempSlide').value);
+  const bbr      = parseInt(document.getElementById('bbrSel').value);  // 1=room, 0=cryo
+
+  const lw_kHz   = Math.pow(10, parseFloat(document.getElementById('linewidthSlide').value) / 10);
+  const UonOmega = parseFloat(document.getElementById('blockadeSlide').value);
+  const spam_pct = parseFloat(document.getElementById('spamSlide').value) / 10;
+  const tau_trap_s= parseFloat(document.getElementById('trapSlide').value);
+  const dB_mG    = parseFloat(document.getElementById('bfieldSlide').value) / 10;
+  const dOmega_frac = parseFloat(document.getElementById('rabiSlide').value) / 10 / 100;
+
+  // SI
+  const tgate_s  = tgate_us * 1e-6;
+  const T_K      = T_uK * 1e-6;
+  const lw_Hz    = lw_kHz * 1e3;
+  const dB_T     = dB_mG * 1e-7;  // mG → T: 1 mG = 1e-7 T
+  const k_Ryd    = 2 * Math.PI / (atom.lambda_Ryd_nm * 1e-9);
+
+  // Rydberg lifetime
+  const tau_Ryd_rad_us = atom.tau0_ns * 1e-3 * Math.pow(nstar, 3); // μs
+  const tau_Ryd_us = bbr === 1 ? tau_Ryd_rad_us / 2 : tau_Ryd_rad_us; // BBR halves at 300K
+  const Gamma_Ryd = 1e6 / tau_Ryd_us; // s⁻¹
+
+  // ─── Error sources ─────────────────────────────────────────
+  const eps = {};
+
+  // 1. Spontaneous emission
+  eps['Spont. emission'] = Gamma_Ryd * tgate_s;
+
+  // 2. Doppler dephasing
+  const v_rms = Math.sqrt(kB * T_K / mass);
+  eps['Doppler (thermal)'] = 0.5 * Math.pow(k_Ryd * v_rms * tgate_s, 2);
+
+  // 3. Laser phase noise
+  eps['Laser phase noise'] = Math.PI * lw_Hz * tgate_s;
+
+  // 4. Blockade leakage
+  eps['Blockade leakage'] = 1 / (UonOmega * UonOmega);
+
+  // 5. SPAM
+  eps['SPAM'] = spam_pct / 100;
+
+  // 6. Atom loss
+  eps['Atom loss'] = tgate_s / tau_trap_s;
+
+  // 7. Magnetic field noise (g_F m_F ~ 1 assumed, clock states would be ~1000× smaller)
+  eps['B-field dephasing'] = 0.5 * Math.pow(muB * dB_T * tgate_s / hbar, 2);
+
+  // 8. Rabi inhomogeneity
+  eps['Rabi inhomogeneity'] = 0.5 * Math.pow(Math.PI * dOmega_frac / 2, 2);
+
+  const entries  = Object.entries(eps).sort((a, b) => b[1] - a[1]);
+  const totalErr = Math.min(1, entries.reduce((s, [, v]) => s + v, 0));
+  const fidelity = Math.max(0, 1 - totalErr);
+
+  // ─── Fidelity meter ─────────────────────────────────────────
+  const fidPct    = (fidelity * 100).toFixed(3) + '%';
+  const fidEl     = document.getElementById('fidDisplay');
+  fidEl.textContent = fidPct;
+  fidEl.style.color = fidelity >= 0.999 ? '#4ade80' : fidelity >= 0.99 ? '#fbbf24' : '#f87171';
+
+  const barPct    = Math.max(0, (fidelity - 0.90) / 0.10 * 100);
+  const fidBar    = document.getElementById('fidBar');
+  fidBar.style.width      = barPct + '%';
+  fidBar.style.background = fidelity >= 0.999 ? '#4ade80' : fidelity >= 0.99 ? '#fbbf24' : '#f87171';
+
+  const fidNote   = document.getElementById('fidNote');
+  if (fidelity >= 0.999) {
+    fidNote.innerHTML = '<span style="color:#4ade80">✅ Below fault-tolerance threshold — suitable for surface-code FTQC (p_th ≈ 1%).</span>';
+  } else if (fidelity >= 0.99) {
+    fidNote.innerHTML = '<span style="color:#fbbf24">⚠️ Good fidelity, but not yet below surface-code threshold. Check dominant error source.</span>';
+  } else {
+    fidNote.innerHTML = '<span style="color:#f87171">❌ Below 99% — significant noise reduction needed. Identify and fix the dominant error.</span>';
+  }
+
+  // Rydberg state panel
+  document.getElementById('tauDisplay').textContent =
+    tau_Ryd_us >= 1000 ? (tau_Ryd_us/1000).toFixed(1) + ' ms' : tau_Ryd_us.toFixed(0) + ' μs';
+  document.getElementById('tauNote').textContent =
+    bbr === 1 ? `n*=${nstar.toFixed(1)}, BBR-corrected (300 K)` : `n*=${nstar.toFixed(1)}, cryogenic`;
+
+  document.getElementById('totalErrDisplay').textContent = totalErr.toExponential(3);
+
+  const [domName, domVal] = entries[0];
+  document.getElementById('dominantErr').textContent = domName;
+  document.getElementById('dominantPct').textContent =
+    `${(domVal / totalErr * 100).toFixed(1)}% of total error (ε = ${domVal.toExponential(2)})`;
+
+  // SOTA comparison panel
+  document.getElementById('yourFid').textContent = fidPct;
+  document.getElementById('yourFid').style.color =
+    fidelity >= 0.999 ? '#4ade80' : fidelity >= 0.99 ? '#fbbf24' : '#f87171';
+  document.getElementById('yourFidNote').textContent =
+    `Dominant: ${domName} (${(domVal/totalErr*100).toFixed(0)}% of error)`;
+
+  // ─── Budget table ─────────────────────────────────────────
+  const tbody = document.getElementById('budgetBody');
+  tbody.innerHTML = entries.map(([name, val], i) => {
+    const frac = totalErr > 0 ? (val / totalErr * 100) : 0;
+    const barW  = Math.min(100, frac);
+    const colors = ['#f87171','#fb923c','#fbbf24','#4ade80','#38bdf8','#818cf8','#e879f9','#f472b6'];
+    const isDom  = i === 0;
+    return `<tr class="${isDom ? 'dominant' : ''}">
+      <td>${isDom ? '⚑ ' : ''}${name}</td>
+      <td>${val.toExponential(2)}</td>
+      <td>${frac.toFixed(1)}%</td>
+      <td>
+        <div class="bbar">
+          <div class="bbar-fill" style="width:${barW}%;background:${colors[i % colors.length]}"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('') + `<tr style="font-weight:700;border-top:2px solid #1e293b">
+    <td>Total Σεᵢ</td>
+    <td>${totalErr.toExponential(3)}</td>
+    <td>100%</td>
+    <td></td>
+  </tr>`;
+
+  // ─── Bar chart ─────────────────────────────────────────────
+  ERR_CHART.data.labels   = entries.map(([n]) => n);
+  ERR_CHART.data.datasets[0].data = entries.map(([, v]) => Math.max(v, 1e-9));
+  ERR_CHART.update('none');
+}
+
+function onSpeciesChange() { compute(); }
+
+compute();
+initAccordions();
+</script>
+</body>
+</html>
