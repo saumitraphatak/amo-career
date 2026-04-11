@@ -423,3 +423,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initSmoothScroll();
   initHeroCanvas();
 });
+
+/* ─────────────────────────────────────────────────────────
+   KATEX AUTO-RENDER
+   Runs after DOM + KaTeX scripts are loaded (defer order)
+   ───────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof renderMathInElement !== 'undefined') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true  },
+        { left: '$',  right: '$',  display: false },
+      ],
+      throwOnError: false,
+    });
+  }
+});
