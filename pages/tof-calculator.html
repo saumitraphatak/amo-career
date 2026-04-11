@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOF Thermometry — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="Time-of-flight thermometry calculator for ultracold atoms — ballistic expansion, T extraction by σ² vs t² fit, de Broglie wavelength, phase-space density, and cooling limits.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/tof-calculator.html">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-atom); }   /* sky blue #38bdf8 */
+
+    .prop-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: .9rem 1.1rem; transition: border-color .2s;
+    }
+    .prop-card:hover { border-color: rgba(56,189,248,.35); }
+    .prop-card-label {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .prop-card-val {
+      font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
+      color: #38bdf8; line-height: 1;
+    }
+    .prop-card-unit { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
+    .prop-card-sub  { font-size: .75rem; color: var(--text-secondary); margin-top: .3rem; }
+
+    .prop-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+    .prop-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+    @media(max-width:640px) {
+      .prop-grid-3, .prop-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .ctrl-panel {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .ctrl-panel h5 {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: #38bdf8; margin: 0 0 .9rem 0;
+    }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label {
+      display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .field-row select, .field-row input[type=number] {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .7rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row select:focus, .field-row input:focus { outline: none; border-color: #38bdf8; }
+    .field-row input[type=range] { width: 100%; accent-color: #38bdf8; margin-top: .2rem; }
+    .lbl-val { color: #38bdf8; font-family: var(--mono); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:800px) { .two-col { grid-template-columns: 1fr; } }
+
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-left: 4px solid #38bdf8; border-radius: 10px;
+      padding: 1rem 1.3rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .93rem; font-weight: 700; color: #38bdf8; margin: 0 0 .5rem 0; }
+    .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+
+    .formula-box {
+      background: #060d14; border: 1px solid #1e3a5f; border-radius: 8px;
+      padding: .7rem 1rem; margin: .6rem 0;
+      font-family: var(--mono); color: #7dd3fc; font-size: .82rem;
+      line-height: 1.85; white-space: pre; overflow-x: auto;
+    }
+
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1rem 1.25rem;
+    }
+    .chart-card h5 {
+      font-size: .78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted); margin: 0 0 .75rem 0;
+    }
+
+    .info-banner {
+      background: #060d14; border: 1px solid #1e3a5f;
+      border-radius: 8px; padding: .65rem 1rem;
+      font-size: .8rem; color: #7dd3fc; margin-top: .75rem; line-height: 1.6;
+    }
+
+    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+
+    /* ─── Limit comparison bar ───────────────────── */
+    .limit-bar-wrap { margin: .5rem 0; }
+    .limit-bar-label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .78rem; margin-bottom: .25rem;
+    }
+    .limit-bar-name { color: var(--text-secondary); }
+    .limit-bar-val  { font-family: var(--mono); color: #38bdf8; }
+    .limit-bar-track {
+      height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden;
+    }
+    .limit-bar-fill {
+      height: 100%; border-radius: 4px; transition: width .4s ease;
+    }
+
+    /* ─── Fit data table ─────────────────────────── */
+    .fit-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .fit-table th {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-muted); padding: .45rem .65rem; text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    .fit-table td { padding: .45rem .65rem; border-bottom: 1px solid #111827; }
+    .fit-table input[type=number] {
+      width: 90px; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 5px; padding: .25rem .5rem;
+      color: var(--text-primary); font-size: .83rem; font-family: var(--mono);
+    }
+    .fit-table input:focus { outline: none; border-color: #38bdf8; }
+    .fit-table .del-btn {
+      background: none; border: 1px solid #374151; color: var(--text-muted);
+      border-radius: 5px; padding: .2rem .55rem; cursor: pointer; font-size: .8rem;
+    }
+    .fit-table .del-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+    .add-row-btn {
+      background: rgba(56,189,248,.08); border: 1px dashed rgba(56,189,248,.35);
+      color: #38bdf8; border-radius: 7px; padding: .5rem 1rem;
+      font-size: .82rem; cursor: pointer; width: 100%; margin-top: .5rem;
+      transition: background .15s;
+    }
+    .add-row-btn:hover { background: rgba(56,189,248,.15); }
+
+    .fit-result-box {
+      background: #060d14; border: 1px solid #1e3a5f; border-radius: 10px;
+      padding: 1rem 1.25rem; margin-top: 1rem;
+    }
+    .fit-result-box h5 {
+      font-size: .78rem; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-muted); margin: 0 0 .75rem 0;
+    }
+
+    /* ─── PSD / degeneracy display ───────────────── */
+    .psd-big {
+      font-family: var(--mono); font-size: 2.2rem; font-weight: 700; color: #38bdf8;
+      text-align: center; padding: .75rem;
+    }
+    .psd-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-muted); text-align: center; }
+
+    /* ─── Read links ─────────────────────────────── */
+    .read-links { display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
+    .read-link {
+      display: flex; align-items: center; gap: .6rem;
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 8px;
+      padding: .55rem .85rem; font-size: .82rem; color: var(--text-secondary);
+      text-decoration: none; transition: border-color .15s, color .15s;
+    }
+    .read-link:hover { border-color: #38bdf8; color: var(--text-primary); }
+    .rl-icon { font-size: 1rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="page-hero" style="--hero-accent:#38bdf8;">
+  <div class="container">
+    <div class="hero-badge anim-in">TIME-OF-FLIGHT THERMOMETRY</div>
+    <h1 class="page-title anim-in delay-1">
+      TOF <span class="grad-text" style="--ga:#38bdf8; --gb:#818cf8;">Thermometry</span>
+    </h1>
+    <p class="page-subtitle anim-in delay-2">
+      Ballistic expansion calculator for ultracold atom clouds — extract temperature from σ² vs t²
+      fits, compute de Broglie wavelength, phase-space density, and compare to fundamental cooling limits.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">σ²(t)</span><span class="stat-lbl">Expansion law</span></div>
+      <div class="stat"><span class="stat-val">T</span><span class="stat-lbl">Temperature fit</span></div>
+      <div class="stat"><span class="stat-val">λ_dB</span><span class="stat-lbl">de Broglie wavelength</span></div>
+      <div class="stat"><span class="stat-val">PSD</span><span class="stat-lbl">Phase-space density</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top:2.5rem;">
+
+  <!-- ═══ SECTION 1: ATOM & TEMPERATURE ════════════════════════ -->
+  <section class="section-block anim-in delay-1">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#38bdf8">01 </span>Atom &amp; Temperature
+    </h2>
+    <div class="two-col">
+
+      <div class="ctrl-panel">
+        <h5>Atom Species</h5>
+
+        <div class="field-row">
+          <label>Species</label>
+          <select id="speciesSel" onchange="onSpeciesChange()">
+            <option value="Rb87">⁸⁷Rb — 86.909 u</option>
+            <option value="Rb85">⁸⁵Rb — 84.912 u</option>
+            <option value="Cs133">¹³³Cs — 132.905 u</option>
+            <option value="Li6">⁶Li — 6.015 u</option>
+            <option value="Li7">⁷Li — 7.016 u</option>
+            <option value="Na23">²³Na — 22.990 u</option>
+            <option value="K39">³⁹K — 38.964 u</option>
+            <option value="K40">⁴⁰K — 39.964 u</option>
+            <option value="K41">⁴¹K — 40.962 u</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Temperature (logarithmic slider):
+            <span class="lbl-val" id="tempLbl">1.0 μK</span></label>
+          <input type="range" id="tempSlide" min="-30" max="30" value="0" step="1"
+            oninput="updateTempLabel(); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>1 nK</span><span>1 μK</span><span>1 mK</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Initial cloud size σ₀ (μm):
+            <span class="lbl-val" id="sig0Lbl">10.0</span> μm</label>
+          <input type="range" id="sig0Slide" min="1" max="500" value="10" step="1"
+            oninput="document.getElementById('sig0Lbl').textContent=this.value; compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>1 μm</span><span>50 μm</span><span>500 μm</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Atom number N (log):
+            <span class="lbl-val" id="numLbl">10 000</span></label>
+          <input type="range" id="numSlide" min="10" max="70" value="40" step="1"
+            oninput="document.getElementById('numLbl').textContent=fmtN(Math.round(Math.pow(10,this.value/10))); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>10</span><span>1 k</span><span>10 M</span>
+          </div>
+        </div>
+
+        <div class="info-banner" id="atomBanner">
+          ⁸⁷Rb: mass = 86.909 u &middot; D2 line Γ/2π = 6.065 MHz &middot; λ = 780 nm
+        </div>
+      </div>
+
+      <!-- Core results -->
+      <div>
+        <div class="prop-grid-3" style="margin-bottom:.75rem;">
+          <div class="prop-card">
+            <div class="prop-card-label">Temperature</div>
+            <div class="prop-card-val" id="tempDisplay">—</div>
+            <div class="prop-card-unit" id="tempUnit">—</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Thermal velocity v_rms</div>
+            <div class="prop-card-val" id="vrmsDisplay">—</div>
+            <div class="prop-card-unit">mm/s</div>
+            <div class="prop-card-sub">√(k_BT/m) per axis</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">de Broglie λ</div>
+            <div class="prop-card-val" id="lambdaDisplay">—</div>
+            <div class="prop-card-unit" id="lambdaUnit">—</div>
+            <div class="prop-card-sub">h / √(2πmk_BT)</div>
+          </div>
+        </div>
+
+        <div class="prop-grid-2">
+          <div class="prop-card">
+            <div class="prop-card-label">Phase-space density</div>
+            <div class="prop-card-val" id="psdDisplay">—</div>
+            <div class="prop-card-unit">n_peak × λ_dB³</div>
+            <div class="prop-card-sub" id="psdDesc">—</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Peak density n_peak</div>
+            <div class="prop-card-val" id="npeakDisplay">—</div>
+            <div class="prop-card-unit">atoms / cm³</div>
+            <div class="prop-card-sub">N / (2π)^(3/2) σ₀³</div>
+          </div>
+        </div>
+
+        <div style="margin-top:.75rem; background:var(--bg-card); border:1px solid #1e293b; border-radius:10px; padding:.9rem 1.1rem;">
+          <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.6rem;">
+            Distance to cooling limits
+          </div>
+          <div class="limit-bar-wrap">
+            <div class="limit-bar-label">
+              <span class="limit-bar-name" id="dopLabel">Doppler limit T_D</span>
+              <span class="limit-bar-val" id="dopVal">—</span>
+            </div>
+            <div class="limit-bar-track">
+              <div class="limit-bar-fill" id="dopBar" style="background:#fbbf24;width:0%"></div>
+            </div>
+          </div>
+          <div class="limit-bar-wrap">
+            <div class="limit-bar-label">
+              <span class="limit-bar-name" id="recLabel">Recoil limit T_rec</span>
+              <span class="limit-bar-val" id="recVal">—</span>
+            </div>
+            <div class="limit-bar-track">
+              <div class="limit-bar-fill" id="recBar" style="background:#f87171;width:0%"></div>
+            </div>
+          </div>
+          <div style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem;" id="limitNote">
+            Bar shows T / T_limit (capped at 100%). Below Doppler = sub-Doppler cooled.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 2: EXPANSION CURVE ══════════════════════════ -->
+  <section class="section-block anim-in delay-2">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#38bdf8">02 </span>Cloud Expansion σ(t)
+    </h2>
+    <div class="two-col">
+
+      <div class="ctrl-panel">
+        <h5>TOF Range</h5>
+
+        <div class="field-row">
+          <label>Max TOF displayed:
+            <span class="lbl-val" id="tMaxLbl">30</span> ms</label>
+          <input type="range" id="tMaxSlide" min="1" max="100" value="30" step="1"
+            oninput="document.getElementById('tMaxLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Trap frequency ω/2π (Hz):
+            <span class="lbl-val" id="omegaLbl">100</span> Hz
+            <span style="font-size:.7rem;color:var(--text-muted)">(sets σ_thermal)</span></label>
+          <input type="range" id="omegaSlide" min="10" max="500" value="100" step="5"
+            oninput="document.getElementById('omegaLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="theory-box" style="margin-top:.75rem;">
+          <h4>Ballistic expansion law</h4>
+          <p>After release from a trap, the atom cloud expands freely. For a thermal gas with
+             1D width σ₀ at t=0:</p>
+        </div>
+        <div class="formula-box">σ²(t) = σ₀² + (k_B T / m) · t²
+
+→ T = m · (σ²(t) − σ₀²) / (k_B · t²)
+
+For harmonic trap (ω): σ₀ = √(k_B T / m ω²)
+→ σ²(t) = (k_B T / m)(1/ω² + t²)</div>
+
+        <div class="info-banner">
+          The slope of σ² vs t² gives k_BT/m directly — plot σ²(t²) and fit a line.
+          Intercept = σ₀², slope = k_BT/m.
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h5>σ(t) — cloud radius vs time of flight</h5>
+        <canvas id="expChart" height="270"></canvas>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
+          <span style="display:flex;align-items:center;gap:.4rem">
+            <span style="width:20px;height:3px;background:#38bdf8;display:inline-block"></span>
+            σ(t) — full expansion
+          </span>
+          <span style="display:flex;align-items:center;gap:.4rem">
+            <span style="width:20px;height:2px;border-top:2px dashed #818cf8;display:inline-block"></span>
+            Free expansion only (σ₀=0)
+          </span>
+          <span style="display:flex;align-items:center;gap:.4rem">
+            <span style="width:20px;height:2px;border-top:2px dashed #1e293b;display:inline-block"></span>
+            σ₀ (in-situ limit)
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 3: FIT FROM DATA ════════════════════════════ -->
+  <section class="section-block anim-in delay-3">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#38bdf8">03 </span>Fit Temperature from Data
+    </h2>
+    <p style="color:var(--text-secondary);font-size:.88rem;margin-bottom:1rem;">
+      Enter measured cloud widths σ at known TOF times t. The tool performs a linear least-squares
+      fit of σ² vs t² to extract T and σ₀. You need at least 2 points.
+    </p>
+    <div class="two-col">
+
+      <!-- Data entry -->
+      <div>
+        <div class="ctrl-panel">
+          <h5>Measured Data</h5>
+          <table class="fit-table" id="fitTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>t (ms)</th>
+                <th>σ (μm)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="fitBody">
+              <!-- rows added by JS -->
+            </tbody>
+          </table>
+          <button class="add-row-btn" onclick="addFitRow()">+ Add data point</button>
+
+          <div style="margin-top:.9rem;">
+            <div class="field-row">
+              <label>Fit species (for T extraction)</label>
+              <select id="fitSpecies" onchange="fitCompute()">
+                <option value="Rb87">⁸⁷Rb</option>
+                <option value="Rb85">⁸⁵Rb</option>
+                <option value="Cs133">¹³³Cs</option>
+                <option value="Li6">⁶Li</option>
+                <option value="Li7">⁷Li</option>
+                <option value="Na23">²³Na</option>
+                <option value="K39">³⁹K</option>
+                <option value="K40">⁴⁰K</option>
+                <option value="K41">⁴¹K</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fit results -->
+      <div>
+        <div class="fit-result-box">
+          <h5>Fit Results</h5>
+          <div id="fitStatus" style="font-size:.83rem;color:var(--text-muted);font-style:italic">
+            Add at least 2 data points to compute a fit.
+          </div>
+          <div id="fitResultsWrap" style="display:none">
+            <div class="prop-grid-2" style="margin-bottom:.75rem;">
+              <div class="prop-card">
+                <div class="prop-card-label">Fitted temperature</div>
+                <div class="prop-card-val" id="fitTemp">—</div>
+                <div class="prop-card-unit" id="fitTempUnit">—</div>
+              </div>
+              <div class="prop-card">
+                <div class="prop-card-label">Fitted σ₀</div>
+                <div class="prop-card-val" id="fitSig0">—</div>
+                <div class="prop-card-unit">μm (in-situ size)</div>
+              </div>
+              <div class="prop-card">
+                <div class="prop-card-label">Slope (k_BT/m)</div>
+                <div class="prop-card-val" id="fitSlope">—</div>
+                <div class="prop-card-unit">μm²/ms²</div>
+              </div>
+              <div class="prop-card">
+                <div class="prop-card-label">R² (goodness of fit)</div>
+                <div class="prop-card-val" id="fitR2">—</div>
+                <div class="prop-card-unit">closer to 1 = better fit</div>
+              </div>
+            </div>
+            <div class="info-banner" id="fitNote">—</div>
+          </div>
+        </div>
+
+        <!-- σ² vs t² plot -->
+        <div class="chart-card" style="margin-top:.9rem;">
+          <h5>σ² vs t² — linear fit</h5>
+          <canvas id="fitChart" height="230"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 4: COOLING LIMITS REFERENCE ═════════════════ -->
+  <section class="section-block anim-in delay-4">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#38bdf8">04 </span>Cooling Limit Reference
+    </h2>
+    <div id="limitsGrid" class="prop-grid-3" style="margin-bottom:1rem;">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Doppler cooling limit
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>T_Doppler = ℏΓ / (2k_B)</h4>
+          <p>In a 1D optical molasses, the equilibrium between laser cooling and heating from photon
+             recoil occurs at the Doppler temperature. It depends only on the natural linewidth Γ
+             and is independent of atomic mass. Typical values: Rb 145 μK, Cs 125 μK, Na 235 μK.</p>
+        </div>
+        <div class="formula-box">T_Doppler = ℏΓ / (2 k_B)
+
+Example (⁸⁷Rb, Γ/2π = 6.065 MHz):
+  T_D = (1.055e-34 × 6.065e6 × 2π) / (2 × 1.381e-23)
+      = 145.6 μK</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Photon recoil limit
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>T_rec = ℏ²k² / (m k_B)</h4>
+          <p>Each absorbed photon imparts a momentum kick ℏk. The temperature equivalent of one
+             recoil is the recoil temperature — the minimum achievable by any scheme that relies
+             on spontaneous emission (e.g. Sisyphus cooling reaches ~T_rec). Sub-recoil cooling
+             (VSCPT, Raman cooling, EIT) can go below this limit.</p>
+        </div>
+        <div class="formula-box">T_rec = ℏ²k² / (m k_B) = E_rec / k_B
+
+Example (⁸⁷Rb, λ = 780 nm):
+  k = 2π/λ = 8.055e6 m⁻¹
+  E_rec = (1.055e-34)² × (8.055e6)² / (2 × 86.909 × 1.66e-27)
+        = 3.77e-30 J  →  T_rec = E_rec / k_B = 362 nK</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Phase-space density &amp; BEC threshold
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>PSD = n × λ_dB³</h4>
+          <p>Phase-space density quantifies the occupation of quantum states. When PSD ≈ 2.612
+             (the Riemann ζ(3/2) value), a Bose gas in a uniform box reaches Bose-Einstein
+             condensation. In a harmonic trap the critical condition is (k_BT_c/ℏω) = (N/ζ(3))^(1/3).</p>
+        </div>
+        <div class="formula-box">λ_dB = h / √(2π m k_B T)
+
+PSD = n_peak × λ_dB³
+    = [N / (2π)^(3/2) σ³] × [h / √(2πmk_BT)]³
+
+BEC threshold (uniform 3D box): PSD = 2.612
+
+BEC critical T (harmonic trap):
+  T_c = (ℏω / k_B) × (N / ζ(3))^(1/3)
+  ζ(3) ≈ 1.202   [Apéry's constant]</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 5: REFERENCES ════════════════════════════════ -->
+  <section class="section-block anim-in delay-5">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#38bdf8">05 </span>References
+    </h2>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.70.721" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Metcalf &amp; van der Straten (1999) — Laser Cooling and Trapping (Rev. Mod. Phys.)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.74.875" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Ketterle, Durfee &amp; Stamper-Kurn (1999) — Making, probing, and understanding BECs
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.80.885" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Bloch, Dalibard &amp; Zwerger (2008) — Many-body physics with ultracold gases (Rev. Mod. Phys.)
+      </a>
+      <a class="read-link" href="https://steck.us/alkalidata" target="_blank" rel="noopener">
+        <span class="rl-icon">📊</span>
+        Steck — Alkali Data Sheets (mass, Γ, λ, I_sat for all species)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.75.3253" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Anderson et al. (1995) — Observation of Bose-Einstein Condensation (first BEC, Science)
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      TOF Thermometry Calculator · AMO Career · Saumitra Phatak · Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'tof-calculator', root: '../' });
+
+/* ═══════════════════════════════════════════════════════════════
+   PHYSICAL CONSTANTS
+═══════════════════════════════════════════════════════════════ */
+const kB   = 1.380649e-23;  // J/K
+const hbar = 1.054572e-34;  // J·s
+const h    = 6.626070e-34;  // J·s
+const amu  = 1.660539e-27;  // kg
+
+/* ═══════════════════════════════════════════════════════════════
+   ATOM DATA
+═══════════════════════════════════════════════════════════════ */
+const ATOMS = {
+  Rb87:  { label: '⁸⁷Rb',   mass_u: 86.909,  Gamma_MHz: 6.065,  lambda_nm: 780.241 },
+  Rb85:  { label: '⁸⁵Rb',   mass_u: 84.912,  Gamma_MHz: 5.746,  lambda_nm: 780.241 },
+  Cs133: { label: '¹³³Cs',  mass_u: 132.905, Gamma_MHz: 5.234,  lambda_nm: 852.347 },
+  Li6:   { label: '⁶Li',    mass_u: 6.015,   Gamma_MHz: 5.924,  lambda_nm: 670.977 },
+  Li7:   { label: '⁷Li',    mass_u: 7.016,   Gamma_MHz: 5.924,  lambda_nm: 670.977 },
+  Na23:  { label: '²³Na',   mass_u: 22.990,  Gamma_MHz: 9.795,  lambda_nm: 588.996 },
+  K39:   { label: '³⁹K',    mass_u: 38.964,  Gamma_MHz: 6.035,  lambda_nm: 766.701 },
+  K40:   { label: '⁴⁰K',    mass_u: 39.964,  Gamma_MHz: 6.035,  lambda_nm: 766.701 },
+  K41:   { label: '⁴¹K',    mass_u: 40.962,  Gamma_MHz: 6.035,  lambda_nm: 766.701 },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART SETUP
+═══════════════════════════════════════════════════════════════ */
+const expCtx = document.getElementById('expChart').getContext('2d');
+const EXP_CHART = new Chart(expCtx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [
+      { label: 'σ(t)', data: [], borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,.08)',
+        fill: true, tension: 0.3, borderWidth: 2.5, pointRadius: 0 },
+      { label: 'Free expansion', data: [], borderColor: '#818cf8',
+        borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+      { label: 'σ₀', data: [], borderColor: '#334155',
+        borderDash: [3,3], borderWidth: 1, pointRadius: 0, fill: false },
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { title: { display: true, text: 'TOF t (ms)', color: '#94a3b8', font: { size: 11 } },
+           ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+      y: { title: { display: true, text: 'Cloud size σ (μm)', color: '#94a3b8', font: { size: 11 } },
+           ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, min: 0 }
+    },
+    plugins: { legend: { display: false },
+      tooltip: { backgroundColor: '#0c1526', titleColor: '#38bdf8', bodyColor: '#94a3b8',
+                 borderColor: '#1e3a5f', borderWidth: 1 } }
+  }
+});
+
+const fitCtx = document.getElementById('fitChart').getContext('2d');
+const FIT_CHART = new Chart(fitCtx, {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'Data (σ², t²)', data: [], backgroundColor: '#38bdf8',
+        pointRadius: 5, pointHoverRadius: 7 },
+      { label: 'Linear fit', data: [], borderColor: '#fbbf24',
+        type: 'line', borderWidth: 2, pointRadius: 0, fill: false, tension: 0 },
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { title: { display: true, text: 't² (ms²)', color: '#94a3b8', font: { size: 11 } },
+           ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+      y: { title: { display: true, text: 'σ² (μm²)', color: '#94a3b8', font: { size: 11 } },
+           ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+    },
+    plugins: { legend: { display: false },
+      tooltip: { backgroundColor: '#0c1526', titleColor: '#38bdf8', bodyColor: '#94a3b8',
+                 borderColor: '#1e3a5f', borderWidth: 1 } }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+function fmtN(n) {
+  if (n >= 1e6) return (n/1e6).toFixed(1)+' M';
+  if (n >= 1e3) return (n/1e3).toFixed(0)+' k';
+  return n.toString();
+}
+
+function fmtT(T_K) {
+  if (T_K >= 1e-3) return { val: (T_K*1e3).toPrecision(4), unit: 'mK' };
+  if (T_K >= 1e-6) return { val: (T_K*1e6).toPrecision(4), unit: 'μK' };
+  if (T_K >= 1e-9) return { val: (T_K*1e9).toPrecision(4), unit: 'nK' };
+  return { val: (T_K*1e12).toPrecision(3), unit: 'pK' };
+}
+
+function getTempK() {
+  const v = parseFloat(document.getElementById('tempSlide').value); // -30 to 30
+  return 1e-6 * Math.pow(10, v / 10);  // 1nK to 1mK range, centered at 1μK
+}
+
+function updateTempLabel() {
+  const { val, unit } = fmtT(getTempK());
+  document.getElementById('tempLbl').textContent = val + ' ' + unit;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHYSICS
+═══════════════════════════════════════════════════════════════ */
+function expansion_um(sig0_um, T_K, mass_kg, t_ms) {
+  const v2 = kB * T_K / mass_kg;              // m²/s²
+  const t_s = t_ms / 1e3;
+  const sig_m = Math.sqrt(sig0_um * sig0_um * 1e-12 + v2 * t_s * t_s);
+  return sig_m * 1e6;  // μm
+}
+
+function lambdadB_m(T_K, mass_kg) {
+  return h / Math.sqrt(2 * Math.PI * mass_kg * kB * T_K);
+}
+
+function T_Doppler_K(Gamma_MHz) {
+  return hbar * Gamma_MHz * 1e6 * 2 * Math.PI / (2 * kB);
+}
+
+function T_recoil_K(lambda_nm, mass_kg) {
+  const k = 2 * Math.PI / (lambda_nm * 1e-9);
+  return hbar * hbar * k * k / (mass_kg * kB);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN COMPUTE
+═══════════════════════════════════════════════════════════════ */
+function compute() {
+  const key    = document.getElementById('speciesSel').value;
+  const atom   = ATOMS[key];
+  const mass   = atom.mass_u * amu;
+  const T_K    = getTempK();
+  const sig0   = parseFloat(document.getElementById('sig0Slide').value);  // μm
+  const N      = Math.round(Math.pow(10, parseFloat(document.getElementById('numSlide').value) / 10));
+  const tMax   = parseFloat(document.getElementById('tMaxSlide').value);  // ms
+
+  // Thermal quantities
+  const v_rms = Math.sqrt(kB * T_K / mass);      // m/s
+  const lam   = lambdadB_m(T_K, mass);           // m
+  const TD    = T_Doppler_K(atom.Gamma_MHz);
+  const Trec  = T_recoil_K(atom.lambda_nm, mass);
+
+  // Peak density (Gaussian cloud, 3D isotropic σ₀)
+  const sig0_m  = sig0 * 1e-6;
+  const n_peak  = N / Math.pow(2 * Math.PI, 1.5) / Math.pow(sig0_m, 3);  // m⁻³
+  const PSD     = n_peak * Math.pow(lam, 3);
+
+  // ─── Update DOM ──────────────────────────────────────────────
+  const tFmt = fmtT(T_K);
+  document.getElementById('tempDisplay').textContent = tFmt.val;
+  document.getElementById('tempUnit').textContent    = tFmt.unit;
+
+  document.getElementById('vrmsDisplay').textContent = (v_rms * 1e3).toPrecision(4);
+
+  const lam_nm = lam * 1e9;
+  if (lam_nm > 1000) {
+    document.getElementById('lambdaDisplay').textContent = (lam_nm/1000).toPrecision(4);
+    document.getElementById('lambdaUnit').textContent = 'μm';
+  } else if (lam_nm > 1) {
+    document.getElementById('lambdaDisplay').textContent = lam_nm.toPrecision(4);
+    document.getElementById('lambdaUnit').textContent = 'nm';
+  } else {
+    document.getElementById('lambdaDisplay').textContent = (lam_nm * 1000).toPrecision(3);
+    document.getElementById('lambdaUnit').textContent = 'pm';
+  }
+
+  // PSD
+  let psdStr, psdDesc;
+  if (PSD >= 1e3) { psdStr = PSD.toExponential(2); }
+  else if (PSD >= 1) { psdStr = PSD.toPrecision(4); }
+  else { psdStr = PSD.toExponential(2); }
+  if (PSD >= 2.612)       psdDesc = '🎉 Above BEC threshold!';
+  else if (PSD >= 0.1)    psdDesc = 'Near-degenerate regime';
+  else if (PSD >= 0.01)   psdDesc = 'Cold thermal gas';
+  else                    psdDesc = 'Classical (PSD ≪ 1)';
+
+  document.getElementById('psdDisplay').textContent = psdStr;
+  document.getElementById('psdDesc').textContent    = psdDesc;
+
+  const n_peak_cm3 = n_peak * 1e-6;
+  document.getElementById('npeakDisplay').textContent =
+    n_peak_cm3 >= 1e10 ? n_peak_cm3.toExponential(3) : n_peak_cm3.toPrecision(3);
+
+  // Cooling limit bars (ratio T / T_limit, capped at 100%)
+  const ratioD   = Math.min(1, T_K / TD);
+  const ratioRec = Math.min(1, T_K / Trec);
+  const tDfmt  = fmtT(TD);
+  const tRfmt  = fmtT(Trec);
+  document.getElementById('dopLabel').textContent = `Doppler limit T_D = ${tDfmt.val} ${tDfmt.unit}`;
+  document.getElementById('recLabel').textContent = `Recoil limit T_rec = ${tRfmt.val} ${tRfmt.unit}`;
+  document.getElementById('dopVal').textContent = `${(ratioD*100).toFixed(1)}%`;
+  document.getElementById('recVal').textContent = `${(ratioRec*100).toFixed(1)}%`;
+  document.getElementById('dopBar').style.width  = (ratioD   * 100) + '%';
+  document.getElementById('recBar').style.width  = (ratioRec * 100) + '%';
+
+  // Limits reference grid
+  const Tomega = parseFloat(document.getElementById('omegaSlide').value);
+  const sigTherm = Math.sqrt(kB * T_K / (mass * (2*Math.PI*Tomega) * (2*Math.PI*Tomega))) * 1e6; // μm
+  document.getElementById('limitsGrid').innerHTML = [
+    { label: 'Doppler temperature', val: tDfmt.val, unit: tDfmt.unit, desc: 'ℏΓ/(2k_B)' },
+    { label: 'Recoil temperature', val: tRfmt.val, unit: tRfmt.unit, desc: 'ℏ²k²/(mk_B)' },
+    { label: 'Thermal size in trap', val: sigTherm.toPrecision(4), unit: 'μm', desc: `at ω/2π=${Tomega} Hz` },
+  ].map(c => `<div class="prop-card">
+    <div class="prop-card-label">${c.label}</div>
+    <div class="prop-card-val">${c.val}</div>
+    <div class="prop-card-unit">${c.unit}</div>
+    <div class="prop-card-sub">${c.desc}</div>
+  </div>`).join('');
+
+  // ─── Expansion chart ─────────────────────────────────────────
+  const tPts = [], sFull = [], sFree = [], sSig0 = [];
+  for (let i = 0; i <= 60; i++) {
+    const t = (i / 60) * tMax;
+    tPts.push(t.toFixed(2));
+    sFull.push(expansion_um(sig0, T_K, mass, t).toFixed(2));
+    sFree.push(expansion_um(0, T_K, mass, t).toFixed(2));
+    sSig0.push(sig0.toFixed(2));
+  }
+  EXP_CHART.data.labels = tPts;
+  EXP_CHART.data.datasets[0].data = sFull;
+  EXP_CHART.data.datasets[1].data = sFree;
+  EXP_CHART.data.datasets[2].data = sSig0;
+  EXP_CHART.update('none');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIT FROM DATA
+═══════════════════════════════════════════════════════════════ */
+let fitRows = [];
+let fitRowId = 0;
+
+function addFitRow(t_ms = '', sig_um = '') {
+  const id = fitRowId++;
+  fitRows.push(id);
+  const tbody = document.getElementById('fitBody');
+  const tr = document.createElement('tr');
+  tr.id = 'fr-' + id;
+  tr.innerHTML = `
+    <td style="color:var(--text-muted)">${fitRows.length}</td>
+    <td><input type="number" id="ft-${id}" min="0" step="any" value="${t_ms}"
+         placeholder="e.g. 5" oninput="fitCompute()"></td>
+    <td><input type="number" id="fs-${id}" min="0" step="any" value="${sig_um}"
+         placeholder="e.g. 120" oninput="fitCompute()"></td>
+    <td><button class="del-btn" onclick="delFitRow(${id})">✕</button></td>`;
+  tbody.appendChild(tr);
+  fitCompute();
+}
+
+function delFitRow(id) {
+  const tr = document.getElementById('fr-' + id);
+  if (tr) tr.remove();
+  fitRows = fitRows.filter(r => r !== id);
+  // Renumber labels
+  document.querySelectorAll('#fitBody tr').forEach((row, i) => {
+    row.querySelector('td').textContent = i + 1;
+  });
+  fitCompute();
+}
+
+function fitCompute() {
+  const specKey = document.getElementById('fitSpecies').value;
+  const mass    = ATOMS[specKey].mass_u * amu;
+
+  // Collect data
+  const data = [];
+  document.querySelectorAll('#fitBody tr').forEach(tr => {
+    const id  = tr.id.replace('fr-', '');
+    const t   = parseFloat(document.getElementById('ft-' + id)?.value);
+    const sig = parseFloat(document.getElementById('fs-' + id)?.value);
+    if (isFinite(t) && isFinite(sig) && t >= 0 && sig > 0) {
+      data.push({ t2: t * t, s2: sig * sig });
+    }
+  });
+
+  const wrap = document.getElementById('fitResultsWrap');
+  const stat = document.getElementById('fitStatus');
+
+  if (data.length < 2) {
+    wrap.style.display = 'none';
+    stat.textContent = 'Add at least 2 valid data points to compute a fit.';
+    stat.style.display = 'block';
+    FIT_CHART.data.datasets[0].data = [];
+    FIT_CHART.data.datasets[1].data = [];
+    FIT_CHART.update('none');
+    return;
+  }
+
+  // Linear regression: s² = a + b·t²
+  const n    = data.length;
+  const sumX = data.reduce((s, d) => s + d.t2, 0);
+  const sumY = data.reduce((s, d) => s + d.s2, 0);
+  const sumX2= data.reduce((s, d) => s + d.t2 * d.t2, 0);
+  const sumXY= data.reduce((s, d) => s + d.t2 * d.s2, 0);
+  const denom = n * sumX2 - sumX * sumX;
+
+  if (Math.abs(denom) < 1e-30) {
+    stat.textContent = 'Degenerate fit — all t values may be the same.';
+    return;
+  }
+
+  const b = (n * sumXY - sumX * sumY) / denom;    // slope: μm²/ms² = k_BT/m
+  const a = (sumY - b * sumX) / n;                // intercept: σ₀²
+
+  // T from slope: b [μm²/ms²] = k_BT/m [m²/s²] × (1e6)² / (1e3)² = k_BT/m × 1e6
+  // Slope in SI: b_SI = b × 1e-12 / 1e-6 = b × 1e-6  (m²/s²)
+  const b_SI = b * 1e-12 / 1e-6;  // m²/s²
+  const T_fit = b_SI * mass / kB;  // K
+  const sig0_fit = a > 0 ? Math.sqrt(a) : 0;  // μm
+
+  // R²
+  const yMean = sumY / n;
+  const SStot = data.reduce((s, d) => s + (d.s2 - yMean) ** 2, 0);
+  const SSres = data.reduce((s, d) => s + (d.s2 - (a + b * d.t2)) ** 2, 0);
+  const R2    = SStot > 0 ? 1 - SSres / SStot : 1;
+
+  // Update DOM
+  stat.style.display = 'none';
+  wrap.style.display = 'block';
+
+  const tFmt = fmtT(T_fit);
+  document.getElementById('fitTemp').textContent     = T_fit >= 0 ? tFmt.val : '—';
+  document.getElementById('fitTempUnit').textContent = T_fit >= 0 ? tFmt.unit : 'invalid fit';
+  document.getElementById('fitSig0').textContent  = sig0_fit.toFixed(1);
+  document.getElementById('fitSlope').textContent = b.toFixed(4);
+  document.getElementById('fitR2').textContent    = R2.toFixed(4);
+
+  const note = T_fit < 0
+    ? '⚠ Negative temperature: cloud may be shrinking (check data). Possibly a heating effect or measurement error.'
+    : `Fitted T = ${tFmt.val} ${tFmt.unit}. ${R2 > 0.99 ? 'Excellent R² — good linear fit.' : R2 > 0.95 ? 'Acceptable R² — check for systematic errors.' : 'Low R² — consider more data points or check measurements.'}`;
+  document.getElementById('fitNote').textContent = note;
+
+  // Update scatter plot
+  const xs = data.map(d => d.t2);
+  const xMin = 0, xMax = Math.max(...xs) * 1.1;
+  const lineData = [
+    { x: xMin, y: a + b * xMin },
+    { x: xMax, y: a + b * xMax },
+  ];
+
+  FIT_CHART.data.datasets[0].data = data.map(d => ({ x: d.t2, y: d.s2 }));
+  FIT_CHART.data.datasets[1].data = lineData;
+  FIT_CHART.update('none');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENT HANDLERS
+═══════════════════════════════════════════════════════════════ */
+function onSpeciesChange() {
+  const atom = ATOMS[document.getElementById('speciesSel').value];
+  document.getElementById('atomBanner').innerHTML =
+    `${atom.label}: mass = ${atom.mass_u} u &middot; Γ/2π = ${atom.Gamma_MHz} MHz &middot; λ = ${atom.lambda_nm.toFixed(0)} nm`;
+  compute();
+}
+
+// Pre-populate fit table with example data for ⁸⁷Rb at ~1 μK
+window.addEventListener('DOMContentLoaded', () => {
+  addFitRow(1, 15);
+  addFitRow(3, 45);
+  addFitRow(5, 72);
+  addFitRow(10, 140);
+  addFitRow(15, 207);
+  updateTempLabel();
+  compute();
+  initAccordions();
+});
+</script>
+</body>
+</html>

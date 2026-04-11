@@ -14,6 +14,7 @@ const NAV = {
     { key: 'lab-techniques',       label: 'Lab Techniques',          icon: '🔬',  color: '#34d399', href: 'pages/lab-techniques.html'       },
     { key: 'rydberg-calculator',   label: 'Rydberg Calculator',      icon: '🔮',  color: '#818cf8', href: 'pages/rydberg-calculator.html'   },
     { key: 'imaging-calculator',   label: 'Imaging SNR Calculator',  icon: '📷',  color: '#34d399', href: 'pages/imaging-calculator.html'   },
+    { key: 'tof-calculator',       label: 'TOF Thermometry',         icon: '🌡️',  color: '#38bdf8', href: 'pages/tof-calculator.html'        },
     { key: 'release-recapture',    label: 'Release-Recapture',       icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html'    },
     { key: 'lab-calculators',      label: 'Lab Calculators',         icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'      },
     { key: 'laser-locking',        label: 'Laser Locking',           icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'        },
