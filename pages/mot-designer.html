@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOT Designer — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="MOT and magnetic trap designer — damping, spring constant, capture velocity, Ioffe-Pritchard trap frequencies, trap depth, and evaporation parameter.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/mot-designer.html">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --page-color: var(--c-rr); }  /* orange #fb923c */
+
+    .prop-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 10px; padding: .9rem 1.1rem; transition: border-color .2s;
+    }
+    .prop-card:hover { border-color: rgba(251,146,60,.35); }
+    .prop-card-label {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .prop-card-val {
+      font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
+      color: #fb923c; line-height: 1;
+    }
+    .prop-card-unit { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
+    .prop-card-sub  { font-size: .75rem; color: var(--text-secondary); margin-top: .3rem; }
+
+    .prop-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; }
+    .prop-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; }
+    @media(max-width:640px){ .prop-grid-3,.prop-grid-2 { grid-template-columns:1fr; } }
+
+    .ctrl-panel {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .ctrl-panel h5 {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: #fb923c; margin: 0 0 .9rem 0;
+    }
+    .field-row { margin-bottom: .8rem; }
+    .field-row label {
+      display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
+    }
+    .field-row select, .field-row input[type=number] {
+      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      border-radius: 6px; padding: .38rem .7rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+    }
+    .field-row select:focus, .field-row input:focus { outline:none; border-color:#fb923c; }
+    .field-row input[type=range] { width:100%; accent-color:#fb923c; margin-top:.2rem; }
+    .lbl-val { color: #fb923c; font-family: var(--mono); }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+    @media(max-width:800px){ .two-col { grid-template-columns:1fr; } }
+
+    .theory-box {
+      background: var(--bg-card); border:1px solid #1e293b;
+      border-left: 4px solid #fb923c; border-radius:10px;
+      padding:1rem 1.3rem; margin-bottom:1rem;
+    }
+    .theory-box h4 { font-size:.93rem; font-weight:700; color:#fb923c; margin:0 0 .5rem 0; }
+    .theory-box p  { font-size:.86rem; color:var(--text-secondary); line-height:1.7; margin:0; }
+
+    .formula-box {
+      background:#0d0700; border:1px solid #7c2d12; border-radius:8px;
+      padding:.7rem 1rem; margin:.6rem 0;
+      font-family:var(--mono); color:#fdba74; font-size:.82rem;
+      line-height:1.85; white-space:pre; overflow-x:auto;
+    }
+
+    .chart-card {
+      background:var(--bg-card); border:1px solid #1e293b;
+      border-radius:12px; padding:1rem 1.25rem;
+    }
+    .chart-card h5 {
+      font-size:.78rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.06em; color:var(--text-muted); margin:0 0 .75rem 0;
+    }
+
+    .info-banner {
+      background:#0d0700; border:1px solid #7c2d12;
+      border-radius:8px; padding:.65rem 1rem;
+      font-size:.8rem; color:#fdba74; margin-top:.75rem; line-height:1.6;
+    }
+    .good-banner {
+      background:#052e16; border:1px solid #15803d;
+      border-radius:8px; padding:.65rem 1rem;
+      font-size:.8rem; color:#86efac; margin-top:.75rem; line-height:1.6;
+    }
+    .warn-banner {
+      background:#1c0f00; border:1px solid #92400e;
+      border-radius:8px; padding:.65rem 1rem;
+      font-size:.8rem; color:#fbbf24; margin-top:.75rem; line-height:1.6;
+    }
+
+    .section-divider { border:none; border-top:1px solid #1e293b; margin:2rem 0; }
+
+    /* eta gauge */
+    .eta-gauge {
+      display:flex; align-items:center; gap:1rem;
+      background:var(--bg-card); border:1px solid #1e293b; border-radius:12px;
+      padding:1rem 1.25rem;
+    }
+    .eta-big {
+      font-family:var(--mono); font-size:2.5rem; font-weight:700; color:#fb923c;
+      flex-shrink:0; min-width:4rem; text-align:center;
+    }
+    .eta-bar-wrap { flex:1; }
+    .eta-bar-label { font-size:.72rem; text-transform:uppercase; letter-spacing:.07em;
+      color:var(--text-muted); margin-bottom:.35rem; }
+    .eta-bar-track { height:12px; background:#1e293b; border-radius:6px; overflow:hidden; }
+    .eta-bar-fill  { height:100%; border-radius:6px; transition:width .4s ease; }
+
+    /* read links */
+    .read-links { display:flex; flex-direction:column; gap:.5rem; margin-top:.75rem; }
+    .read-link {
+      display:flex; align-items:center; gap:.6rem;
+      background:var(--bg-card); border:1px solid #1e293b; border-radius:8px;
+      padding:.55rem .85rem; font-size:.82rem; color:var(--text-secondary);
+      text-decoration:none; transition:border-color .15s,color .15s;
+    }
+    .read-link:hover { border-color:#fb923c; color:var(--text-primary); }
+    .rl-icon { font-size:1rem; flex-shrink:0; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<!-- ═══════════════════════ HERO ═══════════════════════════ -->
+<section class="page-hero" style="--hero-accent:#fb923c;">
+  <div class="container">
+    <div class="hero-badge anim-in">LASER COOLING &amp; MAGNETIC TRAPPING</div>
+    <h1 class="page-title anim-in delay-1">
+      MOT <span class="grad-text" style="--ga:#fb923c;--gb:#fbbf24;">Designer</span>
+    </h1>
+    <p class="page-subtitle anim-in delay-2">
+      Full parameter design tool for magneto-optical traps and Ioffe-Pritchard magnetic traps —
+      from laser detuning and gradient to trap frequencies, depth, and evaporation efficiency.
+    </p>
+    <div class="hero-stats anim-in delay-3">
+      <div class="stat"><span class="stat-val">α</span><span class="stat-lbl">MOT damping</span></div>
+      <div class="stat"><span class="stat-val">κ</span><span class="stat-lbl">Spring constant</span></div>
+      <div class="stat"><span class="stat-val">ω_r, ω_z</span><span class="stat-lbl">IP trap freqs</span></div>
+      <div class="stat"><span class="stat-val">η</span><span class="stat-lbl">Evaporation param</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="container" style="padding-top:2.5rem;">
+
+  <!-- ═══ SECTION 1: MOT PARAMETERS ════════════════════════════ -->
+  <section class="section-block anim-in delay-1">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#fb923c">01 </span>Magneto-Optical Trap (MOT)
+    </h2>
+    <div class="two-col">
+
+      <div class="ctrl-panel">
+        <h5>Laser &amp; Field Parameters</h5>
+
+        <div class="field-row">
+          <label>Atom species</label>
+          <select id="speciesSel" onchange="onSpeciesChange()">
+            <option value="Rb87">⁸⁷Rb — D2, F=2→F′=3</option>
+            <option value="Cs133">¹³³Cs — D2, F=4→F′=5</option>
+            <option value="Na23">²³Na — D2, F=2→F′=3</option>
+            <option value="Li7">⁷Li — D2, F=2→F′=3</option>
+            <option value="K39">³⁹K — D2, F=2→F′=3</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Detuning |Δ|/Γ (red-detuned):
+            <span class="lbl-val" id="detLbl">1.5</span> × Γ</label>
+          <input type="range" id="detSlide" min="5" max="50" value="15" step="1"
+            oninput="document.getElementById('detLbl').textContent=(this.value/10).toFixed(1); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.5Γ</span><span>−Γ (opt. Doppler)</span><span>5Γ</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Saturation parameter s = I/I<sub>sat</sub>:
+            <span class="lbl-val" id="satLbl">1.0</span></label>
+          <input type="range" id="satSlide" min="1" max="30" value="10" step="1"
+            oninput="document.getElementById('satLbl').textContent=(this.value/10).toFixed(1); compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>0.1</span><span>1 (sat.)</span><span>3</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Beam 1/e² radius w (mm):
+            <span class="lbl-val" id="beamLbl">10</span> mm</label>
+          <input type="range" id="beamSlide" min="1" max="30" value="10" step="1"
+            oninput="document.getElementById('beamLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Axial B-field gradient dB/dz (G/cm):
+            <span class="lbl-val" id="gradLbl">15</span> G/cm</label>
+          <input type="range" id="gradSlide" min="1" max="60" value="15" step="1"
+            oninput="document.getElementById('gradLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="info-banner" id="atomBanner">
+          ⁸⁷Rb D2: Γ/2π = 6.065 MHz · λ = 780 nm · I_sat = 1.67 mW/cm²
+        </div>
+      </div>
+
+      <!-- MOT results -->
+      <div>
+        <div class="prop-grid-3" style="margin-bottom:.75rem;">
+          <div class="prop-card">
+            <div class="prop-card-label">Damping coeff. α</div>
+            <div class="prop-card-val" id="alphaVal">—</div>
+            <div class="prop-card-unit">10⁻²⁰ kg/s (1D, 2 beams)</div>
+            <div class="prop-card-sub">F = −αv</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Spring constant κ</div>
+            <div class="prop-card-val" id="kappaVal">—</div>
+            <div class="prop-card-unit">10⁻¹⁷ N/m</div>
+            <div class="prop-card-sub">F = −κr (radial)</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">MOT trap frequency</div>
+            <div class="prop-card-val" id="omegaMOT">—</div>
+            <div class="prop-card-unit">Hz</div>
+            <div class="prop-card-sub">ω = √(κ/m)</div>
+          </div>
+        </div>
+
+        <div class="prop-grid-3" style="margin-bottom:.75rem;">
+          <div class="prop-card">
+            <div class="prop-card-label">Capture velocity</div>
+            <div class="prop-card-val" id="vcapVal">—</div>
+            <div class="prop-card-unit">m/s</div>
+            <div class="prop-card-sub">v_cap ≈ |Δ|/k</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Doppler temperature</div>
+            <div class="prop-card-val" id="tdopVal">—</div>
+            <div class="prop-card-unit">μK</div>
+            <div class="prop-card-sub">ℏΓ/2k_B (limit)</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Max acceleration</div>
+            <div class="prop-card-val" id="accelVal">—</div>
+            <div class="prop-card-unit">m/s²</div>
+            <div class="prop-card-sub">a_max = ℏkΓs/(2m(1+s))</div>
+          </div>
+        </div>
+
+        <div class="theory-box">
+          <h4>MOT force in 1D (two-beam, low velocity limit)</h4>
+          <p>
+            Each beam exerts a scattering force ℏk × R_sc on the atom. Two counter-propagating beams
+            with the quadrupole field create both a velocity-dependent damping force and a
+            position-dependent restoring force. In the low-saturation, low-velocity limit:
+          </p>
+          <div class="formula-box">F_MOT ≈ −α·v − κ·r
+
+α = 8ℏk²s|Δ|/Γ / (1 + s + (2Δ/Γ)²)²     [damping]
+κ = α · μ_eff · dB/dz / (ℏk)              [spring via B-field gradient]
+
+μ_eff = g_F · m_F · μ_B   (effective magnetic moment)</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 2: MAGNETIC TRAP ════════════════════════════ -->
+  <section class="section-block anim-in delay-2">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#fb923c">02 </span>Ioffe-Pritchard Magnetic Trap
+    </h2>
+    <div class="two-col">
+
+      <div class="ctrl-panel">
+        <h5>IP Trap Field Parameters</h5>
+
+        <div class="field-row">
+          <label>Trapping state (g<sub>F</sub> × m<sub>F</sub>):
+            <span class="lbl-val" id="stateLbl">+1.0 μ_B</span></label>
+          <select id="stateSel" onchange="compute()">
+            <option value="1.0">|F=2, m_F=+2⟩ — μ_eff = +1 μ_B (Rb, Na, K)</option>
+            <option value="0.5">|F=2, m_F=+1⟩ — μ_eff = +½ μ_B</option>
+            <option value="0.5">|F=1, m_F=−1⟩ — μ_eff = +½ μ_B (Rb)</option>
+            <option value="1.0">|F=4, m_F=+4⟩ — μ_eff = +1 μ_B (Cs)</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label>Radial gradient B′ (G/cm):
+            <span class="lbl-val" id="bprimeLbl">150</span> G/cm</label>
+          <input type="range" id="bprimeSlide" min="10" max="500" value="150" step="5"
+            oninput="document.getElementById('bprimeLbl').textContent=this.value; compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>10 G/cm</span><span>200 G/cm</span><span>500 G/cm</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Bias field B₀ (G):
+            <span class="lbl-val" id="b0Lbl">5</span> G</label>
+          <input type="range" id="b0Slide" min="1" max="100" value="5" step="1"
+            oninput="document.getElementById('b0Lbl').textContent=this.value; compute()">
+          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
+            <span>1 G</span><span>20 G</span><span>100 G</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Axial curvature B″ (G/cm²):
+            <span class="lbl-val" id="bppLbl">100</span> G/cm²</label>
+          <input type="range" id="bppSlide" min="5" max="500" value="100" step="5"
+            oninput="document.getElementById('bppLbl').textContent=this.value; compute()">
+        </div>
+
+        <div class="field-row">
+          <label>Atom temperature T (μK):
+            <span class="lbl-val" id="tTrapLbl">100</span> μK</label>
+          <input type="range" id="tTrapSlide" min="1" max="500" value="100" step="1"
+            oninput="document.getElementById('tTrapLbl').textContent=this.value; compute()">
+        </div>
+      </div>
+
+      <!-- IP trap results -->
+      <div>
+        <div class="prop-grid-2" style="margin-bottom:.75rem;">
+          <div class="prop-card">
+            <div class="prop-card-label">Radial freq ω_r /2π</div>
+            <div class="prop-card-val" id="omegaR">—</div>
+            <div class="prop-card-unit">Hz</div>
+            <div class="prop-card-sub">√(μ_eff B′² / m B₀)</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Axial freq ω_z /2π</div>
+            <div class="prop-card-val" id="omegaZ">—</div>
+            <div class="prop-card-unit">Hz</div>
+            <div class="prop-card-sub">√(μ_eff B″ / m)</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Geometric mean freq</div>
+            <div class="prop-card-val" id="omegaBar">—</div>
+            <div class="prop-card-unit">Hz = (ω_r² ω_z)^(1/3) / 2π</div>
+            <div class="prop-card-sub">relevant for BEC T_c</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Trap depth U₀</div>
+            <div class="prop-card-val" id="trapDepth">—</div>
+            <div class="prop-card-unit">μK</div>
+            <div class="prop-card-sub">μ_eff × B₀ / k_B</div>
+          </div>
+        </div>
+
+        <!-- Evaporation η gauge -->
+        <div class="eta-gauge">
+          <div>
+            <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem">η parameter</div>
+            <div class="eta-big" id="etaVal">—</div>
+          </div>
+          <div class="eta-bar-wrap">
+            <div class="eta-bar-label">Evaporation efficiency: η = U₀ / (k_B T)</div>
+            <div class="eta-bar-track">
+              <div class="eta-bar-fill" id="etaBar" style="background:#fb923c;width:0%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.2rem">
+              <span>η=1 (poor)</span><span>η=5 (good)</span><span>η=10+ (excellent)</span>
+            </div>
+            <div id="etaNote" class="info-banner" style="margin-top:.6rem;font-size:.77rem;">—</div>
+          </div>
+        </div>
+
+        <div style="margin-top:.75rem;" id="majoranaWarn"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 3: TRAP PROFILE CHART ════════════════════════ -->
+  <section class="section-block anim-in delay-3">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#fb923c">03 </span>Trap Potential Profile
+    </h2>
+    <div class="chart-card">
+      <h5>U(r) = μ_eff · |B(r)| — radial cut through IP trap</h5>
+      <canvas id="trapChart" height="260"></canvas>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
+        <span style="display:flex;align-items:center;gap:.4rem">
+          <span style="width:20px;height:3px;background:#fb923c;display:inline-block"></span>
+          U(r) — radial potential
+        </span>
+        <span style="display:flex;align-items:center;gap:.4rem">
+          <span style="width:20px;height:2px;border-top:2px dashed #fbbf24;display:inline-block"></span>
+          k_B T (atom energy)
+        </span>
+        <span style="display:flex;align-items:center;gap:.4rem">
+          <span style="width:20px;height:2px;border-top:2px dashed #f87171;display:inline-block"></span>
+          Trap depth U₀ = μ_eff B₀
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 4: THEORY ════════════════════════════════════ -->
+  <section class="section-block anim-in delay-4">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#fb923c">04 </span>Physics Reference
+    </h2>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        MOT force: damping and spring constant
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Radiation pressure and position-dependent detuning</h4>
+          <p>
+            In a MOT the two counter-propagating beams create opposing radiation pressure forces.
+            For a moving atom at position r in the quadrupole field, the effective detuning
+            for each beam is Δ_eff = Δ ± kv ± μ_eff B(r)/ℏ. This creates both velocity
+            (Doppler) and position (Zeeman) dependent forces.
+          </p>
+        </div>
+        <div class="formula-box">Scattering rate (single beam, two-level):
+  R_sc = (Γ/2) · s / [1 + s + (2Δ_eff/Γ)²]
+
+Net force (two beams, |kv| ≪ |Δ|, low v):
+  F = F₊ − F₋ ≈ −αv − κr
+
+Damping (1D, 2 beams):
+  α = 8ℏk²s|Δ|/Γ / (1 + s + (2Δ/Γ)²)²
+
+Spring constant:
+  κ = (μ_eff/ℏk) · (∂B/∂r) · α
+    = μ_eff · (dB/dz) · 8k²s|Δ|/Γ / (1 + s + (2Δ/Γ)²)²
+
+Optimal damping: Δ = −Γ/(2√3) ≈ −0.29Γ → α_max</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Ioffe-Pritchard trap — field geometry
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Non-zero minimum prevents Majorana losses</h4>
+          <p>
+            An IP trap combines a radial quadrupole field (wires or Ioffe bars: gradient B′) with
+            axial pinch coils that create a non-zero minimum field B₀ and axial curvature B″.
+            The non-zero field bottom eliminates Majorana spin-flip losses that plague quadrupole traps.
+          </p>
+        </div>
+        <div class="formula-box">Field magnitude near trap center (r ≪ B₀/B′):
+
+  |B(ρ,z)| ≈ B₀ + (B′²/2B₀ − B″/2)ρ² + (B″/2)z²
+
+where ρ = radial distance,  z = axial distance
+
+Trap frequencies:
+  ω_r = √(μ_eff(B′²/B₀ − B″) / m)   [radial]
+  ω_z = √(μ_eff · B″ / m)             [axial]
+
+For stability: B′²/B₀ > B″ (radial trap not cancelled by curvature)
+
+Trap depth (height of the saddle point or coil centre):
+  U₀ ≈ μ_eff · B₀</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          QUIC trap (Esslinger group) and cloverleaf trap (Ketterle group) are two common
+          IP-type implementations. Typical: B₀ = 1–10 G, B′ = 100–300 G/cm, B″ = 50–200 G/cm².
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Evaporative cooling — η parameter and runaway evaporation
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>η = U₀ / (k_B T) — truncation parameter</h4>
+          <p>
+            Evaporative cooling removes the hottest atoms (tail of the Maxwell-Boltzmann distribution)
+            by RF or microwave induced spin-flip at a tunable cutoff energy η × k_B T. As hot atoms
+            leave and the cloud rethermalizes via elastic collisions, the temperature drops.
+          </p>
+        </div>
+        <div class="formula-box">Evaporation efficiency (simple model):
+  dT/T = −(η − 4) / (η − 3 + ...) · dN/N
+
+"Runaway evaporation" requires elastic-to-inelastic collision ratio:
+  γ_el / γ_inel > threshold ≈ 150 (Rb-87: 3-body limit)
+
+Good evaporation:  η ≳ 5  (T₀/e per decade in N)
+Optimal evaporation: η ≈ 8–10 (BEC achievable)
+Too shallow (η < 4): evaporation is not efficient
+
+RF evaporation ramp:  ν_RF(t) decreases from ν₀ to ν_f
+  E_cut = h·ν_RF − m_F · g_F · μ_B · B₀</div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Majorana losses in quadrupole traps
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Spin-flip at the zero of the field</h4>
+          <p>
+            A pure quadrupole trap has a zero-field point at the center. Atoms that pass near this
+            point can undergo a non-adiabatic Majorana spin-flip from a weak-field-seeking to a
+            strong-field-seeking state, ejecting them from the trap. The rate increases as the cloud
+            cools and atoms approach the zero-field region.
+          </p>
+        </div>
+        <div class="formula-box">Majorana flip rate (Petrich et al. 1995):
+  Γ_M ≈ ω_r · (ℏ / (m ω_r ⟨r²⟩))
+       ≈ ω_r · (T_rec / T)
+  ω_r = √(μ_B · B′² / (m · B₀))   [for quadrupole: B₀ → 0]
+
+For quadrupole (B₀ = 0): Γ_M → ∞  →  catastrophic losses
+
+Fix: add bias field (IP trap, TOP trap) or optical plug (Rb BEC 1995).
+
+Lifetime in quadrupole (crude estimate):
+  τ_M ~ (m v̄) / (μ_B B′)  where v̄ = √(2k_BT/m)</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 5: REFERENCES ════════════════════════════════ -->
+  <section class="section-block anim-in delay-5">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#fb923c">05 </span>References
+    </h2>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.70.721" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Metcalf &amp; van der Straten — Laser Cooling and Trapping (textbook)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.74.3352" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Petrich et al. (1995) — Stable, Tightly Confining Magnetic Trap (TOP trap, first Rb BEC paper)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.75.3969" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Anderson et al. (1995) — Observation of BEC in dilute Rb gas (Science)
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.74.875" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Ketterle, Durfee &amp; Stamper-Kurn — Making, probing, and understanding BECs
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.51.R23" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Esslinger et al. (1998) — Bose-Einstein condensation in a QUIC trap
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      MOT Designer · AMO Career · Saumitra Phatak · Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script>
+renderNav({ active: 'mot-designer', root: '../' });
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════════════════════════ */
+const kB   = 1.380649e-23;
+const hbar = 1.054572e-34;
+const muB  = 9.274010e-24;
+const amu  = 1.660539e-27;
+
+/* ═══════════════════════════════════════════════════════════════
+   ATOM DATA (D2 line)
+═══════════════════════════════════════════════════════════════ */
+const ATOMS = {
+  Rb87:  { label:'⁸⁷Rb',  mass_u:86.909,  Gamma_MHz:6.065,  lambda_nm:780.241, Isat:1.669 },
+  Cs133: { label:'¹³³Cs', mass_u:132.905, Gamma_MHz:5.234,  lambda_nm:852.347, Isat:1.103 },
+  Na23:  { label:'²³Na',  mass_u:22.990,  Gamma_MHz:9.795,  lambda_nm:588.996, Isat:6.260 },
+  Li7:   { label:'⁷Li',   mass_u:7.016,   Gamma_MHz:5.924,  lambda_nm:670.977, Isat:7.590 },
+  K39:   { label:'³⁹K',   mass_u:38.964,  Gamma_MHz:6.035,  lambda_nm:766.701, Isat:1.750 },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CHART
+═══════════════════════════════════════════════════════════════ */
+const trapCtx = document.getElementById('trapChart').getContext('2d');
+const TRAP_CHART = new Chart(trapCtx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [
+      { label: 'U(r)', data: [], borderColor: '#fb923c',
+        backgroundColor: 'rgba(251,146,60,.07)', fill: true,
+        tension: 0.3, borderWidth: 2.5, pointRadius: 0 },
+      { label: 'k_BT', data: [], borderColor: '#fbbf24',
+        borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+      { label: 'U₀', data: [], borderColor: '#f87171',
+        borderDash: [5,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { title:{ display:true, text:'Radial distance r (mm)', color:'#94a3b8', font:{size:11} },
+           ticks:{ color:'#64748b' }, grid:{ color:'#1e293b' } },
+      y: { title:{ display:true, text:'Energy / k_B (μK)', color:'#94a3b8', font:{size:11} },
+           ticks:{ color:'#64748b' }, grid:{ color:'#1e293b' }, min:0 }
+    },
+    plugins: {
+      legend: { display:false },
+      tooltip: { backgroundColor:'#0c1526', titleColor:'#fb923c',
+                 bodyColor:'#94a3b8', borderColor:'#1e3a5f', borderWidth:1 }
+    }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN COMPUTE
+═══════════════════════════════════════════════════════════════ */
+function compute() {
+  const key    = document.getElementById('speciesSel').value;
+  const atom   = ATOMS[key];
+  const mass   = atom.mass_u * amu;
+  const G      = atom.Gamma_MHz * 1e6 * 2 * Math.PI;  // rad/s
+  const k      = 2 * Math.PI / (atom.lambda_nm * 1e-9); // m⁻¹
+
+  const detRatio = parseFloat(document.getElementById('detSlide').value) / 10;  // |Δ|/Γ
+  const Delta    = -detRatio * atom.Gamma_MHz * 1e6 * 2 * Math.PI; // rad/s (negative = red)
+  const s        = parseFloat(document.getElementById('satSlide').value) / 10;
+  const w_mm     = parseFloat(document.getElementById('beamSlide').value);   // mm
+  const dBdz_Gcm = parseFloat(document.getElementById('gradSlide').value);   // G/cm
+  const dBdz     = dBdz_Gcm * 0.01;  // T/m  (1 G/cm = 0.01 T/m)
+
+  const muEff = parseFloat(document.getElementById('stateSel').value) * muB; // J/T
+
+  const bprime_Gcm = parseFloat(document.getElementById('bprimeSlide').value); // G/cm
+  const B0_G       = parseFloat(document.getElementById('b0Slide').value);
+  const bpp_Gcm2   = parseFloat(document.getElementById('bppSlide').value);
+  const T_uK       = parseFloat(document.getElementById('tTrapSlide').value);
+
+  // SI conversions
+  const bprime  = bprime_Gcm * 0.01;      // T/m
+  const B0      = B0_G * 1e-4;            // T
+  const bpp     = bpp_Gcm2 * 1.0;         // T/m² (1 G/cm² = 1 T/m²)
+  const T_K     = T_uK * 1e-6;
+
+  // ─── MOT physics ────────────────────────────────────────────
+  const D2 = (2 * Delta / G) ** 2;
+  const denom2 = (1 + s + D2) ** 2;
+
+  // Damping coefficient α (1D, 2 beams)
+  const alpha = 8 * hbar * k * k * s * Math.abs(Delta / G) / denom2;  // kg/s
+
+  // Spring constant κ = α × μ_eff × dB/dz / (ℏk)
+  const kappa = alpha * muEff * dBdz / (hbar * k);  // N/m
+
+  // MOT trap frequency
+  const omegaMOT = kappa > 0 ? Math.sqrt(kappa / mass) : 0;  // rad/s
+
+  // Capture velocity ≈ |Δ|/k
+  const vcap = Math.abs(Delta) / k;  // m/s
+
+  // Doppler temperature
+  const T_Doppler = hbar * G / (2 * kB);  // K (true Doppler limit)
+
+  // Max acceleration (resonance, on-axis)
+  const a_max = hbar * k * (G / (2 * Math.PI)) * 2 * Math.PI * s / (2 * mass * (1 + s));
+
+  // ─── IP trap physics ─────────────────────────────────────────
+  // Radial frequency: ω_r = √(μ_eff(B′²/B₀ − B″) / m)
+  const radTerm = muEff * (bprime * bprime / B0 - bpp) / mass;
+  const omegaR  = radTerm > 0 ? Math.sqrt(radTerm) : 0;  // rad/s
+
+  // Axial frequency: ω_z = √(μ_eff B″ / m)
+  const omegaZ = Math.sqrt(muEff * bpp / mass);
+
+  // Geometric mean
+  const omegaBar = Math.pow(omegaR * omegaR * omegaZ, 1/3);
+
+  // Trap depth U₀ = μ_eff B₀ / k_B  in μK
+  const U0_uK = muEff * B0 / kB * 1e6;
+
+  // Evaporation η
+  const eta = U0_uK / T_uK;
+
+  // ─── Update DOM ─────────────────────────────────────────────
+  document.getElementById('alphaVal').textContent = (alpha * 1e20).toPrecision(3);
+  document.getElementById('kappaVal').textContent = (kappa * 1e17).toPrecision(3);
+  document.getElementById('omegaMOT').textContent = (omegaMOT / (2*Math.PI)).toFixed(1);
+  document.getElementById('vcapVal').textContent  = vcap.toFixed(2);
+  document.getElementById('tdopVal').textContent  = (T_Doppler * 1e6).toFixed(0);
+  document.getElementById('accelVal').textContent = (a_max).toExponential(2);
+
+  document.getElementById('omegaR').textContent    = omegaR > 0 ? (omegaR/(2*Math.PI)).toFixed(1) : '—';
+  document.getElementById('omegaZ').textContent    = (omegaZ/(2*Math.PI)).toFixed(1);
+  document.getElementById('omegaBar').textContent  = (omegaBar/(2*Math.PI)).toFixed(1);
+  document.getElementById('trapDepth').textContent = U0_uK.toFixed(1);
+
+  // η gauge
+  document.getElementById('etaVal').textContent = eta.toFixed(1);
+  const etaPct = Math.min(100, eta / 10 * 100);
+  document.getElementById('etaBar').style.width = etaPct + '%';
+  document.getElementById('etaBar').style.background =
+    eta >= 8 ? '#4ade80' : eta >= 5 ? '#fb923c' : '#f87171';
+
+  const etaNote = document.getElementById('etaNote');
+  if (eta >= 8) {
+    etaNote.className = 'good-banner';
+    etaNote.textContent = `η = ${eta.toFixed(1)} — excellent. Runaway evaporation to BEC is feasible. Decrease T or raise B₀.`;
+  } else if (eta >= 5) {
+    etaNote.className = 'info-banner';
+    etaNote.textContent = `η = ${eta.toFixed(1)} — good. Efficient evaporation; further cooling will improve η. Target η ≥ 8 for BEC.`;
+  } else {
+    etaNote.className = 'warn-banner';
+    etaNote.textContent = `η = ${eta.toFixed(1)} — insufficient. Evaporation is inefficient below η ≈ 5. Increase trap depth or cool further.`;
+  }
+
+  // Majorana warning (rough estimate for B0 → small)
+  const majWarn = document.getElementById('majoranaWarn');
+  if (B0_G < 3) {
+    majWarn.innerHTML = `<div class="warn-banner">⚠️ B₀ = ${B0_G} G is very small. Majorana spin-flip losses near the field zero will limit lifetime. Consider increasing B₀ or using a TOP/optical plug.</div>`;
+  } else {
+    majWarn.innerHTML = '';
+  }
+
+  // ─── Trap potential chart ─────────────────────────────────────
+  // |B(ρ)| ≈ B₀ + (B′²/(2B₀))ρ²  (radial, near centre)
+  const rMax_m = w_mm * 3e-3;  // plot to 3× beam radius
+  const rPts = [], UPts = [], kBTPts = [], U0Pts = [];
+  const nPts = 80;
+  for (let i = 0; i <= nPts; i++) {
+    const r = (i / nPts) * rMax_m;   // m
+    // IP radial field: |B| = sqrt((B′r)² + B₀²)  (more accurate than Taylor)
+    const Bmag = Math.sqrt((bprime * r) ** 2 + B0 * B0);  // T
+    const U_uK = muEff * Bmag / kB * 1e6;                  // μK
+    rPts.push((r * 1e3).toFixed(2));   // mm
+    UPts.push(U_uK.toFixed(2));
+    kBTPts.push(T_uK.toFixed(2));
+    U0Pts.push(U0_uK.toFixed(2));
+  }
+  TRAP_CHART.data.labels = rPts;
+  TRAP_CHART.data.datasets[0].data = UPts;
+  TRAP_CHART.data.datasets[1].data = kBTPts;
+  TRAP_CHART.data.datasets[2].data = U0Pts;
+  TRAP_CHART.update('none');
+}
+
+function onSpeciesChange() {
+  const atom = ATOMS[document.getElementById('speciesSel').value];
+  document.getElementById('atomBanner').innerHTML =
+    `${atom.label} D2: Γ/2π = ${atom.Gamma_MHz} MHz · λ = ${atom.lambda_nm.toFixed(0)} nm · I<sub>sat</sub> = ${atom.Isat} mW/cm²`;
+  compute();
+}
+
+compute();
+initAccordions();
+</script>
+</body>
+</html>
