@@ -1,49 +1,64 @@
 # AMO Career Toolkit
 
-A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — covering research tools, lab techniques, quantum computing context, and interactive simulators. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
+A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — covering 12 interactive research tools, lab technique guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
 **Live site:** https://saumitraphatak.github.io/amo-career/
 
 ---
 
-## Why This Exists
-
-AMO physics sits at the intersection of fundamental research and quantum technology. Whether you're choosing a trap geometry, calculating a Clebsch-Gordan coefficient, or trying to understand where your skills fit in the quantum computing industry — this toolkit has you covered. It consolidates knowledge that's currently scattered across textbooks, papers, and lab wikis.
-
----
-
-## The 9 Tools
+## The 12 Research Tools
 
 | Tool | Description |
 |---|---|
-| **Atom Library** | Properties of 15 laser-coolable atoms — family tabs, energy levels, US research groups |
-| **Lab Techniques** | 8 core experimental techniques with deep-dive accordions (from thesis Ch. 6) |
-| **QC Landscape** | Where AMO skills fit in the quantum computing industry — companies, roles, roadmaps |
-| **Cooling Simulator** | Interactive Doppler / Sisyphus cooling simulation |
-| **Release-Recapture** | Interactive release-recapture simulator for trap frequency measurement |
-| **Lab Calculators** | Beam waist, trap depth, photon recoil, scattering rate, and more |
-| **Clebsch-Gordan** | Interactive CG coefficient calculator with selection rules |
-| **Laser Locking** | PDH / side-of-fringe locking guide with error signal visualizer |
-| **Zernike Modes** | Zernike polynomial visualizer for wavefront aberration analysis |
+| **Atom Library** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, T_recoil, US research groups |
+| **Lab Techniques** | 8 core experimental techniques with deep-dive accordions (MOT, tweezers, evaporation, imaging, lattices) |
+| **Rydberg Calculator** | n-scaling: lifetime τ ~ n³, C₆ ~ n¹¹, blockade radius R_b vs principal quantum number |
+| **Imaging SNR Calculator** | Single-atom fluorescence SNR — full EMCCD/sCMOS noise model, detection fidelity, min exposure finder |
+| **TOF Thermometry** | Temperature from time-of-flight: σ²(t) expansion fit, PSD, BEC threshold indicator |
+| **MOT / Trap Designer** | MOT damping/spring constants + Ioffe-Pritchard trap frequencies, evaporation η, Majorana warning |
+| **Gate Fidelity Budget** | 8-error Rydberg two-qubit gate budget; fidelity meter; SOTA comparison (Evered 2023: 99.5%) |
+| **Release-Recapture** | Interactive tweezer trap frequency measurement simulation |
+| **Lab Calculators** | Optics (beam waist, NA, AOM, dBm), atomic physics (recoil, Zeeman, I_sat), trap (ω_r, ω_z, η_LD), CG coefficients |
+| **Laser Locking** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
+| **Zernike Polynomials** | Wavefront aberration visualizer — OSA/ANSI Zernike terms, Strehl ratio, SLM phase patterns |
+| **Polarimetry Explorer** | Stokes parameters, QWP rotation analysis, degree of polarization |
 
 ---
 
-## Learning Section
+## Quantum Computing Section
 
 | Resource | Description |
 |---|---|
-| **Learn Quantum** | Fundamentals: quantum states, entanglement, measurement, decoherence |
+| **QC Landscape** | Where AMO physics skills fit — company profiles, hardware platforms, job roles, career roadmaps |
+
+---
+
+## Learn Quantum (14 Topics)
+
+Bloch Sphere · Quantum Gates · Superposition · Measurement · Entanglement · Rydberg Atoms · Two-Qubit Gates · Rabi Oscillations · Decoherence · Hyperfine Qubits · Optical Pumping · Error Correction · Quantum Algorithms · Analog Simulation
 
 ---
 
 ## Tech Stack
 
 - **HTML5 / CSS3 / Vanilla JS** — zero dependencies, zero build step
-- **Chart.js** (via CDN) — simulator plots and calculator charts
-- **KaTeX** (via CDN) — LaTeX math rendering for formulas
+- **Chart.js** (via CDN) — all interactive plots and simulator charts
+- **KaTeX** (via CDN) — LaTeX math rendering (`$$...$$` display, `$...$` inline)
 - **Google Fonts** — Inter (body) + JetBrains Mono (equations/code)
 
 No npm. No webpack. No React. Open `home.html` in a browser and it works.
+
+---
+
+## LLM / AI Accessibility
+
+This site ships three files for AI-readable access:
+
+| File | Purpose |
+|---|---|
+| [`llms.txt`](llms.txt) | Lightweight index — descriptions + links for all pages. Follows [llmstxt.org](https://llmstxt.org) spec. |
+| [`llms-full.txt`](llms-full.txt) | Full content dump — all physics, formulas, and descriptions in Markdown. For RAG pipelines or large-context models. |
+| [`CLAUDE.md`](CLAUDE.md) | Claude Code project guide — tech stack, patterns, design tokens, and tool summaries for AI-assisted development. |
 
 ---
 
@@ -52,21 +67,31 @@ No npm. No webpack. No React. Open `home.html` in a browser and it works.
 ```
 amo-career/
 ├── index.html              # GitHub Pages redirect → home.html
-├── home.html               # Main home page (hero, 9 tool cards, learn section, about)
+├── home.html               # Main landing page (12 tool cards, learn section, about)
+├── CLAUDE.md               # AI coding assistant project guide
+├── llms.txt                # LLM site index (llmstxt.org standard)
+├── llms-full.txt           # Full content for LLM/RAG ingestion
 ├── css/
-│   └── styles.css          # Full design system (dark quantum theme + CSS variables)
+│   └── styles.css          # Full design system (dark quantum theme, all CSS variables)
 ├── js/
 │   └── main.js             # renderNav(), canvas animation, scroll reveal, accordions, tabs
-└── pages/
+└── pages/                  # 17 tool and content pages
     ├── atom-library.html
     ├── lab-techniques.html
-    ├── qc-landscape.html
-    ├── cooling-simulator.html
+    ├── rydberg-calculator.html
+    ├── imaging-calculator.html
+    ├── tof-calculator.html
+    ├── mot-designer.html
+    ├── fidelity-budget.html
     ├── release-recapture.html
     ├── lab-calculators.html
-    ├── clebsch-gordan.html
     ├── laser-locking.html
     ├── zernike.html
+    ├── polarimetry.html
+    ├── cooling-simulator.html
+    ├── clebsch-gordan.html
+    ├── pdh-explorer.html
+    ├── qc-landscape.html
     └── learn-quantum.html
 ```
 
@@ -78,9 +103,9 @@ Dark "quantum" theme with a unique accent color per tool:
 
 ```css
 /* Backgrounds */
---bg-base:    #02080f;
---bg-surface: #060e1c;
---bg-card:    #0c1526;
+--bg-base:    #02080f;    /* deepest */
+--bg-surface: #060e1c;    /* page bg */
+--bg-card:    #0c1526;    /* cards */
 
 /* Tool accent colors */
 --c-atom: #38bdf8;   /* sky blue    — Atom Library        */
@@ -91,23 +116,20 @@ Dark "quantum" theme with a unique accent color per tool:
 --c-calc: #fbbf24;   /* amber       — Lab Calculators     */
 --c-cg:   #f472b6;   /* pink        — Clebsch-Gordan      */
 --c-lock: #f87171;   /* red         — Laser Locking       */
---c-zern: #2dd4bf;   /* teal        — Zernike Modes       */
-
-/* Typography */
---font-mono: 'JetBrains Mono', monospace;  /* formulas, code */
+--c-zern: #2dd4bf;   /* teal        — Zernike / PDH       */
 ```
 
 ### Component Patterns
 
 | Pattern | Implementation |
 |---|---|
-| **Nav** | `renderNav({ active: 'page-key', root: '../' })` — called in every page |
-| **Tool cards** | Inline `--card-color` and `--card-bg` CSS vars on `.tool-card` |
+| **Nav** | `renderNav({ active: 'page-key', root: '../' })` — auto-updates count from NAV object |
+| **Math** | `$$...$$` display, `$...$` inline — KaTeX auto-renders on all pages |
 | **Accordions** | `.accordion` > `.accordion-header` + `.accordion-body` |
 | **Tabs** | `.tab-bar[data-group]` > `.tab-btn[data-tab]` + `.tab-panel[data-tab]` |
-| **Scroll reveal** | Class `anim-in` + `delay-N` (1–9) on elements |
+| **Scroll reveal** | Class `anim-in` + `delay-N` (1–9) |
 | **Page layout** | `.page-wrap` > `.page-hero` > `.page-content` |
-| **Page accent** | CSS vars `--page-color`, `--page-bg`, `--page-border` on `.page-wrap` |
+| **Page accent** | `--page-color`, `--page-bg`, `--page-border` CSS vars on `.page-wrap` |
 
 ---
 
@@ -117,18 +139,15 @@ Dark "quantum" theme with a unique accent color per tool:
 git clone https://github.com/saumitraphatak/amo-career.git
 cd amo-career
 open home.html         # macOS
-# or just drag home.html into any browser
 ```
 
 No install step. Chart.js and KaTeX load via CDN.
-
-> **Note:** `index.html` redirects to `home.html` for GitHub Pages compatibility. Open `home.html` directly when developing locally.
 
 ---
 
 ## Deployment
 
-Deployed via **GitHub Pages** from the `main` branch root.
+Deployed via **GitHub Pages** from the `main` branch root. Push to `main` → auto-deploys.
 
 To deploy your own fork:
 1. Fork this repo
@@ -142,8 +161,6 @@ To deploy your own fork:
 
 **Saumitra Phatak** — Physics PhD candidate at Purdue University, Hood Lab.
 Research focus: ultracold atoms, optical tweezers, precision measurement.
-
-This toolkit grew directly out of my own PhD experience — the calculations I run weekly, the concepts I had to piece together from scattered sources, and the career questions I had to navigate entering a field where "quantum computing" means very different things to different people.
 
 - GitHub: [@saumitraphatak](https://github.com/saumitraphatak)
 

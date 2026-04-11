@@ -1,0 +1,841 @@
+# AMO Career Toolkit — Full Content
+
+**Live site:** https://saumitraphatak.github.io/amo-career/
+**Author:** Saumitra Phatak — Physics PhD candidate, Purdue University, Hood Lab (ultracold atoms / optical tweezers)
+**Source:** https://github.com/saumitraphatak/amo-career
+**Purpose:** Career and research toolkit for Atomic, Molecular & Optical (AMO) physicists. Contains 12 interactive calculators, a quantum computing industry landscape, 14 quantum fundamentals topics, and experimental technique guides. Built with pure HTML/CSS/Vanilla JS — no build tools, KaTeX for math rendering, Chart.js for interactive plots.
+
+---
+
+## SITE STRUCTURE
+
+```
+home.html               — Landing page (tool grid, learn section, about)
+pages/atom-library.html
+pages/lab-techniques.html
+pages/rydberg-calculator.html
+pages/imaging-calculator.html
+pages/tof-calculator.html
+pages/mot-designer.html
+pages/fidelity-budget.html
+pages/release-recapture.html
+pages/lab-calculators.html
+pages/laser-locking.html
+pages/zernike.html
+pages/polarimetry.html
+pages/cooling-simulator.html
+pages/clebsch-gordan.html
+pages/pdh-explorer.html
+pages/qc-landscape.html
+pages/learn-quantum.html
+```
+
+---
+
+## TOOL 1: ATOM LIBRARY
+**URL:** https://saumitraphatak.github.io/amo-career/pages/atom-library.html
+**Accent color:** #38bdf8 (sky blue)
+
+### Overview
+Reference table of 15 laser-coolable atomic species organized in 4 family tabs. Aimed at AMO experimenters choosing a species or needing spectroscopic constants for calculation.
+
+### Atom Families
+- **Alkali metals:** Li-6, Li-7, Na-23, K-39, K-40, K-41, Rb-85, Rb-87, Cs-133
+- **Alkaline-earth-like:** Sr-88, Sr-87, Yb-171, Yb-174
+- **Other:** Ca-40, He-4* (metastable)
+
+### Data per atom
+| Property | Description |
+|---|---|
+| Mass (u) | Atomic mass units |
+| D1 wavelength (nm) | S₁/₂ → P₁/₂ transition |
+| D2 wavelength (nm) | S₁/₂ → P₃/₂ transition (main cooling transition) |
+| Natural linewidth Γ/2π (MHz) | Inverse of excited state lifetime |
+| Saturation intensity I_sat (mW/cm²) | I_sat = πhcΓ/3λ³ |
+| Recoil temperature T_rec (μK) | T_rec = ℏ²k²/(mk_B) |
+| Doppler temperature T_D (μK) | T_D = ℏΓ/(2k_B) |
+| Nuclear spin I | Relevant for hyperfine structure and Fermi statistics |
+
+### Key Rb-87 constants (most common species)
+- Mass: 86.909 u
+- D2 wavelength: 780.241 nm
+- Linewidth: Γ/2π = 6.065 MHz
+- I_sat = 1.67 mW/cm²
+- T_Doppler = 145 μK
+- T_recoil = 0.362 μK
+- Nuclear spin I = 3/2 → Bosonic
+
+### Key Cs-133 constants
+- Mass: 132.905 u, D2: 852.347 nm, Γ/2π = 5.234 MHz
+- I_sat = 1.10 mW/cm², T_D = 125 μK, T_rec = 0.198 μK
+
+### US Research Groups (selected)
+Rb: Greiner (Harvard), Lukin (Harvard), Kaufman (Harvard), Vuletic (MIT), Thompson (Caltech)
+Cs: Chin (Chicago), DeMille (Chicago), Ye (JILA)
+Sr: Ye (JILA), Kaubruegger (Innsbruck), Norcia (NIST)
+Yb: Pagano (Maryland), Lukin (Harvard-Yb), Scazza (Florence)
+
+---
+
+## TOOL 2: LAB TECHNIQUES
+**URL:** https://saumitraphatak.github.io/amo-career/pages/lab-techniques.html
+**Accent color:** #34d399 (emerald)
+
+### 8 Experimental Techniques (accordion sections)
+
+**1. Laser Cooling (Doppler)**
+- Force: F = ℏk·Γ·s/[2(1+s+(2Δ/Γ)²)] − (opposite beam)
+- Damping coefficient α = −8ℏk²sΔ/[Γ(1+s+(2Δ/Γ)²)²]
+- Doppler limit: T_D = ℏΓ/(2k_B); minimum at Δ = −Γ/2
+- Sub-Doppler (Sisyphus) reaches T_rec via polarization gradients
+
+**2. Magneto-Optical Trap (MOT)**
+- Requires red-detuned laser + quadrupole B-field gradient
+- Position-dependent Zeeman shift creates restoring force
+- Spring constant κ = α·μ'·(dB/dz)/(ℏk)
+- Typical: 10⁸–10¹⁰ atoms, T ~ 10–100 μK
+
+**3. Evaporative Cooling**
+- RF knife removes high-energy tail, remaining atoms rethermalize
+- Efficiency parameter η = U_trap/(k_BT); need η ≥ 5–10
+- Runaway evaporation if PSD gain > atom loss rate
+- Reaches BEC at PSD ≥ 2.612 (nλ_dB³ threshold)
+
+**4. Optical Tweezers**
+- Focused Gaussian beam: U(r,z) = −U₀/(1+(z/z_R)²) × exp(−2r²/w²(z))
+- Trap depth U₀ = (α/2ε₀c) × (P/πw₀²)
+- Radial frequency: ω_r = √(4U₀/mw₀²)
+- Axial frequency: ω_z = √(2U₀/mz_R²)
+
+**5. Fluorescence Imaging**
+- Scatter rate R_sc = (Γ/2)·s/[1+s+(2Δ/Γ)²]
+- Photons collected: N = R_sc × t_exp × η_geo × QE × T_opt
+- Camera noise: EMCCD (EM gain G, excess noise F=√2), sCMOS (direct read noise)
+- SNR = N_sig/√(N_sig + N_bg + σ_read²/G²)
+
+**6. Absorption Imaging**
+- Beer-Lambert: I(x,y) = I₀ exp(−n·σ₀·OD)
+- Resonant cross-section: σ₀ = 3λ²/(2π) (two-level)
+- Destructive — atom is lost after imaging
+- Best for large atom number (BEC, thermal cloud)
+
+**7. RF / Microwave Spectroscopy**
+- Drive hyperfine transitions at νₕf (Rb: 6.835 GHz, Cs: 9.193 GHz)
+- Ramsey spectroscopy: π/2 → free precession → π/2; linewidth ~ 1/T_Ramsey
+- Rabi spectroscopy: π pulse for state transfer
+
+**8. Optical Lattices**
+- Standing wave creates periodic potential U(x) = U₀ cos²(kx)
+- Band structure: Bloch bands, quasi-momentum
+- Lattice depth in units of recoil energy E_r = ℏ²k²/(2m)
+- Hubbard model: H = −J Σ (c†ᵢcⱼ) + U Σ nᵢ↑nᵢ↓
+
+---
+
+## TOOL 3: RYDBERG CALCULATOR
+**URL:** https://saumitraphatak.github.io/amo-career/pages/rydberg-calculator.html
+**Accent color:** #818cf8 (indigo)
+
+### Physics
+Rydberg atoms are highly excited atoms with large principal quantum number n. They exhibit dramatically enhanced properties:
+
+| Property | Scaling | Typical (n=70, Rb) |
+|---|---|---|
+| Orbital radius | n² | ~260 nm |
+| Lifetime τ | n³ | ~300 μs |
+| C₆ coefficient | n¹¹ | ~10⁶ GHz·μm⁶ |
+| Blockade radius R_b | n^(11/6) | ~10 μm |
+| Transition dipole | n² | large |
+
+### Key Formulas
+
+**Lifetime (with BBR correction):**
+τ(n) = τ₀ × (n*/n*₀)³ / (1 + Γ_BBR·τ₀·(n*/n*₀)³)
+
+where n* = n − δ_l (quantum defect), and Γ_BBR is the blackbody radiation-induced transition rate at room temperature (300 K).
+
+**van der Waals C₆:**
+C₆ ∝ α²(n*)¹¹  [units: GHz·μm⁶]
+Interaction: V(R) = C₆/R⁶
+
+**Blockade radius:**
+R_b = (C₆/ℏΩ_R)^(1/6)
+where Ω_R is the Rabi frequency of the Rydberg excitation laser.
+
+**Gate fidelity estimate:**
+ε_se ≈ Γ_Ryd × t_gate     (spontaneous emission during gate)
+t_gate ≈ π/Ω_R             (π-pulse time)
+
+### Species Data
+| Species | λ_Ryd (nm) | τ₀_ns (reference state) | Quantum defect δ_s |
+|---|---|---|---|
+| ⁸⁷Rb | 480 | 1.43 | 3.131 |
+| ¹³³Cs | 510 | 1.50 | 4.049 |
+| ¹⁷¹Yb | 302 | 2.00 | 4.279 |
+| ⁸⁸Sr | 317 | 1.80 | 3.269 |
+
+### Chart
+Chart.js plot of τ(n) and R_b(n) vs n from 30 to 120 for the selected species.
+
+---
+
+## TOOL 4: IMAGING SNR CALCULATOR
+**URL:** https://saumitraphatak.github.io/amo-career/pages/imaging-calculator.html
+**Accent color:** #34d399 (emerald)
+
+### Physics Model
+
+**Scattering rate:**
+R_sc = (Γ/2) × s / (1 + s + (2Δ/Γ)²)    [photons/s]
+where s = I/I_sat (saturation parameter), Δ = laser detuning
+
+**Geometric collection efficiency:**
+η_geo = (1 − √(1−NA²)) / 2               [exact formula, assumes n=1]
+≈ NA²/4                                   [paraxial approximation]
+
+**Total collection efficiency:**
+η = η_geo × QE × T_opt
+where QE = detector quantum efficiency, T_opt = optical transmission
+
+**Photons detected:**
+N_sig = R_sc × t_exp × η
+
+**Background photons:**
+N_bg = background_rate × t_exp × η_geo
+
+**Dark counts:**
+N_dark = dark_rate × t_exp
+
+**Noise variance:**
+- EMCCD:  σ² = F²(N_sig + N_bg + N_dark) + (σ_read/G)²    [F = √2, excess noise]
+- sCMOS:  σ² = N_sig + N_bg + N_dark + σ_read²
+- Ideal:  σ² = N_sig + N_bg + N_dark
+
+**SNR:**
+SNR = N_sig / √σ²
+
+**Detection fidelity:**
+F_det = Φ(SNR/√2)   [Gaussian threshold model]
+Φ(x) ≈ 1 − φ(x)(b₁t + b₂t² + b₃t³)   [Abramowitz & Stegun approximation]
+where t = 1/(1+0.47047x), φ(x) = e^(−x²/2)/√(2π)
+
+### Species Data (D2 line, Steck 2019)
+| Species | λ_D2 (nm) | Γ/2π (MHz) | I_sat (mW/cm²) |
+|---|---|---|---|
+| ⁸⁷Rb | 780.241 | 6.065 | 1.67 |
+| ¹³³Cs | 852.347 | 5.234 | 1.10 |
+| ⁶Li | 670.977 | 5.872 | 2.54 |
+| ⁷Li | 670.977 | 5.872 | 2.54 |
+| ²³Na | 589.000 | 9.795 | 6.26 |
+| ³⁹K | 766.701 | 6.035 | 1.75 |
+| ⁴⁰K | 766.701 | 6.035 | 1.75 |
+
+### Outputs
+- R_sc (photons/s), s (saturation parameter), R_max = Γ/2
+- η_geo, η_total, N_sig, N_bg, N_dark
+- SNR (with bar meter log scale 1–100)
+- Detection fidelity F_det
+- Noise budget table (signal shot, background shot, dark shot, read noise)
+- Min exposure time for SNR=10, SNR=50 (binary search)
+- Chart.js: SNR vs exposure time (0.1–100 ms) with reference lines
+
+### Recoil Heating
+Each scattered photon imparts recoil: ΔE = (ℏk)²/(2m)
+Recoil heating rate: dT/dt = 2T_rec × R_sc   [factor 2: absorption + emission]
+
+---
+
+## TOOL 5: TOF THERMOMETRY
+**URL:** https://saumitraphatak.github.io/amo-career/pages/tof-calculator.html
+**Accent color:** #38bdf8 (sky blue)
+
+### Physics
+
+**Ballistic expansion (free flight after trap release):**
+σ²(t) = σ₀² + (k_BT/m)·t²
+- σ₀ = in-situ cloud radius (initial size)
+- Linear in t² → temperature from slope
+
+**de Broglie wavelength:**
+λ_dB = h / √(2πmk_BT)
+
+**Peak number density:**
+n_peak = N / (2π)^(3/2) / σ_x σ_y σ_z      [Gaussian cloud]
+
+**Phase-space density:**
+PSD = n_peak × λ_dB³
+BEC threshold: PSD ≥ 2.612   (for ideal Bose gas in 3D harmonic trap)
+
+**Cooling limits:**
+T_Doppler = ℏΓ/(2k_B)     [minimum achievable with Doppler cooling]
+T_recoil = ℏ²k²/(mk_B)   [single photon recoil energy as temperature]
+
+**In-trap thermal size (if trap frequency known):**
+σ_thermal = √(k_BT/(mω²))
+
+### Fit From Data (linear regression)
+Given N data points (tᵢ, σᵢ):
+- Linearize: Yᵢ = σᵢ², Xᵢ = tᵢ²
+- Slope m = Σ(Xᵢ-X̄)(Yᵢ-Ȳ) / Σ(Xᵢ-X̄)²
+- Intercept b = Ȳ − m·X̄
+- T = m·(mass)/(k_B)   [from slope = k_BT/m]
+- σ₀ = √b             [from intercept = σ₀²]
+- R² = 1 − SS_res/SS_tot
+
+### Species Data (exact masses)
+| Species | Mass (u) |
+|---|---|
+| ⁸⁵Rb | 84.912 |
+| ⁸⁷Rb | 86.909 |
+| ¹³³Cs | 132.905 |
+| ⁶Li | 6.015 |
+| ⁷Li | 7.016 |
+| ²³Na | 22.990 |
+| ³⁹K | 38.964 |
+| ⁴⁰K | 39.964 |
+| ⁴¹K | 40.962 |
+
+### Charts
+1. σ(t) vs t — expansion curve with free-expansion asymptote and σ₀ reference
+2. σ² vs t² — scatter plot with linear fit line (from data table)
+
+---
+
+## TOOL 6: MOT / MAGNETIC TRAP DESIGNER
+**URL:** https://saumitraphatak.github.io/amo-career/pages/mot-designer.html
+**Accent color:** #fb923c (orange)
+
+### Section 1: MOT Parameters
+
+**Radiation pressure force on a two-level atom:**
+F = ℏk·(Γ/2)·s / (1 + s + (2(Δ−kv)/Γ)²) − ℏk·(Γ/2)·s / (1 + s + (2(Δ+kv)/Γ)²)
+
+**Damping coefficient (first-order in v):**
+α = 8ℏk²·s·|Δ|/Γ / (1 + s + (2Δ/Γ)²)²   [units: kg/s]
+
+**MOT spring constant (with B-field gradient):**
+κ = α·μ_eff·(dB/dz) / (ℏk)               [units: N/m]
+
+**MOT oscillation frequency:**
+ω_MOT = √(κ/m)
+
+**Capture velocity:**
+v_cap ≈ w_beam × |α|/(2m)                 [beam radius w_beam]
+
+**Doppler temperature (theoretical minimum):**
+T_D = ℏΓ/(2k_B)                           [Rb: 145 μK, Cs: 125 μK]
+
+**Maximum deceleration:**
+a_max = ℏk·Γ/(2m)                         [at saturation s→∞]
+
+### Section 2: Ioffe-Pritchard Magnetic Trap
+
+The IP trap has a non-zero field minimum B₀ at the trap center (prevents Majorana flips).
+
+**Radial (transverse) frequency:**
+ω_r = √(μ_eff·B'² / (m·B₀))              [B' = radial gradient]
+
+**Axial frequency:**
+ω_z = √(μ_eff·B'' / m)                    [B'' = axial curvature]
+
+**Mean trap frequency:**
+ω̄ = (ω_r²·ω_z)^(1/3)
+
+**Trap depth:**
+U₀ = μ_eff·B_max                          [B_max = field at trap edge]
+
+**Evaporation parameter:**
+η = U₀/(k_BT)
+Good evaporation: η ≥ 5; runaway evaporation: η ≥ 8–10
+
+**Majorana loss warning:**
+Majorana spin-flip rate: Γ_M ∝ ω_r² × exp(−2μB₀/ℏω_r)
+Warning triggered when B₀ < 3 G (high loss risk)
+
+**Effective magnetic moment:**
+μ_eff = m_F × g_F × μ_B
+For ⁸⁷Rb |F=2, m_F=2⟩: μ_eff = 2 × (1/2) × μ_B = μ_B
+
+### Chart
+U(r) = μ_eff × |B(r)| where |B(r)| = √((B'r)² + B₀²)
+Displayed with k_BT and U₀ horizontal reference lines.
+
+---
+
+## TOOL 7: GATE FIDELITY BUDGET
+**URL:** https://saumitraphatak.github.io/amo-career/pages/fidelity-budget.html
+**Accent color:** #f87171 (red)
+
+### Overview
+Calculates the two-qubit gate fidelity for Rydberg neutral atom quantum computers by budgeting 8 independent error sources.
+
+### Error Sources and Formulas
+
+**1. Spontaneous emission from Rydberg state:**
+ε_se = Γ_Ryd × t_gate
+where Γ_Ryd = 1/τ_Ryd (BBR-corrected lifetime), t_gate = π/Ω_R
+
+**2. Doppler dephasing (thermal motion):**
+ε_D = ½ × (k_Ryd × v_rms × t_gate)²
+v_rms = √(k_BT/m), k_Ryd = 2π/λ_Ryd
+
+**3. Laser phase noise (finite linewidth):**
+ε_φ = π × Δν_laser × t_gate
+Δν_laser = laser linewidth (Hz)
+
+**4. Finite Rydberg blockade (leakage):**
+ε_blk = 1 / (U_dd/Ω_R)²
+U_dd = blockade interaction strength; need U_dd ≫ Ω_R
+
+**5. State preparation and measurement (SPAM):**
+ε_SPAM = SPAM_error (%)     [typically 0.5–2%]
+
+**6. Atom loss during gate:**
+ε_loss = t_gate / τ_trap    [trap lifetime τ_trap ~ 1–10 s]
+
+**7. Magnetic field noise (dephasing):**
+ε_B = ½ × (μ_B × ΔB × t_gate / ℏ)²
+ΔB = rms field fluctuation (mG)
+
+**8. Rabi frequency inhomogeneity:**
+ε_Ω = ½ × (π × δΩ/Ω / 2)²
+δΩ/Ω = fractional Rabi frequency variation across atomic ensemble
+
+**Total error:**
+ε_total = Σᵢ εᵢ    [to first order, errors add]
+
+**Gate fidelity:**
+F_gate = 1 − ε_total
+
+### Fidelity Meter
+- F ≥ 99.9%: green (fault-tolerant threshold for many QEC codes)
+- F ≥ 99.0%: yellow (surface code threshold ≈ 99%)
+- F < 99.0%: red (below practical threshold)
+
+### SOTA Comparison
+| Reference | F_gate | Notes |
+|---|---|---|
+| Evered et al. 2023 (Nature) | 99.5% | Rb tweezer, CZ gate |
+| Ma et al. 2023 (Nature) | 99.3% | Cs tweezer |
+| Levine et al. 2022 (PRX Quantum) | 99.0% | Rb, parallel gates |
+| FTQC threshold | 99.0% | Surface code estimate |
+| Typical lab (2024) | 97–99% | Varies by implementation |
+
+### BBR Correction to Rydberg Lifetime
+At room temperature T=300K, blackbody radiation drives transitions to neighboring Rydberg states:
+τ_eff = τ₀ × n*³ / (1 + α_BBR × (T/300K)⁴ × n*²)
+
+---
+
+## TOOL 8: RELEASE-RECAPTURE SIMULATOR
+**URL:** https://saumitraphatak.github.io/amo-career/pages/release-recapture.html
+**Accent color:** #fb923c (orange)
+
+Simulates the release-recapture technique for measuring trap frequencies in optical tweezers or dipole traps:
+1. Atom released from tweezer (trap turned off)
+2. Atom evolves under gravity + initial thermal velocity
+3. Trap turned back on after time τ
+4. Atom recaptured if within trap volume (r < w₀, z < z_R)
+
+Recapture probability P(τ) vs hold time τ oscillates at twice the trap frequency (for radial motion):
+P(τ) ≈ cos²(ω_r τ)    [cold atom, harmonic approx]
+
+---
+
+## TOOL 9: LAB CALCULATORS
+**URL:** https://saumitraphatak.github.io/amo-career/pages/lab-calculators.html
+**Accent color:** #fbbf24 (amber)
+
+### Optics Calculators
+- **Beam waist:** w(z) = w₀√(1+(z/z_R)²), z_R = πw₀²/λ
+- **Numerical aperture:** NA = n·sin(θ), w₀ = λ/(π·NA) for diffraction-limited focus
+- **Fiber coupling:** η_fiber = exp(−2(Δr/w₀)²) × cos²(Δθ·kw₀/2)
+- **Telescope magnification:** M = f₂/f₁, w_out = M·w_in
+- **f-number:** f/# = f/D = 1/(2·NA)
+- **Power (dBm ↔ mW):** P_mW = 10^(P_dBm/10), P_dBm = 10·log₁₀(P_mW)
+- **AOM shift:** ν_out = ν_in ± ν_AOM; double-pass: ±2ν_AOM
+- **Shot noise:** σ_shot = √N (photon number), RIN = 2ℏω/P
+
+### Atomic Physics Calculators
+- **Photon recoil velocity:** v_r = ℏk/m
+- **Recoil temperature:** T_rec = ℏ²k²/(mk_B) = mv_r²/k_B
+- **Doppler temperature:** T_D = ℏΓ/(2k_B)
+- **de Broglie wavelength:** λ_dB = h/√(2πmk_BT)
+- **Zeeman shift:** ΔE = m_F·g_F·μ_B·B (linear Zeeman)
+- **Saturation intensity:** I_sat = πhcΓ/(3λ³)
+- **Mean thermal velocity:** v̄ = √(8k_BT/πm)
+- **RMS velocity:** v_rms = √(3k_BT/m)
+
+### Trap Calculators
+- **Tweezer radial frequency:** ω_r = √(4U₀/(mw₀²))
+- **Tweezer axial frequency:** ω_z = √(2U₀/(mz_R²)) = ω_r·w₀/z_R·√(1/2)
+- **Lamb-Dicke parameter:** η_LD = k·x_zpf = k·√(ℏ/(2mω))
+- **Zero-point fluctuation:** x_zpf = √(ℏ/(2mω))
+- **Cavity FSR:** ν_FSR = c/(2nL)
+- **Cavity finesse:** F = π√R/(1-R) (R = mirror reflectivity)
+- **Cavity linewidth:** δν_cav = ν_FSR/F
+- **Mode matching:** η_mm = |⟨Gaussian_1|Gaussian_2⟩|²
+
+### Clebsch-Gordan Coefficients
+⟨j₁m₁;j₂m₂|JM⟩ computed via Wigner 3j symbol:
+⟨j₁m₁;j₂m₂|JM⟩ = (-1)^(j₁-j₂+M)·√(2J+1)·(j₁ j₂ J; m₁ m₂ -M)
+
+---
+
+## TOOL 10: LASER LOCKING GUIDE
+**URL:** https://saumitraphatak.github.io/amo-career/pages/laser-locking.html
+**Accent color:** #f87171 (red)
+
+### Saturated Absorption Spectroscopy (SAS)
+- Pump beam saturates the transition; probe sees Doppler-free dip at resonance
+- Error signal: derivative of absorption dip (side-of-fringe locking)
+- Linewidth ~ Γ/2π × √(1 + I/I_sat) (power-broadened)
+- Crossover resonances: ν_cross = (ν_a + ν_b)/2
+
+### Beat-Note Offset Locking
+- Two lasers mixed on fast photodetector
+- Beat note: i_PD(t) ∝ E₁E₂·cos[2π(ν₂−ν₁)t + Δφ]
+- Lock one laser's frequency relative to other: ν₂ = ν₁ ± ν_offset
+
+### PDH (Pound-Drever-Hall) Locking
+- Phase modulation at frequency Ω_m creates sidebands at ν ± Ω_m
+- Cavity reflection field: E_r = E₀[r(ν)·J₀(β) + ir(ν+Ω_m)J₁(β)e^{iΩt} − ir(ν−Ω_m)J₁(β)e^{−iΩt}]
+- Error signal (demodulated at Ω_m):
+  ε(ν) = −2√(P_c P_s)·J₀(β)·J₁(β)·Im[F(ν)]
+  where P_c = carrier power, P_s = sideband power, F(ν) = cavity reflection coefficient
+
+### Cavity Parameters
+- FSR: ν_FSR = c/(2nL)
+- Finesse: F = π√R/(1−R) ≈ π/(1−R) for R ≈ 1
+- Cavity linewidth: δν_cav = ν_FSR/F
+- Reflection coefficient: r(ν) = (r_1 − r_2·e^{2iπν/ν_FSR})/(1 − r_1r_2·e^{2iπν/ν_FSR})
+
+---
+
+## TOOL 11: ZERNIKE POLYNOMIAL VISUALIZER
+**URL:** https://saumitraphatak.github.io/amo-career/pages/zernike.html
+**Accent color:** #2dd4bf (teal)
+
+### OSA/ANSI Zernike Polynomials
+Z_n^m(ρ,θ) = R_n^|m|(ρ) × Θ_m(θ)
+
+**Radial polynomial:**
+R_n^|m|(ρ) = Σ_{s=0}^{(n-|m|)/2} [(-1)^s (n−s)! / (s! ((n+|m|)/2−s)! ((n−|m|)/2−s)!)] × ρ^{n-2s}
+
+**Angular part:**
+Θ_m(θ) = √2·cos(mθ)  for m > 0
+          1            for m = 0
+          √2·sin(|m|θ) for m < 0
+
+### OSA/ANSI Single-Index Terms (j-ordering)
+j=0: piston Z₀⁰   j=1: tip Z₁⁻¹    j=2: tilt Z₁¹
+j=3: defocus Z₂⁰  j=4: astigmatism Z₂⁻²  j=5: astigmatism Z₂²
+j=6: coma Z₃⁻¹    j=7: coma Z₃¹    j=8: trefoil Z₃⁻³  j=9: trefoil Z₃³
+j=10: spherical Z₄⁰  j=11: secondary astigmatism ...
+
+### Strehl Ratio
+For small aberrations (Maréchal criterion):
+S ≈ exp(−σ²)   where σ² = variance of wavefront across pupil [in waves²]
+S ≥ 0.8 → diffraction-limited (Strehl criterion)
+
+### SLM Application (LG modes)
+Laguerre-Gaussian LG_p^l modes generated by SLM phase pattern:
+φ(r,θ) = l·θ + (2p+|l|+1)·arctan(z/z_R) + correction terms for beam shaping
+
+---
+
+## TOOL 12: POLARIMETRY EXPLORER
+**URL:** https://saumitraphatak.github.io/amo-career/pages/polarimetry.html
+**Accent color:** #e879f9 (fuchsia)
+
+### Stokes Parameters
+S₀ = total intensity
+S₁ = I(0°) − I(90°)
+S₂ = I(45°) − I(135°)
+S₃ = I_RCP − I_LCP
+
+Degree of polarization: P = √(S₁² + S₂² + S₃²)/S₀
+
+### Quarter-Wave Plate (rotating) Method
+Intensity vs QWP angle α:
+I(α) = (S₀/2)[1 + S₁/S₀·cos²(2α) + S₂/S₀·cos(2α)sin(2α) + S₃/S₀·(1/2)sin(4α − π)]
+
+### Retardance Measurement
+Phase retardance δ: Δφ between fast and slow axes
+QWP: δ = π/2; HWP: δ = π
+Measure via rotating-waveplate Stokes polarimetry
+
+---
+
+## QC INDUSTRY LANDSCAPE
+**URL:** https://saumitraphatak.github.io/amo-career/pages/qc-landscape.html
+**Accent color:** #a78bfa (violet)
+
+### Hardware Platforms Comparison
+| Platform | Companies | AMO relevance |
+|---|---|---|
+| Trapped ions | IonQ, Quantinuum (H2), AQT, Alpine Quantum Technologies | Direct — laser cooling, laser control, vacuum |
+| Neutral atoms | QuEra (Rb tweezer), Pasqal, Atom Computing, Infleqtion | Direct — MOT, tweezer, Rydberg |
+| Superconducting | IBM, Google (Sycamore), Rigetti, IQM | Indirect — microwave, cryogenics |
+| Photonic | PsiQuantum, Xanadu | Indirect — optics, nonlinear |
+| Spin qubits | Intel, QuTech | Indirect — some AMO laser skills |
+
+### Job Roles for AMO Physicists
+- **Quantum hardware engineer:** Trap design, vacuum, laser systems, control electronics
+- **Algorithm/software engineer:** Circuit optimization, error correction, simulation
+- **Applications scientist:** Customer use cases, quantum advantage demonstrations
+- **Research scientist:** Novel qubit modalities, gate fidelity improvement
+- **Systems engineer:** Integration, scaling, reliability
+
+### AMO Skills That Transfer
+Optical tweezers → single qubit addressing; MOT loading → qubit initialization; PDH locking → laser coherence for gates; fluorescence imaging → qubit readout; Rydberg physics → gate mechanism (QuEra, Pasqal, Atom Computing, Infleqtion)
+
+---
+
+## LEARN QUANTUM — ALL 14 TOPICS
+**URL:** https://saumitraphatak.github.io/amo-career/pages/learn-quantum.html
+
+### 1. Bloch Sphere (#bloch)
+Single qubit state: |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩
+Measurement probabilities: P(|0⟩) = cos²(θ/2), P(|1⟩) = sin²(θ/2)
+Bloch vector: ⟨σ_x⟩ = sinθ·cosφ, ⟨σ_y⟩ = sinθ·sinφ, ⟨σ_z⟩ = cosθ
+Mach-Zehnder unitary: U_MZI = H·R_z(φ)·H
+Output: P(|0⟩) = cos²(φ/2), P(|1⟩) = sin²(φ/2)
+
+### 2. Quantum Gates (#gates)
+Single-qubit gates (2×2 unitary matrices):
+- Hadamard: H = (1/√2)[[1,1],[1,-1]]
+- Pauli-X: [[0,1],[1,0]] (bit flip)
+- Pauli-Y: [[0,-i],[i,0]]
+- Pauli-Z: [[1,0],[0,-1]] (phase flip)
+- S gate: [[1,0],[0,i]] (phase = π/2)
+- T gate: [[1,0],[0,e^{iπ/4}]] (phase = π/4, needed for universality)
+- R_z(θ): [[e^{-iθ/2},0],[0,e^{iθ/2}]]
+
+Two-qubit gates:
+- CNOT: flips target if control = |1⟩
+- CZ: phase flip if both qubits |1⟩; CZ = (H⊗I)·CNOT·(H⊗I)
+- SWAP: exchanges two qubit states; SWAP = 3 CNOTs
+
+Universality: {H, T, CNOT} is a universal gate set
+
+### 3. Superposition (#superposition)
+|ψ⟩ = α|0⟩ + β|1⟩, |α|² + |β|² = 1
+Born rule: P(outcome) = |amplitude|²
+Interference: amplitudes add (constructively or destructively)
+Measurement collapses superposition — process is irreversible
+
+### 4. Quantum Measurement (#measurement)
+Projective measurement on basis {|0⟩,|1⟩}:
+P(0) = |⟨0|ψ⟩|² = |α|², post-measurement state: |0⟩
+Expectation value: ⟨O⟩ = ⟨ψ|O|ψ⟩
+No-cloning theorem: cannot copy unknown quantum state |ψ⟩
+Quantum Zeno effect: frequent measurement suppresses evolution
+
+### 5. Entanglement (#entanglement)
+Bell states (maximally entangled two-qubit states):
+|Φ⁺⟩ = (|00⟩ + |11⟩)/√2    |Φ⁻⟩ = (|00⟩ − |11⟩)/√2
+|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2    |Ψ⁻⟩ = (|01⟩ − |10⟩)/√2
+
+EPR paradox: Einstein-Podolsky-Rosen — apparent non-locality
+CHSH inequality: |⟨AB⟩ + ⟨AB'⟩ + ⟨A'B⟩ − ⟨A'B'⟩| ≤ 2 (classical)
+Quantum violation: up to 2√2 ≈ 2.83
+
+Quantum teleportation protocol:
+1. Share Bell pair between Alice (A) and Bob (B)
+2. Alice has unknown state |ψ⟩; applies CNOT + H
+3. Alice measures 2 bits, sends to Bob classically
+4. Bob applies X^m₂·Z^m₁ to recover |ψ⟩
+No information travels faster than light (classical channel needed)
+
+### 6. Rydberg Atoms (#rydberg)
+n-scaling summary:
+- Orbital radius: a₀·n² (Bohr model) → nm scale for n ~ 50
+- Lifetime: τ₀·n³ → μs scale
+- van der Waals C₆: ∝ n¹¹
+- Blockade radius R_b ∝ n^(11/6): typically 5–15 μm
+
+Dipole-dipole interaction: V(R) = C₆/R⁶ (van der Waals regime, large R)
+Blockade: if two atoms within R_b, second excitation is blockaded (energy mismatch = U_dd ≫ ℏΩ)
+Blockade enables entangling gate: one excitation controls the other
+
+### 7. Two-Qubit Gates (#twoqubit)
+**Rydberg CZ gate (blockade protocol):**
+1. π pulse on control (|0⟩ → |r⟩, |1⟩ stays)
+2. 2π pulse on target (if control in |r⟩, target blocked; if control in |0⟩, target rotates 2π → phase)
+3. π pulse on control (|r⟩ → |0⟩)
+Result: |11⟩ → e^{iπ}|11⟩ = −|11⟩ (CZ phase)
+
+**Mølmer-Sørensen gate (trapped ions):**
+H_MS = ℏ·η·Ω·(σ₊ₐ + σ₋ₐ)(a + a†) + h.c.
+Entangles two ions through shared motional mode
+Generates: exp(−iπ/4·σ_xᵃ⊗σ_xᵇ)
+
+### 8. Rabi Oscillations (#rabi)
+Two-level atom coupled to near-resonant field (Δ = ω_laser − ω_atom):
+H = ℏ/2 × [[−Δ, Ω*],[Ω, Δ]]
+
+Generalized Rabi frequency: Ω' = √(Ω² + Δ²)
+Excited state population: P_e(t) = (Ω/Ω')²·sin²(Ω't/2)
+On resonance (Δ=0): P_e(t) = sin²(Ωt/2) — full oscillation
+
+Dressed states (energy eigenstates in rotating frame):
+|+⟩ = cos(θ/2)|e⟩ + sin(θ/2)|g⟩
+|−⟩ = −sin(θ/2)|e⟩ + cos(θ/2)|g⟩
+where tan(θ) = Ω/Δ
+
+π pulse: t = π/Ω → full population transfer |g⟩ → |e⟩
+π/2 pulse: creates equal superposition
+
+### 9. Decoherence (#decoherence)
+T₁ (longitudinal relaxation / energy decay):
+ρ_ee(t) = ρ_ee(0)·e^{−t/T₁}
+Qubit loses energy to environment (spontaneous emission, phonons)
+
+T₂ (transverse relaxation / dephasing):
+ρ_ge(t) = ρ_ge(0)·e^{−t/T₂}
+T₂ ≤ 2T₁ (fundamental bound)
+
+T₂* (inhomogeneous dephasing):
+Faster apparent dephasing from static field inhomogeneity
+Reversible with spin echo: π/2 − τ − π − τ − π/2
+
+Refocusing sequences:
+Hahn echo: π/2 − τ − π − τ − π/2, recovers T₂ from T₂*
+CPMG: repeated π pulses, extends T₂ against slow noise
+
+### 10. Hyperfine Qubits (#hyperfine)
+Hyperfine Hamiltonian:
+H_hf = A_hf·(I·J) + B_hf·[3(I·J)² − I(I+1)J(J+1)]/[2I(2I−1)J(2J−1)]
+
+Total angular momentum: F = I + J, with |I−J| ≤ F ≤ I+J
+Energy levels: E_F = (A_hf/2)·[F(F+1) − I(I+1) − J(J+1)]
+
+Clock states (first-order field-insensitive m_F=0 ↔ m_F=0):
+⁸⁷Rb: |F=1,m_F=0⟩ ↔ |F=2,m_F=0⟩ at 6.834683 GHz
+¹³³Cs: |F=3,m_F=0⟩ ↔ |F=4,m_F=0⟩ at 9.192631770 GHz (SI second definition)
+
+Qubit transitions for ⁸⁷Rb (magnetically sensitive):
+|F=1,m_F=−1⟩ ↔ |F=2,m_F=+1⟩ used in some experiments (allows MW + RF addressing)
+
+Zeeman shift (linear): ΔE = m_F·g_F·μ_B·B
+⁸⁷Rb F=2: g_F = +1/2, sensitivity ~ 700 kHz/G
+⁸⁷Rb F=1: g_F = −1/2
+
+### 11. Optical Pumping (#optical-pumping)
+σ⁺ light selection rule: Δm_F = +1 (drives atom toward higher m_F)
+Dark state: m_F = F_max (cannot absorb σ⁺ and decay to lower m_F)
+
+For F=1 ground state with σ⁺ pumping (3 sublevels: m_F = −1, 0, +1):
+Transition rates (phenomenological 3×3 matrix):
+- From m_F=−1: 50% to m_F=0, 50% to m_F=+1 (via absorption + spontaneous)
+- From m_F=0: 25% to m_F=0, 75% to m_F=+1
+- From m_F=+1: 0% change (dark state)
+
+After ~20 photon scattering events: population > 95% in m_F=+1 stretch state.
+
+EIT / CPT dark states:
+For Λ-system (|1⟩, |2⟩ ground states + |e⟩ excited):
+Dark state: |D⟩ = (Ω₂|1⟩ − Ω₁|2⟩)/√(Ω₁² + Ω₂²)
+Coherent population trapping when two-photon resonance: ν₁ − ν₂ = ν_hf
+
+Applications: clock-state preparation (reset after measurement), spin squeezing, atomic magnetometry.
+
+### 12. Quantum Error Correction (#qec)
+3-qubit bit-flip code:
+|0⟩_L = |000⟩, |1⟩_L = |111⟩
+Detects (not corrects) phase errors; corrects single bit-flips
+Syndrome measurement: ZZ⊗I, I⊗ZZ → identifies which qubit flipped
+
+Shor 9-qubit code:
+Encodes 1 logical qubit in 9 physical qubits
+Corrects any single-qubit error (bit flip, phase, or combination)
+First quantum error correcting code (Shor 1995)
+
+Surface code:
+2D array of qubits; logical qubit encoded in boundary conditions
+Threshold error rate: ~1% per gate for realistic noise models
+Current hardware approaching threshold (Google, IBM, Quantinuum)
+Resource overhead: ~1000 physical qubits per logical qubit at useful error rates
+
+Threshold theorem:
+If physical error rate p < p_threshold, logical error rate → 0 as code size increases.
+p_threshold ≈ 1% for surface code with independent, identically distributed errors
+
+### 13. Quantum Algorithms (#algorithms)
+Deutsch-Jozsa: Determines if f:{0,1}ⁿ→{0,1} is constant or balanced in ONE query (classical: 2^(n-1)+1 queries)
+
+Grover's search: Finds marked item in unsorted database of N elements in O(√N) queries
+Amplitude amplification: (1/√N)·Σ|x⟩ → |target⟩ after ~π√N/4 iterations
+
+Shor's factoring: Factors N-bit integer in O((log N)³) steps (classical: exponential)
+Key step: quantum period finding via QFT
+Breaks RSA-2048 with ~4000 logical qubits (millions of physical)
+
+VQE (Variational Quantum Eigensolver):
+Parameterized circuit U(θ)|0⟩ = |ψ(θ)⟩
+Minimize ⟨ψ(θ)|H|ψ(θ)⟩ via classical optimizer
+NISQ-era algorithm for quantum chemistry (LiH, BeH₂, etc.)
+
+### 14. Analog Quantum Simulation (#analog-sim)
+Bose-Hubbard model (optical lattice):
+H = −J Σ_{⟨i,j⟩} (a†ᵢaⱼ + h.c.) + (U/2) Σᵢ nᵢ(nᵢ−1) − μΣᵢ nᵢ
+Superfluid-Mott insulator quantum phase transition at U/J ~ 5.8z (z = coordination number)
+First demonstrated: Greiner et al., Nature 2002
+
+Transverse-field Ising model:
+H = −J Σ σᵢᶻσⱼᶻ − h Σ σᵢˣ
+Quantum phase transition at J/h = 1
+Simulated with Rydberg atoms (QuEra, Harvard, etc.)
+
+BEC-BCS crossover:
+Fermionic atoms near Feshbach resonance interpolate between BCS (weak attraction) and BEC (tightly bound pairs)
+Controlled by magnetic field near Feshbach resonance
+
+---
+
+## OTHER TOOLS
+
+### Cooling Simulator (`pages/cooling-simulator.html`)
+Doppler cooling: F(v) = −αv for |v| ≪ Γ/k
+Sisyphus cooling: σ⁺/σ⁻ polarization gradient → sub-Doppler; momentum diffusion coefficient D_p
+Equilibrium temperature: k_BT = D_p/|α|
+Interactive animation shows velocity distribution narrowing over time.
+
+### Clebsch-Gordan Calculator (`pages/clebsch-gordan.html`)
+⟨j₁m₁;j₂m₂|JM⟩ via Wigner 3j:
+= (−1)^(j₁−j₂+M)·√(2J+1)·(j₁ j₂ J; m₁ m₂ −M)
+Selection rules: M = m₁ + m₂, |j₁−j₂| ≤ J ≤ j₁+j₂, triangle inequality
+
+### PDH Explorer (`pages/pdh-explorer.html`)
+PDH error signal derivation, reflection coefficient R(ν), cavity pole ω_c = δν_cav/2,
+Feedback loop bandwidth, servo bump, integrator windup.
+
+---
+
+## DESIGN SYSTEM TOKENS
+
+### Colors
+```
+--bg-base:    #02080f    --bg-surface: #060e1c    --bg-card: #0c1526
+--text-primary: #e2e8f0  --text-secondary: #94a3b8  --text-muted: #475569
+--c-atom: #38bdf8   --c-lab:  #34d399   --c-qc:   #a78bfa
+--c-cool: #60a5fa   --c-rr:   #fb923c   --c-calc: #fbbf24
+--c-cg:   #f472b6   --c-lock: #f87171   --c-zern: #2dd4bf
+```
+
+### Typography
+Inter — body text; JetBrains Mono (--font-mono) — equations and code displays
+
+### Key CSS Components
+- `.formula-box` — KaTeX math container (dark background, colored border per page)
+- `.accordion` + `.accordion-header` + `.accordion-body` — collapsible sections
+- `.tab-bar[data-group]` + `.tab-btn` + `.tab-panel` — tabbed content
+- `.page-wrap` + `.page-hero` + `.page-content` — page layout skeleton
+- `.tool-card` with `--card-color` and `--card-bg` CSS vars — home tool grid
+- `.anim-in.delay-N` — scroll-reveal animation (IntersectionObserver)
+
+---
+
+*This file was generated for LLM/RAG ingestion. It represents content as of 2026-04-11.*
+*For the canonical, up-to-date content see the live site or source repository.*
