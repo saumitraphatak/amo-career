@@ -125,10 +125,10 @@ Every page (except home.html) calls this at the end of `<body>`:
 </script>
 ```
 
-**Cache busting:** The `?v=N` suffix forces browsers to reload files after changes. The current version is `v=3`. **Increment to `v=4` (then `v=5`, etc.) whenever you make significant changes to `main.js` or `styles.css`** so users don't get stale cached files. Use sed to update all pages at once:
+**Cache busting:** The `?v=N` suffix forces browsers to reload files after changes. The current version is `v=4`. **Increment to `v=5` (then `v=6`, etc.) whenever you make significant changes to `main.js` or `styles.css`** so users don't get stale cached files. Use sed to update all pages at once:
 ```bash
-sed -i '' 's/main\.js?v=3/main.js?v=4/g' pages/*.html home.html
-sed -i '' 's/styles\.css?v=3/styles.css?v=4/g' pages/*.html home.html
+sed -i '' 's/main\.js?v=4/main.js?v=5/g' pages/*.html home.html
+sed -i '' 's/styles\.css?v=4/styles.css?v=5/g' pages/*.html home.html
 ```
 
 ---
