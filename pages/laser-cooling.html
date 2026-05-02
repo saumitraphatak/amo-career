@@ -392,6 +392,62 @@
           </div>
         </div>
 
+        <!-- DIAGRAM: Harmonic oscillator levels + sideband transitions -->
+        <figure class="level-diagram" style="margin-top:1.5rem;">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:480px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arBSB" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#818cf8"/></marker>
+              <marker id="arC"   markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#22d3ee"/></marker>
+              <marker id="arRSB" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#f97316"/></marker>
+              <marker id="arSP"  markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#4ade80"/></marker>
+            </defs>
+            <!-- Column headers -->
+            <text x="140" y="22" fill="#64748b" text-anchor="middle" font-size="11" font-family="Inter,sans-serif">Ground state  |g, n⟩</text>
+            <text x="340" y="22" fill="#64748b" text-anchor="middle" font-size="11" font-family="Inter,sans-serif">Excited state  |e, n⟩</text>
+            <!-- Ground state levels (n=0..4) — cyan -->
+            <line x1="88"  y1="238" x2="192" y2="238" stroke="#38bdf8" stroke-width="2.5"/>
+            <line x1="88"  y1="200" x2="192" y2="200" stroke="#38bdf8" stroke-width="2"/>
+            <line x1="88"  y1="162" x2="192" y2="162" stroke="#38bdf8" stroke-width="2"/>
+            <line x1="88"  y1="124" x2="192" y2="124" stroke="#38bdf8" stroke-width="2"/>
+            <line x1="88"  y1="86"  x2="192" y2="86"  stroke="#38bdf8" stroke-width="2"/>
+            <!-- Ground labels -->
+            <text x="82" y="242" fill="#94a3b8" text-anchor="end" font-size="10" font-family="JetBrains Mono,monospace">n=0</text>
+            <text x="82" y="204" fill="#94a3b8" text-anchor="end" font-size="10" font-family="JetBrains Mono,monospace">n=1</text>
+            <text x="82" y="166" fill="#94a3b8" text-anchor="end" font-size="10" font-family="JetBrains Mono,monospace">n=2</text>
+            <text x="82" y="128" fill="#94a3b8" text-anchor="end" font-size="10" font-family="JetBrains Mono,monospace">n=3</text>
+            <text x="82" y="90"  fill="#94a3b8" text-anchor="end" font-size="10" font-family="JetBrains Mono,monospace">n=4</text>
+            <!-- ħν spacing indicator -->
+            <line x1="70" y1="238" x2="70" y2="200" stroke="#334155" stroke-width="1"/>
+            <line x1="66" y1="238" x2="74" y2="238" stroke="#334155" stroke-width="1"/>
+            <line x1="66" y1="200" x2="74" y2="200" stroke="#334155" stroke-width="1"/>
+            <text x="60" y="222" fill="#475569" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">ħν</text>
+            <!-- Excited state levels (n=0..4) — pink -->
+            <line x1="288" y1="238" x2="392" y2="238" stroke="#f472b6" stroke-width="2.5"/>
+            <line x1="288" y1="200" x2="392" y2="200" stroke="#f472b6" stroke-width="2"/>
+            <line x1="288" y1="162" x2="392" y2="162" stroke="#f472b6" stroke-width="2"/>
+            <line x1="288" y1="124" x2="392" y2="124" stroke="#f472b6" stroke-width="2"/>
+            <line x1="288" y1="86"  x2="392" y2="86"  stroke="#f472b6" stroke-width="2"/>
+            <!-- Γ linewidth indicator (blurred band on excited n=2) -->
+            <rect x="288" y="154" width="104" height="16" fill="rgba(244,114,182,0.10)" rx="2"/>
+            <text x="396" y="164" fill="#f472b6" font-size="9" font-family="Inter,sans-serif">← Γ</text>
+            <!-- Atom dot on |g,2⟩ -->
+            <circle cx="170" cy="162" r="6" fill="#22d3ee" opacity="0.9"/>
+            <!-- Transition arrows from |g,2⟩ (192,162) to excited manifold -->
+            <!-- BSB: g,2 → e,3 (up) -->
+            <line x1="195" y1="162" x2="285" y2="124" stroke="#818cf8" stroke-width="1.8" marker-end="url(#arBSB)"/>
+            <text x="240" y="134" fill="#818cf8" text-anchor="middle" font-size="9.5" font-family="Inter,sans-serif">ω₀+ν  (BSB)</text>
+            <!-- Carrier: g,2 → e,2 (horizontal) -->
+            <line x1="195" y1="162" x2="285" y2="162" stroke="#22d3ee" stroke-width="2.2" marker-end="url(#arC)"/>
+            <text x="240" y="155" fill="#22d3ee" text-anchor="middle" font-size="9.5" font-family="Inter,sans-serif">ω₀  (carrier)</text>
+            <!-- RSB: g,2 → e,1 (down) — the cooling transition -->
+            <line x1="195" y1="162" x2="285" y2="200" stroke="#f97316" stroke-width="2.5" marker-end="url(#arRSB)"/>
+            <text x="240" y="196" fill="#f97316" text-anchor="middle" font-size="9.5" font-family="Inter,sans-serif">ω₀−ν  (RSB ← cool)</text>
+            <!-- Dark state label -->
+            <text x="140" y="256" fill="#4ade80" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">⟨ dark — no RSB from n=0 ⟩</text>
+          </svg>
+          <figcaption>Harmonic oscillator energy levels. The atom in the tweezer trap has discrete motional states spaced by ħν. Three transitions are possible from any level: carrier (ω₀, Δn=0), blue sideband (ω₀+ν, Δn=+1, heating), and red sideband (ω₀−ν, Δn=−1, cooling). For resolved sideband cooling: ν ≫ Γ so the RSB can be driven selectively. The ground state n=0 has no RSB → population accumulates there.</figcaption>
+        </figure>
+
         <hr class="section-divider">
       </section>
 
@@ -473,6 +529,12 @@
             Resolved = $\nu > \Gamma/2\pi$. In the resolved regime, ⟨n⟩<sub>resolved</sub> &lt; ⟨n⟩<sub>unresolved</sub>. Doppler limit: ⟨n⟩ = Γ/(4ν) (same as unresolved SB).
           </p>
         </div>
+
+        <!-- DIAGRAM: Resolved SB cooling cycle animation -->
+        <figure class="level-diagram" style="margin-top:1.5rem;">
+          <canvas id="sbCoolCanvas" width="440" height="200" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:8px;"></canvas>
+          <figcaption>Animated cooling cycle. The cyan dot (atom population) is driven by a red sideband laser from |g,n⟩ to |e,n−1⟩ (orange arrow), then returns via spontaneous emission (green dashed arrow) to |g,n−1⟩. Each cycle removes one motional quantum. The ground state |n=0⟩ is dark — no red sideband transition exists — so population accumulates there.</figcaption>
+        </figure>
 
         <hr class="section-divider">
       </section>
@@ -621,6 +683,12 @@
           <p>Phatak et al. show that PG cooling is captured by the same unified spin model as GM and EIT. After adiabatically eliminating the excited state, the effective ground-state dynamics has: (1) a position-independent Hamiltonian giving spin-dependent light shifts, (2) position-independent collapse operators for optical pumping, and (3) position-dependent collapse operators (recoil heating in the dark state). The ratio $\gamma_-/\gamma_+$ — how asymmetric the pumping is toward the cooling spin state — controls the final temperature.</p>
         </div>
 
+        <!-- DIAGRAM: Sisyphus animation -->
+        <figure class="level-diagram" style="margin-top:1rem;">
+          <canvas id="sisyphusCanvas" width="440" height="190" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:8px;"></canvas>
+          <figcaption>Sisyphus cooling animation. The blue and orange curves show the sinusoidal light-shift potentials for the two spin states (↑ and ↓), which are π out of phase. The atom (cyan dot) climbs a potential hill, then is optically pumped (green arrow) to the bottom of the other spin state's potential. Energy equal to the light shift U₀ is dissipated at each pump event.</figcaption>
+        </figure>
+
         <hr class="section-divider">
       </section>
 
@@ -716,6 +784,53 @@
           </div>
         </div>
 
+        <!-- DIAGRAM: GM spin cooling level diagram (SVG) -->
+        <figure class="level-diagram" style="margin-top:1.5rem;">
+          <svg viewBox="0 0 480 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:480px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arGP" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#4ade80"/></marker>
+              <marker id="arGM" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#f87171"/></marker>
+              <marker id="arGR" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#22d3ee"/></marker>
+            </defs>
+            <!-- Bright state (↑) — top row, higher energy -->
+            <text x="22" y="50" fill="#f472b6" font-size="11" font-weight="600" font-family="Inter,sans-serif">|↑⟩ Bright</text>
+            <text x="22" y="63" fill="#64748b" font-size="9" font-family="Inter,sans-serif">(light shift +Δs)</text>
+            <line x1="100" y1="65" x2="175" y2="65" stroke="#f472b6" stroke-width="2"/>
+            <line x1="190" y1="65" x2="265" y2="65" stroke="#f472b6" stroke-width="2"/>
+            <line x1="280" y1="65" x2="355" y2="65" stroke="#f472b6" stroke-width="2"/>
+            <line x1="370" y1="65" x2="445" y2="65" stroke="#f472b6" stroke-width="2" stroke-dasharray="4,2" opacity="0.5"/>
+            <text x="137" y="79" fill="#64748b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">n=1</text>
+            <text x="222" y="79" fill="#64748b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">n=2</text>
+            <text x="317" y="79" fill="#64748b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">n=3</text>
+            <!-- Dark state (↓) — bottom row, lower energy -->
+            <text x="22" y="160" fill="#22d3ee" font-size="11" font-weight="600" font-family="Inter,sans-serif">|↓⟩ Dark</text>
+            <text x="22" y="173" fill="#64748b" font-size="9" font-family="Inter,sans-serif">(no light shift)</text>
+            <line x1="100" y1="155" x2="175" y2="155" stroke="#22d3ee" stroke-width="2.5"/>
+            <line x1="190" y1="155" x2="265" y2="155" stroke="#22d3ee" stroke-width="2.5"/>
+            <line x1="280" y1="155" x2="355" y2="155" stroke="#22d3ee" stroke-width="2.5"/>
+            <line x1="370" y1="155" x2="445" y2="155" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="4,2" opacity="0.5"/>
+            <text x="137" y="170" fill="#64748b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">n=0</text>
+            <text x="222" y="170" fill="#64748b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">n=1</text>
+            <text x="317" y="170" fill="#64748b" font-size="9" text-anchor="middle" font-family="JetBrains Mono,monospace">n=2</text>
+            <!-- Raman coupling arrows ηΩR: |↑,n⟩ ↔ |↓,n-1⟩ (diagonal) -->
+            <line x1="175" y1="65" x2="190" y2="155" stroke="#22d3ee" stroke-width="1.8" stroke-dasharray="5,2" marker-end="url(#arGR)"/>
+            <line x1="265" y1="65" x2="280" y2="155" stroke="#22d3ee" stroke-width="1.8" stroke-dasharray="5,2" marker-end="url(#arGR)"/>
+            <text x="182" y="115" fill="#22d3ee" font-size="9.5" font-family="Inter,sans-serif">ηΩR</text>
+            <!-- Optical pumping γ+ (↑ → ↓, large, cool) -->
+            <path d="M 222 68 Q 160 110 222 152" stroke="#4ade80" stroke-width="2" fill="none" marker-end="url(#arGP)"/>
+            <text x="148" y="113" fill="#4ade80" font-size="10" font-weight="600" font-family="Inter,sans-serif">γ₊</text>
+            <!-- Back pumping γ- (↓ → ↑, small, limit) -->
+            <path d="M 317 152 Q 380 110 317 68" stroke="#f87171" stroke-width="1.5" fill="none" marker-end="url(#arGM)" stroke-dasharray="3,2"/>
+            <text x="385" y="113" fill="#f87171" font-size="10" font-family="Inter,sans-serif">γ₋ ≪ γ₊</text>
+            <!-- Light shift arrow -->
+            <line x1="460" y1="65" x2="460" y2="155" stroke="#334155" stroke-width="1"/>
+            <line x1="456" y1="65" x2="464" y2="65" stroke="#334155" stroke-width="1"/>
+            <line x1="456" y1="155" x2="464" y2="155" stroke="#334155" stroke-width="1"/>
+            <text x="470" y="113" fill="#64748b" font-size="9" font-family="Inter,sans-serif">Δs</text>
+          </svg>
+          <figcaption>Spin cooling model for gray molasses. Blue-detuned light creates a differential light shift Δs between the bright |↑⟩ and dark |↓⟩ states. Optical pumping γ₊ transfers atoms to the dark state. The coherent Raman coupling ηΩ_R (dashed) links |↑,n⟩ to |↓,n−1⟩, removing one motional quantum per Raman+pump cycle. The residual back-pumping rate γ₋ ≪ γ₊ sets the temperature floor.</figcaption>
+        </figure>
+
         <hr class="section-divider">
       </section>
 
@@ -766,6 +881,47 @@
             </div>
           </div>
         </div>
+
+        <!-- DIAGRAM: Lambda level scheme (EIT) SVG -->
+        <figure class="level-diagram" style="margin-top:1.5rem;">
+          <svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:460px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arE1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#38bdf8"/></marker>
+              <marker id="arE2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#fb923c"/></marker>
+              <marker id="arED" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3z" fill="#4ade80"/></marker>
+            </defs>
+            <!-- Excited state |e⟩ — top center -->
+            <line x1="195" y1="55" x2="285" y2="55" stroke="#f472b6" stroke-width="3"/>
+            <text x="240" y="44" fill="#f472b6" text-anchor="middle" font-size="12" font-weight="700" font-family="Inter,sans-serif">|e⟩</text>
+            <text x="240" y="72" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">Excited state (linewidth Γ)</text>
+            <!-- Ground state |g₁⟩ — bottom left -->
+            <line x1="55" y1="175" x2="155" y2="175" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="105" y="165" fill="#38bdf8" text-anchor="middle" font-size="12" font-weight="700" font-family="Inter,sans-serif">|g₁⟩</text>
+            <text x="105" y="192" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">HF ground (F=2)</text>
+            <!-- Ground state |g₂⟩ — bottom right -->
+            <line x1="325" y1="175" x2="425" y2="175" stroke="#fb923c" stroke-width="2.5"/>
+            <text x="375" y="165" fill="#fb923c" text-anchor="middle" font-size="12" font-weight="700" font-family="Inter,sans-serif">|g₂⟩</text>
+            <text x="375" y="192" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">HF ground (F=1)</text>
+            <!-- Laser arrows g₁→e and g₂→e -->
+            <line x1="135" y1="172" x2="205" y2="62" stroke="#38bdf8" stroke-width="2" marker-end="url(#arE1)"/>
+            <line x1="345" y1="172" x2="275" y2="62" stroke="#fb923c" stroke-width="2" marker-end="url(#arE2)"/>
+            <!-- Labels on arrows -->
+            <text x="145" y="118" fill="#38bdf8" font-size="10" font-family="Inter,sans-serif">Ω₁, Δ₁</text>
+            <text x="305" y="118" fill="#fb923c" font-size="10" font-family="Inter,sans-serif">Ω₂, Δ₂</text>
+            <!-- Dark state label at bottom center -->
+            <rect x="170" y="208" width="140" height="26" rx="5" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.3)" stroke-width="1"/>
+            <text x="240" y="224" fill="#4ade80" text-anchor="middle" font-size="11" font-weight="600" font-family="Inter,sans-serif">|g_D⟩ = (−Ω₂|g₁⟩ + Ω₁|g₂⟩)/Ω_rms</text>
+            <!-- Lines from g states to dark state box -->
+            <line x1="155" y1="175" x2="178" y2="208" stroke="#4ade80" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arED)"/>
+            <line x1="325" y1="175" x2="302" y2="208" stroke="#4ade80" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arED)"/>
+            <!-- HFS splitting double arrow -->
+            <line x1="160" y1="175" x2="320" y2="175" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+            <text x="240" y="172" fill="#475569" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">ω_HFS (6.8 GHz for Rb)</text>
+            <!-- Resonance condition label -->
+            <text x="240" y="95" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">EIT resonance: Δ₁ = Δ₂ (two-photon)</text>
+          </svg>
+          <figcaption>The Λ-level configuration for EIT / Λ-GM cooling. Two coherent laser beams with Rabi frequencies Ω₁ and Ω₂ address two hyperfine ground states |g₁⟩ and |g₂⟩ to a common excited state |e⟩. When Δ₁ = Δ₂ (two-photon resonance), destructive interference creates the dark superposition |g_D⟩ = (−Ω₂|g₁⟩ + Ω₁|g₂⟩)/Ω_rms that does not couple to either laser. This dark state is much darker than a single-beam GM dark state, leading to lower γ₋/γ₊ and deeper cooling.</figcaption>
+        </figure>
 
         <hr class="section-divider">
       </section>
@@ -837,6 +993,47 @@
             </p>
           </div>
         </div>
+
+        <!-- DIAGRAM: RSB two-step cooling cycle (Fig. 9 style) -->
+        <figure class="level-diagram" style="margin-top:1rem;">
+          <svg viewBox="0 0 480 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:480px;display:block;margin:0 auto;">
+            <defs>
+              <marker id="arR1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#818cf8"/></marker>
+              <marker id="arR2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#4ade80"/></marker>
+            </defs>
+            <!-- Column headers -->
+            <text x="120" y="20" fill="#38bdf8" text-anchor="middle" font-size="11" font-weight="700" font-family="Inter,sans-serif">|g₁⟩  Dark state</text>
+            <text x="360" y="20" fill="#fb923c" text-anchor="middle" font-size="11" font-weight="700" font-family="Inter,sans-serif">|g₂⟩  Bright state</text>
+            <!-- |g₁⟩ levels at x=120 — 4 levels: n=0..3 -->
+            <line x1="72"  y1="200" x2="168" y2="200" stroke="#38bdf8" stroke-width="2.5"/><text x="62"  y="204" fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="end">n=0</text>
+            <line x1="72"  y1="162" x2="168" y2="162" stroke="#38bdf8" stroke-width="2"/><text x="62"  y="166" fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="end">n=1</text>
+            <line x1="72"  y1="124" x2="168" y2="124" stroke="#38bdf8" stroke-width="2"/><text x="62"  y="128" fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="end">n=2</text>
+            <line x1="72"  y1="86"  x2="168" y2="86"  stroke="#38bdf8" stroke-width="2"/><text x="62"  y="90"  fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="end">n=3</text>
+            <!-- |g₂⟩ levels at x=360 -->
+            <line x1="312" y1="200" x2="408" y2="200" stroke="#fb923c" stroke-width="2.5"/><text x="418" y="204" fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace">n=0</text>
+            <line x1="312" y1="162" x2="408" y2="162" stroke="#fb923c" stroke-width="2"/><text x="418" y="166" fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace">n=1</text>
+            <line x1="312" y1="124" x2="408" y2="124" stroke="#fb923c" stroke-width="2"/><text x="418" y="128" fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace">n=2</text>
+            <line x1="312" y1="86"  x2="408" y2="86"  stroke="#fb923c" stroke-width="2"/><text x="418" y="90"  fill="#94a3b8" font-size="9" font-family="JetBrains Mono,monospace">n=3</text>
+            <!-- Step 1: Raman |g₁,n=2⟩ → |g₂,n=1⟩ (diagonal, indigo) -->
+            <line x1="170" y1="124" x2="310" y2="162" stroke="#818cf8" stroke-width="2.5" marker-end="url(#arR1)"/>
+            <text x="240" y="134" fill="#818cf8" text-anchor="middle" font-size="10" font-family="Inter,sans-serif">① Raman: |g₁,2⟩→|g₂,1⟩</text>
+            <text x="240" y="146" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">Ω_R = Ω₁Ω₂/Δ  (remove Δn=−1)</text>
+            <!-- Step 2: Optical pump |g₂,n=1⟩ → |g₁,n=1⟩ (horizontal, green) -->
+            <line x1="310" y1="162" x2="172" y2="162" stroke="#4ade80" stroke-width="2.5" marker-end="url(#arR2)"/>
+            <text x="240" y="179" fill="#4ade80" text-anchor="middle" font-size="10" font-family="Inter,sans-serif">② Optical pump: |g₂,1⟩→|g₁,1⟩</text>
+            <text x="240" y="191" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">Selection rules: |g₁⟩ dark to pump → stays at n=1</text>
+            <!-- Arrow showing overall n decrease -->
+            <line x1="40" y1="124" x2="40" y2="162" stroke="#334155" stroke-width="1.5"/>
+            <line x1="36" y1="162" x2="44" y2="162" stroke="#334155" stroke-width="1.5"/>
+            <text x="30" y="146" fill="#475569" font-size="9" font-family="Inter,sans-serif" text-anchor="middle">ħν</text>
+            <!-- Dark state n=0 label -->
+            <text x="120" y="214" fill="#4ade80" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">← ground state (dark)</text>
+            <!-- Cycle loop arrow -->
+            <path d="M 168 124 Q 240 60 312 124" stroke="#818cf8" stroke-width="1.5" fill="none" stroke-dasharray="5,2"/>
+            <text x="240" y="58" fill="#64748b" text-anchor="middle" font-size="9" font-family="Inter,sans-serif">repeat until n=0</text>
+          </svg>
+          <figcaption>RSB two-step cooling cycle (Fig. 9 of Phatak et al.). Step ①: two far-detuned Raman beams drive |g₁,n⟩→|g₂,n−1⟩ via stimulated two-photon transition, reducing n by 1. Step ②: a near-resonant optical pump returns |g₂⟩→|g₁⟩. Because |g₁⟩ is dark to the pump beam by angular momentum selection rules, no recoil heating enters the dark state — eliminating the η²γₕ heating floor present in GM and EIT.</figcaption>
+        </figure>
 
         <hr class="section-divider">
       </section>
@@ -1006,6 +1203,17 @@
         <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
           The resources below are organized by how deep you want to go — from a 10-minute video to graduate-level review articles. Start with the videos if you want intuition first, then move to the textbook chapters, then the original papers once you want to work through the math.
         </p>
+
+        <!-- GitHub simulation repo — prominent callout -->
+        <a class="resource-card" href="https://github.itap.purdue.edu/hoodlabpurdue/Trapped-atom-cooling-simulations" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:1.25rem;border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.04);margin-bottom:2rem;padding:1.25rem 1.5rem;">
+          <div style="font-size:2.5rem;flex-shrink:0;">🖥️</div>
+          <div style="flex:1;">
+            <div style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:.25rem;">Hood Lab — Trapped Atom Cooling Simulations</div>
+            <div style="font-size:.82rem;color:#22d3ee;font-weight:600;margin-bottom:.4rem;">github.itap.purdue.edu/hoodlabpurdue/Trapped-atom-cooling-simulations</div>
+            <div style="font-size:.84rem;color:var(--text-secondary);line-height:1.6;">The companion simulation code for Phatak et al. (2024). Contains master equation solvers for all cooling techniques discussed on this page — resolved and unresolved sideband, PG, GM, Λ-GM, EIT, and RSB — validated against the paper's figures. Requires Python + QuTiP. Run your own simulations, explore parameter sweeps, and reproduce the paper's results.</div>
+          </div>
+          <div style="font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#22d3ee;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);border-radius:5px;padding:.3rem .7rem;white-space:nowrap;flex-shrink:0;">Purdue GitHub →</div>
+        </a>
 
         <!-- ── Videos ── -->
         <h3 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;border-left:3px solid #22d3ee;padding-left:.75rem;">🎬 Videos — Build the Intuition</h3>
@@ -1427,6 +1635,298 @@ if (typeof renderMathInElement === 'undefined') {
     }
   });
 }
+
+/* ═══════════════════════════════════════════════
+   CANVAS ANIMATION: Resolved Sideband Cooling Cycle
+   Shows population cascading from |g,n=3⟩ down to |g,0⟩
+══════════════════════════════════════════════════ */
+(function initSBCoolAnim() {
+  const canvas = document.getElementById('sbCoolCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Layout constants
+  const gX = 110, eX = 330; // x-center of ground/excited ladders
+  const nLevels = 4;         // n = 0..4 on ground, 0..3 on excited
+  const lvlH = 38;           // vertical spacing per level
+  const baseY = H - 25;      // y of n=0
+
+  function levelY(n) { return baseY - n * lvlH; }
+
+  // Animation state machine
+  // States: 'drive' (laser arrow g→e), 'emit' (spont emission e→g), 'pause'
+  let currentN = 3;  // start from n=3
+  let state = 'drive';
+  let progress = 0;  // 0..1 within current state
+  const DRIVE_DUR  = 900;
+  const EMIT_DUR   = 700;
+  const PAUSE_DUR  = 400;
+  let lastT = null;
+  let stateStart = 0;
+
+  function arrowHead(ctx, x1,y1,x2,y2,color,size) {
+    const angle = Math.atan2(y2-y1, x2-x1);
+    ctx.save();
+    ctx.translate(x2,y2);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0,0); ctx.lineTo(-size,-size/2); ctx.lineTo(-size,size/2); ctx.closePath();
+    ctx.fillStyle = color; ctx.fill();
+    ctx.restore();
+  }
+
+  function drawFrame(ts) {
+    if (!lastT) { lastT = ts; stateStart = ts; }
+    const elapsed = ts - stateStart;
+
+    // Advance state machine
+    let dur = state==='drive'?DRIVE_DUR : state==='emit'?EMIT_DUR : PAUSE_DUR;
+    progress = Math.min(elapsed / dur, 1);
+
+    if (progress >= 1) {
+      if (state === 'drive') {
+        state = 'emit'; stateStart = ts; progress = 0;
+      } else if (state === 'emit') {
+        currentN = Math.max(0, currentN - 1);
+        if (currentN === 0) {
+          state = 'pause'; stateStart = ts; progress = 0;
+        } else {
+          state = 'drive'; stateStart = ts; progress = 0;
+        }
+      } else {
+        // reset
+        currentN = 3; state = 'drive'; stateStart = ts; progress = 0;
+      }
+    }
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#060e1c';
+    ctx.fillRect(0, 0, W, H);
+
+    // Column labels
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillStyle = '#64748b'; ctx.textAlign = 'center';
+    ctx.fillText('|g, n⟩  Ground', gX, 16);
+    ctx.fillText('|e, n⟩  Excited', eX, 16);
+
+    // Draw energy levels
+    for (let n = 0; n <= nLevels; n++) {
+      const y = levelY(n);
+      const isGround = n === 0;
+      // Ground state levels
+      ctx.beginPath(); ctx.moveTo(gX-55, y); ctx.lineTo(gX+55, y);
+      ctx.strokeStyle = isGround ? '#4ade80' : '#38bdf8';
+      ctx.lineWidth = isGround ? 2.5 : 1.8;
+      ctx.stroke();
+      // n label
+      ctx.font = '9px JetBrains Mono, monospace';
+      ctx.fillStyle = isGround ? '#4ade80' : '#64748b'; ctx.textAlign = 'right';
+      ctx.fillText('n='+n, gX-60, y+3);
+      if (isGround) { ctx.textAlign='center'; ctx.fillStyle='#4ade80'; ctx.fillText('← dark', gX, y+14); }
+
+      // Excited state levels (n=0..3 only)
+      if (n <= nLevels - 1) {
+        ctx.beginPath(); ctx.moveTo(eX-55, y); ctx.lineTo(eX+55, y);
+        ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 1.8; ctx.stroke();
+        ctx.font = '9px JetBrains Mono, monospace';
+        ctx.fillStyle = '#64748b'; ctx.textAlign = 'left';
+        ctx.fillText('n='+n, eX+60, y+3);
+      }
+    }
+
+    // Population dot position
+    const gY = levelY(currentN);
+    const eY = levelY(Math.max(0, currentN - 1));
+
+    if (state === 'drive') {
+      // Draw laser arrow (RSB): ground n → excited n-1
+      const px = gX + 55 + (eX - 55 - gX - 55) * progress;
+      const py = gY + (eY - gY) * progress;
+      // Arrow line
+      ctx.beginPath(); ctx.moveTo(gX+55, gY);
+      ctx.lineTo(px, py);
+      ctx.strokeStyle = '#f97316'; ctx.lineWidth = 2; ctx.setLineDash([]);
+      ctx.stroke();
+      arrowHead(ctx, gX+55, gY, px, py, '#f97316', 7);
+      // Atom on ground level
+      ctx.beginPath(); ctx.arc(gX, gY, 8, 0, 2*Math.PI);
+      ctx.fillStyle = '#22d3ee'; ctx.fill();
+      // RSB label
+      ctx.font = '10px Inter, sans-serif';
+      ctx.fillStyle = '#f97316'; ctx.textAlign = 'center';
+      ctx.fillText('RSB laser ω₀−ν', (gX+55+eX-55)/2, gY < eY ? eY+18 : gY+18);
+    } else if (state === 'emit') {
+      // Draw spontaneous emission dashed arrow: excited n-1 → ground n-1
+      const destY = levelY(currentN - 1);
+      const px = eX - 55 - (eX-55 - gX - 55) * progress;
+      const py = eY + (destY - eY) * progress;
+      ctx.beginPath(); ctx.moveTo(eX-55, eY);
+      ctx.lineTo(px, py);
+      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
+      arrowHead(ctx, eX-55, eY, px, py, '#4ade80', 7);
+      // Atom on excited level
+      ctx.beginPath(); ctx.arc(eX, eY, 8, 0, 2*Math.PI);
+      ctx.fillStyle = '#f472b6'; ctx.fill();
+      ctx.font = '10px Inter, sans-serif';
+      ctx.fillStyle = '#4ade80'; ctx.textAlign = 'center';
+      ctx.fillText('spont. emission', (gX+55+eX-55)/2, destY - 8);
+    } else {
+      // Ground state reached — glow
+      ctx.beginPath(); ctx.arc(gX, levelY(0), 10, 0, 2*Math.PI);
+      ctx.fillStyle = '#4ade80'; ctx.fill();
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillStyle = '#4ade80'; ctx.textAlign = 'center';
+      ctx.fillText('Ground state  ⟨n⟩ = 0', gX + 80, levelY(0) + 4);
+    }
+
+    requestAnimationFrame(drawFrame);
+  }
+  requestAnimationFrame(drawFrame);
+})();
+
+/* ═══════════════════════════════════════════════
+   CANVAS ANIMATION: Sisyphus / PG Cooling
+   Shows two sinusoidal light-shift potentials + atom climbing and being pumped
+══════════════════════════════════════════════════ */
+(function initSisyphusAnim() {
+  const canvas = document.getElementById('sisyphusCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const AMP   = 55;         // potential amplitude in px
+  const baseY = H - 30;     // zero-energy line y
+  const k     = (2*Math.PI) / (W * 0.38);  // ~2.6 periods across canvas
+  const SPEED = 0.00014;    // animation speed
+
+  // V_up = A*sin²(kx),  V_down = A*cos²(kx) = A*(1-sin²(kx))
+  function Vup(x)   { return AMP * Math.sin(k*x) ** 2; }
+  function Vdown(x) { return AMP * Math.cos(k*x) ** 2; }
+
+  // Peaks of V_up: kx = π/2, 3π/2,... → x = π/(2k), 3π/(2k)
+  // Peaks of V_down: kx = 0, π, ... → x = 0, π/k
+
+  const xOffset = 30;  // start x
+
+  // Animation phases: atom traverses one full Sisyphus cycle
+  // Phase A [0..0.45]: on V_up curve, climbing from valley (sin²=0) to peak (sin²=1)
+  //   valley1 = xOffset (sin(k*xOffset)≈0 if we shift)
+  //   peak1   = xOffset + π/(2k)
+  // Phase B [0.45..0.52]: pump event at peak1 (flash + drop to V_down minimum)
+  // Phase C [0.52..0.97]: on V_down curve, climbing from valley to peak
+  //   valley2 = peak1 (V_down has minimum where V_up has maximum)
+  //   peak2   = peak1 + π/(2k) = xOffset + π/k
+  // Phase D [0.97..1.0]: pump event at peak2
+
+  // Let's compute:
+  const period = (2*Math.PI)/k;
+  const halfPeriod = period/2;
+  const quarterPeriod = period/4;
+
+  const valley1 = xOffset;
+  const peak1   = xOffset + quarterPeriod;
+  const valley2 = peak1;            // V_down minimum is at same x as V_up maximum
+  const peak2   = peak1 + quarterPeriod;
+
+  let t = 0;
+
+  function drawSisyphus(ts) {
+    t = (ts * SPEED) % 1;
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#060e1c'; ctx.fillRect(0,0,W,H);
+
+    // Draw zero-energy baseline
+    ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY);
+    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.font = '9px Inter,sans-serif'; ctx.fillStyle = '#334155';
+    ctx.textAlign = 'left'; ctx.fillText('zero energy', W-90, baseY-3);
+
+    // Draw V_up curve (blue — spin ↑)
+    ctx.beginPath();
+    for (let px = 0; px <= W; px++) {
+      const y = baseY - Vup(px);
+      px === 0 ? ctx.moveTo(px,y) : ctx.lineTo(px,y);
+    }
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Draw V_down curve (orange — spin ↓)
+    ctx.beginPath();
+    for (let px = 0; px <= W; px++) {
+      const y = baseY - Vdown(px);
+      px === 0 ? ctx.moveTo(px,y) : ctx.lineTo(px,y);
+    }
+    ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Labels
+    ctx.font = '11px Inter,sans-serif';
+    ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'left';
+    ctx.fillText('V↑ = U₀ sin²(kx)', 6, 16);
+    ctx.fillStyle = '#fb923c';
+    ctx.fillText('V↓ = U₀ cos²(kx)', 6, 30);
+
+    // Determine atom position
+    let atomX, atomY, onCurve;
+    let isPump = false;
+    let pumpEnergy = 0;
+
+    if (t < 0.45) {
+      const frac = t / 0.45;
+      atomX = valley1 + (peak1 - valley1) * frac;
+      atomY = baseY - Vup(atomX);
+      onCurve = 'up';
+    } else if (t < 0.53) {
+      atomX = peak1;
+      atomY = baseY - Vup(peak1);
+      onCurve = 'up';
+      isPump = true;
+      pumpEnergy = Vup(peak1) - Vdown(peak1);  // energy drop
+    } else if (t < 0.97) {
+      const frac = (t - 0.53) / 0.44;
+      atomX = valley2 + (peak2 - valley2) * frac;
+      atomY = baseY - Vdown(atomX);
+      onCurve = 'down';
+    } else {
+      atomX = peak2;
+      atomY = baseY - Vdown(peak2);
+      onCurve = 'down';
+      isPump = true;
+      pumpEnergy = Vdown(peak2) - Vup(peak2);
+    }
+
+    // Draw pump event
+    if (isPump) {
+      const targetY = (onCurve === 'up') ? (baseY - Vdown(atomX)) : (baseY - Vup(atomX));
+      // Arrow
+      ctx.beginPath(); ctx.moveTo(atomX, atomY); ctx.lineTo(atomX, targetY);
+      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2;
+      ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+      // Arrowhead
+      ctx.beginPath(); ctx.moveTo(atomX, targetY);
+      ctx.lineTo(atomX-5, targetY - (onCurve==='up' ? -8 : 8));
+      ctx.lineTo(atomX+5, targetY - (onCurve==='up' ? -8 : 8));
+      ctx.closePath(); ctx.fillStyle = '#4ade80'; ctx.fill();
+      // Label
+      ctx.font = '10px Inter,sans-serif'; ctx.fillStyle = '#4ade80';
+      ctx.textAlign = 'center';
+      const midY = (atomY + targetY) / 2;
+      ctx.fillText('γ₊ pump', atomX + 26, midY);
+      ctx.fillText('−ΔE', atomX + 26, midY + 12);
+    }
+
+    // Draw atom
+    const atomColor = onCurve === 'up' ? '#38bdf8' : '#fb923c';
+    ctx.beginPath(); ctx.arc(atomX, atomY, 8, 0, 2*Math.PI);
+    ctx.fillStyle = atomColor; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.stroke();
+
+    requestAnimationFrame(drawSisyphus);
+  }
+  requestAnimationFrame(drawSisyphus);
+})();
+
 </script>
 </body>
 </html>
