@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laser Cooling — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="A unified framework for optical cooling in neutral atom tweezers — sideband, polarization gradient, gray molasses, EIT, and Raman sideband cooling explained with equations and interactive calculators.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/laser-cooling.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Laser Cooling — AMO Career">
+  <meta property="og:description" content="Unified theory of optical cooling techniques for neutral atom tweezers — from Doppler to quantum ground state.">
+  <meta property="og:url" content="https://saumitraphatak.github.io/amo-career/pages/laser-cooling.html">
+  <meta property="og:site_name" content="AMO Career">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Laser Cooling — AMO Career">
+  <meta name="twitter:description" content="Unified theory of optical cooling techniques — sideband, PG, GM, EIT, RSB.">
+
+  <link rel="stylesheet" href="../css/styles.css?v=4">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Override accent color — everything using var(--c-qc) picks this up */
+    :root { --c-qc: #22d3ee; --page-color: #22d3ee; }
+
+    /* ─── Sticky anchor nav ─────────────────────────── */
+    .topic-nav {
+      position: sticky; top: 64px; z-index: 50;
+      background: rgba(2,8,15,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e293b;
+      overflow-x: auto; white-space: nowrap;
+      padding: .45rem 1rem; display: flex; gap: .35rem;
+    }
+    .topic-nav a {
+      display: inline-block; padding: .3rem .65rem; border-radius: 6px;
+      font-size: .75rem; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; transition: background .15s, color .15s;
+    }
+    .topic-nav a:hover, .topic-nav a.active { background: #0f2a33; color: #22d3ee; }
+
+    /* ─── Section layout ────────────────────────────── */
+    .topic-section { padding: 2.5rem 0 1rem 0; }
+    .topic-header {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.25rem;
+      border-left: 4px solid #22d3ee; padding-left: .85rem;
+    }
+    .topic-header .t-icon { font-size: 1.5rem; }
+    .topic-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .topic-header .t-tag {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      background: rgba(34,211,238,.1); color: #22d3ee;
+      border: 1px solid rgba(34,211,238,.25); border-radius: 5px;
+      padding: .15rem .5rem;
+    }
+    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 2.5rem 0 0 0; }
+
+    /* ─── Theory / formula boxes ────────────────────── */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-left: 4px solid #22d3ee; border-radius: 10px;
+      padding: 1rem 1.3rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .93rem; font-weight: 700; color: #22d3ee; margin: 0 0 .5rem 0; }
+    .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+
+    .formula-box {
+      background: #060e1c; border: 1px solid #0c2233; border-radius: 8px;
+      padding: .85rem 1.1rem; margin: .6rem 0;
+      overflow-x: auto;
+    }
+    .formula-label {
+      font-size: .72rem; color: #22d3ee; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem;
+    }
+    .eq { font-family: var(--font-mono); font-size: .87rem; color: #f0abfc;
+          display: block; margin: .4rem 0; text-align: center; }
+
+    /* ─── Two / three col ───────────────────────────── */
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 800px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* ─── Calculator cards ──────────────────────────── */
+    .calc-card {
+      background: var(--bg-card); border: 1px solid #0f2a33;
+      border-radius: 14px; padding: 1.5rem;
+    }
+    .calc-card h3 {
+      font-size: 1rem; font-weight: 700; color: #22d3ee;
+      margin: 0 0 1rem 0; display: flex; align-items: center; gap: .5rem;
+    }
+    .ctrl-row { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: .75rem; }
+    .ctrl-group { flex: 1; min-width: 120px; }
+    .ctrl-group label { font-size: .78rem; color: var(--text-muted); display: block; margin-bottom: .3rem; }
+    .ctrl-group input[type=range] { width: 100%; accent-color: #22d3ee; display: block; }
+    .ctrl-group input[type=number] {
+      width: 100%; background: #060e1c; border: 1px solid #1e293b;
+      border-radius: 6px; padding: .4rem .6rem;
+      color: var(--text-primary); font-size: .85rem; font-family: var(--font-mono);
+    }
+    .ctrl-group input[type=number]:focus { outline: 1px solid #22d3ee; border-color: #22d3ee; }
+    .ctrl-val { color: #22d3ee; font-family: var(--font-mono); font-size: .82rem; margin-top: .15rem; }
+
+    .result-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: .75rem; }
+    .result-chip {
+      background: #060e1c; border: 1px solid #1e293b; border-radius: 8px;
+      padding: .5rem .9rem; flex: 1; min-width: 120px;
+    }
+    .result-chip .r-label { font-size: .72rem; color: var(--text-muted); margin-bottom: .2rem; }
+    .result-chip .r-val { font-family: var(--font-mono); font-size: .95rem; color: var(--text-primary); font-weight: 600; }
+    .result-chip.good .r-val { color: #4ade80; }
+    .result-chip.warn .r-val { color: #fbbf24; }
+    .result-chip.bad  .r-val { color: #f87171; }
+
+    /* ─── Level diagram ─────────────────────────────── */
+    .level-diagram {
+      background: #060e1c; border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem; text-align: center;
+    }
+    .level-diagram canvas { display: block; margin: 0 auto; max-width: 100%; }
+    .level-diagram figcaption { font-size: .75rem; color: var(--text-muted); margin-top: .5rem; }
+
+    /* ─── Insight callout ───────────────────────────── */
+    .insight {
+      background: rgba(34,211,238,.05); border: 1px solid rgba(34,211,238,.2);
+      border-radius: 10px; padding: .85rem 1.1rem; margin: .75rem 0;
+      font-size: .85rem; color: var(--text-secondary); line-height: 1.7;
+    }
+    .insight strong { color: #22d3ee; }
+
+    /* ─── Comparison table ──────────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .compare-table th {
+      background: #0c1526; color: var(--text-muted); font-weight: 600;
+      padding: .6rem .8rem; text-align: left; border-bottom: 1px solid #1e293b;
+      font-size: .77rem; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .compare-table td {
+      padding: .55rem .8rem; border-bottom: 1px solid #131c2e;
+      color: var(--text-secondary); vertical-align: middle;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: #0a1830; }
+    .compare-table .technique-name { color: var(--text-primary); font-weight: 600; }
+    .badge {
+      display: inline-block; padding: .15rem .5rem; border-radius: 4px; font-size: .73rem; font-weight: 600;
+    }
+    .badge-blue  { background: rgba(56,189,248,.12); color: #38bdf8; }
+    .badge-green { background: rgba(74,222,128,.12); color: #4ade80; }
+    .badge-amber { background: rgba(251,191,36,.12);  color: #fbbf24; }
+    .badge-rose  { background: rgba(251,113,133,.12); color: #fb7185; }
+
+    /* ─── Spin diagram ──────────────────────────────── */
+    .spin-diagram {
+      display: flex; align-items: center; justify-content: center;
+      gap: 2rem; padding: 1rem; flex-wrap: wrap;
+    }
+    .spin-state {
+      display: flex; flex-direction: column; align-items: center; gap: .3rem;
+    }
+    .spin-level {
+      width: 80px; height: 3px; border-radius: 2px;
+    }
+    .spin-label {
+      font-size: .78rem; color: var(--text-muted); font-family: var(--font-mono); text-align: center;
+    }
+    .spin-arrow {
+      font-size: 1.2rem; color: var(--text-muted);
+    }
+
+    /* ─── Intro stat cards ──────────────────────────── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.1rem;
+      text-align: center;
+    }
+    .stat-card .stat-icon { font-size: 1.5rem; margin-bottom: .4rem; }
+    .stat-card .stat-val  { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+    .stat-card .stat-desc { font-size: .75rem; color: var(--text-muted); margin-top: .25rem; line-height: 1.4; }
+
+    /* ─── Chart card ────────────────────────────────── */
+    .chart-wrap {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem;
+    }
+    .chart-wrap h4 { font-size: .9rem; font-weight: 700; color: var(--text-primary); margin: 0 0 .75rem 0; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+<div class="page-wrap">
+
+  <!-- ═══════════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════════════ -->
+  <div class="page-hero" style="--page-color:#22d3ee;--page-bg:rgba(34,211,238,0.06);--page-border:rgba(34,211,238,0.2);">
+    <div class="container">
+      <div class="page-hero-eyebrow" style="background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee;">
+        ❄️ Laser Cooling · 8 Techniques
+      </div>
+      <h1>Laser <span class="grad-text" style="--ga:#22d3ee;--gb:#818cf8;">Cooling</span></h1>
+      <p class="page-hero-desc">
+        A unified theory of optical cooling in neutral atom tweezers — from the Lamb-Dicke regime to quantum ground state preparation. Based on Phatak et al., <em>arXiv:2406.19153</em>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       STICKY TOPIC NAV
+  ══════════════════════════════════════════════════════ -->
+  <nav class="topic-nav" id="topicNav">
+    <a href="#intro"       class="active">Overview</a>
+    <a href="#lamb-dicke"          >Lamb-Dicke</a>
+    <a href="#resolved-sb"         >Resolved SB</a>
+    <a href="#unresolved-sb"       >Unresolved SB</a>
+    <a href="#dark-sb"             >Dark SB</a>
+    <a href="#pg"                  >Pol. Gradient</a>
+    <a href="#gm"                  >Gray Molasses</a>
+    <a href="#eit-lgm"             >EIT / Λ-GM</a>
+    <a href="#rsb"                 >Raman SB</a>
+    <a href="#comparison"          >Compare</a>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════
+       PAGE CONTENT
+  ══════════════════════════════════════════════════════ -->
+  <div class="page-content">
+    <div class="container">
+
+      <!-- ─── OVERVIEW ─────────────────────────────── -->
+      <section class="topic-section" id="intro">
+        <div class="topic-header">
+          <span class="t-icon">🎯</span>
+          <h2>Why Cool Atoms to the Ground State?</h2>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.25rem;">
+          In a neutral-atom optical tweezer experiment, a single atom sits inside a tightly focused laser beam, confined like a harmonic oscillator. The atom's thermal motion — its occupation of motional energy levels $|n\rangle$ — is the primary source of decoherence and gate infidelity in quantum computing experiments. Laser cooling techniques reduce this thermal motion until the atom sits in the motional ground state $|n = 0\rangle$, where quantum coherence is maximized.
+        </p>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🌡️</div>
+            <div class="stat-val">~20 µK</div>
+            <div class="stat-desc">Typical MOT temperature after Doppler cooling</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">❄️</div>
+            <div class="stat-val">~1 µK</div>
+            <div class="stat-desc">Sub-Doppler: gray molasses, PG cooling limit</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⚛️</div>
+            <div class="stat-val">⟨n⟩ &lt; 0.1</div>
+            <div class="stat-desc">Ground state: Raman sideband, resolved SB</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📐</div>
+            <div class="stat-val">η ≪ 1</div>
+            <div class="stat-desc">Lamb-Dicke regime: the key parameter for all cooling</div>
+          </div>
+        </div>
+
+        <div class="theory-box">
+          <h4>The Unified Spin Cooling Framework</h4>
+          <p>
+            All two-photon optical cooling techniques — polarization gradient (PG), gray molasses (GM), Λ-enhanced GM, EIT, and Raman sideband (RSB) — share the same fundamental structure. After adiabatically eliminating the excited state and expanding to first order in the Lamb-Dicke parameter, each produces a Hamiltonian and collapse operators with a common form: a differential light shift between spin states equal to the trapping frequency (providing resonance), preferential optical pumping to the lower energy spin state (providing directionality), and coherent coupling between motional states (providing the actual cooling transition).
+          </p>
+          <p>
+            This unified picture is the central result of Phatak et al. (2024). It reveals three factors that determine the final temperature: (1) large pumping asymmetry $\gamma_+/\gamma_-$, (2) small Lamb-Dicke parameter $\eta$, and (3) a maximally dark lower-energy state.
+          </p>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── LAMB-DICKE ─────────────────────────────── -->
+      <section class="topic-section" id="lamb-dicke">
+        <div class="topic-header">
+          <span class="t-icon">📐</span>
+          <h2>The Lamb-Dicke Regime</h2>
+          <span class="t-tag">Foundation</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          A tightly trapped atom behaves like a quantum harmonic oscillator with discrete energy levels $|n\rangle$ separated by $\hbar\nu$, where $\nu$ is the trap frequency. The spatial extent of the ground state wavefunction is the zero-point motion $x_0$. The Lamb-Dicke parameter $\eta$ compares this motion to the photon wavelength — it is the single most important parameter in laser cooling.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Trap Hamiltonian and Motional States</h4>
+              <p>The atom in the trap is described by a harmonic oscillator:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Trap Hamiltonian</div>
+              $$H_\text{trap} = \hbar\nu\!\left(a^\dagger a + \tfrac{1}{2}\right)$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Zero-point motion</div>
+              $$x_0 = \sqrt{\frac{\hbar}{2m\nu}}$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Lamb-Dicke parameter</div>
+              $$\eta = k\,x_0 = k\sqrt{\frac{\hbar}{2m\nu}}$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">LD expansion of light-matter coupling</div>
+              $$e^{ik\hat{x}} \approx 1 + i\eta(a + a^\dagger) \quad (\eta \ll 1)$$
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Physical Meaning of η</h4>
+              <p>When $\eta \ll 1$, the atom's position uncertainty during a photon interaction is much smaller than the photon wavelength. A photon absorption is unlikely to change the motional quantum number ($\Delta n \neq 0$ transitions are suppressed by $\eta$). This suppression is what makes sideband cooling efficient: the carrier transition ($\Delta n = 0$) dominates, and the red sideband ($\Delta n = -1$, cooling) is preferred over the blue sideband ($\Delta n = +1$, heating) by the factor $\eta^2$.</p>
+              <p>Typical values: $\eta \approx 0.05$–$0.15$ for optical tweezers with $\nu \approx 50$–$200\,\text{kHz}$ and $\lambda \approx 780\,\text{nm}$.</p>
+            </div>
+            <div class="insight">
+              <strong>Key insight:</strong> The Lamb-Dicke parameter sets the fundamental limit for all cooling techniques. Tighter traps (larger $\nu$) give smaller $\eta$ and colder final temperatures. This is why tweezer experiments push for MHz-level trap frequencies.
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculator -->
+        <div class="calc-card" style="margin-top:1.5rem;">
+          <h3>🧮 Lamb-Dicke Parameter Calculator</h3>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>Atomic mass A (amu)</label>
+              <input type="number" id="ld-mass" value="87" min="1" max="300" step="1">
+            </div>
+            <div class="ctrl-group">
+              <label>Trap frequency ν (kHz)</label>
+              <input type="number" id="ld-nu" value="100" min="1" max="2000" step="10">
+            </div>
+            <div class="ctrl-group">
+              <label>Laser wavelength λ (nm)</label>
+              <input type="number" id="ld-lambda" value="780" min="200" max="1100" step="1">
+            </div>
+          </div>
+          <div class="result-row">
+            <div class="result-chip">
+              <div class="r-label">Zero-point motion x₀</div>
+              <div class="r-val" id="ld-x0">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">Lamb-Dicke parameter η</div>
+              <div class="r-val" id="ld-eta">—</div>
+            </div>
+            <div class="result-chip" id="ld-regime-chip">
+              <div class="r-label">LD Regime?</div>
+              <div class="r-val" id="ld-regime">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">Recoil energy E_r / hν</div>
+              <div class="r-val" id="ld-recoil">—</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── RESOLVED SIDEBAND ─────────────────────── -->
+      <section class="topic-section" id="resolved-sb">
+        <div class="topic-header">
+          <span class="t-icon">📡</span>
+          <h2>Resolved Sideband Cooling</h2>
+          <span class="t-tag">Single-photon</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          Resolved sideband (RSB) cooling is the simplest route to the motional ground state, applicable when the trap frequency exceeds the photon linewidth ($\nu \gg \Gamma$). The atomic spectrum splits into a carrier (at $\omega_0$) and discrete sidebands at $\omega_0 \pm n\nu$. By tuning a laser to the red sideband at $\omega_0 - \nu$, every absorption removes one quantum of motional energy.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Cooling Cycle</h4>
+              <p>Step 1: Drive the red sideband — a photon at $\omega_0 - \nu$ takes $|g, n\rangle \to |e, n-1\rangle$. Step 2: Spontaneous emission returns the atom to the ground electronic state. In the Lamb-Dicke regime, the emitted photon has equal probability of going to $|g, n-1\rangle$ (the desired path) or $|g, n\rangle$ (recoil back up). The net effect per cycle: one motional quantum removed. The state $|g, 0\rangle$ is dark (no red sideband to drive), so the population accumulates there.</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Resolved sideband steady-state (Eq. 38)</div>
+              $$\langle n \rangle_{ss} = \left(\frac{\Gamma}{4\nu}\right)^2$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Condition for resolved sidebands</div>
+              $$\nu \gg \Gamma \quad \Leftrightarrow \quad \frac{\Gamma}{4\nu} \ll 1$$
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Physical Mechanism</h4>
+              <p>The cooling rate is set by the photon scattering rate on the red sideband: $R_- = \eta^2 \Gamma$. The heating rate from off-resonant blue sideband excitation is $R_+ \propto \eta^2 \Gamma (\Gamma/4\nu)^2$. In steady state, these balance to give $\langle n \rangle_{ss} = ({\Gamma}/{4\nu})^2$.</p>
+              <p>The formula is striking: the final temperature depends only on the ratio $\Gamma/\nu$, not on the laser intensity or the Lamb-Dicke parameter. Making the trap tighter (larger $\nu$) directly lowers the temperature floor.</p>
+            </div>
+            <div class="insight">
+              <strong>Example:</strong> For $^{87}$Rb ($\Gamma/2\pi = 6\,\text{MHz}$) in a 200 kHz trap: $\langle n \rangle = (6/(4\times0.2))^2 \approx 56$. Resolved SB requires narrow-line transitions (like the $^1S_0 \to {^3P_0}$ clock line in Sr or Yb) for deep ground-state cooling.
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculator -->
+        <div class="calc-card" style="margin-top:1.5rem;">
+          <h3>🧮 Sideband Cooling Limit Calculator</h3>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>Linewidth Γ/2π (MHz)</label>
+              <input type="number" id="sb-gamma" value="6.065" min="0.001" max="100" step="0.001">
+            </div>
+            <div class="ctrl-group">
+              <label>Trap frequency ν (kHz)</label>
+              <input type="number" id="sb-nu" value="100" min="1" max="5000" step="10">
+            </div>
+            <div class="ctrl-group">
+              <label>Atomic mass A (amu)</label>
+              <input type="number" id="sb-mass" value="87" min="1" max="300" step="1">
+            </div>
+          </div>
+          <div class="result-row">
+            <div class="result-chip" id="sb-regime-chip">
+              <div class="r-label">Sideband regime</div>
+              <div class="r-val" id="sb-regime">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">⟨n⟩ resolved (Γ/4ν)²</div>
+              <div class="r-val" id="sb-n-resolved">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">⟨n⟩ unresolved Γ/4ν</div>
+              <div class="r-val" id="sb-n-unresolved">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">Doppler limit ⟨n⟩</div>
+              <div class="r-val" id="sb-n-doppler">—</div>
+            </div>
+          </div>
+          <p style="font-size:.76rem;color:var(--text-muted);margin-top:.6rem;">
+            Resolved = $\nu > \Gamma/2\pi$. In the resolved regime, ⟨n⟩<sub>resolved</sub> &lt; ⟨n⟩<sub>unresolved</sub>. Doppler limit: ⟨n⟩ = Γ/(4ν) (same as unresolved SB).
+          </p>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── UNRESOLVED SIDEBAND ───────────────────── -->
+      <section class="topic-section" id="unresolved-sb">
+        <div class="topic-header">
+          <span class="t-icon">〰️</span>
+          <h2>Unresolved Sideband Cooling</h2>
+          <span class="t-tag">Doppler regime</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          When $\nu \ll \Gamma$, the trap sidebands are not spectrally resolved — the photon linewidth is so broad that a single laser drives both the carrier and nearby sidebands simultaneously. This is the regime most atoms find themselves in after a MOT. Standard Doppler cooling operates here, and the cooling limit is set by competition between the viscous force (cooling) and random recoil kicks (heating).
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>The Unresolved Sideband Limit</h4>
+              <p>When the sidebands overlap, the atom cannot distinguish cooling transitions from carrier transitions. The steady-state occupation from Eq. 39 of Phatak et al. is:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Unresolved sideband limit (Eq. 39)</div>
+              $$\langle n \rangle_{ss} = \frac{\Gamma}{4\nu} \gg 1$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Equivalent temperature</div>
+              $$k_B T = \frac{\hbar\Gamma}{4} \quad \text{(Doppler temperature)}$$
+            </div>
+            <div class="insight">
+              <strong>Example:</strong> For Rb ($\Gamma/2\pi = 6\,\text{MHz}$) at $\nu = 100\,\text{kHz}$: $\langle n \rangle \approx 6\,\text{MHz}/(4 \times 100\,\text{kHz}) = 15$. Still very far from the ground state.
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>The Doppler Temperature</h4>
+              <p>The Doppler limit arises from the competition between two processes: the laser's viscous force damps atomic momentum (cooling), while random recoil from spontaneous emission heats the atom. At the optimal detuning $\Delta = -\Gamma/2$, the minimum achievable temperature is $T_D = \hbar\Gamma/(2k_B)$.</p>
+              <p>For $^{87}$Rb: $T_D = 146\,\mu\text{K}$. For the ground state in a 100 kHz trap, we need $T \sim \hbar\nu/k_B \approx 5\,\mu\text{K}$. Doppler cooling alone does not reach the ground state for broad-line atoms.</p>
+            </div>
+            <div class="theory-box">
+              <h4>Crossing to Sub-Doppler</h4>
+              <p>The solution is two-photon cooling — the techniques that follow. By using spin-dependent light shifts and coherent dark states, these methods surpass the Doppler limit while still using the same broad transitions. The Lamb-Dicke parameter $\eta$ then controls how efficiently the motional sidebands are addressed.</p>
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── DARK / STANDING-WAVE SB ──────────────── -->
+      <section class="topic-section" id="dark-sb">
+        <div class="topic-header">
+          <span class="t-icon">🌑</span>
+          <h2>Dark-State Sideband Cooling</h2>
+          <span class="t-tag">Standing wave</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          A standing wave creates a spatially varying light-matter coupling. At the nodes of the standing wave, the electric field vanishes and the atom does not couple to light — it becomes "dark" to the laser. An atom cooled to a motional state whose wavefunction concentrates near the node has its scattering heavily suppressed, enabling very deep cooling.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Position-Dependent Coupling</h4>
+              <p>In a standing wave, the interaction Hamiltonian contains $\sin(k\hat{x})$ or $\cos(k\hat{x})$ instead of $e^{ik\hat{x}}$. Near a node (at $\hat{x} = 0$), expanding to first order:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Near a node: $\sin(k\hat{x}) \approx k\hat{x}$</div>
+              $$\hat{H}_I \propto \Omega\, k\hat{x}\, |\text{e}\rangle\langle\text{g}|$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Matrix element for motional transition</div>
+              $$\langle n-1|\, k\hat{x}\, |n\rangle = k x_0 \sqrt{n} = \eta\sqrt{n}$$
+            </div>
+            <div class="theory-box">
+              <h4>Enhanced Cooling at the Node</h4>
+              <p>At the node, the $n \to n-1$ coupling scales as $\eta\sqrt{n}$, which goes to zero as $n \to 0$. The state $|n=0\rangle$ is therefore dark at the node — it does not scatter photons. This creates a natural dark state for cooling and allows the motional ground state population to accumulate without being further heated.</p>
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Different Trap Frequencies</h4>
+              <p>When the cooling laser and the trap have different length scales (e.g., a red-detuned tweezer and a near-resonant cooling laser), the motional states seen by each can differ. The paper treats this case using a squeezing transformation, showing that an effective Lamb-Dicke parameter</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Effective LD parameter (Eq. 55 regime)</div>
+              $$\eta_\text{eff} = \eta \sqrt{\frac{\nu_\text{cool}}{\nu_\text{trap}}}$$
+            </div>
+            <p style="color:var(--text-secondary);font-size:.85rem;line-height:1.7;margin-top:.5rem;">
+              applies when the cooling and trapping frequencies differ. A tighter trap ($\nu_\text{trap} > \nu_\text{cool}$) reduces $\eta_\text{eff}$, pushing the cooling limit lower.
+            </p>
+            <div class="insight">
+              <strong>Practical note:</strong> In optical tweezer experiments, the tweezer itself provides the tight trap, while a separate near-resonant beam provides the cooling sideband drive. This geometry is exactly the "different trap frequencies" case and allows MHz-trap tweezers to cool using MHz-linewidth transitions.
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── POLARIZATION GRADIENT ─────────────────── -->
+      <section class="topic-section" id="pg">
+        <div class="topic-header">
+          <span class="t-icon">🔄</span>
+          <h2>Polarization Gradient Cooling</h2>
+          <span class="t-tag">Sub-Doppler</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          Polarization gradient (PG) cooling uses two counter-propagating laser beams with different polarizations to create a spatially varying light shift that depends on the atom's internal spin state. The atom's spin follows the local light polarization adiabatically, and the resulting Sisyphus mechanism extracts kinetic energy efficiently. Temperatures well below the Doppler limit are achievable.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>The Sisyphus Mechanism</h4>
+              <p>In the $\sigma^+$-$\sigma^-$ geometry, two beams create a standing wave. The light shift of the $m_F$ sublevels varies sinusoidally in space, and the optical pumping rate between sublevels also varies. An atom in the higher-$m_F$ state climbing a potential hill is pumped by optical pumping to the lower-$m_F$ state at the hill top — like Sisyphus rolling a boulder up forever. Each pump cycle dissipates kinetic energy equal to the light shift $U_0$.</p>
+            </div>
+            <div class="theory-box">
+              <h4>Lin ⊥ Lin Geometry</h4>
+              <p>In the lin $\perp$ lin configuration, the polarization rotates from linear to circular and back over half a wavelength. The atom's internal state follows this rotation, and energy is dissipated each time the atom climbs a light-shift hill. The cooling is more efficient than $\sigma^+$-$\sigma^-$ because the polarization gradient is steeper.</p>
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Temperature Limit</h4>
+              <p>PG cooling does not have a simple closed-form temperature limit — it depends on the spin $F$, the laser intensity, and detuning. The temperature scales approximately as:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">PG cooling temperature (approximate)</div>
+              $$k_B T \sim \frac{\hbar\Omega^2}{|\Delta|} \quad \left(\sim U_0, \text{ the light shift}\right)$$
+            </div>
+            <p style="color:var(--text-secondary);font-size:.85rem;line-height:1.7;margin:.5rem 0;">
+              where $\Omega$ is the Rabi frequency and $\Delta$ the detuning. Lowering the laser power reduces $U_0$ and thus the temperature, but eventually the atom is not cooled fast enough and the technique breaks down. Typical results: $T \sim 1$–$10\,\mu\text{K}$ for alkalis.
+            </p>
+            <div class="insight">
+              <strong>Key difference from sideband cooling:</strong> PG cooling does not resolve individual motional sidebands. It reaches sub-Doppler temperatures through the Sisyphus mechanism but does not prepare the motional ground state. It is usually the first step before sideband or GM cooling in tweezer experiments.
+            </div>
+          </div>
+        </div>
+
+        <div class="theory-box" style="margin-top:.5rem;">
+          <h4>Spin Cooling Model for PG</h4>
+          <p>Phatak et al. show that PG cooling is captured by the same unified spin model as GM and EIT. After adiabatically eliminating the excited state, the effective ground-state dynamics has: (1) a position-independent Hamiltonian giving spin-dependent light shifts, (2) position-independent collapse operators for optical pumping, and (3) position-dependent collapse operators (recoil heating in the dark state). The ratio $\gamma_-/\gamma_+$ — how asymmetric the pumping is toward the cooling spin state — controls the final temperature.</p>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── GRAY MOLASSES ─────────────────────────── -->
+      <section class="topic-section" id="gm">
+        <div class="topic-header">
+          <span class="t-icon">☁️</span>
+          <h2>Gray Molasses Cooling</h2>
+          <span class="t-tag">Dark states</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          Gray molasses (GM) cooling uses transitions where coherent superpositions of ground spin states can be completely dark to the light. Unlike Sisyphus cooling where all spin states scatter, in GM the atom spends most of its time in a non-scattering dark state. Cooling occurs when the dark state becomes bright only at the turning points of the classical motion, and the atom is then pumped back to a dark state with less energy.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>Dark States and the $F \to F' = F$ Transition</h4>
+              <p>For a $J \to J' = J$ (or $F \to F' = F$) transition driven with blue-detuned light, coherent superpositions of ground $m_F$ states can be constructed that have zero dipole matrix element to all excited states. These are the "dark states." An atom pumped into a dark state stops scattering. The bright state (orthogonal superposition) has a positive light shift, sitting higher in energy. With blue detuning, bright states are trapped in regions of high intensity and dark states live in low-intensity regions.</p>
+            </div>
+            <div class="theory-box">
+              <h4>The Unified Spin Model (Eq. 72)</h4>
+              <p>After adiabatic elimination and expanding to first order in $\eta$, Phatak et al. derive the effective spin-cooling Hamiltonian:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">GM spin Hamiltonian</div>
+              $$H = \nu a^\dagger a + \Delta_s |\!\uparrow\rangle\langle\uparrow| + \Omega_R k\hat{x}\,\hat{F}_x$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Collapse operators (pumping)</div>
+              $$L_+ = \sqrt{\gamma_+}\,\hat{F}_+ (1 + ik\hat{x}), \quad L_- = \sqrt{\gamma_-}\,\hat{F}_- (1 + ik\hat{x})$$
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Cooling Limit (Eq. 72)</h4>
+              <p>The steady-state mean phonon number in the spin model is:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Gray molasses steady state (Eq. 72)</div>
+              $$\langle n \rangle = \frac{s}{1 - s}, \quad s = \frac{4\eta^2\gamma_h + \gamma_-}{\eta^2\gamma_h + \gamma_+}$$
+            </div>
+            <p style="color:var(--text-secondary);font-size:.84rem;line-height:1.7;margin:.5rem 0;">
+              where $\gamma_h$ is the heating rate from the position-dependent operators, $\gamma_+$ is the pumping rate toward the dark state (cooling), and $\gamma_-$ is the residual rate back toward the bright state (limiting factor).
+            </p>
+            <div class="insight">
+              <strong>Fundamental limit:</strong> For $\gamma_- \to 0$ (perfectly dark lower state), $s \to 4\eta^2\gamma_h/\gamma_+$. The temperature scales as $\eta^2$ — the same functional dependence as all two-photon cooling techniques. Achieving $\langle n \rangle \ll 1$ requires $\eta^2 \gamma_h/\gamma_+ \ll 1$.
+            </div>
+          </div>
+        </div>
+
+        <!-- GM Calculator -->
+        <div class="calc-card" style="margin-top:1.5rem;">
+          <h3>🧮 Gray Molasses Cooling Limit Calculator</h3>
+          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem;">
+            Enter the spin model parameters to compute $\langle n\rangle_{ss}$ from Eq. 72. The ratios $\gamma_-/\gamma_+$ and $\gamma_h/\gamma_+$ characterize how asymmetric the pumping is and how much recoil heating the dark state experiences.
+          </p>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>Lamb-Dicke parameter η</label>
+              <input type="range" id="gm-eta" min="0.01" max="0.3" step="0.005" value="0.1">
+              <div class="ctrl-val">η = <span id="gm-eta-val">0.100</span></div>
+            </div>
+            <div class="ctrl-group">
+              <label>γ₋/γ₊ (pumping asymmetry)</label>
+              <input type="range" id="gm-asym" min="0.001" max="0.5" step="0.001" value="0.1">
+              <div class="ctrl-val">γ₋/γ₊ = <span id="gm-asym-val">0.100</span></div>
+            </div>
+            <div class="ctrl-group">
+              <label>γₕ/γ₊ (dark-state heating)</label>
+              <input type="range" id="gm-heat" min="0.1" max="10" step="0.1" value="2.0">
+              <div class="ctrl-val">γₕ/γ₊ = <span id="gm-heat-val">2.0</span></div>
+            </div>
+          </div>
+          <div class="result-row">
+            <div class="result-chip">
+              <div class="r-label">s parameter</div>
+              <div class="r-val" id="gm-s">—</div>
+            </div>
+            <div class="result-chip" id="gm-n-chip">
+              <div class="r-label">⟨n⟩ steady state</div>
+              <div class="r-val" id="gm-n">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">Ground state fraction</div>
+              <div class="r-val" id="gm-gs">—</div>
+            </div>
+            <div class="result-chip">
+              <div class="r-label">Cooling possible?</div>
+              <div class="r-val" id="gm-valid">—</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── EIT / Λ-GM ─────────────────────────────── -->
+      <section class="topic-section" id="eit-lgm">
+        <div class="topic-header">
+          <span class="t-icon">✨</span>
+          <h2>EIT and Λ-Enhanced Gray Molasses</h2>
+          <span class="t-tag">Two-photon dark states</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          Electromagnetically induced transparency (EIT) and Λ-enhanced gray molasses (Λ-GM) improve over standard GM by using two coherent laser beams to create dark states from superpositions of different ground hyperfine manifolds. This "Λ-configuration" makes the dark state darker than a single-photon GM dark state, reducing $\gamma_-/\gamma_+$ and enabling lower temperatures.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>The Λ-Configuration</h4>
+              <p>Two ground states $|g_1\rangle$ and $|g_2\rangle$ (from different hyperfine levels) are each coupled to a common excited state $|e\rangle$ by laser fields $\Omega_1$ and $\Omega_2$ with detunings $\Delta_1$ and $\Delta_2$. The key is to transform to the bright/dark basis:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Bright and dark states (Eq. 76)</div>
+              $$|g_B\rangle = \frac{\Omega_1|g_1\rangle + \Omega_2|g_2\rangle}{\Omega_{rms}}$$
+              $$|g_D\rangle = \frac{-\Omega_2|g_1\rangle + \Omega_1|g_2\rangle}{\Omega_{rms}}$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Raman coupling bright ↔ dark (Eq. 85)</div>
+              $$\Omega_r = \frac{\Omega_1\Omega_2}{2\Delta}$$
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">EIT resonance condition</div>
+              $$\Delta_1 = \Delta_2 \quad \text{(two-photon resonance)}$$
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Why EIT/Λ-GM is Better than GM</h4>
+              <p>In standard GM, the dark state is a single ground-state spin superposition that is dark only at the leading order in the coupling. In the Λ-configuration, the dark state $|g_D\rangle$ is dark to both laser fields simultaneously due to destructive interference — the contribution from $|g_1\rangle$ and $|g_2\rangle$ cancel exactly. This makes $\gamma_- \to 0$ much more effectively, directly reducing the steady-state $\langle n \rangle$.</p>
+              <p>The same spin-cooling model (Eq. 72) applies, but with significantly smaller $\gamma_-/\gamma_+$ — extracted from simulations of $^{87}$Rb: $\gamma_-/\gamma_+ \approx 0.006$ for Λ-GM vs. $\gamma_-/\gamma_+ \approx 0.11$ for standard GM.</p>
+            </div>
+            <div class="insight">
+              <strong>Coherence requirement:</strong> EIT/Λ-GM requires the two lasers to be phase-coherent to within the two-photon linewidth. Any relative phase noise $\delta\phi$ with frequency $\omega_\phi$ drives coupling between $|g_D\rangle$ and $|g_B\rangle$ at rate $\sim (\Delta_1 - \Delta_2)$. For 100 kHz traps, coherence within ~1 kHz is required — naturally satisfied if both frequencies come from the same laser via an AOM or EOM.
+            </div>
+            <div class="theory-box">
+              <h4>EIT Heating Resonance</h4>
+              <p>When $\Delta_1 - \Delta_2 = 2\nu$ (the blue sideband two-photon condition), a heating resonance appears. The optimal cooling occurs at $\Delta_1 = \Delta_2$ when the bright-state light shift equals the trap frequency, $\Omega^2/\Delta = \nu$.</p>
+            </div>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── RAMAN SIDEBAND ────────────────────────── -->
+      <section class="topic-section" id="rsb">
+        <div class="topic-header">
+          <span class="t-icon">🔀</span>
+          <h2>Raman Sideband Cooling</h2>
+          <span class="t-tag">Ground state prep</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
+          Raman sideband (RSB) cooling achieves the highest fidelity ground-state preparation currently available for neutral atoms in tweezers. Unlike PG, GM, and EIT — which all use the same beams for both cooling and optical pumping — RSB separates these roles. Far-detuned Raman lasers drive the motional transition while a carefully designed near-resonant optical pumping beam uses angular momentum selection rules to ensure the dark state is truly immune to recoil heating.
+        </p>
+
+        <div class="two-col">
+          <div>
+            <div class="theory-box">
+              <h4>The RSB Cooling Cycle (Fig. 9)</h4>
+              <p><strong>Step 1 (Raman):</strong> Two far-detuned counter-propagating lasers at Rabi frequencies $\Omega_1$, $\Omega_2$ and detuning $\Delta$ drive the two-photon transition $|g_1, n\rangle \to |g_2, n-1\rangle$ via stimulated Raman. The Raman coupling:</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">Effective Raman coupling (Eq. 86–87)</div>
+              $$\Omega_R = \frac{\Omega_1\Omega_2}{\Delta}$$
+              $$\langle g_1, n-1|\, H_\text{eff}\, |g_2, n\rangle = -\Omega_R\,\eta\sqrt{n}$$
+            </div>
+            <div class="theory-box">
+              <h4>Step 2 (Optical pumping):</h4>
+              <p>A separate near-resonant beam pumps $|g_2\rangle \to |g_1\rangle$ via spontaneous emission. The key is that angular momentum selection rules ($\Delta m_F = 0, \pm 1$) can be exploited so that $|g_1\rangle$ remains dark to the pump beam. Spontaneous emission in the Lamb-Dicke regime keeps the atom at $n-1$ rather than $n$.</p>
+            </div>
+          </div>
+          <div>
+            <div class="theory-box">
+              <h4>Why RSB Beats EIT/Λ-GM</h4>
+              <p>In EIT and Λ-GM, the counter-propagating lasers that provide cooling also do optical pumping. This means position-dependent collapse operators act on the dark state: the atom in $|g_D\rangle$ scatters photons from the cooling beams at rate $\propto \eta^2 \gamma_h$. This heating rate is fundamental and sets the $\eta^2$ floor in Eq. 72.</p>
+              <p>In RSB, the optical pump beam is completely separate and designed to be dark to $|g_1\rangle$. The far-detuned Raman beams have negligible scattering ($\Gamma_R \propto \Omega^2/\Delta^2 \approx 0$). So the position-dependent collapse operator from pumping is absent, removing the $\eta^2\gamma_h$ floor entirely.</p>
+            </div>
+            <div class="formula-box">
+              <div class="formula-label">RSB spin model (Eq. 88)</div>
+              $$H = \nu a^\dagger a + (\Delta_1 - \Delta_2)|g_2\rangle\langle g_2| + \Omega_R k\hat{x}\,\hat{F}_x$$
+              $$L_+ = \sqrt{\gamma_+}\,\hat{F}_+(1 + ik\hat{x})$$
+            </div>
+            <div class="insight">
+              <strong>Practical limits:</strong> RSB cooling is limited not by the fundamental theory but by technical factors: (1) coherence time between $|g_1\rangle$ and $|g_2\rangle$ is typically a few ms due to magnetic field fluctuations; (2) the carrier transition ($\Delta n = 0$) is driven with Rabi frequency $\Omega_R/\eta$ — much larger than the red sideband — and can populate higher $n$ if not carefully timed; (3) phase coherence of both Raman lasers is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:1rem;">
+          <div class="theory-box">
+            <h4>Comparison: PG / GM / EIT / RSB at a Glance</h4>
+            <p>The progression from PG to RSB represents successive improvements in how dark the dark state is to recoil heating:</p>
+            <ul style="color:var(--text-secondary);font-size:.84rem;line-height:1.9;padding-left:1.1rem;list-style:disc;">
+              <li><strong>PG:</strong> No dark state; all spin states scatter. Sisyphus mechanism provides cooling. Limit: $T \sim U_0 \sim \hbar\Omega^2/|\Delta|$.</li>
+              <li><strong>GM:</strong> Single-laser dark state. Position-dependent pumping heats the dark state at rate $\eta^2\gamma_h$. Limit: $\langle n\rangle \propto \eta^2\gamma_h/\gamma_+$.</li>
+              <li><strong>EIT/Λ-GM:</strong> Two-laser dark state via interference. $\gamma_-/\gamma_+$ reduced by $\sim 20\times$. Same $\eta^2\gamma_h$ floor from counter-propagating pump.</li>
+              <li><strong>RSB:</strong> Separate pump beam, dark to $|g_1\rangle$. No $\eta^2\gamma_h$ floor. Limit: technical coherence and off-resonant carrier driving.</li>
+            </ul>
+          </div>
+          <div class="theory-box">
+            <h4>Phase Coherence Requirement</h4>
+            <p>Both RSB and Λ-GM require the two Raman lasers to maintain phase coherence. Any relative frequency noise at timescales faster than the coherence time $\tau_c$ drives unwanted bright-dark mixing. The requirement is:</p>
+            <div class="formula-box" style="margin-top:.5rem;">
+              $$\delta\nu_\text{laser} \lesssim \eta\, \Omega_R \lesssim \eta\, \nu$$
+            </div>
+            <p style="font-size:.84rem;color:var(--text-secondary);margin-top:.5rem;">
+              For $\eta = 0.1$ and $\nu = 100\,\text{kHz}$, this requires laser coherence at the $\sim 10\,\text{kHz}$ level — readily satisfied by generating both frequencies from the same laser using an AOM or microwave EOM.
+            </p>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+      </section>
+
+      <!-- ─── COMPARISON ─────────────────────────────── -->
+      <section class="topic-section" id="comparison">
+        <div class="topic-header">
+          <span class="t-icon">📊</span>
+          <h2>Technique Comparison</h2>
+          <span class="t-tag">Summary</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
+          All techniques are benchmarked for the same atom and trap. The chart and table below show theoretical $\langle n \rangle$ limits using parameters representative of $^{87}$Rb in a 100 kHz optical tweezer ($\eta \approx 0.1$). Use the calculator to explore how the limits shift for your atom and trap.
+        </p>
+
+        <div class="two-col" style="margin-bottom:1.5rem;">
+          <div class="chart-wrap">
+            <h4>Steady-state ⟨n⟩ for different cooling techniques (η = 0.1, Rb D2)</h4>
+            <canvas id="compareChart" height="220"></canvas>
+          </div>
+          <div class="calc-card">
+            <h3>🧮 Technique Comparison Calculator</h3>
+            <div class="ctrl-row">
+              <div class="ctrl-group">
+                <label>η (Lamb-Dicke)</label>
+                <input type="range" id="cmp-eta" min="0.02" max="0.3" step="0.005" value="0.1">
+                <div class="ctrl-val">η = <span id="cmp-eta-val">0.100</span></div>
+              </div>
+              <div class="ctrl-group">
+                <label>Γ/2π (MHz) — linewidth</label>
+                <input type="range" id="cmp-gamma" min="0.1" max="20" step="0.1" value="6.065">
+                <div class="ctrl-val">Γ/2π = <span id="cmp-gamma-val">6.1</span> MHz</div>
+              </div>
+              <div class="ctrl-group">
+                <label>ν (kHz) — trap freq</label>
+                <input type="range" id="cmp-nu" min="10" max="1000" step="10" value="100">
+                <div class="ctrl-val">ν = <span id="cmp-nu-val">100</span> kHz</div>
+              </div>
+            </div>
+            <div class="result-row">
+              <div class="result-chip">
+                <div class="r-label">Doppler</div>
+                <div class="r-val" id="cmp-doppler">—</div>
+              </div>
+              <div class="result-chip">
+                <div class="r-label">Resolved SB</div>
+                <div class="r-val" id="cmp-rsb-n">—</div>
+              </div>
+              <div class="result-chip">
+                <div class="r-label">Gray Molasses</div>
+                <div class="r-val" id="cmp-gm-n">—</div>
+              </div>
+              <div class="result-chip good">
+                <div class="r-label">EIT / Λ-GM</div>
+                <div class="r-val" id="cmp-eit-n">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison table -->
+        <div style="overflow-x:auto;">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Technique</th>
+                <th>⟨n⟩ limit</th>
+                <th>Regime</th>
+                <th>Beams</th>
+                <th>Dark state</th>
+                <th>Key requirement</th>
+                <th>Typical ⟨n⟩ (Rb, 100 kHz)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="technique-name">Doppler</td>
+                <td>$\Gamma / (4\nu)$</td>
+                <td><span class="badge badge-rose">Unresolved</span></td>
+                <td>1 color</td>
+                <td>None</td>
+                <td>$\Delta = -\Gamma/2$</td>
+                <td>~15</td>
+              </tr>
+              <tr>
+                <td class="technique-name">Resolved SB</td>
+                <td>$(\Gamma/4\nu)^2$</td>
+                <td><span class="badge badge-blue">Resolved $\nu \gg \Gamma$</span></td>
+                <td>1 (narrow line)</td>
+                <td>$|n=0\rangle$ dark</td>
+                <td>$\nu \gg \Gamma$</td>
+                <td>~0.01 (Sr/Yb)</td>
+              </tr>
+              <tr>
+                <td class="technique-name">Polarization Gradient</td>
+                <td>$\sim U_0 / k_B$</td>
+                <td><span class="badge badge-amber">Sub-Doppler</span></td>
+                <td>2 (counter-prop.)</td>
+                <td>Partial</td>
+                <td>Power &amp; detuning tuning</td>
+                <td>2–5</td>
+              </tr>
+              <tr>
+                <td class="technique-name">Gray Molasses</td>
+                <td>$s/(1-s)$, $s \approx \eta^2\gamma_h/\gamma_+$</td>
+                <td><span class="badge badge-amber">Sub-Doppler</span></td>
+                <td>2 (counter-prop., blue det.)</td>
+                <td>Spin dark state</td>
+                <td>$F \to F' = F$ transition</td>
+                <td>0.3–1</td>
+              </tr>
+              <tr>
+                <td class="technique-name">EIT / Λ-GM</td>
+                <td>Same as GM, smaller $\gamma_-$</td>
+                <td><span class="badge badge-green">Deep sub-Doppler</span></td>
+                <td>2 colors, coherent</td>
+                <td>Two-photon dark state</td>
+                <td>Phase coherence; $\Delta_1 = \Delta_2$</td>
+                <td>0.05–0.3</td>
+              </tr>
+              <tr>
+                <td class="technique-name">Raman Sideband</td>
+                <td>Technical (coherence time)</td>
+                <td><span class="badge badge-green">Ground state</span></td>
+                <td>2 Raman + 1 pump</td>
+                <td>Separate pump (sel. rules)</td>
+                <td>Phase coherence; $\Omega_R &lt; \nu$</td>
+                <td>&lt;0.05</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Key insights -->
+        <div class="three-col" style="margin-top:1.5rem;">
+          <div class="theory-box">
+            <h4>Insight 1: η² Scaling</h4>
+            <p>All two-photon cooling techniques have a temperature floor scaling as $\eta^2$. Tighter traps (higher $\nu$, smaller $\eta$) directly improve the final temperature. This is why modern tweezer experiments push toward 1 MHz trap frequencies.</p>
+          </div>
+          <div class="theory-box">
+            <h4>Insight 2: Pumping Asymmetry</h4>
+            <p>The ratio $\gamma_-/\gamma_+$ is the key material parameter. A large asymmetry means the atom quickly returns to the cooling spin state after each cycle. GM achieves $\gamma_-/\gamma_+ \approx 0.11$; Λ-GM achieves $\approx 0.006$; RSB achieves $\approx 0$ by design.</p>
+          </div>
+          <div class="theory-box">
+            <h4>Insight 3: Dark State Quality</h4>
+            <p>The final temperature is set by how dark the dark state is to recoil heating. Single-laser dark states (GM) have a position-dependent heating rate $\eta^2\gamma_h$. Two-laser dark states (EIT) reduce $\gamma_-$. Separate-pump RSB eliminates position-dependent heating from the optical pump entirely.</p>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="insight" style="margin-top:1.5rem;">
+          <strong>Further reading:</strong> Phatak, S.S. et al., "A Generalized Theory for Optical Cooling of a Trapped Atom with Spin," arXiv:2406.19153 (2024). The paper derives the full master equation treatment, validates the spin model against exact simulations, and provides detailed comparison of all techniques in the $F=3/2 \to F'=3/2$ system of $^{87}$Rb.
+        </div>
+
+      </section>
+
+    </div><!-- /container -->
+  </div><!-- /page-content -->
+</div><!-- /page-wrap -->
+
+<script src="../js/main.js?v=4"></script>
+<script>renderNav({ active: 'laser-cooling', root: '../' });</script>
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════
+   STICKY NAV HIGHLIGHT
+══════════════════════════════════════════════════ */
+const lcSections = ['intro','lamb-dicke','resolved-sb','unresolved-sb','dark-sb','pg','gm','eit-lgm','rsb','comparison'];
+const lcObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.topic-nav a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.topic-nav a[href="#${e.target.id}"]`);
+      if (link) { link.classList.add('active'); link.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}); }
+    }
+  });
+}, { threshold: 0.25 });
+lcSections.forEach(id => { const el = document.getElementById(id); if (el) lcObserver.observe(el); });
+
+/* ═══════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════════ */
+const HBAR = 1.0546e-34;  // J·s
+const AMU  = 1.6605e-27;  // kg
+const KB   = 1.3806e-23;  // J/K
+
+/* ═══════════════════════════════════════════════
+   LAMB-DICKE CALCULATOR
+══════════════════════════════════════════════════ */
+function calcLD() {
+  const m = parseFloat(document.getElementById('ld-mass').value) * AMU;
+  const nu = parseFloat(document.getElementById('ld-nu').value) * 1e3;   // Hz
+  const lam = parseFloat(document.getElementById('ld-lambda').value) * 1e-9; // m
+  if (!m || !nu || !lam) return;
+
+  const k = 2 * Math.PI / lam;
+  const x0 = Math.sqrt(HBAR / (2 * m * nu));
+  const eta = k * x0;
+  const Er = HBAR * HBAR * k * k / (2 * m);  // recoil energy
+  const recoilRatio = Er / (HBAR * nu);
+
+  document.getElementById('ld-x0').textContent = (x0 * 1e9).toFixed(2) + ' nm';
+  document.getElementById('ld-eta').textContent = eta.toFixed(4);
+  document.getElementById('ld-recoil').textContent = recoilRatio.toFixed(3);
+
+  const chip = document.getElementById('ld-regime-chip');
+  const regime = document.getElementById('ld-regime');
+  if (eta < 0.1) {
+    regime.textContent = 'Yes (η ≪ 1)';
+    chip.classList.add('good'); chip.classList.remove('warn','bad');
+  } else if (eta < 0.3) {
+    regime.textContent = 'Marginal';
+    chip.classList.add('warn'); chip.classList.remove('good','bad');
+  } else {
+    regime.textContent = 'No (η ≥ 0.3)';
+    chip.classList.add('bad'); chip.classList.remove('good','warn');
+  }
+}
+['ld-mass','ld-nu','ld-lambda'].forEach(id => document.getElementById(id).addEventListener('input', calcLD));
+calcLD();
+
+/* ═══════════════════════════════════════════════
+   SIDEBAND COOLING CALCULATOR
+══════════════════════════════════════════════════ */
+function calcSB() {
+  const gamma_hz = parseFloat(document.getElementById('sb-gamma').value) * 1e6; // Hz
+  const nu_hz    = parseFloat(document.getElementById('sb-nu').value) * 1e3;    // Hz
+  const m        = parseFloat(document.getElementById('sb-mass').value) * AMU;
+  if (!gamma_hz || !nu_hz) return;
+
+  const ratio = gamma_hz / (4 * nu_hz);
+  const nResolved   = ratio * ratio;
+  const nUnresolved = ratio;
+  const nDoppler    = ratio; // same as unresolved SB limit
+  const isResolved  = nu_hz > gamma_hz;
+
+  document.getElementById('sb-n-resolved').textContent   = nResolved.toFixed(4);
+  document.getElementById('sb-n-unresolved').textContent = nUnresolved.toFixed(3);
+  document.getElementById('sb-n-doppler').textContent    = nDoppler.toFixed(3);
+
+  const chip = document.getElementById('sb-regime-chip');
+  const text = document.getElementById('sb-regime');
+  if (isResolved) {
+    text.textContent = 'Resolved ✓';
+    chip.classList.add('good'); chip.classList.remove('warn','bad');
+  } else {
+    text.textContent = 'Unresolved ✗';
+    chip.classList.add('bad'); chip.classList.remove('good','warn');
+  }
+}
+['sb-gamma','sb-nu','sb-mass'].forEach(id => document.getElementById(id).addEventListener('input', calcSB));
+calcSB();
+
+/* ═══════════════════════════════════════════════
+   GRAY MOLASSES CALCULATOR
+══════════════════════════════════════════════════ */
+function calcGM() {
+  const eta   = parseFloat(document.getElementById('gm-eta').value);
+  const asym  = parseFloat(document.getElementById('gm-asym').value);  // γ-/γ+
+  const heat  = parseFloat(document.getElementById('gm-heat').value);  // γh/γ+
+
+  document.getElementById('gm-eta-val').textContent  = eta.toFixed(3);
+  document.getElementById('gm-asym-val').textContent = asym.toFixed(3);
+  document.getElementById('gm-heat-val').textContent = heat.toFixed(1);
+
+  const eta2 = eta * eta;
+  const s = (4 * eta2 * heat + asym) / (eta2 * heat + 1.0);
+  const nss = s >= 1 ? Infinity : s / (1 - s);
+  const gs  = s < 1 ? (1 / (nss + 1)) * 100 : 0;
+
+  document.getElementById('gm-s').textContent  = s.toFixed(4);
+
+  const nChip = document.getElementById('gm-n-chip');
+  const nEl   = document.getElementById('gm-n');
+  if (!isFinite(nss)) {
+    nEl.textContent = '∞ (no cooling)';
+    nChip.classList.add('bad'); nChip.classList.remove('good','warn');
+  } else if (nss < 0.3) {
+    nEl.textContent = nss.toFixed(4);
+    nChip.classList.add('good'); nChip.classList.remove('bad','warn');
+  } else if (nss < 2) {
+    nEl.textContent = nss.toFixed(3);
+    nChip.classList.add('warn'); nChip.classList.remove('bad','good');
+  } else {
+    nEl.textContent = nss.toFixed(2);
+    nChip.classList.add('bad'); nChip.classList.remove('good','warn');
+  }
+
+  document.getElementById('gm-gs').textContent  = gs.toFixed(1) + '%';
+
+  const valid = document.getElementById('gm-valid');
+  if (s < 1) { valid.textContent = 'Yes (s < 1)'; }
+  else       { valid.textContent = 'No (s ≥ 1)'; }
+}
+['gm-eta','gm-asym','gm-heat'].forEach(id => document.getElementById(id).addEventListener('input', calcGM));
+calcGM();
+
+/* ═══════════════════════════════════════════════
+   COMPARISON CHART + CALCULATOR
+══════════════════════════════════════════════════ */
+const compareCtx = document.getElementById('compareChart').getContext('2d');
+const compareChart = new Chart(compareCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Doppler', 'PG (est.)', 'Gray\nMolasses', 'EIT /\nΛ-GM', 'Resolved\nSB (narrow)', 'Raman\nSB'],
+    datasets: [{
+      label: '⟨n⟩ steady state',
+      data: [15, 3, 0.8, 0.1, 0.01, 0.05],
+      backgroundColor: ['#f87171','#fb923c','#fbbf24','#22d3ee','#4ade80','#818cf8'],
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `⟨n⟩ = ${ctx.parsed.y}` } }
+    },
+    scales: {
+      y: {
+        type: 'logarithmic',
+        grid: { color: '#1e293b' },
+        ticks: { color: '#64748b', font: { size: 10 } },
+        title: { display: true, text: '⟨n⟩ (log scale)', color: '#64748b', font: { size: 11 } }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#64748b', font: { size: 10 } }
+      }
+    }
+  }
+});
+
+function updateCompare() {
+  const eta   = parseFloat(document.getElementById('cmp-eta').value);
+  const gamma = parseFloat(document.getElementById('cmp-gamma').value) * 1e6; // Hz
+  const nu    = parseFloat(document.getElementById('cmp-nu').value) * 1e3;    // Hz
+
+  document.getElementById('cmp-eta-val').textContent   = eta.toFixed(3);
+  document.getElementById('cmp-gamma-val').textContent = (gamma/1e6).toFixed(1);
+  document.getElementById('cmp-nu-val').textContent    = (nu/1e3).toFixed(0);
+
+  const ratio   = gamma / (4 * nu);
+  const nDop    = ratio;
+  const nResSB  = ratio * ratio;
+  // GM: approximate with γ-/γ+ = 0.11, γh/γ+ = 2
+  const eta2    = eta * eta;
+  const gmAsym  = 0.11, gmHeat = 2.0;
+  const sGM     = (4*eta2*gmHeat + gmAsym) / (eta2*gmHeat + 1);
+  const nGM     = sGM < 1 ? sGM/(1-sGM) : 999;
+  // EIT/Λ-GM: same model with better γ-/γ+ = 0.006
+  const eitAsym = 0.006;
+  const sEIT    = (4*eta2*gmHeat + eitAsym) / (eta2*gmHeat + 1);
+  const nEIT    = sEIT < 1 ? sEIT/(1-sEIT) : 999;
+
+  document.getElementById('cmp-doppler').textContent = nDop.toFixed(1);
+  document.getElementById('cmp-rsb-n').textContent   = nResSB.toFixed(4);
+  document.getElementById('cmp-gm-n').textContent    = nGM.toFixed(3);
+  document.getElementById('cmp-eit-n').textContent   = nEIT.toFixed(4);
+
+  compareChart.data.datasets[0].data = [
+    parseFloat(nDop.toFixed(3)),
+    parseFloat((0.3 * ratio).toFixed(3)),  // PG estimate: ~0.3× Doppler
+    parseFloat(nGM.toFixed(4)),
+    parseFloat(nEIT.toFixed(4)),
+    parseFloat(nResSB.toFixed(4)),
+    0.05  // RSB: technical limit, ~0.05 typical
+  ];
+  compareChart.update();
+}
+['cmp-eta','cmp-gamma','cmp-nu'].forEach(id => document.getElementById(id).addEventListener('input', updateCompare));
+updateCompare();
+
+/* ═══════════════════════════════════════════════
+   KATEX AUTO-RENDER (fallback trigger after load)
+══════════════════════════════════════════════════ */
+if (typeof renderMathInElement === 'undefined') {
+  window.addEventListener('load', () => {
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+        throwOnError: false
+      });
+    }
+  });
+}
+</script>
+</body>
+</html>

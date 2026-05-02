@@ -26,6 +26,17 @@ const NAV = {
   industry: [
     { key: 'qc-landscape', label: 'QC Industry Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
   ],
+  cooling: [
+    { label: 'Overview & Lamb-Dicke',      icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke'   },
+    { label: 'Resolved Sideband',          icon: '📡', href: 'pages/laser-cooling.html#resolved-sb'  },
+    { label: 'Unresolved Sideband',        icon: '〰️', href: 'pages/laser-cooling.html#unresolved-sb' },
+    { label: 'Dark-State Sideband',        icon: '🌑', href: 'pages/laser-cooling.html#dark-sb'      },
+    { label: 'Polarization Gradient',      icon: '🔄', href: 'pages/laser-cooling.html#pg'           },
+    { label: 'Gray Molasses',              icon: '☁️',  href: 'pages/laser-cooling.html#gm'           },
+    { label: 'EIT / Λ-Enhanced GM',        icon: '✨', href: 'pages/laser-cooling.html#eit-lgm'      },
+    { label: 'Raman Sideband',             icon: '🔀', href: 'pages/laser-cooling.html#rsb'          },
+    { label: 'Technique Comparison',       icon: '📊', href: 'pages/laser-cooling.html#comparison'   },
+  ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
     { key: 'quantum-gates',      label: 'Quantum Gates',         icon: '⚡',  href: 'pages/learn-quantum.html#gates'        },
@@ -73,6 +84,13 @@ function renderNav({ active = '', root = '' } = {}) {
     </a>
   `).join('');
 
+  const coolingHTML = NAV.cooling.map(t => `
+    <a class="nav-drop-item" href="${root}${t.href}">
+      <span style="font-size:1rem;width:20px;text-align:center">${t.icon}</span>
+      ${t.label}
+    </a>
+  `).join('');
+
   // Mobile tools
   const mobileTools = NAV.tools.map(t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
@@ -91,6 +109,13 @@ function renderNav({ active = '', root = '' } = {}) {
   const mobileIndustry = NAV.industry.map(t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
       <span class="nav-drop-dot" style="background:${t.color};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
+      ${t.label}
+    </a>
+  `).join('');
+
+  const mobileCooling = NAV.cooling.map(t => `
+    <a class="nav-mobile-link" href="${root}${t.href}">
+      <span style="font-size:1.1rem">${t.icon}</span>
       ${t.label}
     </a>
   `).join('');
@@ -143,6 +168,20 @@ function renderNav({ active = '', root = '' } = {}) {
             </div>
           </div>
 
+          <!-- Laser Cooling dropdown -->
+          <div class="nav-item" role="none">
+            <button class="nav-btn ${'laser-cooling'===active?'active':''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
+              Laser Cooling
+              <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6l4 4 4-4"/>
+              </svg>
+            </button>
+            <div class="nav-drop" role="menu" style="min-width:320px">
+              <div class="nav-drop-section">❄️ Cooling Techniques — ${NAV.cooling.length} topics</div>
+              ${coolingHTML}
+            </div>
+          </div>
+
           <!-- QC Industry dropdown -->
           <div class="nav-item" role="none">
             <button class="nav-btn ${NAV.industry.some(t=>t.key===active)?'active':''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
@@ -182,6 +221,10 @@ function renderNav({ active = '', root = '' } = {}) {
       <div class="nav-mobile-section">
         <div class="nav-mobile-section-title">Learn Quantum</div>
         ${mobileLearn}
+      </div>
+      <div class="nav-mobile-section">
+        <div class="nav-mobile-section-title">Laser Cooling</div>
+        ${mobileCooling}
       </div>
       <div class="nav-mobile-section">
         <div class="nav-mobile-section-title">QC Industry</div>
