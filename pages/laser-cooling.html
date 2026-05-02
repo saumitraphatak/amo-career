@@ -177,6 +177,29 @@
       font-size: 1.2rem; color: var(--text-muted);
     }
 
+    /* ─── Resource cards ───────────────────────────── */
+    .resource-card {
+      display: block; text-decoration: none;
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 14px; padding: 1.1rem 1.25rem;
+      transition: border-color .2s, background .2s;
+    }
+    .resource-card:hover {
+      border-color: rgba(34,211,238,.35); background: #0b1e28;
+    }
+    .rc-header { display: flex; gap: .75rem; align-items: flex-start; margin-bottom: .6rem; }
+    .rc-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+    .rc-title { font-size: .9rem; font-weight: 700; color: var(--text-primary); line-height: 1.4; margin-bottom: .15rem; }
+    .rc-meta  { font-size: .75rem; color: #22d3ee; font-weight: 500; }
+    .rc-desc  { font-size: .82rem; color: var(--text-secondary); line-height: 1.65; margin: 0 0 .6rem 0; }
+    .rc-tag   {
+      display: inline-block; font-size: .7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .05em;
+      background: rgba(34,211,238,.08); color: #22d3ee;
+      border: 1px solid rgba(34,211,238,.18); border-radius: 4px;
+      padding: .15rem .45rem;
+    }
+
     /* ─── Intro stat cards ──────────────────────────── */
     .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
     .stat-card {
@@ -229,6 +252,7 @@
     <a href="#eit-lgm"             >EIT / Λ-GM</a>
     <a href="#rsb"                 >Raman SB</a>
     <a href="#comparison"          >Compare</a>
+    <a href="#resources"           >Resources</a>
   </nav>
 
   <!-- ═══════════════════════════════════════════════════
@@ -966,7 +990,207 @@
         <hr class="section-divider">
 
         <div class="insight" style="margin-top:1.5rem;">
-          <strong>Further reading:</strong> Phatak, S.S. et al., "A Generalized Theory for Optical Cooling of a Trapped Atom with Spin," arXiv:2406.19153 (2024). The paper derives the full master equation treatment, validates the spin model against exact simulations, and provides detailed comparison of all techniques in the $F=3/2 \to F'=3/2$ system of $^{87}$Rb.
+          <strong>Primary reference:</strong> Phatak, S.S. et al., "A Generalized Theory for Optical Cooling of a Trapped Atom with Spin," arXiv:2406.19153 (2024). All equations on this page are from that paper. The full master equation derivation, adiabatic elimination, and detailed comparison of all techniques for $^{87}$Rb are there.
+        </div>
+
+      </section>
+
+      <!-- ─── RESOURCES ──────────────────────────────────── -->
+      <section class="topic-section" id="resources">
+        <div class="topic-header">
+          <span class="t-icon">📚</span>
+          <h2>Papers, Textbooks &amp; Videos</h2>
+          <span class="t-tag">Go deeper</span>
+        </div>
+
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
+          The resources below are organized by how deep you want to go — from a 10-minute video to graduate-level review articles. Start with the videos if you want intuition first, then move to the textbook chapters, then the original papers once you want to work through the math.
+        </p>
+
+        <!-- ── Videos ── -->
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;border-left:3px solid #22d3ee;padding-left:.75rem;">🎬 Videos — Build the Intuition</h3>
+        <div class="two-col" style="margin-bottom:2rem;">
+
+          <a class="resource-card" href="https://www.youtube.com/results?search_query=William+Phillips+Nobel+lecture+laser+cooling" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🏅</span>
+              <div>
+                <div class="rc-title">William D. Phillips — Nobel Lecture (1997)</div>
+                <div class="rc-meta">Nobel Prize YouTube channel · ~50 min</div>
+              </div>
+            </div>
+            <p class="rc-desc">The clearest physical intuition for laser cooling from one of its inventors. Phillips walks through Doppler cooling, optical molasses, and sub-Doppler mechanisms with hand-drawn diagrams. Essential first watch.</p>
+            <span class="rc-tag">Foundational · Nobel lecture</span>
+          </a>
+
+          <a class="resource-card" href="https://www.youtube.com/results?search_query=laser+cooling+atoms+Veritasium+coldest" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🎥</span>
+              <div>
+                <div class="rc-title">How to Make the Coldest Thing in the Universe</div>
+                <div class="rc-meta">Veritasium · ~10 min</div>
+              </div>
+            </div>
+            <p class="rc-desc">Visual, accessible introduction to laser cooling for a general science audience. Good for building the core mental model of photon momentum kicks before diving into the physics.</p>
+            <span class="rc-tag">Introductory · Visual</span>
+          </a>
+
+          <a class="resource-card" href="https://www.youtube.com/results?search_query=sideband+cooling+trapped+ion+neutral+atom+lecture" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🎓</span>
+              <div>
+                <div class="rc-title">Sideband Cooling — Graduate Lecture</div>
+                <div class="rc-meta">Search: "sideband cooling trapped ion lecture" · Various ICAP/DAMOP talks</div>
+              </div>
+            </div>
+            <p class="rc-desc">Several graduate-level recorded lectures from ICAP, DAMOP, and Les Houches summer schools cover resolved sideband cooling and the Lamb-Dicke regime in detail. Search for talks by Dietrich Leibfried (NIST) or Jun Ye (JILA).</p>
+            <span class="rc-tag">Graduate level · Sideband cooling</span>
+          </a>
+
+          <a class="resource-card" href="https://www.youtube.com/results?search_query=gray+molasses+cooling+optical+tweezer+AMO+lecture" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🎓</span>
+              <div>
+                <div class="rc-title">Gray Molasses &amp; Sub-Doppler Cooling</div>
+                <div class="rc-meta">Search: "gray molasses cooling lecture" · Summer school recordings</div>
+              </div>
+            </div>
+            <p class="rc-desc">Recorded talks from Les Houches and Cargese summer schools cover sub-Doppler mechanisms including gray molasses and EIT cooling. Look for lectures by Jean Dalibard and Claude Cohen-Tannoudji whose theoretical framework underlies all of this.</p>
+            <span class="rc-tag">Graduate level · Sub-Doppler</span>
+          </a>
+
+        </div>
+
+        <!-- ── Textbooks / Free Notes ── -->
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;border-left:3px solid #22d3ee;padding-left:.75rem;">📖 Textbooks &amp; Free Notes</h3>
+        <div class="two-col" style="margin-bottom:2rem;">
+
+          <a class="resource-card" href="http://steck.us/teaching" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">📄</span>
+              <div>
+                <div class="rc-title">Quantum and Atom Optics — Daniel Steck</div>
+                <div class="rc-meta">steck.us/teaching · Free PDF · Updated continuously</div>
+              </div>
+            </div>
+            <p class="rc-desc">The definitive free graduate textbook for AMO physics. Chapters 9–11 cover laser cooling comprehensively: Doppler cooling, optical molasses, the Wigner-Weisskopf theory, and sub-Doppler mechanisms. Also covers the master equation formalism used by Phatak et al. The spin tensor coefficients in the paper's Appendix reference Steck directly.</p>
+            <span class="rc-tag">Free PDF · Most recommended</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/RevModPhys.75.281" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">📋</span>
+              <div>
+                <div class="rc-title">Quantum Dynamics of Single Trapped Ions</div>
+                <div class="rc-meta">Leibfried, Blatt, Monroe, Wineland · Rev. Mod. Phys. 75, 281 (2003)</div>
+              </div>
+            </div>
+            <p class="rc-desc">The standard review for sideband cooling of trapped ions — and the physics is identical for neutral atoms in tweezers. Covers the Lamb-Dicke regime, motional state preparation, sideband thermometry, and ground-state cooling in rigorous detail. Highly cited (5000+).</p>
+            <span class="rc-tag">Review article · Sideband cooling</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/RevModPhys.58.699" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">📋</span>
+              <div>
+                <div class="rc-title">The Mechanical Effects of Light</div>
+                <div class="rc-meta">Stenholm · Rev. Mod. Phys. 58, 699 (1986)</div>
+              </div>
+            </div>
+            <p class="rc-desc">The foundational review that established the theoretical framework for laser cooling — before sub-Doppler cooling was even discovered. Covers the semiclassical and quantum treatments of radiation pressure, the Fokker-Planck approach to cooling, and the Doppler limit.</p>
+            <span class="rc-tag">Review article · Doppler / foundations</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1364/JOSAB.6.002023" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">📋</span>
+              <div>
+                <div class="rc-title">Laser Cooling Below the Doppler Limit by Polarization Gradients</div>
+                <div class="rc-meta">Dalibard &amp; Cohen-Tannoudji · JOSAB 6, 2023 (1989)</div>
+              </div>
+            </div>
+            <p class="rc-desc">The original paper predicting and explaining sub-Doppler cooling via polarization gradients — the Sisyphus mechanism. Written the same year the effect was discovered experimentally. The theoretical framework here directly underlies PG and GM cooling.</p>
+            <span class="rc-tag">Original paper · PG cooling</span>
+          </a>
+
+        </div>
+
+        <!-- ── Key experimental papers ── -->
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;border-left:3px solid #22d3ee;padding-left:.75rem;">🔬 Key Experimental Papers</h3>
+        <div class="three-col" style="margin-bottom:1rem;">
+
+          <a class="resource-card" href="https://arxiv.org/abs/2406.19153" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">⚛️</span>
+              <div>
+                <div class="rc-title">A Generalized Theory for Optical Cooling of a Trapped Atom with Spin</div>
+                <div class="rc-meta">Phatak et al. · arXiv:2406.19153 (2024)</div>
+              </div>
+            </div>
+            <p class="rc-desc">The primary reference for this entire page. Derives the unified spin-cooling framework unifying PG, GM, Λ-GM, EIT, and RSB under a single formalism. All equations on this page are from here.</p>
+            <span class="rc-tag">Theory · Unified framework</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/PhysRevLett.131.083001" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🧲</span>
+              <div>
+                <div class="rc-title">Λ-Enhanced Gray Molasses in an Optical Tweezer</div>
+                <div class="rc-meta">Blodgett, Peana, Phatak et al. (Hood Lab) · PRL 131, 083001 (2023)</div>
+              </div>
+            </div>
+            <p class="rc-desc">Experimental demonstration of Λ-GM cooling in a single-atom optical tweezer — the experiment at Purdue that motivated the generalized theory paper. Shows $\langle n \rangle \approx 0.3$–$0.5$ for $^{87}$Rb using the $F=1/2, 3/2 \to F'=3/2$ Λ-configuration.</p>
+            <span class="rc-tag">Experiment · Λ-GM · Hood Lab</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/PhysRevX.9.011057" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🔬</span>
+              <div>
+                <div class="rc-title">Gray Molasses Cooling of $^{39}$K to the Quantum Ground State</div>
+                <div class="rc-meta">Brown, Thiele, Kiehl et al. (Regal Lab) · PRX 9, 011057 (2019)</div>
+              </div>
+            </div>
+            <p class="rc-desc">Demonstrated that standard gray molasses, when combined with the correct Λ-enhancement, can reach the motional ground state in a single tweezer. One of the first demonstrations of near-ground-state cooling using sub-Doppler techniques rather than RSB.</p>
+            <span class="rc-tag">Experiment · GM in tweezers</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/PhysRevX.2.041014" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🎯</span>
+              <div>
+                <div class="rc-title">Cooling a Single Atom in an Optical Tweezer to Its Quantum Ground State</div>
+                <div class="rc-meta">Kaufman, Lester, Regal · PRX 2, 041014 (2012)</div>
+              </div>
+            </div>
+            <p class="rc-desc">The landmark paper demonstrating RSB cooling of a single neutral atom in a tweezer to $\langle n \rangle &lt; 0.05$ — the first ground-state preparation in a tweezer. Foundational for the neutral-atom quantum computing platform.</p>
+            <span class="rc-tag">Experiment · RSB · Landmark</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/PhysRevLett.110.133001" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">🎯</span>
+              <div>
+                <div class="rc-title">Coherence and Raman Sideband Cooling of a Single Atom in an Optical Tweezer</div>
+                <div class="rc-meta">Thompson, Tiecke, Zibrov et al. · PRL 110, 133001 (2013)</div>
+              </div>
+            </div>
+            <p class="rc-desc">Independent demonstration of RSB in a tweezer. Includes detailed characterization of the coherence properties and an analysis of the technical limits discussed in the theory section above.</p>
+            <span class="rc-tag">Experiment · RSB · Coherence</span>
+          </a>
+
+          <a class="resource-card" href="https://doi.org/10.1103/PhysRevLett.85.4458" target="_blank" rel="noopener">
+            <div class="rc-header">
+              <span class="rc-icon">✨</span>
+              <div>
+                <div class="rc-title">Quantum State Manipulation of a Single Trapped Ion with EIT Cooling</div>
+                <div class="rc-meta">Morigi, Eschner, Keitel · PRL 85, 4458 (2000)</div>
+              </div>
+            </div>
+            <p class="rc-desc">First theoretical proposal and experimental verification of EIT cooling in trapped ions. Establishes the bright/dark basis picture and the resonance condition. Directly relevant to EIT cooling of neutral atoms in tweezers.</p>
+            <span class="rc-tag">Experiment + Theory · EIT cooling</span>
+          </a>
+
         </div>
 
       </section>
@@ -983,7 +1207,7 @@
 /* ═══════════════════════════════════════════════
    STICKY NAV HIGHLIGHT
 ══════════════════════════════════════════════════ */
-const lcSections = ['intro','lamb-dicke','resolved-sb','unresolved-sb','dark-sb','pg','gm','eit-lgm','rsb','comparison'];
+const lcSections = ['intro','lamb-dicke','resolved-sb','unresolved-sb','dark-sb','pg','gm','eit-lgm','rsb','comparison','resources'];
 const lcObserver = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
