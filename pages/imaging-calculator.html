@@ -25,6 +25,13 @@
     .lbl-val          { color: var(--c-img); font-family: var(--mono); }
     .approx-tag       { background: rgba(52,211,153,.12); color: var(--c-img); border-color: rgba(52,211,153,.25); }
 
+    /* ─── Histogram preset buttons ──────────────── */
+    .hist-preset-btn.active {
+      background: rgba(52,211,153,0.18) !important;
+      border-color: rgba(52,211,153,0.6) !important;
+      color: #34d399 !important;
+    }
+
     /* ─── Result cards grid ──────────────────────── */
     .prop-grid {
       display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem;
@@ -619,10 +626,380 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 6: REFERENCES ════════════════════════════════ -->
+  <!-- ═══ SECTION 6: IMAGING HISTOGRAM & FIDELITY ══════════════ -->
+  <section class="section-block anim-in delay-5" id="histogram-section">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">06 </span>Imaging Histogram &amp; Detection Fidelity
+    </h2>
+
+    <div class="theory-box">
+      <h4>What is the imaging histogram?</h4>
+      <p>Run your experiment ~500–2000 times. Each shot, sum the camera electrons over the region of interest
+      (typically a 3–7 px ROI around one tweezer site). Plot the distribution of those counts.
+      You get a <strong>bimodal histogram</strong>: a narrow "dark" peak when the site is empty (only background
+      scatter + camera noise), and a broader "bright" peak when an atom is present (atom fluorescence + background).
+      The <em>overlap</em> between the two peaks is the fundamental limit on how well you can distinguish
+      atom present from atom absent — this is your imaging fidelity.</p>
+    </div>
+
+    <!-- Anatomy SVG -->
+    <div class="chart-card" style="margin-bottom:1.1rem;">
+      <h5>Anatomy of a single-atom imaging histogram</h5>
+      <svg viewBox="0 0 700 210" width="100%" style="max-width:700px;display:block;margin:0 auto;" aria-label="Bimodal imaging histogram diagram">
+        <defs>
+          <marker id="harr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="#475569"/>
+          </marker>
+        </defs>
+        <!-- Axes -->
+        <line x1="40" y1="175" x2="680" y2="175" stroke="#334155" stroke-width="1.5" marker-end="url(#harr)"/>
+        <line x1="40" y1="175" x2="40"  y2="15"  stroke="#334155" stroke-width="1.5" marker-end="url(#harr)"/>
+        <text x="350" y="200" fill="#64748b" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">Detected signal (counts / electrons)</text>
+        <text x="12" y="95" fill="#64748b" font-size="11" text-anchor="middle" font-family="Inter,sans-serif" transform="rotate(-90,12,95)">Number of shots</text>
+
+        <!-- Dark peak (Gaussian, centred ~160px) -->
+        <!-- mu_dark=150, sigma=22, peak height scaled to 130 px -->
+        <path d="M 55,174 C 75,174 90,172 105,160 C 118,148 130,118 140,85 C 150,52 158,30 165,25 C 172,20 178,20 185,25 C 192,30 200,52 210,85 C 220,118 232,148 245,160 C 258,170 270,174 290,174" stroke="#60a5fa" stroke-width="2.5" fill="rgba(96,165,250,0.18)" />
+        <text x="175" y="14" fill="#60a5fa" font-size="12" text-anchor="middle" font-weight="600" font-family="Inter,sans-serif">Dark peak</text>
+        <text x="175" y="27" fill="#60a5fa" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">(no atom)</text>
+        <line x1="175" y1="30" x2="175" y2="175" stroke="#60a5fa" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <text x="175" y="188" fill="#60a5fa" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">μ_dark</text>
+
+        <!-- Bright peak (Gaussian, centred ~480px) -->
+        <path d="M 320,174 C 345,174 365,172 385,162 C 402,152 418,130 432,102 C 446,74 456,46 465,30 C 472,18 478,15 485,15 C 492,15 498,18 505,30 C 514,46 524,74 538,102 C 552,130 568,152 585,162 C 602,170 620,174 645,174" stroke="#34d399" stroke-width="2.5" fill="rgba(52,211,153,0.18)" />
+        <text x="485" y="7"  fill="#34d399" font-size="12" text-anchor="middle" font-weight="600" font-family="Inter,sans-serif">Bright peak</text>
+        <text x="485" y="19" fill="#34d399" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">(atom present)</text>
+        <line x1="485" y1="22" x2="485" y2="175" stroke="#34d399" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+        <text x="485" y="188" fill="#34d399" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">μ_bright</text>
+
+        <!-- Threshold vertical line -->
+        <line x1="332" y1="25" x2="332" y2="175" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="332" y="19" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="700" font-family="Inter,sans-serif">θ (threshold)</text>
+
+        <!-- Miss error zone (orange) — bright peak left of threshold, tiny overlap -->
+        <path d="M 320,174 C 325,174 330,173 332,171 L 332,174 Z" fill="rgba(251,146,60,0.6)"/>
+        <text x="306" y="168" fill="#fb923c" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">Miss</text>
+        <line x1="306" y1="162" x2="322" y2="174" stroke="#fb923c" stroke-width="1" opacity="0.7"/>
+
+        <!-- False alarm zone (red) — dark peak right of threshold, tiny overlap -->
+        <path d="M 332,171 C 335,169 340,166 348,168 C 360,171 375,174 395,174 L 332,174 Z" fill="rgba(239,68,68,0.5)"/>
+        <text x="358" y="156" fill="#f87171" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">False alarm</text>
+        <line x1="350" y1="151" x2="348" y2="168" stroke="#f87171" stroke-width="1" opacity="0.7"/>
+
+        <!-- σ_dark double arrow -->
+        <line x1="155" y1="98" x2="195" y2="98" stroke="#60a5fa" stroke-width="1.5"/>
+        <line x1="155" y1="93" x2="155" y2="103" stroke="#60a5fa" stroke-width="1.5"/>
+        <line x1="195" y1="93" x2="195" y2="103" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="175" y="91" fill="#60a5fa" font-size="9" text-anchor="middle" font-family="Inter,sans-serif">σ_dark</text>
+
+        <!-- σ_bright double arrow -->
+        <line x1="455" y1="98" x2="515" y2="98" stroke="#34d399" stroke-width="1.5"/>
+        <line x1="455" y1="93" x2="455" y2="103" stroke="#34d399" stroke-width="1.5"/>
+        <line x1="515" y1="93" x2="515" y2="103" stroke="#34d399" stroke-width="1.5"/>
+        <text x="485" y="91" fill="#34d399" font-size="9" text-anchor="middle" font-family="Inter,sans-serif">σ_bright</text>
+
+        <!-- SNR arrow -->
+        <line x1="175" y1="55" x2="485" y2="55" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2,2" opacity="0.4"/>
+        <text x="330" y="51" fill="#94a3b8" font-size="10" text-anchor="middle" font-family="Inter,sans-serif">SNR = (μ_bright − μ_dark) / σ</text>
+      </svg>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;font-style:italic;">
+        θ = threshold. Shots below θ → "no atom"; shots above θ → "atom". Orange = missed atoms (false negative). Red = false alarms (false positive). The overlap area determines error rates.
+      </div>
+    </div>
+
+    <!-- Theory: peak models + fidelity math -->
+    <div class="two-col" style="margin-bottom:1rem;">
+      <div>
+        <div class="theory-box">
+          <h4>Peak models</h4>
+          <p>For $N_{\rm det} \gg 1$ detected photons, both peaks are well-approximated by Gaussians (Central Limit Theorem on Poisson photon statistics + Gaussian read noise):</p>
+        </div>
+        <div class="formula-box">
+$$P_{\rm dark}(n) = \mathcal{N}(\mu_{\rm dark},\,\sigma_{\rm dark}^2)$$
+$$\mu_{\rm dark} = N_{\rm bg} + N_{\rm dark} + \sigma_{\rm read}^2/G^2$$
+$$\sigma_{\rm dark}^2 = F^2 \mu_{\rm dark} + (\sigma_{\rm read}/G)^2$$
+$$P_{\rm bright}(n) = \mathcal{N}(\mu_{\rm bright},\,\sigma_{\rm bright}^2)$$
+$$\mu_{\rm bright} = N_{\rm sig} + \mu_{\rm dark}$$
+$$\sigma_{\rm bright}^2 = F^2 \mu_{\rm bright} + (\sigma_{\rm read}/G)^2$$
+$F=\sqrt{2}$ (EMCCD excess noise), $F=1$ (sCMOS/ideal)
+        </div>
+        <div class="theory-box">
+          <h4>Why σ_bright &gt; σ_dark</h4>
+          <p>Shot noise grows as $\sqrt{N}$. More photons in the bright peak → larger absolute fluctuations
+          → the bright peak is always wider than the dark peak.
+          This asymmetry means the optimal threshold is not exactly at the midpoint —
+          it shifts slightly toward the brighter side to equalize miss and false-alarm probabilities.</p>
+        </div>
+      </div>
+      <div>
+        <div class="theory-box">
+          <h4>Error probabilities &amp; fidelity</h4>
+          <p>Given threshold $\theta$, define two error types:</p>
+        </div>
+        <div class="formula-box">
+$P_{\rm miss}(\theta) = \Phi\!\left(\frac{\theta - \mu_{\rm bright}}{\sigma_{\rm bright}}\right) \quad$ [bright peak below θ]
+<br><br>
+$P_{\rm false}(\theta) = 1 - \Phi\!\left(\frac{\theta - \mu_{\rm dark}}{\sigma_{\rm dark}}\right) \quad$ [dark peak above θ]
+<br><br>
+$$\mathcal{F}_{\rm detect} = 1 - \frac{P_{\rm miss} + P_{\rm false}}{2}$$
+Optimal threshold: minimise $P_{\rm miss} + P_{\rm false}$.
+<br>Equal $\sigma$: $\theta_{\rm opt} = (\mu_{\rm bright} + \mu_{\rm dark})/2$.
+<br>Unequal $\sigma$: solve numerically.
+<br><br>
+For ${\rm SNR} = (\mu_{\rm bright}-\mu_{\rm dark})/\bar{\sigma}$:<br>
+$\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2\sqrt{2}}\right)$ — every factor-2 in SNR dramatically improves fidelity.
+        </div>
+        <div class="info-banner">
+          <strong>SNR → Fidelity rule of thumb:</strong><br>
+          SNR = 5 → F ≈ 96.0% &nbsp;|&nbsp; SNR = 10 → F ≈ 99.96% &nbsp;|&nbsp; SNR = 20 → F &gt; 99.9999%.<br>
+          This is why SNR ≥ 10 is the standard target for single-site atom detection.
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive histogram simulator -->
+    <div class="chart-card" style="margin-bottom:1rem;">
+      <h5>Interactive Histogram Simulator</h5>
+
+      <!-- Species presets -->
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <span style="font-size:.8rem;color:var(--text-muted);align-self:center;">Preset:</span>
+        <button class="hist-preset-btn active" data-key="Rb87"
+          onclick="loadHistPreset('Rb87')"
+          style="background:rgba(251,146,60,0.12);border:1px solid rgba(251,146,60,0.3);color:#fb923c;border-radius:20px;padding:.22rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;">
+          ⁸⁷Rb (alkali)
+        </button>
+        <button class="hist-preset-btn" data-key="Yb171"
+          onclick="loadHistPreset('Yb171')"
+          style="background:rgba(52,211,153,0.08);border:1px solid rgba(148,163,184,0.2);color:#94a3b8;border-radius:20px;padding:.22rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;">
+          ¹⁷¹Yb (alkaline-earth)
+        </button>
+        <button class="hist-preset-btn" data-key="Sr88"
+          onclick="loadHistPreset('Sr88')"
+          style="background:rgba(52,211,153,0.08);border:1px solid rgba(148,163,184,0.2);color:#94a3b8;border-radius:20px;padding:.22rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;">
+          ⁸⁸Sr (alkaline-earth)
+        </button>
+        <button class="hist-preset-btn" data-key="Marginal"
+          onclick="loadHistPreset('Marginal')"
+          style="background:rgba(52,211,153,0.08);border:1px solid rgba(148,163,184,0.2);color:#94a3b8;border-radius:20px;padding:.22rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;">
+          Marginal (SNR≈4)
+        </button>
+      </div>
+      <div id="histNoteBox" style="font-size:.78rem;color:var(--text-muted);background:#060f0a;border:1px solid #166534;border-radius:6px;padding:.55rem .85rem;margin-bottom:.9rem;line-height:1.6;"></div>
+
+      <div class="two-col" style="gap:1rem;margin-bottom:.9rem;">
+        <!-- Sliders -->
+        <div>
+          <div class="field-row">
+            <label>μ_bright (mean signal, atom present):
+              <span class="lbl-val" id="histMuBrightVal">800</span> e⁻</label>
+            <input type="range" id="histMuBrightSlider" min="50" max="3000" value="800" step="10"
+              oninput="document.getElementById('histMuBrightVal').textContent=this.value; onHistSliderChange()">
+          </div>
+          <div class="field-row">
+            <label>σ_bright (bright peak width):
+              <span class="lbl-val" id="histSigBrightVal">42</span> e⁻</label>
+            <input type="range" id="histSigBrightSlider" min="5" max="200" value="42" step="1"
+              oninput="document.getElementById('histSigBrightVal').textContent=this.value; onHistSliderChange()">
+          </div>
+          <div class="field-row">
+            <label>μ_dark (mean signal, no atom):
+              <span class="lbl-val" id="histMuDarkVal">55</span> e⁻</label>
+            <input type="range" id="histMuDarkSlider" min="0" max="500" value="55" step="5"
+              oninput="document.getElementById('histMuDarkVal').textContent=this.value; onHistSliderChange()">
+          </div>
+          <div class="field-row">
+            <label>σ_dark (dark peak width):
+              <span class="lbl-val" id="histSigDarkVal">14</span> e⁻</label>
+            <input type="range" id="histSigDarkSlider" min="2" max="100" value="14" step="1"
+              oninput="document.getElementById('histSigDarkVal').textContent=this.value; onHistSliderChange()">
+          </div>
+          <div class="field-row">
+            <label>Threshold θ:
+              <span class="lbl-val" id="histThrVal">—</span> e⁻
+              <button onclick="autoOptThreshold()"
+                style="margin-left:.6rem;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);
+                       color:#34d399;border-radius:6px;padding:.12rem .5rem;font-size:.72rem;cursor:pointer;">
+                Auto-optimal
+              </button>
+            </label>
+            <input type="range" id="histThrSlider" min="0" max="1000" value="300" step="1"
+              oninput="document.getElementById('histThrVal').textContent=this.value; onHistThrChange()">
+          </div>
+        </div>
+
+        <!-- Result chips -->
+        <div style="display:flex;flex-direction:column;gap:.6rem;justify-content:center;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;">
+            <div class="prop-card">
+              <div class="prop-card-label">SNR</div>
+              <div class="prop-card-val" id="histSNR">—</div>
+              <div class="prop-card-unit">(μ_bright−μ_dark)/σ_rms</div>
+            </div>
+            <div class="prop-card">
+              <div class="prop-card-label">Detection fidelity</div>
+              <div class="prop-card-val" id="histFidelity">—</div>
+              <div class="prop-card-unit">1 − (P_miss+P_false)/2</div>
+            </div>
+            <div class="prop-card" style="border-left:3px solid #fb923c;">
+              <div class="prop-card-label">P_miss (false negative)</div>
+              <div class="prop-card-val" style="color:#fb923c;" id="histPmiss">—</div>
+              <div class="prop-card-unit">bright below θ</div>
+            </div>
+            <div class="prop-card" style="border-left:3px solid #f87171;">
+              <div class="prop-card-label">P_false (false positive)</div>
+              <div class="prop-card-val" style="color:#f87171;" id="histPfalse">—</div>
+              <div class="prop-card-unit">dark above θ</div>
+            </div>
+          </div>
+          <div class="prop-card" style="text-align:center;">
+            <div class="prop-card-label">Optimal threshold θ_opt</div>
+            <div class="prop-card-val" id="histThreshDisp">—</div>
+            <div class="prop-card-sub">minimises P_miss + P_false</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Histogram chart -->
+      <canvas id="histogramChart" height="280"></canvas>
+      <div style="display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.65rem;font-size:.75rem;color:var(--text-muted);">
+        <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:18px;height:3px;background:#60a5fa;display:inline-block;border-radius:2px;"></span>Dark peak (no atom)</span>
+        <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:18px;height:3px;background:#34d399;display:inline-block;border-radius:2px;"></span>Bright peak (atom)</span>
+        <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:14px;height:10px;background:rgba(251,146,60,0.55);display:inline-block;border-radius:2px;"></span>Miss zone (orange)</span>
+        <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:14px;height:10px;background:rgba(239,68,68,0.5);display:inline-block;border-radius:2px;"></span>False alarm zone (red)</span>
+        <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:18px;height:2px;background:#f59e0b;display:inline-block;border-radius:2px;border-top:2px dashed #f59e0b;"></span>Threshold θ</span>
+      </div>
+    </div>
+
+    <!-- Accordions for practical details -->
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Alkali vs alkaline-earth imaging histograms — key differences
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="two-col">
+          <div class="theory-box" style="border-left-color:#fb923c;">
+            <h4 style="color:#fb923c;">Alkali (⁸⁷Rb, ¹³³Cs)</h4>
+            <p><strong>Imaging transition:</strong> D2 cycling transition (780 nm for Rb, 852 nm for Cs).
+            Closed cycling transition with repumper keeps the atom in the imaging cycle.
+            R_sc → Γ/2 at saturation (~3 MHz for Rb87).</p>
+            <p><strong>Photon counts:</strong> With NA=0.5, η≈5%, 5ms exposure →
+            ~750 detected photons. σ_bright ≈ 40e⁻ (EMCCD with excess noise). Well-separated from dark peak (~50 e⁻).</p>
+            <p><strong>Main challenge:</strong> Photon recoil heating (~362 nK/photon for Rb87).
+            At R_sc = 3×10⁶/s, the atom heats by ~1 mK/s.
+            Limit imaging to &lt;10 ms or use concurrent Sisyphus/gray molasses cooling
+            (recapture imaging, EIT imaging).</p>
+            <p><strong>Background:</strong> Stray light from near-resonant beams contributes to dark peak.
+            Typical dark peak: μ_dark = 50–200 e⁻ depending on background suppression.</p>
+          </div>
+          <div class="theory-box" style="border-left-color:#34d399;">
+            <h4 style="color:#34d399;">Alkaline-earth-like (¹⁷¹Yb, ⁸⁸Sr)</h4>
+            <p><strong>Imaging transition:</strong> Broad ¹P₁ transition (399 nm for Yb, 461 nm for Sr,
+            Γ/2π = 29/32 MHz). Very high R_sc ≥ Γ/2 at low saturation. Alternative: narrow ³P₁
+            (556 nm Yb, 689 nm Sr) for gentler imaging.</p>
+            <p><strong>J=0 ground state advantage:</strong> Qubit states (nuclear spin) are immune to
+            the imaging light (which only drives ¹S₀ → ¹P₁ electronic transition). Atoms in the
+            metastable ³P₀ state are invisible to 399/461 nm — enabling <em>shelved</em>
+            (non-destructive) readout of one qubit basis while leaving the other undisturbed.</p>
+            <p><strong>Magic wavelength:</strong> 759 nm tweezer is magic for ¹S₀/³P₀ — no differential
+            light shift on the qubit. The imaging beam (399 nm) shifts ¹S₀ but not ³P₀, so
+            imaging the un-shelved population gives state discrimination.</p>
+            <p><strong>Histogram:</strong> Narrower dark peak (lower background at UV wavelengths far
+            from tweezer), tight bright peak. Excellent separation even at 1ms exposure.
+            Atom Computing Yb171: reports &gt;99.9% imaging fidelity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Fitting histograms in practice — extracting fidelity from real data
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Two-Gaussian fit procedure</h4>
+          <p>Given your measured histogram H(n), fit the sum of two Gaussians:</p>
+        </div>
+        <div class="formula-box">
+$$H(n) = A_0\,\mathcal{N}(n;\,\mu_{\rm dark},\sigma_{\rm dark}^2) + A_1\,\mathcal{N}(n;\,\mu_{\rm bright},\sigma_{\rm bright}^2)$$
+6 free parameters: $A_0, \mu_{\rm dark}, \sigma_{\rm dark}, A_1, \mu_{\rm bright}, \sigma_{\rm bright}$.
+Fit with scipy.optimize.curve_fit or a Gaussian mixture model (sklearn.mixture.GaussianMixture).
+<br><br>
+Quality check: is $A_0/A_1 \approx$ expected loading fraction? Is $\sigma_{\rm bright}/\sigma_{\rm dark} \approx \sqrt{\mu_{\rm bright}/\mu_{\rm dark}}$?
+(this tests whether shot noise dominates as expected)
+        </div>
+        <div class="theory-box">
+          <h4>When peaks are NOT clean Gaussians</h4>
+          <p>Real histograms show deviations from two clean Gaussians in several situations:</p>
+        </div>
+        <ul style="font-size:.85rem;color:var(--text-secondary);padding-left:1.2rem;line-height:1.9;">
+          <li><strong>Atom loss during imaging:</strong> Some fraction of bright shots become mid-sequence dark
+          → bright peak develops a low-side tail. Fix: reduce imaging power or duration, or use
+          concurrent cooling to prevent loss.</li>
+          <li><strong>Multiple occupancy:</strong> If two atoms load into one site, you get a third peak
+          at ~2×μ_bright. Set loading conditions (MOT density, tweezer depth) to suppress.
+          Good diagnostic: multi-peak structure at integer multiples of μ_bright.</li>
+          <li><strong>Background drift:</strong> If background changes shot-to-shot (laser power fluctuations),
+          both peaks broaden. σ_measured² = σ_intrinsic² + σ_drift². Use real-time background subtraction.</li>
+          <li><strong>Non-Poissonian photon statistics:</strong> Sub-Poissonian emission (from e.g. shelving
+          protocols) or super-Poissonian (from intensity noise) → peak widths deviate from $\sqrt{\mu}$ scaling.
+          Check: plot σ² vs μ — should be linear with slope 1 (Poisson) or slope F² (EMCCD).</li>
+          <li><strong>Charge-transfer smear (EMCCD):</strong> Very fast pixel readout + high scattering rates
+          → charge smear across pixels. Solved by choosing appropriate readout speed or using sCMOS.</li>
+        </ul>
+        <div class="theory-box" style="margin-top:.75rem;">
+          <h4>Bootstrap fidelity uncertainty</h4>
+          <p>After fitting, estimate statistical uncertainty via bootstrapping: resample your histogram
+          N_shots times with replacement, refit, and take the std of the fidelity distribution.
+          Typical uncertainty: δF ≈ 0.01–0.1% for 1000 shots, 0.001–0.01% for 10,000 shots.
+          Note: systematic error from threshold choice is usually larger than statistical error for well-separated peaks.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        SPAM fidelity vs imaging fidelity — what the community reports
+        <span class="accordion-icon">▶</span>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Definitions used in neutral-atom QC papers</h4>
+          <p>Different papers define "fidelity" slightly differently. For qubit experiments,
+          the total SPAM (state preparation and measurement) error bundles several contributions:</p>
+        </div>
+        <div class="formula-box">
+Total SPAM error: $\varepsilon_{\rm SPAM} = \varepsilon_{\rm prep} + \varepsilon_{\rm meas}$
+<br><br>
+$\varepsilon_{\rm meas} = (P_{\rm miss} + P_{\rm false})/2$ — from histogram overlap [what this section computes]
+<br><br>
+$\varepsilon_{\rm prep}$ — optical pumping error, atom number fluctuations, tweezer loading fraction
+<br><br>
+$\mathcal{F}_{\rm SPAM} = 1 - \varepsilon_{\rm SPAM} \approx 1 - \varepsilon_{\rm meas} - \varepsilon_{\rm prep}$
+<br><br>
+In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsilon_{\rm prep} \lesssim 0.2\%$
+→ $\mathcal{F}_{\rm SPAM} > 99.5\%$
+        </div>
+        <div class="warn-banner">
+          ⚠️ <strong>Common confusion:</strong> Evered et al. 2023 (99.5% two-qubit gate) reports gate fidelity after
+          SPAM correction — meaning SPAM errors are subtracted out. The <em>raw</em> circuit fidelity
+          is lower. Always check whether a paper's quoted fidelity is SPAM-corrected or not.
+          For practical fault-tolerant thresholds, you need the raw (uncorrected) fidelity.
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 7: REFERENCES ════════════════════════════════ -->
   <section class="section-block anim-in delay-6">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:var(--c-img)">06 </span>References &amp; Further Reading
+      <span style="color:var(--c-img)">07 </span>References &amp; Further Reading
     </h2>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.93.163602" target="_blank" rel="noopener">
@@ -1003,8 +1380,254 @@ function onCamChange() {
   compute();
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   IMAGING HISTOGRAM — presets, chart, fidelity calculator
+═══════════════════════════════════════════════════════════════ */
+
+const HIST_PRESETS = {
+  Rb87: {
+    muBright: 800, sigBright: 42, muDark: 55, sigDark: 14,
+    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright dominated by Poisson shot noise √800≈28 plus sCMOS read noise in quadrature → ~42 e⁻ total · σ_dark ≈ read noise 12 e⁻ + dark counts · Peak separation SNR~11 → F>99.98%'
+  },
+  Yb171: {
+    muBright: 1200, sigBright: 38, muDark: 40, sigDark: 11,
+    note: '¹⁷¹Yb 399 nm (¹S₀→¹P₁) or 556 nm (¹S₀→³P₁) fluorescence · sCMOS · Narrower dark peak due to lower background at 556 nm · Higher μ_bright: higher scatter rate at 556 nm clock line · Typical SNR~16 in Kaufman-group style tweezers · F>99.99% routinely achievable'
+  },
+  Sr88: {
+    muBright: 950, sigBright: 52, muDark: 65, sigDark: 18,
+    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Still achieves F~99.95% · Ericsson/Ye-group typical parameters'
+  },
+  Marginal: {
+    muBright: 280, sigBright: 85, muDark: 120, sigDark: 55,
+    note: '⚠️ Marginal detection regime · Low signal (short exposure or low NA) · Peak overlap significant · This represents a challenging situation: F~97–98% · Fidelity can be improved by: longer exposure, higher NA objective, reducing background scatter, or using EMCCD instead of sCMOS · Typical of early-stage setups before optimization'
+  },
+};
+
+// Gaussian PDF: returns approximate histogram bin height
+function gaussPDF(x, mu, sig) {
+  return Math.exp(-0.5 * Math.pow((x - mu) / sig, 2)) / (sig * Math.sqrt(2 * Math.PI));
+}
+
+// Build x-axis spanning both peaks with padding
+function buildHistX(muB, sigB, muD, sigD) {
+  const lo = Math.max(0, Math.min(muD, muB) - 4.5 * Math.max(sigB, sigD));
+  const hi = Math.max(muD, muB) + 4.5 * Math.max(sigB, sigD);
+  const pts = [];
+  const step = (hi - lo) / 300;
+  for (let x = lo; x <= hi; x += step) pts.push(x);
+  return pts;
+}
+
+// Compute optimal threshold: minimize P_miss + P_false via ternary search
+function computeOptThreshold(muB, sigB, muD, sigD) {
+  let lo = Math.min(muD, muB), hi = Math.max(muD, muB);
+  // Expand search bounds a bit
+  lo = Math.max(0, lo - sigD);
+  hi = hi + sigB;
+  for (let i = 0; i < 80; i++) {
+    const m1 = lo + (hi - lo) / 3;
+    const m2 = hi - (hi - lo) / 3;
+    const f1 = normCDF((m1 - muB) / sigB) + (1 - normCDF((m1 - muD) / sigD));
+    const f2 = normCDF((m2 - muB) / sigB) + (1 - normCDF((m2 - muD) / sigD));
+    if (f1 < f2) hi = m2; else lo = m1;
+  }
+  return Math.round((lo + hi) / 2);
+}
+
+function computeHistMetrics(muB, sigB, muD, sigD, theta) {
+  const pMiss  = normCDF((theta - muB) / sigB);          // bright falls below theta
+  const pFalse = 1 - normCDF((theta - muD) / sigD);      // dark rises above theta
+  const fidelity = 1 - (pMiss + pFalse) / 2;
+  const snr = (muB - muD) / Math.sqrt(sigB * sigB + sigD * sigD);
+  const thetaOpt = computeOptThreshold(muB, sigB, muD, sigD);
+  return { pMiss, pFalse, fidelity, snr, thetaOpt };
+}
+
+// Chart instance — initialised once
+let HIST_CHART = null;
+
+function buildHistChart(muB, sigB, muD, sigD, theta) {
+  const xs = buildHistX(muB, sigB, muD, sigD);
+  // Normalise so each peak integrates to ~1, then scale for visual height balance
+  const darkData  = xs.map(x => ({ x, y: gaussPDF(x, muD, sigD) }));
+  const brightData = xs.map(x => ({ x, y: gaussPDF(x, muB, sigB) }));
+
+  // Threshold vertical bar (two-point line dataset)
+  const yMax = Math.max(gaussPDF(muD, muD, sigD), gaussPDF(muB, muB, sigB)) * 1.15;
+  const thrData = [{ x: theta, y: 0 }, { x: theta, y: yMax }];
+
+  // Miss zone (bright below threshold) and false alarm zone (dark above threshold)
+  const missData  = xs.filter(x => x <= theta).map(x => ({ x, y: gaussPDF(x, muB, sigB) }));
+  const falseData = xs.filter(x => x >= theta).map(x => ({ x, y: gaussPDF(x, muD, sigD) }));
+
+  const datasets = [
+    {
+      label: 'Dark peak',
+      data: darkData,
+      borderColor: '#60a5fa',
+      backgroundColor: 'rgba(96,165,250,0.12)',
+      fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+    },
+    {
+      label: 'Bright peak',
+      data: brightData,
+      borderColor: '#34d399',
+      backgroundColor: 'rgba(52,211,153,0.12)',
+      fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+    },
+    {
+      label: 'Miss zone',
+      data: missData,
+      borderColor: 'rgba(0,0,0,0)',
+      backgroundColor: 'rgba(251,146,60,0.30)',
+      fill: true, tension: 0.4, borderWidth: 0, pointRadius: 0,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+    },
+    {
+      label: 'False alarm',
+      data: falseData,
+      borderColor: 'rgba(0,0,0,0)',
+      backgroundColor: 'rgba(248,113,113,0.30)',
+      fill: true, tension: 0.4, borderWidth: 0, pointRadius: 0,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+    },
+    {
+      label: 'Threshold θ',
+      data: thrData,
+      borderColor: '#f59e0b',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      fill: false, pointRadius: 0,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+    },
+  ];
+
+  if (!HIST_CHART) {
+    const ctx = document.getElementById('histogramChart').getContext('2d');
+    HIST_CHART = new Chart(ctx, {
+      type: 'scatter',
+      data: { datasets },
+      options: {
+        responsive: true,
+        showLine: true,
+        scales: {
+          x: {
+            title: { display: true, text: 'Detected signal (e⁻)', color: '#94a3b8', font: { size: 11 } },
+            ticks: { color: '#64748b', maxTicksLimit: 10 },
+            grid: { color: '#1e293b' },
+          },
+          y: {
+            title: { display: true, text: 'Probability density', color: '#94a3b8', font: { size: 11 } },
+            ticks: { color: '#64748b', maxTicksLimit: 5,
+              callback: v => v === 0 ? '0' : v.toExponential(1) },
+            grid: { color: '#1e293b' },
+            min: 0,
+          },
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0c1526',
+            titleColor: '#34d399', bodyColor: '#94a3b8',
+            borderColor: '#1e3a5f', borderWidth: 1,
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: (${ctx.parsed.x.toFixed(0)}, ${ctx.parsed.y.toExponential(2)})`
+            }
+          },
+        },
+        animation: { duration: 120 },
+      }
+    });
+  } else {
+    HIST_CHART.data.datasets = datasets;
+    HIST_CHART.update('none');
+  }
+}
+
+function updateHistDisplay() {
+  const muB   = parseFloat(document.getElementById('histMuBrightSlider').value);
+  const sigB  = parseFloat(document.getElementById('histSigBrightSlider').value);
+  const muD   = parseFloat(document.getElementById('histMuDarkSlider').value);
+  const sigD  = parseFloat(document.getElementById('histSigDarkSlider').value);
+  const theta = parseFloat(document.getElementById('histThrSlider').value);
+
+  const { pMiss, pFalse, fidelity, snr, thetaOpt } = computeHistMetrics(muB, sigB, muD, sigD, theta);
+
+  document.getElementById('histSNR').textContent      = snr.toFixed(2);
+  document.getElementById('histFidelity').textContent = (fidelity * 100).toFixed(3) + '%';
+  document.getElementById('histPmiss').textContent    = (pMiss * 100).toFixed(4) + '%';
+  document.getElementById('histPfalse').textContent   = (pFalse * 100).toFixed(4) + '%';
+  document.getElementById('histThreshDisp').textContent = thetaOpt + ' e⁻';
+  document.getElementById('histThrVal').textContent   = theta;
+
+  buildHistChart(muB, sigB, muD, sigD, theta);
+}
+
+function loadHistPreset(key) {
+  const p = HIST_PRESETS[key];
+  if (!p) return;
+  document.getElementById('histMuBrightSlider').value  = p.muBright;
+  document.getElementById('histMuBrightVal').textContent = p.muBright;
+  document.getElementById('histSigBrightSlider').value = p.sigBright;
+  document.getElementById('histSigBrightVal').textContent = p.sigBright;
+  document.getElementById('histMuDarkSlider').value    = p.muDark;
+  document.getElementById('histMuDarkVal').textContent = p.muDark;
+  document.getElementById('histSigDarkSlider').value   = p.sigDark;
+  document.getElementById('histSigDarkVal').textContent = p.sigDark;
+
+  // Set threshold slider range sensibly for this preset
+  const thrMax = Math.max(500, p.muBright + 3 * p.sigBright);
+  const thrSlider = document.getElementById('histThrSlider');
+  thrSlider.max = thrMax;
+
+  // Compute and set optimal threshold
+  const thetaOpt = computeOptThreshold(p.muBright, p.sigBright, p.muDark, p.sigDark);
+  thrSlider.value = thetaOpt;
+  document.getElementById('histThrVal').textContent = thetaOpt;
+
+  // Highlight active preset button
+  document.querySelectorAll('.hist-preset-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === key);
+  });
+
+  document.getElementById('histNoteBox').textContent = p.note;
+  updateHistDisplay();
+}
+
+function onHistSliderChange() {
+  // Update threshold slider max to accommodate new muBright if needed
+  const muB = parseFloat(document.getElementById('histMuBrightSlider').value);
+  const sigB = parseFloat(document.getElementById('histSigBrightSlider').value);
+  const thrSlider = document.getElementById('histThrSlider');
+  const newMax = Math.max(500, muB + 3 * sigB);
+  if (parseFloat(thrSlider.max) < newMax) thrSlider.max = newMax;
+  updateHistDisplay();
+}
+
+function onHistThrChange() {
+  updateHistDisplay();
+}
+
+function autoOptThreshold() {
+  const muB  = parseFloat(document.getElementById('histMuBrightSlider').value);
+  const sigB = parseFloat(document.getElementById('histSigBrightSlider').value);
+  const muD  = parseFloat(document.getElementById('histMuDarkSlider').value);
+  const sigD = parseFloat(document.getElementById('histSigDarkSlider').value);
+  const tOpt = computeOptThreshold(muB, sigB, muD, sigD);
+  const thrSlider = document.getElementById('histThrSlider');
+  const newMax = Math.max(parseFloat(thrSlider.max), tOpt + 50);
+  thrSlider.max = newMax;
+  thrSlider.value = tOpt;
+  document.getElementById('histThrVal').textContent = tOpt;
+  updateHistDisplay();
+}
+
 // Initial render
 compute();
+// Load Rb87 histogram preset on page load
+loadHistPreset('Rb87');
 initAccordions();
 </script>
 </body>
