@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⁸⁷Rb vs ¹⁷¹Yb Qubits — AMO Career</title>
+  <meta name="description" content="In-depth comparison of Rubidium-87 (Harvard/QuEra) vs Ytterbium-171 (Atom Computing) neutral atom qubit platforms: atomic physics, coherence, gate fidelity, scalability, and roadmaps.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/rb87-vs-yb171.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=5">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ── page theme ─────────────────────────────────── */
+    :root {
+      --rb:   #fb923c;   /* Rb87 orange */
+      --yb:   #34d399;   /* Yb171 emerald */
+      --page: #f59e0b;   /* page accent amber */
+    }
+
+    .page-wrap { padding-top: 64px; }
+
+    /* ── sticky topic-nav ──────────────────────────── */
+    .topic-nav {
+      position: sticky;
+      top: 64px;
+      z-index: 50;
+      background: rgba(6,14,28,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(245,158,11,0.18);
+      padding: .45rem 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .topic-nav::-webkit-scrollbar { display: none; }
+    .topic-nav-inner {
+      display: inline-flex;
+      gap: .3rem;
+      padding: 0 1.5rem;
+    }
+    .tnav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 20px;
+      padding: .28rem .85rem;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+    .tnav-btn:hover   { color: var(--text-primary); border-color: rgba(245,158,11,0.35); }
+    .tnav-btn.active  { color: #f59e0b; background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.4); }
+
+    /* ── hero ──────────────────────────────────────── */
+    .page-hero {
+      background: linear-gradient(135deg, rgba(251,146,60,0.06) 0%, rgba(52,211,153,0.06) 100%);
+      border-bottom: 1px solid rgba(245,158,11,0.15);
+      padding: 3rem 0 2.5rem;
+    }
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.75rem;
+    }
+    @media(max-width:680px) { .hero-split { grid-template-columns: 1fr; } }
+
+    .hero-atom-card {
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .hero-atom-card.rb { background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.25); }
+    .hero-atom-card.yb { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); }
+
+    .hero-atom-name { font-size: 1.6rem; font-weight: 800; }
+    .hero-atom-sub  { font-size: .85rem; color: var(--text-muted); margin: 0; }
+    .hero-atom-stats { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
+    .hero-stat-chip {
+      border-radius: 6px; padding: .15rem .55rem;
+      font-size: .76rem; font-weight: 600;
+    }
+    .hero-stat-chip.rb { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.3); }
+    .hero-stat-chip.yb { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+
+    /* ── section layout ────────────────────────────── */
+    .page-content { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    .section-block { margin-bottom: 3.5rem; scroll-margin-top: 120px; }
+    .section-title {
+      font-size: 1.35rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .2rem 0;
+      border-left: 3px solid var(--page);
+      padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.2rem .85rem; }
+
+    /* ── side-by-side columns ──────────────────────── */
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media(max-width:768px) { .side-by-side { grid-template-columns: 1fr; } }
+
+    .atom-col {
+      border-radius: 12px;
+      padding: 1.2rem 1.35rem;
+    }
+    .atom-col.rb { background: rgba(251,146,60,0.06); border: 1px solid rgba(251,146,60,0.2); }
+    .atom-col.yb { background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.2); }
+
+    .atom-col-header {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      margin-bottom: .85rem;
+      padding-bottom: .6rem;
+      border-bottom: 1px solid;
+    }
+    .atom-col.rb .atom-col-header { border-color: rgba(251,146,60,0.25); }
+    .atom-col.yb .atom-col-header { border-color: rgba(52,211,153,0.25); }
+
+    .atom-col-title { font-size: 1.05rem; font-weight: 700; }
+    .atom-col.rb .atom-col-title { color: #fb923c; }
+    .atom-col.yb .atom-col-title { color: #34d399; }
+
+    .atom-col ul { padding-left: 1.1rem; margin: 0; }
+    .atom-col li { font-size: .86rem; color: var(--text-muted); margin-bottom: .42rem; line-height: 1.55; }
+    .atom-col p  { font-size: .87rem; color: var(--text-muted); margin: 0 0 .6rem 0; line-height: 1.6; }
+
+    /* ── formula box ────────────────────────────────── */
+    .formula-box {
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin: .9rem 0;
+      font-size: .88rem;
+      line-height: 1.9;
+      color: var(--text-secondary);
+    }
+
+    /* ── info box ───────────────────────────────────── */
+    .info-box {
+      background: rgba(245,158,11,0.07);
+      border: 1px solid rgba(245,158,11,0.22);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin: .8rem 0;
+      font-size: .87rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+    .info-box strong { color: #f59e0b; }
+
+    .rb-box {
+      background: rgba(251,146,60,0.07);
+      border: 1px solid rgba(251,146,60,0.22);
+      border-radius: 10px;
+      padding: .9rem 1.2rem;
+      margin: .7rem 0;
+      font-size: .86rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .rb-box strong { color: #fb923c; }
+
+    .yb-box {
+      background: rgba(52,211,153,0.07);
+      border: 1px solid rgba(52,211,153,0.22);
+      border-radius: 10px;
+      padding: .9rem 1.2rem;
+      margin: .7rem 0;
+      font-size: .86rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .yb-box strong { color: #34d399; }
+
+    /* ── level diagram ──────────────────────────────── */
+    .level-diagram {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      margin: .8rem 0;
+    }
+    .level-caption {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: .6rem;
+      font-style: italic;
+    }
+
+    /* ── chart box ──────────────────────────────────── */
+    .chart-box {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .chart-caption {
+      font-size: .78rem; color: var(--text-muted);
+      margin: .4rem 0 0 0; font-style: italic;
+    }
+
+    /* ── comparison table ───────────────────────────── */
+    .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #1e293b; }
+    .cmp {
+      width: 100%; border-collapse: collapse; font-size: .84rem;
+    }
+    .cmp th {
+      padding: .65rem .9rem; text-align: left;
+      border-bottom: 2px solid #1e293b;
+      white-space: nowrap;
+      font-size: .8rem;
+    }
+    .cmp th.rb-h { background: rgba(251,146,60,0.12); color: #fb923c; }
+    .cmp th.yb-h { background: rgba(52,211,153,0.12); color: #34d399; }
+    .cmp th.cat-h { background: #0c1526; color: var(--text-muted); }
+    .cmp td {
+      color: var(--text-secondary); padding: .55rem .9rem;
+      border-bottom: 1px solid #0d1827; vertical-align: top;
+      line-height: 1.55;
+    }
+    .cmp td.rb-td { background: rgba(251,146,60,0.04); }
+    .cmp td.yb-td { background: rgba(52,211,153,0.04); }
+    .cmp tr:hover td { filter: brightness(1.1); }
+    .cmp .win { font-weight: 700; }
+    .cmp .win.rb { color: #fb923c; }
+    .cmp .win.yb { color: #34d399; }
+
+    /* ── metric stat row ────────────────────────────── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: .9rem;
+      margin: 1.2rem 0;
+    }
+    @media(max-width:700px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+    .stat-card-sm {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: .9rem 1rem;
+      text-align: center;
+    }
+    .stat-card-sm .stat-num { font-size: 1.3rem; font-weight: 800; }
+    .stat-card-sm .stat-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+    .stat-card-sm.rb { border-color: rgba(251,146,60,0.25); }
+    .stat-card-sm.yb { border-color: rgba(52,211,153,0.25); }
+
+    /* ── paper card ─────────────────────────────────── */
+    .paper-card {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: .9rem 1.1rem;
+      margin-bottom: .6rem;
+      transition: border-color .18s;
+    }
+    .paper-card:hover { border-color: rgba(245,158,11,0.35); }
+    .paper-card .paper-title { font-size: .9rem; font-weight: 600; color: var(--text-primary); margin-bottom: .3rem; }
+    .paper-card .paper-meta  { font-size: .78rem; color: #f59e0b; margin-bottom: .35rem; }
+    .paper-card .paper-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+    .paper-card a { color: #93c5fd; text-decoration: none; }
+    .paper-card a:hover { text-decoration: underline; }
+
+    .paper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    @media(max-width:768px) { .paper-grid { grid-template-columns: 1fr; } }
+
+    /* ── company card ───────────────────────────────── */
+    .company-card {
+      background: var(--bg-card);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: .65rem;
+      transition: border-color .18s;
+    }
+    .company-card:hover { border-color: rgba(245,158,11,0.35); }
+    .company-card h4 { font-size: .93rem; margin: 0 0 .3rem 0; }
+    .company-card h4 a { color: #93c5fd; text-decoration: none; }
+    .company-card h4 a:hover { text-decoration: underline; }
+    .company-card p { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+    /* ── advantage badge ────────────────────────────── */
+    .adv-badge {
+      display: inline-block;
+      border-radius: 4px; padding: .1rem .45rem;
+      font-size: .72rem; font-weight: 700;
+      vertical-align: middle; margin-left: .3rem;
+    }
+    .adv-rb { background: rgba(251,146,60,0.18); color: #fb923c; border: 1px solid rgba(251,146,60,0.35); }
+    .adv-yb { background: rgba(52,211,153,0.18); color: #34d399; border: 1px solid rgba(52,211,153,0.35); }
+    .adv-tie { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25); }
+
+    /* ── insight box ────────────────────────────────── */
+    .insight {
+      background: rgba(245,158,11,0.07);
+      border-left: 3px solid #f59e0b;
+      border-radius: 0 8px 8px 0;
+      padding: .7rem 1rem;
+      font-size: .84rem;
+      color: var(--text-secondary);
+      margin: .8rem 0;
+      line-height: 1.6;
+    }
+
+    /* ── vs divider ─────────────────────────────────── */
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin: 1rem 0;
+    }
+    .vs-line { flex: 1; height: 1px; background: #1e293b; }
+    .vs-label {
+      font-size: .9rem; font-weight: 800;
+      color: #f59e0b;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 20px;
+      padding: .2rem .75rem;
+    }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<div class="page-wrap">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="container">
+      <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.85rem;">
+        <span style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);color:#f59e0b;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">⚖️ Qubit Platform Comparison</span>
+        <span style="background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.25);color:#fb923c;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">Alkali: Rb87 · Harvard/QuEra</span>
+        <span style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.25);color:#34d399;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">Alkaline-Earth: Yb171 · Atom Computing</span>
+      </div>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.6rem); font-weight:800; margin:0 0 .75rem 0;">
+        <span style="color:#fb923c;">⁸⁷Rb</span>
+        <span style="color:#f59e0b; margin:0 .5rem;">vs</span>
+        <span style="color:#34d399;">¹⁷¹Yb</span>
+        — Neutral Atom Qubit Showdown
+      </h1>
+      <p style="color:var(--text-muted);font-size:.95rem;max-width:780px;margin:0 0 1.5rem 0;line-height:1.7;">
+        The two dominant neutral atom qubit choices: alkali Rb87 (hyperfine qubit, Harvard/QuEra ecosystem) vs
+        alkaline-earth-like Yb171 (nuclear spin qubit, Atom Computing). A thorough technical comparison across
+        atomic physics, coherence, gate fidelity, scalability, and fault-tolerance prospects.
+      </p>
+
+      <div class="hero-split">
+        <div class="hero-atom-card rb">
+          <div class="hero-atom-name" style="color:#fb923c;">⁸⁷Rb — Rubidium</div>
+          <div class="hero-atom-sub">Alkali · Hyperfine qubit · 6.834 GHz clock transition</div>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip rb">2Q fidelity 99.5%</span>
+            <span class="hero-stat-chip rb">T₂ = 12.6 s</span>
+            <span class="hero-stat-chip rb">6100-qubit array (2025)</span>
+            <span class="hero-stat-chip rb">Harvard/QuEra/Pasqal</span>
+          </div>
+        </div>
+        <div class="hero-atom-card yb">
+          <div class="hero-atom-name" style="color:#34d399;">¹⁷¹Yb — Ytterbium</div>
+          <div class="hero-atom-sub">Alkaline-earth-like · Nuclear spin qubit · J=0 protection</div>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip yb">2Q fidelity 99.72% (post-sel)</span>
+            <span class="hero-stat-chip yb">Nuclear spin coherence</span>
+            <span class="hero-stat-chip yb">1180-qubit array (2023)</span>
+            <span class="hero-stat-chip yb">Atom Computing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STICKY TOPIC NAV ──────────────────────────────────────────── -->
+  <nav class="topic-nav" id="topicNav" aria-label="Page sections">
+    <div class="topic-nav-inner">
+      <button class="tnav-btn active" data-target="overview">Overview</button>
+      <button class="tnav-btn" data-target="atomic-physics">Atomic Physics</button>
+      <button class="tnav-btn" data-target="qubit-encoding">Qubit Encoding</button>
+      <button class="tnav-btn" data-target="cooling">Cooling & Prep</button>
+      <button class="tnav-btn" data-target="coherence">Coherence</button>
+      <button class="tnav-btn" data-target="gates">Gate Performance</button>
+      <button class="tnav-btn" data-target="readout">Readout & SPAM</button>
+      <button class="tnav-btn" data-target="scalability">Scalability</button>
+      <button class="tnav-btn" data-target="erasure">Erasure Conversion</button>
+      <button class="tnav-btn" data-target="comparison">Full Comparison</button>
+      <button class="tnav-btn" data-target="companies">Companies</button>
+      <button class="tnav-btn" data-target="papers">Papers</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+
+  <!-- ── 1. OVERVIEW ──────────────────────────────────────────────── -->
+  <section class="section-block anim-in" id="overview">
+    <h2 class="section-title"><span class="accent">01</span> Why These Two Atoms?</h2>
+    <p class="section-sub">The two leading neutral-atom qubit platforms — and why the choice of atom matters deeply.</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      Neutral atom quantum computers trap individual atoms in optical tweezers and entangle them via
+      Rydberg blockade. The atom species determines everything from qubit coherence to gate speed to
+      the complexity of the laser system. Two atoms have emerged as the leading candidates for scalable
+      fault-tolerant neutral-atom QC — <strong style="color:#fb923c;">⁸⁷Rb</strong> (an alkali, I=3/2, used by the Harvard/QuEra group)
+      and <strong style="color:#34d399;">¹⁷¹Yb</strong> (an alkaline-earth-like rare earth, I=1/2, J=0 ground state, used by Atom Computing).
+      Their physics are fundamentally different, leading to different strengths.
+    </p>
+
+    <div class="info-box">
+      <strong>The core trade-off:</strong>
+      ⁸⁷Rb is the mature, well-characterised platform with the highest <em>demonstrated</em> parallel gate fidelities
+      (99.5%, 60 qubits simultaneously) and the largest coherent arrays (6100 atoms, 2025).
+      ¹⁷¹Yb has a deeper structural advantage: its J=0 ground state means the qubit (nuclear spin) is
+      isolated from electronic noise, projecting superior coherence and 99.72% two-qubit gates (2025).
+      Both are converging toward fault-tolerant thresholds from different starting points.
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">99.5%</div><div class="stat-label">Rb87 2Q fidelity<br>(Evered et al. 2023)</div></div>
+      <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">12.6 s</div><div class="stat-label">Rb87 coherence T₂<br>(Manetsch et al. 2025)</div></div>
+      <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">99.72%</div><div class="stat-label">Yb171 2Q fidelity<br>(Ma et al. 2025, post-sel)</div></div>
+      <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">J = 0</div><div class="stat-label">Yb171 ground state<br>electronic protection</div></div>
+    </div>
+  </section>
+
+  <!-- ── 2. ATOMIC PHYSICS ─────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-1" id="atomic-physics">
+    <h2 class="section-title"><span class="accent">02</span> Atomic Physics Deep Dive</h2>
+    <p class="section-sub">Electronic structure, relevant transitions, and why the physics dictates platform choices.</p>
+
+    <div class="side-by-side">
+      <!-- Rb87 level diagram -->
+      <div class="atom-col rb">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🔴</span>
+          <span class="atom-col-title">⁸⁷Rb — Alkali Atom</span>
+        </div>
+
+        <div class="level-diagram">
+          <svg viewBox="0 0 320 310" width="100%" style="max-width:320px;" aria-label="Rb87 level diagram">
+            <!-- Rydberg state -->
+            <line x1="70" y1="22" x2="250" y2="22" stroke="#818cf8" stroke-width="2.5"/>
+            <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">nS₁/₂ (n~70)</text>
+            <text x="50" y="27" fill="#818cf8" font-size="10" font-family="JetBrains Mono,monospace" text-anchor="end">Rydberg</text>
+
+            <!-- 5P3/2 -->
+            <line x1="70" y1="100" x2="250" y2="100" stroke="#38bdf8" stroke-width="2"/>
+            <text x="260" y="105" fill="#38bdf8" font-size="11" font-family="JetBrains Mono,monospace">5P₃/₂</text>
+            <text x="50" y="95" fill="#94a3b8" font-size="10" text-anchor="end">D2: 780 nm</text>
+
+            <!-- 5P1/2 -->
+            <line x1="70" y1="130" x2="200" y2="130" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="260" y="135" fill="#38bdf8" font-size="10" font-family="JetBrains Mono,monospace" opacity="0.7">5P₁/₂</text>
+            <text x="50" y="125" fill="#94a3b8" font-size="10" text-anchor="end">D1: 795 nm</text>
+
+            <!-- Ground state F=2 -->
+            <line x1="70" y1="240" x2="250" y2="240" stroke="#fb923c" stroke-width="2.5"/>
+            <text x="260" y="245" fill="#fb923c" font-size="11" font-family="JetBrains Mono,monospace">F=2 |1⟩</text>
+
+            <!-- Ground state F=1 -->
+            <line x1="70" y1="270" x2="250" y2="270" stroke="#fb923c" stroke-width="2.5"/>
+            <text x="260" y="275" fill="#fb923c" font-size="11" font-family="JetBrains Mono,monospace">F=1 |0⟩</text>
+
+            <!-- Hyperfine label -->
+            <text x="62" y="258" fill="#fb923c" font-size="10" text-anchor="end" opacity="0.8">6.834 GHz</text>
+            <line x1="68" y1="242" x2="68" y2="268" stroke="#fb923c" stroke-width="1" opacity="0.5"/>
+            <line x1="63" y1="242" x2="68" y2="242" stroke="#fb923c" stroke-width="1" opacity="0.5"/>
+            <line x1="63" y1="268" x2="68" y2="268" stroke="#fb923c" stroke-width="1" opacity="0.5"/>
+
+            <!-- 5S1/2 label -->
+            <text x="155" y="298" fill="#94a3b8" font-size="11" text-anchor="middle">5S₁/₂ ground state</text>
+
+            <!-- Rydberg excitation arrows (two-photon) -->
+            <!-- 780 nm: F=2 to 5P3/2 -->
+            <defs>
+              <marker id="arr-rb" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#38bdf8"/>
+              </marker>
+              <marker id="arr-ryd" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#818cf8"/>
+              </marker>
+              <marker id="arr-emit" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+                <polygon points="8 0, 0 3, 8 6" fill="#f472b6"/>
+              </marker>
+            </defs>
+            <line x1="150" y1="238" x2="150" y2="108" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arr-rb)"/>
+            <text x="134" y="175" fill="#38bdf8" font-size="10" text-anchor="middle">780 nm</text>
+
+            <!-- 480 nm: 5P3/2 to Rydberg -->
+            <line x1="170" y1="98" x2="170" y2="30" stroke="#818cf8" stroke-width="1.8" marker-end="url(#arr-ryd)"/>
+            <text x="185" y="68" fill="#818cf8" font-size="10" text-anchor="middle">480 nm</text>
+
+            <!-- microwave qubit arrow -->
+            <path d="M 100 268 C 85 255 85 245 100 240" stroke="#fb923c" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+            <text x="78" y="252" fill="#fb923c" font-size="9" text-anchor="middle">MW</text>
+          </svg>
+          <div class="level-caption">Rb87 level structure. Qubit: hyperfine states of 5S₁/₂. Two-photon Rydberg excitation via 5P₃/₂ (780 nm + 480 nm). Microwave or Raman coupling for single-qubit gates.</div>
+        </div>
+
+        <ul>
+          <li><strong>Z = 37, ground config:</strong> [Kr] 5s¹ — single valence electron</li>
+          <li><strong>Nuclear spin:</strong> I = 3/2</li>
+          <li><strong>Ground state:</strong> 5S₁/₂, electronic spin J = 1/2, so F = 1 or 2</li>
+          <li><strong>Cooling transitions:</strong> D1 at 795 nm (5S→5P₁/₂), D2 at 780 nm (5S→5P₃/₂)</li>
+          <li><strong>Rydberg excitation:</strong> Two-photon via 5P₃/₂ (780 nm + 480 nm)</li>
+          <li><strong>Natural linewidth:</strong> Γ/2π = 6.07 MHz (D2)</li>
+          <li><strong>C₆ coefficient:</strong> |C₆| ≈ 862,690 × 2π MHz·μm⁶ for |70S₁/₂⟩</li>
+        </ul>
+      </div>
+
+      <!-- Yb171 level diagram -->
+      <div class="atom-col yb">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🟢</span>
+          <span class="atom-col-title">¹⁷¹Yb — Alkaline-Earth-Like</span>
+        </div>
+
+        <div class="level-diagram">
+          <svg viewBox="0 0 320 310" width="100%" style="max-width:320px;" aria-label="Yb171 level diagram">
+            <!-- Rydberg state -->
+            <line x1="70" y1="22" x2="250" y2="22" stroke="#818cf8" stroke-width="2.5"/>
+            <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">Rydberg</text>
+
+            <!-- 3S1 or nP via UV ~300 nm -->
+            <text x="50" y="62" fill="#94a3b8" font-size="9" text-anchor="end">UV/green</text>
+
+            <!-- 3P0 metastable clock state -->
+            <line x1="70" y1="120" x2="250" y2="120" stroke="#fbbf24" stroke-width="2.5"/>
+            <text x="260" y="125" fill="#fbbf24" font-size="11" font-family="JetBrains Mono,monospace">³P₀ (meta, 20 s)</text>
+            <text x="50" y="115" fill="#94a3b8" font-size="10" text-anchor="end">578 nm clock</text>
+
+            <!-- 3P1 -->
+            <line x1="70" y1="145" x2="200" y2="145" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="260" y="150" fill="#fbbf24" font-size="10" opacity="0.7" font-family="JetBrains Mono,monospace">³P₁ 556 nm</text>
+
+            <!-- 1P1 -->
+            <line x1="70" y1="168" x2="200" y2="168" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="260" y="173" fill="#38bdf8" font-size="10" opacity="0.8" font-family="JetBrains Mono,monospace">¹P₁ 399 nm</text>
+            <text x="50" y="165" fill="#94a3b8" font-size="10" text-anchor="end">MOT/image</text>
+
+            <!-- Ground state nuclear spin states -->
+            <!-- mI = +1/2 -->
+            <line x1="70" y1="240" x2="250" y2="240" stroke="#34d399" stroke-width="2.5"/>
+            <text x="260" y="245" fill="#34d399" font-size="11" font-family="JetBrains Mono,monospace">|↑⟩ mI=+½</text>
+            <!-- mI = -1/2 -->
+            <line x1="70" y1="270" x2="250" y2="270" stroke="#34d399" stroke-width="2.5"/>
+            <text x="260" y="275" fill="#34d399" font-size="11" font-family="JetBrains Mono,monospace">|↓⟩ mI=−½</text>
+
+            <!-- Qubit gap label -->
+            <text x="62" y="258" fill="#34d399" font-size="10" text-anchor="end" opacity="0.8">~12 kHz/G</text>
+            <line x1="68" y1="242" x2="68" y2="268" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+            <line x1="63" y1="242" x2="68" y2="242" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+            <line x1="63" y1="268" x2="68" y2="268" stroke="#34d399" stroke-width="1" opacity="0.5"/>
+
+            <!-- 1S0 label -->
+            <text x="155" y="298" fill="#94a3b8" font-size="11" text-anchor="middle">¹S₀ ground state (J=0)</text>
+
+            <defs>
+              <marker id="arr-yb-clk" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+              </marker>
+              <marker id="arr-yb-ryd" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#818cf8"/>
+              </marker>
+            </defs>
+
+            <!-- Clock transition arrow (578 nm) -->
+            <line x1="145" y1="238" x2="145" y2="128" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#arr-yb-clk)"/>
+            <text x="128" y="185" fill="#fbbf24" font-size="10" text-anchor="middle">578 nm</text>
+
+            <!-- Rydberg from 3P0 -->
+            <line x1="165" y1="118" x2="165" y2="30" stroke="#818cf8" stroke-width="1.8" marker-end="url(#arr-yb-ryd)"/>
+            <text x="182" y="72" fill="#818cf8" font-size="10" text-anchor="middle">UV/green</text>
+
+            <!-- J=0 shield symbol -->
+            <text x="155" y="218" fill="#34d399" font-size="10" text-anchor="middle" opacity="0.7">J=0 · no electron mag. moment</text>
+
+            <!-- MW/RF qubit arrow -->
+            <path d="M 100 268 C 85 255 85 245 100 240" stroke="#34d399" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+            <text x="77" y="252" fill="#34d399" font-size="9" text-anchor="middle">RF</text>
+          </svg>
+          <div class="level-caption">Yb171 level structure. Qubit: nuclear spin mI=±½ in ¹S₀ ground state (J=0). Clock transition to ³P₀ at 578 nm. Rydberg excitation from ³P₀ via UV/green light. MOT on ¹P₁ at 399 nm.</div>
+        </div>
+
+        <ul>
+          <li><strong>Z = 70, ground config:</strong> [Xe] 4f¹⁴ 6s² — two valence electrons (closed shell)</li>
+          <li><strong>Nuclear spin:</strong> I = 1/2 (simplest possible)</li>
+          <li><strong>Ground state:</strong> ¹S₀ (J = 0 — critical for qubit protection)</li>
+          <li><strong>Cooling transitions:</strong> ¹P₁ at 399 nm (broad), ³P₁ at 556 nm (intercombination)</li>
+          <li><strong>Clock transition:</strong> ¹S₀ → ³P₀ at 578 nm (< 10 mHz linewidth)</li>
+          <li><strong>Rydberg excitation:</strong> Two-photon from ³P₀ via UV/green laser</li>
+          <li><strong>Magic wavelength:</strong> 759 nm (eliminates differential light shift)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>The J=0 advantage:</strong> In Yb171, the ¹S₀ ground state has zero electronic angular momentum (J=0).
+      The only magnetic moment is the tiny nuclear magnetic moment (μ_N ≈ μ_B/1836). This means the qubit states
+      |mI=±½⟩ are insensitive to magnetic field fluctuations at first order — the qubit frequency shifts as
+      δν ∝ μ_N · B rather than μ_B · B. In Rb87, the hyperfine qubit has an electronic Zeeman effect
+      (μ_B scale), requiring more stringent magnetic shielding and contributing to dephasing at higher fields.
+    </div>
+  </section>
+
+  <!-- ── 3. QUBIT ENCODING ─────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-1" id="qubit-encoding">
+    <h2 class="section-title"><span class="accent">03</span> Qubit Encoding</h2>
+    <p class="section-sub">How each system defines the two-level qubit, and the physics governing its frequency and noise sensitivity.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col rb">
+        <div class="atom-col-header">
+          <span class="atom-col-title">Rb87 — Hyperfine Qubit</span>
+        </div>
+        <p>The qubit is encoded in two <em>hyperfine</em> ground states of the electronic 5S₁/₂ manifold, separated by the
+        nuclear-electron hyperfine coupling $A_{\rm hf}$:</p>
+        <div class="formula-box">
+$$|0\rangle = |F{=}1, m_F{=}0\rangle, \quad |1\rangle = |F{=}2, m_F{=}0\rangle$$
+$$\nu_{\rm qubit} = 6{,}834{,}682{,}610.904\;\text{Hz} \approx 6.834\;\text{GHz}$$
+Zeeman shift: $\delta\nu \approx \pm\, 0.70\;\text{kHz/mG}$ (linear in B near zero crossing)</div>
+        <ul>
+          <li>Driven by microwave pulses at 6.834 GHz (or two-photon Raman beams)</li>
+          <li>First-order Zeeman effect: qubit frequency shifts linearly with B-field</li>
+          <li>Clock states (mF=0) chosen to minimize first-order Zeeman sensitivity — but residual sensitivity remains via second-order Zeeman at &gt;0.1 G</li>
+          <li>Differential light shift from tweezers must be calibrated or nulled</li>
+        </ul>
+      </div>
+
+      <div class="atom-col yb">
+        <div class="atom-col-header">
+          <span class="atom-col-title">Yb171 — Nuclear Spin Qubit</span>
+        </div>
+        <p>The qubit is encoded in the two nuclear spin states of the ¹S₀ ground state (I=1/2, J=0). With no electronic
+        angular momentum, the only B-field coupling is through the nuclear magneton:</p>
+        <div class="formula-box">
+$$|0\rangle = |m_I{=}-\tfrac{1}{2}\rangle, \quad |1\rangle = |m_I{=}+\tfrac{1}{2}\rangle$$
+$$\nu_{\rm qubit}(B) = g_I \,\mu_N \, B / h \approx -\,2.592\;\text{kHz/G} \times B$$
+Zeeman shift: ${\sim}2.6\;\text{kHz/G}$ (nuclear magneton scale, $\times\,1836$ smaller than $\mu_B$)</div>
+        <ul>
+          <li>Driven by RF pulses (kHz–MHz range in typical lab fields) or two-photon Raman</li>
+          <li>First-order Zeeman shift is nuclear magneton scale — ~1836× smaller than Rb87</li>
+          <li>Magic wavelength trap (759 nm) eliminates differential AC Stark shift between |0⟩ and |1⟩</li>
+          <li>No electronic magnetic moment in ground state → intrinsic noise immunity</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="vs-divider">
+      <div class="vs-line"></div><div class="vs-label">B-field sensitivity comparison</div><div class="vs-line"></div>
+    </div>
+
+    <div class="formula-box" style="font-size:.85rem; line-height:1.9;">
+$$\underbrace{\delta\nu_{\rm Rb87}}_{\text{hyperfine qubit}} \approx 0.7\;\text{kHz/mG} \cdot \delta B
+\qquad \text{vs} \qquad
+\underbrace{\delta\nu_{\rm Yb171}}_{\text{nuclear spin qubit}} \approx 0.0026\;\text{kHz/mG} \cdot \delta B$$
+For typical lab noise $\delta B \sim 1\;\text{mG}$: $\delta\nu_{\rm Rb87} \approx 700\;\text{Hz}$, $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$
+— a factor of <strong>~270 better noise immunity</strong> for Yb171 from B-field fluctuations alone.
+    </div>
+  </section>
+
+  <!-- ── 4. COOLING & STATE PREP ───────────────────────────────────── -->
+  <section class="section-block anim-in delay-2" id="cooling">
+    <h2 class="section-title"><span class="accent">04</span> Laser Cooling &amp; State Preparation</h2>
+    <p class="section-sub">From room temperature to single-atom quantum control — the cooling chain for each platform.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col rb">
+        <div class="atom-col-header">
+          <span class="atom-col-title">Rb87 Cooling Chain</span>
+        </div>
+        <ol style="padding-left:1.2rem; margin:0;">
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#fb923c;">2D/3D MOT</strong> — Doppler cooling on D2 line (780 nm) to ~200 μK, loading 10⁸–10⁹ atoms.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#fb923c;">Gray Molasses (GM)</strong> — Sub-Doppler cooling on D1 or D2 line using coherent dark states (Λ-enhanced). Achieves (4.0 ± 0.3) μK without a bias field.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#fb923c;">Tweezer loading</strong> — Single atoms loaded stochastically into 820–850 nm tweezers. Single-atom detection via fluorescence. ~50% initial loading per site.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#fb923c;">Sideband cooling</strong> — Raman or resolved-sideband cooling to motional ground state ⟨n⟩ &lt; 0.1 per axis. Required to minimize Doppler dephasing during Rydberg gates.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#fb923c;">Optical pumping</strong> — Spin initialization to |F=1, mF=0⟩ via σ⁺ + repumper. Fidelity &gt;99.5%.
+          </li>
+        </ol>
+        <div class="rb-box" style="margin-top:.8rem;">
+          <strong>Key challenge:</strong> The D2 line is only 384 THz away from the 5P₃/₂ excited state.
+          Tweezer photon scattering causes qubit dephasing unless the trap is far off-resonance. Typical trap depth ~1 mK.
+        </div>
+      </div>
+
+      <div class="atom-col yb">
+        <div class="atom-col-header">
+          <span class="atom-col-title">Yb171 Cooling Chain</span>
+        </div>
+        <ol style="padding-left:1.2rem; margin:0;">
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#34d399;">Zeeman slower + 2D MOT</strong> — Broad ¹P₁ transition at 399 nm (Γ/2π = 29 MHz) for initial deceleration to ~1 m/s, ~10⁹ atoms.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#34d399;">Intercombination MOT</strong> — ³P₁ transition at 556 nm (Γ/2π = 182 kHz, narrow linewidth) for sub-Doppler cooling to ~5 μK without a dedicated sub-Doppler stage.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#34d399;">Magic-wavelength tweezer loading</strong> — 759 nm tweezers (magic wavelength for ¹S₀–³P₀). Equal light shift for both qubit states → no differential AC Stark shift.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#34d399;">Sideband cooling</strong> — Narrow ³P₁ line enables direct sideband-resolved cooling. Achieves ground state ⟨n⟩ &lt; 0.1.
+          </li>
+          <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
+            <strong style="color:#34d399;">Nuclear spin initialization</strong> — Optical pumping via ¹S₀ → ³P₁ with circularly polarized light. Fidelity &gt;99%.
+          </li>
+        </ol>
+        <div class="yb-box" style="margin-top:.8rem;">
+          <strong>Key advantage:</strong> The 759 nm magic wavelength means the tweezer shifts both qubit states
+          identically → no light-shift-induced dephasing. No differential shift cancellation is needed in the cooling laser system.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. COHERENCE ──────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-2" id="coherence">
+    <h2 class="section-title"><span class="accent">05</span> Coherence &amp; Decoherence</h2>
+    <p class="section-sub">How long quantum information survives — and the dominant dephasing mechanisms for each platform.</p>
+
+    <div class="chart-box" style="max-width:720px; margin:0 auto 1.5rem auto;">
+      <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Coherence Times (log scale)</h3>
+      <canvas id="coherenceChart" height="220"></canvas>
+      <p class="chart-caption">Published best values. Rb87 T₂=12.6 s from Manetsch et al. (Nature, 2025), XY16 dynamical decoupling, 6100-atom array. Yb171 values partially extrapolated from atomic clock experiments; tweezer T₂ not yet fully published as of 2025.</p>
+    </div>
+
+    <div class="side-by-side">
+      <div class="atom-col rb">
+        <div class="atom-col-header"><span class="atom-col-title">Rb87 Coherence</span></div>
+        <ul>
+          <li><strong>T₂* (free precession):</strong> ~22 s (Manetsch 2025, with optimized gradient cancellation)</li>
+          <li><strong>T₂ (XY16 dynamical decoupling):</strong> 12.6(1) s (Manetsch 2025, 6100-qubit array)</li>
+          <li><strong>T₁ (energy relaxation):</strong> &gt;1 s (thermal photon limited)</li>
+          <li><strong>Dominant dephasing:</strong> Magnetic field gradient noise, laser phase noise, differential light shift in tweezer</li>
+          <li><strong>Second-order Zeeman:</strong> Contributes ~0.1 Hz/G² × B² — small but non-zero</li>
+          <li><strong>Tweezer scattering:</strong> Off-resonant photon scattering at rate Γ_sc ∝ I/Δ² limits T₁</li>
+        </ul>
+        <div class="formula-box">
+$$T_2^* \approx 22\;\text{s} \quad \text{(6100-qubit array, 2025)}$$
+$$T_2 \approx 12.6\;\text{s} \quad \text{(XY16 DD, free oscillation)}$$
+Ops within T₂: $N_{\rm ops} \approx T_2 / t_{\rm gate} \approx 12.6\;\text{s} / 2\;\mu\text{s} \approx 6\times10^6$
+        </div>
+      </div>
+      <div class="atom-col yb">
+        <div class="atom-col-header"><span class="atom-col-title">Yb171 Coherence</span></div>
+        <ul>
+          <li><strong>T₂* (free precession, optical clock):</strong> &gt;100 s demonstrated in optical lattice clocks</li>
+          <li><strong>T₂ (in tweezer arrays):</strong> Atom Computing reports 40 s storage (2024), detailed characterization ongoing</li>
+          <li><strong>T₁ (energy relaxation):</strong> Limited by photon scattering from trap, expected comparable to Rb87</li>
+          <li><strong>Dominant dephasing:</strong> Residual differential light shift (trap not perfectly magic), nuclear spin flip from electric quadrupole (suppressed by I=1/2)</li>
+          <li><strong>B-field dephasing:</strong> ~270× smaller than Rb87 due to nuclear magneton coupling</li>
+          <li><strong>Magic wavelength advantage:</strong> Differential Stark shift ΔE_light = 0 at 759 nm — eliminates entire class of dephasing</li>
+        </ul>
+        <div class="formula-box">
+$$\delta\nu_{\rm Yb171} \approx g_I\mu_N B/h \approx 2.6\;\text{Hz/mG} \times B[\text{mG}]$$
+For $B = 1\;\text{G}$: $\delta\nu \approx 2.6\;\text{kHz}$ (Rb87: $\sim 700\;\text{kHz}$)
+Magic wavelength: $\Delta\alpha(\lambda_{\rm magic}) = 0$ → no tweezer dephasing
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Bottom line on coherence:</strong> Rb87 has demonstrated T₂ = 12.6 s in a 6100-qubit array (2025) —
+      remarkable and well above gate times. Yb171's nuclear spin qubit is structurally expected to achieve even longer
+      coherence (optical clock analogy: T₂ &gt; 100 s), but this has not yet been benchmarked in large tweezer arrays.
+      For gate operations where T₂ ≫ t_gate already, both platforms are effectively coherence-limited elsewhere
+      (gate errors dominate over decoherence).
+    </div>
+  </section>
+
+  <!-- ── 6. GATE PERFORMANCE ───────────────────────────────────────── -->
+  <section class="section-block anim-in delay-3" id="gates">
+    <h2 class="section-title"><span class="accent">06</span> Gate Performance</h2>
+    <p class="section-sub">Single-qubit and two-qubit gate fidelities, Rydberg excitation physics, and error sources.</p>
+
+    <div class="chart-box" style="margin-bottom:1.5rem;">
+      <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Gate Fidelity Comparison (2019–2025)</h3>
+      <canvas id="fidelityChart" height="300"></canvas>
+      <p class="chart-caption">Two-qubit gate fidelities, best published values. Rb87: Evered et al. (Nature 2023), Manetsch array (2025). Yb171: Ma et al. (PRX Quantum 2025, post-selection and raw). Surface code fault-tolerance threshold shown as dashed line.</p>
+    </div>
+
+    <div class="side-by-side">
+      <div class="atom-col rb">
+        <div class="atom-col-header"><span class="atom-col-title">Rb87 Gate Results</span></div>
+        <ul>
+          <li><strong>Best 2Q CZ fidelity:</strong> 99.5% on 60 qubit pairs simultaneously <span class="adv-rb">Evered 2023</span></li>
+          <li><strong>Parallel entanglement:</strong> 60 Bell pairs in parallel, same 99.5% per pair</li>
+          <li><strong>1Q gate fidelity:</strong> &gt;99.9% (randomized benchmarking, 2024–25)</li>
+          <li><strong>Gate mechanism:</strong> Rydberg blockade CZ gate via two-photon (780+480 nm) excitation to |70S₁/₂⟩</li>
+          <li><strong>Gate speed:</strong> 0.5–2 μs per two-qubit gate (limited by Rabi frequency)</li>
+          <li><strong>Key innovation:</strong> Optimal-control pulse shaping + atomic dark-state scattering suppression</li>
+          <li><strong>Logical qubit demo:</strong> 48 logical qubits, fault-tolerant operations (Bluvstein 2024)</li>
+          <li><strong>Array size for gate demos:</strong> Up to 280 physical qubits (Bluvstein 2024)</li>
+        </ul>
+        <div class="formula-box">
+$$\mathcal{F}_{\rm CZ} = 1 - \varepsilon_{\rm Ryd} - \varepsilon_{\rm scatt} - \varepsilon_{\rm D} - \varepsilon_{\rm \Omega}$$
+$\varepsilon_{\rm Ryd} \sim (\Gamma_{\rm Ryd} \tau_g)$ — Rydberg decay error<br>
+$\varepsilon_D = \tfrac{1}{2}(k\, v_{\rm rms}\, \tau_g)^2$ — Doppler dephasing (mitigated by sideband cooling)<br>
+Best: 1 − 99.5% = 0.5% total error budget
+        </div>
+      </div>
+
+      <div class="atom-col yb">
+        <div class="atom-col-header"><span class="atom-col-title">Yb171 Gate Results</span></div>
+        <ul>
+          <li><strong>Best 2Q CZ fidelity:</strong> 99.72(3)% with post-selection (Ma et al. PRX Quantum 2025) <span class="adv-yb">Ma 2025</span></li>
+          <li><strong>Without post-selection:</strong> 99.40(3)% — still competitive with Rb87</li>
+          <li><strong>Rydberg gate fidelity (F=1/2 Rydberg):</strong> 99.4(1)% (Ma et al. 2024) — 3.3× improvement over earlier results</li>
+          <li><strong>1Q gate fidelity:</strong> &gt;99.5% (Ma 2025)</li>
+          <li><strong>Gate mechanism:</strong> Rydberg blockade via excitation from ³P₀ (metastable) state using UV or green laser</li>
+          <li><strong>Gate speed:</strong> ~1–5 μs per two-qubit gate (similar to Rb87)</li>
+          <li><strong>Unique feature:</strong> Can encode qubit in both nuclear spin AND clock state (³P₀) — dual encoding protocols</li>
+          <li><strong>Array size for gate demos:</strong> 1180-qubit Atom Computing Phoenix; gate fidelity demos on smaller subsets</li>
+        </ul>
+        <div class="formula-box">
+$$\mathcal{F}_{\rm CZ}^{\rm Yb} = 99.72\%\;\text{(post-sel)}, \quad 99.40\%\;\text{(raw)}$$
+Nuclear spin qubit: $\varepsilon_B \propto (g_I \mu_N \delta B \, \tau_g / \hbar)^2$ — 270× smaller than Rb87<br>
+Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$ — entire error term eliminated
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Gate fidelity status (2025):</strong> Both platforms now demonstrate or approach the surface-code
+      fault-tolerance threshold of 99.9% for two-qubit gates. Rb87 leads in <em>parallel</em> gate demonstrations
+      (60 simultaneous pairs at 99.5%), while Yb171 shows slightly higher per-pair fidelity (99.72% with post-selection).
+      The error budget for Yb171 is expected to shrink further as the platform matures, given its structural
+      noise advantages. The race to consistent 99.9%+ without post-selection is the key 2025–2027 target for both.
+    </div>
+  </section>
+
+  <!-- ── 7. READOUT & SPAM ─────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-3" id="readout">
+    <h2 class="section-title"><span class="accent">07</span> Readout &amp; SPAM</h2>
+    <p class="section-sub">State preparation and measurement fidelity — the bookend errors of every circuit.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col rb">
+        <div class="atom-col-header"><span class="atom-col-title">Rb87 Readout</span></div>
+        <ul>
+          <li><strong>Method:</strong> Fluorescence imaging — atoms in |F=2⟩ fluoresce on D2 cycling transition; |F=1⟩ atoms are dark (shelved or blown away)</li>
+          <li><strong>SPAM fidelity:</strong> 99.94% (3D tweezer lattice, ~160 qubits, 2024)</li>
+          <li><strong>Readout fidelity:</strong> 99.98952% imaging survival (Manetsch 2025, 6100-qubit array)</li>
+          <li><strong>Mid-circuit measurement:</strong> Demonstrated with atom transport (Bluvstein 2022) — move ancilla atoms to readout zone, measure, return data atoms</li>
+          <li><strong>Limitation:</strong> Reading destroys the measured atom unless shelving to F=1 is performed before fluorescence</li>
+          <li><strong>Non-destructive readout:</strong> Active area of research; clock-shift measurements explored</li>
+        </ul>
+      </div>
+      <div class="atom-col yb">
+        <div class="atom-col-header"><span class="atom-col-title">Yb171 Readout</span></div>
+        <ul>
+          <li><strong>Method:</strong> Shelve one spin state to ³P₀ (dark), image the other with broad ¹P₁ transition at 399 nm — scattered photons distinguish |↑⟩ from |↓⟩</li>
+          <li><strong>SPAM fidelity:</strong> &gt;99% per site (Jenkins 2022, single-site characterization)</li>
+          <li><strong>Advantage:</strong> ³P₀ metastable state (20 s lifetime) enables truly <em>non-destructive</em> qubit storage during readout — image one logical basis without disturbing atoms in the other</li>
+          <li><strong>Clock-state readout:</strong> State-selective fluorescence on the narrow ³P₁ transition (556 nm) enables high-SNR readout</li>
+          <li><strong>Mid-circuit measurement:</strong> Structurally enabled by the ³P₀ shelving protocol — single-shot QND-like readout of subsets of qubits</li>
+          <li><strong>Dual encoding advantage:</strong> Can store qubits in ³P₀ (protected from imaging light) while others are measured</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="yb-box">
+      <strong>Yb171 structural readout advantage:</strong> The ³P₀ metastable state (lifetime ~20 s) acts as a
+      quantum memory that is immune to the imaging light. By shelving qubits to ³P₀ before imaging, Yb171 enables
+      site-selective, low-crosstalk readout that is naturally suited for quantum error correction cycles where
+      only syndrome qubits are measured per round. This is significantly harder to achieve non-destructively in Rb87.
+    </div>
+  </section>
+
+  <!-- ── 8. SCALABILITY ────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-4" id="scalability">
+    <h2 class="section-title"><span class="accent">08</span> Array Size &amp; Scalability</h2>
+    <p class="section-sub">Current demonstrations and the path to fault-tolerant arrays of 10,000+ qubits.</p>
+
+    <div class="chart-box" style="max-width:720px; margin:0 auto 1.5rem auto;">
+      <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Array Size Milestones (physical qubits/atoms)</h3>
+      <canvas id="scaleChart" height="240"></canvas>
+      <p class="chart-caption">Demonstrated physical qubit counts. Rb87 Manetsch 2025: 6100-qubit array with T₂=12.6 s, but gate fidelity not yet benchmarked at full scale. Yb171 Atom Computing Phoenix: 1180 qubits demonstrated with nuclear spin qubit encoding.</p>
+    </div>
+
+    <div class="side-by-side">
+      <div class="atom-col rb">
+        <div class="atom-col-header"><span class="atom-col-title">Rb87 Scaling</span></div>
+        <ul>
+          <li><strong>2021:</strong> QuEra Aquila — 256 atoms (analog mode)</li>
+          <li><strong>2022:</strong> Bluvstein et al. — 24-qubit toric code, surface code 19 qubits</li>
+          <li><strong>2023:</strong> Evered et al. — 60 qubits with 99.5% 2Q gates</li>
+          <li><strong>2024:</strong> Bluvstein et al. — 280 physical qubits, 48 logical qubits (color code)</li>
+          <li><strong>2025:</strong> Manetsch et al. — 6100 coherent qubits (12,000-site array, T₂=12.6 s)</li>
+          <li><strong>Rearrangement:</strong> AOD-based atom sorting achieves &gt;99% defect-free loading</li>
+          <li><strong>Roadmap:</strong> 10,000+ qubit arrays, parallel Rydberg gates, photonic interconnects</li>
+        </ul>
+      </div>
+      <div class="atom-col yb">
+        <div class="atom-col-header"><span class="atom-col-title">Yb171 Scaling</span></div>
+        <ul>
+          <li><strong>2022:</strong> Jenkins et al. — 10×10 array, 92.73% filling efficiency</li>
+          <li><strong>2023:</strong> Atom Computing Phoenix — 1,180 qubits (1,225 sites)</li>
+          <li><strong>2024:</strong> Atom Computing — 40 s quantum memory coherence announced</li>
+          <li><strong>2025:</strong> Ma et al. PRX Quantum — 99.72% gate fidelity (small array)</li>
+          <li><strong>Gate fidelity at scale:</strong> Not yet demonstrated at 1000+ qubits simultaneously</li>
+          <li><strong>Rearrangement:</strong> Similar AOD-based sorting; magic-wavelength tweezer enables defect-free loading</li>
+          <li><strong>Roadmap:</strong> Scale to 10,000+ qubits, demonstrate surface code, integrate photonic network</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Current gap:</strong> Rb87 currently leads in demonstrated coherent array size (6100 vs 1180 qubits)
+      and in logical qubit demonstrations (48 logical qubits with error correction). Yb171 leads in per-pair
+      two-qubit gate fidelity and has the structural advantages for even larger arrays. As of mid-2025, no
+      platform has demonstrated &gt;99.9% two-qubit gates across 100+ qubits simultaneously — this is the key
+      engineering milestone for fault-tolerant operation.
+    </div>
+  </section>
+
+  <!-- ── 9. ERASURE CONVERSION ─────────────────────────────────────── -->
+  <section class="section-block anim-in delay-4" id="erasure">
+    <h2 class="section-title"><span class="accent">09</span> Erasure Conversion — Yb171's Structural Advantage</h2>
+    <p class="section-sub">A new paradigm for quantum error correction that alkaline-earth atoms enable uniquely.</p>
+
+    <p style="color:var(--text-secondary);font-size:.88rem;line-height:1.7;margin:0 0 1rem 0;">
+      In standard quantum error correction, errors are <em>Pauli errors</em> (X, Y, Z) that the code must detect and
+      correct. Erasure errors — errors where we know <em>which qubit</em> failed — are much cheaper to correct:
+      an [[n,k,d]] code corrects d-1 erasures but only ⌊(d-1)/2⌋ Pauli errors. If we can
+      <em>convert</em> Pauli errors into known erasures, the overhead for fault tolerance drops dramatically.
+    </p>
+
+    <div class="yb-box">
+      <strong>Wu, Kolkowitz, Puri et al. (Nature Communications 2022)</strong> showed that for Yb171 and Sr87,
+      <strong>~98% of gate errors can be converted to erasures</strong> using the ³P₀ metastable state. When a qubit
+      undergoes an error during a Rydberg gate, it often ends up in the ³P₀ state (detectable as "atom is in wrong
+      sublevel") rather than a Pauli error. Detecting whether an atom is in ³P₀ vs ¹S₀ after each gate round
+      — which is straightforward with site-selective imaging — heralds the error location without collapsing the
+      logical qubit.
+    </div>
+
+    <div class="formula-box" style="font-size:.87rem; line-height:1.9;">
+$$\text{Standard QEC:} \quad d_{\rm eff} = d \quad \rightarrow \quad \varepsilon_{\rm logical} \propto \left(\frac{p}{p_{\rm th}}\right)^{\lceil d/2\rceil}$$
+$$\text{Erasure QEC:} \quad d_{\rm eff} = d-1 \quad \rightarrow \quad \varepsilon_{\rm logical} \propto \left(\frac{p}{p_{\rm th,\, erasure}}\right)^{d-1}$$
+With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure} \approx 10\times$ higher than Pauli threshold.
+<br>Practical consequence: a distance-5 surface code with erasures ≈ distance-9 surface code with Pauli errors.
+    </div>
+
+    <div class="side-by-side">
+      <div class="atom-col yb">
+        <div class="atom-col-header"><span class="atom-col-title">Yb171 Erasure Protocol</span></div>
+        <ul>
+          <li>After each gate round, check if atom is in ¹S₀ (ground) or ³P₀ (metastable) via state-selective fluorescence</li>
+          <li>Atom in ³P₀ = detected error → erasure flag. Atom in ¹S₀ = passed gate correctly</li>
+          <li>The ³P₀ state is stable on the timescale of gate operations (τ ~ 20 s) — no spontaneous decay during check</li>
+          <li>98% of dominant gate errors (Rydberg decay, Doppler) map to ³P₀ state</li>
+          <li>Only 2% are "dark" Pauli errors that the erasure protocol misses</li>
+          <li>Result: up to ~10× reduction in physical qubit overhead for fault-tolerant computation</li>
+        </ul>
+      </div>
+      <div class="atom-col rb">
+        <div class="atom-col-header"><span class="atom-col-title">Rb87 — Limited Erasure</span></div>
+        <ul>
+          <li>In Rb87, gate errors are mostly Rydberg decay or atomic motion errors — they deposit the atom back in the ground state without a detectable "flag"</li>
+          <li>No equivalent long-lived metastable state accessible from the qubit manifold to flag errors</li>
+          <li>Some error conversion possible via Rydberg state monitoring (atom loss detection), but less efficient than Yb171</li>
+          <li>Atom loss from the trap is detectable as an erasure (~99% efficiency for atom-loss erasure detection)</li>
+          <li>But Pauli errors from coherent control noise are not detectable → remain as standard errors</li>
+          <li><strong>Net erasure fraction:</strong> Much lower than Yb171 — roughly 50–70% vs Yb171's 98%</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Long-term significance:</strong> Erasure conversion may be the most important structural advantage Yb171
+      has over Rb87 for large-scale fault-tolerant computation. A 10× reduction in qubit overhead means the difference
+      between needing 10,000 physical qubits per logical qubit vs 1,000. Over millions of physical qubits,
+      this could represent years of roadmap advantage.
+    </div>
+  </section>
+
+  <!-- ── 10. FULL COMPARISON TABLE ─────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="comparison">
+    <h2 class="section-title"><span class="accent">10</span> Full Head-to-Head Comparison</h2>
+    <p class="section-sub">Every major dimension, side by side. Advantage marked in bold color.</p>
+
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th class="cat-h">Category</th>
+            <th class="cat-h">Metric</th>
+            <th class="rb-h">⁸⁷Rb</th>
+            <th class="yb-h">¹⁷¹Yb</th>
+            <th class="cat-h">Edge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Atomic Physics</td>
+            <td>Electronic structure</td>
+            <td class="rb-td">Alkali, 1 valence e⁻, 5S₁/₂ ground</td>
+            <td class="yb-td">Alkaline-earth-like, 2 val. e⁻, ¹S₀ ground</td>
+            <td><span class="adv-yb">Yb</span> J=0 protection</td>
+          </tr>
+          <tr>
+            <td>Nuclear spin</td>
+            <td class="rb-td">I = 3/2</td>
+            <td class="yb-td">I = 1/2</td>
+            <td><span class="adv-yb">Yb</span> simpler</td>
+          </tr>
+          <tr>
+            <td>Ground-state J</td>
+            <td class="rb-td">J = 1/2 (electronic moment)</td>
+            <td class="yb-td">J = 0 (no electronic moment)</td>
+            <td><span class="adv-yb">Yb</span></td>
+          </tr>
+          <tr>
+            <td>Clock transition</td>
+            <td class="rb-td">None (microwave HF, 6.834 GHz)</td>
+            <td class="yb-td">578 nm (¹S₀→³P₀, &lt;10 mHz)</td>
+            <td><span class="adv-yb">Yb</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Qubit Encoding</td>
+            <td>Qubit type</td>
+            <td class="rb-td">Hyperfine (F=1↔F=2, 6.834 GHz)</td>
+            <td class="yb-td">Nuclear spin (mI=±½, ~kHz scale)</td>
+            <td><span class="adv-tie">Tie</span></td>
+          </tr>
+          <tr>
+            <td>B-field sensitivity</td>
+            <td class="rb-td win rb">0.7 kHz/mG (first-order Zeeman)</td>
+            <td class="yb-td win yb">0.0026 kHz/mG (nuclear magneton)</td>
+            <td><span class="adv-yb">Yb</span> 270×</td>
+          </tr>
+          <tr>
+            <td>Light-shift cancellation</td>
+            <td class="rb-td">Requires active calibration</td>
+            <td class="yb-td win yb">Magic wavelength at 759 nm — automatic</td>
+            <td><span class="adv-yb">Yb</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Coherence</td>
+            <td>T₂ (best published)</td>
+            <td class="rb-td win rb">12.6 s (Manetsch 2025)</td>
+            <td class="yb-td">~40 s storage (Atom Computing 2024, preliminary)</td>
+            <td><span class="adv-yb">Yb</span> (structural)</td>
+          </tr>
+          <tr>
+            <td>T₂* (free precession)</td>
+            <td class="rb-td win rb">~22 s (published)</td>
+            <td class="yb-td">Not fully characterized in tweezers</td>
+            <td><span class="adv-rb">Rb</span> (published)</td>
+          </tr>
+          <tr>
+            <td>Primary dephasing</td>
+            <td class="rb-td">B-field noise, light shift</td>
+            <td class="yb-td">Residual light shift (at magic λ min.)</td>
+            <td><span class="adv-yb">Yb</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Gate Performance</td>
+            <td>Best 2Q fidelity</td>
+            <td class="rb-td">99.5% raw, parallel (Evered 2023)</td>
+            <td class="yb-td win yb">99.72% with post-sel (Ma 2025)</td>
+            <td><span class="adv-yb">Yb</span> (slightly)</td>
+          </tr>
+          <tr>
+            <td>2Q fidelity raw</td>
+            <td class="rb-td win rb">99.5% (no post-selection, 60 pairs)</td>
+            <td class="yb-td">99.40% (no post-selection)</td>
+            <td><span class="adv-rb">Rb</span> (current)</td>
+          </tr>
+          <tr>
+            <td>Parallel gates</td>
+            <td class="rb-td win rb">60 qubit pairs simultaneously at 99.5%</td>
+            <td class="yb-td">Not yet demonstrated at scale</td>
+            <td><span class="adv-rb">Rb</span></td>
+          </tr>
+          <tr>
+            <td>Gate speed</td>
+            <td class="rb-td">0.5–2 μs (2Q Rydberg)</td>
+            <td class="yb-td">1–5 μs (2Q Rydberg)</td>
+            <td><span class="adv-rb">Rb</span> (slightly)</td>
+          </tr>
+
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Readout</td>
+            <td>SPAM fidelity</td>
+            <td class="rb-td win rb">99.94% (160-qubit array)</td>
+            <td class="yb-td">&gt;99% (small array, Jenkins 2022)</td>
+            <td><span class="adv-rb">Rb</span> (published at scale)</td>
+          </tr>
+          <tr>
+            <td>Non-destructive readout</td>
+            <td class="rb-td">Limited — active research</td>
+            <td class="yb-td win yb">³P₀ shelving enables partial QND readout</td>
+            <td><span class="adv-yb">Yb</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Scalability</td>
+            <td>Largest array (coherent)</td>
+            <td class="rb-td win rb">6,100 qubits (Manetsch 2025)</td>
+            <td class="yb-td">1,180 qubits (Atom Computing 2023)</td>
+            <td><span class="adv-rb">Rb</span></td>
+          </tr>
+          <tr>
+            <td>Logical qubit demos</td>
+            <td class="rb-td win rb">48 logical qubits (Bluvstein 2024)</td>
+            <td class="yb-td">Not yet demonstrated at scale</td>
+            <td><span class="adv-rb">Rb</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Error Correction</td>
+            <td>Erasure conversion fraction</td>
+            <td class="rb-td">~50–70% (atom loss erasure)</td>
+            <td class="yb-td win yb">~98% (Wu et al. 2022)</td>
+            <td><span class="adv-yb">Yb</span> major</td>
+          </tr>
+          <tr>
+            <td>Qubit overhead reduction</td>
+            <td class="rb-td">Standard surface code overhead</td>
+            <td class="yb-td win yb">~10× reduction via erasure conversion</td>
+            <td><span class="adv-yb">Yb</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Laser System</td>
+            <td>Complexity</td>
+            <td class="rb-td win rb">Simpler: D2 at 780 nm (diode laser)</td>
+            <td class="yb-td">More complex: 399, 556, 578, 759 nm lasers</td>
+            <td><span class="adv-rb">Rb</span></td>
+          </tr>
+          <tr>
+            <td>Rydberg UV laser</td>
+            <td class="rb-td win rb">480 nm (diode-pumped solid-state)</td>
+            <td class="yb-td">UV or green (~300–400 nm, harder)</td>
+            <td><span class="adv-rb">Rb</span></td>
+          </tr>
+
+          <tr>
+            <td style="font-weight:600;color:var(--text-secondary);">Maturity</td>
+            <td>Platform maturity</td>
+            <td class="rb-td win rb">10+ years of tweezer work; most-cited demos</td>
+            <td class="yb-td">~5 years in tweezers; rapid progress 2022–25</td>
+            <td><span class="adv-rb">Rb</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 11. COMPANIES ─────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="companies">
+    <h2 class="section-title"><span class="accent">11</span> Companies &amp; Ecosystem</h2>
+    <p class="section-sub">Who is building what, and how the two platforms map to commercial quantum computing ventures.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#fb923c;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">⁸⁷Rb Ecosystem</h3>
+        <div class="company-card">
+          <h4><a href="https://www.quera.com" target="_blank" rel="noopener">QuEra Computing ↗</a></h4>
+          <p>Harvard/MIT spin-out (Lukin/Greiner groups). Aquila (256 atoms, 2021). Cloud access via AWS Braket. Dual analog+digital capability. Key partner for the Harvard group's gate fidelity demonstrations. Leading neutral-atom company by publication record and cloud reach.</p>
+        </div>
+        <div class="company-card">
+          <h4><a href="https://pasqal.com" target="_blank" rel="noopener">Pasqal ↗</a></h4>
+          <p>French spin-out from Browaeys/Lahaye group (IOGS, Paris). Fresnel processor (100 Rb atoms, 2D programmable). Hybrid analog-digital. Enterprise partnerships: EDF, BASF, Thales. Merged with Qu&Co (2022). Focus: optimization, combinatorial problems, HPC integration.</p>
+        </div>
+        <div class="company-card">
+          <h4><a href="https://infleqtion.com" target="_blank" rel="noopener">Infleqtion (ColdQuanta) ↗</a></h4>
+          <p>Uses Rb (and Cs). Acquired SuperTech. Cloud quantum and quantum networking products. Boulder, Colorado-based.</p>
+        </div>
+        <div class="company-card">
+          <h4>Harvard/MIT Academic Groups</h4>
+          <p>Lukin group (Harvard): All major Rb gate fidelity/logical qubit demonstrations. Greiner group (Harvard): Quantum simulation. Vuletic group (MIT): Tweezer array methods. Most of the landmark papers originate here and license to QuEra.</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#34d399;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">¹⁷¹Yb Ecosystem</h3>
+        <div class="company-card">
+          <h4><a href="https://atom-computing.com" target="_blank" rel="noopener">Atom Computing ↗</a></h4>
+          <p>Berkeley-based startup. Phoenix (1,225-site, 1,180-qubit Yb171 system, 2023). Uses nuclear spin qubit for extended coherence. Modular architecture. Announced 40 s quantum memory. Focus on fault-tolerant digital QC. Raised Series B funding. Key team from Jun Ye group lineage at JILA/NIST.</p>
+        </div>
+        <div class="company-card">
+          <h4>Kaufman Group (JILA/CU Boulder)</h4>
+          <p>Adam Kaufman's group at JILA was the first to demonstrate nuclear-spin Yb171 qubits in optical tweezers (Jenkins et al. PRX Quantum 2022). Key academic partner for Atom Computing. Also works on Sr87 and other alkaline-earth species. Published the high-fidelity gate benchmarking (Ma et al. 2025).</p>
+        </div>
+        <div class="company-card">
+          <h4>NIST / Optical Clock Groups</h4>
+          <p>Several NIST groups (Jun Ye, Andrew Ludlow) have deep Yb171 expertise from optical lattice clock work. The ultranarrow clock transition knowledge transfers directly to tweezer QC. Coherence &gt;100 s demonstrated in optical lattice clocks informs Atom Computing's coherence roadmap.</p>
+        </div>
+        <div class="company-card">
+          <h4>Also: Sr87 (similar physics)</h4>
+          <p>Fermi National Lab (Jonathan Simon group), Stanford (M. Endres group). Sr87 has I=9/2 (more complex spin than Yb171's I=1/2) but the same J=0 ground state protection and erasure conversion advantage. Nuclear clock groups exploring qubit applications.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 12. KEY PAPERS ─────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="papers">
+    <h2 class="section-title"><span class="accent">12</span> Key Papers &amp; References</h2>
+    <p class="section-sub">Essential reading — all major experimental demonstrations, theory papers, and review articles.</p>
+
+    <h3 style="color:#fb923c;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">⁸⁷Rb — Landmark Papers</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">High-fidelity parallel entangling gates on a neutral-atom quantum computer</div>
+        <div class="paper-meta">Evered, Bluvstein, Kalinowski et al. — Nature 622, 268–272 (2023)</div>
+        <p class="paper-desc">99.5% CZ gate fidelity on 60 qubit pairs simultaneously using Rydberg blockade with dark-state-assisted scattering reduction. Crossed the NISQ/fault-tolerance boundary for neutral atoms.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-023-06481-y" target="_blank" rel="noopener">nature.com ↗</a> · <a href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener">arXiv:2304.05420 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Logical quantum processor based on reconfigurable atom arrays</div>
+        <div class="paper-meta">Bluvstein, Evered, Geim et al. — Nature 626, 58–65 (2024)</div>
+        <p class="paper-desc">280 physical qubits, 48 logical qubits encoded in transversal color codes. Fault-tolerant operations with mid-circuit measurement and feed-forward. First demonstration of logical gate advantage in neutral atoms.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-023-06927-3" target="_blank" rel="noopener">nature.com ↗</a> · <a href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener">arXiv:2312.03982 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">A large-scale quantum processor with fast, full-coherence operations</div>
+        <div class="paper-meta">Manetsch, Nomura, Bataille et al. — Nature 647, 60–67 (2025)</div>
+        <p class="paper-desc">6100-qubit Rb87 array on a 12,000-site grid. T₂ = 12.6 s (XY16 DD), 99.98952% imaging fidelity. Largest coherent neutral-atom array demonstrated. Establishes Rb87 at 10³–10⁴ qubit scale.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-025-09641-4" target="_blank" rel="noopener">nature.com ↗</a> · <a href="https://arxiv.org/abs/2403.12021" target="_blank" rel="noopener">arXiv:2403.12021 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Coherent transport and entanglement generation using rearrangeable atom arrays</div>
+        <div class="paper-meta">Bluvstein et al. — Nature 604, 451–456 (2022)</div>
+        <p class="paper-desc">Mid-circuit measurement and feed-forward via atom transport. Surface code on 19 qubits, toric code on 24 qubits. First programmable neutral-atom quantum error correction demonstration.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-022-04592-6" target="_blank" rel="noopener">nature.com ↗</a> · <a href="https://arxiv.org/abs/2112.03923" target="_blank" rel="noopener">arXiv:2112.03923 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Parallel implementation of high-fidelity multiqubit gates with neutral atoms</div>
+        <div class="paper-meta">Levine, Keesling, Semeghini et al. — PRL 123, 170503 (2019)</div>
+        <p class="paper-desc">First high-fidelity (97.4%) parallel Rydberg gates on Rb87 qubits. Introduced the basis for the Harvard group's Rydberg gate protocol.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.123603" target="_blank" rel="noopener">PRL ↗</a> · <a href="https://arxiv.org/abs/1908.06101" target="_blank" rel="noopener">arXiv:1908.06101 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">256-atom quantum simulator (QuEra Aquila)</div>
+        <div class="paper-meta">Ebadi, Wang, Levine et al. — Nature 595, 227–232 (2021)</div>
+        <p class="paper-desc">256-qubit analog Rb87 quantum simulator studying frustrated magnetism and quantum phase transitions. First 200+ qubit neutral-atom demonstration. Basis for QuEra Aquila product.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-021-03582-4" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:#34d399;font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">¹⁷¹Yb — Landmark Papers</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Ytterbium nuclear-spin qubits in an optical tweezer array</div>
+        <div class="paper-meta">Jenkins, Lis, Senoo, McGrew, Kaufman — Phys. Rev. X 12, 021027 (2022)</div>
+        <p class="paper-desc">First demonstration of Yb171 nuclear spin qubits in optical tweezers. 10×10 array, 92.73% filling, sub-100 ns single-qubit manipulation. Founded the Atom Computing roadmap. Kaufman group, JILA/CU Boulder.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://link.aps.org/doi/10.1103/PhysRevX.12.021027" target="_blank" rel="noopener">PRX ↗</a> · <a href="https://arxiv.org/abs/2112.06732" target="_blank" rel="noopener">arXiv:2112.06732 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">High-fidelity universal gates for ¹⁷¹Yb nuclear-spin qubits</div>
+        <div class="paper-meta">Ma, Zhang, Kolkowitz, Kaufman et al. — PRX Quantum 6, 020334 (2025)</div>
+        <p class="paper-desc">99.72% two-qubit CZ gate fidelity with post-selection, 99.40% raw. Universal gate set demonstrated. Error budget fully explained. Establishes Yb171 as a competitive gate platform.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://link.aps.org/doi/10.1103/PRXQuantum.6.020334" target="_blank" rel="noopener">PRX Quantum ↗</a> · <a href="https://arxiv.org/abs/2411.11708" target="_blank" rel="noopener">arXiv:2411.11708 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Rydberg excitation spectroscopy of ¹⁷¹Yb and improved Rydberg gate fidelity</div>
+        <div class="paper-meta">Ma et al. — arXiv:2406.01482 (2024)</div>
+        <p class="paper-desc">CZ fidelity 99.4(1)% using I=1/2 Rydberg pathway — 3.3× improvement over F=3/2 Rydberg. Detailed Rydberg state spectroscopy for Yb171. Clarifies Rydberg excitation pathway from ³P₀.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2406.01482" target="_blank" rel="noopener">arXiv:2406.01482 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Erasure conversion for fault-tolerant quantum computing with alkaline-earth atoms</div>
+        <div class="paper-meta">Wu, Kolkowitz, Puri, Thompson — Nature Commun. 13, 4657 (2022)</div>
+        <p class="paper-desc">Theoretical framework showing that 98% of gate errors in Yb171/Sr87 can be converted to detectable erasures using the ³P₀ metastable state. ~10× reduction in fault-tolerance overhead. Highly cited theory paper.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41467-022-32094-6" target="_blank" rel="noopener">Nature Commun. ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Atom Computing Phoenix: 1225-site ¹⁷¹Yb nuclear spin array</div>
+        <div class="paper-meta">Atom Computing — Technical whitepaper + announcement (2023)</div>
+        <p class="paper-desc">Industry announcement of Phoenix: 1,225 tweezer sites, 1,180 qubits loaded. Nuclear spin qubit. Demonstrated 40 s coherence (2024). First 1000+ qubit neutral-atom demonstration with a programmable gate platform.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://atom-computing.com" target="_blank" rel="noopener">atom-computing.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Two-qubit encoding with ¹⁷¹Yb: clock + nuclear spin dual encoding</div>
+        <div class="paper-meta">Multiple authors — npj Quantum Information (arXiv:2402.13134, 2024)</div>
+        <p class="paper-desc">Proposes encoding logical qubits in both the nuclear spin (fast gates) and clock-state (³P₀, long coherence) of Yb171. Dual-encoding enables gate operations followed by coherent storage — relevant for fault-tolerant architectures.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2402.13134" target="_blank" rel="noopener">arXiv:2402.13134 ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:var(--text-secondary);font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Reviews &amp; Theory</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Tweezer arrays of individual atoms for quantum applications</div>
+        <div class="paper-meta">Kaufman &amp; Ni — Nature Physics 17, 1324–1333 (2021)</div>
+        <p class="paper-desc">Comprehensive review of optical tweezer approaches to neutral-atom quantum computing. Covers both alkali and alkaline-earth platforms. Excellent entry point for the field.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41567-021-01357-2" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Quantum computing with neutral atoms</div>
+        <div class="paper-meta">Henriet et al. — Quantum 4, 327 (2020)</div>
+        <p class="paper-desc">Review of neutral atom quantum computing platforms, algorithms, and near-term applications. Covers DiVincenzo criteria, Rydberg blockade physics, and error correction prospects for neutral atoms.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://quantum-journal.org/papers/q-2020-09-21-327/" target="_blank" rel="noopener">quantum-journal.org ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /page-content -->
+</div><!-- /page-wrap -->
+
+<footer style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.82rem;border-top:1px solid #1a2236;margin-top:1rem;">
+  AMO Career · ⁸⁷Rb vs ¹⁷¹Yb Comparison · Data ≈ 2025 values · Saumitra Phatak, Purdue Physics PhD
+</footer>
+
+<!-- KaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
+
+<script src="../js/main.js?v=5"></script>
+<script>
+  renderNav({ active: 'rb87-vs-yb171', root: '../' });
+
+  // ── Sticky topic nav highlight ─────────────────────────────────────
+  (function() {
+    const btns = document.querySelectorAll('.tnav-btn');
+    const sections = Array.from(btns).map(b => document.getElementById(b.dataset.target)).filter(Boolean);
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const el = document.getElementById(btn.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          btns.forEach(b => b.classList.remove('active'));
+          const active = document.querySelector(`.tnav-btn[data-target="${e.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-64px 0px -55% 0px', threshold: 0 });
+
+    sections.forEach(s => obs.observe(s));
+  })();
+
+  // ── Chart helpers ─────────────────────────────────────────────────
+  function hexToRgba(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+
+  // ── Coherence Time Chart ──────────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('coherenceChart').getContext('2d');
+    const labels = ['T₂* free prec.', 'T₂ with DD', 'Gate time (2Q)', 'Rydberg lifetime'];
+    const rb_data = [22, 12.6, 2e-6, 10e-6];
+    const yb_data = [null, 40, 3e-6, 8e-6];  // 40s Atom Computing announcement
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: '⁸⁷Rb',
+            data: rb_data,
+            backgroundColor: hexToRgba('#fb923c', 0.7),
+            borderColor: '#fb923c',
+            borderWidth: 1.5,
+          },
+          {
+            label: '¹⁷¹Yb',
+            data: yb_data,
+            backgroundColor: hexToRgba('#34d399', 0.7),
+            borderColor: '#34d399',
+            borderWidth: 1.5,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#e2e8f0', font: { size: 11 } }, position: 'bottom' },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const v = ctx.raw;
+                if (v === null) return ' Not yet published';
+                if (v >= 1) return ` ${v} s`;
+                if (v >= 1e-3) return ` ${(v*1e3).toFixed(1)} ms`;
+                if (v >= 1e-6) return ` ${(v*1e6).toFixed(1)} µs`;
+                return ` ${(v*1e9).toFixed(0)} ns`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'Time (seconds, log scale)', color: '#94a3b8' },
+            grid: { color: '#1e293b' },
+            ticks: {
+              callback: (v) => {
+                if (v === 100 || v === 10 || v === 1) return `${v} s`;
+                if (v === 0.001) return '1 ms';
+                if (v === 0.00001) return '10 µs';
+                if (v === 0.000001) return '1 µs';
+                return null;
+              }
+            }
+          }
+        }
+      }
+    });
+  })();
+
+  // ── Gate Fidelity Chart ───────────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('fidelityChart').getContext('2d');
+
+    const data = [
+      { label: 'Rb87\n(Levine 2019)', rb: 97.4, yb: null, year: 2019 },
+      { label: 'Rb87\n(Evered 2023)', rb: 99.5, yb: null, year: 2023 },
+      { label: 'Yb171\n(Ma 2024 Rydberg)', rb: null, yb: 99.4, year: 2024 },
+      { label: 'Rb87 logical\n(Bluvstein 2024)', rb: 99.5, yb: null, year: 2024 },
+      { label: 'Yb171\n(Ma 2025 raw)', rb: null, yb: 99.40, year: 2025 },
+      { label: 'Yb171\n(Ma 2025 post-sel)', rb: null, yb: 99.72, year: 2025 },
+    ];
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [
+          {
+            type: 'bar',
+            label: '⁸⁷Rb 2Q Fidelity',
+            data: data.map(d => d.rb),
+            backgroundColor: hexToRgba('#fb923c', 0.75),
+            borderColor: '#fb923c', borderWidth: 1.5,
+          },
+          {
+            type: 'bar',
+            label: '¹⁷¹Yb 2Q Fidelity',
+            data: data.map(d => d.yb),
+            backgroundColor: hexToRgba('#34d399', 0.75),
+            borderColor: '#34d399', borderWidth: 1.5,
+          },
+          {
+            type: 'line',
+            label: 'Surface code threshold ~99.9%',
+            data: data.map(() => 99.9),
+            borderColor: '#ef4444', borderDash: [6,4], borderWidth: 1.5,
+            pointRadius: 0, fill: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#e2e8f0', font: { size: 11 } }, position: 'bottom' },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                if (ctx.raw === null) return null;
+                return ` ${ctx.dataset.label}: ${ctx.raw}%`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: {
+            min: 96.5, max: 100.3,
+            title: { display: true, text: '2-Qubit Gate Fidelity (%)', color: '#94a3b8' },
+            grid: { color: '#1e293b' }
+          }
+        }
+      }
+    });
+  })();
+
+  // ── Scale Chart ───────────────────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('scaleChart').getContext('2d');
+
+    const milestones = [
+      { label: 'QuEra Aquila\n(Rb87, 2021)', atoms: 256, platform: 'rb' },
+      { label: 'Evered gates\n(Rb87, 2023)', atoms: 60, platform: 'rb' },
+      { label: 'Jenkins array\n(Yb171, 2022)', atoms: 100, platform: 'yb' },
+      { label: 'Bluvstein logic\n(Rb87, 2024)', atoms: 280, platform: 'rb' },
+      { label: 'Phoenix 1180\n(Yb171, 2023)', atoms: 1180, platform: 'yb' },
+      { label: 'Manetsch 6100\n(Rb87, 2025)', atoms: 6100, platform: 'rb' },
+    ];
+
+    milestones.sort((a,b) => a.atoms - b.atoms);
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: milestones.map(m => m.label),
+        datasets: [{
+          data: milestones.map(m => m.atoms),
+          backgroundColor: milestones.map(m => hexToRgba(m.platform === 'rb' ? '#fb923c' : '#34d399', 0.75)),
+          borderColor: milestones.map(m => m.platform === 'rb' ? '#fb923c' : '#34d399'),
+          borderWidth: 1.5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const m = milestones[ctx.dataIndex];
+                return ` ${m.atoms} qubits — ${m.platform === 'rb' ? '⁸⁷Rb' : '¹⁷¹Yb'}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'Physical Qubits / Atoms (log)', color: '#94a3b8' },
+            grid: { color: '#1e293b' },
+            ticks: {
+              callback: (v) => [50, 100, 300, 1000, 6000].includes(v) ? v : null
+            }
+          }
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>

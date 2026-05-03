@@ -24,7 +24,8 @@ const NAV = {
     { key: 'polarimetry',          label: 'Polarimetry Explorer',    icon: '🔭',  color: '#e879f9', href: 'pages/polarimetry.html'          },
   ],
   industry: [
-    { key: 'qc-landscape', label: 'QC Industry Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
+    { key: 'qc-landscape',  label: 'QC Industry Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html'  },
+    { key: 'rb87-vs-yb171', label: '⁸⁷Rb vs ¹⁷¹Yb Qubits',  icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
   ],
   cooling: [
     { label: 'Overview & Lamb-Dicke',      icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke'   },
