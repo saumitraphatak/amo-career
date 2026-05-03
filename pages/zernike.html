@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zernike Polynomials — AMO Career</title>
+  <title>Zernike Polynomials, AMO Career</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/zernike.html">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Zernike Polynomials — AMO Career">
+  <meta property="og:title" content="Zernike Polynomials, AMO Career">
   <meta property="og:description" content="Interactive Zernike polynomial visualiser for wavefront analysis and optical aberration characterisation in AMO experiments.">
   <meta property="og:url" content="https://saumitraphatak.github.io/amo-career/pages/zernike.html">
   <meta property="og:site_name" content="AMO Career">
@@ -204,7 +204,7 @@
       <p class="page-hero-desc">
         The orthonormal basis for optical wavefront aberrations over a circular pupil.
         Visualise Zernike modes, build arbitrary wavefronts, and explore SLM phase-to-far-field
-        Fourier optics — LG beams, OAM, PSF.
+        Fourier optics, LG beams, OAM, PSF.
       </p>
     </div>
   </div>
@@ -212,7 +212,7 @@
   <div class="page-content">
     <div class="container">
   <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-    <strong style="color:var(--page-color,#38bdf8);">Wavefront aberrations in optical tweezers</strong> — Zernike polynomials Z_n^m(ρ,θ) are the standard orthonormal basis for wavefront aberrations on a circular aperture. In AMO experiments they matter for: spatial light modulators (SLMs) that generate arbitrary tweezer arrays and structured light (the SLM's phase pattern is a sum of Zernike modes), high-NA objectives where residual spherical aberration and coma degrade the PSF and increase the tweezer waist, and aberration-corrected imaging paths for single-atom detection. This visualizer lets you decompose any wavefront into Zernike modes, visualize the resulting phase map, and compute the Strehl ratio — a single number summarizing how close your optics are to diffraction-limited performance.
+    Zernike polynomials Z_n^m(ρ,θ) are the standard orthonormal basis for wavefront aberrations on a circular aperture. In AMO experiments they matter for: spatial light modulators (SLMs) that generate arbitrary tweezer arrays and structured light (the SLM's phase pattern is a sum of Zernike modes), high-NA objectives where residual spherical aberration and coma degrade the PSF and increase the tweezer waist, and aberration-corrected imaging paths for single-atom detection. This visualizer lets you decompose any wavefront into Zernike modes, visualize the resulting phase map, and compute the Strehl ratio, a single number summarizing how close your optics are to diffraction-limited performance.
   </div>
   <section class="section-block anim-in delay-1">
     <div data-tabs-wrap>
@@ -359,7 +359,7 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
               <label>Preset phase pattern</label>
               <select id="slmPreset" onchange="slmPresetChange()">
                 <option value="flat">Flat (no phase)</option>
-                <option value="oam">Helical — OAM</option>
+                <option value="oam">Helical, OAM</option>
                 <option value="oam_defocus">Helical + Defocus</option>
                 <option value="oam_astig">Helical + Astigmatism</option>
                 <option value="grating">Blazed Grating</option>
@@ -434,7 +434,7 @@ SLM recipe for LG$_0^l$:<br>
 1. Input: Gaussian beam<br>
 2. Phase: $\varphi = l\cdot\theta$ (helical/vortex phase)<br>
 3. Far field $\approx$ LG$_0^l$ (donut for $l\neq0$)<br><br>
-Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis — separates OAM orders spatially</div>
+Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM orders spatially</div>
           </div>
           <div>
             <table class="lg-table">
@@ -456,7 +456,7 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis — separates OA
       <!-- ══════════════ TAB 4: MODE GALLERY ══════════════ -->
       <div class="tab-panel" data-tab="gallery">
         <div class="theory-box" style="margin-bottom:1.25rem;">
-          <h4>Zernike Pyramid — all modes at a glance</h4>
+          <h4>Zernike Pyramid, all modes at a glance</h4>
           <p>
             Every Zernike polynomial Z_n^m arranged in the standard pyramid (OSA/ANSI order).
             Columns index the azimuthal frequency m, rows the radial order n.
@@ -737,7 +737,7 @@ function updateSingle() {
   const m  = parseInt(document.getElementById('mSel').value);
   const N  = 180;
   document.getElementById('modeName').textContent =
-    `n = ${n},  m = ${m >= 0 ? '+' : ''}${m}  —  ${modeName(n,m)}`;
+    `n = ${n},  m = ${m >= 0 ? '+' : ''}${m} ,  ${modeName(n,m)}`;
 
   const data = computeZernike(n, m, G180, N);
   const { rms, pv, min, max } = nanStats(data);
@@ -883,9 +883,9 @@ function computeWavefront() {
     bar.style.background = strehl > 0.8 ? '#34d399' : strehl > 0.3 ? '#fbbf24' : '#ef4444';
 
     const msg = document.getElementById('strehlMsg');
-    if (strehl > 0.8)      msg.textContent = `Strehl = ${strehl.toFixed(3)} > 0.8 — diffraction-limited (Rayleigh criterion)`;
-    else if (strehl > 0.3) msg.textContent = `Strehl = ${strehl.toFixed(3)} — moderate aberration, PSF broadened`;
-    else                   msg.textContent = `Strehl = ${strehl.toFixed(3)} — strong aberration, PSF severely degraded`;
+    if (strehl > 0.8)      msg.textContent = `Strehl = ${strehl.toFixed(3)} > 0.8, diffraction-limited (Rayleigh criterion)`;
+    else if (strehl > 0.3) msg.textContent = `Strehl = ${strehl.toFixed(3)}, moderate aberration, PSF broadened`;
+    else                   msg.textContent = `Strehl = ${strehl.toFixed(3)}, strong aberration, PSF severely degraded`;
 
     status.className = 'compute-status ok';
     status.textContent = `Done (${N}×${N} grid, ${Nfft}×${Nfft} FFT)`;
@@ -987,7 +987,7 @@ function computeSLM() {
     renderCanvas(document.getElementById('slmFFCanvas'), psf, N, colorInferno, 0, 1);
 
     status.className = 'compute-status ok';
-    status.textContent = `Done — ${N}×${N} → ${Nfft}×${Nfft} FFT.`;
+    status.textContent = `Done, ${N}×${N} → ${Nfft}×${Nfft} FFT.`;
   }, 20);
 }
 
@@ -995,7 +995,7 @@ function computeSLM() {
 computeSLM();
 
 /* ═══════════════════════════════════════════════════════
-   TAB 4: MODE GALLERY — Zernike pyramid
+   TAB 4: MODE GALLERY, Zernike pyramid
    ═══════════════════════════════════════════════════════ */
 const GAL_SIZE = 72;   // px per thumbnail canvas
 const GAL_GRID = makePolarGrid(GAL_SIZE);
