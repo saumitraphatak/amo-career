@@ -81,7 +81,24 @@ ul, ol { list-style: none; }
   --t-slow: 0.4s ease;
 }
 
-/* 3. Scrollbar */
+/* 3. Skip link (accessibility — keyboard/screen-reader users skip nav) */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--sp-4);
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--c-atom);
+  color: #020c18;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 0 0 var(--r-sm) var(--r-sm);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus { top: 0; }
+
+/* 4. Scrollbar */
 ::-webkit-scrollbar            { width: 5px; }
 ::-webkit-scrollbar-track      { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb      { background: rgba(56,189,248,0.25); border-radius: 3px; }
@@ -1443,6 +1460,15 @@ code, .mono {
 
   /* Page hero description */
   .page-hero-desc { font-size: 0.9375rem; }
+}
+
+/* ── iOS input zoom fix: font-size must be ≥ 16px or Safari auto-zooms the page ── */
+@media (max-width: 768px) {
+  .calc-field input,
+  .calc-field select,
+  input, select, textarea {
+    font-size: 1rem;
+  }
 }
 
 /* ── Small phones (≤ 480px) ── */

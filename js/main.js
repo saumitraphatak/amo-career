@@ -124,6 +124,7 @@ function renderNav({ active = '', root = '' } = {}) {
   `).join('');
 
   el.innerHTML = `
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <nav class="nav" role="navigation" aria-label="Main navigation">
       <div class="nav-inner">
 
