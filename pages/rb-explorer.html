@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Randomized Benchmarking Explorer — AMO Career</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="description" content="Interactive Randomized Benchmarking (RB) Explorer — SPAM cancellation, Clifford group, RB decay model, interleaved RB, 2Q benchmarking, and neutral atom results.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/rb-explorer.html">
+  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})"></script>
+
+  <style>
+    /* ── Page accent ─────────────────────────────── */
+    :root { --accent: #c084fc; --accent-dim: rgba(192,132,252,0.12); --accent-border: rgba(192,132,252,0.25); }
+
+    .page-wrap { padding-top: 64px; max-width: 1040px; margin: 0 auto; padding-left: 1.25rem; padding-right: 1.25rem; padding-bottom: 4rem; }
+
+    /* ── Sticky topic nav ────────────────────────── */
+    .topic-nav {
+      position: sticky; top: 64px; z-index: 90;
+      background: rgba(2,8,15,0.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(192,132,252,0.15);
+      padding: .55rem 0; margin-bottom: 3rem;
+      overflow-x: auto; white-space: nowrap;
+    }
+    .topic-nav-inner { display: flex; gap: .2rem; padding: 0 .25rem; }
+    .tnav-link {
+      font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: .35rem .75rem; border-radius: 6px;
+      text-decoration: none; transition: background .2s, color .2s;
+      border: 1px solid transparent; flex-shrink: 0;
+    }
+    .tnav-link:hover { color: var(--accent); background: var(--accent-dim); }
+    .tnav-link.active { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-border); }
+
+    /* ── Page hero ───────────────────────────────── */
+    .page-hero {
+      margin-bottom: 2.5rem; padding: 2rem 2.25rem;
+      background: linear-gradient(135deg, rgba(192,132,252,0.07) 0%, rgba(12,21,38,0.9) 60%);
+      border: 1px solid var(--accent-border); border-radius: 14px;
+    }
+    .page-hero-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
+    }
+    .page-hero h1 { font-size: 2rem; font-weight: 800; color: var(--text-primary); margin: 0 0 .6rem; line-height: 1.2; }
+    .page-hero p  { font-size: .95rem; color: var(--text-secondary); max-width: 700px; line-height: 1.75; margin: 0; }
+
+    /* ── Section titles ──────────────────────────── */
+    .rb-section { margin-bottom: 4rem; scroll-margin-top: 120px; }
+    .section-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: .4rem;
+    }
+    .section-title {
+      font-size: 1.5rem; font-weight: 700; color: var(--text-primary);
+      border-left: 4px solid var(--accent); padding-left: .9rem;
+      margin: 0 0 .4rem; line-height: 1.3;
+    }
+    .section-desc {
+      font-size: .9rem; color: var(--text-muted); margin: 0 0 1.75rem;
+      max-width: 800px; line-height: 1.7;
+    }
+
+    /* ── Prose / theory cards ────────────────────── */
+    .theory {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-left: 4px solid var(--accent-border); border-radius: 10px;
+      padding: 1.2rem 1.5rem; margin-bottom: 1.1rem;
+    }
+    .theory h4 { font-size: .95rem; font-weight: 700; color: var(--accent); margin: 0 0 .55rem; }
+    .theory p  { font-size: .88rem; color: var(--text-secondary); line-height: 1.8; margin: 0 0 .6rem; }
+    .theory p:last-child { margin-bottom: 0; }
+    .theory ul { padding-left: 1.3rem; margin: .35rem 0 0; }
+    .theory li { font-size: .87rem; color: var(--text-secondary); line-height: 1.75; margin-bottom: .25rem; }
+
+    /* ── Formula boxes ───────────────────────────── */
+    .formula-box {
+      background: #040d1a; border: 1px solid rgba(192,132,252,0.2);
+      border-radius: 10px; padding: 1rem 1.5rem;
+      margin: .9rem 0; overflow-x: auto; text-align: center;
+    }
+    .formula-box .katex-display { margin: 0; }
+    .formula-box + .formula-box { margin-top: .5rem; }
+
+    /* ── Info / highlight boxes ──────────────────── */
+    .info-box {
+      background: rgba(192,132,252,0.07); border: 1px solid rgba(192,132,252,0.22);
+      border-radius: 10px; padding: .85rem 1.25rem;
+      font-size: .86rem; color: #ddd6fe; line-height: 1.7; margin: 1rem 0;
+    }
+    .info-box strong { color: var(--accent); }
+    .warn-box {
+      background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.22);
+      border-radius: 10px; padding: .85rem 1.25rem;
+      font-size: .86rem; color: #fde68a; line-height: 1.7; margin: 1rem 0;
+    }
+    .warn-box strong { color: #fbbf24; }
+    .good-box {
+      background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2);
+      border-radius: 10px; padding: .85rem 1.25rem;
+      font-size: .86rem; color: #6ee7b7; line-height: 1.7; margin: 1rem 0;
+    }
+    .good-box strong { color: #34d399; }
+
+    /* ── SVG circuit diagram ─────────────────────── */
+    .circuit-wrap {
+      background: #02080f; border: 1px solid rgba(192,132,252,0.15);
+      border-radius: 12px; padding: 1.25rem; overflow-x: auto; margin: 1rem 0;
+    }
+    .circuit-wrap svg { display: block; margin: auto; }
+
+    /* ── Tables ──────────────────────────────────── */
+    .rb-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin: 1rem 0; }
+    .rb-table th {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text-muted);
+      padding: .6rem .85rem; text-align: left; border-bottom: 1px solid #1e293b;
+    }
+    .rb-table td { padding: .6rem .85rem; border-bottom: 1px solid #111827; color: var(--text-secondary); vertical-align: top; }
+    .rb-table td:first-child { color: var(--text-primary); font-weight: 500; }
+    .rb-table tr:last-child td { border-bottom: none; }
+    .rb-table .mono { font-family: var(--mono); color: var(--accent); }
+    .rb-table .paper { font-size: .78rem; color: var(--text-muted); }
+    .rb-table .good  { color: #34d399; font-family: var(--mono); }
+    .rb-table .warn  { color: #fbbf24; font-family: var(--mono); }
+
+    /* ── Two-col grid ────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Chart card ──────────────────────────────── */
+    .chart-card {
+      background: var(--bg-card); border: 1px solid #1e293b;
+      border-radius: 12px; padding: 1.25rem 1.4rem; margin-top: 1rem;
+    }
+    .chart-card h5 {
+      font-size: .78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-muted); margin: 0 0 1rem; text-align: center;
+    }
+
+    /* ── Slider controls ─────────────────────────── */
+    .ctrl-row { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; align-items: center; margin-bottom: .85rem; }
+    .ctrl-item { display: flex; flex-direction: column; gap: .25rem; min-width: 200px; }
+    .ctrl-item label { font-size: .75rem; color: var(--text-muted); }
+    .ctrl-item input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; height: 4px; }
+    .ctrl-val { font-size: .82rem; color: var(--accent); font-family: var(--mono); }
+
+    /* ── Result chips ────────────────────────────── */
+    .result-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.1rem; }
+    .chip {
+      background: #0a1628; border: 1px solid rgba(192,132,252,0.2);
+      border-radius: 8px; padding: .45rem .85rem;
+      display: flex; flex-direction: column; gap: .1rem; min-width: 130px;
+    }
+    .chip-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); }
+    .chip-value { font-family: var(--mono); font-size: .88rem; color: var(--accent); font-weight: 600; }
+
+    /* ── Toggle button ───────────────────────────── */
+    .toggle-btn {
+      background: #0a1628; border: 1px solid rgba(192,132,252,0.25);
+      color: var(--text-secondary); border-radius: 7px; padding: .4rem .9rem;
+      font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .2s;
+    }
+    .toggle-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+    .toggle-btn.on { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+    /* ── Steps (numbered) ────────────────────────── */
+    .steps { margin: .75rem 0; }
+    .step {
+      display: flex; gap: 1rem; align-items: flex-start; margin-bottom: .85rem;
+    }
+    .step-num {
+      min-width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent); color: #0f0020;
+      font-size: .78rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: .1rem;
+    }
+    .step-body { font-size: .88rem; color: var(--text-secondary); line-height: 1.75; }
+    .step-body strong { color: var(--text-primary); }
+
+    /* ── Bloch sphere legend ─────────────────────── */
+    .bloch-legend { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+    .bloch-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+    /* ── Clifford table compact ──────────────────── */
+    .cliff-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .cliff-table th { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); padding: .45rem .6rem; text-align: left; border-bottom: 1px solid #1e293b; }
+    .cliff-table td { padding: .4rem .6rem; border-bottom: 1px solid #0f1e38; color: var(--text-secondary); font-family: var(--mono); font-size: .77rem; }
+    .cliff-table td:first-child { color: var(--text-primary); font-family: var(--font-body, Inter, sans-serif); font-size: .82rem; }
+    .cliff-table tr:last-child td { border-bottom: none; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<div class="page-wrap">
+
+  <!-- ── Page Hero ───────────────────────────────── -->
+  <div class="page-hero">
+    <div class="page-hero-label">AMO / Quantum Computing · Benchmarking</div>
+    <h1>Randomized Benchmarking Explorer</h1>
+    <p>
+      A thorough interactive reference for RB — from the SPAM problem and Clifford twirling, through the
+      decay model and IRB, to practical design choices and state-of-the-art neutral atom results.
+      Includes working calculators for standard RB and interleaved RB.
+    </p>
+  </div>
+
+  <!-- ── Sticky topic nav ─────────────────────────── -->
+  <nav class="topic-nav" id="topicNav">
+    <div class="topic-nav-inner">
+      <a href="#spam"       class="tnav-link" data-section="spam">01 SPAM Problem</a>
+      <a href="#clifford"   class="tnav-link" data-section="clifford">02 Clifford Group</a>
+      <a href="#decay"      class="tnav-link" data-section="decay">03 Decay Model</a>
+      <a href="#calculator" class="tnav-link" data-section="calculator">04 RB Calculator</a>
+      <a href="#irb"        class="tnav-link" data-section="irb">05 Interleaved RB</a>
+      <a href="#twoqubit"   class="tnav-link" data-section="twoqubit">06 Two-Qubit RB</a>
+      <a href="#practical"  class="tnav-link" data-section="practical">07 Practical Guide</a>
+      <a href="#results"    class="tnav-link" data-section="results">08 Neutral Atom Results</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       01  SPAM PROBLEM
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="spam">
+    <div class="section-label">Section 01</div>
+    <h2 class="section-title">Why Randomized Benchmarking? The SPAM Problem</h2>
+    <p class="section-desc">
+      Before RB existed, measuring gate fidelity seemed simple: prepare $|0\rangle$, apply gate $G$, measure.
+      But this conflates three separate error sources that you cannot disentangle with a single experiment.
+    </p>
+
+    <div class="theory">
+      <h4>State Preparation and Measurement (SPAM) Errors</h4>
+      <p>
+        Every qubit experiment involves three steps: (1) prepare a known state, (2) apply your gate or circuit,
+        (3) measure the output state. Steps 1 and 3 both have imperfections called
+        <strong>state preparation errors</strong> and <strong>measurement errors</strong> — collectively SPAM.
+        In neutral atom experiments, SPAM typically contributes 0.5–2% error per shot, often comparable to or
+        <em>larger</em> than the gate error you're trying to measure.
+      </p>
+      <p>
+        If you apply gate $G$ once and measure, you see:
+        $P(|0\rangle) = F_{\rm gate} \cdot F_{\rm SPAM}$.
+        You cannot extract $F_{\rm gate}$ without knowing $F_{\rm SPAM}$ independently.
+        Even worse, SPAM errors fluctuate with laser power drifts, alignment, and atom temperature —
+        making them hard to characterize reliably.
+      </p>
+    </div>
+
+    <div class="theory">
+      <h4>The Key Insight: SPAM Errors Don't Scale with Circuit Depth</h4>
+      <p>
+        Randomized Benchmarking's crucial observation: apply a <em>random sequence</em> of $m$ Clifford gates
+        followed by the recovery gate $C_r$ that inverts the whole sequence. The ideal output is always $|0\rangle$.
+        As you increase $m$, gate errors accumulate — but SPAM errors are the same no matter how long the circuit is.
+        This means SPAM appears as constants $A$ and $B$ in the fit model, while gate errors appear in the
+        exponential decay $p^m$. You get a clean separation.
+      </p>
+    </div>
+
+    <!-- SVG Circuit Diagram -->
+    <div class="circuit-wrap">
+      <svg width="680" height="110" viewBox="0 0 680 110" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+        <!-- Wire -->
+        <line x1="10" y1="55" x2="670" y2="55" stroke="#334155" stroke-width="1.5"/>
+
+        <!-- |0⟩ label -->
+        <text x="18" y="44" fill="#e2e8f0" font-size="13" font-weight="600">|0⟩</text>
+
+        <!-- SPAM prep box -->
+        <rect x="45" y="35" width="90" height="40" rx="6" fill="#2d1b4e" stroke="rgba(192,132,252,0.5)" stroke-width="1.5"/>
+        <text x="90" y="52" text-anchor="middle" fill="#ddd6fe" font-size="9" font-weight="700">SPAM</text>
+        <text x="90" y="65" text-anchor="middle" fill="#94a3b8" font-size="8">Prep error</text>
+
+        <!-- Arrow -->
+        <line x1="135" y1="55" x2="155" y2="55" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Gate boxes C1..Cm -->
+        <rect x="158" y="35" width="38" height="40" rx="5" fill="#0c1a32" stroke="#1e3a5f" stroke-width="1.2"/>
+        <text x="177" y="60" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="700">C₁</text>
+
+        <rect x="202" y="35" width="38" height="40" rx="5" fill="#0c1a32" stroke="#1e3a5f" stroke-width="1.2"/>
+        <text x="221" y="60" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="700">C₂</text>
+
+        <text x="258" y="58" text-anchor="middle" fill="#475569" font-size="16">…</text>
+
+        <rect x="275" y="35" width="38" height="40" rx="5" fill="#0c1a32" stroke="#1e3a5f" stroke-width="1.2"/>
+        <text x="294" y="60" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="700">Cₘ</text>
+
+        <!-- Arrow -->
+        <line x1="313" y1="55" x2="333" y2="55" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- Recovery gate -->
+        <rect x="336" y="35" width="42" height="40" rx="5" fill="#102020" stroke="rgba(52,211,153,0.45)" stroke-width="1.5"/>
+        <text x="357" y="52" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="700">Cᵣ</text>
+        <text x="357" y="65" text-anchor="middle" fill="#94a3b8" font-size="8">(recover)</text>
+
+        <!-- Arrow -->
+        <line x1="378" y1="55" x2="398" y2="55" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- SPAM meas box -->
+        <rect x="400" y="35" width="90" height="40" rx="6" fill="#2d1b4e" stroke="rgba(192,132,252,0.5)" stroke-width="1.5"/>
+        <text x="445" y="52" text-anchor="middle" fill="#ddd6fe" font-size="9" font-weight="700">SPAM</text>
+        <text x="445" y="65" text-anchor="middle" fill="#94a3b8" font-size="8">Meas error</text>
+
+        <!-- Output -->
+        <line x1="490" y1="55" x2="510" y2="55" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="515" y="44" fill="#e2e8f0" font-size="11" font-weight="600">P(|0⟩)</text>
+        <text x="515" y="57" fill="#94a3b8" font-size="9">→ fit F(m)=Apᵐ+B</text>
+
+        <!-- Bracket: SPAM doesn't scale -->
+        <line x1="45" y1="95" x2="45" y2="90" stroke="rgba(192,132,252,0.5)" stroke-width="1"/>
+        <line x1="45" y1="92" x2="490" y2="92" stroke="rgba(192,132,252,0.5)" stroke-width="1"/>
+        <line x1="490" y1="92" x2="490" y2="90" stroke="rgba(192,132,252,0.5)" stroke-width="1"/>
+        <text x="267" y="107" text-anchor="middle" fill="#c084fc" font-size="9" font-weight="600">SPAM constants A, B — same for all m. Gate errors → pᵐ decay.</text>
+
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#475569"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="info-box">
+      <strong>Bottom line:</strong> By varying the circuit depth $m$ and fitting the survival probability decay,
+      you extract the decay constant $p$ which depends <em>only</em> on gate errors.
+      SPAM gets absorbed into the pre-factors $A$ and $B$ and disappears from the gate error estimate.
+      This is what makes RB so powerful — it's SPAM-insensitive by construction.
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       02  CLIFFORD GROUP
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="clifford">
+    <div class="section-label">Section 02</div>
+    <h2 class="section-title">The Clifford Group</h2>
+    <p class="section-desc">
+      RB uses random Clifford gates — not arbitrary unitaries. The choice is deliberate:
+      Clifford operations have a unique property that makes the RB decay model exact.
+    </p>
+
+    <div class="two-col">
+      <div class="theory">
+        <h4>Definition: Normalizer of the Pauli Group</h4>
+        <p>
+          The Clifford group $\mathcal{C}_n$ consists of all $n$-qubit unitaries $U$ that
+          <em>map Pauli operators to Pauli operators under conjugation</em>:
+        </p>
+        <p>
+          $U \in \mathcal{C}_n \iff U P U^\dagger \in \mathcal{P}_n \text{ for all } P \in \mathcal{P}_n$
+        </p>
+        <p>
+          In other words, Clifford gates <strong>normalize the Pauli group</strong>.
+          This means if you conjugate any Pauli by a Clifford, you get another Pauli (up to a phase).
+          Paulis get "shuffled around" — they never become non-Pauli.
+        </p>
+      </div>
+
+      <div class="theory">
+        <h4>Group Sizes</h4>
+        <ul>
+          <li><strong>1-qubit:</strong> 24 elements — generated by $H$ and $S$, or equivalently
+            $X_{\pi/2}$ and $Z_{\pi/2}$. These correspond to the 24 orientation-preserving symmetries
+            of a cube (the chiral octahedral group $O$).</li>
+          <li><strong>2-qubit:</strong> 11,520 elements — generated by 1Q Cliffords plus CNOT (or CZ).</li>
+          <li><strong>n-qubit:</strong> grows as $\sim 2^{O(n^2)}$ — exponentially large, but still efficiently
+            simulable via the Gottesman-Knill theorem (since Cliffords map stabilizer states to stabilizer states).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="theory">
+      <h4>Why Cliffords? The Twirling Argument</h4>
+      <p>
+        The key insight behind RB is <strong>Clifford twirling</strong>. Given any noise channel
+        $\Lambda$ (which could be completely arbitrary — coherent errors, non-Markovian, anything),
+        averaging over the Clifford group converts it into a <em>depolarizing channel</em>:
+      </p>
+      <p>
+        $\frac{1}{|\mathcal{C}_n|} \sum_{C \in \mathcal{C}_n} C^\dagger \Lambda(C \rho C^\dagger) C = p\rho + (1-p)\frac{I}{d}$
+      </p>
+      <p>
+        This is the twirl. It means: no matter what your noise actually is — coherent Z rotations,
+        amplitude damping, cross-talk, laser phase noise — after Clifford twirling it <em>looks like</em>
+        depolarizing noise parameterized by a single number $p$. The RB decay $F(m) = Ap^m + B$ is
+        therefore exact (not approximate) for any noise that is gate-independent.
+      </p>
+    </div>
+
+    <!-- 1Q Clifford decomposition table -->
+    <div class="theory">
+      <h4>1-Qubit Clifford Decompositions in {$X_{\pi/2}$, $Z_{\pi/2}$} Basis</h4>
+      <p>Modern neutral atom hardware implements 1Q gates natively as $X_{\pi/2}$ and $Z_{\pi/2}$
+         pulses (virtual Z via phase shift). Every 1Q Clifford can be decomposed into at most 3
+         such pulses, giving an average of $\approx 1.875$ native gates per Clifford.</p>
+
+      <table class="cliff-table" style="margin-top:.75rem">
+        <thead>
+          <tr>
+            <th>Gate / Axis</th>
+            <th>Native Gate Sequence</th>
+            <th># Native Gates</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Identity $I$</td><td>— (none)</td><td>0</td><td>Virtual only</td></tr>
+          <tr><td>$X_\pi$ (X gate)</td><td>$X_{\pi/2} \cdot X_{\pi/2}$</td><td>2</td><td>Two half-X pulses</td></tr>
+          <tr><td>$Y_\pi$ (Y gate)</td><td>$Z_{\pi/2} \cdot X_\pi \cdot Z_{-\pi/2}$</td><td>3</td><td>Axis rotation</td></tr>
+          <tr><td>$Z_\pi$ (Z gate)</td><td>$Z_{\pi/2} \cdot Z_{\pi/2}$</td><td>0 (virtual)</td><td>Phase update</td></tr>
+          <tr><td>$H$ (Hadamard)</td><td>$Z_{\pi/2} \cdot X_{\pi/2} \cdot Z_{\pi/2}$</td><td>1 + 2 virtual</td><td>1 physical pulse</td></tr>
+          <tr><td>$S$ ($Z_{\pi/2}$)</td><td>$Z_{\pi/2}$</td><td>0 (virtual)</td><td>Frame rotation</td></tr>
+          <tr><td>$T_3$ (120° face rotations)</td><td>1–3 pulse combos</td><td>1–3</td><td>8 elements, avg 2</td></tr>
+          <tr><td>$T_6$ (180° edge rotations)</td><td>$X_{\pi/2}$ or $Z_{\pi/2}$</td><td>1–2</td><td>6 elements</td></tr>
+          <tr><td>Avg over all 24</td><td>—</td><td style="color:#c084fc;font-family:var(--mono)">1.875</td><td>Theoretical average</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bloch sphere SVG showing 24 Clifford octants -->
+    <div class="circuit-wrap" style="text-align:center">
+      <svg width="360" height="280" viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+        <!-- Bloch sphere outline -->
+        <ellipse cx="180" cy="140" rx="100" ry="100" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+        <!-- Equator ellipse (XY plane) -->
+        <ellipse cx="180" cy="140" rx="100" ry="30" fill="none" stroke="#1e293b" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- Z axis -->
+        <line x1="180" y1="38" x2="180" y2="242" stroke="#334155" stroke-width="1" stroke-dasharray="3 2"/>
+        <!-- X axis -->
+        <line x1="80" y1="140" x2="280" y2="140" stroke="#334155" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- Axis labels -->
+        <text x="185" y="32" fill="#94a3b8" font-size="12" font-weight="600">|0⟩ (Z+)</text>
+        <text x="185" y="255" fill="#94a3b8" font-size="12">|1⟩ (Z−)</text>
+        <text x="283" y="145" fill="#94a3b8" font-size="12">X</text>
+        <text x="58" y="145" fill="#94a3b8" font-size="12">−X</text>
+
+        <!-- 24 Clifford gate positions as dots in 6 octant groups of 4 -->
+        <!-- +Z pole neighbors (6 states near north) -->
+        <circle cx="180" cy="45" r="5" fill="#c084fc"/>   <!-- |0⟩ -->
+        <circle cx="155" cy="65" r="4" fill="#c084fc" opacity=".8"/>
+        <circle cx="205" cy="65" r="4" fill="#c084fc" opacity=".8"/>
+        <circle cx="180" cy="70" r="4" fill="#c084fc" opacity=".7"/>
+        <!-- Equatorial belt -->
+        <circle cx="280" cy="140" r="5" fill="#60a5fa"/>  <!-- +X -->
+        <circle cx="80"  cy="140" r="5" fill="#60a5fa"/>  <!-- −X -->
+        <circle cx="180" cy="110" r="5" fill="#34d399"/>  <!-- +Y -->
+        <circle cx="180" cy="170" r="5" fill="#34d399"/>  <!-- −Y -->
+        <circle cx="243" cy="115" r="4" fill="#60a5fa" opacity=".8"/>
+        <circle cx="117" cy="115" r="4" fill="#60a5fa" opacity=".8"/>
+        <circle cx="243" cy="165" r="4" fill="#60a5fa" opacity=".7"/>
+        <circle cx="117" cy="165" r="4" fill="#60a5fa" opacity=".7"/>
+        <!-- Face-center diagonals (8 T states) -->
+        <circle cx="223" cy="100" r="4" fill="#f472b6"/>
+        <circle cx="137" cy="100" r="4" fill="#f472b6"/>
+        <circle cx="223" cy="180" r="4" fill="#f472b6"/>
+        <circle cx="137" cy="180" r="4" fill="#f472b6"/>
+        <circle cx="210" cy="93" r="3.5" fill="#f472b6" opacity=".75"/>
+        <circle cx="150" cy="93" r="3.5" fill="#f472b6" opacity=".75"/>
+        <circle cx="210" cy="187" r="3.5" fill="#f472b6" opacity=".75"/>
+        <circle cx="150" cy="187" r="3.5" fill="#f472b6" opacity=".75"/>
+        <!-- −Z pole neighbors -->
+        <circle cx="180" cy="235" r="5" fill="#fb923c"/>
+        <circle cx="155" cy="215" r="4" fill="#fb923c" opacity=".8"/>
+        <circle cx="205" cy="215" r="4" fill="#fb923c" opacity=".8"/>
+        <circle cx="180" cy="210" r="4" fill="#fb923c" opacity=".7"/>
+
+        <!-- Legend -->
+        <circle cx="18" cy="210" r="5" fill="#c084fc"/>
+        <text x="28" y="214" fill="#94a3b8" font-size="10">|0⟩, |1⟩ axis (4)</text>
+        <circle cx="18" cy="228" r="5" fill="#60a5fa"/>
+        <text x="28" y="232" fill="#94a3b8" font-size="10">±X, ±Y axis (8)</text>
+        <circle cx="18" cy="246" r="5" fill="#f472b6"/>
+        <text x="28" y="250" fill="#94a3b8" font-size="10">Face/diagonal (8)</text>
+        <circle cx="18" cy="264" r="5" fill="#fb923c"/>
+        <text x="28" y="268" fill="#94a3b8" font-size="10">−Z neighbors (4)</text>
+
+        <text x="180" y="18" text-anchor="middle" fill="#c084fc" font-size="11" font-weight="700">24 Single-Qubit Clifford States on Bloch Sphere</text>
+      </svg>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       03  RB DECAY MODEL
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="decay">
+    <div class="section-label">Section 03</div>
+    <h2 class="section-title">The RB Decay Model</h2>
+    <p class="section-desc">
+      From first principles: why the survival probability decays exponentially,
+      what the fit parameters mean, and how to extract gate error and useful circuit depth.
+    </p>
+
+    <div class="theory">
+      <h4>Derivation: From Twirling to Exponential Decay</h4>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Start with gate-independent depolarizing noise.</strong>
+            Each Clifford gate $C_i$ is followed by a noise channel:
+            $\tilde{C}_i(\rho) = \Lambda(C_i \rho C_i^\dagger)$
+            where $\Lambda(\rho) = p\rho + (1-p)\frac{I}{d}$ is depolarizing with parameter $p \in [0,1]$.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>After m gates, average over all random Clifford sequences.</strong>
+            By the twirling argument, the noise from $m$ sequential gates compounds as $p^m$
+            (since each application of $\Lambda$ shrinks the Bloch vector by factor $p$).
+            The averaged state before measurement is:
+            $\overline{\rho_m} = p^m |\psi_{\rm prep}\rangle\langle\psi_{\rm prep}| + (1-p^m)\frac{I}{d}$
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Apply the recovery gate and measure.</strong>
+            The measured survival probability (probability of recovering $|0\rangle$) is:
+            $F(m) = \langle 0|\overline{\rho_m}|0\rangle = A \cdot p^m + B$
+            where $A = \langle\psi_{\rm prep}|0\rangle^2 - 1/d$ absorbs SPAM,
+            and $B = 1/d$ is the long-depth asymptote (fully mixed state for $d=2$ gives $B = 1/2$).
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Extract error per Clifford from $p$.</strong>
+            For a $d$-dimensional system, depolarizing parameter $p$ relates to error per Clifford:
+            $r_C = \frac{(d-1)(1-p)}{d}$.
+            For 1-qubit ($d=2$): $r_C = (1-p)/2$, so $p = 1 - 2r_C$.
+            For 2-qubit ($d=4$): $r_C = 3(1-p)/4$, so $p = 1 - (4/3)r_C$.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <strong>Convert to error per native gate.</strong>
+            Since each Clifford is compiled from $\bar{n}$ native gates on average,
+            the error per native gate is $\varepsilon_{\rm gate} \approx r_C / \bar{n}$.
+            For 1Q: $\bar{n} \approx 1.875$. For 2Q CZ + overhead: $\bar{n} \approx 2$.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-box">$$F(m) = A \cdot p^m + B$$</div>
+    <div class="formula-box">$$r_C = \frac{(d-1)(1-p)}{d} \quad \text{[1Q: } r_C = \tfrac{1-p}{2}\text{, 2Q: } r_C = \tfrac{3(1-p)}{4}\text{]}$$</div>
+    <div class="formula-box">$$\varepsilon_{\rm gate} \approx \frac{r_C}{\bar{n}} \quad \text{where } \bar{n} \approx 1.875 \text{ (1Q)}, \approx 2.0 \text{ (2Q)}$$</div>
+    <div class="formula-box">$$N_{\rm useful} = \frac{1}{2r_C} \quad \text{[circuit depth at which } F \approx 1/e \approx 0.37\text{]}$$</div>
+
+    <div class="two-col" style="margin-top:1rem">
+      <div class="theory">
+        <h4>Physical Meaning of Parameters</h4>
+        <ul>
+          <li><strong>$p$ (decay constant):</strong> Proximity to identity channel. $p=1$ means perfect gates, $p=0$ means fully depolarizing. Extracted directly from exponential fit.</li>
+          <li><strong>$A$ (amplitude):</strong> Absorbs SPAM. Typically $A \lesssim 0.95$ due to ~5% SPAM in neutral atom experiments. Does <em>not</em> affect $r_C$.</li>
+          <li><strong>$B$ (asymptote):</strong> Long-depth limit where the state is fully mixed. For 1Q: $B \to 1/2$ (chance). For 2Q: $B \to 1/4$. In practice, $B$ is a fit parameter that captures imperfect long-depth behavior.</li>
+          <li><strong>$r_C$ (error per Clifford):</strong> The quantity you report. Benchmark comparing platforms. Equivalent to infidelity per Clifford averaged uniformly over the Clifford group.</li>
+        </ul>
+      </div>
+      <div class="theory">
+        <h4>Average Gate Fidelity</h4>
+        <p>The average gate fidelity of a noisy channel $\tilde{C}$ relative to ideal $C$ is:</p>
+        <p>$F_{\rm avg}(C, \tilde{C}) = \int_\psi \langle\psi|C^\dagger \tilde{C}(|\psi\rangle\langle\psi|) C|\psi\rangle \, d\psi$</p>
+        <p>
+          Under the depolarizing model, $F_{\rm avg} = p + (1-p)/d$.
+          For a 1Q gate: $F_{\rm avg} = p + (1-p)/2 = 1 - r_C$.
+          For a native gate: $F_{\rm avg,gate} \approx 1 - \varepsilon_{\rm gate} = 1 - r_C/\bar{n}$.
+        </p>
+        <p>
+          Surface code fault-tolerance requires $F_{\rm avg} \gtrsim 99\%$ per gate,
+          corresponding to $r_C \lesssim 0.01$ per Clifford. Leading neutral atom systems
+          achieve $r_C \sim 0.003{-}0.005$ for 2Q gates.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       04  INTERACTIVE RB CALCULATOR
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="calculator">
+    <div class="section-label">Section 04</div>
+    <h2 class="section-title">Interactive Standard RB Calculator</h2>
+    <p class="section-desc">
+      Adjust $r_C$ and SPAM amplitude to see how the RB decay curve changes. Compare 1Q and 2Q benchmarks.
+    </p>
+
+    <div class="chart-card">
+      <h5>RB Decay Curve — F(m) = A · pᵐ + B</h5>
+
+      <div class="ctrl-row">
+        <div class="ctrl-item">
+          <label for="slRc">Error per Clifford $r_C$</label>
+          <input type="range" id="slRc" min="0.001" max="0.05" step="0.0005" value="0.005" oninput="updateRBChart()">
+          <span class="ctrl-val" id="lblRc">r_C = 0.0050 (0.50%)</span>
+        </div>
+        <div class="ctrl-item">
+          <label for="slA">SPAM amplitude $A$</label>
+          <input type="range" id="slA" min="0.80" max="0.99" step="0.005" value="0.95" oninput="updateRBChart()">
+          <span class="ctrl-val" id="lblA">A = 0.950</span>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:.1rem">
+          <button class="toggle-btn" id="btn2Q" onclick="toggle2Q()">Show 2Q RB</button>
+        </div>
+      </div>
+
+      <div style="position:relative;height:340px">
+        <canvas id="rbChart"></canvas>
+      </div>
+
+      <div class="result-chips" id="rbChips"></div>
+    </div>
+
+    <div class="info-box" style="margin-top:1rem">
+      <strong>Reading the chart:</strong>
+      The dashed $1/e \approx 0.368$ line shows the characteristic depth $N_{\rm useful} = 1/(2r_C)$
+      — roughly the depth at which your circuit maintains useful coherence. The 2Q curve decays faster
+      because $p_{\rm 2Q} = 1 - (4/3)r_C < p_{\rm 1Q} = 1 - 2r_C$ for the same $r_C$.
+      SPAM amplitude $A$ shifts the whole curve vertically but does <em>not</em> change $r_C$.
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       05  INTERLEAVED RB
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="irb">
+    <div class="section-label">Section 05</div>
+    <h2 class="section-title">Interleaved RB (IRB)</h2>
+    <p class="section-desc">
+      Standard RB gives the average error per Clifford. To measure the fidelity of a <em>specific gate</em>,
+      use Interleaved RB.
+    </p>
+
+    <div class="theory">
+      <h4>Why IRB?</h4>
+      <p>
+        The standard RB decay constant $p_{\rm ref}$ reports an average over all 24 (or 11520) Clifford gates.
+        But for building a quantum computer, you care about individual gates: how well does your
+        $\text{CZ}$ gate perform? Your $X_{\pi/2}$? IRB isolates a single target gate $G$.
+      </p>
+    </div>
+
+    <div class="theory">
+      <h4>Protocol</h4>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Standard RB:</strong> Run regular RB with random Clifford sequences of depths $m = 1, 2, 5, \ldots$
+            Fit $F_{\rm ref}(m) = A_{\rm ref} \cdot p_{\rm ref}^m + B$ to get $p_{\rm ref}$.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Interleaved RB:</strong> Insert the target gate $G$ after <em>every</em> random Clifford:
+            $\ldots C_j \cdot G \cdot C_{j-1} \cdot G \cdot C_{j-2} \cdot G \ldots$
+            The combined sequence is still $m$ pairs of (Clifford, target gate) followed by recovery.
+            Fit $F_{\rm int}(m) = A_{\rm int} \cdot p_{\rm int}^m + B$ to get $p_{\rm int}$.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Extract gate error:</strong> The ratio $p_{\rm int}/p_{\rm ref}$ cancels the average
+            Clifford error, leaving only the contribution of $G$:
+            $r_{\rm gate} = \frac{d-1}{d}\left(1 - \frac{p_{\rm int}}{p_{\rm ref}}\right)$
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-box">$$r_{\rm gate} = \frac{d-1}{d}\left(1 - \frac{p_{\rm int}}{p_{\rm ref}}\right)$$</div>
+
+    <div class="chart-card" style="margin-top:1.5rem">
+      <h5>IRB — Reference vs Interleaved Decay Curves</h5>
+
+      <div class="ctrl-row">
+        <div class="ctrl-item">
+          <label for="slRcIrb">Background $r_C$ (ref Clifford error)</label>
+          <input type="range" id="slRcIrb" min="0.001" max="0.02" step="0.0005" value="0.005" oninput="updateIRBChart()">
+          <span class="ctrl-val" id="lblRcIrb">r_C = 0.0050</span>
+        </div>
+        <div class="ctrl-item">
+          <label for="slRgate">$r_{\rm gate}$ (error of interleaved gate $G$)</label>
+          <input type="range" id="slRgate" min="0" max="0.02" step="0.0005" value="0.005" oninput="updateIRBChart()">
+          <span class="ctrl-val" id="lblRgate">r_gate = 0.0050</span>
+        </div>
+      </div>
+
+      <div style="position:relative;height:300px">
+        <canvas id="irbChart"></canvas>
+      </div>
+
+      <div class="result-chips" id="irbChips"></div>
+    </div>
+
+    <div class="two-col" style="margin-top:1rem">
+      <div class="warn-box">
+        <strong>IRB Systematic Errors:</strong> The formula $r_{\rm gate} = \frac{d-1}{d}(1 - p_{\rm int}/p_{\rm ref})$
+        is a lower bound. If the noise of $G$ is highly coherent or gate-dependent, the extracted $r_{\rm gate}$
+        can underestimate the true error. The bound is tight when $r_{\rm gate} \ll r_C$.
+      </div>
+      <div class="info-box">
+        <strong>Practical note:</strong> $p_{\rm int} \leq p_{\rm ref}$ always (the interleaved gate
+        adds more error). If $r_{\rm gate} \gg r_C$, the interleaved curve decays much faster and the
+        ratio is sensitive to fitting noise. Use more sequences (100+) per depth in that regime.
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       06  TWO-QUBIT RB
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="twoqubit">
+    <div class="section-label">Section 06</div>
+    <h2 class="section-title">Two-Qubit RB Specifics</h2>
+    <p class="section-desc">
+      Two-qubit benchmarking involves a much larger Clifford group and requires accounting for
+      the structure of 2Q gate decompositions and cross-talk.
+    </p>
+
+    <div class="two-col">
+      <div class="theory">
+        <h4>2Q Clifford Group Statistics</h4>
+        <ul>
+          <li><strong>Group size:</strong> 11,520 elements (vs 24 for 1Q). Sampling is still efficient since random 2Q Cliffords can be generated from a small circuit gate set.</li>
+          <li><strong>CZ gate count per 2Q Clifford:</strong> On average $\sim 1.5$ CZ gates + $\sim 8.4$ single-qubit gates (in $\{H, S, X_{\pi/2}\}$ basis).</li>
+          <li><strong>Dimension:</strong> $d = 4$, so $B \to 1/4$ and the formula becomes $r_C = \frac{3(1-p)}{4}$.</li>
+          <li><strong>Error budget:</strong> 2Q error per Clifford includes contributions from CZ gate fidelity AND single-qubit gates within the Clifford decomposition. To isolate CZ: use IRB with $G = \text{CZ}$.</li>
+        </ul>
+      </div>
+
+      <div class="theory">
+        <h4>Simultaneous RB (SimRB)</h4>
+        <p>
+          Run single-qubit RB on both qubits <em>simultaneously</em> while the other qubit is active.
+          Compare to individual 1Q RB on each qubit in isolation.
+        </p>
+        <p>
+          <strong>Crosstalk signature:</strong> If $r_C^{\rm sim} > r_C^{\rm iso}$, the difference
+          $\Delta r_C = r_C^{\rm sim} - r_C^{\rm iso}$ quantifies crosstalk-induced error.
+          In Rydberg arrays, crosstalk arises from: residual Rydberg admixture, off-resonant blockade
+          from neighboring atoms, and laser spillover.
+        </p>
+        <p>
+          <strong>Parallel RB:</strong> Running many qubit pairs simultaneously (Evered 2023: 60 pairs)
+          tests that gate fidelity doesn't degrade under realistic many-body load — crucial for
+          demonstrating scalable performance.
+        </p>
+      </div>
+    </div>
+
+    <table class="rb-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>1Q Standard RB</th>
+          <th>2Q Standard RB</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Clifford group size</td>
+          <td class="mono">24</td>
+          <td class="mono">11,520</td>
+        </tr>
+        <tr>
+          <td>Hilbert space dim $d$</td>
+          <td class="mono">2</td>
+          <td class="mono">4</td>
+        </tr>
+        <tr>
+          <td>Asymptote $B$</td>
+          <td class="mono">0.5</td>
+          <td class="mono">0.25</td>
+        </tr>
+        <tr>
+          <td>$r_C$ from $p$</td>
+          <td>$(1-p)/2$</td>
+          <td>$3(1-p)/4$</td>
+        </tr>
+        <tr>
+          <td>Avg native gates / Clifford</td>
+          <td class="mono">~1.875</td>
+          <td class="mono">~1.5 CZ + ~8.4 SQ</td>
+        </tr>
+        <tr>
+          <td>Typical $r_C$ neutral atoms</td>
+          <td class="good">&lt;0.001</td>
+          <td class="warn">0.003–0.007</td>
+        </tr>
+        <tr>
+          <td>What limits fidelity?</td>
+          <td>Laser phase noise, off-resonance, Doppler</td>
+          <td>Spontaneous emission during Rydberg excitation, Doppler, blockade errors</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box" style="margin-top:1rem">
+      <strong>Generators of the 2Q Clifford Group:</strong>
+      The 2Q Clifford group is generated by $\{H \otimes I,\, S \otimes I,\, I \otimes H,\, I \otimes S,\, \text{CNOT}\}$.
+      In a Rydberg processor, you replace CNOT with CZ (related by single-qubit Hadamards).
+      Random 2Q Cliffords can be synthesized as random circuits of depth $\sim$12–20 in this gate set.
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       07  PRACTICAL CONSIDERATIONS
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="practical">
+    <div class="section-label">Section 07</div>
+    <h2 class="section-title">Practical Considerations</h2>
+    <p class="section-desc">
+      How to actually run RB in the lab — choosing sequence counts, depths, shots, and understanding
+      when the RB model breaks down.
+    </p>
+
+    <div class="two-col">
+      <div class="theory">
+        <h4>Experimental Design Parameters</h4>
+        <ul>
+          <li><strong>Number of random sequences per depth ($K$):</strong> 30–100 is typical.
+            More sequences reduce variance in the fit. For high-fidelity systems ($r_C \lesssim 0.003$),
+            use $K \gtrsim 75$ to resolve the small decay.</li>
+          <li><strong>Number of depth values ($M$):</strong> 8–15 points, log-spaced up to $m_{\rm max} \sim 3/r_C$
+            (where survival drops to $\sim e^{-3} \approx 5\%$ above $B$). Too few depth points
+            → unreliable fit. Too many → waste of time on fully decohered sequences.</li>
+          <li><strong>Shots per circuit ($n_{\rm shots}$):</strong> 100–1000. More shots reduce
+            shot noise. With atom-resolved imaging, even 200 shots per circuit is often sufficient.</li>
+          <li><strong>Total experiments:</strong> $K \times M \times n_{\rm shots} \sim 30 \times 10 \times 200 = 60{,}000$ shots minimum.</li>
+        </ul>
+      </div>
+
+      <div class="theory">
+        <h4>Statistical Error on $r_C$</h4>
+        <p>The statistical uncertainty on the fitted error per Clifford scales approximately as:</p>
+        <p>$\delta r_C \approx \frac{1}{A \cdot \sqrt{K \cdot M \cdot n_{\rm shots}}}$</p>
+        <p>
+          With $A \approx 0.9$, $K=50$, $M=10$, $n_{\rm shots}=200$:
+          $\delta r_C \approx \frac{1}{0.9\sqrt{100{,}000}} \approx 0.00035$ — about $3.5 \times 10^{-4}$.
+          This is the floor on how precisely you can report $r_C$. For sub-0.1% gate errors,
+          you need $\gtrsim 10^6$ total shots.
+        </p>
+        <p>
+          <strong>Bootstrapping:</strong> For confidence intervals, resample the set of sequences
+          (with replacement) and refit many times. Report the 95th percentile range.
+        </p>
+      </div>
+    </div>
+
+    <div class="theory">
+      <h4>When Does RB Break Down?</h4>
+      <ul>
+        <li>
+          <strong>Gate-dependent noise:</strong> If different Clifford gates have very different error
+          rates, the twirl doesn't produce a clean single-exponential decay — you may see multi-exponential
+          behavior. Use <strong>character RB</strong> (Helsen et al.) to handle this.
+        </li>
+        <li>
+          <strong>Leakage out of the qubit subspace:</strong> If population leaks into $|2\rangle$, $|3\rangle$
+          (e.g., second Rydberg state, hyperfine levels), the decay model fails.
+          Use <strong>leakage RB</strong> (Wood & Gambetta) which explicitly tracks leakage as an additional
+          decay channel.
+        </li>
+        <li>
+          <strong>Non-Markovian noise:</strong> If noise has temporal correlations (e.g., slow laser
+          frequency drifts, magnetic field fluctuations), different sequences in the same batch see
+          different error rates. The ensemble average is still approximately valid but the fit variance increases.
+        </li>
+        <li>
+          <strong>Crosstalk for multi-qubit benchmarking:</strong> If benchmarking qubit $i$ while qubit $j$
+          is nearby and in a different state, the effective noise on qubit $i$ depends on qubit $j$'s state.
+          Simultaneous RB explicitly captures this.
+        </li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <strong>Neutral atom highlight (Evered et al., Nature 2023):</strong>
+      Benchmarked 60 qubit pairs <em>simultaneously</em>, each pair undergoing independent RB sequences.
+      Result: $99.5\%$ 2Q CZ gate fidelity holding globally across the array, not just for
+      isolated qubit pairs. This parallel RB approach is essential for proving that
+      cross-atom interactions don't degrade performance at scale. The fact that the
+      isolated-pair and simultaneous-array results agreed confirmed that crosstalk is negligible
+      at typical array spacings ($\sim 3\,\mu\text{m}$ inter-site distance in the tweezer array).
+    </div>
+
+    <table class="rb-table" style="margin-top:1rem">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Conservative</th>
+          <th>Standard</th>
+          <th>High-precision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sequences per depth $K$</td>
+          <td class="mono">20</td>
+          <td class="mono">50</td>
+          <td class="mono">100+</td>
+        </tr>
+        <tr>
+          <td>Depth points $M$</td>
+          <td class="mono">6</td>
+          <td class="mono">10</td>
+          <td class="mono">15</td>
+        </tr>
+        <tr>
+          <td>Shots per circuit</td>
+          <td class="mono">100</td>
+          <td class="mono">200</td>
+          <td class="mono">1000</td>
+        </tr>
+        <tr>
+          <td>$\delta r_C$ (approx)</td>
+          <td class="warn">~0.001</td>
+          <td class="mono">~0.0004</td>
+          <td class="good">~0.0001</td>
+        </tr>
+        <tr>
+          <td>Total shots</td>
+          <td class="mono">12,000</td>
+          <td class="mono">100,000</td>
+          <td class="mono">1,500,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       08  NEUTRAL ATOM RESULTS
+  ════════════════════════════════════════════════ -->
+  <section class="rb-section" id="results">
+    <div class="section-label">Section 08</div>
+    <h2 class="section-title">Results in Neutral Atom Experiments</h2>
+    <p class="section-desc">
+      State-of-the-art RB benchmarks for neutral atom platforms (Rb, Cs, Yb tweezer arrays),
+      with comparison to fault-tolerance thresholds.
+    </p>
+
+    <table class="rb-table">
+      <thead>
+        <tr>
+          <th>Platform / Species</th>
+          <th>Gate</th>
+          <th>$r_C$ (per Clifford)</th>
+          <th>$\varepsilon_{\rm gate}$ (per native gate)</th>
+          <th>Notes / Paper</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>⁸⁷Rb tweezer (Harvard)</td>
+          <td>2Q CZ (Rydberg)</td>
+          <td class="good">0.0050</td>
+          <td class="good">0.25%</td>
+          <td class="paper">Evered et al., <em>Nature</em> 622, 268 (2023). 60-pair parallel RB, 99.5% fidelity.</td>
+        </tr>
+        <tr>
+          <td>⁸⁷Rb tweezer (Harvard)</td>
+          <td>1Q</td>
+          <td class="good">&lt;0.001</td>
+          <td class="good">&lt;0.1%</td>
+          <td class="paper">Manetsch et al. (2025). 6100-atom array, 99.93% single-qubit fidelity.</td>
+        </tr>
+        <tr>
+          <td>¹⁷¹Yb tweezer (JILA)</td>
+          <td>2Q CZ (Rydberg)</td>
+          <td class="good">0.0030</td>
+          <td class="good">0.14%</td>
+          <td class="paper">Ma et al., <em>PRX Quantum</em> 6, 010332 (2025). Nuclear spin qubit, exceptionally low SPAM.</td>
+        </tr>
+        <tr>
+          <td>¹³³Cs tweezer (CsQ / various)</td>
+          <td>2Q</td>
+          <td class="warn">~0.010</td>
+          <td class="warn">~0.5%</td>
+          <td class="paper">Multiple groups; heavier atom, different blockade physics.</td>
+        </tr>
+        <tr>
+          <td>⁸⁷Rb tweezer (Lukin group)</td>
+          <td>1Q + 2Q (Rydberg)</td>
+          <td class="good">0.005 (2Q)</td>
+          <td class="good">0.25%</td>
+          <td class="paper">Bluvstein et al., <em>Nature</em> 604, 451 (2022). Logical qubit experiments with RB characterization.</td>
+        </tr>
+        <tr>
+          <td>¹⁷¹Yb tweezer (Quera/MIT)</td>
+          <td>1Q (nuclear spin)</td>
+          <td class="good">0.0002</td>
+          <td class="good">0.01%</td>
+          <td class="paper">Scholl et al. / Barnes et al. 2022. Nuclear spin qubit with laser-free microwave drives.</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;color:#f59e0b">Surface code threshold</td>
+          <td>—</td>
+          <td class="good">&lt;0.001</td>
+          <td class="good">&lt;0.1%</td>
+          <td class="paper">Theoretical threshold for concatenated / surface codes (depolarizing noise model). Goal for fault-tolerant QC.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="two-col" style="margin-top:1rem">
+      <div class="good-box">
+        <strong>Progress timeline:</strong> Rydberg 2Q gate fidelity has improved from $\sim 97\%$ (2019)
+        to $\sim 99.5\%$ (2023) to $\gtrsim 99.7\%$ (2025) in under 6 years.
+        The rapid improvement has been driven by: better atom cooling (reducing Doppler error),
+        shorter gate times (reducing spontaneous emission), and improved laser stability (phase noise).
+      </div>
+      <div class="info-box">
+        <strong>Why Yb is promising:</strong> ¹⁷¹Yb has a nuclear spin qubit ($I=1/2$, zero electronic
+        spin in ${}^1S_0$), giving $T_2 \sim$ seconds in a tweezer and nearly zero sensitivity to
+        magnetic field noise. SPAM is also improved: ${}^1S_0 \to {}^3P_0$ clock transition has
+        near-unity detection fidelity via fluorescence imaging. These factors combine to push
+        $r_C$ well below $10^{-3}$.
+      </div>
+    </div>
+
+  </section>
+
+</div><!-- end .page-wrap -->
+
+<!-- ── Footer ──────────────────────────────────── -->
+<footer style="background:#060e1c;border-top:1px solid rgba(192,132,252,0.1);padding:1.5rem;text-align:center;font-size:.78rem;color:#475569;margin-top:2rem">
+  AMO Career &middot; Randomized Benchmarking Explorer &middot; Saumitra Phatak, Purdue Physics PhD
+</footer>
+
+<!-- ── Scripts ──────────────────────────────────── -->
+<script src="../js/main.js?v=6"></script>
+<script>
+  renderNav({ active: 'rb-explorer', root: '../' });
+</script>
+
+<script>
+// ================================================================
+//  RB EXPLORER — Interactive Charts & Sticky Nav
+// ================================================================
+
+// ── Utility ─────────────────────────────────────────────────────
+function fmt(v, d=4)  { return v.toFixed(d); }
+function fmtPct(v)    { return (v*100).toFixed(3) + '%'; }
+function fmtSci(v)    { return v.toExponential(2); }
+
+// Depth values for X axis
+const DEPTHS = [0, 1, 2, 5, 10, 20, 30, 50, 75, 100, 150, 200];
+
+// ── Standard RB Chart ───────────────────────────────────────────
+let rbChart = null;
+let show2Q  = false;
+
+function rbDecay(m, rC, A, d) {
+  const p = 1 - (d-1)/d * (1/((d-1)/(d*(1-rC)) + 1/(d*(1-rC))));
+  // Simplified: p = 1 - rC * d/(d-1)
+  // For 1Q: p = 1 - 2*rC; for 2Q: p = 1 - (4/3)*rC
+  const pVal = (d === 2) ? 1 - 2*rC : 1 - (4/3)*rC;
+  const B    = 1/d;
+  return A * Math.pow(pVal, m) + B;
+}
+
+function buildChips(rC, A, is2Q) {
+  const d = 2;
+  const p  = Math.max(0, 1 - 2*rC);
+  const eGate   = rC / 1.875;
+  const nUseful = Math.round(1 / (2*rC));
+  const fAvg    = 1 - eGate;
+
+  let html = `
+    <div class="chip"><span class="chip-label">p (1Q decay)</span><span class="chip-value">${fmt(p,5)}</span></div>
+    <div class="chip"><span class="chip-label">r_C (err/Clifford)</span><span class="chip-value">${fmtPct(rC)}</span></div>
+    <div class="chip"><span class="chip-label">ε_gate ≈ r_C/1.875</span><span class="chip-value">${fmtPct(eGate)}</span></div>
+    <div class="chip"><span class="chip-label">N_useful = 1/(2r_C)</span><span class="chip-value">${nUseful}</span></div>
+    <div class="chip"><span class="chip-label">F_avg gate</span><span class="chip-value">${fmt(fAvg*100,3)}%</span></div>
+  `;
+  if (is2Q) {
+    const p2   = Math.max(0, 1 - (4/3)*rC);
+    const rC2q = 3*(1-p2)/4;
+    html += `<div class="chip"><span class="chip-label">p (2Q decay)</span><span class="chip-value">${fmt(p2,5)}</span></div>`;
+    html += `<div class="chip"><span class="chip-label">r_C 2Q</span><span class="chip-value">${fmtPct(rC2q)}</span></div>`;
+  }
+  document.getElementById('rbChips').innerHTML = html;
+}
+
+function updateRBChart() {
+  const rC = parseFloat(document.getElementById('slRc').value);
+  const A  = parseFloat(document.getElementById('slA').value);
+
+  document.getElementById('lblRc').textContent = `r_C = ${fmt(rC,4)} (${fmtPct(rC)})`;
+  document.getElementById('lblA').textContent  = `A = ${fmt(A,3)}`;
+
+  const p1 = Math.max(0, 1 - 2*rC);
+  const p2 = Math.max(0, 1 - (4/3)*rC);
+  const B1 = 0.5;
+  const B2 = 0.25;
+
+  const y1Q = DEPTHS.map(m => A * Math.pow(p1, m) + B1);
+  const y2Q = DEPTHS.map(m => A * Math.pow(p2, m) + B2);
+
+  if (!rbChart) {
+    const ctx = document.getElementById('rbChart').getContext('2d');
+    rbChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: DEPTHS,
+        datasets: [
+          {
+            label: '1Q RB: F(m) = A·p^m + 0.5',
+            data: y1Q,
+            borderColor: '#c084fc',
+            backgroundColor: 'rgba(192,132,252,0.08)',
+            pointBackgroundColor: '#c084fc',
+            pointRadius: 4,
+            borderWidth: 2.5,
+            tension: 0.3,
+            fill: false,
+          },
+          {
+            label: '2Q RB: F(m) = A·p^m + 0.25',
+            data: y2Q,
+            borderColor: '#60a5fa',
+            backgroundColor: 'rgba(96,165,250,0.06)',
+            pointBackgroundColor: '#60a5fa',
+            pointRadius: 4,
+            borderWidth: 2,
+            borderDash: [5,4],
+            tension: 0.3,
+            fill: false,
+            hidden: !show2Q,
+          },
+          {
+            label: '1/e ≈ 0.368 (reference)',
+            data: DEPTHS.map(() => 0.368),
+            borderColor: 'rgba(248,113,113,0.5)',
+            borderWidth: 1.2,
+            borderDash: [3,3],
+            pointRadius: 0,
+            fill: false,
+          },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+          tooltip: {
+            backgroundColor: '#0c1526',
+            titleColor: '#e2e8f0',
+            bodyColor: '#94a3b8',
+            borderColor: 'rgba(192,132,252,0.3)',
+            borderWidth: 1,
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}`,
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Circuit depth m (number of Cliffords)', color: '#94a3b8', font:{size:11} },
+            ticks: { color: '#475569', font:{size:10} },
+            grid:  { color: 'rgba(255,255,255,0.04)' },
+          },
+          y: {
+            min: 0, max: 1,
+            title: { display: true, text: 'Survival probability F(m)', color: '#94a3b8', font:{size:11} },
+            ticks: { color: '#475569', font:{size:10} },
+            grid:  { color: 'rgba(255,255,255,0.04)' },
+          }
+        }
+      }
+    });
+  } else {
+    rbChart.data.datasets[0].data = y1Q;
+    rbChart.data.datasets[1].data = y2Q;
+    rbChart.data.datasets[1].hidden = !show2Q;
+    rbChart.update('active');
+  }
+
+  buildChips(rC, A, show2Q);
+}
+
+function toggle2Q() {
+  show2Q = !show2Q;
+  const btn = document.getElementById('btn2Q');
+  btn.classList.toggle('on', show2Q);
+  btn.textContent = show2Q ? 'Hide 2Q RB' : 'Show 2Q RB';
+  updateRBChart();
+}
+
+// ── Interleaved RB Chart ─────────────────────────────────────────
+let irbChart = null;
+
+function updateIRBChart() {
+  const rC    = parseFloat(document.getElementById('slRcIrb').value);
+  const rGate = parseFloat(document.getElementById('slRgate').value);
+
+  document.getElementById('lblRcIrb').textContent  = `r_C = ${fmt(rC,4)}`;
+  document.getElementById('lblRgate').textContent  = `r_gate = ${fmt(rGate,4)}`;
+
+  // 1Q, d=2
+  const pRef = Math.max(0, 1 - 2*rC);
+  // Interleaved: each step applies Clifford (error rC) + gate G (error rGate)
+  // Effective error per (Clifford, G) pair: rC + rGate (approx, for small errors)
+  const pInt = Math.max(0, 1 - 2*(rC + rGate));
+  const B    = 0.5;
+  const A    = 0.95;
+
+  const yRef = DEPTHS.map(m => A * Math.pow(pRef, m) + B);
+  const yInt = DEPTHS.map(m => A * Math.pow(pInt, m) + B);
+
+  // Extracted r_gate from ratio
+  const rGateExtracted = (pRef > 0) ? 0.5 * (1 - pInt/pRef) : 0;
+
+  const chips = `
+    <div class="chip"><span class="chip-label">p_ref (standard RB)</span><span class="chip-value">${fmt(pRef,5)}</span></div>
+    <div class="chip"><span class="chip-label">p_int (interleaved)</span><span class="chip-value">${fmt(pInt,5)}</span></div>
+    <div class="chip"><span class="chip-label">p_int / p_ref</span><span class="chip-value">${fmt(pRef>0?pInt/pRef:0,4)}</span></div>
+    <div class="chip"><span class="chip-label">r_gate extracted</span><span class="chip-value">${fmtPct(rGateExtracted)}</span></div>
+    <div class="chip"><span class="chip-label">r_gate set</span><span class="chip-value">${fmtPct(rGate)}</span></div>
+    <div class="chip"><span class="chip-label">F_gate = 1 - r_gate</span><span class="chip-value">${fmt((1-rGateExtracted)*100,3)}%</span></div>
+  `;
+  document.getElementById('irbChips').innerHTML = chips;
+
+  if (!irbChart) {
+    const ctx = document.getElementById('irbChart').getContext('2d');
+    irbChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: DEPTHS,
+        datasets: [
+          {
+            label: 'Reference RB decay (p_ref)',
+            data: yRef,
+            borderColor: '#34d399',
+            backgroundColor: 'rgba(52,211,153,0.07)',
+            pointBackgroundColor: '#34d399',
+            pointRadius: 4,
+            borderWidth: 2.5,
+            tension: 0.3,
+            fill: false,
+          },
+          {
+            label: 'Interleaved RB decay (p_int)',
+            data: yInt,
+            borderColor: '#c084fc',
+            backgroundColor: 'rgba(192,132,252,0.07)',
+            pointBackgroundColor: '#c084fc',
+            pointRadius: 4,
+            borderWidth: 2.5,
+            tension: 0.3,
+            fill: false,
+          },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font:{size:11} } },
+          tooltip: {
+            backgroundColor: '#0c1526',
+            titleColor: '#e2e8f0',
+            bodyColor: '#94a3b8',
+            borderColor: 'rgba(192,132,252,0.3)',
+            borderWidth: 1,
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Circuit depth m', color: '#94a3b8', font:{size:11} },
+            ticks: { color: '#475569', font:{size:10} },
+            grid:  { color: 'rgba(255,255,255,0.04)' },
+          },
+          y: {
+            min: 0, max: 1,
+            title: { display: true, text: 'Survival probability', color: '#94a3b8', font:{size:11} },
+            ticks: { color: '#475569', font:{size:10} },
+            grid:  { color: 'rgba(255,255,255,0.04)' },
+          }
+        }
+      }
+    });
+  } else {
+    irbChart.data.datasets[0].data = yRef;
+    irbChart.data.datasets[1].data = yInt;
+    irbChart.update('active');
+  }
+}
+
+// ── Sticky topic nav IntersectionObserver ────────────────────────
+(function initStickyNav() {
+  const sections = document.querySelectorAll('.rb-section');
+  const links    = document.querySelectorAll('.tnav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('data-section') === id);
+        });
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+})();
+
+// ── Initialize on DOMContentLoaded ──────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateRBChart();
+  updateIRBChart();
+});
+</script>
+
+</body>
+</html>
