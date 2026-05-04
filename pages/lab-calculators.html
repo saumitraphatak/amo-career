@@ -246,6 +246,15 @@ $$w_0 = \frac{\lambda f}{\pi w_{\rm in}} \quad \text{[Gaussian]} \qquad d_{\rm A
             <div id="fn_res" class="result-row"></div>
           </div>
         </div>
+        <!-- ─── Gaussian beam visualizer ─── -->
+        <hr class="divider">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--text-primary);margin:0 0 .3rem 0;">Gaussian Beam Profile</h3>
+        <p style="font-size:.83rem;color:var(--text-muted);margin:0 0 .75rem 0;">Side-view of beam propagation from the waist. Uses λ and w₀ from the Rayleigh Range inputs above.</p>
+        <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;text-align:center;">
+          <canvas id="gbCanvas" width="560" height="120" style="width:100%;border-radius:6px;"></canvas>
+          <div id="gbInfo" style="font-family:var(--font-mono);font-size:.77rem;color:var(--text-muted);margin-top:.35rem;"></div>
+        </div>
+
       </div><!-- /optics -->
 
       <!-- ══════════════════════════════════════════════════════════
@@ -735,6 +744,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         ['Rayleigh range z_R', (zR*1e3).toFixed(2) + ' mm  (' + (zR*1e6).toFixed(1) + ' µm)'],
         ['Far-field divergence', (div*180/Math.PI).toFixed(4) + '°  =  ' + (div*1e3).toFixed(3) + ' mrad'],
       ]);
+      drawGaussianBeam(lam_m, w0_m, zR);
     }
 
     function calcTelescope() {
@@ -1020,6 +1030,150 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         ['Mode overlap η', (eta*100).toFixed(2) + ' %'],
         ['Expected coupling', qual],
       ]);
+    }
+
+    // ── Gaussian beam visualiser ────────────────────────────────────
+    let _gbRaf = null;
+    function drawGaussianBeam(lam_m, w0_m, zR) {
+      const cv = document.getElementById('gbCanvas');
+      if (!cv) return;
+      const W = cv.clientWidth || 560, H = 120;
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#060e1c'; ctx.fillRect(0, 0, W, H);
+
+      // z range: -3.5*zR to +3.5*zR
+      const zMax = 3.5 * zR;
+      const wMax = w0_m * Math.sqrt(1 + (zMax/zR)**2);
+      const yScale = (H * 0.46) / wMax; // pixels per metre (transverse)
+      const xScale = W / (2 * zMax);    // pixels per metre (axial)
+      const cx = W / 2, cy = H / 2;
+
+      const toX = z => cx + z * xScale;
+      const toY = y => cy - y * yScale;
+      const wz  = z => w0_m * Math.sqrt(1 + (z/zR)**2);
+
+      // --- Intensity field (column by column) ---
+      const imgData = ctx.createImageData(W, H);
+      const d = imgData.data;
+      const zPerPx = (2*zMax) / W;
+      for (let px = 0; px < W; px++) {
+        const z = (px - cx) / xScale;
+        const wz_v = wz(z);
+        for (let py = 0; py < H; py++) {
+          const y = (cy - py) / yScale;
+          const I = Math.exp(-2 * y*y / (wz_v*wz_v));
+          const idx = (py * W + px) * 4;
+          // Color: cool blue-white core
+          const r = Math.round(I * 160 + I*I * 80);
+          const g = Math.round(I * 200 + I*I * 55);
+          const b = Math.round(I * 255);
+          d[idx]   = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = Math.round(I * 230 + 25);
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      // --- Envelope lines w(z) ---
+      ctx.beginPath();
+      for (let px = 0; px <= W; px++) {
+        const z = (px - cx) / xScale;
+        const y = wz(z);
+        const yp = toY(y);
+        px === 0 ? ctx.moveTo(px, yp) : ctx.lineTo(px, yp);
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.beginPath();
+      for (let px = 0; px <= W; px++) {
+        const z = (px - cx) / xScale;
+        const y = -wz(z);
+        const yp = toY(y);
+        px === 0 ? ctx.moveTo(px, yp) : ctx.lineTo(px, yp);
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // --- Axis line ---
+      ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1; ctx.stroke();
+
+      // --- Waist marker ---
+      ctx.beginPath(); ctx.moveTo(cx, cy - wz(0)*yScale - 6); ctx.lineTo(cx, cy + wz(0)*yScale + 6);
+      ctx.setLineDash([3,3]); ctx.strokeStyle = 'rgba(251,191,36,0.7)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.setLineDash([]);
+
+      // --- ±z_R markers ---
+      for (const zs of [-zR, zR]) {
+        const xp = toX(zs);
+        ctx.beginPath(); ctx.moveTo(xp, 8); ctx.lineTo(xp, H-8);
+        ctx.setLineDash([2,4]); ctx.strokeStyle = 'rgba(100,160,255,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // --- Labels ---
+      ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(251,191,36,0.85)'; ctx.fillText('w₀', cx, cy + wz(0)*yScale + 16);
+      ctx.fillStyle = 'rgba(100,160,255,0.7)';
+      ctx.fillText('+z_R', toX(zR), 16);
+      ctx.fillText('−z_R', toX(-zR), 16);
+
+      // --- Animated propagating dot ---
+      if (_gbRaf) cancelAnimationFrame(_gbRaf);
+      const startT = performance.now();
+      const period = 2800;
+      function animDot(ts) {
+        const cv2 = document.getElementById('gbCanvas');
+        if (!cv2 || cv2.width !== W) return; // canvas resized, stop
+        const frac = ((ts - startT) % period) / period;
+        const z = (frac - 0.5) * 2 * zMax;
+        const xp = toX(z);
+        const wp = wz(z);
+        // Draw dot on top of existing render
+        // Re-draw everything would be expensive; instead, use a second canvas approach
+        // For simplicity: just draw on top, the dot will be visible briefly
+        // Actually we need to redraw each frame. Use offscreen image.
+        ctx.clearRect(0, 0, W, H);
+        ctx.putImageData(imgData, 0, 0);
+        // Re-draw overlays
+        // envelope
+        for (const sgn of [1, -1]) {
+          ctx.beginPath();
+          for (let px = 0; px <= W; px++) {
+            const zz = (px - cx) / xScale;
+            const yp = toY(sgn * wz(zz));
+            px === 0 ? ctx.moveTo(px, yp) : ctx.lineTo(px, yp);
+          }
+          ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+        }
+        ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, cy - wz(0)*yScale - 6); ctx.lineTo(cx, cy + wz(0)*yScale + 6);
+        ctx.setLineDash([3,3]); ctx.strokeStyle = 'rgba(251,191,36,0.7)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.setLineDash([]);
+        for (const zs of [-zR, zR]) {
+          const xp2 = toX(zs);
+          ctx.beginPath(); ctx.moveTo(xp2, 8); ctx.lineTo(xp2, H-8);
+          ctx.setLineDash([2,4]); ctx.strokeStyle = 'rgba(100,160,255,0.45)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.setLineDash([]);
+        }
+        ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(251,191,36,0.85)'; ctx.fillText('w₀', cx, cy + wz(0)*yScale + 16);
+        ctx.fillStyle = 'rgba(100,160,255,0.7)';
+        ctx.fillText('+z_R', toX(zR), 16); ctx.fillText('−z_R', toX(-zR), 16);
+        // propagating dot
+        const dotR = 4;
+        ctx.beginPath(); ctx.arc(xp, cy, dotR, 0, 2*Math.PI);
+        ctx.fillStyle = '#ffffff'; ctx.fill();
+        ctx.beginPath(); ctx.arc(xp, cy, dotR * 2.5, 0, 2*Math.PI);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fill();
+        _gbRaf = requestAnimationFrame(animDot);
+      }
+      _gbRaf = requestAnimationFrame(animDot);
+
+      // Info text
+      const unit = zR >= 0.001 ? [(zR*1e3).toFixed(2), 'mm'] : [(zR*1e6).toFixed(1), 'µm'];
+      const w0u  = w0_m >= 1e-3 ? [(w0_m*1e3).toFixed(3), 'mm'] : [(w0_m*1e6).toFixed(2), 'µm'];
+      document.getElementById('gbInfo').textContent =
+        `w₀ = ${w0u[0]} ${w0u[1]}  ·  z_R = ${unit[0]} ${unit[1]}  ·  λ = ${(lam_m*1e9).toFixed(0)} nm`;
     }
 
     // ── Initial computation ─────────────────────────────────────────

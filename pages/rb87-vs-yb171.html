@@ -752,6 +752,25 @@ For typical lab noise $\delta B \sim 1\;\text{mG}$: $\delta\nu_{\rm Rb87} \appro
     <h2 class="section-title"><span class="accent">05</span> Coherence &amp; Decoherence</h2>
     <p class="section-sub">How long quantum information survives, and the dominant dephasing mechanisms for each platform.</p>
 
+    <!-- Dual Bloch sphere decoherence animation -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+      <div style="text-align:center;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#f97316;margin-bottom:.4rem;">⁸⁷Rb — T₂ = 12.6 s</div>
+        <canvas id="rbBlochCanvas" width="200" height="220" style="border-radius:8px;background:#020810;display:block;margin:0 auto;"></canvas>
+        <div id="rbBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:.3rem;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#818cf8;margin-bottom:.4rem;">¹⁷¹Yb — T₂ ≈ 2 s</div>
+        <canvas id="ybBlochCanvas" width="200" height="220" style="border-radius:8px;background:#020810;display:block;margin:0 auto;"></canvas>
+        <div id="ybBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:.3rem;"></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <button onclick="resetDecoAnim()" style="background:rgba(255,255,255,0.05);border:1px solid #334155;color:var(--text-secondary);
+        padding:.4rem 1.2rem;border-radius:6px;font-size:.8rem;cursor:pointer;">↺ Restart</button>
+      <span style="font-size:.75rem;color:var(--text-muted);margin-left:1rem;">Watch the Bloch vector spiral inward — Yb loses coherence faster.</span>
+    </div>
+
     <div class="chart-box" style="max-width:720px; margin:0 auto 1.5rem auto;">
       <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Coherence Times (log scale)</h3>
       <canvas id="coherenceChart" height="220"></canvas>
@@ -1350,6 +1369,73 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
 <script src="../js/main.js?v=6"></script>
 <script>
   renderNav({ active: 'rb87-vs-yb171', root: '../' });
+
+/* ── DUAL BLOCH DECOHERENCE ANIMATION ───────────────── */
+(function() {
+  const configs = [
+    { id: 'rbBlochCanvas', lbl: 'rbBlochLbl', T2: 12.6, color: '#fb923c', phi0: 0 },
+    { id: 'ybBlochCanvas', lbl: 'ybBlochLbl', T2: 2.0,  color: '#818cf8', phi0: Math.PI/3 },
+  ];
+  const R=80, CX=100, CY=110;
+  const A=Math.PI/6, B=Math.PI/5;
+  function proj(x,y,z){ const xr=x*Math.cos(A)-y*Math.sin(A),yr=x*Math.sin(A)+y*Math.cos(A); return [CX+R*xr, CY-R*(z*Math.cos(B)+yr*Math.sin(B))]; }
+
+  let t=0; // simulated time in seconds
+
+  function drawBS(cvs, ctx, bx, by, bz, color, trail) {
+    ctx.fillStyle='#020810'; ctx.fillRect(0,0,cvs.width,cvs.height);
+    // sphere
+    ctx.beginPath(); ctx.arc(CX,CY,R,0,2*Math.PI); ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=1.2; ctx.stroke();
+    // equator
+    ctx.setLineDash([3,4]); ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=0.8;
+    ctx.beginPath(); for(let a=0;a<=2*Math.PI;a+=0.05){const[sx,sy]=proj(Math.cos(a),Math.sin(a),0); a===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);} ctx.stroke();
+    ctx.setLineDash([]);
+    // axes
+    [[1,0,0,'x'],[0,0,1,'z']].forEach(([ax,ay,az,n])=>{
+      const[sx,sy]=proj(ax*1.2,ay*1.2,az*1.2),[ox,oy]=proj(-ax*.5,-ay*.5,-az*.5);
+      ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(sx,sy);ctx.strokeStyle='#334155';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle='#475569';ctx.font='10px Inter';ctx.fillText(n,sx+3,sy+4);
+    });
+    const[z0x,z0y]=proj(0,0,1.15),[z1x,z1y]=proj(0,0,-1.15);
+    ctx.fillStyle='#64748b';ctx.font='11px Inter';ctx.fillText('|0⟩',z0x+3,z0y);ctx.fillText('|1⟩',z1x+3,z1y);
+    // trail
+    if(trail.length>1){for(let i=1;i<trail.length;i++){const[x0,y0]=proj(...trail[i-1]),[x1,y1]=proj(...trail[i]);ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.strokeStyle=`rgba(${hexToRgb(color)},${(i/trail.length*0.6).toFixed(2)})`;ctx.lineWidth=1.5;ctx.stroke();}}
+    // vector
+    const[sx,sy]=proj(bx,by,bz);
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(sx,sy);ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.stroke();
+    ctx.beginPath();ctx.arc(sx,sy,5,0,2*Math.PI);ctx.fillStyle=color;ctx.fill();
+  }
+
+  function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `${r},${g},${b}`;}
+
+  const trails = configs.map(()=>[]);
+  const TRAIL=40;
+
+  function animate(){
+    requestAnimationFrame(animate);
+    t += 0.016; // 1 frame ≈ 16ms sim time
+    if(t > 15) { t=0; trails.forEach(tr=>tr.length=0); }
+
+    configs.forEach((cfg,i)=>{
+      const cvs=document.getElementById(cfg.id);
+      if(!cvs) return;
+      const ctx=cvs.getContext('2d');
+      const decay = Math.exp(-t/cfg.T2);
+      const phi = cfg.phi0 + t*2; // precession
+      const bx = decay*Math.cos(phi), by = decay*Math.sin(phi), bz = Math.sqrt(Math.max(0,1-decay*decay))*(t<0.01?1:0); // start near equator
+      // Actually: start on equator (|+⟩), decay inward
+      const bx2=decay*Math.cos(phi), by2=decay*Math.sin(phi), bz2=0;
+      trails[i].push([bx2,by2,bz2]);
+      if(trails[i].length>TRAIL) trails[i].shift();
+      drawBS(cvs,ctx,bx2,by2,bz2,cfg.color,trails[i]);
+      const lbl=document.getElementById(cfg.lbl);
+      if(lbl) lbl.textContent=`t=${t.toFixed(1)} s  |r|=${decay.toFixed(3)}`;
+    });
+  }
+
+  window.resetDecoAnim = function(){ t=0; trails.forEach(tr=>tr.length=0); };
+  requestAnimationFrame(animate);
+})();
 
   // ── Sticky topic nav highlight ─────────────────────────────────────
   (function() {
