@@ -306,8 +306,8 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
               <button class="add-mode-btn" onclick="clearWFModes()" style="color:#f87171;">Clear</button>
             </div>
 
-            <button class="compute-btn" onclick="computeWavefront()">▶ Compute Wavefront + PSF</button>
-            <span class="compute-status" id="wfStatus">—</span>
+            <button class="compute-btn" onclick="computeWavefront()">▶ Recompute</button>
+            <span class="compute-status" id="wfStatus">auto-updating</span>
 
             <div class="result-strip" id="wfResult" style="margin-top:.75rem; display:none;">
               <div class="r-pair"><span class="r-lbl">RMS WFE</span><span class="r-val" id="wfRMS">—</span></div>
@@ -815,9 +815,9 @@ function renderWFRows() {
       `<option value="${mm}" ${mm===mode.m?'selected':''}>${mm>=0?'+':''}${mm} ${modeName(mode.n,mm)}</option>`).join('');
     row.innerHTML = `
       <select onchange="wfSetN(${idx}, this.value)">${nOpts}</select>
-      <select id="wfm${idx}" onchange="wfSetM(${idx}, this.value)">${mOpts}</select>
+      <select id="wfm${idx}" onchange="wfSetM(${idx}, this.value); wfAutoCompute()">${mOpts}</select>
       <input type="number" value="${mode.c}" step="0.05" style="font-size:.8rem"
-        onchange="wfModes[${idx}].c=parseFloat(this.value)">
+        oninput="wfModes[${idx}].c=parseFloat(this.value); wfAutoCompute()">
       <button onclick="removeWFMode(${idx})">×</button>`;
     wrap.appendChild(row);
   });
@@ -827,17 +827,27 @@ function wfSetN(idx, val) {
   const ms = validM(wfModes[idx].n);
   wfModes[idx].m = ms.includes(wfModes[idx].m) ? wfModes[idx].m : ms[0];
   renderWFRows();
+  wfAutoCompute();
 }
 function wfSetM(idx, val) { wfModes[idx].m = parseInt(val); }
 function addWFMode() {
   if (wfModes.length >= 8) return;
   wfModes.push({ n: 2, m: 0, c: 0.1 });
   renderWFRows();
+  wfAutoCompute();
 }
-function removeWFMode(idx) { wfModes.splice(idx, 1); renderWFRows(); }
-function clearWFModes() { wfModes = []; renderWFRows(); }
+function removeWFMode(idx) { wfModes.splice(idx, 1); renderWFRows(); wfAutoCompute(); }
+function clearWFModes() { wfModes = []; renderWFRows(); wfAutoCompute(); }
+
+let _wfAutoTimer = null;
+function wfAutoCompute() {
+  clearTimeout(_wfAutoTimer);
+  _wfAutoTimer = setTimeout(computeWavefront, 300);
+}
 
 renderWFRows();
+// Auto-compute initial state
+setTimeout(computeWavefront, 200);
 
 function computeWavefront() {
   const status = document.getElementById('wfStatus');
