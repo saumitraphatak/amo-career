@@ -197,11 +197,14 @@
       position:relative;
     ">
       <canvas id="lockCanvas" style="display:block;width:100%;height:220px;"></canvas>
+
+      <!-- Buttons row -->
       <div style="
-        display:flex; gap:.75rem; justify-content:center;
-        padding:.6rem .75rem .75rem;
+        display:flex; gap:.75rem; justify-content:center; align-items:center;
+        padding:.65rem .75rem .5rem;
         background:rgba(2,8,16,0.6);
         border-top:1px solid #1e293b;
+        flex-wrap:wrap;
       ">
         <button id="lockBtn" onclick="laserLockToggle()" style="
           padding:.35rem 1.1rem; border-radius:6px; border:1px solid #f87171;
@@ -214,13 +217,65 @@
           background:rgba(255,255,255,0.03); color:#94a3b8;
           font-size:.82rem; font-weight:600; cursor:pointer; font-family:var(--font-sans);
         ">⚡ Perturb</button>
-        <span id="lockStatus" style="
-          font-size:.8rem; color:#64748b; align-self:center; font-family:var(--font-mono);
-        ">drift: <span id="driftHz">—</span></span>
+        <span style="font-size:.8rem; color:#64748b; font-family:var(--font-mono);">
+          offset: <span id="driftHz" style="color:#94a3b8;">—</span>
+        </span>
+      </div>
+
+      <!-- PID sliders row -->
+      <div style="
+        padding:.65rem 1.25rem .85rem;
+        background:rgba(2,8,16,0.6);
+        border-top:1px solid #0f1e35;
+        display:grid; grid-template-columns:1fr 1fr; gap:.75rem 1.5rem;
+      ">
+        <!-- P slider -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem;">
+            <label style="font-size:.76rem;font-weight:700;color:#f87171;font-family:var(--font-mono);">
+              P &nbsp;<span style="font-weight:400;color:#475569;">Gain</span>
+            </label>
+            <span id="pVal" style="font-size:.8rem;font-family:var(--font-mono);color:#f87171;">0.18</span>
+          </div>
+          <input type="range" id="pSlider" min="0.01" max="0.60" step="0.01" value="0.18"
+            oninput="updatePID()"
+            style="width:100%;accent-color:#f87171;">
+          <div style="font-size:.7rem;color:#334155;margin-top:.2rem;">
+            How hard the servo pushes back per MHz of error
+          </div>
+        </div>
+
+        <!-- D slider -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem;">
+            <label style="font-size:.76rem;font-weight:700;color:#60a5fa;font-family:var(--font-mono);">
+              D &nbsp;<span style="font-weight:400;color:#475569;">Damping</span>
+            </label>
+            <span id="dVal" style="font-size:.8rem;font-family:var(--font-mono);color:#60a5fa;">0.72</span>
+          </div>
+          <input type="range" id="dSlider" min="0.05" max="1.50" step="0.01" value="0.72"
+            oninput="updatePID()"
+            style="width:100%;accent-color:#60a5fa;">
+          <div style="font-size:.7rem;color:#334155;margin-top:.2rem;">
+            Resists velocity — prevents overshoot and ringing
+          </div>
+        </div>
+
+        <!-- Status message spans full width -->
+        <div id="pidStatus" style="
+          grid-column:1/-1;
+          font-size:.78rem; font-family:var(--font-mono);
+          padding:.35rem .6rem; border-radius:5px;
+          background:rgba(52,211,153,0.07); border:1px solid rgba(52,211,153,0.2);
+          color:#34d399; text-align:center;
+        ">✓ Well-tuned — fast snap, no overshoot</div>
       </div>
     </div>
-    <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin:.4rem 0 0;">
-      Click <strong style="color:#f87171">Free Running</strong> to toggle the lock. Hit <strong style="color:#94a3b8">Perturb</strong> to kick the laser off resonance and watch feedback correct it.
+
+    <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin:.5rem 0 0;">
+      Try: high <strong style="color:#f87171;">P</strong> + low <strong style="color:#60a5fa;">D</strong> to see ringing &nbsp;·&nbsp;
+      low <strong style="color:#f87171;">P</strong> + high <strong style="color:#60a5fa;">D</strong> for overdamped crawl &nbsp;·&nbsp;
+      hit <strong style="color:#94a3b8;">Perturb</strong> while locked
     </p>
   </div>
 
@@ -1371,8 +1426,37 @@ updateBeat();
 
   // Feedback state
   let velocity = 0;         // momentum for smooth physics
-  const K_p = 0.18;         // proportional gain
-  const K_d = 0.72;         // derivative / damping (critical damping avoids overshoot)
+  let K_p = 0.18;           // proportional gain (live from slider)
+  let K_d = 0.72;           // derivative / damping (live from slider)
+
+  // ── PID slider handler ──────────────────────────────
+  window.updatePID = function() {
+    K_p = parseFloat(document.getElementById('pSlider').value);
+    K_d = parseFloat(document.getElementById('dSlider').value);
+    document.getElementById('pVal').textContent = K_p.toFixed(2);
+    document.getElementById('dVal').textContent = K_d.toFixed(2);
+
+    // Damping ratio ζ = K_d / (2√(K_p · effective_spring))
+    // ζ < 0.55 → underdamped (rings), 0.55–1.6 → well-tuned, >1.6 → overdamped
+    const zeta = K_d / (2 * Math.sqrt(K_p * 1.8 + 0.001));
+    const el = document.getElementById('pidStatus');
+    if (zeta < 0.55) {
+      el.style.background = 'rgba(248,113,113,0.07)';
+      el.style.borderColor = 'rgba(248,113,113,0.25)';
+      el.style.color = '#f87171';
+      el.textContent = '⚠️ Underdamped — needle will ring and oscillate around zero';
+    } else if (zeta > 1.6) {
+      el.style.background = 'rgba(251,191,36,0.07)';
+      el.style.borderColor = 'rgba(251,191,36,0.2)';
+      el.style.color = '#fbbf24';
+      el.textContent = '🐢 Overdamped — lock recovers slowly after perturbation';
+    } else {
+      el.style.background = 'rgba(52,211,153,0.07)';
+      el.style.borderColor = 'rgba(52,211,153,0.2)';
+      el.style.color = '#34d399';
+      el.textContent = '✓ Well-tuned — fast snap, no overshoot';
+    }
+  };
 
   // History for the frequency trace
   const HIST = 220;
@@ -1439,18 +1523,12 @@ updateBeat();
 
     // ── Physics update ───────────────────────────────
     if (locked) {
-      // PD feedback toward zero.
-      // errorSignal(x) < 0 for x > 0 and > 0 for x < 0, so it naturally
-      // points toward zero. We also add a wide-capture linear term so the
-      // servo pulls in even when the laser is far off resonance.
-      const errNarrow = errorSignal(freq) * GAMMA * 18; // dispersive slope near centre
-      const errWide   = -freq * 0.12;                   // linear pull for large offsets
-      const err = errNarrow + errWide;
-      // PD: proportional drive minus damping
-      const correction = K_p * err - K_d * velocity;
-      velocity += correction;
-      freq += velocity;   // += not -= (velocity points in the direction of correction)
-      // Snap to zero when close enough
+      // PD servo: velocity-form for guaranteed stability
+      // pull ∝ -freq drives needle to line centre; damping kills overshoot
+      const pull = -freq * K_p * 1.8;
+      velocity = velocity * (1 - K_d * 0.55) + pull;
+      freq += velocity;
+      // Snap to zero when settled
       if (Math.abs(freq) < 0.06 && Math.abs(velocity) < 0.04) {
         freq = 0; velocity = 0;
       }
