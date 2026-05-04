@@ -1404,6 +1404,18 @@ code, .mono {
 .gap-row { display: flex; flex-direction: column; gap: var(--sp-4); }
 
 /* =====================================================
+   CHART.JS HEIGHT CAP
+   Chart.js responsive:true ignores the canvas height attribute and
+   scales to container width while maintaining aspect ratio — on wide
+   screens this makes charts extremely tall. Cap them globally.
+   Excludes custom animation canvases (#heroCanvas, #blockadeCanvas,
+   #lockCanvas, #motCanvas, #mbCanvas, #rabiBlochCanvas etc.)
+   ===================================================== */
+canvas:not(#hero-canvas):not(#blockadeCanvas):not(#lockCanvas):not(#motCanvas):not(#mbCanvas):not(#rabiBlochCanvas):not(#rabiTraceCanvas) {
+  max-height: 280px;
+}
+
+/* =====================================================
    RESPONSIVE
    ===================================================== */
 
