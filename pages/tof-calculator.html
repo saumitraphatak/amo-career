@@ -392,6 +392,22 @@ $$\Rightarrow \sigma^2(t) = \frac{k_{\rm B}T}{m}\left(\frac{1}{\omega^2} + t^2\r
       </div>
 
     </div>
+
+    <!-- ── TOF Cloud Animation ─────────────────────────────── -->
+    <div style="margin-top:1.25rem;">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:var(--text-muted);margin-bottom:.5rem;">
+        Live TOF expansion &nbsp;·&nbsp; watch the cloud grow after release
+      </div>
+      <canvas id="tofCloudCanvas" width="600" height="140"
+        style="width:100%;height:140px;display:block;border-radius:10px;background:#020810;"></canvas>
+      <div style="display:flex;justify-content:space-between;margin-top:.4rem;
+                  font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
+        <span id="tofCloudLbl">t = 0 ms &nbsp;|&nbsp; σ = —</span>
+        <span>← 1 mm field of view →</span>
+      </div>
+    </div>
+
   </section>
 
   <hr class="section-divider">
@@ -978,6 +994,136 @@ window.addEventListener('DOMContentLoaded', () => {
   compute();
   initAccordions();
 });
+
+/* ═══════════════════════════════════════════════════════════════
+   TOF CLOUD EXPANSION ANIMATION
+═══════════════════════════════════════════════════════════════ */
+(function() {
+  const cvs = document.getElementById('tofCloudCanvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+
+  // Animation state
+  let tofT_K   = 1e-6;   // current temperature (K), updated by hook
+  let tofSig0  = 10e-6;  // initial cloud size (m)
+  let tofMass  = 86.909 * 1.6605e-27; // Rb87 default
+
+  let animT  = 0;       // current time in animation (ms)
+  let animDir = 1;      // 1=expanding, -1=contracting back
+  const T_CYCLE = 180;  // frames for full expansion
+
+  // Hook: called from compute() with physics params
+  window.tofCloudUpdate = function(T_K, sig0_um, mass_kg, tMax_ms) {
+    tofT_K  = T_K;
+    tofSig0 = sig0_um * 1e-6;
+    tofMass = mass_kg;
+    tofTMax = tMax_ms;
+  };
+  let tofTMax = 20; // ms
+
+  // Patch compute() to call hook
+  const _origCompute = window.compute;
+  window.compute = function() {
+    _origCompute && _origCompute();
+    const key   = document.getElementById('speciesSel').value;
+    const ATOMS_local = window.ATOMS || {};
+    const atom  = ATOMS_local[key];
+    if (!atom) return;
+    const T_K   = window.getTempK ? getTempK() : 1e-6;
+    const sig0  = parseFloat(document.getElementById('sig0Slide').value);
+    const tMax  = parseFloat(document.getElementById('tMaxSlide').value);
+    tofCloudUpdate(T_K, sig0, atom.mass_u * 1.6605e-27, tMax);
+  };
+
+  function sigAt(t_ms) {
+    // σ(t) = sqrt(σ₀² + (kBT/m)·t²)
+    const t = t_ms * 1e-3;
+    return Math.sqrt(tofSig0*tofSig0 + (1.3806e-23 * tofT_K / tofMass) * t*t) * 1e6; // μm
+  }
+
+  function resize() {
+    const rect = cvs.parentElement.getBoundingClientRect();
+    cvs.width  = rect.width || 600;
+    cvs.height = 140;
+  }
+  window.addEventListener('resize', resize);
+
+  let _ready = false;
+  function draw() {
+    requestAnimationFrame(draw);
+    if (!_ready) { resize(); _ready = true; }
+    const W = cvs.width, H = cvs.height;
+    if (!W) return;
+
+    // Advance time
+    animT += animDir * (tofTMax / T_CYCLE);
+    if (animT >= tofTMax) { animT = tofTMax; animDir = -1; }
+    if (animT <= 0)        { animT = 0;       animDir =  1; }
+
+    // Current cloud sigma in μm, convert to px (FOV = 1mm)
+    const FOV_um = 1000; // 1 mm field of view
+    const pxPerUm = W / FOV_um;
+    const sig_um  = sigAt(animT);
+    const sig_px  = sig_um * pxPerUm;
+    const CX = W / 2, CY = H / 2;
+
+    ctx.fillStyle = '#020810';
+    ctx.fillRect(0, 0, W, H);
+
+    // Field of view scale bar
+    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(W*0.1, H-10); ctx.lineTo(W*0.9, H-10); ctx.stroke();
+    ctx.fillStyle = '#334155'; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('1 mm', W/2, H-2);
+    ctx.textAlign = 'left';
+
+    // Time progress bar
+    const barW = (animT / tofTMax) * (W * 0.8);
+    ctx.fillStyle = '#0f1e35';
+    ctx.fillRect(W*0.1, 8, W*0.8, 4);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(W*0.1, 8, barW, 4);
+
+    // Gaussian cloud (2D projection = Gaussian intensity)
+    const maxSig = Math.min(sig_px, W*0.45);
+    const glowR  = maxSig * 2.8;
+    if (glowR > 0) {
+      const grd = ctx.createRadialGradient(CX, CY, 0, CX, CY, glowR);
+      // Color: warm yellow-white core → faint blue halo
+      grd.addColorStop(0,    'rgba(255,245,200,0.95)');
+      grd.addColorStop(0.08, 'rgba(200,220,255,0.75)');
+      grd.addColorStop(0.25, 'rgba(100,165,250,0.40)');
+      grd.addColorStop(0.55, 'rgba(56,189,248,0.12)');
+      grd.addColorStop(1,    'rgba(0,0,0,0)');
+      ctx.beginPath(); ctx.arc(CX, CY, glowR, 0, 2*Math.PI);
+      ctx.fillStyle = grd; ctx.fill();
+    }
+
+    // σ circle overlay
+    ctx.beginPath(); ctx.arc(CX, CY, maxSig, 0, 2*Math.PI);
+    ctx.strokeStyle = 'rgba(56,189,248,0.35)'; ctx.lineWidth = 1;
+    ctx.setLineDash([3,4]); ctx.stroke(); ctx.setLineDash([]);
+
+    // 2σ circle
+    const sig2 = Math.min(maxSig*2, W*0.48);
+    ctx.beginPath(); ctx.arc(CX, CY, sig2, 0, 2*Math.PI);
+    ctx.strokeStyle = 'rgba(56,189,248,0.12)'; ctx.lineWidth = 1;
+    ctx.setLineDash([2,5]); ctx.stroke(); ctx.setLineDash([]);
+
+    // σ label
+    ctx.fillStyle = 'rgba(56,189,248,0.6)';
+    ctx.font = '9px Inter,sans-serif';
+    ctx.fillText('1σ', CX + maxSig + 3, CY - 3);
+
+    // Label
+    const lbl = document.getElementById('tofCloudLbl');
+    if (lbl) {
+      const sStr = sig_um >= 1000 ? `${(sig_um/1000).toFixed(2)} mm` : `${sig_um.toFixed(0)} μm`;
+      lbl.textContent = `t = ${animT.toFixed(1)} ms  |  σ = ${sStr}`;
+    }
+  }
+  requestAnimationFrame(draw);
+})();
 </script>
 </body>
 </html>
