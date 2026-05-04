@@ -142,6 +142,21 @@
     .read-link:hover { border-color: var(--c-ryd); color: var(--text-primary); }
     .rl-icon { font-size: 1rem; flex-shrink: 0; }
 
+    /* ─── Blockade visualizer ────────────────────────── */
+    .blk-viz-wrap {
+      margin-top: .9rem;
+      background: #02080f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    #blockadeCanvas {
+      display: block;
+      width: 100%;
+      height: 210px;
+    }
+
     /* ─── Disclaimer tag ─────────────────────────────── */
     .approx-tag {
       display: inline-block; font-size: .65rem; font-weight: 700;
@@ -334,6 +349,11 @@
         </div>
 
         <div id="blockadeStatus" class="blockade-yes" style="display:none;"></div>
+
+        <!-- Live blockade visualizer -->
+        <div class="blk-viz-wrap">
+          <canvas id="blockadeCanvas"></canvas>
+        </div>
 
         <div class="theory-box" style="margin-top:.75rem;">
           <h4>Van der Waals blockade</h4>
@@ -667,6 +687,9 @@ function compute() {
     blkEl.innerHTML = `⚠️ <strong>Not in blockade regime</strong>, r = ${r.toFixed(1)} μm &gt; R<sub>b</sub> = ${Rb.toFixed(2)} μm. Reduce separation or increase n/Ω.`;
   }
 
+  // Update blockade visualizer
+  if (window.updateBlockadeViz) updateBlockadeViz(Rb, r, n, r < Rb);
+
   // Update chart
   updateChart(species, orbKey, Omega);
 }
@@ -798,6 +821,167 @@ function updateChart(species, orbKey, Omega_MHz) {
       tbody.appendChild(tr);
     });
   });
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   BLOCKADE SPHERE VISUALIZER
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+  const cvs = document.getElementById('blockadeCanvas');
+  const ctx = cvs.getContext('2d');
+  let vp = { Rb: 10, r: 5, n: 50, inBlockade: true };
+  let t = 0;
+
+  function resize() {
+    const rect = cvs.parentElement.getBoundingClientRect();
+    cvs.width  = rect.width  || 500;
+    cvs.height = 210;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    const { Rb, r, inBlockade } = vp;
+    const W = cvs.width, H = cvs.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#02080f';
+    ctx.fillRect(0, 0, W, H);
+
+    const cx   = W / 2;
+    const cy   = H / 2 + 10;
+    const sep  = Math.min(W * 0.28, 160);  // visual pixel separation between atoms
+    const x1   = cx - sep / 2;
+    const x2   = cx + sep / 2;
+
+    // Scale: sep pixels = r μm
+    const Rb_px = (Rb / r) * sep;
+
+    const pulse     = 0.5 + 0.5 * Math.sin(t * 0.028);
+    const fastPulse = 0.5 + 0.5 * Math.sin(t * 0.075);
+
+    // ── Blockade sphere around atom 1 ──────────────────────────
+    const sAlpha = 0.13 + 0.06 * pulse;
+    const sColor = inBlockade ? '129,140,248' : '52,211,153';
+    const grad1 = ctx.createRadialGradient(x1, cy, 0, x1, cy, Rb_px);
+    grad1.addColorStop(0,   `rgba(${sColor},${sAlpha * 1.8})`);
+    grad1.addColorStop(0.65,`rgba(${sColor},${sAlpha})`);
+    grad1.addColorStop(1,   `rgba(${sColor},0)`);
+    ctx.beginPath(); ctx.arc(x1, cy, Rb_px, 0, Math.PI * 2);
+    ctx.fillStyle = grad1; ctx.fill();
+
+    // Dashed boundary ring atom 1
+    ctx.beginPath(); ctx.arc(x1, cy, Rb_px, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${sColor},${0.4 + 0.2 * pulse})`;
+    ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ── Sphere around atom 2 (only when NOT in blockade) ───────
+    if (!inBlockade) {
+      const grad2 = ctx.createRadialGradient(x2, cy, 0, x2, cy, Rb_px);
+      grad2.addColorStop(0,   `rgba(52,211,153,${sAlpha * 1.8})`);
+      grad2.addColorStop(0.65,`rgba(52,211,153,${sAlpha})`);
+      grad2.addColorStop(1,   `rgba(52,211,153,0)`);
+      ctx.beginPath(); ctx.arc(x2, cy, Rb_px, 0, Math.PI * 2);
+      ctx.fillStyle = grad2; ctx.fill();
+      ctx.beginPath(); ctx.arc(x2, cy, Rb_px, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(52,211,153,${0.4 + 0.2 * pulse})`;
+      ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // ── Ripple pulses (only when in blockade) ──────────────────
+    if (inBlockade) {
+      for (let i = 0; i < 4; i++) {
+        const phase = ((t * 0.012 + i * 0.25) % 1);
+        const rr    = phase * Rb_px * 1.05;
+        const alpha = (1 - phase) * 0.55;
+        ctx.beginPath(); ctx.arc(x1, cy, rr, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(129,140,248,${alpha})`;
+        ctx.lineWidth = 1.8; ctx.stroke();
+      }
+    }
+
+    // ── Rb label on sphere ─────────────────────────────────────
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.fillStyle = `rgba(${sColor},0.75)`;
+    ctx.textAlign = 'right';
+    ctx.fillText(`R_b = ${Rb.toFixed(1)} μm`, x1 + Rb_px - 6, cy - 8);
+
+    // ── Distance ruler below ───────────────────────────────────
+    const rulerY = cy + 46;
+    ctx.strokeStyle = 'rgba(71,85,105,0.5)';
+    ctx.lineWidth = 1; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x1, rulerY); ctx.lineTo(x2, rulerY); ctx.stroke();
+    [[x1, rulerY - 4, rulerY + 4], [x2, rulerY - 4, rulerY + 4]].forEach(([x, y1, y2]) => {
+      ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x, y2); ctx.stroke();
+    });
+    ctx.fillStyle = '#475569';
+    ctx.font = '11px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(`r = ${r.toFixed(1)} μm`, cx, rulerY + 15);
+
+    // ── Draw atoms ─────────────────────────────────────────────
+    function atom(x, y, suppressed) {
+      const gc = suppressed ? '239,68,68' : '129,140,248';
+      const gAlpha = suppressed ? 0.18 + 0.1 * fastPulse : 0.28 + 0.15 * pulse;
+      const glowR = suppressed ? 24 : 26;
+      const glow = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+      glow.addColorStop(0,  `rgba(${gc},${gAlpha * 2})`);
+      glow.addColorStop(1,  `rgba(${gc},0)`);
+      ctx.beginPath(); ctx.arc(x, y, glowR, 0, Math.PI * 2);
+      ctx.fillStyle = glow; ctx.fill();
+
+      ctx.beginPath(); ctx.arc(x, y, 13, 0, Math.PI * 2);
+      ctx.fillStyle = suppressed ? '#1c0707' : '#13102e';
+      ctx.fill();
+      ctx.strokeStyle = suppressed
+        ? `rgba(239,68,68,${0.55 + 0.3 * fastPulse})`
+        : `rgba(129,140,248,${0.65 + 0.3 * pulse})`;
+      ctx.lineWidth = 2; ctx.stroke();
+
+      ctx.fillStyle  = suppressed ? '#fca5a5' : '#c4b5fd';
+      ctx.font       = suppressed ? 'bold 13px Inter,sans-serif' : '10px Inter,sans-serif';
+      ctx.textAlign  = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(suppressed ? '✕' : '|r⟩', x, y);
+      ctx.textBaseline = 'alphabetic';
+    }
+
+    atom(x1, cy, false);
+    atom(x2, cy, inBlockade);
+
+    // ── Atom labels ────────────────────────────────────────────
+    ctx.font = '11px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('Atom 1', x1, cy - 38);
+    ctx.fillStyle = inBlockade ? '#ef4444' : '#64748b';
+    ctx.fillText('Atom 2', x2, cy - 38);
+
+    // ── Status headline ────────────────────────────────────────
+    ctx.textAlign = 'center';
+    if (inBlockade) {
+      ctx.font = 'bold 12px Inter,sans-serif';
+      ctx.fillStyle = `rgba(134,239,172,${0.7 + 0.3 * pulse})`;
+      ctx.fillText('BLOCKADE ACTIVE  ·  double excitation forbidden', cx, 22);
+    } else {
+      ctx.font = '12px Inter,sans-serif';
+      ctx.fillStyle = 'rgba(148,163,184,0.7)';
+      ctx.fillText('Outside blockade radius  ·  both atoms excitable', cx, 22);
+    }
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+
+  // Called from compute() on every slider change
+  window.updateBlockadeViz = function(Rb_um, r_um, n_val, blocked) {
+    vp = { Rb: Rb_um, r: r_um, n: n_val, inBlockade: blocked };
+  };
+
+  draw();
 })();
 
 /* ═══ Init ═══ */
