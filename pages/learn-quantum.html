@@ -1553,7 +1553,7 @@ function bsProject(x, y, z) {
   ];
 }
 
-function drawBloch(canvasId, theta, phi, label) {
+function drawBloch(canvasId, theta, phi, opts) {
   const canvas = document.getElementById(canvasId);
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -1594,6 +1594,26 @@ function drawBloch(canvasId, theta, phi, label) {
   const [z0x,z0y] = bsProject(0,0,1.15); ctx.fillStyle='#94a3b8'; ctx.font='12px Inter'; ctx.fillText('|0⟩',z0x+4,z0y);
   const [z1x,z1y] = bsProject(0,0,-1.15); ctx.fillText('|1⟩',z1x+4,z1y);
 
+  // ── Arc trail (animated gate rotation) ─────────
+  if (opts && opts.trail && opts.trail.length > 1) {
+    const tr = opts.trail;
+    for (let i = 1; i < tr.length; i++) {
+      const [x0,y0] = bsProject(...tr[i-1]);
+      const [x1,y1] = bsProject(...tr[i]);
+      const alpha = (i / (tr.length - 1)) * 0.7;
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1);
+      ctx.strokeStyle = `rgba(167,139,250,${alpha.toFixed(2)})`;
+      ctx.lineWidth = 2.5; ctx.stroke();
+    }
+  }
+  // Ghost dot at target during animation
+  if (opts && opts.target) {
+    const [tx,ty] = bsProject(...opts.target);
+    ctx.beginPath(); ctx.arc(tx,ty,5,0,2*Math.PI);
+    ctx.fillStyle = 'rgba(167,139,250,0.22)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(167,139,250,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
   // State vector
   const bx = Math.sin(theta)*Math.cos(phi);
   const by = Math.sin(theta)*Math.sin(phi);
@@ -1626,6 +1646,7 @@ drawBloch('blochCanvas', Math.PI/2, 0);
    ═══════════════════════════════════════════════ */
 // State as [alpha_re, alpha_im, beta_re, beta_im]
 let gState = [1/Math.SQRT2, 0, 1/Math.SQRT2, 0]; // |+⟩
+let gAnim = null; // animation handle
 
 function stateToBloch(s) {
   const [ar,ai,br,bi] = s;
@@ -1681,12 +1702,47 @@ function setGateState() {
 
 function applyGateBtn(name) {
   const g = GATES[name];
+  const fromBV = stateToBloch(gState);
   gState = applyMat(gState, g.mat);
+  const toBV = stateToBloch(gState);
+
   document.getElementById('gateMatrix').innerHTML =
     `<strong style="font-size:.8rem;color:var(--c-qc)">${g.label}</strong><br>
      <span style="color:#94a3b8;font-size:.78rem">${GATE_LABELS[name]}</span>`;
   document.getElementById('gateDesc').textContent = g.desc;
-  redrawGateBloch();
+
+  // Animated SLERP rotation along the great-circle arc
+  const dot = Math.max(-1, Math.min(1, fromBV[0]*toBV[0]+fromBV[1]*toBV[1]+fromBV[2]*toBV[2]));
+  if (dot > 0.9999) { redrawGateBloch(); return; } // identity — nothing to animate
+
+  if (gAnim) cancelAnimationFrame(gAnim.rafId);
+  const trail = [fromBV];
+  const Omega = Math.acos(dot);
+  const sinO  = Math.sin(Omega);
+  const STEPS = 28; // ~0.47 s at 60 fps
+  let step = 0;
+
+  function tick() {
+    step++;
+    const frac = step / STEPS;
+    // Spherical linear interpolation (SLERP)
+    const w1 = Math.sin((1-frac)*Omega) / sinO;
+    const w2 = Math.sin(frac*Omega) / sinO;
+    const bx = w1*fromBV[0] + w2*toBV[0];
+    const by = w1*fromBV[1] + w2*toBV[1];
+    const bz = w1*fromBV[2] + w2*toBV[2];
+    trail.push([bx, by, bz]);
+
+    const [th, ph] = blochToAngles(bx, by, bz);
+    drawBloch('gatesBlochCanvas', th, ph, { trail, target: toBV });
+    const stEl = document.getElementById('gatesBlochState');
+    if (stEl) stEl.textContent =
+      `|ψ⟩: bx=${bx.toFixed(2)}, by=${by.toFixed(2)}, bz=${bz.toFixed(2)} | P(0)=${(Math.cos(th/2)**2*100).toFixed(1)}%`;
+
+    if (step >= STEPS) { gAnim = null; redrawGateBloch(); return; }
+    gAnim = { rafId: requestAnimationFrame(tick) };
+  }
+  gAnim = { rafId: requestAnimationFrame(tick) };
 }
 
 function resetGateState() { setGateState(); document.getElementById('gateMatrix').innerHTML=''; document.getElementById('gateDesc').textContent=''; }
