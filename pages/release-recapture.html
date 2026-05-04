@@ -350,6 +350,20 @@
         <div class="sim-status" id="simStatus">Configure parameters and press Run.</div>
       </div>
 
+      <!-- Trajectory canvas -->
+      <div id="trajDiv" style="display:none;margin-bottom:1rem;">
+        <div class="chart-card">
+          <h5>Atom Trajectory Snapshot</h5>
+          <p style="font-size:.8rem;color:var(--text-muted);margin:.2rem 0 .6rem 0;">Drag the slider to change release time τ. Green = recaptured, red = escaped.</p>
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap;">
+            <label style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#fb923c;">0.00 ms</strong></label>
+            <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#fb923c;">
+          </div>
+          <canvas id="trajCanvas" width="560" height="220" style="width:100%;border-radius:6px;background:#03080f;"></canvas>
+          <div id="trajInfo" style="font-family:var(--mono);font-size:.78rem;color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
+        </div>
+      </div>
+
       <!-- Results -->
       <div class="results-grid" id="resultsDiv" style="display:none;">
         <div class="chart-card">
@@ -691,12 +705,80 @@ function runSimulation() {
       status.className = 'sim-status done';
       status.textContent = `Done, ${temps_uK.length} curve(s) · ${N_MC} samples each.`;
 
+      // Build trajectory snapshot data
+      buildTrajViz(tp, temps_uK[0], dt_max);
+
     } catch(e) {
       status.className = 'sim-status';
       status.textContent = 'Error: ' + e.message;
     }
     btn.disabled = false;
   }, 20);
+}
+
+/* ─── Trajectory visualiser ───────────────────────────────── */
+let _trajAtoms = [], _trajTp = null, _trajTmax = 0;
+
+function buildTrajViz(tp, T_uK, dt_max_s) {
+  _trajTp = tp; _trajTmax = dt_max_s;
+  const N = 120, T = T_uK * 1e-6;
+  const sig_v = Math.sqrt(kB*T/tp.m);
+  const sig_r = Math.sqrt(kB*T/(tp.m*tp.wr*tp.wr));
+  const sig_z = Math.sqrt(kB*T/(tp.m*tp.wz*tp.wz));
+  _trajAtoms = Array.from({length:N}, () => ({
+    x0: randn()*sig_r, y0: randn()*sig_r, z0: randn()*sig_z,
+    vx: randn()*sig_v, vy: randn()*sig_v, vz: randn()*sig_v,
+  }));
+  document.getElementById('trajDiv').style.display = '';
+  document.getElementById('trajSlider').oninput = () => drawTrajCanvas();
+  drawTrajCanvas();
+}
+
+function drawTrajCanvas() {
+  const cv = document.getElementById('trajCanvas');
+  const slider = document.getElementById('trajSlider');
+  if (!cv || !_trajTp) return;
+  const W = cv.clientWidth || 560, H = 220;
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#03080f'; ctx.fillRect(0,0,W,H);
+  const tp = _trajTp;
+  const dt = (parseInt(slider.value)/100) * _trajTmax;
+  document.getElementById('trajTauLabel').textContent = (dt*1e3).toFixed(3) + ' ms';
+  const pxPerM_r = (W*0.45)/(6*tp.w0);
+  const pxPerM_z = (H*0.45)/(10*tp.w0);
+  const cx = W/2, cy = H/2;
+  // Beam column
+  const bw = tp.w0*pxPerM_r;
+  const g = ctx.createLinearGradient(cx-bw*3,0,cx+bw*3,0);
+  g.addColorStop(0,'transparent'); g.addColorStop(0.5,'rgba(34,211,238,0.07)'); g.addColorStop(1,'transparent');
+  ctx.fillStyle=g; ctx.fillRect(cx-bw*3,0,bw*6,H);
+  ctx.beginPath(); ctx.arc(cx,cy,bw*0.9,0,2*Math.PI);
+  ctx.fillStyle='rgba(34,211,238,0.12)'; ctx.fill();
+  ctx.strokeStyle='rgba(34,211,238,0.35)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(34,211,238,0.5)'; ctx.fillText('tweezer',cx,cy-bw-5);
+  // Atoms
+  let nRecap=0;
+  for (const a of _trajAtoms) {
+    const xf=a.x0+a.vx*dt, zf=a.z0+a.vz*dt-4.905*dt*dt, vzf=a.vz-9.81*dt;
+    const KE=0.5*tp.m*(a.vx*a.vx+a.vy*a.vy+vzf*vzf);
+    const wz2=tp.w0*tp.w0*(1+(zf/tp.zR)**2);
+    const r2=xf*xf+a.y0*a.y0;
+    const U_f=tp.U0*(tp.w0*tp.w0/wz2)*Math.exp(-2*r2/wz2);
+    const ok=KE<U_f; if(ok) nRecap++;
+    const px=cx+xf*pxPerM_r, py=cy+zf*pxPerM_z;
+    if(px<-5||px>W+5||py<-5||py>H+5) continue;
+    ctx.beginPath(); ctx.arc(px,py,2.5,0,2*Math.PI);
+    ctx.fillStyle=ok?'rgba(74,222,128,0.85)':'rgba(248,113,113,0.7)'; ctx.fill();
+  }
+  const pRecap=(nRecap/_trajAtoms.length*100).toFixed(1);
+  ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='left';
+  ctx.fillStyle='rgba(74,222,128,0.85)'; ctx.fillText('● recaptured',10,16);
+  ctx.fillStyle='rgba(248,113,113,0.85)'; ctx.fillText('● escaped',10,30);
+  ctx.fillStyle='#94a3b8'; ctx.fillText('τ = '+(dt*1e3).toFixed(3)+' ms  |  P_cap ≈ '+pRecap+'%',10,H-8);
+  document.getElementById('trajInfo').textContent =
+    'w₀='+( tp.w0*1e6).toFixed(2)+'μm · U₀='+(tp.U0/kB*1e6).toFixed(0)+'μK · ωᵣ/2π='+(tp.wr/(2*Math.PI)/1e3).toFixed(1)+'kHz';
 }
 </script>
 </body>

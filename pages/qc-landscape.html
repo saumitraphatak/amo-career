@@ -296,6 +296,18 @@
       </div>
     </section>
 
+    <!-- ── Qubit race animation ─────────────────────────────────── -->
+    <section class="section-block anim-in delay-1">
+      <h2 class="section-title">The Qubit Race</h2>
+      <p class="section-sub">Physical qubit count per platform (log scale) — animated buildup showing the race toward fault tolerance.</p>
+      <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.9rem;">
+        <canvas id="qubitRaceCanvas" width="680" height="180" style="width:100%;border-radius:6px;"></canvas>
+        <div style="font-size:.76rem;color:var(--text-muted);margin-top:.4rem;text-align:center;">
+          Dashed line = ~1M qubits needed for fault-tolerant RSA-2048. Hover/tap bars for company details.
+        </div>
+      </div>
+    </section>
+
     <!-- ── 2. DiVincenzo Criteria ───────────────────────────────── -->
     <section class="section-block anim-in delay-1">
       <h2 class="section-title">The DiVincenzo Criteria</h2>
@@ -1272,6 +1284,91 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
           }
         }
       });
+    })();
+
+    /* ── Qubit race animated canvas ─────────────────────────── */
+    (function() {
+      const PLATFORMS = [
+        { name: 'IBM (SC)',       qubits: 1121,  color: '#60a5fa', detail: 'Condor 1121Q (2023)' },
+        { name: 'Google (SC)',    qubits: 70,    color: '#34d399', detail: 'Sycamore 72Q (2023)' },
+        { name: 'IonQ (Ions)',    qubits: 35,    color: '#a78bfa', detail: '#AQ 35 (2024)' },
+        { name: 'Quantinuum',     qubits: 56,    color: '#fbbf24', detail: 'H2: 56 Yb⁺ ions' },
+        { name: 'Atom Comp.',     qubits: 1180,  color: '#fb923c', detail: 'Phoenix 1180 atoms' },
+        { name: 'QuEra (Na)',     qubits: 256,   color: '#f472b6', detail: 'Aquila 256 atoms' },
+        { name: 'PsiQuantum',     qubits: 1e6,   color: '#38bdf8', detail: 'Projected ~1M photons' },
+      ];
+      const FTQC_TARGET = 1e6;
+      const MAX_LOG = Math.log10(FTQC_TARGET * 2);
+
+      const cv = document.getElementById('qubitRaceCanvas');
+      if (!cv) return;
+      const W = cv.clientWidth || 680, H = 180;
+      cv.width = W; cv.height = H;
+
+      const PAD_L=120, PAD_R=80, PAD_T=14, PAD_B=20;
+      const CHART_W = W-PAD_L-PAD_R, CHART_H = H-PAD_T-PAD_B;
+      const N = PLATFORMS.length;
+      const ROW_H = CHART_H / N;
+      const ctx = cv.getContext('2d');
+
+      const toX = logV => PAD_L + (Math.log10(Math.max(logV,1))/MAX_LOG) * CHART_W;
+
+      const startT = performance.now();
+      function frame(ts) {
+        const t = Math.min(1, (ts-startT)/1100);
+        const ease = 1-Math.pow(1-t,3);
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+
+        // Log grid lines
+        for (let exp=1; exp<=7; exp++) {
+          const x = toX(Math.pow(10,exp));
+          ctx.beginPath(); ctx.moveTo(x,PAD_T); ctx.lineTo(x,H-PAD_B);
+          ctx.strokeStyle='rgba(30,41,59,0.8)'; ctx.lineWidth=1; ctx.stroke();
+          ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='center';
+          ctx.fillStyle='#334155'; ctx.fillText('10^'+exp, x, H-PAD_B+12);
+        }
+
+        // FTQC threshold
+        const xT = toX(FTQC_TARGET);
+        ctx.beginPath(); ctx.moveTo(xT,PAD_T); ctx.lineTo(xT,H-PAD_B);
+        ctx.setLineDash([4,3]); ctx.strokeStyle='rgba(248,113,113,0.5)'; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='center'; ctx.fillStyle='rgba(248,113,113,0.6)';
+        ctx.fillText('FTQC target', xT, PAD_T-2);
+
+        PLATFORMS.forEach((p, i) => {
+          const y = PAD_T + i*ROW_H + ROW_H*0.15;
+          const barH = ROW_H*0.6;
+          const logFull = Math.log10(Math.max(p.qubits,1));
+          const animLog = logFull * ease;
+          const barW = Math.max(0, (animLog/MAX_LOG)*CHART_W);
+
+          // Bar
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = 0.8;
+          ctx.beginPath();
+          ctx.roundRect ? ctx.roundRect(PAD_L, y, barW, barH, 3)
+                        : ctx.rect(PAD_L, y, barW, barH);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // Name label
+          ctx.font='10px Inter,sans-serif'; ctx.textAlign='right'; ctx.fillStyle=p.color;
+          ctx.fillText(p.name, PAD_L-5, y+barH*0.72);
+
+          // Value label at end of bar
+          if (ease > 0.3) {
+            const dispN = p.qubits >= 1e6 ? p.qubits.toExponential(0)
+                         : p.qubits >= 1000 ? (p.qubits/1000).toFixed(1)+'k'
+                         : p.qubits.toString();
+            ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left'; ctx.fillStyle='rgba(226,232,240,0.8)';
+            ctx.fillText(dispN, PAD_L+barW+3, y+barH*0.72);
+          }
+        });
+        if (t<1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
     })();
   </script>
 </body>

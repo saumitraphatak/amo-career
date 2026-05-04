@@ -246,6 +246,11 @@
             <!-- 1. Fiber Coupling -->
             <div class="tech-section">
               <div class="tech-section-title">1 · Optical Fiber Coupling</div>
+              <!-- Fiber coupling animation -->
+              <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
+                <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Mode-matching visualiser — beam waist animated into fiber</div>
+                <canvas id="fiberCouplingCanvas" width="560" height="80" style="width:100%;border-radius:5px;"></canvas>
+              </div>
               <div class="concept-box">
                 Almost every laser beam in an AMO experiment is delivered to the optical table via
                 optical fiber. This is not merely a convenience: fibers <strong>spatially filter</strong> the
@@ -366,6 +371,11 @@
             <!-- 2. Double-Pass AOMs -->
             <div class="tech-section">
               <div class="tech-section-title">2 · Double-Pass Acousto-Optic Modulators (AOMs)</div>
+              <!-- AOM Bragg animation -->
+              <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
+                <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Double-pass AOM schematic — frequency shift +2f_RF, beam deflection cancelled</div>
+                <canvas id="aomCanvas" width="560" height="100" style="width:100%;border-radius:5px;"></canvas>
+              </div>
               <div class="concept-box">
                 An AOM diffracts light off a moving acoustic grating, shifting the optical frequency
                 by f_RF while deflecting the beam by the Bragg angle. The problem with a single pass:
@@ -1406,6 +1416,197 @@ SteadyStateTweezer(
           },
         },
       });
+    })();
+
+    /* ── Fiber coupling animation ──────────────────────────── */
+    (function() {
+      const cv = document.getElementById('fiberCouplingCanvas');
+      if (!cv) return;
+      const W = cv.clientWidth || 560, H = 80;
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      const CX = W/2, CY = H/2;
+
+      // Fiber core at right
+      const fiberX = W * 0.78, fiberCoreR = 6, fiberR = 14;
+      // Lens at center-right
+      const lensX = W * 0.58, lensH = 36;
+      // Input beam comes from left
+
+      function frame(ts) {
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+        const t = (ts * 0.0008) % (2*Math.PI);
+
+        // Propagating photon phase (ripple along beam)
+        const phase = t;
+
+        // ── Input beam (Gaussian, from left to lens) ──
+        const inputW0 = 20; // px 1/e² at left edge
+        const beamConvX = lensX; // beam converges at lens
+        for (let x = 20; x < lensX; x++) {
+          const frac = (lensX-x)/(lensX-20);
+          const wy = inputW0 * (0.35 + 0.65*frac);
+          const alpha = Math.exp(-0.5*((x-lensX)/(lensX-20))**2);
+          ctx.strokeStyle = `rgba(56,189,248,${(0.15+0.1*Math.sin(x*0.15-phase))*alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x, CY-wy); ctx.lineTo(x, CY+wy); ctx.stroke();
+        }
+        // beam center axis
+        ctx.beginPath(); ctx.moveTo(20,CY); ctx.lineTo(lensX,CY);
+        ctx.strokeStyle='rgba(56,189,248,0.35)'; ctx.lineWidth=1.2; ctx.stroke();
+
+        // ── Lens ──
+        ctx.beginPath();
+        ctx.ellipse(lensX, CY, 5, lensH/2, 0, 0, 2*Math.PI);
+        ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.5;
+        ctx.fillStyle='rgba(100,200,255,0.07)'; ctx.fill(); ctx.stroke();
+
+        // ── Focused beam (converging to fiber) ──
+        const focW0 = fiberCoreR * 0.9;
+        for (let x = lensX; x < fiberX; x++) {
+          const frac = (x-lensX)/(fiberX-lensX);
+          const wy = inputW0 * (1-frac) * 0.55 + focW0 * frac;
+          const alpha = 0.6;
+          ctx.strokeStyle = `rgba(74,222,128,${0.12+0.08*Math.sin(x*0.22-phase)})`;
+          ctx.lineWidth=1;
+          ctx.beginPath(); ctx.moveTo(x,CY-wy); ctx.lineTo(x,CY+wy); ctx.stroke();
+        }
+        ctx.beginPath(); ctx.moveTo(lensX,CY); ctx.lineTo(fiberX,CY);
+        ctx.strokeStyle='rgba(74,222,128,0.4)'; ctx.lineWidth=1.2; ctx.stroke();
+
+        // ── Fiber cladding + core ──
+        // Cladding (dark)
+        ctx.fillStyle='#1e293b'; ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.roundRect(fiberX-3,CY-fiberR,W-fiberX+3,fiberR*2,2); ctx.fill(); ctx.stroke();
+        // Core (lit up, pulsing)
+        const corePulse = 0.7 + 0.3*Math.sin(phase*3);
+        ctx.fillStyle=`rgba(74,222,128,${corePulse*0.5})`;
+        ctx.beginPath(); ctx.roundRect(fiberX-2,CY-fiberCoreR,W-fiberX+2,fiberCoreR*2,1); ctx.fill();
+        // Propagating mode inside fiber
+        for (let x=fiberX+8; x<W-10; x+=18) {
+          const spotX = (x+phase*50) % (W-fiberX-15) + fiberX + 5;
+          ctx.beginPath(); ctx.arc(spotX, CY, 3, 0, 2*Math.PI);
+          ctx.fillStyle=`rgba(74,222,128,${0.4+0.3*Math.sin(spotX*0.3)})`; ctx.fill();
+        }
+
+        // Labels
+        ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
+        ctx.fillStyle='rgba(56,189,248,0.7)'; ctx.fillText('input beam', lensX*0.4, 12);
+        ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fillText('lens', lensX, H-6);
+        ctx.fillStyle='rgba(74,222,128,0.7)'; ctx.fillText('SM fiber', fiberX+20, 12);
+
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
+
+    /* ── AOM double-pass animation ─────────────────────────── */
+    (function() {
+      const cv = document.getElementById('aomCanvas');
+      if (!cv) return;
+      const W = cv.clientWidth || 560, H = 100;
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+
+      // Layout: input → AOM crystal → retroreflector → AOM again → output
+      const aomX1 = W*0.3, aomX2 = W*0.7;
+      const retX = W*0.85;
+      const aomW = 40, aomH = 55;
+      const CY = H/2;
+
+      function frame(ts) {
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+        const ph = ts * 0.0009;
+
+        // Acoustic grating inside AOM (animated ripple lines)
+        function drawAOM(x, label) {
+          ctx.fillStyle='rgba(251,191,36,0.08)';
+          ctx.fillRect(x-aomW/2, CY-aomH/2, aomW, aomH);
+          ctx.strokeStyle='rgba(251,191,36,0.4)'; ctx.lineWidth=1;
+          ctx.strokeRect(x-aomW/2, CY-aomH/2, aomW, aomH);
+          // acoustic fringes
+          for (let i=0; i<6; i++) {
+            const yf = CY-aomH/2 + ((i + ph*4)%6) * (aomH/6);
+            ctx.beginPath(); ctx.moveTo(x-aomW/2+2,yf); ctx.lineTo(x+aomW/2-2,yf);
+            ctx.strokeStyle=`rgba(251,191,36,0.25)`; ctx.lineWidth=1; ctx.stroke();
+          }
+          ctx.font='8px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='rgba(251,191,36,0.7)';
+          ctx.fillText(label, x, CY-aomH/2-4);
+        }
+
+        drawAOM(aomX1, 'AOM (pass 1)');
+        drawAOM(aomX2, 'AOM (pass 2)');
+
+        // Retroreflector (cat's eye)
+        ctx.beginPath(); ctx.arc(retX, CY, 10, 0, 2*Math.PI);
+        ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5;
+        ctx.fillStyle='rgba(200,200,255,0.07)'; ctx.fill(); ctx.stroke();
+        ctx.font='7px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='rgba(200,200,255,0.6)';
+        ctx.fillText('retro', retX, H-4);
+
+        // ── Pass 1: input beam deflected upward ──
+        const deflect = 8; // px deflection
+        // Input beam (horizontal) coming from left
+        ctx.beginPath(); ctx.moveTo(8, CY); ctx.lineTo(aomX1-aomW/2, CY);
+        ctx.strokeStyle='rgba(56,189,248,0.7)'; ctx.lineWidth=2; ctx.stroke();
+        // Zeroth order (continues, faint)
+        ctx.beginPath(); ctx.moveTo(aomX1+aomW/2, CY); ctx.lineTo(aomX2-aomW/2-5, CY);
+        ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(56,189,248,0.2)'; ctx.lineWidth=1; ctx.stroke();
+        ctx.setLineDash([]);
+        // First order (deflected)
+        ctx.beginPath(); ctx.moveTo(aomX1+aomW/2, CY);
+        ctx.lineTo(aomX2-aomW/2, CY-deflect);
+        ctx.strokeStyle='rgba(74,222,128,0.8)'; ctx.lineWidth=2; ctx.stroke();
+        // Pass 2: retro bounces back (mirror path), then exits same axis
+        ctx.beginPath(); ctx.moveTo(aomX2+aomW/2, CY-deflect);
+        ctx.lineTo(retX-10, CY-deflect);
+        ctx.strokeStyle='rgba(74,222,128,0.6)'; ctx.lineWidth=2; ctx.stroke();
+        // Retro reflects back at same height
+        ctx.beginPath(); ctx.moveTo(retX-10, CY-deflect);
+        ctx.lineTo(aomX2+aomW/2, CY-deflect);
+        ctx.strokeStyle='rgba(251,146,60,0.7)'; ctx.lineWidth=2; ctx.stroke();
+        // 2nd pass through AOM2, deflects back to original axis
+        ctx.beginPath(); ctx.moveTo(aomX2-aomW/2, CY-deflect);
+        ctx.lineTo(aomX1+aomW/2, CY);
+        ctx.strokeStyle='rgba(251,146,60,0.8)'; ctx.lineWidth=2; ctx.stroke();
+        // Output beam: +2f_RF, same axis as input
+        ctx.beginPath(); ctx.moveTo(aomX1-aomW/2, CY); ctx.lineTo(8, CY);
+        ctx.setLineDash([4,3]);
+        ctx.strokeStyle='rgba(251,146,60,0.6)'; ctx.lineWidth=2; ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Labels
+        ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left';
+        ctx.fillStyle='rgba(56,189,248,0.8)'; ctx.fillText('ν₀', 10, CY-6);
+        ctx.fillStyle='rgba(251,146,60,0.8)'; ctx.fillText('ν₀+2f_RF', 10, CY+14);
+        ctx.fillStyle='rgba(74,222,128,0.7)'; ctx.fillText('+f_RF', (aomX1+aomX2)/2, CY-deflect-5);
+
+        // Animated photon dot
+        const dotPhase = (ph % 1);
+        let dotX, dotY, dotColor;
+        if (dotPhase < 0.3) { // pass 1
+          dotX = 8 + dotPhase/0.3*(aomX1-aomW/2-8); dotY = CY; dotColor='rgba(56,189,248,0.9)';
+        } else if (dotPhase < 0.55) { // deflect
+          const f=(dotPhase-0.3)/0.25;
+          dotX=aomX1+aomW/2+f*(aomX2-aomW/2-aomX1-aomW/2); dotY=CY-deflect*f; dotColor='rgba(74,222,128,0.9)';
+        } else if (dotPhase < 0.7) { // retro
+          const f=(dotPhase-0.55)/0.15;
+          dotX=aomX2+aomW/2+f*(retX-10-aomX2-aomW/2); dotY=CY-deflect; dotColor='rgba(74,222,128,0.9)';
+        } else if (dotPhase < 0.85) { // back through AOM
+          const f=(dotPhase-0.7)/0.15;
+          dotX=aomX2-aomW/2-f*(aomX2-aomW/2-aomX1-aomW/2); dotY=CY-deflect*(1-f); dotColor='rgba(251,146,60,0.9)';
+        } else { // output
+          const f=(dotPhase-0.85)/0.15;
+          dotX=aomX1-aomW/2-f*(aomX1-aomW/2-8); dotY=CY; dotColor='rgba(251,146,60,0.9)';
+        }
+        ctx.beginPath(); ctx.arc(dotX, dotY, 4, 0, 2*Math.PI);
+        ctx.fillStyle=dotColor; ctx.fill();
+
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
     })();
   </script>
 

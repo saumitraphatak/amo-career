@@ -1154,6 +1154,30 @@ Narrow: 583 nm (intercombination line)</span>
       });
     });
 
+    /* ── Pulsed glow animation on atom tiles ── */
+    (function() {
+      const startT = performance.now();
+      function pulse(ts) {
+        const t = (ts - startT) / 1000; // seconds
+        document.querySelectorAll('.atom-tile').forEach((tile, i) => {
+          // Each tile pulses with a slight phase offset
+          const ph = t * 1.2 + i * 0.3;
+          const glow = 0.5 + 0.5 * Math.sin(ph);
+          // Get tile color from inline style
+          const bgColor = tile.style.background || '';
+          const alpha = 0.08 + glow * 0.12;
+          // Re-apply background with animated alpha
+          const match = bgColor.match(/rgba?\([^)]+\)/);
+          if (match) {
+            const base = match[0].replace(/[\d.]+\)$/, alpha.toFixed(3)+')');
+            tile.style.background = base;
+          }
+        });
+        requestAnimationFrame(pulse);
+      }
+      requestAnimationFrame(pulse);
+    })();
+
     /* ── Atom tile selector ── */
     function selectAtom(tile, sym) {
       // Toggle active tile

@@ -364,6 +364,13 @@
       <h5>Error breakdown, relative contributions</h5>
       <canvas id="errorChart" height="240"></canvas>
     </div>
+
+    <!-- Animated waterfall -->
+    <div class="chart-card" style="margin-top:1rem;">
+      <h5>Error waterfall — cumulative build-up</h5>
+      <p style="font-size:.78rem;color:var(--text-muted);margin:.15rem 0 .6rem 0;">Each bar adds its error to the running total. The dashed line marks the fault-tolerance threshold (0.1% error = 99.9% fidelity).</p>
+      <canvas id="waterfallCanvas" width="560" height="160" style="width:100%;border-radius:6px;"></canvas>
+    </div>
   </section>
 
   <hr class="section-divider">
@@ -771,6 +778,114 @@ function compute() {
   ERR_CHART.data.labels   = entries.map(([n]) => n);
   ERR_CHART.data.datasets[0].data = entries.map(([, v]) => Math.max(v, 1e-9));
   ERR_CHART.update('none');
+
+  // ─── Waterfall animation ────────────────────────────────────
+  drawWaterfall(entries, totalErr);
+}
+
+let _wfAnim = null;
+function drawWaterfall(entries, totalErr) {
+  if (_wfAnim) { cancelAnimationFrame(_wfAnim); _wfAnim = null; }
+  const cv = document.getElementById('waterfallCanvas');
+  if (!cv) return;
+  const W = cv.clientWidth || 560, H = 160;
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+
+  const N = entries.length;
+  const PAD_L = 55, PAD_R = 15, PAD_T = 20, PAD_B = 32;
+  const CHART_W = W - PAD_L - PAD_R;
+  const CHART_H = H - PAD_T - PAD_B;
+  const BAR_W = Math.min(38, (CHART_W / N) * 0.65);
+  const COLORS = ['#f87171','#fb923c','#fbbf24','#4ade80','#38bdf8','#818cf8','#e879f9','#f472b6'];
+  const THRESHOLD = 0.001; // 99.9% fidelity
+
+  // yMax: nice scale above totalErr and threshold
+  const yMax = Math.max(totalErr * 1.15, THRESHOLD * 1.5);
+
+  const toY = v => PAD_T + CHART_H * (1 - Math.min(v, yMax) / yMax);
+  const toX = i => PAD_L + (i + 0.5) * (CHART_W / N);
+
+  const startT = performance.now();
+  const ANIM_MS = 800;
+
+  function frame(ts) {
+    const progress = Math.min(1, (ts - startT) / ANIM_MS);
+    // ease-out
+    const t = 1 - Math.pow(1 - progress, 3);
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#0c1526'; ctx.fillRect(0,0,W,H);
+
+    // Grid lines
+    for (const frac of [0.25,0.5,0.75,1.0]) {
+      const y = toY(yMax * frac);
+      ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(W-PAD_R, y);
+      ctx.strokeStyle='rgba(30,41,59,0.9)'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    // Threshold line
+    const yThr = toY(THRESHOLD);
+    ctx.beginPath(); ctx.moveTo(PAD_L, yThr); ctx.lineTo(W-PAD_R, yThr);
+    ctx.setLineDash([5,4]); ctx.strokeStyle='rgba(248,113,113,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillStyle='rgba(248,113,113,0.7)'; ctx.fillText('99.9%', PAD_L-3, yThr+3);
+
+    // Cumulative bars, animated to grow left-to-right
+    let cumErr = 0;
+    const visN = Math.ceil(N * Math.min(1, progress * 1.4));
+    for (let i = 0; i < visN; i++) {
+      const [name, val] = entries[i];
+      const barProgress = Math.min(1, (t * N - i));
+      const animVal = val * barProgress;
+      const x = toX(i);
+      const barBottom = toY(cumErr);
+      const barTop = toY(cumErr + animVal);
+      const barH = barBottom - barTop;
+      // Stacked bar from cumErr to cumErr+val
+      const color = COLORS[i % COLORS.length];
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(x-BAR_W/2, barTop, BAR_W, barH, [3,3,0,0])
+                    : ctx.rect(x-BAR_W/2, barTop, BAR_W, barH);
+      ctx.fill();
+      // Glow
+      ctx.shadowColor = color; ctx.shadowBlur = 6;
+      ctx.fill(); ctx.shadowBlur = 0;
+      cumErr += animVal;
+
+      // Label (only after mostly done)
+      if (barProgress > 0.7) {
+        ctx.font = '8px JetBrains Mono,monospace'; ctx.textAlign='center';
+        const shortName = name.split(' ')[0].substring(0,6);
+        ctx.fillStyle='rgba(148,163,184,0.8)';
+        ctx.fillText(shortName, x, H-PAD_B+12);
+        ctx.fillText(val.toExponential(1), x, H-PAD_B+22);
+      }
+    }
+
+    // Cumulative line
+    ctx.beginPath();
+    let runE = 0;
+    for (let i = 0; i < visN; i++) {
+      const animFrac = Math.min(1, t * N - i);
+      runE += entries[i][1] * animFrac;
+      const x = toX(i); const y = toY(runE);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // Y axis ticks
+    ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right'; ctx.fillStyle='#475569';
+    for (const frac of [0,0.25,0.5,0.75,1.0]) {
+      const v = yMax * frac;
+      ctx.fillText(v.toExponential(1), PAD_L-4, toY(v)+3);
+    }
+
+    if (progress < 1) _wfAnim = requestAnimationFrame(frame);
+  }
+  _wfAnim = requestAnimationFrame(frame);
 }
 
 function onSpeciesChange() { compute(); }
