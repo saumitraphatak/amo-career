@@ -1371,8 +1371,8 @@ updateBeat();
 
   // Feedback state
   let velocity = 0;         // momentum for smooth physics
-  const K_p = 0.07;         // proportional gain
-  const K_d = 0.55;         // derivative / damping
+  const K_p = 0.18;         // proportional gain
+  const K_d = 0.72;         // derivative / damping (critical damping avoids overshoot)
 
   // History for the frequency trace
   const HIST = 220;
@@ -1439,13 +1439,19 @@ updateBeat();
 
     // ── Physics update ───────────────────────────────
     if (locked) {
-      // PD feedback: error signal drives correction
-      const err = errorSignal(freq);
-      const correction = K_p * err * GAMMA * 15 - K_d * velocity;
+      // PD feedback toward zero.
+      // errorSignal(x) < 0 for x > 0 and > 0 for x < 0, so it naturally
+      // points toward zero. We also add a wide-capture linear term so the
+      // servo pulls in even when the laser is far off resonance.
+      const errNarrow = errorSignal(freq) * GAMMA * 18; // dispersive slope near centre
+      const errWide   = -freq * 0.12;                   // linear pull for large offsets
+      const err = errNarrow + errWide;
+      // PD: proportional drive minus damping
+      const correction = K_p * err - K_d * velocity;
       velocity += correction;
-      freq -= velocity;
-      // Clamp
-      if (Math.abs(freq) < 0.08 && Math.abs(velocity) < 0.05) {
+      freq += velocity;   // += not -= (velocity points in the direction of correction)
+      // Snap to zero when close enough
+      if (Math.abs(freq) < 0.06 && Math.abs(velocity) < 0.04) {
         freq = 0; velocity = 0;
       }
     } else {
