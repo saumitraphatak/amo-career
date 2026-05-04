@@ -187,6 +187,43 @@
     685 nm Cs E₂ quadrupole line (Γ/2π ≈ 117 kHz) to motivate PDH locking.
   </div>
 
+  <!-- ═══ LASER DRIFT / LOCK ANIMATOR ═══ -->
+  <div class="anim-in" style="margin-bottom:2.5rem;">
+    <div id="lockVizWrap" style="
+      background:#020810;
+      border:1px solid #1e293b;
+      border-radius:14px;
+      overflow:hidden;
+      position:relative;
+    ">
+      <canvas id="lockCanvas" style="display:block;width:100%;height:220px;"></canvas>
+      <div style="
+        display:flex; gap:.75rem; justify-content:center;
+        padding:.6rem .75rem .75rem;
+        background:rgba(2,8,16,0.6);
+        border-top:1px solid #1e293b;
+      ">
+        <button id="lockBtn" onclick="laserLockToggle()" style="
+          padding:.35rem 1.1rem; border-radius:6px; border:1px solid #f87171;
+          background:rgba(248,113,113,0.1); color:#f87171;
+          font-size:.82rem; font-weight:700; cursor:pointer; font-family:var(--font-sans);
+          transition: all .2s;
+        ">🔓 Free Running</button>
+        <button onclick="laserPerturb()" style="
+          padding:.35rem 1.1rem; border-radius:6px; border:1px solid #475569;
+          background:rgba(255,255,255,0.03); color:#94a3b8;
+          font-size:.82rem; font-weight:600; cursor:pointer; font-family:var(--font-sans);
+        ">⚡ Perturb</button>
+        <span id="lockStatus" style="
+          font-size:.8rem; color:#64748b; align-self:center; font-family:var(--font-mono);
+        ">drift: <span id="driftHz">—</span></span>
+      </div>
+    </div>
+    <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin:.4rem 0 0;">
+      Click <strong style="color:#f87171">Free Running</strong> to toggle the lock. Hit <strong style="color:#94a3b8">Perturb</strong> to kick the laser off resonance and watch feedback correct it.
+    </p>
+  </div>
+
   <!-- ═══ TABS ═══ -->
   <section class="section-block anim-in delay-1">
     <div data-tabs-wrap>
@@ -1312,6 +1349,263 @@ function updatePDH() {
 buildSASCharts(); updateSAS();
 buildPDHCharts(); updatePDH();
 updateBeat();
+
+/* ═══════════════════════════════════════════════════════
+   LASER DRIFT + LOCK VISUALIZER
+   ═══════════════════════════════════════════════════════ */
+(function() {
+  const cvs = document.getElementById('lockCanvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+
+  // ── State ───────────────────────────────────────────
+  let locked = false;
+  let t = 0;
+
+  // Laser frequency offset from line centre (MHz)
+  let freq = 0;
+  // Drift: slow random walk when free-running
+  let driftRate = 0.04;     // MHz per frame (average)
+  let driftDir  = 1;
+  let driftNoise = 0;
+
+  // Feedback state
+  let velocity = 0;         // momentum for smooth physics
+  const K_p = 0.07;         // proportional gain
+  const K_d = 0.55;         // derivative / damping
+
+  // History for the frequency trace
+  const HIST = 220;
+  const history = new Array(HIST).fill(0);
+
+  // Canvas sizing
+  function resize() {
+    const rect = cvs.parentElement.getBoundingClientRect();
+    cvs.width  = rect.width || 600;
+    cvs.height = 220;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Lorentzian absorption line (Cs D2 approximation)
+  // x in MHz offset from line centre, Γ/2π = 5.234 MHz (HWHM)
+  const GAMMA = 5.234;
+  function lorentzian(x) {
+    return 1 / (1 + (x / (GAMMA / 2)) ** 2);
+  }
+  // First derivative (dispersive error signal)
+  function errorSignal(x) {
+    const hw = GAMMA / 2;
+    return -2 * x * hw / (hw * hw + x * x) ** 2 * hw * hw;
+  }
+
+  // ── Controls exposed globally ───────────────────────
+  window.laserLockToggle = function() {
+    locked = !locked;
+    velocity = 0;
+    const btn = document.getElementById('lockBtn');
+    if (locked) {
+      btn.textContent = '🔒 Locked';
+      btn.style.borderColor = '#34d399';
+      btn.style.color = '#34d399';
+      btn.style.background = 'rgba(52,211,153,0.1)';
+    } else {
+      btn.textContent = '🔓 Free Running';
+      btn.style.borderColor = '#f87171';
+      btn.style.color = '#f87171';
+      btn.style.background = 'rgba(248,113,113,0.1)';
+    }
+  };
+
+  window.laserPerturb = function() {
+    freq += (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 20);
+    velocity = 0;
+  };
+
+  // ── Main draw loop ──────────────────────────────────
+  function draw() {
+    const W = cvs.width, H = cvs.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#020810';
+    ctx.fillRect(0, 0, W, H);
+
+    // Layout: left half = absorption profile, right half = freq trace
+    const splitX = W * 0.44;
+    const profileW = splitX - 20;
+    const traceX   = splitX + 10;
+    const traceW   = W - traceX - 16;
+
+    // ── Physics update ───────────────────────────────
+    if (locked) {
+      // PD feedback: error signal drives correction
+      const err = errorSignal(freq);
+      const correction = K_p * err * GAMMA * 15 - K_d * velocity;
+      velocity += correction;
+      freq -= velocity;
+      // Clamp
+      if (Math.abs(freq) < 0.08 && Math.abs(velocity) < 0.05) {
+        freq = 0; velocity = 0;
+      }
+    } else {
+      // Free-running: random walk with slow drift
+      driftNoise += (Math.random() - 0.5) * 0.12;
+      driftNoise *= 0.92;
+      if (Math.random() < 0.003) driftDir *= -1;
+      freq += driftRate * driftDir + driftNoise;
+      // Reflective boundaries at ±55 MHz
+      if (Math.abs(freq) > 55) { driftDir *= -1; freq = Math.sign(freq) * 55; }
+    }
+
+    // Push to history
+    history.push(freq);
+    if (history.length > HIST) history.shift();
+
+    // ── Draw absorption profile ──────────────────────
+    // Axis
+    const profileCX = profileW / 2 + 12;
+    const profileMidY = H / 2 + 10;
+    const profileH = H * 0.58;
+    const freqScale = profileW / 2 / 60; // px per MHz
+
+    // Doppler envelope (broad Gaussian, ±250 MHz, scaled to same height)
+    const doppW = 220 * freqScale;
+    ctx.beginPath();
+    for (let px = 12; px < profileW + 12; px++) {
+      const fMHz = (px - profileCX) / freqScale;
+      const dop  = 0.55 * Math.exp(-fMHz * fMHz / (2 * 80 * 80));
+      const lam  = lorentzian(fMHz);
+      const val  = dop + 0.42 * lam;
+      const py   = profileMidY + profileH / 2 - val * profileH * 0.82;
+      px === 12 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = 'rgba(148,163,184,0.25)';
+    ctx.lineWidth = 1.5; ctx.stroke();
+
+    // Lamb dip (narrow Lorentzian dip at 0)
+    ctx.beginPath();
+    for (let px = 12; px < profileW + 12; px++) {
+      const fMHz = (px - profileCX) / freqScale;
+      const dop  = 0.55 * Math.exp(-fMHz * fMHz / (2 * 80 * 80));
+      const lam  = lorentzian(fMHz) * 0.38;
+      const py   = profileMidY + profileH / 2 - (dop - lam * 0.55) * profileH * 0.82;
+      px === 12 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = 'rgba(248,113,113,0.55)';
+    ctx.lineWidth = 1.5; ctx.stroke();
+
+    // Error signal (dispersive, scaled small at bottom)
+    const errScale = profileH * 0.14;
+    const errMidY  = profileMidY + profileH / 2 + 28;
+    ctx.beginPath();
+    for (let px = 12; px < profileW + 12; px++) {
+      const fMHz = (px - profileCX) / freqScale;
+      const es   = errorSignal(fMHz);
+      const py   = errMidY - es * errScale * 0.32;
+      px === 12 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = 'rgba(251,191,36,0.5)';
+    ctx.lineWidth = 1.3; ctx.stroke();
+
+    // Zero crossing tick
+    ctx.strokeStyle = 'rgba(251,191,36,0.3)';
+    ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(profileCX, profileMidY - profileH * 0.5);
+    ctx.lineTo(profileCX, errMidY + 14);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // Laser needle
+    const needleX = profileCX + freq * freqScale;
+    const needleTop = profileMidY - profileH * 0.52;
+    const needleBot = errMidY + 10;
+    const needleColor = locked
+      ? `rgba(52,211,153,${0.7 + 0.25 * (0.5 + 0.5 * Math.sin(t * 0.08))})`
+      : `rgba(248,113,113,${0.75 + 0.2 * Math.sin(t * 0.13)})`;
+
+    ctx.strokeStyle = needleColor;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(needleX, needleTop); ctx.lineTo(needleX, needleBot); ctx.stroke();
+
+    // Glow on needle
+    const grd = ctx.createLinearGradient(needleX - 10, 0, needleX + 10, 0);
+    grd.addColorStop(0, 'transparent');
+    grd.addColorStop(0.5, locked ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)');
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(needleX - 10, needleTop, 20, needleBot - needleTop);
+
+    // Needle label
+    ctx.fillStyle = locked ? 'rgba(52,211,153,0.9)' : 'rgba(248,113,113,0.9)';
+    ctx.font = 'bold 10px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    const labelY = Math.max(needleTop - 6, 14);
+    ctx.fillText(locked ? 'LOCKED' : `${freq >= 0 ? '+' : ''}${freq.toFixed(1)} MHz`, needleX, labelY);
+
+    // Profile labels
+    ctx.fillStyle = '#475569';
+    ctx.font = '9.5px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Absorption + Lamb dip', profileCX, H - 8);
+    ctx.fillStyle = 'rgba(251,191,36,0.5)';
+    ctx.fillText('error signal', profileCX, H - 8 + 0);
+
+    // ── Draw frequency history trace ─────────────────
+    // Frame
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1; ctx.setLineDash([]);
+    ctx.strokeRect(traceX, 20, traceW, H - 40);
+
+    // Zero line
+    ctx.strokeStyle = 'rgba(71,85,105,0.4)';
+    ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(traceX, H / 2 + 10); ctx.lineTo(traceX + traceW, H / 2 + 10);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // Trace
+    const tScale = (H - 40) / 2 / 60; // px per MHz in trace
+    const traceMidY = H / 2 + 10;
+    const pxPerSample = traceW / HIST;
+
+    ctx.beginPath();
+    history.forEach((f, i) => {
+      const x = traceX + i * pxPerSample;
+      const y = traceMidY - f * tScale;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    // Colour by locked state (use gradient over time)
+    ctx.strokeStyle = locked ? 'rgba(52,211,153,0.85)' : 'rgba(248,113,113,0.75)';
+    ctx.lineWidth = 1.8; ctx.stroke();
+
+    // Axis labels
+    ctx.fillStyle = '#334155';
+    ctx.font = '9px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('+60 MHz', traceX + 3, 24);
+    ctx.fillText('  0 MHz', traceX + 3, H / 2 + 13);
+    ctx.fillText('−60 MHz', traceX + 3, H - 24);
+    ctx.fillStyle = '#475569';
+    ctx.textAlign = 'center';
+    ctx.fillText('laser frequency vs time', traceX + traceW / 2, H - 8);
+
+    // Divider
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(splitX, 10); ctx.lineTo(splitX, H - 10); ctx.stroke();
+
+    // Status
+    const driftMHz = Math.abs(freq).toFixed(1);
+    const el = document.getElementById('driftHz');
+    if (el) el.textContent = locked ? '< 0.1 MHz' : driftMHz + ' MHz';
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
 </script>
 </body>
 </html>
