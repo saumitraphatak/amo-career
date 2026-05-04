@@ -262,7 +262,7 @@
             Atoms start with a room-temperature Maxwell-Boltzmann distribution.
             Drag the sliders above — watch the cloud cool in real time.
           </div>
-          <canvas id="mbCanvas" style="width:100%;height:160px;display:block;border-radius:8px;background:#020810;"></canvas>
+          <canvas id="mbCanvas" width="560" height="160" style="width:100%;height:160px;display:block;border-radius:8px;background:#020810;"></canvas>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
             <span id="mbTLabel" style="color:#60a5fa;">T = — μK</span>
             <span>← cooled &nbsp;|&nbsp; velocity (v_rms units) &nbsp;|&nbsp; warm →</span>
@@ -1044,11 +1044,25 @@ function updateCoolEvo() {
 
   // Resize
   function resize() {
-    const rect = cvs.parentElement.getBoundingClientRect();
-    cvs.width  = rect.width || 560;
+    // getBoundingClientRect returns 0 when inside a hidden tab panel.
+    // Walk up to find a visible ancestor width as fallback.
+    let w = cvs.parentElement.getBoundingClientRect().width;
+    if (!w) {
+      // Try the page content container
+      const pc = document.querySelector('.page-content .container');
+      w = pc ? pc.getBoundingClientRect().width : 0;
+    }
+    cvs.width  = w || 560;
     cvs.height = 160;
   }
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', () => { resize(); });
+
+  // Re-init when Doppler tab is activated
+  document.querySelectorAll('[data-tab="doppler"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(() => { resize(); if (!_mbReady) { initAtoms(); _mbReady = true; } }, 50);
+    });
+  });
 
   let _mbReady = false;
 
@@ -1057,7 +1071,11 @@ function updateCoolEvo() {
 
   function draw() {
     requestAnimationFrame(draw);
-    if (!_mbReady) { resize(); initAtoms(); _mbReady = true; }
+    // Also retry resize every frame until we get a real width
+    if (!_mbReady || cvs.width < 10) {
+      resize();
+      if (cvs.width >= 10) { initAtoms(); _mbReady = true; }
+    }
 
     const W = cvs.width, H = cvs.height;
     if (!W || !H) return;
