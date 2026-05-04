@@ -30,15 +30,16 @@ const NAV = {
     { key: 'dd-playground', label: 'Qubit Coherence & Decoupling', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html'  },
   ],
   cooling: [
-    { label: 'Overview & Lamb-Dicke',      icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke'   },
-    { label: 'Resolved Sideband',          icon: '📡', href: 'pages/laser-cooling.html#resolved-sb'  },
-    { label: 'Unresolved Sideband',        icon: '〰️', href: 'pages/laser-cooling.html#unresolved-sb' },
-    { label: 'Dark-State Sideband',        icon: '🌑', href: 'pages/laser-cooling.html#dark-sb'      },
-    { label: 'Polarization Gradient',      icon: '🔄', href: 'pages/laser-cooling.html#pg'           },
-    { label: 'Gray Molasses',              icon: '☁️',  href: 'pages/laser-cooling.html#gm'           },
-    { label: 'EIT / Λ-Enhanced GM',        icon: '✨', href: 'pages/laser-cooling.html#eit-lgm'      },
-    { label: 'Raman Sideband',             icon: '🔀', href: 'pages/laser-cooling.html#rsb'          },
-    { label: 'Technique Comparison',       icon: '📊', href: 'pages/laser-cooling.html#comparison'   },
+    { label: 'Overview & Lamb-Dicke',      icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke',   color: '#60a5fa' },
+    { label: 'Resolved Sideband',          icon: '📡', href: 'pages/laser-cooling.html#resolved-sb',  color: '#60a5fa' },
+    { label: 'Unresolved Sideband',        icon: '〰️', href: 'pages/laser-cooling.html#unresolved-sb', color: '#60a5fa' },
+    { label: 'Dark-State Sideband',        icon: '🌑', href: 'pages/laser-cooling.html#dark-sb',      color: '#60a5fa' },
+    { label: 'Polarization Gradient',      icon: '🔄', href: 'pages/laser-cooling.html#pg',           color: '#60a5fa' },
+    { label: 'Gray Molasses',              icon: '☁️',  href: 'pages/laser-cooling.html#gm',           color: '#60a5fa' },
+    { label: 'EIT / Λ-Enhanced GM',        icon: '✨', href: 'pages/laser-cooling.html#eit-lgm',      color: '#60a5fa' },
+    { label: 'Raman Sideband',             icon: '🔀', href: 'pages/laser-cooling.html#rsb',          color: '#60a5fa' },
+    { label: 'Technique Comparison',       icon: '📊', href: 'pages/laser-cooling.html#comparison',   color: '#60a5fa' },
+    { label: 'Doppler Cooling Simulator',  icon: '🌡️', href: 'pages/cooling-simulator.html',          color: '#34d399', key: 'cooling-simulator' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -88,8 +89,8 @@ function renderNav({ active = '', root = '' } = {}) {
   `).join('');
 
   const coolingHTML = NAV.cooling.map(t => `
-    <a class="nav-drop-item" href="${root}${t.href}">
-      <span style="font-size:1rem;width:20px;text-align:center">${t.icon}</span>
+    <a class="nav-drop-item" href="${root}${t.href}" ${t.key && active===t.key ? 'aria-current="page"' : ''}>
+      <span class="nav-drop-dot" style="background:${t.color}"></span>
       ${t.label}
     </a>
   `).join('');
@@ -118,7 +119,7 @@ function renderNav({ active = '', root = '' } = {}) {
 
   const mobileCooling = NAV.cooling.map(t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
-      <span style="font-size:1.1rem">${t.icon}</span>
+      <span class="nav-drop-dot" style="background:${t.color};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
       ${t.label}
     </a>
   `).join('');
@@ -180,9 +181,11 @@ function renderNav({ active = '', root = '' } = {}) {
                 <path d="M4 6l4 4 4-4"/>
               </svg>
             </button>
-            <div class="nav-drop" role="menu" style="min-width:320px">
+            <div class="nav-drop" role="menu" style="min-width:520px">
               <div class="nav-drop-section">❄️ Cooling Techniques — ${NAV.cooling.length} topics</div>
-              ${coolingHTML}
+              <div style="display:grid;grid-template-columns:1fr 1fr;">
+                ${coolingHTML}
+              </div>
             </div>
           </div>
 
