@@ -736,6 +736,33 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
     <canvas id="rabiChart" height="230"></canvas>
   </div>
   <div style="font-family:var(--mono); font-size:.8rem; color:var(--text-muted); margin-top:.4rem;" id="rabiInfo"></div>
+
+  <!-- Live Rabi Bloch sphere -->
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;margin-top:1rem;">
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:var(--text-muted);margin-bottom:.4rem;text-align:center;">
+        Bloch vector precession
+      </div>
+      <canvas id="rabiBlochCanvas" width="220" height="240"
+        style="border-radius:8px;background:#020810;display:block;"></canvas>
+      <div id="rabiBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;
+           color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
+    </div>
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:var(--text-muted);margin-bottom:.4rem;">P₁(t) live</div>
+      <canvas id="rabiTraceCanvas" width="400" height="120"
+        style="width:100%;border-radius:8px;background:#020810;display:block;"></canvas>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;line-height:1.7;">
+        The Bloch vector rotates around the <em>effective field</em>
+        <strong style="color:#a78bfa;">n̂_eff = (Ω, 0, −Δ)/Ω'</strong> at angular frequency Ω'.
+        At resonance (Δ=0) the rotation axis is x̂ — the vector sweeps from |0⟩ to |1⟩ and back.
+        Off-resonance, the axis tilts toward ẑ and the cone shrinks.
+      </div>
+    </div>
+  </div>
+
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D-line data (Ω reference)</a>
     <a class="read-link" href="https://qutip.org/docs/4.7/guide/dynamics/dynamics-bloch-redfield.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: driven qubit dynamics</a>
@@ -2017,6 +2044,216 @@ function updateRabi() {
   document.getElementById('rabiInfo').textContent =
     `Ω' = √(Ω²+Δ²) = ${OmP.toFixed(2)} MHz,  amplitude = ${(A*100).toFixed(1)}%,  π-pulse t = ${(t_pi*1e3).toFixed(0)} ns`;
 }
+
+/* ═══════════════════════════════════════════════
+   RABI BLOCH SPHERE ANIMATION
+   ═══════════════════════════════════════════════ */
+(function() {
+  const bCvs = document.getElementById('rabiBlochCanvas');
+  const tCvs = document.getElementById('rabiTraceCanvas');
+  if (!bCvs || !tCvs) return;
+  const bCtx = bCvs.getContext('2d');
+  const tCtx = tCvs.getContext('2d');
+
+  // Bloch sphere geometry (same projection as main BS)
+  const R = 80, CX = 110, CY = 120;
+  const A = Math.PI/6, B = Math.PI/5;
+  function proj(x, y, z) {
+    const xr = x*Math.cos(A) - y*Math.sin(A);
+    const yr = x*Math.sin(A) + y*Math.cos(A);
+    return [CX + R*xr, CY - R*(z*Math.cos(B) + yr*Math.sin(B))];
+  }
+
+  // Animation state
+  let phase = 0;       // current rotation angle around effective axis
+  let Om = 1.0, De = 0.0;  // Ω, Δ in MHz
+  let traceData = [];  // P1 history for scrolling trace
+  const TRACE_LEN = 180;
+
+  // Sync from sliders
+  window.rabiAnimSync = function(om, de) { Om = om; De = de; };
+
+  // Patch updateRabi to also sync animation
+  const _origUpdateRabi = updateRabi;
+  window.updateRabi = function() {
+    _origUpdateRabi();
+    Om = parseFloat(document.getElementById('rabiOm').value);
+    De = parseFloat(document.getElementById('rabiD').value);
+  };
+
+  function drawBS(bx, by, bz, trail) {
+    const W = bCvs.width, H = bCvs.height;
+    bCtx.fillStyle = '#020810';
+    bCtx.fillRect(0, 0, W, H);
+
+    // Sphere
+    bCtx.beginPath(); bCtx.arc(CX, CY, R, 0, 2*Math.PI);
+    bCtx.strokeStyle = '#1e3a5f'; bCtx.lineWidth = 1.2; bCtx.stroke();
+
+    // Equator
+    bCtx.setLineDash([3,4]); bCtx.strokeStyle = '#1e3a5f'; bCtx.lineWidth = 0.8;
+    bCtx.beginPath();
+    for (let t=0; t<=2*Math.PI; t+=0.05) {
+      const [sx,sy] = proj(Math.cos(t), Math.sin(t), 0);
+      t===0 ? bCtx.moveTo(sx,sy) : bCtx.lineTo(sx,sy);
+    }
+    bCtx.stroke();
+    bCtx.setLineDash([]);
+
+    // Axes
+    [[[1,0,0],'x','#334155'],[[0,1,0],'y','#334155'],[[0,0,1],'z','#475569']].forEach(([v,n,c]) => {
+      const [sx,sy] = proj(v[0]*1.25,v[1]*1.25,v[2]*1.25);
+      const [ox,oy] = proj(-v[0]*.5,-v[1]*.5,-v[2]*.5);
+      bCtx.beginPath(); bCtx.moveTo(ox,oy); bCtx.lineTo(sx,sy);
+      bCtx.strokeStyle = c; bCtx.lineWidth = 1; bCtx.stroke();
+      bCtx.fillStyle = '#475569'; bCtx.font='10px Inter,sans-serif';
+      bCtx.fillText(n, sx+3, sy+4);
+    });
+    // |0⟩ |1⟩
+    const [z0x,z0y]=proj(0,0,1.18); bCtx.fillStyle='#64748b'; bCtx.font='11px Inter,sans-serif'; bCtx.fillText('|0⟩',z0x+3,z0y);
+    const [z1x,z1y]=proj(0,0,-1.18); bCtx.fillText('|1⟩',z1x+3,z1y);
+
+    // Effective axis (unit vector n̂_eff)
+    const OmP = Math.sqrt(Om*Om+De*De) || 1;
+    const nx = Om/OmP, nz = -De/OmP;
+    const [ax,ay] = proj(nx*1.15, 0, nz*1.15);
+    const [ax2,ay2] = proj(-nx*.5, 0, -nz*.5);
+    bCtx.beginPath(); bCtx.moveTo(ax2,ay2); bCtx.lineTo(ax,ay);
+    bCtx.strokeStyle = 'rgba(251,191,36,0.55)'; bCtx.lineWidth = 1.5;
+    bCtx.setLineDash([4,3]); bCtx.stroke(); bCtx.setLineDash([]);
+    bCtx.fillStyle='rgba(251,191,36,0.6)'; bCtx.font='9px Inter,sans-serif'; bCtx.fillText('n̂',ax+3,ay);
+
+    // Trail (cone arc)
+    if (trail.length > 1) {
+      for (let i=1; i<trail.length; i++) {
+        const [x0,y0]=proj(...trail[i-1]);
+        const [x1,y1]=proj(...trail[i]);
+        const alpha = (i/(trail.length-1))*0.6;
+        bCtx.beginPath(); bCtx.moveTo(x0,y0); bCtx.lineTo(x1,y1);
+        bCtx.strokeStyle=`rgba(167,139,250,${alpha.toFixed(2)})`; bCtx.lineWidth=2; bCtx.stroke();
+      }
+    }
+
+    // State vector
+    const [sx,sy]=proj(bx,by,bz);
+    bCtx.beginPath(); bCtx.moveTo(CX,CY); bCtx.lineTo(sx,sy);
+    bCtx.strokeStyle='#a78bfa'; bCtx.lineWidth=2.5; bCtx.stroke();
+    bCtx.beginPath(); bCtx.arc(sx,sy,5,0,2*Math.PI);
+    bCtx.fillStyle='#a78bfa'; bCtx.fill();
+  }
+
+  function drawTrace(P1) {
+    const W = tCvs.width || 400, H = tCvs.height || 120;
+    tCtx.fillStyle = '#020810';
+    tCtx.fillRect(0, 0, W, H);
+
+    // Axes
+    const pad = 20;
+    tCtx.strokeStyle = '#1e293b'; tCtx.lineWidth = 1;
+    tCtx.beginPath(); tCtx.moveTo(pad, pad); tCtx.lineTo(pad, H-pad); tCtx.lineTo(W-pad, H-pad); tCtx.stroke();
+    // 0 and 1 lines
+    tCtx.setLineDash([3,4]);
+    [0, 0.5, 1].forEach(v => {
+      const y = H - pad - v*(H-2*pad);
+      tCtx.beginPath(); tCtx.moveTo(pad,y); tCtx.lineTo(W-pad,y);
+      tCtx.strokeStyle = v===0.5 ? '#1e3a5f' : '#0f1e35'; tCtx.stroke();
+    });
+    tCtx.setLineDash([]);
+    tCtx.fillStyle='#334155'; tCtx.font='9px Inter,sans-serif';
+    tCtx.fillText('1', 4, H-pad-1*(H-2*pad)+4);
+    tCtx.fillText('0', 6, H-pad+4);
+
+    // P1 trace
+    if (P1.length > 1) {
+      tCtx.beginPath();
+      P1.forEach((p,i) => {
+        const x = pad + (i/(TRACE_LEN-1))*(W-2*pad);
+        const y = H - pad - p*(H-2*pad);
+        i===0 ? tCtx.moveTo(x,y) : tCtx.lineTo(x,y);
+      });
+      tCtx.strokeStyle='#a78bfa'; tCtx.lineWidth=2; tCtx.stroke();
+    }
+
+    // Dot at current end
+    if (P1.length) {
+      const p = P1[P1.length-1];
+      const x = pad + ((P1.length-1)/(TRACE_LEN-1))*(W-2*pad);
+      const y = H - pad - p*(H-2*pad);
+      tCtx.beginPath(); tCtx.arc(x,y,3.5,0,2*Math.PI);
+      tCtx.fillStyle='#a78bfa'; tCtx.fill();
+    }
+  }
+
+  // Pre-compute cone trail (last 1.5 turns)
+  const TRAIL_PTS = 60;
+  function getConeTrail(phase, Om, De) {
+    const OmP = Math.sqrt(Om*Om+De*De) || 1e-6;
+    const nx = Om/OmP, nz = -De/OmP;
+    // Rotation around n̂=(nx,0,nz) by angle φ, starting from |0⟩=(0,0,1)
+    function rotate(phi) {
+      // Rodrigues: v_rot = v cos φ + (n×v) sin φ + n(n·v)(1-cos φ)
+      const v = [0, 0, 1]; // |0⟩
+      const ndotv = nx*v[0] + nz*v[2];
+      const ncrossv = [0*v[2]-nz*v[1], nz*v[0]-nx*v[2], nx*v[1]-0*v[0]]; // n×v
+      return [
+        v[0]*Math.cos(phi) + ncrossv[0]*Math.sin(phi) + nx*ndotv*(1-Math.cos(phi)),
+        v[1]*Math.cos(phi) + ncrossv[1]*Math.sin(phi) + 0 *ndotv*(1-Math.cos(phi)),
+        v[2]*Math.cos(phi) + ncrossv[2]*Math.sin(phi) + nz*ndotv*(1-Math.cos(phi)),
+      ];
+    }
+    const trail = [];
+    for (let i=0; i<=TRAIL_PTS; i++) {
+      const phi = phase - (i/TRAIL_PTS)*2*Math.PI;
+      trail.push(rotate(phi));
+    }
+    return trail.reverse();
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const OmP = Math.sqrt(Om*Om+De*De) || 1e-6;
+    phase += OmP * 0.012; // speed in rad/frame (~60fps)
+
+    // Current Bloch vector
+    const nx = Om/OmP, nz = -De/OmP;
+    const ndotv = nz; // n·|0⟩ = nz
+    const ncrossv = [0, nz*0-nx*1, nx*0-0*0]; // simplified: n×|0⟩ = (0, nz, -nx) wait...
+    // Rodrigues rotation of |0⟩=(0,0,1) around n̂=(nx,0,nz)
+    const cp = Math.cos(phase), sp = Math.sin(phase);
+    const bx = (0)*cp    + (nz)*sp        + nx*nz*(1-cp);
+    const by = (0)*cp    + (-nx*1+nz*0)*sp+ 0*(1-cp);   // n×v|y = nz*vx-nx*vz = -nx
+    const bz = (1)*cp    + (-nz*0)*sp     + nz*nz*(1-cp) + (1-nz*nz)*0;
+    // Cleaner: direct Rodrigues
+    const v0=[0,0,1];
+    const ndv = nx*v0[0]+0*v0[1]+nz*v0[2]; // n·v
+    const ncv=[0*v0[2]-nz*v0[1], nz*v0[0]-nx*v0[2], nx*v0[1]-0*v0[0]];
+    const bvx=v0[0]*cp+ncv[0]*sp+nx*ndv*(1-cp);
+    const bvy=v0[1]*cp+ncv[1]*sp+0 *ndv*(1-cp);
+    const bvz=v0[2]*cp+ncv[2]*sp+nz*ndv*(1-cp);
+
+    // P1 = (1 - bz)/2
+    const P1cur = (1 - bvz)/2;
+    traceData.push(P1cur);
+    if (traceData.length > TRACE_LEN) traceData.shift();
+
+    const trail = getConeTrail(phase, Om, De);
+    drawBS(bvx, bvy, bvz, trail);
+    drawTrace(traceData);
+
+    const lbl = document.getElementById('rabiBlochLbl');
+    if (lbl) {
+      const OmPd = OmP.toFixed(2);
+      lbl.textContent = `Ω'=${OmPd} MHz  P₁=${(P1cur*100).toFixed(0)}%`;
+    }
+
+    // Resize trace canvas
+    const rect = tCvs.parentElement.getBoundingClientRect();
+    if (rect.width > 10 && Math.abs(tCvs.width - rect.width) > 5) {
+      tCvs.width = rect.width;
+    }
+  }
+  requestAnimationFrame(animate);
+})();
 
 /* ═══════════════════════════════════════════════
    DECOHERENCE

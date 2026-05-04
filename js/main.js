@@ -22,7 +22,6 @@ const NAV = {
     { key: 'laser-locking',        label: 'Laser Stabilization Guide',   icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'        },
     { key: 'zernike',              label: 'Wavefront & Aberration Viewer', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'             },
     { key: 'polarimetry',          label: 'Polarization State Analyzer', icon: '🔭',  color: '#e879f9', href: 'pages/polarimetry.html'          },
-    { key: 'clebsch-gordan',       label: 'Angular Momentum (CG)',       icon: '🔢',  color: '#f472b6', href: 'pages/clebsch-gordan.html'        },
   ],
   industry: [
     { key: 'qc-landscape',  label: 'Quantum Computing Industry',  icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html'  },
@@ -41,7 +40,6 @@ const NAV = {
     { label: 'Raman Sideband',             icon: '🔀', href: 'pages/laser-cooling.html#rsb',          color: '#60a5fa' },
     { label: 'Technique Comparison',       icon: '📊', href: 'pages/laser-cooling.html#comparison',   color: '#60a5fa' },
     { label: 'Doppler Cooling Simulator',  icon: '🌡️', href: 'pages/cooling-simulator.html',          color: '#34d399', key: 'cooling-simulator' },
-    { label: 'PDH Error Signal Explorer',  icon: '📡', href: 'pages/pdh-explorer.html',               color: '#f87171', key: 'pdh-explorer' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
