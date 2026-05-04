@@ -527,31 +527,24 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     </div>
   </section>
 
-  <!-- ── Detector animation ── -->
+  <!-- ── Fluorescence histogram animation ── -->
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
-      <span style="color:var(--c-img)">05 </span>Live Detector — Watch SNR Build
+      <span style="color:var(--c-img)">05 </span>Fluorescence Histogram — Single-Atom Detection
     </h2>
     <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:.75rem;">
-      Photons arrive at random on the signal pixel (center). Noise pixels flicker everywhere.
-      Longer exposure → signal accumulates, SNR rises. Driven by your current settings.
+      Each frame adds simulated imaging shots drawn from the real Poisson distributions for your settings.
+      <strong style="color:#34d399;">Green = atom present</strong> (N_sig photons) ·
+      <strong style="color:#94a3b8;">Gray = empty tweezer</strong> (N_bg background) ·
+      <strong style="color:#fbbf24;">dashed = optimal threshold θ</strong>.
+      Detection fidelity = 1 − P(miss) − P(false alarm).
     </p>
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start;">
-      <div>
-        <canvas id="detectorCanvas" width="180" height="180"
-          style="border-radius:8px;background:#020810;display:block;image-rendering:pixelated;"></canvas>
-        <div id="detLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);
-             margin-top:.35rem;text-align:center;">t = 0 ms</div>
-      </div>
-      <div>
-        <canvas id="detSnrTrace" width="400" height="120"
-          style="width:100%;height:120px;display:block;border-radius:8px;background:#020810;"></canvas>
-        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.4rem;line-height:1.7;">
-          <strong style="color:#34d399;">Green pixel</strong> = signal (atom).
-          <strong style="color:#f87171;">Red speckle</strong> = read noise + dark current.
-          The SNR = N_sig / √(N_sig + N_bg + N_dark + σ_read²) grows as √t for shot-noise-limited imaging.
-        </div>
-      </div>
+    <canvas id="fluorHistCanvas" width="600" height="210"
+      style="width:100%;border-radius:8px;background:#020810;display:block;"></canvas>
+    <div style="display:flex;gap:1.5rem;margin-top:.5rem;flex-wrap:wrap;">
+      <div id="histFidReadout" style="font-family:var(--font-mono);font-size:.82rem;color:#34d399;font-weight:700;"></div>
+      <div id="histShotCount"  style="font-family:var(--font-mono);font-size:.78rem;color:var(--text-muted);"></div>
+      <div id="histErrReadout" style="font-family:var(--font-mono);font-size:.78rem;color:#f87171;"></div>
     </div>
   </section>
 
@@ -1672,142 +1665,284 @@ compute();
 loadHistPreset('Rb87');
 initAccordions();
 
-/* ── DETECTOR ANIMATION ─────────────────────────────── */
+/* ── FLUORESCENCE HISTOGRAM ANIMATION ─────────────────── */
 (function() {
-  const bCvs = document.getElementById('detectorCanvas');
-  const tCvs = document.getElementById('detSnrTrace');
-  if (!bCvs || !tCvs) return;
-  const bCtx = bCvs.getContext('2d');
-  const tCtx = tCvs.getContext('2d');
+  const cv = document.getElementById('fluorHistCanvas');
+  if (!cv) return;
 
-  const GRID = 15; // pixels per side
-  const PX   = Math.floor(180 / GRID);
-  const CX   = Math.floor(GRID/2), CY = Math.floor(GRID/2);
+  // Physics params — updated from compute() via window.histAnimUpdate
+  let _N_sig   = 500;   // mean detected photons (atom present)
+  let _N_bg    = 20;    // mean background photons (atom absent)
+  let _sigRead = 2;     // effective read-noise std-dev (electrons)
 
-  // Accumulated counts per pixel
-  let counts = new Float32Array(GRID * GRID);
-  let simT   = 0;    // simulated time (ms)
-  let snrHistory = [];
-  const HIST_LEN = 120;
-
-  // Physics params (updated from compute())
-  let Rsig   = 500;  // signal photons / ms
-  let Rnoise = 2;    // background photons / ms per pixel
-  let sigRead = 2;   // read noise e-
-  let tExp   = 10;   // total exposure ms (just for scale)
-
-  window.detAnimUpdate = function(N_sig_per_ms, N_bg_per_ms, sigma_r, tExp_ms) {
-    Rsig = N_sig_per_ms; Rnoise = N_bg_per_ms; sigRead = sigma_r; tExp = tExp_ms;
+  window.histAnimUpdate = function(n_sig, n_bg, sig_r) {
+    const changed = (Math.abs(n_sig-_N_sig)>1 || Math.abs(n_bg-_N_bg)>0.5);
+    _N_sig = Math.max(0.1, n_sig);
+    _N_bg  = Math.max(0, n_bg);
+    _sigRead = Math.max(0, sig_r);
+    if (changed) reset();
   };
 
+  /* ── Poisson sampler (Knuth + normal approx) ── */
   function poisson(lam) {
-    // Knuth for small λ
-    if (lam < 30) {
-      let L = Math.exp(-lam), k = 0, p = 1;
-      do { k++; p *= Math.random(); } while (p > L);
-      return k - 1;
+    if (lam <= 0) return 0;
+    if (lam < 40) {
+      let L=Math.exp(-lam), k=0, p=1;
+      do { k++; p*=Math.random(); } while(p>L);
+      return k-1;
     }
-    return Math.round(lam + Math.sqrt(lam) * (Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random() - 3));
+    let x;
+    do { x=Math.round(lam+Math.sqrt(lam)*(Math.random()+Math.random()+Math.random()+Math.random()+Math.random()+Math.random()-3)); } while(x<0);
+    return x;
   }
 
-  function resetSim() { counts.fill(0); simT = 0; snrHistory = []; }
+  /* ── Sample one imaging shot ── */
+  function shot(meanPhotons) {
+    const photons = poisson(meanPhotons);
+    const read = Math.round(_sigRead * (Math.random()+Math.random()-1));
+    return Math.max(0, photons + read);
+  }
 
-  let frame = 0;
-  function draw() {
-    requestAnimationFrame(draw);
-    frame++;
+  /* ── Poisson CDF (cumulative distribution) ── */
+  function poissonCDF(k, lam) {
+    if (k < 0) return 0;
+    let s=0, term=Math.exp(-lam), lim=Math.min(k, 300);
+    for (let i=0; i<=lim; i++) { s+=term; term*=lam/(i+1); }
+    return Math.min(1, s);
+  }
 
-    // Advance 1 ms per frame (capped for visual clarity)
-    const dt = 0.5; // ms per frame
-    simT += dt;
-    if (simT > tExp * 1.5) resetSim();
+  /* ── Optimal threshold (maximise fidelity for equal priors) ── */
+  function optimalThreshold() {
+    const lo=_N_bg, hi=_N_sig+_sigRead*3;
+    if (_N_sig <= _N_bg+1) return Math.ceil(_N_bg+3);
+    // Analytic: θ = (N_sig - N_bg) / ln(N_sig/N_bg)
+    const th = (_N_sig - _N_bg) / Math.log(Math.max(_N_sig/_N_bg, 1.001));
+    return Math.max(Math.ceil(_N_bg)+1, Math.round(th));
+  }
 
-    // Add photons this frame
-    for (let y = 0; y < GRID; y++) {
-      for (let x = 0; x < GRID; x++) {
-        const isSignal = (x === CX && y === CY);
-        const lam = (isSignal ? Rsig : 0) * dt + Rnoise * dt;
-        counts[y*GRID+x] += poisson(lam);
+  /* ── Detection fidelity ── */
+  function calcFidelity(theta) {
+    const eff_sig = _N_sig + _sigRead*_sigRead;  // effective mean including read noise variance
+    const eff_bg  = _N_bg  + _sigRead*_sigRead;
+    const p_miss  = poissonCDF(theta-1, eff_sig); // P(count < θ | atom)
+    const p_false = 1 - poissonCDF(theta, eff_bg); // P(count > θ | no atom)
+    return { fid: Math.max(0, 1-p_miss-p_false), pmiss: p_miss, pfalse: p_false };
+  }
+
+  // Histogram state
+  let bins_atom  = null;  // Int32Array
+  let bins_empty = null;
+  let nBins = 0, binMax = 0, nShots = 0;
+  const MAX_SHOTS = 400;
+  let resetTimer = null;
+
+  function reset() {
+    nShots = 0;
+    const xMax = Math.max(_N_sig*2.5, _N_bg*5+30, 50);
+    nBins  = Math.min(80, Math.max(30, Math.round(xMax/3)));
+    binMax = xMax;
+    bins_atom  = new Int32Array(nBins);
+    bins_empty = new Int32Array(nBins);
+  }
+  reset();
+
+  let lastAdd = 0;
+  function frame(ts) {
+    requestAnimationFrame(frame);
+
+    // Responsive canvas width
+    const W = cv.clientWidth || 600, H = 210;
+    if (cv.width !== W) { cv.width = W; }
+
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle='#020810'; ctx.fillRect(0,0,W,H);
+
+    // Add shots
+    if (nShots < MAX_SHOTS && ts - lastAdd > 25) {
+      lastAdd = ts;
+      const nAdd = 5;
+      for (let i=0; i<nAdd; i++) {
+        const va = shot(_N_sig);
+        const ve = shot(_N_bg);
+        const ba = Math.min(nBins-1, Math.floor(va/binMax*nBins));
+        const be = Math.min(nBins-1, Math.floor(ve/binMax*nBins));
+        if (ba >= 0) bins_atom[ba]++;
+        if (be >= 0) bins_empty[be]++;
+      }
+      nShots += nAdd;
+    }
+    // Pause then reset
+    if (nShots >= MAX_SHOTS && ts - lastAdd > 2200) {
+      lastAdd = ts + 1e9;
+      setTimeout(reset, 50);
+      return;
+    }
+
+    const PAD_L=52, PAD_R=20, PAD_T=38, PAD_B=36;
+    const CW=W-PAD_L-PAD_R, CH=H-PAD_T-PAD_B;
+
+    // Max bar height
+    let maxCount=1;
+    for (let i=0;i<nBins;i++) maxCount=Math.max(maxCount, bins_atom[i], bins_empty[i]);
+    const bW = Math.max(1, CW/nBins - 0.8);
+    const toX = v => PAD_L + (v/binMax)*CW;
+    const toY = c => PAD_T + CH*(1 - Math.min(1, c/maxCount*0.92));
+
+    // Draw Poisson envelope curves (theoretical)
+    function drawEnvelope(mu, color) {
+      ctx.beginPath();
+      let first=true;
+      for (let i=0;i<nBins;i++) {
+        const x_mid = (i+0.5)*binMax/nBins;
+        // Poisson PMF × nShots × binW (normalized to histogram scale)
+        const k = Math.round(x_mid);
+        // Use Stirling/log-factorial for large k
+        let logPmf;
+        if (mu <= 0) { logPmf = -1e9; }
+        else {
+          // log P(k|mu) = k*log(mu) - mu - log(k!)
+          let logFact=0; for(let j=1;j<=k;j++) logFact+=Math.log(j);
+          logPmf = k*Math.log(mu) - mu - logFact;
+        }
+        const pmf = Math.exp(logPmf);
+        const y = PAD_T + CH*(1 - Math.min(1, pmf*nShots*0.92/maxCount));
+        const xp = toX(x_mid);
+        first ? ctx.moveTo(xp,y) : ctx.lineTo(xp,y);
+        first=false;
+      }
+      ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    // Draw bars (background first so green overlays)
+    for (let i=0;i<nBins;i++) {
+      const x = PAD_L + i*(CW/nBins);
+      if (bins_empty[i]>0) {
+        ctx.fillStyle='rgba(100,116,139,0.55)';
+        const barH = CH - (toY(bins_empty[i])-PAD_T);
+        ctx.fillRect(x, toY(bins_empty[i]), bW, barH);
+      }
+      if (bins_atom[i]>0) {
+        ctx.fillStyle='rgba(52,211,153,0.7)';
+        const barH = CH - (toY(bins_atom[i])-PAD_T);
+        ctx.fillRect(x, toY(bins_atom[i]), bW, barH);
       }
     }
 
-    // Render pixel grid
-    const maxSig = Math.max(...counts) || 1;
-    bCtx.fillStyle = '#020810';
-    bCtx.fillRect(0,0,180,180);
-    for (let y=0; y<GRID; y++) {
-      for (let x=0; x<GRID; x++) {
-        const c = counts[y*GRID+x];
-        const isSignal = (x===CX && y===CY);
-        const bright = Math.min(1, c / (maxSig * 0.7));
-        let r,g,b;
-        if (isSignal) { r=Math.round(50+bright*150); g=Math.round(180+bright*75); b=Math.round(50+bright*100); }
-        else { r=Math.round(bright*200); g=Math.round(bright*30); b=Math.round(bright*30); }
-        bCtx.fillStyle = `rgb(${r},${g},${b})`;
-        bCtx.fillRect(x*PX, y*PX, PX-1, PX-1);
+    // Theoretical envelopes
+    if (nShots > 30) {
+      drawEnvelope(_N_sig, 'rgba(52,211,153,0.6)');
+      drawEnvelope(_N_bg,  'rgba(148,163,184,0.5)');
+    }
+
+    // Threshold line
+    const theta = optimalThreshold();
+    const xTh = toX(theta);
+    ctx.beginPath(); ctx.moveTo(xTh, PAD_T-6); ctx.lineTo(xTh, H-PAD_B);
+    ctx.setLineDash([5,4]); ctx.strokeStyle='rgba(251,191,36,0.85)'; ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+    ctx.font='bold 10px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(251,191,36,0.9)';
+    ctx.fillText('θ='+theta, xTh, PAD_T-10);
+
+    // Shaded error regions
+    // False alarm: gray bars right of threshold
+    for (let i=0;i<nBins;i++) {
+      const x_mid=(i+0.5)*binMax/nBins;
+      if (x_mid > theta && bins_empty[i]>0) {
+        const x=PAD_L+i*(CW/nBins);
+        ctx.fillStyle='rgba(248,113,113,0.18)';
+        const barH=CH-(toY(bins_empty[i])-PAD_T);
+        ctx.fillRect(x,toY(bins_empty[i]),bW,barH);
+      }
+      // Miss: green bars left of threshold
+      if (x_mid < theta && bins_atom[i]>0) {
+        const x=PAD_L+i*(CW/nBins);
+        ctx.fillStyle='rgba(248,113,113,0.18)';
+        const barH=CH-(toY(bins_atom[i])-PAD_T);
+        ctx.fillRect(x,toY(bins_atom[i]),bW,barH);
       }
     }
-    // Highlight signal pixel
-    bCtx.strokeStyle='rgba(52,211,153,0.7)'; bCtx.lineWidth=1.5;
-    bCtx.strokeRect(CX*PX, CY*PX, PX-1, PX-1);
 
-    // Compute instantaneous SNR
-    const Nsig = counts[CY*GRID+CX];
-    let Nbg_sum = 0, N2 = 0;
-    for (let i=0; i<GRID*GRID; i++) { if(i!==CY*GRID+CX) { Nbg_sum+=counts[i]; N2++; } }
-    const Nbg_per_px = Nbg_sum / N2;
-    const snr = Nsig / Math.sqrt(Math.max(1, Nsig + Nbg_per_px + sigRead*sigRead));
-    snrHistory.push(snr);
-    if (snrHistory.length > HIST_LEN) snrHistory.shift();
+    // X axis + ticks
+    ctx.beginPath(); ctx.moveTo(PAD_L,H-PAD_B); ctx.lineTo(W-PAD_R,H-PAD_B);
+    ctx.strokeStyle='#1e293b'; ctx.lineWidth=1; ctx.stroke();
+    ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center'; ctx.fillStyle='#475569';
+    const tickStep = Math.ceil(binMax/6/10)*10 || 10;
+    for (let v=0; v<=binMax; v+=tickStep) {
+      const x=toX(v);
+      ctx.fillText(v, x, H-PAD_B+12);
+      ctx.beginPath(); ctx.moveTo(x,H-PAD_B); ctx.lineTo(x,H-PAD_B+3);
+      ctx.strokeStyle='#334155'; ctx.lineWidth=1; ctx.stroke();
+    }
+    ctx.fillStyle='#475569'; ctx.fillText('detected photons per shot', W/2, H-PAD_B+25);
 
-    // Update label
-    const lbl = document.getElementById('detLbl');
-    if (lbl) lbl.textContent = `t=${simT.toFixed(1)} ms  SNR=${snr.toFixed(1)}`;
+    // Y axis label
+    ctx.save(); ctx.translate(12,H/2); ctx.rotate(-Math.PI/2);
+    ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillStyle='#475569'; ctx.fillText('shots', 0, 0); ctx.restore();
 
-    // Draw SNR trace
-    const W = tCvs.width || 400, H = tCvs.height || 120;
-    tCtx.fillStyle='#020810'; tCtx.fillRect(0,0,W,H);
-    const maxSNR = Math.max(10, ...snrHistory);
-    // target lines
-    [10, 50].forEach((target, i) => {
-      const y = H - 8 - (target/maxSNR)*(H-16);
-      tCtx.setLineDash([3,4]);
-      tCtx.strokeStyle = i===0 ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)';
-      tCtx.lineWidth=1; tCtx.beginPath(); tCtx.moveTo(0,y); tCtx.lineTo(W,y); tCtx.stroke();
-      tCtx.fillStyle=tCtx.strokeStyle; tCtx.font='9px Inter,sans-serif';
-      tCtx.fillText(`SNR=${target}`, 3, y-2);
-    });
-    tCtx.setLineDash([]);
-    // SNR curve
-    if (snrHistory.length > 1) {
-      tCtx.beginPath();
-      snrHistory.forEach((s,i) => {
-        const x = (i/(HIST_LEN-1))*W;
-        const y = H - 8 - (s/maxSNR)*(H-16);
-        i===0 ? tCtx.moveTo(x,y) : tCtx.lineTo(x,y);
-      });
-      tCtx.strokeStyle='#34d399'; tCtx.lineWidth=2; tCtx.stroke();
+    // Y gridlines
+    for (const frac of [0.25,0.5,0.75,1.0]) {
+      const y = PAD_T + CH*(1-frac*0.92);
+      ctx.beginPath(); ctx.moveTo(PAD_L,y); ctx.lineTo(W-PAD_R,y);
+      ctx.strokeStyle='rgba(30,41,59,0.6)'; ctx.lineWidth=1; ctx.stroke();
     }
 
-    // Resize trace
-    const rect = tCvs.parentElement.getBoundingClientRect();
-    if (rect.width > 10 && Math.abs(tCvs.width - rect.width) > 5) tCvs.width = rect.width;
+    // Legend (top-left)
+    ctx.font='10px Inter,sans-serif'; ctx.textAlign='left';
+    ctx.fillStyle='rgba(52,211,153,0.9)'; ctx.fillText('▪ atom present  (μ='+_N_sig.toFixed(0)+')', PAD_L, PAD_T-20);
+    ctx.fillStyle='rgba(148,163,184,0.8)'; ctx.fillText('▪ no atom  (μ='+_N_bg.toFixed(0)+')', PAD_L+190, PAD_T-20);
+
+    // Live fidelity readout (top-right)
+    const {fid, pmiss, pfalse} = calcFidelity(theta);
+    const fidPct = (fid*100).toFixed(2)+'%';
+    const fidColor = fid>=0.999 ? '#4ade80' : fid>=0.99 ? '#fbbf24' : '#f87171';
+    ctx.font='bold 12px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillStyle=fidColor; ctx.fillText('F = '+fidPct, W-PAD_R, PAD_T-20);
+    ctx.font='9px JetBrains Mono,monospace';
+    ctx.fillStyle='rgba(248,113,113,0.8)';
+    ctx.fillText('P_miss='+pmiss.toExponential(1)+'  P_fa='+pfalse.toExponential(1), W-PAD_R, PAD_T-8);
+
+    // Status readouts below canvas
+    const fidEl = document.getElementById('histFidReadout');
+    const shotsEl = document.getElementById('histShotCount');
+    const errEl = document.getElementById('histErrReadout');
+    if (fidEl) fidEl.textContent = 'F_det = '+fidPct;
+    if (shotsEl) shotsEl.textContent = nShots+' shots  (resets at '+MAX_SHOTS+')';
+    if (errEl) errEl.textContent = 'P_miss='+pmiss.toExponential(2)+'  P_false_alarm='+pfalse.toExponential(2);
   }
 
-  // Patch compute to feed params
-  const _orig = window.compute;
-  window.compute = function() {
-    _orig && _orig();
+  requestAnimationFrame(frame);
+
+  // Parse fmtShort output ("1.5 k" → 1500, "234.5" → 234.5, "1.2 M" → 1.2e6)
+  function parseFmt(s) {
+    if (!s || s==='—') return NaN;
+    const v = parseFloat(s);
+    if (s.includes('M')) return v*1e6;
+    if (s.includes('k')) return v*1e3;
+    return v;
+  }
+
+  // Bootstrap: compute() already ran before this IIFE, so pull values from DOM now
+  setTimeout(() => {
     try {
-      const tExpMs = Math.pow(10, parseFloat(document.getElementById('tExpLbl').textContent)/10);
-      const N_sig = parseFloat(document.querySelector('#nsigVal, [id*="nsig"]')?.textContent) || 500;
+      const n_sig   = parseFmt(document.getElementById('nDetected').textContent) || 500;
       const sigma_r = parseFloat(document.getElementById('rnLbl').textContent) || 2;
-      const N_bg = parseFloat(document.getElementById('bgLbl').textContent) || 0;
-      detAnimUpdate(Math.max(1, N_sig / Math.max(1,tExpMs)), N_bg / Math.max(1,tExpMs) * 0.01, sigma_r, tExpMs);
-    } catch(e){}
-  };
+      const n_bg    = parseFloat(document.getElementById('bgLbl').textContent) || 20;
+      histAnimUpdate(n_sig, n_bg, sigma_r);
+    } catch(e) {}
+  }, 100);
 
-  requestAnimationFrame(draw);
+  // Patch compute() to feed updated N_sig, N_bg, sigma_read
+  const _origCompute = window.compute;
+  window.compute = function() {
+    _origCompute && _origCompute();
+    try {
+      const n_sig   = parseFmt(document.getElementById('nDetected').textContent) || 500;
+      const sigma_r = parseFloat(document.getElementById('rnLbl').textContent) || 2;
+      const n_bg    = parseFloat(document.getElementById('bgLbl').textContent) || 20;
+      histAnimUpdate(n_sig, n_bg, sigma_r);
+    } catch(e) {}
+  };
 })();
 </script>
 </body>
