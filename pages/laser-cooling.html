@@ -309,7 +309,7 @@
         <!-- Phonon ladder animation -->
         <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-top:1rem;">
           <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Phonon ladder — watch the atom cool step-by-step to |n=0⟩ via sideband absorption + spontaneous emission</div>
-          <canvas id="phononLadderCanvas" width="560" height="140" style="width:100%;border-radius:5px;"></canvas>
+          <canvas id="phononLadderCanvas" width="560" height="200" style="width:100%;border-radius:5px;"></canvas>
         </div>
 
         <hr class="section-divider">
@@ -1653,140 +1653,138 @@ if (typeof renderMathInElement === 'undefined') {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
-  // Layout constants
-  const gX = 110, eX = 330; // x-center of ground/excited ladders
-  const nLevels = 4;         // n = 0..4 on ground, 0..3 on excited
-  const lvlH = 38;           // vertical spacing per level
-  const baseY = H - 25;      // y of n=0
+  const gX = 105, eX = 320;
+  const N_G = 5;  // ground levels 0..4
+  const N_E = 4;  // excited levels 0..3
+  const lvlH = 34, baseY = H - 22;
+  const lvlHalf = 52;  // half-width of level lines
 
   function levelY(n) { return baseY - n * lvlH; }
 
-  // Animation state machine
-  // States: 'drive' (laser arrow g→e), 'emit' (spont emission e→g), 'pause'
-  let currentN = 3;  // start from n=3
+  const DRIVE_DUR = 850, EMIT_DUR = 750, PAUSE_DUR = 600, RESET_DUR = 900;
+  let currentN = 4;
   let state = 'drive';
-  let progress = 0;  // 0..1 within current state
-  const DRIVE_DUR  = 900;
-  const EMIT_DUR   = 700;
-  const PAUSE_DUR  = 400;
-  let lastT = null;
   let stateStart = 0;
+  let lastT = 0;
 
-  function arrowHead(ctx, x1,y1,x2,y2,color,size) {
-    const angle = Math.atan2(y2-y1, x2-x1);
-    ctx.save();
-    ctx.translate(x2,y2);
-    ctx.rotate(angle);
-    ctx.beginPath();
-    ctx.moveTo(0,0); ctx.lineTo(-size,-size/2); ctx.lineTo(-size,size/2); ctx.closePath();
-    ctx.fillStyle = color; ctx.fill();
-    ctx.restore();
+  function arrowHead(ctx, x1,y1,x2,y2,col,sz) {
+    const a = Math.atan2(y2-y1,x2-x1);
+    ctx.save(); ctx.translate(x2,y2); ctx.rotate(a);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-sz,-sz/2); ctx.lineTo(-sz,sz/2);
+    ctx.closePath(); ctx.fillStyle=col; ctx.fill(); ctx.restore();
+  }
+
+  function atom(ctx, x, y, col, r=9) {
+    ctx.shadowColor=col; ctx.shadowBlur=12;
+    ctx.beginPath(); ctx.arc(x,y,r,0,2*Math.PI);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.beginPath(); ctx.arc(x,y,r,0,2*Math.PI);
+    ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1.5; ctx.stroke();
   }
 
   function drawFrame(ts) {
     if (!lastT) { lastT = ts; stateStart = ts; }
+    lastT = ts;
     const elapsed = ts - stateStart;
+    const dur = state==='drive'?DRIVE_DUR : state==='emit'?EMIT_DUR : state==='pause'?PAUSE_DUR : RESET_DUR;
+    let prog = Math.min(elapsed/dur, 1);
 
-    // Advance state machine
-    let dur = state==='drive'?DRIVE_DUR : state==='emit'?EMIT_DUR : PAUSE_DUR;
-    progress = Math.min(elapsed / dur, 1);
-
-    if (progress >= 1) {
-      if (state === 'drive') {
-        state = 'emit'; stateStart = ts; progress = 0;
-      } else if (state === 'emit') {
-        currentN = Math.max(0, currentN - 1);
-        if (currentN === 0) {
-          state = 'pause'; stateStart = ts; progress = 0;
-        } else {
-          state = 'drive'; stateStart = ts; progress = 0;
-        }
-      } else {
-        // reset
-        currentN = 3; state = 'drive'; stateStart = ts; progress = 0;
-      }
+    if (prog >= 1) {
+      if (state==='drive')  { state='emit';  stateStart=ts; prog=0; }
+      else if (state==='emit') {
+        currentN = Math.max(0, currentN-1);
+        state = currentN===0 ? 'pause' : 'drive';
+        stateStart=ts; prog=0;
+      } else if (state==='pause') { state='reset'; stateStart=ts; prog=0; }
+      else { currentN=4; state='drive'; stateStart=ts; prog=0; }
     }
 
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#060e1c';
-    ctx.fillRect(0, 0, W, H);
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
 
-    // Column labels
-    ctx.font = '11px Inter, sans-serif';
-    ctx.fillStyle = '#64748b'; ctx.textAlign = 'center';
-    ctx.fillText('|g, n⟩  Ground', gX, 16);
-    ctx.fillText('|e, n⟩  Excited', eX, 16);
+    // ── Column headers ─────────────────────────────────────────
+    ctx.font='11px Inter,sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle='#38bdf8'; ctx.fillText('|g, n⟩  ground', gX, 14);
+    ctx.fillStyle='#f472b6'; ctx.fillText('|e, n⟩  excited', eX, 14);
 
-    // Draw energy levels
-    for (let n = 0; n <= nLevels; n++) {
-      const y = levelY(n);
-      const isGround = n === 0;
-      // Ground state levels
-      ctx.beginPath(); ctx.moveTo(gX-55, y); ctx.lineTo(gX+55, y);
-      ctx.strokeStyle = isGround ? '#4ade80' : '#38bdf8';
-      ctx.lineWidth = isGround ? 2.5 : 1.8;
-      ctx.stroke();
-      // n label
-      ctx.font = '9px JetBrains Mono, monospace';
-      ctx.fillStyle = isGround ? '#4ade80' : '#64748b'; ctx.textAlign = 'right';
-      ctx.fillText('n='+n, gX-60, y+3);
-      if (isGround) { ctx.textAlign='center'; ctx.fillStyle='#4ade80'; ctx.fillText('← dark', gX, y+14); }
-
-      // Excited state levels (n=0..3 only)
-      if (n <= nLevels - 1) {
-        ctx.beginPath(); ctx.moveTo(eX-55, y); ctx.lineTo(eX+55, y);
-        ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 1.8; ctx.stroke();
-        ctx.font = '9px JetBrains Mono, monospace';
-        ctx.fillStyle = '#64748b'; ctx.textAlign = 'left';
-        ctx.fillText('n='+n, eX+60, y+3);
+    // ── Energy levels ───────────────────────────────────────────
+    for (let i=0; i<=N_G; i++) {
+      const y = levelY(i);
+      ctx.beginPath(); ctx.moveTo(gX-lvlHalf, y); ctx.lineTo(gX+lvlHalf, y);
+      const isGS = i===0;
+      ctx.strokeStyle = isGS ? '#4ade80' : (i===currentN && (state==='drive'||state==='pause'||state==='reset') ? '#38bdf8' : 'rgba(56,189,248,0.4)');
+      ctx.lineWidth = isGS ? 2.5 : 1.5; ctx.stroke();
+      ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
+      ctx.fillStyle= isGS ? '#4ade80' : '#475569';
+      ctx.fillText('n='+i, gX-lvlHalf-5, y+4);
+      if (isGS) {
+        ctx.font='8px Inter,sans-serif'; ctx.textAlign='center';
+        ctx.fillStyle='rgba(74,222,128,0.55)'; ctx.fillText('dark ✓', gX, y+13);
       }
     }
+    for (let i=0; i<N_E; i++) {
+      const y = levelY(i);
+      const active = state==='emit' && i===currentN-1;
+      ctx.beginPath(); ctx.moveTo(eX-lvlHalf, y); ctx.lineTo(eX+lvlHalf, y);
+      ctx.strokeStyle = active ? '#f472b6' : 'rgba(244,114,182,0.35)';
+      ctx.lineWidth = active ? 2 : 1.3; ctx.stroke();
+      ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left';
+      ctx.fillStyle='#475569'; ctx.fillText('n='+i, eX+lvlHalf+5, y+4);
+    }
 
-    // Population dot position
-    const gY = levelY(currentN);
-    const eY = levelY(Math.max(0, currentN - 1));
+    // ── Harmonic potential label ────────────────────────────────
+    ctx.save(); ctx.translate(9, H/2+10); ctx.rotate(-Math.PI/2);
+    ctx.font='9px Inter,sans-serif'; ctx.fillStyle='rgba(71,85,105,0.6)';
+    ctx.textAlign='center'; ctx.fillText('E = (n+½)ℏν', 0, 0); ctx.restore();
 
-    if (state === 'drive') {
-      // Draw laser arrow (RSB): ground n → excited n-1
-      const px = gX + 55 + (eX - 55 - gX - 55) * progress;
-      const py = gY + (eY - gY) * progress;
-      // Arrow line
-      ctx.beginPath(); ctx.moveTo(gX+55, gY);
-      ctx.lineTo(px, py);
-      ctx.strokeStyle = '#f97316'; ctx.lineWidth = 2; ctx.setLineDash([]);
-      ctx.stroke();
-      arrowHead(ctx, gX+55, gY, px, py, '#f97316', 7);
-      // Atom on ground level
-      ctx.beginPath(); ctx.arc(gX, gY, 8, 0, 2*Math.PI);
-      ctx.fillStyle = '#22d3ee'; ctx.fill();
-      // RSB label
-      ctx.font = '10px Inter, sans-serif';
-      ctx.fillStyle = '#f97316'; ctx.textAlign = 'center';
-      ctx.fillText('RSB laser ω₀−ν', (gX+55+eX-55)/2, gY < eY ? eY+18 : gY+18);
-    } else if (state === 'emit') {
-      // Draw spontaneous emission dashed arrow: excited n-1 → ground n-1
-      const destY = levelY(currentN - 1);
-      const px = eX - 55 - (eX-55 - gX - 55) * progress;
-      const py = eY + (destY - eY) * progress;
-      ctx.beginPath(); ctx.moveTo(eX-55, eY);
-      ctx.lineTo(px, py);
-      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2;
-      ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
-      arrowHead(ctx, eX-55, eY, px, py, '#4ade80', 7);
-      // Atom on excited level
-      ctx.beginPath(); ctx.arc(eX, eY, 8, 0, 2*Math.PI);
-      ctx.fillStyle = '#f472b6'; ctx.fill();
-      ctx.font = '10px Inter, sans-serif';
-      ctx.fillStyle = '#4ade80'; ctx.textAlign = 'center';
-      ctx.fillText('spont. emission', (gX+55+eX-55)/2, destY - 8);
+    const gY  = levelY(currentN);
+    const eY  = levelY(Math.max(0,currentN-1));
+    const mid = (gX+lvlHalf + eX-lvlHalf) / 2;
+
+    if (state==='drive') {
+      // Smooth arrow growing from ground level to excited
+      const ease = 1-Math.pow(1-prog,2);
+      const ax = gX+lvlHalf + (eX-lvlHalf-gX-lvlHalf)*ease;
+      const ay = gY + (eY-gY)*ease;
+      ctx.beginPath(); ctx.moveTo(gX+lvlHalf, gY); ctx.lineTo(ax, ay);
+      ctx.strokeStyle='#f97316'; ctx.lineWidth=2.2; ctx.setLineDash([]); ctx.stroke();
+      if (prog>0.05) arrowHead(ctx, gX+lvlHalf, gY, ax, ay, '#f97316', 7);
+      atom(ctx, gX, gY, '#22d3ee');
+      ctx.font='10px Inter,sans-serif'; ctx.textAlign='center';
+      ctx.fillStyle='#f97316'; ctx.fillText('RSB  ω_L = ω₀ − ν', mid, Math.min(gY,eY)-10);
+    } else if (state==='emit') {
+      // Arrow returning from excited n-1 to ground n-1
+      const destY = levelY(currentN-1);
+      const ease = 1-Math.pow(1-prog,2);
+      const ax = eX-lvlHalf - (eX-lvlHalf-gX-lvlHalf)*ease;
+      const ay = eY + (destY-eY)*ease;
+      ctx.beginPath(); ctx.moveTo(eX-lvlHalf, eY); ctx.lineTo(ax, ay);
+      ctx.strokeStyle='#4ade80'; ctx.lineWidth=2.2;
+      ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+      if (prog>0.05) arrowHead(ctx, eX-lvlHalf, eY, ax, ay, '#4ade80', 7);
+      atom(ctx, eX, eY, '#f472b6');
+      ctx.font='10px Inter,sans-serif'; ctx.textAlign='center';
+      ctx.fillStyle='#4ade80'; ctx.fillText('spont. emission  (random ℏk)', mid, destY-10);
+    } else if (state==='pause') {
+      // Ground state — pulsing
+      const pulse = 0.7 + 0.3*Math.sin(prog*12);
+      atom(ctx, gX, levelY(0), `rgba(74,222,128,${pulse})`, 11);
+      ctx.font='bold 11px JetBrains Mono,monospace'; ctx.textAlign='center';
+      ctx.fillStyle='#4ade80';
+      ctx.fillText('|g, n=0⟩  ⟨n⟩ ≈ 0', mid, levelY(0)+4);
+      ctx.font='9px Inter,sans-serif'; ctx.fillStyle='rgba(74,222,128,0.6)';
+      ctx.fillText('ground state — no RSB transition exists', mid, levelY(0)+18);
     } else {
-      // Ground state reached, glow
-      ctx.beginPath(); ctx.arc(gX, levelY(0), 10, 0, 2*Math.PI);
-      ctx.fillStyle = '#4ade80'; ctx.fill();
-      ctx.font = '11px Inter, sans-serif';
-      ctx.fillStyle = '#4ade80'; ctx.textAlign = 'center';
-      ctx.fillText('Ground state  ⟨n⟩ = 0', gX + 80, levelY(0) + 4);
+      // reset: fade atom up
+      const ey = levelY(0) - prog*lvlH*4;
+      ctx.globalAlpha=1-prog*0.7;
+      atom(ctx, gX, ey, '#4ade80', 9);
+      ctx.globalAlpha=1;
     }
+
+    // n readout
+    ctx.font='bold 12px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillStyle='#38bdf8'; ctx.fillText('⟨n⟩ = '+currentN, W-8, 14);
 
     requestAnimationFrame(drawFrame);
   }
@@ -1803,131 +1801,138 @@ if (typeof renderMathInElement === 'undefined') {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
-  const AMP   = 55;         // potential amplitude in px
-  const baseY = H - 30;     // zero-energy line y
-  const k     = (2*Math.PI) / (W * 0.38);  // ~2.6 periods across canvas
-  const SPEED = 0.00014;    // animation speed
-
-  // V_up = A*sin²(kx),  V_down = A*cos²(kx) = A*(1-sin²(kx))
-  function Vup(x)   { return AMP * Math.sin(k*x) ** 2; }
-  function Vdown(x) { return AMP * Math.cos(k*x) ** 2; }
-
-  // Peaks of V_up: kx = π/2, 3π/2,... → x = π/(2k), 3π/(2k)
-  // Peaks of V_down: kx = 0, π, ... → x = 0, π/k
-
-  const xOffset = 30;  // start x
-
-  // Animation phases: atom traverses one full Sisyphus cycle
-  // Phase A [0..0.45]: on V_up curve, climbing from valley (sin²=0) to peak (sin²=1)
-  //   valley1 = xOffset (sin(k*xOffset)≈0 if we shift)
-  //   peak1   = xOffset + π/(2k)
-  // Phase B [0.45..0.52]: pump event at peak1 (flash + drop to V_down minimum)
-  // Phase C [0.52..0.97]: on V_down curve, climbing from valley to peak
-  //   valley2 = peak1 (V_down has minimum where V_up has maximum)
-  //   peak2   = peak1 + π/(2k) = xOffset + π/k
-  // Phase D [0.97..1.0]: pump event at peak2
-
-  // Let's compute:
-  const period = (2*Math.PI)/k;
-  const halfPeriod = period/2;
-  const quarterPeriod = period/4;
+  const AMP   = 52;
+  const baseY = H - 28;
+  const k     = (2*Math.PI) / (W * 0.40);
+  const xOffset = 25;
+  const period  = (2*Math.PI)/k;
+  const qtrP    = period/4;
 
   const valley1 = xOffset;
-  const peak1   = xOffset + quarterPeriod;
-  const valley2 = peak1;            // V_down minimum is at same x as V_up maximum
-  const peak2   = peak1 + quarterPeriod;
+  const peak1   = xOffset + qtrP;
+  const valley2 = peak1;
+  const peak2   = peak1 + qtrP;
 
-  let t = 0;
+  // Two phases: climb A (valley1→peak1), climb B (valley2→peak2)
+  // Pump event duration: 0.12 of cycle, shown with flash
+  const CYCLE_MS = 3400;  // total cycle duration (slower = more readable)
+
+  function Vup(x)   { return AMP * Math.sin(k*x)**2; }
+  function Vdown(x) { return AMP * Math.cos(k*x)**2; }
+
+  // Energy dissipated counter
+  let pumpCount = 0;
+  let pumpFlash = 0; // 0..1, decays each frame
+  let lastPump = -1; // which pump event fired last cycle
+  let lastTs = 0;
 
   function drawSisyphus(ts) {
-    t = (ts * SPEED) % 1;
+    const dt = (ts - lastTs) / 1000;
+    lastTs = ts;
+    if (pumpFlash > 0) pumpFlash = Math.max(0, pumpFlash - dt*2.5);
 
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle = '#060e1c'; ctx.fillRect(0,0,W,H);
+    const t = (ts / CYCLE_MS) % 1;  // 0..1
 
-    // Draw zero-energy baseline
-    ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY);
-    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1; ctx.stroke();
-    ctx.font = '9px Inter,sans-serif'; ctx.fillStyle = '#334155';
-    ctx.textAlign = 'left'; ctx.fillText('zero energy', W-90, baseY-3);
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
 
-    // Draw V_up curve (blue, spin ↑)
+    // ── Potential curves ─────────────────────────────────────────
+    // V_up (blue, spin ↑)
     ctx.beginPath();
-    for (let px = 0; px <= W; px++) {
-      const y = baseY - Vup(px);
-      px === 0 ? ctx.moveTo(px,y) : ctx.lineTo(px,y);
-    }
-    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
-
-    // Draw V_down curve (orange, spin ↓)
+    for (let x=0; x<=W; x++) { const y=baseY-Vup(x); x===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+    ctx.strokeStyle='#38bdf8'; ctx.lineWidth=2; ctx.stroke();
+    // V_down (orange, spin ↓)
     ctx.beginPath();
-    for (let px = 0; px <= W; px++) {
-      const y = baseY - Vdown(px);
-      px === 0 ? ctx.moveTo(px,y) : ctx.lineTo(px,y);
-    }
-    ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 2; ctx.stroke();
+    for (let x=0; x<=W; x++) { const y=baseY-Vdown(x); x===0?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+    ctx.strokeStyle='#fb923c'; ctx.lineWidth=2; ctx.stroke();
+
+    // Baseline
+    ctx.beginPath(); ctx.moveTo(0,baseY); ctx.lineTo(W,baseY);
+    ctx.strokeStyle='rgba(30,41,59,0.7)'; ctx.lineWidth=1; ctx.stroke();
 
     // Labels
-    ctx.font = '11px Inter,sans-serif';
-    ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'left';
-    ctx.fillText('V↑ = U₀ sin²(kx)', 6, 16);
-    ctx.fillStyle = '#fb923c';
-    ctx.fillText('V↓ = U₀ cos²(kx)', 6, 30);
+    ctx.font='11px Inter,sans-serif'; ctx.textAlign='left';
+    ctx.fillStyle='#38bdf8'; ctx.fillText('V↑ = U₀ sin²(kx)  (spin ↑)', 6, 16);
+    ctx.fillStyle='#fb923c'; ctx.fillText('V↓ = U₀ cos²(kx)  (spin ↓)', 6, 30);
 
-    // Determine atom position
-    let atomX, atomY, onCurve;
-    let isPump = false;
-    let pumpEnergy = 0;
+    // ── Atom position ─────────────────────────────────────────────
+    let atomX, atomY, onCurve, isPump=false, pumpSide=0;
 
-    if (t < 0.45) {
-      const frac = t / 0.45;
-      atomX = valley1 + (peak1 - valley1) * frac;
-      atomY = baseY - Vup(atomX);
-      onCurve = 'up';
+    // Phase 0.00–0.43: climb V_up valley1→peak1
+    // Phase 0.43–0.53: pump at peak1 (drop to V_down)
+    // Phase 0.53–0.95: climb V_down valley2→peak2
+    // Phase 0.95–1.00: pump at peak2 (drop to V_up)
+    if (t < 0.43) {
+      const ease = 1-Math.pow(1-t/0.43,2);
+      atomX = valley1 + (peak1-valley1)*ease;
+      atomY = baseY - Vup(atomX); onCurve='up';
     } else if (t < 0.53) {
-      atomX = peak1;
-      atomY = baseY - Vup(peak1);
-      onCurve = 'up';
-      isPump = true;
-      pumpEnergy = Vup(peak1) - Vdown(peak1);  // energy drop
-    } else if (t < 0.97) {
-      const frac = (t - 0.53) / 0.44;
-      atomX = valley2 + (peak2 - valley2) * frac;
-      atomY = baseY - Vdown(atomX);
-      onCurve = 'down';
+      atomX = peak1; atomY = baseY-Vup(peak1); onCurve='up';
+      isPump=true; pumpSide=-1;
+      if (lastPump!==1) { pumpCount++; pumpFlash=1; lastPump=1; }
+    } else if (t < 0.95) {
+      const ease = 1-Math.pow(1-(t-0.53)/0.42,2);
+      atomX = valley2 + (peak2-valley2)*ease;
+      atomY = baseY - Vdown(atomX); onCurve='down';
     } else {
-      atomX = peak2;
-      atomY = baseY - Vdown(peak2);
-      onCurve = 'down';
-      isPump = true;
-      pumpEnergy = Vdown(peak2) - Vup(peak2);
+      atomX = peak2; atomY = baseY-Vdown(peak2); onCurve='down';
+      isPump=true; pumpSide=1;
+      if (lastPump!==2) { pumpCount++; pumpFlash=1; lastPump=2; }
     }
+    if (t < 0.1) lastPump=-1; // reset between cycles
 
-    // Draw pump event
+    // ── Pump event visualisation ──────────────────────────────────
     if (isPump) {
-      const targetY = (onCurve === 'up') ? (baseY - Vdown(atomX)) : (baseY - Vup(atomX));
-      // Arrow
-      ctx.beginPath(); ctx.moveTo(atomX, atomY); ctx.lineTo(atomX, targetY);
-      ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2;
+      const targetY = (onCurve==='up') ? (baseY-Vdown(atomX)) : (baseY-Vup(atomX));
+      const f = pumpFlash;
+      // dashed arrow
+      ctx.beginPath(); ctx.moveTo(atomX,atomY); ctx.lineTo(atomX,targetY);
+      ctx.strokeStyle=`rgba(74,222,128,${0.5+f*0.5})`; ctx.lineWidth=2;
       ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
-      // Arrowhead
-      ctx.beginPath(); ctx.moveTo(atomX, targetY);
-      ctx.lineTo(atomX-5, targetY - (onCurve==='up' ? -8 : 8));
-      ctx.lineTo(atomX+5, targetY - (onCurve==='up' ? -8 : 8));
-      ctx.closePath(); ctx.fillStyle = '#4ade80'; ctx.fill();
-      // Label
-      ctx.font = '10px Inter,sans-serif'; ctx.fillStyle = '#4ade80';
-      ctx.textAlign = 'center';
-      const midY = (atomY + targetY) / 2;
-      ctx.fillText('γ₊ pump', atomX + 26, midY);
-      ctx.fillText('−ΔE', atomX + 26, midY + 12);
+      // arrowhead
+      const dir = targetY > atomY ? 1 : -1;
+      ctx.beginPath();
+      ctx.moveTo(atomX,targetY);
+      ctx.lineTo(atomX-5, targetY-dir*9); ctx.lineTo(atomX+5, targetY-dir*9);
+      ctx.closePath(); ctx.fillStyle=`rgba(74,222,128,${0.7+f*0.3})`; ctx.fill();
+
+      // Flash burst at atom
+      if (f > 0.1) {
+        for (let a=0; a<8; a++) {
+          const ang = (a/8)*2*Math.PI;
+          const r = 18*f;
+          ctx.beginPath();
+          ctx.moveTo(atomX+Math.cos(ang)*9, atomY+Math.sin(ang)*9);
+          ctx.lineTo(atomX+Math.cos(ang)*r, atomY+Math.sin(ang)*r);
+          ctx.strokeStyle=`rgba(168,85,247,${f*0.8})`; ctx.lineWidth=1.5; ctx.stroke();
+        }
+      }
+
+      const midY = (atomY+targetY)/2;
+      ctx.font='10px Inter,sans-serif'; ctx.textAlign='center';
+      ctx.fillStyle=`rgba(74,222,128,${0.7+f*0.3})`;
+      ctx.fillText('optical pump  γ₊', atomX+38, midY);
+      ctx.fillStyle=`rgba(168,85,247,${0.5+f*0.5})`;
+      ctx.fillText('−U₀ dissipated', atomX+38, midY+13);
     }
 
-    // Draw atom
-    const atomColor = onCurve === 'up' ? '#38bdf8' : '#fb923c';
-    ctx.beginPath(); ctx.arc(atomX, atomY, 8, 0, 2*Math.PI);
-    ctx.fillStyle = atomColor; ctx.fill();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.stroke();
+    // ── Atom dot ──────────────────────────────────────────────────
+    const atomColor = onCurve==='up' ? '#38bdf8' : '#fb923c';
+    ctx.shadowColor=atomColor; ctx.shadowBlur=10;
+    ctx.beginPath(); ctx.arc(atomX,atomY,8,0,2*Math.PI);
+    ctx.fillStyle=atomColor; ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.beginPath(); ctx.arc(atomX,atomY,8,0,2*Math.PI);
+    ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
+    // spin label on atom
+    ctx.font='bold 10px Inter,sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle='#fff'; ctx.fillText(onCurve==='up'?'↑':'↓', atomX, atomY+3.5);
+
+    // ── Energy counter ────────────────────────────────────────────
+    ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillStyle='rgba(100,116,139,0.8)';
+    ctx.fillText('pump events: '+pumpCount, W-6, H-8);
+    ctx.fillStyle='rgba(74,222,128,0.8)';
+    ctx.fillText('energy dissipated: '+pumpCount+'·U₀', W-6, H-21);
 
     requestAnimationFrame(drawSisyphus);
   }
@@ -1938,111 +1943,179 @@ if (typeof renderMathInElement === 'undefined') {
 (function() {
   const cv = document.getElementById('phononLadderCanvas');
   if (!cv) return;
-  const W = cv.clientWidth || 560, H = 140;
-  cv.width = W; cv.height = H;
+  const H = 200;
+  cv.height = H;
   const ctx = cv.getContext('2d');
 
-  const N_LEVELS = 7; // |n=0> to |n=6>
-  const PAD_L = 70, PAD_R = 40, PAD_T = 12, PAD_B = 20;
-  const LEVEL_H = (H - PAD_T - PAD_B) / N_LEVELS;
-  const CHART_W = W - PAD_L - PAD_R;
+  /*
+   * Improved phonon ladder — 3-phase cycle per level:
+   *   ABSORB  (0.8s): RSB photon arrow travels from top → atom; atom flashes excited color
+   *   DROP    (0.4s): atom smoothly slides down one level (interpolated Y position)
+   *   EMIT    (0.5s): spontaneous emission rays fan out; phonon count decrements
+   *   WAIT    (0.5s): brief pause showing new state
+   * When n=0 is reached: "ground state" banner for 1.5s, then reset to n=6
+   */
 
-  // Animation state
-  let nState = N_LEVELS - 1; // start at n=6
-  let animPhase = 'idle'; // 'cooling', 'emit', 'idle'
-  let phaseT = 0;
-  let targetN = nState - 1;
+  const N = 7;  // levels n=0..6
+  const PAD_L=75, PAD_R=50, PAD_T=18, PAD_B=14;
+  const COLORS = ['#4ade80','#a3e635','#fbbf24','#fb923c','#f87171','#c084fc','#a78bfa'];
 
-  const COLORS = ['#4ade80','#a3e635','#fbbf24','#fb923c','#f87171','#f472b6','#c084fc'];
+  let n    = N-1;   // current phonon number
+  let phase = 'wait';
+  let phT  = 0;
+  let atomYfrom = 0, atomYto = 0;
+  let lastTs = null;
 
-  function levelY(n) {
-    // n=0 at bottom, n=N-1 at top
-    return PAD_T + (N_LEVELS - 1 - n) * LEVEL_H + LEVEL_H * 0.55;
+  function lvlY(n) {
+    const usable = H - PAD_T - PAD_B;
+    return PAD_T + (N-1-n) * (usable/(N-1));
   }
 
-  let lastT = null;
-  function frame(ts) {
-    if (!lastT) lastT = ts;
-    const dt = Math.min((ts - lastT)/1000, 0.05);
-    lastT = ts;
-
-    phaseT += dt;
-    // State machine
-    if (animPhase === 'idle' && phaseT > 1.2) {
-      if (nState > 0) {
-        animPhase = 'cooling'; phaseT = 0; targetN = nState - 1;
-      } else {
-        // Reset: jump back to n=6 with a flash
-        nState = N_LEVELS - 1; animPhase = 'idle'; phaseT = 0;
-      }
-    } else if (animPhase === 'cooling' && phaseT > 0.6) {
-      nState = targetN; animPhase = 'emit'; phaseT = 0;
-    } else if (animPhase === 'emit' && phaseT > 0.5) {
-      animPhase = 'idle'; phaseT = 0;
+  function startCycle() {
+    if (n > 0) {
+      phase = 'absorb'; phT = 0;
+      atomYfrom = lvlY(n); atomYto = lvlY(n);
+    } else {
+      phase = 'ground'; phT = 0;
     }
+  }
 
+  // Initialise
+  atomYfrom = atomYto = lvlY(n);
+  phase = 'wait'; phT = 0;
+
+  function frame(ts) {
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min((ts-lastTs)/1000, 0.05);
+    lastTs = ts;
+    phT += dt;
+
+    // State transitions
+    if (phase==='wait'   && phT > 0.6)  startCycle();
+    if (phase==='absorb' && phT > 0.8)  { phase='drop'; phT=0; atomYfrom=lvlY(n); atomYto=lvlY(n-1); }
+    if (phase==='drop'   && phT > 0.35) { n=Math.max(0,n-1); atomYfrom=atomYto; phase='emit'; phT=0; }
+    if (phase==='emit'   && phT > 0.5)  { phase='wait'; phT=0; }
+    if (phase==='ground' && phT > 1.8)  { n=N-1; atomYfrom=atomYto=lvlY(n); phase='wait'; phT=0; }
+
+    const W = cv.clientWidth || 560;
+    if (cv.width !== W) cv.width = W;
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
 
-    // Draw energy levels
-    for (let n = 0; n < N_LEVELS; n++) {
-      const y = levelY(n);
+    const CW = W - PAD_L - PAD_R;
+    const atomX = PAD_L + CW * 0.38;
+
+    // ── Energy level lines ─────────────────────────────────────
+    for (let i=0; i<N; i++) {
+      const y = lvlY(i);
+      const active = (i===n);
       ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(W-PAD_R, y);
-      const isActive = (n === nState);
-      ctx.strokeStyle = isActive ? COLORS[n] : 'rgba(30,41,59,0.9)';
-      ctx.lineWidth = isActive ? 2 : 1; ctx.stroke();
-      ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
-      ctx.fillStyle = isActive ? COLORS[n] : '#334155';
-      ctx.fillText('|n='+n+'⟩', PAD_L-5, y+3);
-    }
+      ctx.strokeStyle = active ? COLORS[i] : 'rgba(30,41,59,0.85)';
+      ctx.lineWidth = active ? 2 : 1; ctx.stroke();
 
-    // Axis label
-    ctx.font='8px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#475569';
-    ctx.fillText('Energy', 14, H/2);
+      // label
+      ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='right';
+      ctx.fillStyle = active ? COLORS[i] : (i===0 ? '#4ade80' : '#334155');
+      ctx.fillText('|n='+i+'⟩', PAD_L-7, y+4);
 
-    // Atom position
-    const atomY = levelY(nState);
-    const atomX = PAD_L + CHART_W * 0.35;
-
-    // Draw cooling photon arrow (RSB pulse)
-    if (animPhase === 'cooling') {
-      const prog = phaseT / 0.6;
-      // Arrow going down from laser (top) to atom
-      const arrowY = PAD_T + 5 + prog*(atomY - PAD_T - 20);
-      ctx.beginPath(); ctx.moveTo(atomX, PAD_T+5); ctx.lineTo(atomX, arrowY);
-      ctx.strokeStyle='rgba(56,189,248,0.7)'; ctx.lineWidth=1.5;
-      ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
-      ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='left';
-      ctx.fillStyle='rgba(56,189,248,0.8)'; ctx.fillText('RSB photon', atomX+6, PAD_T+12);
-    }
-
-    // Spontaneous emission flash
-    if (animPhase === 'emit') {
-      const fade = 1 - phaseT/0.5;
-      // Emit photon upward (random direction visual)
-      for (let a = 0; a < 6; a++) {
-        const angle = (a/6)*2*Math.PI;
-        const r = 20 * phaseT/0.5;
-        ctx.beginPath();
-        ctx.moveTo(atomX, levelY(nState));
-        ctx.lineTo(atomX + Math.cos(angle)*r, levelY(nState) + Math.sin(angle)*r);
-        ctx.strokeStyle=`rgba(74,222,128,${fade*0.6})`; ctx.lineWidth=1.2; ctx.stroke();
+      // tick energy (ℏν spacing)
+      if (i > 0) {
+        ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='left';
+        ctx.fillStyle='rgba(100,116,139,0.5)';
+        ctx.fillText('ℏν', W-PAD_R+4, y+4);
       }
-      ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='left';
-      ctx.fillStyle=`rgba(74,222,128,${fade})`; ctx.fillText('spont. emission', atomX+14, levelY(nState)-8);
     }
 
-    // Draw atom
-    ctx.beginPath(); ctx.arc(atomX, atomY, 8, 0, 2*Math.PI);
-    ctx.fillStyle = COLORS[nState]; ctx.fill();
-    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    // ── Axis arrow ──────────────────────────────────────────────
+    ctx.beginPath(); ctx.moveTo(PAD_L-40, H-PAD_B); ctx.lineTo(PAD_L-40, PAD_T);
+    ctx.strokeStyle='rgba(71,85,105,0.5)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD_L-43,PAD_T+6); ctx.lineTo(PAD_L-40,PAD_T); ctx.lineTo(PAD_L-37,PAD_T+6);
+    ctx.strokeStyle='rgba(71,85,105,0.5)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.save(); ctx.translate(PAD_L-52,H/2); ctx.rotate(-Math.PI/2);
+    ctx.font='9px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#475569';
+    ctx.fillText('Energy  E = (n+½)ℏν', 0, 0); ctx.restore();
 
-    // nbar readout
-    ctx.font='11px JetBrains Mono,monospace'; ctx.textAlign='right';
-    ctx.fillStyle=COLORS[nState]; ctx.fillText('⟨n⟩ = '+nState.toFixed(0), W-PAD_R, PAD_T+14);
-    if (nState === 0) {
-      ctx.fillStyle='#4ade80'; ctx.fillText('ground state ✓', W-PAD_R, PAD_T+28);
+    // ── RSB photon arrow (absorb phase) ────────────────────────
+    if (phase==='absorb') {
+      const prog = Math.min(phT/0.8, 1);
+      const atomY = lvlY(n);
+      const arrowEndY = PAD_T + 8 + prog * (atomY - PAD_T - 24);
+      // dashed photon line from top
+      ctx.beginPath(); ctx.moveTo(atomX, PAD_T+8); ctx.lineTo(atomX, arrowEndY);
+      ctx.strokeStyle='rgba(56,189,248,0.85)'; ctx.lineWidth=2;
+      ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+      // arrowhead
+      if (prog > 0.05) {
+        ctx.beginPath();
+        ctx.moveTo(atomX-5, arrowEndY-8); ctx.lineTo(atomX, arrowEndY);
+        ctx.lineTo(atomX+5, arrowEndY-8);
+        ctx.strokeStyle='rgba(56,189,248,0.9)'; ctx.lineWidth=2; ctx.stroke();
+      }
+      ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='left';
+      ctx.fillStyle='rgba(56,189,248,0.9)';
+      ctx.fillText('RSB  ω_laser = ω₀ − ν', atomX+12, PAD_T+20);
+      ctx.font='9px JetBrains Mono,monospace'; ctx.fillStyle='rgba(56,189,248,0.6)';
+      ctx.fillText('absorb → |n−1⟩', atomX+12, PAD_T+33);
     }
+
+    // ── Smooth atom drop (drop phase) ──────────────────────────
+    let drawY = atomYfrom;
+    if (phase==='drop') {
+      const ease = 1 - Math.pow(1 - Math.min(phT/0.35,1), 3);
+      drawY = atomYfrom + (atomYto - atomYfrom) * ease;
+    } else if (phase==='emit' || phase==='wait' || phase==='ground') {
+      drawY = atomYto;
+    }
+
+    // ── Spontaneous emission (emit phase) ─────────────────────
+    if (phase==='emit') {
+      const fade = 1 - phT/0.5;
+      const r = 22 * (phT/0.5);
+      for (let a=0; a<8; a++) {
+        const angle = (a/8)*2*Math.PI + phT*2;
+        ctx.beginPath();
+        ctx.moveTo(atomX + Math.cos(angle)*8, drawY + Math.sin(angle)*8);
+        ctx.lineTo(atomX + Math.cos(angle)*r, drawY + Math.sin(angle)*r);
+        ctx.strokeStyle=`rgba(74,222,128,${fade*0.7})`; ctx.lineWidth=1.5; ctx.stroke();
+      }
+      ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left';
+      ctx.fillStyle=`rgba(74,222,128,${fade})`;
+      ctx.fillText('spont. emission → random dir', atomX+13, drawY-10);
+    }
+
+    // ── Ground state banner ────────────────────────────────────
+    if (phase==='ground') {
+      const fade = Math.min(phT*4, 1);
+      ctx.font='bold 13px JetBrains Mono,monospace'; ctx.textAlign='right';
+      ctx.fillStyle=`rgba(74,222,128,${fade})`;
+      ctx.fillText('✓  |n=0⟩  ground state', W-PAD_R, PAD_T+18);
+      ctx.font='10px Inter,sans-serif';
+      ctx.fillStyle=`rgba(100,200,140,${fade*0.7})`;
+      ctx.fillText('cooling complete — resetting…', W-PAD_R, PAD_T+34);
+      // Pulsing glow on n=0 level
+      const pulse = 0.4 + 0.6*Math.abs(Math.sin(phT*4));
+      ctx.beginPath(); ctx.moveTo(PAD_L, lvlY(0)); ctx.lineTo(W-PAD_R, lvlY(0));
+      ctx.strokeStyle=`rgba(74,222,128,${pulse*0.6})`; ctx.lineWidth=3; ctx.stroke();
+    }
+
+    // ── Atom dot ───────────────────────────────────────────────
+    const aColor = COLORS[Math.min(n, N-1)];
+    // outer glow
+    ctx.beginPath(); ctx.arc(atomX, drawY, 12, 0, 2*Math.PI);
+    ctx.fillStyle = aColor.replace('#','rgba(').replace(/^rgba\(([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})\)$/, (m,r,g,b) =>
+      `rgba(${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)},0.18)`);
+    // simpler glow using shadowBlur
+    ctx.shadowColor = aColor; ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.arc(atomX, drawY, 9, 0, 2*Math.PI);
+    ctx.fillStyle = aColor; ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.arc(atomX, drawY, 9, 0, 2*Math.PI);
+    ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // ── ⟨n⟩ readout ───────────────────────────────────────────
+    ctx.font='bold 13px JetBrains Mono,monospace'; ctx.textAlign='right';
+    ctx.fillStyle = aColor;
+    ctx.fillText('⟨n⟩ = '+n, W-PAD_R, PAD_T+14);
 
     requestAnimationFrame(frame);
   }

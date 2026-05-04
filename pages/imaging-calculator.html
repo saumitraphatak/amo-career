@@ -1733,11 +1733,12 @@ initAccordions();
   let bins_atom  = null;  // Int32Array
   let bins_empty = null;
   let nBins = 0, binMax = 0, nShots = 0;
-  const MAX_SHOTS = 400;
-  let resetTimer = null;
+  const MAX_SHOTS = 300;
+  let _pauseStart = null;
 
   function reset() {
     nShots = 0;
+    _pauseStart = null;
     const xMax = Math.max(_N_sig*2.5, _N_bg*5+30, 50);
     nBins  = Math.min(80, Math.max(30, Math.round(xMax/3)));
     binMax = xMax;
@@ -1746,7 +1747,8 @@ initAccordions();
   }
   reset();
 
-  let lastAdd = 0;
+  // Throttle: add 1 shot every ~50ms so the histogram builds visibly slowly
+  let _lastShotT = 0;
   function frame(ts) {
     requestAnimationFrame(frame);
 
@@ -1757,25 +1759,22 @@ initAccordions();
     const ctx = cv.getContext('2d');
     ctx.fillStyle='#020810'; ctx.fillRect(0,0,W,H);
 
-    // Add shots
-    if (nShots < MAX_SHOTS && ts - lastAdd > 25) {
-      lastAdd = ts;
-      const nAdd = 5;
-      for (let i=0; i<nAdd; i++) {
+    // Add 1 shot per ~50ms for a slow, visible build-up
+    if (nShots < MAX_SHOTS) {
+      if (ts - _lastShotT >= 50) {
+        _lastShotT = ts;
         const va = shot(_N_sig);
         const ve = shot(_N_bg);
         const ba = Math.min(nBins-1, Math.floor(va/binMax*nBins));
         const be = Math.min(nBins-1, Math.floor(ve/binMax*nBins));
         if (ba >= 0) bins_atom[ba]++;
         if (be >= 0) bins_empty[be]++;
+        nShots++;
       }
-      nShots += nAdd;
-    }
-    // Pause then reset
-    if (nShots >= MAX_SHOTS && ts - lastAdd > 2200) {
-      lastAdd = ts + 1e9;
-      setTimeout(reset, 50);
-      return;
+    } else {
+      // Hold for 2.5s then loop
+      if (!_pauseStart) _pauseStart = ts;
+      if (ts - _pauseStart > 2500) reset();
     }
 
     const PAD_L=52, PAD_R=20, PAD_T=38, PAD_B=36;
@@ -1907,7 +1906,7 @@ initAccordions();
     const shotsEl = document.getElementById('histShotCount');
     const errEl = document.getElementById('histErrReadout');
     if (fidEl) fidEl.textContent = 'F_det = '+fidPct;
-    if (shotsEl) shotsEl.textContent = nShots+' shots  (resets at '+MAX_SHOTS+')';
+    if (shotsEl) shotsEl.textContent = nShots+' / '+MAX_SHOTS+' shots';
     if (errEl) errEl.textContent = 'P_miss='+pmiss.toExponential(2)+'  P_false_alarm='+pfalse.toExponential(2);
   }
 
