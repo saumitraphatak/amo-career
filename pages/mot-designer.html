@@ -285,6 +285,20 @@ $\mu_{\rm eff} = g_F m_F \mu_B$ (effective magnetic moment)
       </div>
 
     </div>
+
+    <!-- ── Live MOT Visualization ─────────────────────────────── -->
+    <div style="margin-top:1.25rem;">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:var(--text-muted);margin-bottom:.5rem;">
+        Live MOT Visualization &nbsp;·&nbsp; 2D cross-section (horizontal + vertical beam pair)
+      </div>
+      <div style="position:relative;">
+        <canvas id="motCanvas" style="width:100%;border-radius:10px;background:#020810;display:block;"></canvas>
+        <div id="motCloudLbl" style="position:absolute;bottom:8px;right:12px;
+             font-family:var(--font-mono);font-size:.72rem;color:rgba(251,146,60,0.55);"></div>
+      </div>
+    </div>
+
   </section>
 
   <hr class="section-divider">
@@ -711,6 +725,8 @@ function compute() {
   const eta = U0_uK / T_uK;
 
   // ─── Update DOM ─────────────────────────────────────────────
+  if (window.updateMOTViz) updateMOTViz(kappa, alpha, T_Doppler);
+
   document.getElementById('alphaVal').textContent = (alpha * 1e20).toPrecision(3);
   document.getElementById('kappaVal').textContent = (kappa * 1e17).toPrecision(3);
   document.getElementById('omegaMOT').textContent = (omegaMOT / (2*Math.PI)).toFixed(1);
@@ -778,6 +794,137 @@ function onSpeciesChange() {
     `${atom.label} D2: Γ/2π = ${atom.Gamma_MHz} MHz · λ = ${atom.lambda_nm.toFixed(0)} nm · I<sub>sat</sub> = ${atom.Isat} mW/cm²`;
   compute();
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOT LIVE VISUALIZATION — 2D cross-section
+═══════════════════════════════════════════════════════════════ */
+(function() {
+  const cvs = document.getElementById('motCanvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+
+  let targetSigma = 35;   // desired cloud radius in canvas px
+  let curSigma    = 35;   // smoothly interpolated toward target
+  let dampRate    = 0.015; // Langevin damping (scales with α)
+
+  function resize() {
+    const rect = cvs.parentElement.getBoundingClientRect();
+    cvs.width  = Math.round(rect.width) || 520;
+    cvs.height = Math.max(160, Math.round(cvs.width * 0.40));
+    // Re-centre atoms after resize (simple reset)
+    spawnAtoms();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // ── Atom particles ────────────────────────────────────────────
+  const N = 28;
+  let atoms = [];
+  function spawnAtoms() {
+    const CX = cvs.width / 2, CY = cvs.height / 2;
+    atoms = Array.from({ length: N }, () => {
+      const a = Math.random() * 2 * Math.PI;
+      const r = curSigma * (0.4 + Math.random() * 1.1);
+      return {
+        x: CX + r * Math.cos(a), y: CY + r * Math.sin(a),
+        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+      };
+    });
+  }
+  spawnAtoms();
+
+  // ── Arrow helper ──────────────────────────────────────────────
+  function arrow(x1, y1, x2, y2, col) {
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const ang = Math.atan2(y2 - y1, x2 - x1);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 6*Math.cos(ang-0.4), y2 - 6*Math.sin(ang-0.4));
+    ctx.lineTo(x2 - 6*Math.cos(ang+0.4), y2 - 6*Math.sin(ang+0.4));
+    ctx.closePath(); ctx.fill();
+  }
+
+  // ── Draw loop ─────────────────────────────────────────────────
+  function draw() {
+    requestAnimationFrame(draw);
+    const W = cvs.width, H = cvs.height;
+    const CX = W / 2, CY = H / 2;
+
+    // Smooth cloud size transition
+    curSigma += (targetSigma - curSigma) * 0.035;
+
+    ctx.fillStyle = '#020810';
+    ctx.fillRect(0, 0, W, H);
+
+    // ── Laser beams (4 in 2D cross-section) ─────────────────────
+    const beams = [
+      { x0: 0, y0: CY, x1: W, y1: CY, l0: 'σ⁺', l1: 'σ⁻', lx0: 8, ly0: CY-7, lx1: W-26, ly1: CY-7 },
+      { x0: CX, y0: 0, x1: CX, y1: H, l0: 'σ⁻', l1: 'σ⁺', lx0: CX+5, ly0: 13, lx1: CX+5, ly1: H-5 },
+    ];
+    beams.forEach(b => {
+      [ [b.x0, b.y0], [b.x1, b.y1] ].forEach(([ex, ey]) => {
+        const g = ctx.createLinearGradient(ex, ey, CX, CY);
+        g.addColorStop(0, 'rgba(251,146,60,0.00)');
+        g.addColorStop(1, 'rgba(251,146,60,0.20)');
+        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(CX, CY);
+        ctx.strokeStyle = g; ctx.lineWidth = 18; ctx.stroke();
+      });
+      ctx.fillStyle = 'rgba(251,146,60,0.5)';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText(b.l0, b.lx0, b.ly0);
+      ctx.fillText(b.l1, b.lx1, b.ly1);
+    });
+
+    // ── Quadrupole B-field arrows ────────────────────────────────
+    const bCol = 'rgba(96,165,250,0.30)';
+    const D = 72;
+    arrow(CX, CY, CX - D, CY, bCol);      // ← left
+    arrow(CX, CY, CX + D, CY, bCol);      // → right
+    arrow(CX, CY, CX, CY - D * 0.7, bCol); // ↑ up
+    arrow(CX, CY, CX, CY + D * 0.7, bCol); // ↓ down
+    ctx.fillStyle = 'rgba(96,165,250,0.35)';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.fillText('B', CX - D - 14, CY - 4);
+
+    // ── Atom cloud glow ──────────────────────────────────────────
+    const glow = ctx.createRadialGradient(CX, CY, 0, CX, CY, curSigma * 2.3);
+    glow.addColorStop(0,    'rgba(255,220,100,0.55)');
+    glow.addColorStop(0.25, 'rgba(251,146,60,0.28)');
+    glow.addColorStop(0.65, 'rgba(200,60,20,0.08)');
+    glow.addColorStop(1,    'rgba(0,0,0,0)');
+    ctx.beginPath(); ctx.arc(CX, CY, curSigma * 2.3, 0, 2*Math.PI);
+    ctx.fillStyle = glow; ctx.fill();
+
+    // ── Atom particles (Langevin dynamics) ──────────────────────
+    const sk = 0.015;  // spring constant (canvas units)
+    const noiseAmp = curSigma * Math.sqrt(dampRate * sk) * 1.6;
+    atoms.forEach(a => {
+      a.vx = a.vx * (1 - dampRate) - sk * (a.x - CX) + (Math.random() - 0.5) * noiseAmp;
+      a.vy = a.vy * (1 - dampRate) - sk * (a.y - CY) + (Math.random() - 0.5) * noiseAmp;
+      a.x += a.vx; a.y += a.vy;
+      const r = Math.hypot(a.x - CX, a.y - CY);
+      const al = Math.max(0, 1 - r / (curSigma * 2.8));
+      ctx.beginPath(); ctx.arc(a.x, a.y, 1.8, 0, 2*Math.PI);
+      ctx.fillStyle = `rgba(255,235,150,${(al * 0.9).toFixed(2)})`; ctx.fill();
+    });
+
+    // ── Cloud size readout ───────────────────────────────────────
+    const lbl = document.getElementById('motCloudLbl');
+    if (lbl) lbl.textContent = `cloud σ ≈ ${(curSigma * 10).toFixed(0)} μm`;
+  }
+
+  // ── External hook (called from compute()) ────────────────────
+  window.updateMOTViz = function(kappa_SI, alpha_SI, T_Doppler_K) {
+    const kB_loc = 1.380649e-23;
+    const SCALE  = 1e5; // px / m  → 1 px = 10 μm
+    const r_th   = kappa_SI > 0 ? Math.sqrt(kB_loc * T_Doppler_K / kappa_SI) : 350e-6;
+    targetSigma  = Math.max(10, Math.min(68, r_th * SCALE));
+    dampRate     = 0.008 + Math.min(1, alpha_SI / 5e-20) * 0.027;
+  };
+
+  requestAnimationFrame(draw);
+})();
 
 compute();
 initAccordions();
