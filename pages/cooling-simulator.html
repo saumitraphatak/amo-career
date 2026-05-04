@@ -255,6 +255,20 @@
           </p>
         </div>
 
+        <!-- ── Live MB cooling animation ─────────────────────── -->
+        <div class="chart-card" style="margin-top:1.5rem;">
+          <h5>Live Velocity Distribution — Doppler Cooling in Action</h5>
+          <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;">
+            Atoms start with a room-temperature Maxwell-Boltzmann distribution.
+            Drag the sliders above — watch the cloud cool in real time.
+          </div>
+          <canvas id="mbCanvas" style="width:100%;height:160px;display:block;border-radius:8px;background:#020810;"></canvas>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
+            <span id="mbTLabel" style="color:#60a5fa;">T = — μK</span>
+            <span>← cooled &nbsp;|&nbsp; velocity (v_rms units) &nbsp;|&nbsp; warm →</span>
+          </div>
+        </div>
+
         <!-- Atom guide -->
         <div class="section-title" style="margin-top: 2rem; font-size: 1.1rem;">Doppler Cooling Parameters by Species</div>
         <div class="atom-guide" style="margin-top: .75rem;">
@@ -783,6 +797,7 @@ function updateForce() {
   const s0    = parseFloat(document.getElementById('satSlide').value);
   document.getElementById('detVal').textContent = delta.toFixed(2);
   document.getElementById('satVal').textContent = s0.toFixed(2);
+  if (window.mbUpdateParams) mbUpdateParams(delta, s0);
 
   // v in units of Γ/k
   const vs = [], F1 = [], F0 = [];
@@ -972,6 +987,180 @@ function updateCoolEvo() {
       }
     }
   });
+})();
+
+/* ─── MAXWELL-BOLTZMANN LIVE COOLING ANIMATION ────────── */
+(function() {
+  const cvs = document.getElementById('mbCanvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+
+  // Cs D2 parameters (representative)
+  const Gamma = 5.234e6 * 2 * Math.PI; // rad/s
+  const k_cs  = 2 * Math.PI / 852e-9;
+  const m_cs  = 132.905 * 1.6605e-27;
+
+  // Particle ensemble: N atoms, each with velocity in m/s
+  const N = 600;
+  const T_room = 300; // K start
+  let atoms = [];
+
+  function initAtoms() {
+    // Sample from Maxwell-Boltzmann: v ~ Normal(0, sqrt(kB T / m))
+    const sigma_v = Math.sqrt(kB * T_room / m_cs); // ~170 m/s for Cs
+    atoms = Array.from({ length: N }, () => ({
+      v: sigma_v * (boxMuller()),
+      active: true,
+    }));
+  }
+
+  function boxMuller() {
+    // Box-Muller transform for unit normal
+    const u1 = Math.random(), u2 = Math.random();
+    return Math.sqrt(-2 * Math.log(u1 + 1e-12)) * Math.cos(2 * Math.PI * u2);
+  }
+
+  // Current physics params (updated by slider hooks)
+  let delta_G = -0.5;  // δ/Γ
+  let s0      = 0.5;
+
+  // Smooth target temperature (K), shown temperature, v_rms scale
+  const T_Doppler_cs = hbar * Gamma / (2 * kB); // ~125 μK
+  let T_target = T_room;
+  let T_cur    = T_room;
+
+  function computeTTarget(dG, s) {
+    // T_D(δ,s) ∝ (1 + s + (2δ/Γ)²) / |δ/Γ| * ℏΓ/(4kB)
+    const x = 2 * dG; // 2δ/Γ
+    return T_Doppler_cs * (1 + s + x*x) / (2 * Math.abs(dG) + 1e-6);
+  }
+
+  // Expose a hook so updateForce() can update our params
+  window.mbUpdateParams = function(dG, s) {
+    delta_G  = dG;
+    s0       = s;
+    T_target = Math.min(T_room, computeTTarget(dG, s));
+  };
+
+  // Resize
+  function resize() {
+    const rect = cvs.parentElement.getBoundingClientRect();
+    cvs.width  = rect.width || 560;
+    cvs.height = 160;
+  }
+  window.addEventListener('resize', resize);
+
+  let _mbReady = false;
+
+  // Histogram bins
+  const BINS   = 80;
+
+  function draw() {
+    requestAnimationFrame(draw);
+    if (!_mbReady) { resize(); initAtoms(); _mbReady = true; }
+
+    const W = cvs.width, H = cvs.height;
+    if (!W || !H) return;
+
+    // Relax T_cur toward T_target (cooling/heating timescale)
+    const tau = T_cur > T_target ? 0.012 : 0.003; // cool fast, heat slowly
+    T_cur += (T_target - T_cur) * tau;
+
+    // Resample velocities from current T (Langevin thermostat)
+    const sigma_v = Math.sqrt(kB * Math.max(T_cur, 1e-9) / m_cs);
+    const mix = 0.04; // fraction of atoms resampled each frame
+    atoms.forEach(a => {
+      if (Math.random() < mix) a.v = sigma_v * boxMuller();
+    });
+
+    // Build histogram
+    const v_rms = Math.sqrt(kB * T_room / m_cs); // fixed scale = room T v_rms
+    const v_max = 3.5 * v_rms;
+    const bins  = new Float32Array(BINS);
+    const dv    = 2 * v_max / BINS;
+    atoms.forEach(a => {
+      const bi = Math.floor((a.v + v_max) / dv);
+      if (bi >= 0 && bi < BINS) bins[bi]++;
+    });
+    const bmax = Math.max(...bins, 1);
+
+    // Draw
+    ctx.fillStyle = '#020810';
+    ctx.fillRect(0, 0, W, H);
+
+    const pad = 24, barW = (W - 2*pad) / BINS;
+
+    // Draw cold-region shading around zero
+    const zeroX = pad + (BINS/2) * barW;
+    const coldW = (sigma_v / v_max) * (W - 2*pad) * 1.5;
+    const cg = ctx.createLinearGradient(zeroX - coldW, 0, zeroX + coldW, 0);
+    cg.addColorStop(0,   'rgba(96,165,250,0)');
+    cg.addColorStop(0.35,'rgba(96,165,250,0.07)');
+    cg.addColorStop(0.5, 'rgba(96,165,250,0.13)');
+    cg.addColorStop(0.65,'rgba(96,165,250,0.07)');
+    cg.addColorStop(1,   'rgba(96,165,250,0)');
+    ctx.fillStyle = cg;
+    ctx.fillRect(zeroX - coldW, 0, coldW * 2, H - 18);
+
+    // Bars: warm → cool color based on v
+    for (let i = 0; i < BINS; i++) {
+      const bh = ((bins[i] / bmax)) * (H - 30);
+      const x  = pad + i * barW;
+      const frac = Math.abs((i - BINS/2) / (BINS/2)); // 0=center, 1=edge
+      // Color: blue at center (cold), red at wings (hot)
+      const r = Math.round(240 * frac);
+      const b = Math.round(250 * (1 - frac * 0.7));
+      const g = Math.round(100 * (1 - frac));
+      ctx.fillStyle = `rgba(${r},${g},${b},0.85)`;
+      ctx.fillRect(x, H - 18 - bh, Math.max(barW - 0.5, 1), bh);
+    }
+
+    // Zero-velocity axis
+    ctx.strokeStyle = 'rgba(96,165,250,0.4)';
+    ctx.setLineDash([3, 4]); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(zeroX, 0); ctx.lineTo(zeroX, H - 18); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Doppler limit marker (±v_D = sqrt(2kBT_D/m))
+    const v_D = Math.sqrt(2 * kB * T_Doppler_cs / m_cs);
+    const xD  = v_D / v_max * (W - 2*pad) / 2;
+    ctx.strokeStyle = 'rgba(251,191,36,0.5)';
+    ctx.lineWidth = 1;
+    [-1, 1].forEach(sign => {
+      ctx.beginPath();
+      ctx.moveTo(zeroX + sign * xD, 0);
+      ctx.lineTo(zeroX + sign * xD, H - 18);
+      ctx.stroke();
+    });
+    ctx.fillStyle = 'rgba(251,191,36,0.55)';
+    ctx.font = '9px Inter, sans-serif';
+    ctx.fillText('T_D', zeroX + xD + 3, 12);
+
+    // x-axis labels
+    ctx.fillStyle = '#334155';
+    ctx.font = '9px Inter, sans-serif';
+    ctx.fillText('−v_rms', pad, H - 4);
+    ctx.fillText('0', zeroX - 4, H - 4);
+    ctx.fillText('+v_rms', W - pad - 34, H - 4);
+
+    // Temperature readout
+    const T_uK = T_cur * 1e6;
+    const lbl = document.getElementById('mbTLabel');
+    if (lbl) {
+      if (T_cur >= 1e-3)     lbl.textContent = `T ≈ ${(T_cur*1e3).toFixed(0)} mK`;
+      else if (T_cur >= 1e-6) lbl.textContent = `T ≈ ${T_uK.toFixed(0)} μK`;
+      else                   lbl.textContent = `T ≈ ${(T_cur*1e9).toFixed(0)} nK`;
+      // Color cold → warm
+      const warmFrac = Math.log10(T_cur / T_Doppler_cs) / Math.log10(T_room / T_Doppler_cs);
+      const cr = Math.round(96 + 155 * Math.max(0, Math.min(1, warmFrac)));
+      const cb = Math.round(250 - 200 * Math.max(0, Math.min(1, warmFrac)));
+      lbl.style.color = `rgb(${cr},100,${cb})`;
+    }
+  }
+
+  // Init target from current slider defaults
+  T_target = Math.min(T_room, computeTTarget(delta_G, s0));
+  requestAnimationFrame(draw);
 })();
 
 /* ─── INIT INTERACTIVE CHARTS ────────────────────────── */
