@@ -807,15 +807,13 @@ function onSpeciesChange() {
   let curSigma    = 35;   // smoothly interpolated toward target
   let dampRate    = 0.015; // Langevin damping (scales with α)
 
+  // Resize: defer to RAF so getBoundingClientRect returns real layout width
   function resize() {
     const rect = cvs.parentElement.getBoundingClientRect();
-    cvs.width  = Math.round(rect.width) || 520;
-    cvs.height = Math.max(160, Math.round(cvs.width * 0.40));
-    // Re-centre atoms after resize (simple reset)
-    spawnAtoms();
+    cvs.width  = rect.width || 580;
+    cvs.height = 220;
   }
-  resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', () => { resize(); spawnAtoms(); });
 
   // ── Atom particles ────────────────────────────────────────────
   const N = 28;
@@ -831,7 +829,6 @@ function onSpeciesChange() {
       };
     });
   }
-  spawnAtoms();
 
   // ── Arrow helper ──────────────────────────────────────────────
   function arrow(x1, y1, x2, y2, col) {
@@ -846,9 +843,13 @@ function onSpeciesChange() {
   }
 
   // ── Draw loop ─────────────────────────────────────────────────
+  let _ready = false;
   function draw() {
     requestAnimationFrame(draw);
+    // Initialise on first frame — layout is guaranteed by then
+    if (!_ready) { resize(); spawnAtoms(); _ready = true; }
     const W = cvs.width, H = cvs.height;
+    if (!W || !H) return;
     const CX = W / 2, CY = H / 2;
 
     // Smooth cloud size transition
