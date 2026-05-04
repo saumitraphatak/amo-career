@@ -159,6 +159,36 @@
     Laser cooling exploits radiation pressure from near-resonant light to slow and cool atoms. Doppler cooling, the first stage, provides cooling whenever an atom moving toward a beam sees a red-shifted photon closer to resonance, leading to a velocity-dependent damping force with limit k_BT_D = ℏΓ/2. Sub-Doppler mechanisms (Sisyphus cooling, gray molasses) exploit light shifts and optical pumping to reach the photon recoil limit k_BT_r = ℏ²k²/(2m), typically a factor 10–100 colder than the Doppler limit. This simulator shows momentum-space dynamics in real time so you can see the transition from broad thermal distribution to cold peak.
   </div>
 
+  <!-- ═══ LIVE COOLING ANIMATION ═══ -->
+  <section class="section-block anim-in">
+    <div class="section-title">Live Doppler Cooling Simulator</div>
+    <div class="section-sub">Drag the sliders — watch the velocity distribution narrow as atoms cool</div>
+    <div class="chart-card">
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.75rem;">
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:.78rem;color:var(--text-muted);display:block;margin-bottom:.25rem;">
+            Detuning δ/Γ &nbsp;<span id="mbDetLbl" style="color:#60a5fa;font-family:var(--font-mono);">−0.5</span>
+          </label>
+          <input type="range" id="mbDetSlide" min="-3" max="-0.1" step="0.05" value="-0.5"
+            style="width:100%;accent-color:#60a5fa;" oninput="mbSliderUpdate()">
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label style="font-size:.78rem;color:var(--text-muted);display:block;margin-bottom:.25rem;">
+            Saturation s₀ &nbsp;<span id="mbSatLbl" style="color:#60a5fa;font-family:var(--font-mono);">0.5</span>
+          </label>
+          <input type="range" id="mbSatSlide" min="0.05" max="5" step="0.05" value="0.5"
+            style="width:100%;accent-color:#60a5fa;" oninput="mbSliderUpdate()">
+        </div>
+      </div>
+      <canvas id="mbCanvas" width="560" height="160" style="width:100%;height:160px;display:block;border-radius:8px;background:#020810;"></canvas>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
+        <span id="mbTLabel" style="color:#60a5fa;">T = — μK</span>
+        <span style="color:rgba(251,191,36,0.6);">▏= Doppler limit</span>
+        <span>← hot &nbsp;|&nbsp; velocity &nbsp;|&nbsp; hot →</span>
+      </div>
+    </div>
+  </section>
+
   <!-- ═══ TEMPERATURE LADDER ═══ -->
   <section class="section-block anim-in">
     <div class="section-title">Temperature Ladder</div>
@@ -253,20 +283,6 @@
             A 3D molasses (6 beams ±x, ±y, ±z) provides isotropic cooling. Adding a magnetic
             field gradient creates a magneto-optical trap (MOT) that both cools and traps atoms.
           </p>
-        </div>
-
-        <!-- ── Live MB cooling animation ─────────────────────── -->
-        <div class="chart-card" style="margin-top:1.5rem;">
-          <h5>Live Velocity Distribution — Doppler Cooling in Action</h5>
-          <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:.6rem;">
-            Atoms start with a room-temperature Maxwell-Boltzmann distribution.
-            Drag the sliders above — watch the cloud cool in real time.
-          </div>
-          <canvas id="mbCanvas" width="560" height="160" style="width:100%;height:160px;display:block;border-radius:8px;background:#020810;"></canvas>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
-            <span id="mbTLabel" style="color:#60a5fa;">T = — μK</span>
-            <span>← cooled &nbsp;|&nbsp; velocity (v_rms units) &nbsp;|&nbsp; warm →</span>
-          </div>
         </div>
 
         <!-- Atom guide -->
@@ -1035,7 +1051,18 @@ function updateCoolEvo() {
     return T_Doppler_cs * (1 + s + x*x) / (2 * Math.abs(dG) + 1e-6);
   }
 
-  // Expose a hook so updateForce() can update our params
+  // Standalone slider handler (own controls at top of page)
+  window.mbSliderUpdate = function() {
+    const dG = parseFloat(document.getElementById('mbDetSlide').value);
+    const s  = parseFloat(document.getElementById('mbSatSlide').value);
+    document.getElementById('mbDetLbl').textContent = dG.toFixed(2);
+    document.getElementById('mbSatLbl').textContent = s.toFixed(2);
+    delta_G  = dG;
+    s0       = s;
+    T_target = Math.min(T_room, computeTTarget(dG, s));
+  };
+
+  // Also expose a hook so the Doppler tab's updateForce() can sync
   window.mbUpdateParams = function(dG, s) {
     delta_G  = dG;
     s0       = s;
@@ -1056,13 +1083,6 @@ function updateCoolEvo() {
     cvs.height = 160;
   }
   window.addEventListener('resize', () => { resize(); });
-
-  // Re-init when Doppler tab is activated
-  document.querySelectorAll('[data-tab="doppler"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setTimeout(() => { resize(); if (!_mbReady) { initAtoms(); _mbReady = true; } }, 50);
-    });
-  });
 
   let _mbReady = false;
 
