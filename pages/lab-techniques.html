@@ -373,8 +373,8 @@
               <div class="tech-section-title">2 · Double-Pass Acousto-Optic Modulators (AOMs)</div>
               <!-- AOM Bragg animation -->
               <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
-                <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Cat's-eye double-pass AOM — V-pol input (ν₀) enters PBS, travels through lens → AOM (+f_RF) → QWP → cat's-eye lens → flat mirror → returns through same path (+f_RF again). After round trip QWP the beam is H-pol: PBS deflects it to fiber coupler. Output: ν₀ + 2f_RF, direction unchanged.</div>
-                <canvas id="aomCanvas" width="560" height="160" style="width:100%;border-radius:5px;"></canvas>
+                <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Cat's-eye double-pass AOM (Fig. 3). Laser → PBS → lenses → AOM: 0th order blocked, +1st order (ν₀+f) deflected at Bragg angle θ_B → QWP → cat's-eye lens ↔ mirror → retroreflects → AOM again (+f) → lens → PBS. After the double QWP pass the beam is H-pol; PBS deflects it to FC. Output: ν₀+2f, direction unchanged, frequency-agile.</div>
+                <canvas id="aomCanvas" width="560" height="195" style="width:100%;border-radius:5px;"></canvas>
               </div>
               <div class="concept-box">
                 An AOM diffracts light off a moving acoustic grating, shifting the optical frequency
@@ -1505,243 +1505,236 @@ SteadyStateTweezer(
     (function() {
       const cv = document.getElementById('aomCanvas');
       if (!cv) return;
-      const H = 160;
+      const H = 195;
       cv.height = H;
       const ctx = cv.getContext('2d');
 
       /*
-       * Cat's-eye double-pass layout:
-       *
-       *   [FC out] ← (reflected by PBS on return, now H-pol)
-       *       |
-       *   [PBS] ──→ [lens] ──→ [AOM] ──→ [QWP] ──→ [cat-eye lens] ──→ [mirror]
-       *   ↑ input (V-pol, ν₀)                     ←── return (H-pol, ν₀+2f) ──
-       *
-       * Input laser enters PBS from below (V-pol → transmitted straight through).
-       * On return the beam is H-pol (QWP doubled the rotation), so PBS reflects it
-       * downward to the FC output.
+       * Matches paper Figure 3:
+       *   laser (left) → PBS → lens1 → lens2 → AOM
+       *   AOM exit: 0th order continues straight (BLOCKED), 1st order at Bragg angle upward
+       *   1st order (orange) → QWP → cat's-eye lens → flat mirror → retroreflects
+       *   Return (blue): same angled path back → AOM (2nd pass) → horizontal back to PBS
+       *   PBS (H-pol return) → 45° folding mirror below PBS → FC
        */
 
+      const BRAGG = 32; // vertical pixel separation: 0th vs 1st order at mirror (noticeable!)
+
       function layout(W, H) {
-        const ROW_Y = Math.round(H * 0.42);   // main beam row
-        const INY   = H - 14;                  // laser input from bottom
-        const FCY   = H - 14;                  // FC output at bottom
+        const RY      = Math.round(H * 0.44); // main beam axis
+        const FCY     = H - 14;
+        const aomX    = W * 0.41;
+        const aomW    = W * 0.10;
+        const aomEndX = aomX + aomW / 2;
+        const mirrorX = W * 0.87;
+        const mirrorY = RY - BRAGG;
+        const slope   = (mirrorY - RY) / (mirrorX - aomEndX);
+        const y1      = x => RY + slope * (x - aomEndX);
+        const qwpX    = W * 0.62;
+        const ceLensX = W * 0.74;
         return {
-          ROW_Y, INY, FCY,
-          laserInX : W * 0.12,   // laser enters PBS from below
-          pbsX     : W * 0.12,
-          fcOutX   : W * 0.04,   // FC output to the left of PBS
-          lensX    : W * 0.25,
-          aomX     : W * 0.43,  aomW: W*0.09, aomH: H*0.30,
-          qwpX     : W * 0.60,
-          ceLensX  : W * 0.73,
-          mirrorX  : W * 0.88,
+          RY, FCY,
+          laserX : W * 0.02,
+          pbsX   : W * 0.13, PBS_S: 13,
+          lens1X : W * 0.22,
+          lens2X : W * 0.30,
+          aomX, aomW, aomH: H * 0.38, aomEndX,
+          blkX   : aomEndX + W * 0.052,
+          qwpX, qwpY: y1(W * 0.62),
+          ceLensX, ceLensY: y1(W * 0.74),
+          mirrorX, mirrorY,
+          fmX: W * 0.13, fmY: H * 0.77,
+          fcX: W * 0.05,
+          y1, slope,
         };
       }
 
-      // Draw biconvex lens
-      function drawLens(ctx, x, y, col) {
-        const r=14, hw=5;
-        ctx.save();
-        ctx.strokeStyle=col; ctx.lineWidth=1.5;
-        ctx.fillStyle='rgba(56,189,248,0.06)';
+      function drawLens(x, y, col, r, hw) {
+        r=r||13; hw=hw||4.5;
+        ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.fillStyle='rgba(56,189,248,0.06)';
         ctx.beginPath();
-        ctx.moveTo(x, y-r*0.65);
-        ctx.bezierCurveTo(x+hw*2,y-r*0.4, x+hw*2,y+r*0.4, x,y+r*0.65);
-        ctx.bezierCurveTo(x-hw*2,y+r*0.4, x-hw*2,y-r*0.4, x,y-r*0.65);
-        ctx.fill(); ctx.stroke();
-        ctx.restore();
+        ctx.moveTo(x,y-r*0.7);
+        ctx.bezierCurveTo(x+hw*2,y-r*0.4,x+hw*2,y+r*0.4,x,y+r*0.7);
+        ctx.bezierCurveTo(x-hw*2,y+r*0.4,x-hw*2,y-r*0.4,x,y-r*0.7);
+        ctx.fill(); ctx.stroke(); ctx.restore();
       }
 
       function frame(ts) {
         const W = cv.clientWidth || 560;
         if (cv.width !== W) cv.width = W;
-        ctx.clearRect(0,0,W,H);
-        ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+        ctx.clearRect(0,0,W,H); ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
 
-        const ph = ts * 0.00085;
         const L = layout(W, H);
-        const {ROW_Y:RY, INY, FCY, laserInX, pbsX, fcOutX, lensX,
-               aomX, aomW, aomH, qwpX, ceLensX, mirrorX} = L;
-        const PBS_S = 14; // PBS half-size
+        const {RY, FCY, laserX, pbsX, PBS_S, lens1X, lens2X,
+               aomX, aomW, aomH, aomEndX, blkX,
+               qwpX, qwpY, ceLensX, ceLensY, mirrorX, mirrorY,
+               fmX, fmY, fcX, y1, slope} = L;
+        const retY = RY - 3; // return beam after 2nd AOM pass (slightly above input)
+        const BW = 1.8;
 
-        // ── Static beam paths ──────────────────────────────────────
-        const beamW = 1.8;
+        // ── STATIC BEAM PATHS ──────────────────────────────────────
 
-        // Input: laser enters PBS from below (vertical segment)
-        ctx.beginPath(); ctx.moveTo(pbsX, INY); ctx.lineTo(pbsX, RY+PBS_S);
-        ctx.strokeStyle='rgba(239,68,68,0.5)'; ctx.lineWidth=beamW; ctx.stroke();
+        // Input: laser → PBS (horizontal red)
+        ctx.beginPath(); ctx.moveTo(laserX+18,RY); ctx.lineTo(pbsX-PBS_S,RY);
+        ctx.strokeStyle='rgba(239,68,68,0.5)'; ctx.lineWidth=BW; ctx.stroke();
 
-        // Forward: PBS → lens → AOM → QWP → ceLens → mirror
-        const fwd = [
-          [pbsX+PBS_S, RY, lensX-8,       RY],
-          [lensX+8,    RY, aomX-aomW/2,   RY],
-          [aomX+aomW/2,RY, qwpX-5,        RY],
-          [qwpX+5,     RY, ceLensX-9,     RY],
-          [ceLensX+9,  RY, mirrorX-4,     RY],
-        ];
-        fwd.forEach(([x1,y1,x2,y2]) => {
-          ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
-          ctx.strokeStyle='rgba(239,68,68,0.45)'; ctx.lineWidth=beamW; ctx.stroke();
-        });
+        // PBS → lens1 → lens2 → AOM left edge (horizontal red)
+        ctx.beginPath(); ctx.moveTo(pbsX+PBS_S,RY); ctx.lineTo(aomX-aomW/2,RY);
+        ctx.strokeStyle='rgba(239,68,68,0.5)'; ctx.lineWidth=BW; ctx.stroke();
 
-        // Return: mirror → ceLens → QWP → AOM → lens → PBS (3px above fwd)
-        const retY = RY - 4;
-        const ret = [
-          [mirrorX-4,   retY, ceLensX+9,  retY],
-          [ceLensX-9,   retY, qwpX+5,     retY],
-          [qwpX-5,      retY, aomX+aomW/2,retY],
-          [aomX-aomW/2, retY, lensX+8,    retY],
-          [lensX-8,     retY, pbsX+PBS_S, retY],
-        ];
-        ret.forEach(([x1,y1,x2,y2]) => {
-          ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
-          ctx.strokeStyle='rgba(96,165,250,0.5)'; ctx.lineWidth=beamW; ctx.stroke();
-        });
+        // 0th order: straight through AOM → short stub → beam block
+        ctx.beginPath(); ctx.moveTo(aomEndX,RY); ctx.lineTo(blkX,RY);
+        ctx.strokeStyle='rgba(239,68,68,0.22)'; ctx.lineWidth=BW;
+        ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+        // beam block
+        ctx.fillStyle='rgba(60,70,90,0.8)'; ctx.fillRect(blkX-3,RY-12,6,24);
+        ctx.strokeStyle='rgba(130,140,160,0.9)'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(blkX-5,RY-10); ctx.lineTo(blkX+5,RY+10); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(blkX+5,RY-10); ctx.lineTo(blkX-5,RY+10); ctx.stroke();
+        ctx.font='7px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='rgba(100,116,139,0.75)';
+        ctx.fillText('0th  (block)', blkX+20, RY+18);
 
-        // PBS deflects return beam down → FC output (left side)
-        ctx.beginPath(); ctx.moveTo(pbsX, RY-PBS_S); ctx.lineTo(pbsX, FCY);
-        ctx.strokeStyle='rgba(74,222,128,0.5)'; ctx.lineWidth=beamW; ctx.stroke();
-        // Horizontal to FC
-        ctx.beginPath(); ctx.moveTo(pbsX, FCY); ctx.lineTo(fcOutX+10, FCY);
-        ctx.strokeStyle='rgba(74,222,128,0.5)'; ctx.lineWidth=beamW; ctx.stroke();
+        // 1st order forward: AOM exit → mirror (angled upward, orange)
+        ctx.beginPath(); ctx.moveTo(aomEndX,RY); ctx.lineTo(mirrorX-3,mirrorY);
+        ctx.strokeStyle='rgba(251,146,60,0.55)'; ctx.lineWidth=BW; ctx.stroke();
 
-        // ── PBS box ──────────────────────────────────────────────
-        ctx.fillStyle='rgba(180,200,255,0.07)';
-        ctx.strokeStyle='rgba(180,200,255,0.55)'; ctx.lineWidth=1.2;
-        ctx.fillRect(pbsX-PBS_S, RY-PBS_S, PBS_S*2, PBS_S*2);
-        ctx.strokeRect(pbsX-PBS_S, RY-PBS_S, PBS_S*2, PBS_S*2);
-        ctx.beginPath(); ctx.moveTo(pbsX-PBS_S, RY+PBS_S); ctx.lineTo(pbsX+PBS_S, RY-PBS_S);
+        // Return: mirror → AOM entry (same angled path, blue, offset 2px)
+        ctx.beginPath(); ctx.moveTo(mirrorX-3,mirrorY+2); ctx.lineTo(aomEndX,RY+2);
+        ctx.strokeStyle='rgba(96,165,250,0.55)'; ctx.lineWidth=BW; ctx.stroke();
+
+        // Return after 2nd AOM pass: horizontal blue back to PBS
+        ctx.beginPath(); ctx.moveTo(aomX-aomW/2,retY); ctx.lineTo(pbsX+PBS_S,retY);
+        ctx.strokeStyle='rgba(96,165,250,0.55)'; ctx.lineWidth=BW; ctx.stroke();
+
+        // PBS deflects H-pol return down → 45° mirror → FC
+        ctx.beginPath(); ctx.moveTo(pbsX,RY-PBS_S); ctx.lineTo(pbsX,fmY);
+        ctx.strokeStyle='rgba(74,222,128,0.5)'; ctx.lineWidth=BW; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(fmX,fmY); ctx.lineTo(fcX+10,FCY);
+        ctx.strokeStyle='rgba(74,222,128,0.5)'; ctx.lineWidth=BW; ctx.stroke();
+
+        // ── BRAGG ANGLE ARC ────────────────────────────────────────
+        const bAng = Math.atan2(mirrorY-RY, mirrorX-aomEndX);
+        ctx.beginPath(); ctx.arc(aomEndX,RY,28,bAng,0);
+        ctx.strokeStyle='rgba(251,191,36,0.5)'; ctx.lineWidth=1; ctx.stroke();
+        ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='left';
+        ctx.fillStyle='rgba(251,191,36,0.8)'; ctx.fillText('θ_B', aomEndX+30,RY-5);
+
+        // ── PBS ────────────────────────────────────────────────────
+        ctx.fillStyle='rgba(180,200,255,0.07)'; ctx.strokeStyle='rgba(180,200,255,0.55)'; ctx.lineWidth=1.2;
+        ctx.fillRect(pbsX-PBS_S,RY-PBS_S,PBS_S*2,PBS_S*2); ctx.strokeRect(pbsX-PBS_S,RY-PBS_S,PBS_S*2,PBS_S*2);
+        ctx.beginPath(); ctx.moveTo(pbsX-PBS_S,RY+PBS_S); ctx.lineTo(pbsX+PBS_S,RY-PBS_S);
         ctx.strokeStyle='rgba(180,200,255,0.75)'; ctx.lineWidth=1.5; ctx.stroke();
         ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(180,200,255,0.85)'; ctx.fillText('PBS', pbsX, RY-PBS_S-5);
+        ctx.fillStyle='rgba(180,200,255,0.85)'; ctx.fillText('PBS',pbsX,RY-PBS_S-5);
 
-        // ── Coupling lens ─────────────────────────────────────────
-        drawLens(ctx, lensX, RY, 'rgba(150,220,255,0.65)');
-        ctx.font='8px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(150,220,255,0.6)'; ctx.fillText('lens', lensX, RY+18);
+        // ── Lenses ─────────────────────────────────────────────────
+        drawLens(lens1X, RY, 'rgba(150,220,255,0.65)');
+        drawLens(lens2X, RY, 'rgba(150,220,255,0.65)');
 
-        // ── AOM crystal ───────────────────────────────────────────
-        ctx.fillStyle='rgba(251,191,36,0.08)';
-        ctx.strokeStyle='rgba(251,191,36,0.55)'; ctx.lineWidth=1.3;
-        ctx.fillRect(aomX-aomW/2, RY-aomH/2, aomW, aomH);
-        ctx.strokeRect(aomX-aomW/2, RY-aomH/2, aomW, aomH);
-        // Animated acoustic fringes (horizontal)
-        for (let i=0; i<6; i++) {
-          const fy = RY-aomH/2 + ((i + ph*4)%6)*(aomH/6);
-          ctx.beginPath(); ctx.moveTo(aomX-aomW/2+2, fy); ctx.lineTo(aomX+aomW/2-2, fy);
-          ctx.strokeStyle='rgba(251,191,36,0.25)'; ctx.lineWidth=1; ctx.stroke();
+        // ── AOM ────────────────────────────────────────────────────
+        ctx.fillStyle='rgba(251,191,36,0.07)'; ctx.strokeStyle='rgba(251,191,36,0.6)'; ctx.lineWidth=1.3;
+        ctx.fillRect(aomX-aomW/2,RY-aomH/2,aomW,aomH); ctx.strokeRect(aomX-aomW/2,RY-aomH/2,aomW,aomH);
+        const ph = ts*0.004;
+        for (let i=0;i<7;i++) {
+          const fy=RY-aomH/2+1+((i+ph)%7)*(aomH/7);
+          ctx.beginPath(); ctx.moveTo(aomX-aomW/2+2,fy); ctx.lineTo(aomX+aomW/2-2,fy);
+          ctx.strokeStyle='rgba(251,191,36,0.28)'; ctx.lineWidth=0.9; ctx.stroke();
         }
         ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(251,191,36,0.85)'; ctx.fillText('AOM', aomX, RY-aomH/2-5);
-        // f_RF label below
-        ctx.fillStyle='rgba(251,191,36,0.6)'; ctx.fillText('f_RF', aomX, RY+aomH/2+11);
+        ctx.fillStyle='rgba(251,191,36,0.85)'; ctx.fillText('AOM',aomX,RY-aomH/2-5);
+        ctx.fillStyle='rgba(251,191,36,0.55)'; ctx.fillText('f_RF',aomX,RY+aomH/2+11);
 
-        // ── QWP ───────────────────────────────────────────────────
-        ctx.save();
-        ctx.translate(qwpX, RY); ctx.rotate(0.22);
-        ctx.fillStyle='rgba(251,146,60,0.28)';
-        ctx.strokeStyle='rgba(251,146,60,0.75)'; ctx.lineWidth=2.2;
-        ctx.fillRect(-3,-17,6,34); ctx.strokeRect(-3,-17,6,34);
-        ctx.restore();
+        // ── QWP (on angled path, perpendicular to beam) ─────────────
+        ctx.save(); ctx.translate(qwpX,qwpY);
+        ctx.rotate(slope+Math.PI/2+0.18);
+        ctx.fillStyle='rgba(251,146,60,0.28)'; ctx.strokeStyle='rgba(251,146,60,0.8)'; ctx.lineWidth=2.2;
+        ctx.fillRect(-3,-17,6,34); ctx.strokeRect(-3,-17,6,34); ctx.restore();
         ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(251,146,60,0.85)'; ctx.fillText('QWP', qwpX, RY-21);
+        ctx.fillStyle='rgba(251,146,60,0.85)'; ctx.fillText('QWP',qwpX+2,qwpY-22);
 
-        // ── Cat's-eye lens ────────────────────────────────────────
-        drawLens(ctx, ceLensX, RY, 'rgba(100,200,255,0.65)');
-        ctx.font='8px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(100,200,255,0.6)'; ctx.fillText('cat-eye f', ceLensX, RY+18);
+        // ── Cat's-eye lens ─────────────────────────────────────────
+        drawLens(ceLensX, ceLensY, 'rgba(100,200,255,0.65)', 14, 5);
 
-        // ── Retroreflector mirror ─────────────────────────────────
-        ctx.fillStyle='rgba(200,210,235,0.55)';
-        ctx.fillRect(mirrorX-3, RY-20, 6, 40);
+        // ── Retroreflector ─────────────────────────────────────────
+        ctx.fillStyle='rgba(200,210,235,0.55)'; ctx.fillRect(mirrorX-3,mirrorY-18,6,36);
         ctx.strokeStyle='rgba(200,210,235,0.85)'; ctx.lineWidth=1;
-        for (let dy=-18; dy<20; dy+=7) {
-          ctx.beginPath(); ctx.moveTo(mirrorX-3,RY+dy); ctx.lineTo(mirrorX+5,RY+dy-5); ctx.stroke();
+        for (let dy=-16;dy<18;dy+=7) {
+          ctx.beginPath(); ctx.moveTo(mirrorX-3,mirrorY+dy); ctx.lineTo(mirrorX+5,mirrorY+dy-5); ctx.stroke();
         }
         ctx.font='8px Inter,sans-serif'; ctx.textAlign='left';
-        ctx.fillStyle='rgba(200,210,235,0.7)'; ctx.fillText('mirror', mirrorX+7, RY+3);
+        ctx.fillStyle='rgba(200,210,235,0.6)'; ctx.fillText('mirror',mirrorX+7,mirrorY+3);
 
-        // ── Laser input label ─────────────────────────────────────
-        ctx.fillStyle='rgba(239,68,68,0.18)';
-        ctx.strokeStyle='rgba(239,68,68,0.6)'; ctx.lineWidth=1;
-        ctx.fillRect(pbsX-10, INY-1, 20, 14); ctx.strokeRect(pbsX-10, INY-1, 20, 14);
-        ctx.font='7px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(239,68,68,0.85)'; ctx.fillText('laser', pbsX, INY+9);
-        // ν₀ label
-        ctx.font='9px JetBrains Mono,monospace';
-        ctx.fillStyle='rgba(239,68,68,0.8)'; ctx.fillText('ν₀', pbsX+14, INY+2);
-
-        // ── FC output label ───────────────────────────────────────
-        ctx.fillStyle='rgba(74,222,128,0.15)';
-        ctx.strokeStyle='rgba(74,222,128,0.65)'; ctx.lineWidth=1.2;
-        ctx.fillRect(fcOutX-6, FCY-6, 12, 12); ctx.strokeRect(fcOutX-6, FCY-6, 12, 12);
-        ctx.beginPath(); ctx.moveTo(fcOutX-6, FCY); ctx.lineTo(fcOutX-20, FCY);
-        ctx.strokeStyle='rgba(74,222,128,0.4)'; ctx.lineWidth=2; ctx.stroke();
-        ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(74,222,128,0.85)'; ctx.fillText('FC out', fcOutX, FCY+14);
-        // freq label
-        ctx.font='8px JetBrains Mono,monospace';
-        ctx.fillStyle='rgba(74,222,128,0.7)'; ctx.fillText('ν₀+2f', fcOutX+30, FCY-2);
-
-        // ── Cat's-eye brace ───────────────────────────────────────
-        const brY = RY + aomH/2 + 18;
-        ctx.beginPath(); ctx.moveTo(qwpX, brY); ctx.lineTo(mirrorX, brY);
-        ctx.strokeStyle='rgba(100,180,255,0.3)'; ctx.lineWidth=1; ctx.stroke();
+        // cat's-eye brace under AOM-to-mirror region
+        const brY = RY+aomH/2+15;
+        ctx.beginPath(); ctx.moveTo(qwpX,brY); ctx.lineTo(mirrorX,brY);
+        ctx.strokeStyle='rgba(100,180,255,0.28)'; ctx.lineWidth=1; ctx.stroke();
         ctx.beginPath(); ctx.moveTo(qwpX,brY-2); ctx.lineTo(qwpX,brY+2); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(mirrorX,brY-2); ctx.lineTo(mirrorX,brY+2); ctx.stroke();
         ctx.font='8px Inter,sans-serif'; ctx.textAlign='center';
-        ctx.fillStyle='rgba(100,180,255,0.5)'; ctx.fillText('cat\'s-eye retroreflector', (qwpX+mirrorX)/2, brY+9);
+        ctx.fillStyle='rgba(100,180,255,0.45)'; ctx.fillText("cat's-eye  (distance f)",(qwpX+mirrorX)/2,brY+9);
 
-        // ── pol labels ────────────────────────────────────────────
-        ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='left';
-        ctx.fillStyle='rgba(239,68,68,0.6)';  ctx.fillText('V-pol →', pbsX+PBS_S+3, RY-2);
-        ctx.fillStyle='rgba(96,165,250,0.65)'; ctx.textAlign='right';
-        ctx.fillText('← H-pol  ν₀+2f', pbsX-PBS_S-3, retY-3);
+        // ── 45° folding mirror below PBS ───────────────────────────
+        ctx.save(); ctx.translate(fmX,fmY); ctx.rotate(-Math.PI/4);
+        ctx.fillStyle='rgba(200,200,220,0.45)'; ctx.fillRect(-3,-13,6,26);
+        ctx.strokeStyle='rgba(200,200,220,0.7)'; ctx.lineWidth=1;
+        for (let dy=-11;dy<13;dy+=5){ ctx.beginPath(); ctx.moveTo(-3,dy); ctx.lineTo(5,dy-4); ctx.stroke(); }
+        ctx.restore();
 
-        // ── Animated photon dot ───────────────────────────────────
-        // Path: laser-in → PBS → fwd path → mirror → ret path → PBS → FC
+        // ── FC ─────────────────────────────────────────────────────
+        ctx.fillStyle='rgba(74,222,128,0.15)'; ctx.strokeStyle='rgba(74,222,128,0.65)'; ctx.lineWidth=1.2;
+        ctx.fillRect(fcX-6,FCY-6,12,12); ctx.strokeRect(fcX-6,FCY-6,12,12);
+        ctx.beginPath(); ctx.moveTo(fcX-6,FCY); ctx.lineTo(fcX-18,FCY);
+        ctx.strokeStyle='rgba(74,222,128,0.4)'; ctx.lineWidth=2; ctx.stroke();
+        ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
+        ctx.fillStyle='rgba(74,222,128,0.85)'; ctx.fillText('FC',fcX,FCY+14);
+
+        // ── Laser box ──────────────────────────────────────────────
+        ctx.fillStyle='rgba(239,68,68,0.18)'; ctx.strokeStyle='rgba(239,68,68,0.6)'; ctx.lineWidth=1;
+        ctx.fillRect(laserX,RY-8,18,16); ctx.strokeRect(laserX,RY-8,18,16);
+        ctx.font='7px Inter,sans-serif'; ctx.textAlign='center';
+        ctx.fillStyle='rgba(239,68,68,0.8)'; ctx.fillText('laser',laserX+9,RY-11);
+
+        // ── Labels ─────────────────────────────────────────────────
+        ctx.font='8px JetBrains Mono,monospace';
+        ctx.textAlign='left'; ctx.fillStyle='rgba(239,68,68,0.72)'; ctx.fillText('ν₀  V-pol',laserX+20,RY-2);
+        const midX=(aomEndX+mirrorX)/2;
+        ctx.textAlign='center'; ctx.fillStyle='rgba(251,146,60,0.8)';
+        ctx.fillText('ν₀+f  (+1 order)',midX,y1(midX)-9);
+        ctx.textAlign='right'; ctx.fillStyle='rgba(96,165,250,0.75)';
+        ctx.fillText('ν₀+2f  H-pol',pbsX-18,retY-3);
+        ctx.textAlign='center'; ctx.fillStyle='rgba(74,222,128,0.72)';
+        ctx.fillText('ν₀+2f  out',fcX+32,FCY+14);
+
+        // ── Animated photon dot ────────────────────────────────────
         const segs = [
-          // Input: bottom of canvas up to PBS
-          { x1:pbsX,        y1:INY,      x2:pbsX,        y2:RY+PBS_S, col:'rgba(239,68,68,0.95)' },
-          // Forward through components
-          { x1:pbsX+PBS_S,  y1:RY,       x2:lensX-8,     y2:RY,       col:'rgba(239,68,68,0.95)' },
-          { x1:lensX+8,     y1:RY,       x2:aomX-aomW/2, y2:RY,       col:'rgba(239,68,68,0.95)' },
-          { x1:aomX+aomW/2, y1:RY,       x2:qwpX-5,      y2:RY,       col:'rgba(251,146,60,0.95)' },
-          { x1:qwpX+5,      y1:RY,       x2:ceLensX-9,   y2:RY,       col:'rgba(251,146,60,0.95)' },
-          { x1:ceLensX+9,   y1:RY,       x2:mirrorX-4,   y2:RY,       col:'rgba(251,146,60,0.95)' },
-          // Return
-          { x1:mirrorX-4,   y1:retY,     x2:ceLensX+9,   y2:retY,     col:'rgba(96,165,250,0.95)' },
-          { x1:ceLensX-9,   y1:retY,     x2:qwpX+5,      y2:retY,     col:'rgba(96,165,250,0.95)' },
-          { x1:qwpX-5,      y1:retY,     x2:aomX+aomW/2, y2:retY,     col:'rgba(96,165,250,0.95)' },
-          { x1:aomX-aomW/2, y1:retY,     x2:lensX+8,     y2:retY,     col:'rgba(96,165,250,0.95)' },
-          { x1:lensX-8,     y1:retY,     x2:pbsX+PBS_S,  y2:retY,     col:'rgba(96,165,250,0.95)' },
-          // PBS deflects down to FC
-          { x1:pbsX,        y1:RY-PBS_S, x2:pbsX,        y2:FCY,      col:'rgba(74,222,128,0.95)' },
-          { x1:pbsX,        y1:FCY,      x2:fcOutX+10,   y2:FCY,      col:'rgba(74,222,128,0.95)' },
+          {x1:laserX+18,  y1:RY,        x2:pbsX-PBS_S,  y2:RY,        col:'rgba(239,68,68,0.95)'},
+          {x1:pbsX+PBS_S, y1:RY,        x2:aomX-aomW/2, y2:RY,        col:'rgba(239,68,68,0.95)'},
+          // 1st order angled upward from AOM exit
+          {x1:aomEndX,    y1:RY,        x2:qwpX-5,      y2:y1(qwpX-5),col:'rgba(251,146,60,0.95)'},
+          {x1:qwpX+5,     y1:y1(qwpX+5),x2:ceLensX-8,  y2:ceLensY-3, col:'rgba(251,146,60,0.95)'},
+          {x1:ceLensX+8,  y1:ceLensY+3, x2:mirrorX-3,  y2:mirrorY,    col:'rgba(251,146,60,0.95)'},
+          // Return (retroreflected, same angled path)
+          {x1:mirrorX-3,  y1:mirrorY,   x2:ceLensX+8,  y2:ceLensY+3,  col:'rgba(96,165,250,0.95)'},
+          {x1:ceLensX-8,  y1:ceLensY-3, x2:qwpX+5,     y2:y1(qwpX+5), col:'rgba(96,165,250,0.95)'},
+          {x1:qwpX-5,     y1:y1(qwpX-5),x2:aomEndX,    y2:RY,         col:'rgba(96,165,250,0.95)'},
+          // 2nd AOM pass → horizontal back to PBS
+          {x1:aomX-aomW/2,y1:retY,      x2:pbsX+PBS_S, y2:retY,       col:'rgba(96,165,250,0.95)'},
+          // PBS deflects down → 45° mirror → FC
+          {x1:pbsX,       y1:RY-PBS_S,  x2:pbsX,       y2:fmY,        col:'rgba(74,222,128,0.95)'},
+          {x1:fmX,        y1:fmY,       x2:fcX+6,      y2:FCY,        col:'rgba(74,222,128,0.95)'},
         ];
 
-        const totalLen = segs.reduce((s,sg) => s + Math.hypot(sg.x2-sg.x1, sg.y2-sg.y1), 0);
-        const T = 2.0; // seconds per full cycle
-        const dotP = ((ph / T) % 1 + 1) % 1;
-        const targetDist = dotP * totalLen;
-
-        let walked = 0, dotX = segs[0].x1, dotY = segs[0].y1, dotCol = segs[0].col;
+        const totLen=segs.reduce((s,sg)=>s+Math.hypot(sg.x2-sg.x1,sg.y2-sg.y1),0);
+        const dotP=((ts*0.00082/2.3)%1+1)%1;
+        const target=dotP*totLen;
+        let walked=0,dotX=segs[0].x1,dotY=segs[0].y1,dotCol=segs[0].col;
         for (const sg of segs) {
-          const segLen = Math.hypot(sg.x2-sg.x1, sg.y2-sg.y1);
-          if (walked + segLen >= targetDist) {
-            const frac = (targetDist - walked) / segLen;
-            dotX = sg.x1 + frac*(sg.x2-sg.x1);
-            dotY = sg.y1 + frac*(sg.y2-sg.y1);
-            dotCol = sg.col; break;
-          }
-          walked += segLen;
+          const sL=Math.hypot(sg.x2-sg.x1,sg.y2-sg.y1);
+          if (walked+sL>=target){ const f=(target-walked)/sL; dotX=sg.x1+f*(sg.x2-sg.x1); dotY=sg.y1+f*(sg.y2-sg.y1); dotCol=sg.col; break; }
+          walked+=sL;
         }
-        const glow = dotCol.replace('0.95','0.18');
-        ctx.beginPath(); ctx.arc(dotX, dotY, 7, 0, 2*Math.PI);
-        ctx.fillStyle=glow; ctx.fill();
-        ctx.beginPath(); ctx.arc(dotX, dotY, 3.5, 0, 2*Math.PI);
-        ctx.fillStyle=dotCol; ctx.fill();
+        ctx.beginPath(); ctx.arc(dotX,dotY,7,0,2*Math.PI); ctx.fillStyle=dotCol.replace('0.95','0.15'); ctx.fill();
+        ctx.beginPath(); ctx.arc(dotX,dotY,3.5,0,2*Math.PI); ctx.fillStyle=dotCol; ctx.fill();
 
         requestAnimationFrame(frame);
       }
