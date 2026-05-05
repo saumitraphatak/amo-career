@@ -283,7 +283,7 @@
       <div class="three-col">
         <div class="concept-box">
           <div class="concept-box-label">🎯 The Goal</div>
-          <p>Fault-tolerant quantum computers that run Shor's algorithm on RSA-2048 (~10⁶ physical qubits, error rate &lt;10⁻³) and simulate industrial molecules (FeMoco, nitrogenase) with ~100 logical qubits at error rates below 10⁻⁴.</p>
+          <p>Fault-tolerant quantum computers that run Shor's algorithm on RSA-2048 (~20 million physical qubits at 10⁻³ error rate — Gidney &amp; Ekerå 2021) and simulate industrial molecules (FeMoco, nitrogenase) with ~100 logical qubits at error rates below 10⁻⁴.</p>
         </div>
         <div class="concept-box">
           <div class="concept-box-label">📍 Where We Are (NISQ)</div>
@@ -291,7 +291,7 @@
         </div>
         <div class="concept-box">
           <div class="concept-box-label">🚧 The Gap</div>
-          <p>Current best two-qubit error rates are 10⁻³ to 10⁻². Surface codes need &lt;10⁻³ per gate. At ~441 physical qubits per logical qubit (distance-21 surface code), RSA-2048 breaking requires ~2×10⁶ physical qubits, 3–4 orders of magnitude beyond today.</p>
+          <p>Current best two-qubit error rates are ~10⁻³ to 10⁻². Surface codes require &lt;10⁻³ per gate to operate below threshold. Breaking RSA-2048 with Shor's algorithm requires ~20 million physical qubits at 10⁻³ error rate — Gidney &amp; Ekerå, <em>Quantum</em> (2021) — roughly 4 orders of magnitude beyond today's largest systems.</p>
         </div>
       </div>
     </section>
@@ -396,7 +396,7 @@
             <canvas id="qubitChart" height="260"></canvas>
           </div>
           <p class="chart-caption">
-            Note: Atom Computing Phoenix (1,180 atoms) demonstrated array loading; not all atoms used as qubits simultaneously.
+            Note: Atom Computing's 1,180-atom ¹⁷¹Yb array demonstrated array loading; not all atoms are used as qubits simultaneously (Phoenix was the earlier ⁸⁷Sr system, ~100 atoms).
             PsiQuantum uses photonic fusion gates, qubit count metric is not directly comparable.
           </p>
         </div>
@@ -405,9 +405,9 @@
             <canvas id="fidelityChart" height="260"></canvas>
           </div>
           <p class="chart-caption">
-            Best published values. Superconducting: IBM Heron/Google Willow. Trapped ions: Quantinuum H-series.
-            Neutral atoms: individual atom pair demos (Evered et al. 2023, Harvard).
-            Silicon spins: isotopically-purified ²⁸Si.
+            Best published values. Superconducting: IBM Heron/Google Willow. Trapped ions: Quantinuum H-series (arXiv:2305.03828).
+            Neutral atoms: Evered et al. 2023, Harvard (<em>Nature</em>).
+            Silicon spins: Mills et al. <em>Sci. Adv.</em> 2022 (²⁸Si, 99.8% CNOT). Dashed line at 99.9% indicates the error rate needed for practical overhead in surface code QEC (mathematical threshold ≈ 99%; Fowler et al. <em>PRA</em> 2012).
           </p>
         </div>
       </div>
@@ -508,7 +508,7 @@ Anharmonicity: $\alpha = \omega_{12} - \omega_{01} \approx -E_C/\hbar \approx -2
               <h3 style="color:#34d399; margin:0 0 .75rem 0;">Trapped Ion Qubits</h3>
               <div class="plat-card">
                 <h4>How it works</h4>
-                <p>Hyperfine "clock" states of ¹⁷¹Yb⁺ or ⁴³Ca⁺ ions confined in radiofrequency Paul traps. Ions are laser-cooled
+                <p>Hyperfine "clock" states of ¹⁷¹Yb⁺ or ⁴⁰Ca⁺ ions confined in radiofrequency Paul traps. Ions are laser-cooled
                 to the motional ground state; shared vibrational modes of the ion chain act as a quantum bus. The Mølmer–Sørensen
                 gate drives an entangling operation via collective phonon modes.</p>
               </div>
@@ -577,7 +577,7 @@ Fidelity limited by: Rabi freq. stability, heating rate, mode crowding</div>
                 <p>Individual neutral atoms (Rb, Cs, Yb, Sr) trapped in tightly focused laser beams (optical tweezers) —
                 intensity gradient provides a restoring force. Hyperfine ground states form the qubit. Two-qubit gates use the
                 <strong>Rydberg blockade</strong>: transient excitation to highly-excited Rydberg states (n ~ 60–100) whose
-                strong dipole-dipole interaction (V_dd ~ n⁷) prevents simultaneous excitation of two nearby atoms.</p>
+                strong van der Waals interaction (V ∝ C₆/r⁶, C₆ ∝ n¹¹) prevents simultaneous excitation of two nearby atoms.</p>
               </div>
               <div class="plat-card">
                 <h4>Key Metrics (≈ 2024)</h4>
@@ -593,9 +593,9 @@ Fidelity limited by: Rabi freq. stability, heating rate, mode crowding</div>
               <div class="plat-card">
                 <h4>Current Engineering Challenges</h4>
                 <p>
-                  <strong style="color:var(--text-secondary)">① Gate fidelity:</strong> Native CZ/CCZ gate fidelities of 97–99.5% are achieved (Evered et al. 2023), but reaching 99.9%+ consistently across large arrays remains the primary target for fault tolerance.<br><br>
-                  <strong style="color:var(--text-secondary)">② Mid-circuit measurement:</strong> Measuring a subset of atoms without disturbing the rest is essential for quantum error correction. Demonstrated at small scale (Bluvstein et al. 2022); extending to 100+ qubit arrays is an active area.<br><br>
-                  <strong style="color:var(--text-secondary)">③ Scaling and connectivity:</strong> Moving atoms between zones (Atom Computing, QuEra) and maintaining coherence during transport is needed for >1000-qubit fault-tolerant operation.
+                  <strong style="color:var(--text-secondary)">① Gate fidelity:</strong> Native CZ gate fidelity of 99.5% demonstrated (Evered et al., <em>Nature</em> 2023). Reaching 99.9%+ across large arrays is the primary target for fault tolerance.<br><br>
+                  <strong style="color:var(--text-secondary)">② Mid-circuit measurement:</strong> Selective atom readout without disturbing neighbours demonstrated with 48 logical qubits (Bluvstein et al., <em>Nature</em> 2024). Extending to larger arrays with full feed-forward is an active area.<br><br>
+                  <strong style="color:var(--text-secondary)">③ Scaling and connectivity:</strong> Atom Computing demonstrated a 1,180-qubit ¹⁷¹Yb array (2023). Maintaining coherence during atom transport between gate and storage zones is the next engineering challenge.
                 </p>
               </div>
               <div class="formula-box" style="font-size:.82rem; line-height:1.8;">
@@ -617,7 +617,7 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
               </div>
               <div class="plat-card">
                 <h4><a href="https://atom-computing.com" target="_blank" rel="noopener" style="color:#c4b5fd;">Atom Computing ↗</a></h4>
-                <p>Phoenix (1180 Sr atoms demonstrated). Focus on ⁸⁷Sr nuclear spin qubits (longer T₂). Modular architecture.</p>
+                <p>1,180-qubit ¹⁷¹Yb array demonstrated (2023); earlier Phoenix system used ⁸⁷Sr. Nuclear spin qubit (I=1/2) enables longer T₂.</p>
               </div>
               <div class="plat-card">
                 <h4><a href="https://infleqtion.com" target="_blank" rel="noopener" style="color:#c4b5fd;">Infleqtion ↗</a></h4>
@@ -689,7 +689,8 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
                 <h4>Key Papers</h4>
                 <ul>
                   <li><a href="https://www.nature.com/articles/s41586-022-04903-3" target="_blank" rel="noopener">Six-qubit Si/SiGe processor (Philips et al., <em>Nature</em> 2022)</a></li>
-                  <li><a href="https://www.nature.com/articles/s41586-022-04566-0" target="_blank" rel="noopener">99.8% 2Q fidelity in ²⁸Si (Noiri et al., <em>Nature</em> 2022)</a></li>
+                  <li><a href="https://www.science.org/doi/10.1126/sciadv.abn5130" target="_blank" rel="noopener">99.8% CNOT fidelity in ²⁸Si (Mills et al., <em>Sci. Adv.</em> 2022)</a></li>
+                  <li><a href="https://www.nature.com/articles/s41586-022-04566-0" target="_blank" rel="noopener">99.5% 2Q fidelity in ²⁸Si (Noiri et al., <em>Nature</em> 2022)</a></li>
                   <li><a href="https://arxiv.org/abs/2410.16583" target="_blank" rel="noopener">Intel Tunnel Falls 12-qubit (2024)</a></li>
                   <li><a href="https://link.aps.org/doi/10.1103/PhysRevApplied.15.034011" target="_blank" rel="noopener">ML-assisted dot tuning (Zwolak et al., <em>PRApplied</em> 2021)</a></li>
                 </ul>
@@ -729,7 +730,7 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
               <h4 style="color:var(--text-secondary); margin:0 0 .6rem 0;">Companies</h4>
               <div class="plat-card">
                 <h4><a href="https://psiquantum.com" target="_blank" rel="noopener" style="color:#f9a8d4;">PsiQuantum ↗</a></h4>
-                <p>Largest-funded photonic QC startup (~$700M). Fusion-based QC on GlobalFoundries silicon photonics. Target: 1M+ photonic qubits.</p>
+                <p>Major photonic QC startup (&gt;$1B total funding incl. AUD $940M Queensland government investment, 2023). Fusion-based QC on GlobalFoundries silicon photonics. Target: 1M+ photonic qubits.</p>
               </div>
               <div class="plat-card">
                 <h4><a href="https://xanadu.ai" target="_blank" rel="noopener" style="color:#f9a8d4;">Xanadu ↗</a></h4>
@@ -821,11 +822,11 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
 
       <div class="concept-box" style="margin-bottom:1.25rem;">
         <div class="concept-box-label">🛡️ Surface Code</div>
-        <p>The leading error correction scheme. Encodes 1 logical qubit in d² physical qubits (d = code distance). Can correct
-        any error affecting fewer than d/2 qubits per syndrome round. At physical error rate ~10⁻³, a distance-21 surface code
-        gives one logical qubit at 10⁻¹⁰ logical error rate, at the cost of 441 physical qubits and continuous syndrome
-        measurement. Running Shor's algorithm on RSA-2048 requires ~4000 logical qubits →
-        <strong>~2×10⁶ physical qubits</strong>.</p>
+        <p>The leading error correction scheme. Encodes 1 logical qubit in ~2d² physical qubits (d = code distance). Can correct
+        any error affecting fewer than ⌊d/2⌋ qubits per syndrome round. At physical error rate ~10⁻³, a distance-21 code
+        (≈882 physical qubits per logical qubit) achieves a logical error rate of ~10⁻¹⁰ per cycle (extrapolated from
+        Fowler et al., <em>PRA</em> 2012). Breaking RSA-2048 with Shor's algorithm requires approximately
+        <strong>20 million physical qubits</strong> — Gidney &amp; Ekerå, <em>Quantum</em> 5, 433 (2021).</p>
       </div>
 
       <div class="timeline-grid">
@@ -906,12 +907,12 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot solid"></div>
             <span class="tl-year">2023</span>
-            <span class="tl-label">Harvard 99.5% Rydberg 2Q gate</span>
+            <span class="tl-label">99.5% Rydberg CZ gate (Evered et al., Harvard)</span>
           </div>
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot solid"></div>
             <span class="tl-year">2023</span>
-            <span class="tl-label">99.5% Rydberg gate (Evered et al., Harvard)</span>
+            <span class="tl-label">1,180-qubit ¹⁷¹Yb array (Atom Computing)</span>
           </div>
           <div class="tl-event" style="color:#a78bfa;">
             <div class="tl-dot solid"></div>
@@ -1030,7 +1031,7 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
       <div class="roadmap-item" style="background:#1c1007; border-left:4px solid #d97706;">
         <div style="flex:1;">
           <div class="ri-title" style="color:#fcd34d;">② Scale to ~10⁴ atoms</div>
-          <p class="ri-desc">Multiplexed AOD arrays + parallel imaging. Atom Computing Phoenix demonstrated 1180 atoms loaded (2023).</p>
+          <p class="ri-desc">Multiplexed AOD arrays + parallel imaging. Atom Computing demonstrated a 1,180-qubit ¹⁷¹Yb array (2023). QuEra Aquila: 256 Rb atoms.</p>
         </div>
         <span class="ri-badge" style="background:#d9770622; color:#fcd34d; border:1px solid #d97706;">Near-term</span>
       </div>
@@ -1088,6 +1089,8 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
           <ul>
             <li><a href="https://arxiv.org/abs/quant-ph/0002077" target="_blank" rel="noopener">DiVincenzo (2000), Five criteria</a></li>
             <li><a href="https://arxiv.org/abs/1801.00862" target="_blank" rel="noopener">Preskill (2018), NISQ era</a></li>
+            <li><a href="https://arxiv.org/abs/1905.09749" target="_blank" rel="noopener">Gidney &amp; Ekerå, <em>Quantum</em> 2021 — RSA-2048 needs ~20M qubits</a></li>
+            <li><a href="https://link.aps.org/doi/10.1103/PhysRevA.86.032324" target="_blank" rel="noopener">Fowler et al. (2012), Surface code threshold &amp; resource estimates</a></li>
             <li><a href="https://www.nature.com/articles/s41586-022-04903-3" target="_blank" rel="noopener">Philips et al. (Si), Nature 2022</a></li>
             <li><a href="https://www.nature.com/articles/s41586-022-04725-x" target="_blank" rel="noopener">Madsen et al. (Xanadu), Nature 2022</a></li>
             <li><a href="https://arxiv.org/abs/2502.12252" target="_blank" rel="noopener">Microsoft topological qubit, 2025</a></li>
@@ -1179,13 +1182,13 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
       const ctx = document.getElementById('qubitChart').getContext('2d');
       const systems = [
         { name: 'IBM Condor',           type: 'Superconducting', count: 1121 },
-        { name: 'Atom Computing Phoenix',type: 'Neutral Atoms',   count: 1180 },
+        { name: 'Atom Computing (Yb)',   type: 'Neutral Atoms',   count: 1180 },
         { name: 'IBM Heron r2',         type: 'Superconducting', count: 156  },
         { name: 'QuEra Aquila',         type: 'Neutral Atoms',   count: 256  },
         { name: 'Quantinuum H2',        type: 'Trapped Ions',    count: 56   },
         { name: 'Google Willow',        type: 'Superconducting', count: 105  },
         { name: 'Pasqal Fresnel',       type: 'Neutral Atoms',   count: 100  },
-        { name: 'IonQ Forte',          type: 'Trapped Ions',    count: 36   },
+        { name: 'IonQ Forte',           type: 'Trapped Ions',    count: 36   },
         { name: 'Intel Tunnel Falls',   type: 'Silicon Spins',   count: 12   },
         { name: 'PsiQuantum',           type: 'Photonic',        count: 0    },
       ];
@@ -1290,10 +1293,10 @@ $\langle n\rangle = k_{\rm B}T/(\hbar\omega_{\rm trap})$; state-of-art: $\langle
     (function() {
       const PLATFORMS = [
         { name: 'IBM (SC)',       qubits: 1121,  color: '#60a5fa', detail: 'Condor 1121Q (2023)' },
-        { name: 'Google (SC)',    qubits: 70,    color: '#34d399', detail: 'Sycamore 72Q (2023)' },
+        { name: 'Google (SC)',    qubits: 105,   color: '#34d399', detail: 'Willow 105Q (2024)' },
         { name: 'IonQ (Ions)',    qubits: 35,    color: '#a78bfa', detail: '#AQ 35 (2024)' },
         { name: 'Quantinuum',     qubits: 56,    color: '#fbbf24', detail: 'H2: 56 Yb⁺ ions' },
-        { name: 'Atom Comp.',     qubits: 1180,  color: '#fb923c', detail: 'Phoenix 1180 atoms' },
+        { name: 'Atom Comp.',     qubits: 1180,  color: '#fb923c', detail: '¹⁷¹Yb array 1180 atoms (2023)' },
         { name: 'QuEra (Na)',     qubits: 256,   color: '#f472b6', detail: 'Aquila 256 atoms' },
         { name: 'PsiQuantum',     qubits: 1e6,   color: '#38bdf8', detail: 'Projected ~1M photons' },
       ];
