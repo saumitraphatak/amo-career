@@ -444,7 +444,7 @@
     <div class="stat-row">
       <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">99.5%</div><div class="stat-label">Rb87 2Q fidelity<br>(Evered et al. 2023)</div></div>
       <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">12.6 s</div><div class="stat-label">Rb87 coherence T₂<br>(Manetsch et al. 2025)</div></div>
-      <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">99.72%</div><div class="stat-label">Yb171 2Q fidelity<br>(Ma et al. 2025, post-sel)</div></div>
+      <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">99.72%</div><div class="stat-label">Yb171 2Q fidelity<br>(Muniz et al. 2025, post-sel)</div></div>
       <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">J = 0</div><div class="stat-label">Yb171 ground state<br>electronic protection</div></div>
     </div>
   </section>
@@ -548,7 +548,7 @@
             <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">Rydberg</text>
 
             <!-- 3S1 or nP via UV ~300 nm -->
-            <text x="50" y="62" fill="#94a3b8" font-size="9" text-anchor="end">UV/green</text>
+            <text x="50" y="62" fill="#94a3b8" font-size="9" text-anchor="end">~302 nm UV</text>
 
             <!-- 3P0 metastable clock state -->
             <line x1="70" y1="120" x2="250" y2="120" stroke="#fbbf24" stroke-width="2.5"/>
@@ -573,7 +573,7 @@
             <text x="260" y="275" fill="#34d399" font-size="11" font-family="JetBrains Mono,monospace">|↓⟩ mI=−½</text>
 
             <!-- Qubit gap label -->
-            <text x="62" y="258" fill="#34d399" font-size="10" text-anchor="end" opacity="0.8">~12 kHz/G</text>
+            <text x="62" y="258" fill="#34d399" font-size="10" text-anchor="end" opacity="0.8">~2.6 kHz/G</text>
             <line x1="68" y1="242" x2="68" y2="268" stroke="#34d399" stroke-width="1" opacity="0.5"/>
             <line x1="63" y1="242" x2="68" y2="242" stroke="#34d399" stroke-width="1" opacity="0.5"/>
             <line x1="63" y1="268" x2="68" y2="268" stroke="#34d399" stroke-width="1" opacity="0.5"/>
@@ -596,7 +596,7 @@
 
             <!-- Rydberg from 3P0 -->
             <line x1="165" y1="118" x2="165" y2="30" stroke="#818cf8" stroke-width="1.8" marker-end="url(#arr-yb-ryd)"/>
-            <text x="182" y="72" fill="#818cf8" font-size="10" text-anchor="middle">UV/green</text>
+            <text x="182" y="72" fill="#818cf8" font-size="10" text-anchor="middle">~302 nm UV</text>
 
             <!-- J=0 shield symbol -->
             <text x="155" y="218" fill="#34d399" font-size="10" text-anchor="middle" opacity="0.7">J=0 · no electron mag. moment</text>
@@ -605,7 +605,7 @@
             <path d="M 100 268 C 85 255 85 245 100 240" stroke="#34d399" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
             <text x="77" y="252" fill="#34d399" font-size="9" text-anchor="middle">RF</text>
           </svg>
-          <div class="level-caption">Yb171 level structure. Qubit: nuclear spin mI=±½ in ¹S₀ ground state (J=0). Clock transition to ³P₀ at 578 nm. Rydberg excitation from ³P₀ via UV/green light. MOT on ¹P₁ at 399 nm.</div>
+          <div class="level-caption">Yb171 level structure. Qubit: nuclear spin mI=±½ in ¹S₀ ground state (J=0). Clock transition to ³P₀ at 578 nm. Rydberg excitation: single UV photon (~302 nm) from ³P₀ to Rydberg nP state. MOT on ¹P₁ at 399 nm; narrow-line cooling on ³P₁ at 556 nm.</div>
         </div>
 
         <ul>
@@ -614,18 +614,21 @@
           <li><strong>Ground state:</strong> ¹S₀ (J = 0, critical for qubit protection)</li>
           <li><strong>Cooling transitions:</strong> ¹P₁ at 399 nm (broad), ³P₁ at 556 nm (intercombination)</li>
           <li><strong>Clock transition:</strong> ¹S₀ → ³P₀ at 578 nm (< 10 mHz linewidth)</li>
-          <li><strong>Rydberg excitation:</strong> Two-photon from ³P₀ via UV/green laser</li>
+          <li><strong>Rydberg excitation:</strong> Single UV photon (~302 nm) from metastable ³P₀ state to Rydberg nP levels; overall path from ¹S₀ is two-photon (578 nm + 302 nm)</li>
           <li><strong>Magic wavelength:</strong> 759 nm (eliminates differential light shift)</li>
         </ul>
       </div>
     </div>
 
     <div class="insight">
-      <strong>The J=0 advantage:</strong> In Yb171, the ¹S₀ ground state has zero electronic angular momentum (J=0).
-      The only magnetic moment is the tiny nuclear magnetic moment (μ_N ≈ μ_B/1836). This means the qubit states
-      |mI=±½⟩ are insensitive to magnetic field fluctuations at first order, the qubit frequency shifts as
-      δν ∝ μ_N · B rather than μ_B · B. In Rb87, the hyperfine qubit has an electronic Zeeman effect
-      (μ_B scale), requiring more stringent magnetic shielding and contributing to dephasing at higher fields.
+      <strong>The J=0 advantage (correctly stated):</strong> In Yb171, the ¹S₀ ground state has J=0, so the
+      qubit (nuclear spin mI=±½) couples only at the nuclear magneton scale (~2.6 kHz/G, linear in B).
+      Rb87 <em>clock</em> states |mF=0⟩ have <strong>zero first-order Zeeman</strong> — their sensitivity is
+      quadratic (~1288 Hz/G² × B²). At a typical bias field B₀~1 G both platforms show similar B-noise
+      sensitivity (~2.6 Hz/mG); Yb171 gains an advantage above ~1 G and Rb87 is better below ~0.3 G.
+      The <em>primary</em> structural advantages of Yb171's J=0 ground state are: (1) <strong>collisional immunity</strong>
+      — no electronic spin means spin-exchange relaxation is highly suppressed; (2) <strong>magic wavelength</strong>
+      at 759 nm — differential AC Stark shift is zero automatically; (3) <strong>erasure conversion</strong> via ³P₀.
     </div>
   </section>
 
@@ -644,11 +647,14 @@
         <div class="formula-box">
 $$|0\rangle = |F{=}1, m_F{=}0\rangle, \quad |1\rangle = |F{=}2, m_F{=}0\rangle$$
 $$\nu_{\rm qubit} = 6{,}834{,}682{,}610.904\;\text{Hz} \approx 6.834\;\text{GHz}$$
-Zeeman shift: $\delta\nu \approx \pm\, 0.70\;\text{kHz/mG}$ (linear in B near zero crossing)</div>
+Clock states ($m_F{=}0$): first-order Zeeman is exactly zero.<br>
+Quadratic (second-order) Zeeman: $\delta\nu \approx +1288\;\text{Hz/G}^2 \times B^2$<br>
+Sensitivity to fluctuations $\delta B$ at bias field $B_0$: $\delta\nu \approx 2576\;\text{Hz/G}^2 \times B_0 \cdot \delta B$</div>
         <ul>
           <li>Driven by microwave pulses at 6.834 GHz (or two-photon Raman beams)</li>
-          <li>First-order Zeeman effect: qubit frequency shifts linearly with B-field</li>
-          <li>Clock states (mF=0) chosen to minimize first-order Zeeman sensitivity, but residual sensitivity remains via second-order Zeeman at &gt;0.1 G</li>
+          <li><strong>Clock states |mF=0⟩: zero first-order Zeeman</strong> — symmetry cancels linear Zeeman exactly for mF=0 ↔ mF=0 transition</li>
+          <li>Residual quadratic Zeeman: ~1288 Hz/G² × B²; at B=1 G → 1288 Hz total shift, sensitivity dν/dB = 2576 Hz/G</li>
+          <li>At typical bias field B₀=1 G, noise δB=1 mG: δν ≈ 2.6 Hz — comparable to Yb171 nuclear Zeeman at same field</li>
           <li>Differential light shift from tweezers must be calibrated or nulled</li>
         </ul>
       </div>
@@ -662,10 +668,10 @@ Zeeman shift: $\delta\nu \approx \pm\, 0.70\;\text{kHz/mG}$ (linear in B near ze
         <div class="formula-box">
 $$|0\rangle = |m_I{=}-\tfrac{1}{2}\rangle, \quad |1\rangle = |m_I{=}+\tfrac{1}{2}\rangle$$
 $$\nu_{\rm qubit}(B) = g_I \,\mu_N \, B / h \approx -\,2.592\;\text{kHz/G} \times B$$
-Zeeman shift: ${\sim}2.6\;\text{kHz/G}$ (nuclear magneton scale, $\times\,1836$ smaller than $\mu_B$)</div>
+Zeeman shift: ${\sim}2.6\;\text{kHz/G}$ (nuclear magneton scale; qubit frequency ~26 kHz at $B=10\;\text{G}$)</div>
         <ul>
           <li>Driven by RF pulses (kHz–MHz range in typical lab fields) or two-photon Raman</li>
-          <li>First-order Zeeman shift is nuclear magneton scale, ~1836× smaller than Rb87</li>
+          <li>First-order Zeeman shift at nuclear magneton scale (~2.6 kHz/G); Rb87 clock states have zero first-order Zeeman and only quadratic ~1288 Hz/G²</li>
           <li>Magic wavelength trap (759 nm) eliminates differential AC Stark shift between |0⟩ and |1⟩</li>
           <li>No electronic magnetic moment in ground state → intrinsic noise immunity</li>
         </ul>
@@ -677,11 +683,13 @@ Zeeman shift: ${\sim}2.6\;\text{kHz/G}$ (nuclear magneton scale, $\times\,1836$ 
     </div>
 
     <div class="formula-box" style="font-size:.85rem; line-height:1.9;">
-$$\underbrace{\delta\nu_{\rm Rb87}}_{\text{hyperfine qubit}} \approx 0.7\;\text{kHz/mG} \cdot \delta B
+$$\underbrace{\delta\nu_{\rm Rb87}^{\rm (clock)}}_{\text{quadratic Zeeman}} \approx 2 \times 1288\;\text{Hz/G}^2 \times B_0 \cdot \delta B
 \qquad \text{vs} \qquad
-\underbrace{\delta\nu_{\rm Yb171}}_{\text{nuclear spin qubit}} \approx 0.0026\;\text{kHz/mG} \cdot \delta B$$
-For typical lab noise $\delta B \sim 1\;\text{mG}$: $\delta\nu_{\rm Rb87} \approx 700\;\text{Hz}$, $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$
-— a factor of <strong>~270 better noise immunity</strong> for Yb171 from B-field fluctuations alone.
+\underbrace{\delta\nu_{\rm Yb171}}_{\text{nuclear spin, linear}} \approx 2.6\;\text{kHz/G} \times \delta B$$
+At $B_0 = 1\;\text{G}$, $\delta B = 1\;\text{mG}$:
+$\delta\nu_{\rm Rb87}^{\rm (clock)} \approx 2.6\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — <strong>comparable at 1 G.</strong><br>
+At $B_0 = 10\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 26\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — Yb171 is 10× better.<br>
+At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.26\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — Rb87 clock is <em>better</em> at low fields.
     </div>
   </section>
 
@@ -806,7 +814,7 @@ Ops within T₂: $N_{\rm ops} \approx T_2 / t_{\rm gate} \approx 12.6\;\text{s} 
         </ul>
         <div class="formula-box">
 $$\delta\nu_{\rm Yb171} \approx g_I\mu_N B/h \approx 2.6\;\text{Hz/mG} \times B[\text{mG}]$$
-For $B = 1\;\text{G}$: $\delta\nu \approx 2.6\;\text{kHz}$ (Rb87: $\sim 700\;\text{kHz}$)
+At $B = 1\;\text{G}$: $\delta\nu_{\rm Yb171} \approx 2.6\;\text{kHz}$; Rb87 clock qubit: $\delta\nu \approx 1.29\;\text{kHz}$ (quadratic Zeeman)<br>
 Magic wavelength: $\Delta\alpha(\lambda_{\rm magic}) = 0$ → no tweezer dephasing
         </div>
       </div>
@@ -856,11 +864,11 @@ Best: 1 − 99.5% = 0.5% total error budget
       <div class="atom-col yb">
         <div class="atom-col-header"><span class="atom-col-title">Yb171 Gate Results</span></div>
         <ul>
-          <li><strong>Best 2Q CZ fidelity:</strong> 99.72(3)% with post-selection (Ma et al. PRX Quantum 2025) <span class="adv-yb">Ma 2025</span></li>
+          <li><strong>Best 2Q CZ fidelity:</strong> 99.72(3)% with post-selection (Muniz et al. PRX Quantum 2025) <span class="adv-yb">Muniz 2025</span></li>
           <li><strong>Without post-selection:</strong> 99.40(3)%, still competitive with Rb87</li>
           <li><strong>Rydberg gate fidelity (F=1/2 Rydberg):</strong> 99.4(1)% (Ma et al. 2024), 3.3× improvement over earlier results</li>
-          <li><strong>1Q gate fidelity:</strong> &gt;99.5% (Ma 2025)</li>
-          <li><strong>Gate mechanism:</strong> Rydberg blockade via excitation from ³P₀ (metastable) state using UV or green laser</li>
+          <li><strong>1Q gate fidelity:</strong> &gt;99.5% (Muniz 2025)</li>
+          <li><strong>Gate mechanism:</strong> Rydberg blockade via single UV photon (~302 nm) from ³P₀ (metastable) to Rydberg nP state</li>
           <li><strong>Gate speed:</strong> ~1–5 μs per two-qubit gate (similar to Rb87)</li>
           <li><strong>Unique feature:</strong> Can encode qubit in both nuclear spin AND clock state (³P₀), dual encoding protocols</li>
           <li><strong>Array size for gate demos:</strong> 1180-qubit Atom Computing Phoenix; gate fidelity demos on smaller subsets</li>
@@ -950,7 +958,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
           <li><strong>2022:</strong> Jenkins et al., 10×10 array, 92.73% filling efficiency</li>
           <li><strong>2023:</strong> Atom Computing Phoenix, 1,180 qubits (1,225 sites)</li>
           <li><strong>2024:</strong> Atom Computing, 40 s quantum memory coherence announced</li>
-          <li><strong>2025:</strong> Ma et al. PRX Quantum, 99.72% gate fidelity (small array)</li>
+          <li><strong>2025:</strong> Muniz et al. (Atom Computing collab.), PRX Quantum, 99.72% gate fidelity (post-sel)</li>
           <li><strong>Gate fidelity at scale:</strong> Not yet demonstrated at 1000+ qubits simultaneously</li>
           <li><strong>Rearrangement:</strong> Similar AOD-based sorting; magic-wavelength tweezer enables defect-free loading</li>
           <li><strong>Roadmap:</strong> Scale to 10,000+ qubits, demonstrate surface code, integrate photonic network</li>
@@ -1080,9 +1088,9 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
           </tr>
           <tr>
             <td>B-field sensitivity</td>
-            <td class="rb-td win rb">0.7 kHz/mG (first-order Zeeman)</td>
-            <td class="yb-td win yb">0.0026 kHz/mG (nuclear magneton)</td>
-            <td><span class="adv-yb">Yb</span> 270×</td>
+            <td class="rb-td">~0 first-order; quadratic ~1288 Hz/G² × B² (clock states mF=0)</td>
+            <td class="yb-td win yb">~2.6 Hz/mG (linear, nuclear magneton scale)</td>
+            <td><span class="adv-yb">Yb</span> at B &gt; 1 G; <span class="adv-rb">Rb</span> at B &lt; 0.3 G</td>
           </tr>
           <tr>
             <td>Light-shift cancellation</td>
@@ -1115,7 +1123,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
             <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Gate Performance</td>
             <td>Best 2Q fidelity</td>
             <td class="rb-td">99.5% raw, parallel (Evered 2023)</td>
-            <td class="yb-td win yb">99.72% with post-sel (Ma 2025)</td>
+            <td class="yb-td win yb">99.72% with post-sel (Muniz 2025)</td>
             <td><span class="adv-yb">Yb</span> (slightly)</td>
           </tr>
           <tr>
@@ -1189,7 +1197,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
           <tr>
             <td>Rydberg UV laser</td>
             <td class="rb-td win rb">480 nm (diode-pumped solid-state)</td>
-            <td class="yb-td">UV or green (~300–400 nm, harder)</td>
+            <td class="yb-td">~302 nm UV (single photon from ³P₀); harder than Rb 480 nm diode</td>
             <td><span class="adv-rb">Rb</span></td>
           </tr>
 
@@ -1227,7 +1235,11 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
         </div>
         <div class="company-card">
           <h4>Harvard/MIT Academic Groups</h4>
-          <p>Lukin group (Harvard): All major Rb gate fidelity/logical qubit demonstrations. Greiner group (Harvard): Quantum simulation. Vuletic group (MIT): Tweezer array methods. Most of the landmark papers originate here and license to QuEra.</p>
+          <p>Lukin group (Harvard): All major Rb gate fidelity/logical qubit demonstrations (Evered 2023, Bluvstein 2024). Greiner group (Harvard): Quantum simulation. Vuletic group (MIT): Tweezer array methods. Most of the landmark papers originate here and license to QuEra.</p>
+        </div>
+        <div class="company-card">
+          <h4>Endres Group, Caltech</h4>
+          <p>Manuel Endres group at Caltech. Published the 6100-qubit Rb87 array with T₂=12.6 s (Manetsch et al., Nature 2025) — the largest coherent neutral-atom array demonstrated. Focuses on scalability and coherence rather than gate fidelity.</p>
         </div>
       </div>
 
@@ -1239,7 +1251,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
         </div>
         <div class="company-card">
           <h4>Kaufman Group (JILA/CU Boulder)</h4>
-          <p>Adam Kaufman's group at JILA was the first to demonstrate nuclear-spin Yb171 qubits in optical tweezers (Jenkins et al. PRX Quantum 2022). Key academic partner for Atom Computing. Also works on Sr87 and other alkaline-earth species. Published the high-fidelity gate benchmarking (Ma et al. 2025).</p>
+          <p>Adam Kaufman's group at JILA was the first to demonstrate nuclear-spin Yb171 qubits in optical tweezers (Jenkins et al. PRX Quantum 2022). Key academic partner for Atom Computing. Also works on Sr87 and other alkaline-earth species. The 99.72% gate fidelity result (Muniz et al. PRX Quantum 2025) is an Atom Computing collaboration with JILA and other groups.</p>
         </div>
         <div class="company-card">
           <h4>NIST / Optical Clock Groups</h4>
@@ -1288,7 +1300,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
         <div class="paper-title">Parallel implementation of high-fidelity multiqubit gates with neutral atoms</div>
         <div class="paper-meta">Levine, Keesling, Semeghini et al., PRL 123, 170503 (2019)</div>
         <p class="paper-desc">First high-fidelity (97.4%) parallel Rydberg gates on Rb87 qubits. Introduced the basis for the Harvard group's Rydberg gate protocol.</p>
-        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.123603" target="_blank" rel="noopener">PRL ↗</a> · <a href="https://arxiv.org/abs/1908.06101" target="_blank" rel="noopener">arXiv:1908.06101 ↗</a></p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.123.170503" target="_blank" rel="noopener">PRL ↗</a> · <a href="https://arxiv.org/abs/1908.06101" target="_blank" rel="noopener">arXiv:1908.06101 ↗</a></p>
       </div>
       <div class="paper-card">
         <div class="paper-title">256-atom quantum simulator (QuEra Aquila)</div>
@@ -1308,14 +1320,14 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
       </div>
       <div class="paper-card">
         <div class="paper-title">High-fidelity universal gates for ¹⁷¹Yb nuclear-spin qubits</div>
-        <div class="paper-meta">Ma, Zhang, Kolkowitz, Kaufman et al., PRX Quantum 6, 020334 (2025)</div>
-        <p class="paper-desc">99.72% two-qubit CZ gate fidelity with post-selection, 99.40% raw. Universal gate set demonstrated. Error budget fully explained. Establishes Yb171 as a competitive gate platform.</p>
+        <div class="paper-meta">Muniz, Stone, Stack et al. (Atom Computing collaboration, 53 authors), PRX Quantum 6, 020334 (2025)</div>
+        <p class="paper-desc">99.72(3)% two-qubit CZ gate fidelity with post-selection, 99.40(3)% raw. Universal gate set with individually controlled and parallel single- and two-qubit gates. Demonstrates &gt;200 CZ gates on atom pairs. Establishes Yb171 ground-state nuclear spin qubit as a top-tier gate platform.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://link.aps.org/doi/10.1103/PRXQuantum.6.020334" target="_blank" rel="noopener">PRX Quantum ↗</a> · <a href="https://arxiv.org/abs/2411.11708" target="_blank" rel="noopener">arXiv:2411.11708 ↗</a></p>
       </div>
       <div class="paper-card">
         <div class="paper-title">Rydberg excitation spectroscopy of ¹⁷¹Yb and improved Rydberg gate fidelity</div>
-        <div class="paper-meta">Ma et al., arXiv:2406.01482 (2024)</div>
-        <p class="paper-desc">CZ fidelity 99.4(1)% using I=1/2 Rydberg pathway, 3.3× improvement over F=3/2 Rydberg. Detailed Rydberg state spectroscopy for Yb171. Clarifies Rydberg excitation pathway from ³P₀.</p>
+        <div class="paper-meta">Ma, Peper, Li, Knapp, Liu, Peng, Zhang, Horvath, Burgers, Thompson (Princeton), arXiv:2406.01482 (2024)</div>
+        <p class="paper-desc">CZ fidelity 99.4(1)% using F=1/2 Rydberg series (3.3× better than F=3/2). MQDT spectroscopy of ¹⁷¹Yb Rydberg states. Single-photon UV (~302 nm) excitation from ³P₀ to Rydberg nP levels. Thompson group, Princeton.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2406.01482" target="_blank" rel="noopener">arXiv:2406.01482 ↗</a></p>
       </div>
       <div class="paper-card">
@@ -1546,8 +1558,8 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
       { label: 'Rb87\n(Evered 2023)', rb: 99.5, yb: null, year: 2023 },
       { label: 'Yb171\n(Ma 2024 Rydberg)', rb: null, yb: 99.4, year: 2024 },
       { label: 'Rb87 logical\n(Bluvstein 2024)', rb: 99.5, yb: null, year: 2024 },
-      { label: 'Yb171\n(Ma 2025 raw)', rb: null, yb: 99.40, year: 2025 },
-      { label: 'Yb171\n(Ma 2025 post-sel)', rb: null, yb: 99.72, year: 2025 },
+      { label: 'Yb171\n(Muniz 2025 raw)', rb: null, yb: 99.40, year: 2025 },
+      { label: 'Yb171\n(Muniz 2025 post-sel)', rb: null, yb: 99.72, year: 2025 },
     ];
 
     new Chart(ctx, {
