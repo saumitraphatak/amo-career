@@ -222,6 +222,7 @@
         <button class="tab-btn" data-tab="wavefront">🔧 Wavefront Builder</button>
         <button class="tab-btn" data-tab="slm">📡 SLM &amp; Far Field</button>
         <button class="tab-btn" data-tab="gallery">🗺️ Mode Gallery</button>
+        <button class="tab-btn" data-tab="gs">⚡ Gerchberg-Saxton</button>
       </div>
 
       <!-- ══════════════ TAB 1: SINGLE MODE ══════════════ -->
@@ -477,6 +478,91 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
 
         <div id="galleryWrap" style="overflow-x:auto;"></div>
       </div>
+
+      <!-- ══════════════ TAB 5: GERCHBERG-SAXTON ══════════════ -->
+      <div class="tab-panel" data-tab="gs">
+        <div class="theory-box">
+          <h4>Gerchberg-Saxton (GS) Algorithm — iterative phase retrieval</h4>
+          <p>
+            Given a desired far-field intensity |T(u,v)|² (e.g. a reconfigurable tweezer array),
+            GS finds the SLM phase pattern φ(x,y) that produces it.
+            The algorithm alternates between the SLM plane and the target plane, enforcing
+            known amplitude constraints in each:
+          </p>
+        </div>
+
+        <!-- GS flow diagram -->
+        <canvas id="gsFlowCanvas" width="600" height="90"
+          style="display:block;width:100%;max-width:600px;border-radius:8px;background:#050d1a;margin-bottom:1rem;"></canvas>
+
+        <!-- Controls -->
+        <div class="ctrl-panel" style="margin-bottom:1rem;">
+          <h5>GS Parameters</h5>
+          <div class="slm-ctrl">
+            <div class="slm-field" style="min-width:180px;">
+              <label>Target pattern</label>
+              <select id="gsTarget">
+                <option value="spots22">2×2 spot array</option>
+                <option value="spots33" selected>3×3 spot array</option>
+                <option value="line">Line of 5 spots</option>
+                <option value="ring">Ring of 8 spots</option>
+              </select>
+            </div>
+            <div class="slm-field">
+              <label>Iterations: <span class="lbl-val" id="gsIterLbl">30</span></label>
+              <input type="range" id="gsIterSlide" min="5" max="60" value="30" step="5"
+                oninput="document.getElementById('gsIterLbl').textContent=this.value">
+            </div>
+          </div>
+          <button class="compute-btn" onclick="runGS()">⚡ Run GS Algorithm</button>
+          <span class="compute-status" id="gsStatus">Choose a target and run the algorithm.</span>
+        </div>
+
+        <!-- Three canvases -->
+        <div class="three-col" style="gap:.75rem;margin-bottom:1rem;">
+          <div class="canvas-wrap">
+            <h5>Target intensity</h5>
+            <canvas class="zernike-canvas" id="gsTargetCanvas"></canvas>
+            <div class="canvas-info">Desired tweezer pattern</div>
+          </div>
+          <div class="canvas-wrap">
+            <h5>SLM phase φ (mod 2π)</h5>
+            <canvas class="zernike-canvas" id="gsPhaseCanvas"></canvas>
+            <div class="canvas-info">Computed phase hologram</div>
+          </div>
+          <div class="canvas-wrap">
+            <h5>Reconstructed far-field</h5>
+            <canvas class="zernike-canvas" id="gsOutputCanvas"></canvas>
+            <div class="canvas-info">|FT{e^{iφ}}|² at each iteration</div>
+          </div>
+        </div>
+
+        <!-- Convergence chart -->
+        <div class="chart-card" style="max-width:500px;">
+          <h5>Convergence: normalised RMSE vs iteration</h5>
+          <canvas id="gsConvChart" height="160"></canvas>
+        </div>
+
+        <div class="theory-box" style="margin-top:1.5rem;">
+          <h4>Algorithm details</h4>
+          <p>
+            <strong>Step 1 (SLM plane):</strong> Combine input Gaussian amplitude A(x,y) with
+            current phase estimate φₖ(x,y).<br>
+            <strong>Step 2 (FFT → target plane):</strong> Propagate the field to the focal plane
+            using a 2D discrete Fourier transform.<br>
+            <strong>Step 3 (target constraint):</strong> Replace the amplitude with √T(u,v) while
+            keeping the retrieved phase arg(FT{E}).<br>
+            <strong>Step 4 (IFFT → SLM plane):</strong> Propagate back; extract new phase φₖ₊₁.<br>
+            Typically converges in 20–50 iterations. Efficiency (fraction of power in target spots)
+            reaches 70–90% for typical arrays; adding a blazed grating shifts the 1st order off-axis
+            to separate it from undiffracted light.
+          </p>
+          <div class="formula-box">
+GS convergence criterion: RMSE = $\sqrt{\frac{1}{P}\sum_i \left(|E_i|^2 - T_i\right)^2}$ / mean($T$)
+          </div>
+        </div>
+      </div>
+
     </div><!-- /data-tabs-wrap -->
   </section>
     </div>
@@ -486,7 +572,7 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=6"></script>
+<script src="../js/main.js?v=7"></script>
 <script>
 renderNav({ active: 'zernike', root: '../' });
 initScrollReveal();
@@ -1086,6 +1172,331 @@ document.querySelector('[data-tab="gallery"]').addEventListener('click', () => {
   // Small delay to let tab panel become visible before rendering canvases
   setTimeout(renderGallery, 50);
 }, { once: true });
+
+/* ═══════════════════════════════════════════════════════
+   GERCHBERG-SAXTON ALGORITHM
+   Operates on an N×N grid (N=32). Real FFT via Cooley-Tukey.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 1-D FFT (Cooley-Tukey, radix-2, in-place) ── */
+function fft1d(re, im, inverse) {
+  const N = re.length;
+  // bit-reverse permutation
+  for (let i=1, j=0; i<N; i++) {
+    let bit = N >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { let t=re[i]; re[i]=re[j]; re[j]=t; t=im[i]; im[i]=im[j]; im[j]=t; }
+  }
+  for (let len=2; len<=N; len<<=1) {
+    const ang = 2*Math.PI/len * (inverse?1:-1);
+    const wRe = Math.cos(ang), wIm = Math.sin(ang);
+    for (let i=0; i<N; i+=len) {
+      let uR=1, uI=0;
+      for (let j=0; j<len/2; j++) {
+        const eR=re[i+j], eI=im[i+j];
+        const oR=re[i+j+len/2]*uR - im[i+j+len/2]*uI;
+        const oI=re[i+j+len/2]*uI + im[i+j+len/2]*uR;
+        re[i+j]=eR+oR; im[i+j]=eI+oI;
+        re[i+j+len/2]=eR-oR; im[i+j+len/2]=eI-oI;
+        const nuR=uR*wRe-uI*wIm; uI=uR*wIm+uI*wRe; uR=nuR;
+      }
+    }
+  }
+  if (inverse) { for (let i=0; i<N; i++) { re[i]/=N; im[i]/=N; } }
+}
+
+/* ── 2-D FFT (rows then cols) ── */
+function fft2d(re, im, N, inverse) {
+  const row = new Float64Array(N), rowI = new Float64Array(N);
+  for (let r=0; r<N; r++) {
+    for (let c=0; c<N; c++) { row[c]=re[r*N+c]; rowI[c]=im[r*N+c]; }
+    fft1d(row,rowI,inverse);
+    for (let c=0; c<N; c++) { re[r*N+c]=row[c]; im[r*N+c]=rowI[c]; }
+  }
+  for (let c=0; c<N; c++) {
+    for (let r=0; r<N; r++) { row[r]=re[r*N+c]; rowI[r]=im[r*N+c]; }
+    fft1d(row,rowI,inverse);
+    for (let r=0; r<N; r++) { re[r*N+c]=row[r]; im[r*N+c]=rowI[r]; }
+  }
+}
+
+/* ── Target pattern builder ── */
+function makeTarget(type, N) {
+  const T = new Float64Array(N*N);
+  const cx0 = N/2, cy0 = N/2;
+  const sigma = 1.2; // spot half-width in pixels
+  function addSpot(u, v) {
+    // u, v in units of (N/8) from centre; converted to shifted FFT coords
+    const pu = ((Math.round(cx0 + u*N/8) % N + N) % N);
+    const pv = ((Math.round(cy0 + v*N/8) % N + N) % N);
+    T[pv*N+pu] = 1;
+  }
+  if (type === 'spots22') {
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([u,v])=>addSpot(u,v));
+  } else if (type === 'spots33') {
+    for (let di=-1; di<=1; di++) for (let dj=-1; dj<=1; dj++) addSpot(di*1.3, dj*1.3);
+  } else if (type === 'line') {
+    for (let i=-2; i<=2; i++) addSpot(i*1.2, 0);
+  } else { // ring
+    for (let k=0; k<8; k++) {
+      const a = k*2*Math.PI/8;
+      addSpot(Math.round(Math.cos(a)*2.2), Math.round(Math.sin(a)*2.2));
+    }
+  }
+  // Blur each point into a tiny Gaussian
+  const Tsmooth = new Float64Array(N*N);
+  for (let r=0; r<N; r++) for (let c=0; c<N; c++) {
+    if (T[r*N+c] > 0) {
+      for (let dr=-3; dr<=3; dr++) for (let dc=-3; dc<=3; dc++) {
+        const rr=(r+dr+N)%N, cc=(c+dc+N)%N;
+        Tsmooth[rr*N+cc] += Math.exp(-(dr*dr+dc*dc)/(2*sigma*sigma));
+      }
+    }
+  }
+  // Normalise
+  const mx = Math.max(...Tsmooth);
+  if (mx>0) for (let i=0; i<N*N; i++) Tsmooth[i] /= mx;
+  return Tsmooth;
+}
+
+/* ── Canvas helpers ── */
+function inferno(v) { // v in [0,1]
+  v = Math.max(0,Math.min(1,v));
+  const r = Math.round(255*Math.max(0,Math.min(1, v<0.5 ? 2*v : 1)));
+  const g = Math.round(255*Math.max(0,Math.min(1, v<0.25 ? 0 : v<0.75 ? (v-0.25)*2 : 1)));
+  const b = Math.round(255*Math.max(0,Math.min(1, v<0.5 ? v : 1-v)));
+  return [r,g,b];
+}
+function hsvCyclic(v) { // v in [0,1], hue cycle
+  const h = v*360;
+  const s=1, l=0.55;
+  const a = s*(l<0.5?l:1-l);
+  function f(n){ const k=(n+h/30)%12; return l-a*Math.max(-1,Math.min(k-3,9-k,1)); }
+  return [Math.round(255*f(0)), Math.round(255*f(8)), Math.round(255*f(4))];
+}
+
+function renderCvs(cv, data, N, colorFn) {
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const size = cv.width;
+  const imgData = ctx.createImageData(size,size);
+  const scale = size/N;
+  // max for normalisation
+  let mx = 0; for (let i=0; i<data.length; i++) if (data[i]>mx) mx=data[i];
+  if (!mx) mx=1;
+  for (let r=0; r<N; r++) for (let c=0; c<N; c++) {
+    const [R,G,B] = colorFn(data[r*N+c]/mx);
+    for (let dr=0; dr<scale; dr++) for (let dc=0; dc<scale; dc++) {
+      const px = ((r*scale+dr)*size + c*scale+dc)*4;
+      imgData.data[px]=R; imgData.data[px+1]=G; imgData.data[px+2]=B; imgData.data[px+3]=255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+/* ── Main GS runner ── */
+let gsConvChart = null;
+async function runGS() {
+  const N = 32;
+  const targetType = document.getElementById('gsTarget').value;
+  const nIter = parseInt(document.getElementById('gsIterSlide').value);
+  const statusEl = document.getElementById('gsStatus');
+
+  // Build Gaussian input amplitude
+  const amp = new Float64Array(N*N);
+  const w = N*0.28;
+  for (let r=0; r<N; r++) for (let c=0; c<N; c++) {
+    const dr=r-N/2, dc=c-N/2;
+    amp[r*N+c] = Math.exp(-(dr*dr+dc*dc)/(2*w*w));
+  }
+
+  // Build target
+  const T = makeTarget(targetType, N);
+
+  // Render target
+  renderCvs(document.getElementById('gsTargetCanvas'), T, N, inferno);
+
+  // Initialise random phase
+  const phi = new Float64Array(N*N);
+  for (let i=0; i<N*N; i++) phi[i] = Math.random()*2*Math.PI;
+
+  const errors = [];
+  const re = new Float64Array(N*N), im = new Float64Array(N*N);
+
+  for (let iter=0; iter<=nIter; iter++) {
+    // Step 1: E_in = amp * e^{i phi}  (SLM plane)
+    for (let i=0; i<N*N; i++) { re[i]=amp[i]*Math.cos(phi[i]); im[i]=amp[i]*Math.sin(phi[i]); }
+
+    // Step 2: FFT to target plane
+    fft2d(re, im, N, false);
+
+    // Compute error (RMSE)
+    let err=0, tSum=0;
+    for (let i=0; i<N*N; i++) {
+      const mag = Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+      const sqT = Math.sqrt(T[i]);
+      err += (mag - sqT*Math.sqrt(mag/Math.max(sqT||0.001,1e-9)))*(mag - sqT*Math.sqrt(mag/Math.max(sqT||0.001,1e-9)));
+      tSum += T[i];
+    }
+    errors.push(Math.sqrt(err/(N*N)) / Math.max(tSum/(N*N), 1e-9));
+
+    // Step 3: Replace amplitude with sqrt(T), keep phase
+    const farFieldIntensity = new Float64Array(N*N);
+    for (let i=0; i<N*N; i++) {
+      const mag = Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+      const phase = Math.atan2(im[i],re[i]);
+      const newMag = Math.sqrt(T[i]);
+      re[i] = newMag*Math.cos(phase);
+      im[i] = newMag*Math.sin(phase);
+      farFieldIntensity[i] = (re[i]*re[i]+im[i]*im[i]);
+    }
+
+    // Step 4: IFFT back to SLM plane
+    fft2d(re, im, N, true);
+
+    // Update phase
+    for (let i=0; i<N*N; i++) phi[i] = Math.atan2(im[i], re[i]);
+
+    // Render every 5th iteration (or last)
+    if (iter % 5 === 0 || iter === nIter) {
+      // Render SLM phase (normalise 0→2π to 0→1)
+      const phaseNorm = new Float64Array(N*N);
+      for (let i=0; i<N*N; i++) phaseNorm[i] = ((phi[i] % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI) / (2*Math.PI);
+      renderCvs(document.getElementById('gsPhaseCanvas'), phaseNorm, N, hsvCyclic);
+
+      // Render far-field output (from last FFT before IFFT)
+      // Re-do FFT to get output
+      const reOut = new Float64Array(N*N), imOut = new Float64Array(N*N);
+      for (let i=0; i<N*N; i++) { reOut[i]=amp[i]*Math.cos(phi[i]); imOut[i]=amp[i]*Math.sin(phi[i]); }
+      fft2d(reOut, imOut, N, false);
+      const outInt = new Float64Array(N*N);
+      for (let i=0; i<N*N; i++) outInt[i] = reOut[i]*reOut[i]+imOut[i]*imOut[i];
+      renderCvs(document.getElementById('gsOutputCanvas'), outInt, N, inferno);
+
+      statusEl.textContent = `Iteration ${iter}/${nIter} — RMSE: ${errors[iter].toFixed(3)}`;
+
+      // Yield to browser
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  // Draw convergence chart
+  if (!gsConvChart) {
+    const ctx = document.getElementById('gsConvChart').getContext('2d');
+    gsConvChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels: errors.map((_,i)=>i), datasets:[{
+        label:'RMSE', data: errors, borderColor:'#2dd4bf', backgroundColor:'rgba(45,212,191,0.1)',
+        fill:true, tension:0.3, pointRadius:0, borderWidth:2
+      }]},
+      options:{ responsive:true, plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:'#64748b',maxTicksLimit:8},grid:{color:'#1e293b'},title:{display:true,text:'Iteration',color:'#64748b'}},
+          y:{ticks:{color:'#64748b'},grid:{color:'#1e293b'},title:{display:true,text:'RMSE',color:'#64748b'}}
+        }
+      }
+    });
+  } else {
+    gsConvChart.data.labels = errors.map((_,i)=>i);
+    gsConvChart.data.datasets[0].data = errors;
+    gsConvChart.update();
+  }
+
+  statusEl.textContent = `Done! ${nIter} iterations. Final RMSE: ${errors[errors.length-1].toFixed(4)}`;
+}
+
+/* ── GS flow diagram (animated) ── */
+(function(){
+  const cv = document.getElementById('gsFlowCanvas');
+  if (!cv) return;
+  const cx = cv.getContext('2d');
+  const W=600, H=90;
+  const boxes = [
+    { x:22,  label:'SLM plane\n|A|e^{iφ}', col:'#2dd4bf' },
+    { x:162, label:'FFT →\ntarget plane',   col:'#60a5fa' },
+    { x:302, label:'Fix amplitude\n√T, keep phase', col:'#f87171' },
+    { x:442, label:'IFFT →\nSLM plane',      col:'#a78bfa' },
+  ];
+  const BW=110, BH=54, BY=18;
+
+  let dotT = 0, lastTs = 0;
+  const CYCLE = 3200;
+
+  function frame(ts){
+    if (!lastTs) lastTs=ts;
+    const dt=ts-lastTs; lastTs=ts;
+    dotT = (dotT+dt/CYCLE)%1;
+    cx.clearRect(0,0,W,H);
+
+    // Draw boxes
+    boxes.forEach((b,i)=>{
+      cx.save();
+      cx.shadowColor=b.col; cx.shadowBlur=8;
+      cx.fillStyle=`${b.col}18`; cx.strokeStyle=b.col; cx.lineWidth=1.5;
+      cx.beginPath(); cx.roundRect(b.x, BY, BW, BH, 6); cx.fill(); cx.stroke();
+      cx.restore();
+      // Label (split on \n)
+      const lines = b.label.split('\n');
+      cx.fillStyle=b.col; cx.font='10.5px Inter,sans-serif'; cx.textAlign='center';
+      lines.forEach((l,j)=>cx.fillText(l, b.x+BW/2, BY+20+j*16));
+    });
+
+    // Draw arrows between boxes
+    for (let i=0; i<3; i++) {
+      const x1=boxes[i].x+BW+2, x2=boxes[i+1].x-2, y=BY+BH/2;
+      cx.strokeStyle='#334155'; cx.lineWidth=1.5;
+      cx.beginPath(); cx.moveTo(x1,y); cx.lineTo(x2-8,y); cx.stroke();
+      cx.fillStyle='#334155';
+      cx.beginPath(); cx.moveTo(x2,y); cx.lineTo(x2-8,y-4); cx.lineTo(x2-8,y+4); cx.closePath(); cx.fill();
+    }
+
+    // Feedback arrow (bottom: box4 → box1)
+    cx.strokeStyle='#334155'; cx.lineWidth=1.2; cx.setLineDash([4,3]);
+    const feedY=BY+BH+10;
+    cx.beginPath();
+    cx.moveTo(boxes[3].x+BW/2, BY+BH);
+    cx.lineTo(boxes[3].x+BW/2, feedY);
+    cx.lineTo(boxes[0].x+BW/2, feedY);
+    cx.lineTo(boxes[0].x+BW/2, BY+BH);
+    cx.stroke();
+    cx.setLineDash([]);
+    cx.fillStyle='#334155';
+    cx.beginPath(); cx.moveTo(boxes[0].x+BW/2,BY+BH); cx.lineTo(boxes[0].x+BW/2-4,BY+BH+8); cx.lineTo(boxes[0].x+BW/2+4,BY+BH+8); cx.closePath(); cx.fill();
+
+    // Animated photon dot traversing the cycle
+    const totalLen = 3*(boxes[1].x - boxes[0].x - BW) + (boxes[0].x + BW/2 - boxes[3].x - BW/2)*2;
+    const segs = [
+      // Forward path (3 arrows)
+      {x1:boxes[0].x+BW, y1:BY+BH/2, x2:boxes[1].x, y2:BY+BH/2},
+      {x1:boxes[1].x+BW, y1:BY+BH/2, x2:boxes[2].x, y2:BY+BH/2},
+      {x1:boxes[2].x+BW, y1:BY+BH/2, x2:boxes[3].x, y2:BY+BH/2},
+      // Feedback path
+      {x1:boxes[3].x+BW/2, y1:BY+BH, x2:boxes[3].x+BW/2, y2:feedY},
+      {x1:boxes[3].x+BW/2, y1:feedY, x2:boxes[0].x+BW/2, y2:feedY},
+      {x1:boxes[0].x+BW/2, y1:feedY, x2:boxes[0].x+BW/2, y2:BY+BH},
+    ];
+    const segLens = segs.map(s=>Math.hypot(s.x2-s.x1,s.y2-s.y1));
+    const totalPath = segLens.reduce((a,b)=>a+b,0);
+    let dist = dotT * totalPath;
+    let dx=0, dy=0;
+    for (let s=0; s<segs.length; s++) {
+      if (dist <= segLens[s]) {
+        const p = dist/segLens[s];
+        dx = segs[s].x1 + (segs[s].x2-segs[s].x1)*p;
+        dy = segs[s].y1 + (segs[s].y2-segs[s].y1)*p;
+        break;
+      }
+      dist -= segLens[s];
+    }
+    cx.save(); cx.shadowColor='#fbbf24'; cx.shadowBlur=12;
+    cx.fillStyle='#fbbf24'; cx.beginPath(); cx.arc(dx,dy,4,0,2*Math.PI); cx.fill();
+    cx.restore();
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>

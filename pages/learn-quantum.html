@@ -172,8 +172,8 @@
     .r-val { color: #4ade80; font-size: 1rem; font-weight: 700; }
 
 
-    /* MZI SVG */
-    .mzi-svg { display: block; margin: 0 auto; }
+    /* MZI canvas */
+    .mzi-canvas { display: block; margin: 0 auto; border-radius: 8px; background: #050d1a; }
 
     /* Measurement histogram */
     .shot-info { font-family: var(--mono); font-size: .82rem; color: var(--text-muted); margin-top: .4rem; }
@@ -417,53 +417,17 @@ $$P(|0\rangle) = \cos^2(\varphi/2) \qquad P(|1\rangle) = \sin^2(\varphi/2)$$
 Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive at $\varphi = \pi$ (all into $|1\rangle$)
 </div>
 
-  <div class="two-col" style="margin-top:1rem;">
-    <div>
-      <!-- MZI SVG diagram -->
-      <svg class="mzi-svg" width="320" height="180" viewBox="0 0 320 180">
-        <!-- Input -->
-        <line x1="10" y1="90" x2="70" y2="90" stroke="#60a5fa" stroke-width="1.5"/>
-        <text x="5" y="87" fill="#60a5fa" font-size="11">|0⟩</text>
-        <!-- BS1 -->
-        <rect x="70" y="75" width="30" height="30" fill="#0c1e3a" stroke="#a78bfa" stroke-width="1.5" rx="4"/>
-        <text x="77" y="94" fill="#a78bfa" font-size="10">H</text>
-        <!-- Upper arm -->
-        <line x1="100" y1="80" x2="185" y2="60" stroke="#34d399" stroke-width="1.5"/>
-        <!-- Lower arm -->
-        <line x1="100" y1="100" x2="185" y2="120" stroke="#fbbf24" stroke-width="1.5"/>
-        <!-- Phase element -->
-        <rect x="185" y="112" width="28" height="18" fill="#0c1e3a" stroke="#fbbf24" stroke-width="1" rx="3"/>
-        <text x="188" y="125" fill="#fbbf24" font-size="9">e^iφ</text>
-        <!-- BS2 -->
-        <line x1="213" y1="121" x2="225" y2="110" stroke="#fbbf24" stroke-width="1.5"/>
-        <line x1="185" y1="60" x2="225" y2="80" stroke="#34d399" stroke-width="1.5"/>
-        <rect x="225" y="75" width="30" height="30" fill="#0c1e3a" stroke="#a78bfa" stroke-width="1.5" rx="4"/>
-        <text x="232" y="94" fill="#a78bfa" font-size="10">H</text>
-        <!-- Outputs -->
-        <line x1="255" y1="80" x2="305" y2="60" stroke="#60a5fa" stroke-width="1.5"/>
-        <line x1="255" y1="100" x2="305" y2="120" stroke="#f87171" stroke-width="1.5"/>
-        <text x="308" y="63" fill="#60a5fa" font-size="11">|0⟩</text>
-        <text x="308" y="123" fill="#f87171" font-size="11">|1⟩</text>
-        <!-- Detector labels -->
-        <text x="140" y="57" fill="#34d399" font-size="9">arm 0</text>
-        <text x="140" y="135" fill="#fbbf24" font-size="9">arm 1 (phase φ)</text>
-      </svg>
+  <!-- MZI animated canvas — full width -->
+  <canvas id="mziCanvas" class="mzi-canvas" width="640" height="180" style="width:100%;max-width:640px;height:auto;"></canvas>
 
-      <div class="ctrl-row" style="margin-top:1rem;">
-        <div class="ctrl-group">
-          <label>Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
-          <input type="range" id="mziPhi" min="0" max="360" value="0" step="1"
-            oninput="document.getElementById('mziPhiLbl').textContent=this.value+'°'; updateMZI()">
-        </div>
-      </div>
-      <div class="info-banner" id="mziBanner"></div>
-    </div>
-
-    <div class="chart-card">
-      <h5>Output Probabilities</h5>
-      <canvas id="mziChart" height="240"></canvas>
+  <div class="ctrl-row" style="margin-top:1rem;">
+    <div class="ctrl-group">
+      <label>Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
+      <input type="range" id="mziPhi" min="0" max="360" value="0" step="1"
+        oninput="document.getElementById('mziPhiLbl').textContent=this.value+'°'; updateMZI()">
     </div>
   </div>
+  <div class="info-banner" id="mziBanner"></div>
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: superposition &amp; interference</a>
     <a class="read-link" href="https://en.wikipedia.org/wiki/Mach%E2%80%93Zehnder_interferometer" target="_blank" rel="noopener"><span class="rl-icon">🌐</span>Mach-Zehnder interferometer (Wikipedia)</a>
@@ -686,6 +650,13 @@ Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{mot
       <table class="truth-table" id="tqTruth"></table>
     </div>
   </div>
+  <!-- Bell state generation animation -->
+  <div style="margin-top:1rem;">
+    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">Bell state |Φ⁺⟩ generation: H ⊗ I → CNOT</div>
+    <canvas id="tqBellCanvas" width="480" height="140"
+      style="display:block;width:100%;max-width:480px;border-radius:8px;background:#050d1a;"></canvas>
+  </div>
+
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, apply CNOT &amp; CZ visually</a>
     <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/multiple-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
@@ -1250,6 +1221,15 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
     </div>
   </div>
 
+  <!-- Grover amplitude animation -->
+  <div style="margin-top:1rem;">
+    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">
+      Grover's algorithm: amplitude amplification on N=8 states, target = state&nbsp;★
+    </div>
+    <canvas id="groverCanvas" width="500" height="150"
+      style="display:block;width:100%;max-width:500px;border-radius:8px;background:#050d1a;"></canvas>
+  </div>
+
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Matuschak &amp; Nielsen: Quantum Computing for the Very Curious (free, interactive)</a>
     <a class="read-link" href="https://learning.quantum.ibm.com/" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum Learning, Grover &amp; QAOA tutorials with runnable circuits</a>
@@ -1421,6 +1401,15 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
     </div>
   </div>
 
+  <!-- Rydberg array phase transition animation -->
+  <div style="margin-top:1rem;">
+    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">
+      Rydberg array: Z₂ symmetry breaking as Ω/Δ is tuned — atoms (●) and blockade halos shown
+    </div>
+    <canvas id="rydbergArrayCanvas" width="520" height="155"
+      style="display:block;width:100%;max-width:520px;border-radius:8px;background:#050d1a;"></canvas>
+  </div>
+
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://arxiv.org/abs/2107.09341" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2021, quantum phases of matter in 256-atom Rydberg array (Harvard)</a>
     <a class="read-link" href="https://arxiv.org/abs/2104.04986" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Semeghini et al. 2021, topological spin liquid in Rydberg array</a>
@@ -1543,7 +1532,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=6"></script>
+<script src="../js/main.js?v=7"></script>
 <script>
 renderNav({ active: 'learn-quantum', root: '../' });
 initScrollReveal();
@@ -1782,33 +1771,200 @@ function redrawGateBloch() {
 setGateState();
 
 /* ═══════════════════════════════════════════════
-   MZI / SUPERPOSITION
+   MZI — animated canvas
    ═══════════════════════════════════════════════ */
-let mziChart;
-(function() {
-  const ctx = document.getElementById('mziChart').getContext('2d');
-  mziChart = new Chart(ctx, {
-    type: 'bar',
-    data: { labels:['P(|0⟩)','P(|1⟩)'], datasets:[{
-      data:[1,0], backgroundColor:['#60a5faaa','#f87171aa'],
-      borderColor:['#60a5fa','#f87171'], borderWidth:2, borderRadius:6
-    }]},
-    options: { responsive:true, plugins:{legend:{display:false}},
-      scales: { y:{min:0,max:1,ticks:{color:'#64748b',callback:v=>(v*100).toFixed(0)+'%'},grid:{color:'#1e293b'}},
-                x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}} } }
-  });
-  updateMZI();
+(function(){
+  const cv = document.getElementById('mziCanvas');
+  if (!cv) return;
+  const cx = cv.getContext('2d');
+  const W = 640, H = 180;
+
+  // Layout
+  const INx=18, INy=90;
+  const BS1x=110, BSy=90;
+  const BS2x=440, armTop=42, armBot=138;
+  const OUT0x=570, OUT0y=42, OUT1x=570, OUT1y=138;
+  const DETx=600;
+  const PPmid = (BS1x+BS2x)/2; // phase-plate midpoint x
+
+  let photonT = 0;
+  let lastTs = 0;
+  const CYCLE = 2600;
+
+  function getPhi() {
+    const el = document.getElementById('mziPhi');
+    return el ? +el.value * Math.PI/180 : 0;
+  }
+
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function easeInOut(t){ return t<0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function drawGlowLine(x1,y1,x2,y2,col,alpha,width){
+    cx.save();
+    cx.globalAlpha = alpha;
+    cx.strokeStyle = col;
+    cx.lineWidth = width||1.5;
+    cx.shadowColor = col;
+    cx.shadowBlur = 6;
+    cx.beginPath(); cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.stroke();
+    cx.restore();
+  }
+
+  function drawBS(x, y, label){
+    // Tilted beamsplitter plate
+    cx.save();
+    cx.translate(x, y);
+    cx.rotate(Math.PI/4);
+    const g = cx.createLinearGradient(-14,0,14,0);
+    g.addColorStop(0,'rgba(167,139,250,0.05)');
+    g.addColorStop(0.5,'rgba(167,139,250,0.22)');
+    g.addColorStop(1,'rgba(167,139,250,0.05)');
+    cx.fillStyle = g;
+    cx.strokeStyle = '#a78bfa';
+    cx.lineWidth = 1.8;
+    cx.shadowColor = '#a78bfa';
+    cx.shadowBlur = 8;
+    cx.beginPath();
+    cx.roundRect(-14,-4,28,8,2);
+    cx.fill(); cx.stroke();
+    cx.restore();
+    // Label
+    cx.save();
+    cx.fillStyle = '#c4b5fd';
+    cx.font = 'bold 12px Inter,sans-serif';
+    cx.textAlign = 'center';
+    cx.fillText(label, x, y-16);
+    cx.restore();
+  }
+
+  function drawPhasePlate(phi){
+    const mx = PPmid;
+    // on lower arm, interpolate y
+    const slope = (armBot - BSy)/(BS2x - BS1x);
+    const py = BSy + slope*(mx - BS1x);
+    cx.save();
+    const g = cx.createLinearGradient(mx-22,0,mx+22,0);
+    g.addColorStop(0,'rgba(251,191,36,0.0)');
+    g.addColorStop(0.3,'rgba(251,191,36,0.18)');
+    g.addColorStop(0.7,'rgba(251,191,36,0.18)');
+    g.addColorStop(1,'rgba(251,191,36,0.0)');
+    cx.fillStyle = g;
+    cx.strokeStyle = '#fbbf24';
+    cx.lineWidth = 1.4;
+    cx.shadowColor = '#fbbf24';
+    cx.shadowBlur = 6;
+    cx.beginPath();
+    cx.roundRect(mx-22, py-11, 44, 22, 4);
+    cx.fill(); cx.stroke();
+    cx.fillStyle = '#fde68a';
+    cx.font = '10px JetBrains Mono,monospace';
+    cx.textAlign = 'center';
+    const deg = Math.round(phi*180/Math.PI);
+    cx.fillText('φ='+deg+'°', mx, py+4);
+    cx.restore();
+  }
+
+  function drawDetector(x, y, P, col, label){
+    cx.save();
+    cx.shadowColor = col;
+    cx.shadowBlur = P * 28;
+    cx.globalAlpha = 0.15 + P*0.85;
+    cx.fillStyle = col;
+    cx.beginPath(); cx.arc(x, y, 13, 0, 2*Math.PI); cx.fill();
+    cx.globalAlpha = 1;
+    cx.strokeStyle = col;
+    cx.lineWidth = 1.6;
+    cx.beginPath(); cx.arc(x, y, 13, 0, 2*Math.PI); cx.stroke();
+    cx.restore();
+    cx.fillStyle = col;
+    cx.font = '12px Inter,sans-serif';
+    cx.textAlign = 'left';
+    cx.fillText(label+' '+(P*100).toFixed(0)+'%', x+18, y+4);
+  }
+
+  function drawPhoton(x, y, col, alpha){
+    cx.save();
+    cx.shadowColor = col; cx.shadowBlur = 16;
+    cx.globalAlpha = alpha;
+    cx.fillStyle = col;
+    cx.beginPath(); cx.arc(x, y, 5, 0, 2*Math.PI); cx.fill();
+    cx.restore();
+  }
+
+  function frame(ts){
+    if (!lastTs) lastTs = ts;
+    const dt = ts - lastTs; lastTs = ts;
+    photonT = (photonT + dt/CYCLE) % 1;
+    const phi = getPhi();
+    const P0 = Math.cos(phi/2)**2;
+    const P1 = Math.sin(phi/2)**2;
+
+    cx.clearRect(0, 0, W, H);
+
+    // Beam paths (static, dim)
+    drawGlowLine(INx, INy, BS1x, BSy, '#60a5fa', 0.55, 2);
+    drawGlowLine(BS1x, BSy, BS2x, armTop, '#34d399', 0.45, 1.5);
+    drawGlowLine(BS1x, BSy, BS2x, armBot, '#fbbf24', 0.45, 1.5);
+    drawGlowLine(BS2x, armTop, OUT0x, OUT0y, '#60a5fa', 0.25+P0*0.55, 1.5);
+    drawGlowLine(BS2x, armBot, OUT1x, OUT1y, '#f87171', 0.25+P1*0.55, 1.5);
+
+    // Arm labels
+    cx.fillStyle = '#34d399'; cx.font = '10px Inter,sans-serif'; cx.textAlign='center';
+    const umid = lerp(BS1x, BS2x, 0.45);
+    const slTop = (armTop-BSy)/(BS2x-BS1x);
+    cx.fillText('arm 0  (|0⟩)', umid, BSy+slTop*(umid-BS1x)-10);
+    cx.fillStyle = '#fbbf24';
+    const slBot = (armBot-BSy)/(BS2x-BS1x);
+    cx.fillText('arm 1  (|1⟩) + φ', umid+30, BSy+slBot*(umid+30-BS1x)+16);
+
+    // Phase plate
+    drawPhasePlate(phi);
+
+    // Beamsplitters
+    drawBS(BS1x, BSy, 'H');
+    drawBS(BS2x, (armTop+armBot)/2, 'H');
+
+    // Input label
+    cx.fillStyle='#60a5fa'; cx.font='13px Inter,sans-serif'; cx.textAlign='right';
+    cx.fillText('|0⟩', INx-2, INy+4);
+
+    // Detectors
+    drawDetector(DETx, OUT0y, P0, '#60a5fa', '|0⟩');
+    drawDetector(DETx, OUT1y, P1, '#f87171', '|1⟩');
+
+    // Animate photon
+    const t = photonT;
+    // Segment 0..0.28: input → BS1
+    // Segment 0.28..0.70: arms (two photons)
+    // Segment 0.70..1.0: BS2 → detectors
+    if (t < 0.28){
+      const p = easeInOut(t/0.28);
+      drawPhoton(lerp(INx, BS1x, p), INy, '#60a5fa', 1);
+    } else if (t < 0.70){
+      const p = easeInOut((t-0.28)/0.42);
+      // Upper arm photon
+      drawPhoton(lerp(BS1x, BS2x, p), lerp(BSy, armTop, p), '#34d399', 0.95);
+      // Lower arm photon
+      drawPhoton(lerp(BS1x, BS2x, p), lerp(BSy, armBot, p), '#fbbf24', 0.95);
+    } else {
+      const p = easeInOut((t-0.70)/0.30);
+      if (P0 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(armTop, OUT0y, p), '#60a5fa', P0*0.9+0.1);
+      if (P1 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(armBot, OUT1y, p), '#f87171', P1*0.9+0.1);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
 })();
 
 function updateMZI() {
   const phi = +document.getElementById('mziPhi').value * Math.PI/180;
   const P0 = Math.cos(phi/2)**2, P1 = Math.sin(phi/2)**2;
-  mziChart.data.datasets[0].data = [P0, P1];
-  mziChart.update('none');
   const b = document.getElementById('mziBanner');
-  if (P0 > 0.99) { b.textContent='Constructive interference into |0⟩, all photons in upper output.'; b.style.background='#052e16'; }
-  else if (P1 > 0.99) { b.textContent='Destructive interference, all photons into |1⟩.'; b.style.background='#1c1007'; }
-  else { b.textContent=`P(|0⟩)=${(P0*100).toFixed(1)}%,  P(|1⟩)=${(P1*100).toFixed(1)}%, partial interference.`; b.style.background='#0a1020'; }
+  if (P0 > 0.99) { b.textContent='Constructive interference → all photons exit |0⟩ (upper output).'; b.style.background='#052e16'; }
+  else if (P1 > 0.99) { b.textContent='Destructive interference → all photons exit |1⟩ (lower output).'; b.style.background='#1c1007'; }
+  else { b.textContent=`P(|0⟩) = ${(P0*100).toFixed(1)}%,  P(|1⟩) = ${(P1*100).toFixed(1)}%  — partial interference.`; b.style.background='#0a1020'; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -2423,6 +2579,322 @@ function opReset() {
     'Click "+1 photon" to begin pumping the population toward m<sub>F</sub> = +1.';
   opUpdateDisplay();
 }
+
+/* ═══════════════════════════════════════════════
+   TWO-QUBIT: Bell state generation animation
+   Steps: |00⟩ → H⊗I → |+0⟩ → CNOT → |Φ⁺⟩
+   ═══════════════════════════════════════════════ */
+(function(){
+  const cv = document.getElementById('tqBellCanvas');
+  if (!cv) return;
+  const cx = cv.getContext('2d');
+  const W = 480, H = 140;
+  const labels = ['|00⟩','|01⟩','|10⟩','|11⟩'];
+  const colors  = ['#60a5fa','#a78bfa','#34d399','#fbbf24'];
+
+  // Amplitude magnitudes at each step (real, non-negative display)
+  const steps = [
+    { title: 'Initial: |00⟩', amps: [1, 0, 0, 0] },
+    { title: 'After H⊗I → (|00⟩+|10⟩)/√2', amps: [0.707, 0, 0.707, 0] },
+    { title: 'After CNOT → |Φ⁺⟩ = (|00⟩+|11⟩)/√2', amps: [0.707, 0, 0, 0.707] },
+  ];
+
+  let step = 0, animT = 0, lastTs = 0, pauseT = null;
+  const ANIM_MS = 800, PAUSE_MS = 2200;
+
+  function frame(ts){
+    if (!lastTs) lastTs = ts;
+    const dt = ts - lastTs; lastTs = ts;
+
+    if (pauseT !== null) {
+      pauseT += dt;
+      if (pauseT > PAUSE_MS) {
+        step = (step + 1) % steps.length;
+        animT = 0; pauseT = null;
+      }
+    } else {
+      animT += dt;
+      if (animT >= ANIM_MS) { animT = ANIM_MS; pauseT = 0; }
+    }
+
+    const t = Math.min(animT / ANIM_MS, 1);
+    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    const prev = steps[(step + steps.length - 1) % steps.length].amps;
+    const curr = steps[step].amps;
+    const amps = curr.map((a, i) => prev[i] + (a - prev[i]) * ease);
+
+    cx.clearRect(0, 0, W, H);
+
+    // Title
+    cx.fillStyle = '#94a3b8';
+    cx.font = '11px Inter,sans-serif';
+    cx.textAlign = 'center';
+    cx.fillText(steps[step].title, W/2, 16);
+
+    // Bars
+    const barW = 64, gap = 20;
+    const totalW = labels.length * barW + (labels.length-1) * gap;
+    const startX = (W - totalW) / 2;
+    const maxH = 82, baseY = 118;
+
+    amps.forEach((a, i) => {
+      const x = startX + i * (barW + gap);
+      const bh = a * maxH;
+
+      // Shadow glow
+      cx.save();
+      cx.shadowColor = colors[i];
+      cx.shadowBlur = a > 0.05 ? 12 : 0;
+      cx.fillStyle = colors[i];
+      cx.globalAlpha = 0.15 + a * 0.65;
+      cx.beginPath();
+      cx.roundRect(x, baseY - bh, barW, bh, [4,4,0,0]);
+      cx.fill();
+      cx.globalAlpha = 1;
+      cx.strokeStyle = colors[i];
+      cx.lineWidth = 1.4;
+      cx.stroke();
+      cx.restore();
+
+      // Amplitude label on bar
+      if (a > 0.05) {
+        cx.fillStyle = colors[i];
+        cx.font = '10px JetBrains Mono,monospace';
+        cx.textAlign = 'center';
+        cx.fillText((a).toFixed(2), x + barW/2, baseY - bh - 5);
+      }
+
+      // Basis state label
+      cx.fillStyle = '#64748b';
+      cx.font = '11px Inter,sans-serif';
+      cx.textAlign = 'center';
+      cx.fillText(labels[i], x + barW/2, baseY + 16);
+    });
+
+    // Baseline
+    cx.strokeStyle = '#1e293b';
+    cx.lineWidth = 1;
+    cx.beginPath(); cx.moveTo(startX-4, baseY); cx.lineTo(startX+totalW+4, baseY); cx.stroke();
+
+    // Step indicator dots
+    steps.forEach((_, i) => {
+      cx.beginPath();
+      cx.arc(W/2 - (steps.length-1)*8 + i*16, H-6, 3, 0, 2*Math.PI);
+      cx.fillStyle = i === step ? '#60a5fa' : '#1e3a5f';
+      cx.fill();
+    });
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ═══════════════════════════════════════════════
+   ALGORITHMS: Grover amplitude amplification
+   N=8 states, target = state index 2 (★)
+   ═══════════════════════════════════════════════ */
+(function(){
+  const cv = document.getElementById('groverCanvas');
+  if (!cv) return;
+  const cx = cv.getContext('2d');
+  const W = 500, H = 150;
+  const N = 8, TARGET = 2;
+  const k_opt = Math.round(Math.PI/4 * Math.sqrt(N)); // ≈2 iterations
+
+  // Grover iteration: oracle + diffusion
+  function groverStep(amps) {
+    // Oracle: flip target
+    const a = [...amps];
+    a[TARGET] = -a[TARGET];
+    // Diffusion: 2|s><s| - I
+    const mean = a.reduce((s,v)=>s+v,0)/N;
+    return a.map(v => 2*mean - v);
+  }
+
+  // Pre-compute snapshots
+  const snapshots = [];
+  let a = new Array(N).fill(1/Math.sqrt(N));
+  snapshots.push({ title: 'Initial: equal superposition', amps: [...a] });
+  for (let i = 0; i < k_opt + 1; i++) {
+    // Oracle step
+    const ao = [...a]; ao[TARGET] = -ao[TARGET];
+    snapshots.push({ title: `Step ${i+1}a: oracle flips target phase`, amps: [...ao] });
+    // Diffusion step
+    a = groverStep(a);
+    snapshots.push({ title: `Step ${i+1}b: diffusion amplifies target`, amps: [...a] });
+  }
+
+  let step = 0, animT = 0, lastTs = 0, pauseT = null;
+  const ANIM_MS = 700, PAUSE_MS = 1800;
+
+  function frame(ts){
+    if (!lastTs) lastTs = ts;
+    const dt = ts - lastTs; lastTs = ts;
+
+    if (pauseT !== null) {
+      pauseT += dt;
+      if (pauseT > PAUSE_MS) { step = (step+1) % snapshots.length; animT=0; pauseT=null; }
+    } else {
+      animT += dt;
+      if (animT >= ANIM_MS) { animT=ANIM_MS; pauseT=0; }
+    }
+
+    const t = Math.min(animT/ANIM_MS, 1);
+    const ease = t<0.5?2*t*t:-1+(4-2*t)*t;
+    const prev = snapshots[(step+snapshots.length-1)%snapshots.length].amps;
+    const curr = snapshots[step].amps;
+    const amps = curr.map((v,i) => prev[i] + (v-prev[i])*ease);
+
+    cx.clearRect(0,0,W,H);
+
+    // Title
+    cx.fillStyle = '#94a3b8';
+    cx.font = '10.5px Inter,sans-serif';
+    cx.textAlign = 'center';
+    cx.fillText(snapshots[step].title, W/2, 14);
+
+    const barW = 44, gap = 12;
+    const totalW = N*barW + (N-1)*gap;
+    const startX = (W-totalW)/2;
+    const maxH = 90, zeroY = 118;
+
+    amps.forEach((a, i) => {
+      const x = startX + i*(barW+gap);
+      const isTarget = i === TARGET;
+      const col = isTarget ? '#f87171' : '#60a5fa';
+      const bh = a * maxH; // can be negative
+      const rectY = bh >= 0 ? zeroY - bh : zeroY;
+      const rectH = Math.abs(bh);
+
+      if (rectH > 0.5) {
+        cx.save();
+        cx.shadowColor = col;
+        cx.shadowBlur = isTarget ? 14 : 5;
+        cx.fillStyle = col;
+        cx.globalAlpha = isTarget ? 0.9 : 0.55;
+        cx.beginPath(); cx.roundRect(x, rectY, barW, Math.max(rectH,1), 3); cx.fill();
+        cx.globalAlpha = 1;
+        cx.strokeStyle = col; cx.lineWidth = 1.2; cx.stroke();
+        cx.restore();
+
+        // Value label
+        cx.fillStyle = col;
+        cx.font = '9px JetBrains Mono,monospace';
+        cx.textAlign = 'center';
+        const lblY = bh >= 0 ? zeroY - bh - 4 : zeroY + Math.abs(bh) + 12;
+        cx.fillText(a.toFixed(2), x+barW/2, lblY);
+      }
+
+      // Star for target
+      cx.fillStyle = isTarget ? '#fbbf24' : '#334155';
+      cx.font = isTarget ? 'bold 11px Inter' : '11px Inter';
+      cx.textAlign = 'center';
+      cx.fillText(isTarget ? '★' : (i+1).toString(), x+barW/2, zeroY+16);
+    });
+
+    // Zero line
+    cx.strokeStyle = '#1e3a5f'; cx.lineWidth = 1;
+    cx.beginPath(); cx.moveTo(startX-4,zeroY); cx.lineTo(startX+totalW+4,zeroY); cx.stroke();
+
+    // Step dots
+    snapshots.forEach((_,i) => {
+      cx.beginPath(); cx.arc(W/2-(snapshots.length-1)*6+i*12, H-5, 2.5, 0, 2*Math.PI);
+      cx.fillStyle = i===step?'#f87171':'#1e3a5f'; cx.fill();
+    });
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ═══════════════════════════════════════════════
+   ANALOG-SIM: Rydberg array Z₂ phase animation
+   5×4 array; tune Δ/Ω from disordered → Z₂ ordered
+   ═══════════════════════════════════════════════ */
+(function(){
+  const cv = document.getElementById('rydbergArrayCanvas');
+  if (!cv) return;
+  const cx = cv.getContext('2d');
+  const W = 520, H = 155;
+  const COLS = 8, ROWS = 4;
+  const R_ATOM = 9, SPACING = 48;
+  const startX = (W - (COLS-1)*SPACING) / 2;
+  const startY = (H - (ROWS-1)*SPACING) / 2 + 5;
+
+  // Z₂ checkerboard: excited if (col+row) % 2 === 0
+  const z2 = (c,r) => (c+r)%2===0;
+
+  let phase = 0; // 0→1 disordered, 1→2 hold, 2→3 back
+  let phaseFrac = 0;
+  let lastTs = 0;
+  const PHASE_MS = 2800;
+
+  function frame(ts){
+    if (!lastTs) lastTs = ts;
+    const dt = ts - lastTs; lastTs = ts;
+    phaseFrac += dt / PHASE_MS;
+    if (phaseFrac >= 1) { phaseFrac = 0; phase = (phase+1) % 3; }
+
+    // Disorder fraction 0=ordered, 1=disordered
+    let disorder;
+    if (phase === 0) disorder = 1 - phaseFrac;         // ordering
+    else if (phase === 1) disorder = 0;                  // hold ordered
+    else disorder = phaseFrac;                           // disordering
+
+    cx.clearRect(0,0,W,H);
+
+    // Title
+    const titles = ['Rydberg ordering (Δ/Ω → large)', 'Z₂ ordered phase', 'Disordered phase (small Δ/Ω)'];
+    cx.fillStyle = '#94a3b8'; cx.font = '11px Inter,sans-serif'; cx.textAlign = 'center';
+    cx.fillText(titles[phase], W/2, 13);
+
+    for (let r=0; r<ROWS; r++) {
+      for (let c=0; c<COLS; c++) {
+        const x = startX + c*SPACING;
+        const y = startY + r*SPACING;
+        const orderedExcited = z2(c,r);
+        // Excitation probability with noise
+        const noise = (Math.sin(ts*0.0023 + c*1.7 + r*2.3)*0.5+0.5) * disorder;
+        const pExcited = orderedExcited ? Math.max(0, 1-disorder*0.5+noise*0.3) : Math.min(1, disorder*0.8*noise);
+
+        // Blockade halo for excited atoms
+        if (pExcited > 0.4) {
+          cx.save();
+          cx.globalAlpha = (pExcited-0.4)*0.15;
+          cx.fillStyle = '#f97316';
+          cx.beginPath();
+          cx.arc(x, y, SPACING*0.82, 0, 2*Math.PI);
+          cx.fill();
+          cx.restore();
+        }
+
+        // Atom body
+        const excited = pExcited > 0.5;
+        const col = excited ? '#f97316' : '#1e3a5f';
+        const glowCol = excited ? '#f97316' : '#38bdf8';
+        cx.save();
+        cx.shadowColor = glowCol;
+        cx.shadowBlur = excited ? 14 : 4;
+        const grad = cx.createRadialGradient(x-2,y-2,1,x,y,R_ATOM);
+        grad.addColorStop(0, excited ? '#fde68a' : '#60a5fa');
+        grad.addColorStop(1, excited ? '#f97316' : '#1d4ed8');
+        cx.fillStyle = grad;
+        cx.beginPath(); cx.arc(x, y, R_ATOM, 0, 2*Math.PI); cx.fill();
+        cx.strokeStyle = excited ? '#fbbf24' : '#3b82f6';
+        cx.lineWidth = 1.2; cx.stroke();
+        cx.restore();
+      }
+    }
+
+    // Legend
+    cx.font = '10px Inter,sans-serif'; cx.textAlign = 'left';
+    cx.fillStyle = '#f97316'; cx.fillText('● excited |r⟩', W-105, H-8);
+    cx.fillStyle = '#60a5fa'; cx.fillText('● ground |g⟩', W-105, H-20);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
