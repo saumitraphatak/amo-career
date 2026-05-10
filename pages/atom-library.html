@@ -221,6 +221,56 @@
       .group-grid      { grid-template-columns: 1fr; }
       .resources-3col  { grid-template-columns: 1fr; }
     }
+
+    /* ── Comparison mode ─────────────────────────────────── */
+    .cmp-toggle {
+      padding: 5px 14px; border-radius: var(--r-sm);
+      border: 1px solid rgba(192,132,252,0.35); background: rgba(192,132,252,0.06);
+      color: #c084fc; font-size: 0.8125rem; font-weight: 600; cursor: pointer;
+      transition: all var(--t); font-family: var(--font-sans); margin-left: auto;
+    }
+    .cmp-toggle:hover  { background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.5); }
+    .cmp-toggle.active { background: rgba(192,132,252,0.15); border-color: #c084fc; }
+    .atom-tile.cmp-a { border-color: #38bdf8 !important; box-shadow: 0 0 0 2px rgba(56,189,248,0.45) !important; }
+    .atom-tile.cmp-b { border-color: #c084fc !important; box-shadow: 0 0 0 2px rgba(192,132,252,0.45) !important; }
+
+    #cmp-panel {
+      background: var(--bg-card); border: 1px solid rgba(192,132,252,0.2);
+      border-radius: var(--r-lg); padding: var(--sp-5); margin-bottom: var(--sp-5);
+    }
+    .cmp-prompt { text-align:center; color:var(--text-muted); font-size:.85rem; padding:var(--sp-5) 0; }
+    .cmp-heads {
+      display: grid; grid-template-columns: 1fr 36px 1fr;
+      gap: var(--sp-4); align-items: center; margin-bottom: var(--sp-4);
+    }
+    .cmp-head {
+      display:flex; align-items:center; gap:var(--sp-3);
+      background:var(--bg-surface); border-radius:var(--r); padding:var(--sp-3) var(--sp-4);
+      border: 1px solid var(--border);
+    }
+    .cmp-sym { font-family:var(--font-mono); font-size:1.3rem; font-weight:700; }
+    .cmp-meta { font-size:.78rem; color:var(--text-secondary); line-height:1.5; }
+    .cmp-vs { font-weight:800; font-size:.85rem; color:var(--text-muted); text-align:center; }
+
+    .cmp-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+    .cmp-table thead th {
+      padding:5px 10px; color:var(--text-muted); font-size:.72rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:.06em; border-bottom:1px solid var(--border);
+    }
+    .cmp-table thead th:first-child { text-align:left; }
+    .cmp-table thead th:not(:first-child) { text-align:center; }
+    .cmp-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.03); transition: background 0.1s; }
+    .cmp-table tbody td { padding:5px 10px; color:var(--text-secondary); text-align:center; }
+    .cmp-table tbody td:first-child { text-align:left; color:var(--text-primary); font-size:.8rem; }
+    .cmp-cell-win  { color:#34d399 !important; font-weight:700; }
+    .cmp-cell-lose { color:var(--text-muted) !important; }
+    .cmp-cell-tie  { color:var(--text-secondary); }
+    .cmp-verdict {
+      background:var(--bg-surface); border-radius:var(--r); padding:var(--sp-4) var(--sp-5);
+      margin-top:var(--sp-4); font-size:.84rem; color:var(--text-secondary); line-height:1.65;
+    }
+    .cmp-verdict p { margin: 0 0 .6rem; }
+    .cmp-verdict p:last-child { margin:0; }
   </style>
 </head>
 
@@ -312,6 +362,45 @@
           <button class="filter-btn" data-family="Alkali">Alkali (9)</button>
           <button class="filter-btn" data-family="Alkaline Earth">Alkaline Earth (4)</button>
           <button class="filter-btn" data-family="Magnetic">Magnetic (2)</button>
+          <button class="cmp-toggle" id="cmp-toggle-btn" onclick="toggleCompare()">⚖ Compare</button>
+        </div>
+
+        <!-- ── Comparison panel ──────────────────────────────── -->
+        <div id="cmp-panel" style="display:none">
+          <div id="cmp-prompt" class="cmp-prompt">Click any atom tile above to start comparing — then click a second one.</div>
+          <div id="cmp-content" style="display:none">
+            <div class="cmp-heads">
+              <div class="cmp-head" id="cmp-head-a" style="border-color:rgba(56,189,248,0.3)">
+                <div class="cmp-sym" id="cmp-sym-a" style="color:#38bdf8">—</div>
+                <div class="cmp-meta" id="cmp-meta-a">select atom A</div>
+              </div>
+              <div class="cmp-vs">vs</div>
+              <div class="cmp-head" id="cmp-head-b" style="border-color:rgba(192,132,252,0.3)">
+                <div class="cmp-sym" id="cmp-sym-b" style="color:#c084fc">—</div>
+                <div class="cmp-meta" id="cmp-meta-b">select atom B</div>
+              </div>
+            </div>
+            <div data-tabs-wrap>
+              <div class="tab-bar" data-group="cmp" style="--page-color:#c084fc">
+                <button class="tab-btn active" data-tab="cmp-overview">📊 Overview</button>
+                <button class="tab-btn" data-tab="cmp-rydberg">🔮 Rydberg Gates</button>
+                <button class="tab-btn" data-tab="cmp-clocks">⏰ Clocks</button>
+                <button class="tab-btn" data-tab="cmp-sim">🔬 Quantum Sim</button>
+              </div>
+              <div class="tab-panel active" data-group="cmp" data-tab="cmp-overview" style="padding-top:var(--sp-3)">
+                <div id="cmp-table-wrap"></div>
+              </div>
+              <div class="tab-panel" data-group="cmp" data-tab="cmp-rydberg" style="padding-top:var(--sp-3)">
+                <div id="cmp-rydberg"></div>
+              </div>
+              <div class="tab-panel" data-group="cmp" data-tab="cmp-clocks" style="padding-top:var(--sp-3)">
+                <div id="cmp-clocks"></div>
+              </div>
+              <div class="tab-panel" data-group="cmp" data-tab="cmp-sim" style="padding-top:var(--sp-3)">
+                <div id="cmp-sim"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="data-table-wrap anim-in delay-2">
@@ -1350,8 +1439,249 @@ Narrow: 583 nm (intercombination line)</span>
       ctx.fill();
     }
 
+    /* ══════════════════════════════════════════════════════════════════
+       ATOM COMPARISON MODE
+       ══════════════════════════════════════════════════════════════════ */
+    let cmpMode = false, cmpAtoms = [];
+
+    const CMP_DATA = {
+      '⁶Li':  { mass:6,   stat:'Fermion', Z:3,  fam:'Alkali',   cool_nm:671, Gamma:5.87, TD:141,  Er:7.08, I:'1',   HF:0.228, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#fb923c' },
+      '⁷Li':  { mass:7,   stat:'Boson',   Z:3,  fam:'Alkali',   cool_nm:671, Gamma:5.87, TD:141,  Er:6.07, I:'3/2', HF:0.804, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#fb923c' },
+      '²³Na': { mass:23,  stat:'Boson',   Z:11, fam:'Alkali',   cool_nm:589, Gamma:9.80, TD:235,  Er:2.40, I:'3/2', HF:1.772, mu:0,  clock:false, narrow:null,    Fesh:false, col:'#fbbf24' },
+      '³⁹K':  { mass:39,  stat:'Boson',   Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.84, I:'3/2', HF:0.462, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa' },
+      '⁴⁰K':  { mass:40,  stat:'Fermion', Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.82, I:'4',   HF:1.286, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa' },
+      '⁴¹K':  { mass:41,  stat:'Boson',   Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.80, I:'3/2', HF:0.254, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa' },
+      '⁸⁵Rb': { mass:85,  stat:'Boson',   Z:37, fam:'Alkali',   cool_nm:780, Gamma:6.07, TD:146,  Er:0.37, I:'5/2', HF:3.036, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#38bdf8' },
+      '⁸⁷Rb': { mass:87,  stat:'Boson',   Z:37, fam:'Alkali',   cool_nm:780, Gamma:6.07, TD:146,  Er:0.36, I:'3/2', HF:6.835, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#38bdf8' },
+      '¹³³Cs':{ mass:133, stat:'Boson',   Z:55, fam:'Alkali',   cool_nm:852, Gamma:5.23, TD:125,  Er:0.19, I:'7/2', HF:9.193, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#34d399' },
+      '⁸⁸Sr': { mass:88,  stat:'Boson',   Z:38, fam:'AE',       cool_nm:461, Gamma:32.0, TD:767,  Er:0.46, I:'0',   HF:0,     mu:0,  clock:true,  narrow:0.00763, Fesh:false, col:'#60a5fa', clock_nm:698 },
+      '⁸⁷Sr': { mass:87,  stat:'Fermion', Z:38, fam:'AE',       cool_nm:461, Gamma:32.0, TD:767,  Er:0.46, I:'9/2', HF:0,     mu:0,  clock:true,  narrow:0.00763, Fesh:false, col:'#60a5fa', clock_nm:698 },
+      '¹⁷⁴Yb':{ mass:174, stat:'Boson',   Z:70, fam:'AE',       cool_nm:399, Gamma:28.0, TD:672,  Er:0.35, I:'0',   HF:0,     mu:0,  clock:true,  narrow:0.182,   Fesh:false, col:'#2dd4bf', clock_nm:578 },
+      '¹⁷¹Yb':{ mass:171, stat:'Fermion', Z:70, fam:'AE',       cool_nm:399, Gamma:28.0, TD:672,  Er:0.35, I:'1/2', HF:0,     mu:0,  clock:true,  narrow:0.182,   Fesh:false, col:'#2dd4bf', clock_nm:578 },
+      '¹⁶⁴Dy':{ mass:164, stat:'Boson',   Z:66, fam:'Magnetic', cool_nm:421, Gamma:null,  TD:null, Er:0.27, I:'0',   HF:0,     mu:10, clock:false, narrow:null,    Fesh:true,  col:'#f472b6' },
+      '¹⁶⁸Er':{ mass:168, stat:'Boson',   Z:68, fam:'Magnetic', cool_nm:401, Gamma:null,  TD:null, Er:0.27, I:'0',   HF:0,     mu:7,  clock:false, narrow:null,    Fesh:true,  col:'#fbbf24' },
+    };
+
+    // parameter row definitions: dir 1=higher better, -1=lower better, 0=neutral
+    const CMP_ROWS = [
+      { key:'mass',  label:'Mass (amu)',            dir:-1, fmt: v => v,                                                  tasks:['rydberg','clocks'] },
+      { key:'stat',  label:'Statistics',            dir: 0, fmt: v => v,                                                  tasks:['sim'] },
+      { key:'I',     label:'Nuclear spin I',        dir: 0, fmt: v => v,                                                  tasks:['clocks','sim'] },
+      { key:'cool_nm',label:'Cooling λ (nm)',       dir: 0, fmt: v => v + ' nm',                                          tasks:[] },
+      { key:'Gamma', label:'Γ/2π (MHz)',             dir:-1, fmt: v => v != null ? v : '—',                               tasks:['rydberg','clocks'] },
+      { key:'TD',    label:'T_Doppler (μK)',          dir:-1, fmt: v => v != null ? v : '—',                              tasks:['rydberg','clocks'] },
+      { key:'Er',    label:'2E_r/k_B (μK)',           dir:-1, fmt: v => v,                                                tasks:['rydberg','clocks'] },
+      { key:'HF',    label:'HF qubit (GHz)',          dir: 1, fmt: v => v > 0 ? v.toFixed(3) : '—',                      tasks:['rydberg'] },
+      { key:'clock', label:'Clock transition',        dir: 0, fmt: (v,d) => v ? (d.clock_nm ? d.clock_nm+' nm ✓' : 'Yes') : 'No', tasks:['clocks'] },
+      { key:'narrow',label:'Narrow line Γ/2π (MHz)', dir:-1, fmt: v => v != null ? v : '—',                              tasks:['clocks'] },
+      { key:'mu',    label:'Magnetic μ (μ_B)',         dir: 0, fmt: v => v > 0 ? v : '0',                                tasks:['sim'] },
+      { key:'Fesh',  label:'Feshbach resonance',       dir: 0, fmt: v => v ? 'Yes ✓' : 'No',                             tasks:['sim'] },
+    ];
+
+    function parseI(s) {
+      if (!s || s === '0') return 0;
+      const p = s.toString().split('/');
+      return p.length === 2 ? +p[0] / +p[1] : +s;
+    }
+
+    function cellWinner(row, va, vb) {
+      if (row.dir === 0 || va == null || vb == null || typeof va !== 'number' || typeof vb !== 'number')
+        return { a:'tie', b:'tie' };
+      const denom = Math.max(Math.abs(va), Math.abs(vb), 1e-9);
+      if (Math.abs(va - vb) / denom < 0.12) return { a:'tie', b:'tie' };
+      const aW = row.dir === 1 ? va > vb : va < vb;
+      return aW ? { a:'win', b:'lose' } : { a:'lose', b:'win' };
+    }
+
+    function W(s, c) { return `<strong style="color:${c}">${s}</strong>`; }
+
+    function getVerdict(sA, sB, da, db, task, cA, cB) {
+      const lines = [];
+      if (task === 'rydberg') {
+        if (da.Z !== db.Z) {
+          const [ws,wc,wz,lz] = da.Z > db.Z ? [sA,cA,da.Z,db.Z] : [sB,cB,db.Z,da.Z];
+          lines.push(`${W(ws,wc)} has higher Z (${wz} vs ${lz}) → larger quantum defect → bigger effective n* at the same principal quantum number → C₆ ∝ n*¹¹ and blockade radius R_b ∝ n*¹¹/⁶, so ${W(ws,wc)} unlocks a proportionally larger blockade at the same n.`);
+        } else {
+          lines.push(`Both atoms have Z=${da.Z} — identical Rydberg level structure. The distinction lies in other parameters.`);
+        }
+        if (da.HF > 0 || db.HF > 0) {
+          const [ws,wc,wh,lh,ls,lc] = da.HF >= db.HF ? [sA,cA,da.HF,db.HF,sB,cB] : [sB,cB,db.HF,da.HF,sA,cA];
+          if (lh < 0.1) lines.push(`${W(ws,wc)} supports a ground-state hyperfine qubit at ${wh.toFixed(3)} GHz; ${W(ls,lc)} has no ground-HF qubit. Hyperfine qubits in clock states (m_F=0) have long coherence times and are easier to address with commercial microwave sources.`);
+          else lines.push(`Both are hyperfine qubits — ${sA} at ${da.HF.toFixed(3)} GHz, ${sB} at ${db.HF.toFixed(3)} GHz. ${W(ws,wc)}'s higher splitting sits in a quieter thermal-noise floor for microwave control.`);
+        } else {
+          lines.push(`Neither atom has a ground-state hyperfine qubit. Both use a clock-transition qubit (¹S₀→³P₀ stretched-state encoding), requiring a bias magnetic field and careful state preparation.`);
+        }
+        if (da.TD != null && db.TD != null) {
+          const [ws,wc] = da.TD <= db.TD ? [sA,cA] : [sB,cB];
+          lines.push(`Doppler dephasing during Rydberg excitation scales as ε_D ∝ T_D/m. ${W(ws,wc)} has a lower Doppler temperature, giving less thermal velocity spread per laser pulse.`);
+        }
+        if (da.stat !== db.stat) {
+          const [Fs,Fc] = da.stat === 'Fermion' ? [sA,cA] : [sB,cB];
+          lines.push(`${W(Fs,Fc)} is fermionic — Pauli exclusion suppresses two-body collisions in the same m_F state during Rydberg excitation, reducing motional decoherence in dense tweezer arrays.`);
+        }
+      } else if (task === 'clocks') {
+        if (!da.clock && !db.clock) {
+          lines.push(`Neither ${W(sA,cA)} nor ${W(sB,cB)} has an optical clock transition. Both are alkali or magnetic atoms whose narrowest transitions are D-lines (Γ/2π ~ 5–10 MHz). Optical lattice clocks require alkaline-earth (Sr, Yb, Hg) species with mHz-linewidth ¹S₀→³P₀ transitions.`);
+        } else if (da.clock && db.clock) {
+          const [ws,wc,wn,ln] = (da.narrow??99) <= (db.narrow??99) ? [sA,cA,da.narrow,db.narrow] : [sB,cB,db.narrow,da.narrow];
+          lines.push(`Both ${W(sA,cA)} and ${W(sB,cB)} have optical clock transitions. ${W(ws,wc)} has the narrower intercombination line (Γ/2π = ${wn} MHz vs ${ln} MHz), reaching a sideband-cooling floor of T_min = ℏΓ/k_B ≈ ${(1.055e-34*wn*1e6/1.38e-23*1e9).toFixed(1)} nK.`);
+          const iA = parseI(da.I), iB = parseI(db.I);
+          const [ws2,wc2,ls2,lc2] = iA < iB ? [sA,cA,sB,cB] : [sB,cB,sA,cA];
+          lines.push(`For the cleanest clock spectra, I=0 (${W(ws2,wc2)}) has no hyperfine structure — simpler to interrogate. The I≠0 fermionic isotope (${W(ls2,lc2)}) benefits from Pauli-suppressed collisional frequency shifts and can encode a nuclear-spin qubit alongside the clock.`);
+        } else {
+          const [ws,wc,ls,lc,wd] = da.clock ? [sA,cA,sB,cB,da] : [sB,cB,sA,cA,db];
+          lines.push(`${W(ws,wc)} has an optical clock transition at ${wd.clock_nm} nm with mHz natural linewidth. ${W(ls,lc)} does not — for optical lattice clock applications ${W(ws,wc)} is the unambiguous choice.`);
+          if (wd.narrow) lines.push(`The ${wd.narrow} MHz intercombination line in ${W(ws,wc)} also enables narrow-line laser cooling to the Lamb-Dicke regime before clock interrogation.`);
+        }
+      } else if (task === 'sim') {
+        if (da.stat !== db.stat) {
+          const [Fs,Fc,Bs,Bc] = da.stat === 'Fermion' ? [sA,cA,sB,cB] : [sB,cB,sA,cA];
+          lines.push(`${W(Fs,Fc)} is fermionic — the natural choice for Fermi-Hubbard model simulations (Pauli exclusion implements the on-site constraint automatically). ${W(Bs,Bc)} is bosonic — suited for Bose-Hubbard physics, superfluid–Mott insulator transitions, and bosonic pairing.`);
+        } else {
+          lines.push(`Both ${W(sA,cA)} and ${W(sB,cB)} are ${da.stat}s — same quantum statistical behavior. Distinguish by nuclear spin or interaction tunability.`);
+        }
+        if (da.mu > 0 || db.mu > 0) {
+          const [ws,wc,wmu,ls,lc] = da.mu >= db.mu ? [sA,cA,da.mu,sB,cB] : [sB,cB,db.mu,sA,cA];
+          lines.push(`${W(ws,wc)} has a large magnetic dipole moment (μ = ${wmu} μ_B), enabling long-range anisotropic dipole-dipole interactions for exotic phases: quantum droplets, striped supersolids, and dipolar crystals. ${W(ls,lc)} has negligible dipolar interactions (contact only).`);
+        }
+        const iA = parseI(da.I), iB = parseI(db.I);
+        if (iA !== iB && (iA > 0 || iB > 0)) {
+          const [ws,wc,wi,NA] = iA > iB ? [sA,cA,da.I,Math.round(2*iA+1)] : [sB,cB,db.I,Math.round(2*iB+1)];
+          lines.push(`${W(ws,wc)} has nuclear spin I=${wi} → ${NA} magnetic sub-levels, enabling SU(${NA})-symmetric Hubbard physics and orbital magnetism with ${NA} "color" degrees of freedom — inaccessible to atoms with fewer nuclear-spin states.`);
+        }
+        if (da.Fesh !== db.Fesh) {
+          const [ws,wc] = da.Fesh ? [sA,cA] : [sB,cB];
+          lines.push(`${W(ws,wc)} has accessible Feshbach resonances for magnetically tuning the scattering length from strongly repulsive to strongly attractive — critical for BEC-BCS crossover studies and Feshbach molecule production.`);
+        } else if (da.Fesh && db.Fesh) {
+          lines.push(`Both atoms have Feshbach resonances, giving equal interaction tunability. The choice depends on the interaction strength and resonance position best suited to your target parameter regime.`);
+        }
+      }
+      return lines.map(l => `<p>${l}</p>`).join('');
+    }
+
+    function buildTaskPanel(sA, sB, da, db, task, cA, cB) {
+      const taskCol = task === 'rydberg' ? '#818cf8' : task === 'clocks' ? '#fbbf24' : '#34d399';
+      let html = `<table class="cmp-table"><thead><tr>
+        <th style="text-align:left">Parameter</th>
+        <th style="color:${cA}">${sA}</th>
+        <th style="color:${cB}">${sB}</th>
+      </tr></thead><tbody>`;
+      for (const row of CMP_ROWS) {
+        const va = da[row.key], vb = db[row.key];
+        const fa = row.fmt(va, da), fb = row.fmt(vb, db);
+        const rel = row.tasks.includes(task);
+        const { a: clsA, b: clsB } = rel ? cellWinner(row, va, vb) : { a:'tie', b:'tie' };
+        const rs = rel
+          ? `style="border-left:3px solid ${taskCol};background:rgba(0,0,0,0.1)"`
+          : `style="opacity:0.38"`;
+        html += `<tr ${rs}><td style="padding-left:${rel?'7':'10'}px">${row.label}</td>
+          <td class="cmp-cell-${clsA}">${fa}</td>
+          <td class="cmp-cell-${clsB}">${fb}</td>
+        </tr>`;
+      }
+      html += `</tbody></table>`;
+      html += `<div class="cmp-verdict">${getVerdict(sA, sB, da, db, task, cA, cB)}</div>`;
+      return html;
+    }
+
+    function updateComparePanel() {
+      const [sA, sB] = cmpAtoms;
+      const da = CMP_DATA[sA], db = CMP_DATA[sB];
+      if (!da || !db) return;
+      const cA = da.col || '#38bdf8', cB = db.col || '#c084fc';
+
+      // Update heads
+      const saEl = document.getElementById('cmp-sym-a');
+      saEl.textContent = sA; saEl.style.color = cA;
+      document.getElementById('cmp-meta-a').textContent = `${da.stat} · ${da.fam} · Z=${da.Z}`;
+      document.getElementById('cmp-head-a').style.borderColor = cA + '55';
+      const sbEl = document.getElementById('cmp-sym-b');
+      sbEl.textContent = sB; sbEl.style.color = cB;
+      document.getElementById('cmp-meta-b').textContent = `${db.stat} · ${db.fam} · Z=${db.Z}`;
+      document.getElementById('cmp-head-b').style.borderColor = cB + '55';
+
+      // Overview table
+      let html = `<table class="cmp-table"><thead><tr>
+        <th style="text-align:left">Parameter</th>
+        <th style="color:${cA}">${sA}</th>
+        <th style="color:${cB}">${sB}</th>
+      </tr></thead><tbody>`;
+      for (const row of CMP_ROWS) {
+        const va = da[row.key], vb = db[row.key];
+        const { a: clsA, b: clsB } = cellWinner(row, va, vb);
+        html += `<tr><td>${row.label}</td>
+          <td class="cmp-cell-${clsA}">${row.fmt(va, da)}</td>
+          <td class="cmp-cell-${clsB}">${row.fmt(vb, db)}</td>
+        </tr>`;
+      }
+      html += `</tbody></table>
+        <p style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">
+          <span style="color:#34d399">■</span> advantage &nbsp;
+          <span style="color:var(--text-muted)">■</span> disadvantage (for directional parameters)
+        </p>`;
+      document.getElementById('cmp-table-wrap').innerHTML = html;
+
+      // Task panels
+      document.getElementById('cmp-rydberg').innerHTML = buildTaskPanel(sA, sB, da, db, 'rydberg', cA, cB);
+      document.getElementById('cmp-clocks').innerHTML  = buildTaskPanel(sA, sB, da, db, 'clocks',  cA, cB);
+      document.getElementById('cmp-sim').innerHTML     = buildTaskPanel(sA, sB, da, db, 'sim',     cA, cB);
+    }
+
+    function selectForCompare(tile, sym) {
+      const idx = cmpAtoms.indexOf(sym);
+      if (idx !== -1) {
+        cmpAtoms.splice(idx, 1);
+      } else {
+        if (cmpAtoms.length >= 2) cmpAtoms.shift();
+        cmpAtoms.push(sym);
+      }
+      // Re-apply visual selection classes
+      document.querySelectorAll('.atom-tile').forEach(t => t.classList.remove('cmp-a', 'cmp-b'));
+      cmpAtoms.forEach((s, i) => {
+        document.querySelectorAll('.atom-tile').forEach(t => {
+          if (t.dataset.atom === s) t.classList.add(i === 0 ? 'cmp-a' : 'cmp-b');
+        });
+      });
+      const panel   = document.getElementById('cmp-panel');
+      const content = document.getElementById('cmp-content');
+      const prompt  = document.getElementById('cmp-prompt');
+      panel.style.display = 'block';
+      if (cmpAtoms.length === 0) {
+        content.style.display = 'none';
+        prompt.style.display = 'block';
+        prompt.textContent = 'Click any atom tile above to start comparing.';
+      } else if (cmpAtoms.length === 1) {
+        content.style.display = 'none';
+        prompt.style.display = 'block';
+        prompt.textContent = `${cmpAtoms[0]} selected — now click a second atom.`;
+      } else {
+        content.style.display = 'block';
+        prompt.style.display = 'none';
+        updateComparePanel();
+        panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }
+    }
+
+    function toggleCompare() {
+      cmpMode = !cmpMode;
+      const btn = document.getElementById('cmp-toggle-btn');
+      btn.classList.toggle('active', cmpMode);
+      btn.textContent = cmpMode ? '✕ Exit Compare' : '⚖ Compare';
+      if (!cmpMode) {
+        cmpAtoms = [];
+        document.querySelectorAll('.atom-tile').forEach(t => t.classList.remove('cmp-a', 'cmp-b'));
+        document.getElementById('cmp-panel').style.display = 'none';
+      } else {
+        document.getElementById('cmp-panel').style.display = 'block';
+        document.getElementById('cmp-content').style.display = 'none';
+        document.getElementById('cmp-prompt').style.display = 'block';
+        document.getElementById('cmp-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }
+    }
+
     /* ── Atom tile selector ── */
     function selectAtom(tile, sym) {
+      if (cmpMode) { selectForCompare(tile, sym); return; }
       // Toggle active tile
       document.querySelectorAll('.atom-tile').forEach(t => t.classList.remove('active'));
       tile.classList.add('active');
