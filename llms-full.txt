@@ -54,7 +54,7 @@ Reference table of 15 laser-coolable atomic species organized in 4 family tabs. 
 | D2 wavelength (nm) | S₁/₂ → P₃/₂ transition (main cooling transition) |
 | Natural linewidth Γ/2π (MHz) | Inverse of excited state lifetime |
 | Saturation intensity I_sat (mW/cm²) | I_sat = πhcΓ/3λ³ |
-| Recoil temperature T_rec (μK) | T_rec = ℏ²k²/(mk_B) |
+| Recoil scale 2E_rec/k_B (μK) | Two-recoil absorption-plus-emission heating scale; single recoil is E_rec/k_B = ℏ²k²/(2mk_B) |
 | Doppler temperature T_D (μK) | T_D = ℏΓ/(2k_B) |
 | Nuclear spin I | Relevant for hyperfine structure and Fermi statistics |
 
@@ -64,12 +64,12 @@ Reference table of 15 laser-coolable atomic species organized in 4 family tabs. 
 - Linewidth: Γ/2π = 6.065 MHz
 - I_sat = 1.67 mW/cm²
 - T_Doppler = 145 μK
-- T_recoil = 0.362 μK
+- 2E_recoil/k_B = 0.362 μK; single recoil E_recoil/k_B = 0.181 μK
 - Nuclear spin I = 3/2 → Bosonic
 
 ### Key Cs-133 constants
 - Mass: 132.905 u, D2: 852.347 nm, Γ/2π = 5.234 MHz
-- I_sat = 1.10 mW/cm², T_D = 125 μK, T_rec = 0.198 μK
+- I_sat = 1.10 mW/cm², T_D = 125 μK, 2E_recoil/k_B = 0.198 μK
 
 ### US Research Groups (selected)
 Rb: Greiner (Harvard), Lukin (Harvard), Kaufman (Harvard), Vuletic (MIT), Thompson (Caltech)
@@ -89,7 +89,7 @@ Yb: Pagano (Maryland), Lukin (Harvard-Yb), Scazza (Florence)
 - Force: F = ℏk·Γ·s/[2(1+s+(2Δ/Γ)²)] − (opposite beam)
 - Damping coefficient α = −8ℏk²sΔ/[Γ(1+s+(2Δ/Γ)²)²]
 - Doppler limit: T_D = ℏΓ/(2k_B); minimum at Δ = −Γ/2
-- Sub-Doppler (Sisyphus) reaches T_rec via polarization gradients
+- Sub-Doppler (Sisyphus) can approach the recoil scale via polarization gradients
 
 **2. Magneto-Optical Trap (MOT)**
 - Requires red-detuned laser + quadrupole B-field gradient
@@ -217,7 +217,7 @@ N_dark = dark_rate × t_exp
 SNR = N_sig / √σ²
 
 **Detection fidelity:**
-F_det = Φ(SNR/√2)   [Gaussian threshold model]
+F_det ≈ Φ(SNR/2)   [equal-width Gaussian threshold model, SNR = peak separation / σ]
 Φ(x) ≈ 1 − φ(x)(b₁t + b₂t² + b₃t³)   [Abramowitz & Stegun approximation]
 where t = 1/(1+0.47047x), φ(x) = e^(−x²/2)/√(2π)
 
@@ -242,8 +242,8 @@ where t = 1/(1+0.47047x), φ(x) = e^(−x²/2)/√(2π)
 - Chart.js: SNR vs exposure time (0.1–100 ms) with reference lines
 
 ### Recoil Heating
-Each scattered photon imparts recoil: ΔE = (ℏk)²/(2m)
-Recoil heating rate: dT/dt = 2T_rec × R_sc   [factor 2: absorption + emission]
+Single recoil energy: E_rec = (ℏk)²/(2m)
+Recoil heating rate: dT/dt ≈ 2E_rec R_sc/k_B   [factor 2: absorption + emission, no cooling]
 
 ---
 
@@ -270,7 +270,7 @@ BEC threshold: PSD ≥ 2.612   (for ideal Bose gas in 3D harmonic trap)
 
 **Cooling limits:**
 T_Doppler = ℏΓ/(2k_B)     [minimum achievable with Doppler cooling]
-T_recoil = ℏ²k²/(mk_B)   [single photon recoil energy as temperature]
+E_recoil/k_B = ℏ²k²/(2mk_B)   [single-photon recoil energy as temperature]
 
 **In-trap thermal size (if trap frequency known):**
 σ_thermal = √(k_BT/(mω²))
@@ -460,7 +460,7 @@ P(τ) ≈ cos²(ω_r τ)    [cold atom, harmonic approx]
 
 ### Atomic Physics Calculators
 - **Photon recoil velocity:** v_r = ℏk/m
-- **Recoil temperature:** T_rec = ℏ²k²/(mk_B) = mv_r²/k_B
+- **Single recoil scale:** E_rec/k_B = ℏ²k²/(2mk_B); one scatter cycle is roughly 2E_rec/k_B without cooling
 - **Doppler temperature:** T_D = ℏΓ/(2k_B)
 - **de Broglie wavelength:** λ_dB = h/√(2πmk_BT)
 - **Zeeman shift:** ΔE = m_F·g_F·μ_B·B (linear Zeeman)

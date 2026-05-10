@@ -312,7 +312,7 @@
           </div>
           <div class="limit-bar-wrap">
             <div class="limit-bar-label">
-              <span class="limit-bar-name" id="recLabel">Recoil limit T_rec</span>
+              <span class="limit-bar-name" id="recLabel">Single recoil E_rec/k_B</span>
               <span class="limit-bar-val" id="recVal">—</span>
             </div>
             <div class="limit-bar-track">
@@ -536,20 +536,21 @@ Example ($^{87}$Rb, $\Gamma/2\pi = 6.065$ MHz): $T_D = 145.6\,\mu$K</div>
 
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
-        Photon recoil limit
+        Photon recoil scale
         <span class="accordion-icon">▶</span>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
-          <h4>T_rec = ℏ²k² / (m k_B)</h4>
-          <p>Each absorbed photon imparts a momentum kick ℏk. The temperature equivalent of one
-             recoil is the recoil temperature, the minimum achievable by any scheme that relies
-             on spontaneous emission (e.g. Sisyphus cooling reaches ~T_rec). Sub-recoil cooling
+          <h4>E_rec/k_B = ℏ²k² / (2m k_B)</h4>
+          <p>Each absorbed or emitted photon gives a momentum kick of order ℏk. The single-photon
+             recoil energy is \(E_{\rm rec}=\hbar^2k^2/2m\); an absorption plus spontaneous-emission
+             scatter cycle deposits an order-\(2E_{\rm rec}\) heating scale when no cooling mechanism
+             removes that energy. Sub-recoil cooling
              (VSCPT, Raman cooling, EIT) can go below this limit.</p>
         </div>
         <div class="formula-box">
-$$T_{\rm rec} = \frac{\hbar^2 k^2}{m k_{\rm B}} = \frac{E_{\rm rec}}{k_{\rm B}}$$
-Example ($^{87}$Rb, $\lambda = 780$ nm): $E_{\rm rec}/k_{\rm B} = 362$ nK</div>
+$$\frac{E_{\rm rec}}{k_{\rm B}} = \frac{\hbar^2 k^2}{2m k_{\rm B}}$$
+Example ($^{87}$Rb, $\lambda = 780$ nm): $E_{\rm rec}/k_{\rm B} \approx 181$ nK; one scatter cycle is roughly $362$ nK without cooling.</div>
       </div>
     </div>
 
@@ -750,7 +751,7 @@ function T_Doppler_K(Gamma_MHz) {
 
 function T_recoil_K(lambda_nm, mass_kg) {
   const k = 2 * Math.PI / (lambda_nm * 1e-9);
-  return hbar * hbar * k * k / (mass_kg * kB);
+  return hbar * hbar * k * k / (2 * mass_kg * kB);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -818,7 +819,7 @@ function compute() {
   const tDfmt  = fmtT(TD);
   const tRfmt  = fmtT(Trec);
   document.getElementById('dopLabel').textContent = `Doppler limit T_D = ${tDfmt.val} ${tDfmt.unit}`;
-  document.getElementById('recLabel').textContent = `Recoil limit T_rec = ${tRfmt.val} ${tRfmt.unit}`;
+  document.getElementById('recLabel').textContent = `Single recoil E_rec/k_B = ${tRfmt.val} ${tRfmt.unit}`;
   document.getElementById('dopVal').textContent = `${(ratioD*100).toFixed(1)}%`;
   document.getElementById('recVal').textContent = `${(ratioRec*100).toFixed(1)}%`;
   document.getElementById('dopBar').style.width  = (ratioD   * 100) + '%';
@@ -829,7 +830,7 @@ function compute() {
   const sigTherm = Math.sqrt(kB * T_K / (mass * (2*Math.PI*Tomega) * (2*Math.PI*Tomega))) * 1e6; // μm
   document.getElementById('limitsGrid').innerHTML = [
     { label: 'Doppler temperature', val: tDfmt.val, unit: tDfmt.unit, desc: 'ℏΓ/(2k_B)' },
-    { label: 'Recoil temperature', val: tRfmt.val, unit: tRfmt.unit, desc: 'ℏ²k²/(mk_B)' },
+    { label: 'Single recoil scale', val: tRfmt.val, unit: tRfmt.unit, desc: 'ℏ²k²/(2mk_B)' },
     { label: 'Thermal size in trap', val: sigTherm.toPrecision(4), unit: 'μm', desc: `at ω/2π=${Tomega} Hz` },
   ].map(c => `<div class="prop-card">
     <div class="prop-card-label">${c.label}</div>

@@ -622,8 +622,9 @@ For Gaussian approximation ($\mu \gg 1$):
 $$P_{\rm miss} = \Phi\!\left(\frac{-(\mu_{\rm sig} - \theta)}{\sqrt{\sigma^2_{\rm sig}}}\right) \quad \text{[false negative]}$$
 $$P_{\rm false} = 1 - \Phi\!\left(\frac{\theta - \mu_{\rm bg}}{\sqrt{\sigma^2_{\rm bg}}}\right) \quad \text{[false positive]}$$
 Optimal $\theta \approx (\mu_{\rm sig} + \mu_{\rm bg})/2$<br>
-Detection fidelity: $\mathcal{F} = 1 - (P_{\rm miss} + P_{\rm false})/2 \approx \Phi({\rm SNR}/(2\sqrt{2}))$<br>
-where $\Phi$ is the standard normal CDF, ${\rm SNR} = (\mu_{\rm sig} - \mu_{\rm bg})/\sigma$</div>
+Detection fidelity: $\mathcal{F} = 1 - (P_{\rm miss} + P_{\rm false})/2$.<br>
+If the bright and dark peaks have equal variance and ${\rm SNR}=(\mu_{\rm sig}-\mu_{\rm bg})/\sigma$,
+then $\mathcal{F}\approx\Phi({\rm SNR}/2)$. The calculator below uses the bright and dark variances separately.</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that fidelity scales as
           erfc(SNR), doubling SNR dramatically reduces error. Background suppression (e.g.
@@ -646,8 +647,8 @@ where $\Phi$ is the standard normal CDF, ${\rm SNR} = (\mu_{\rm sig} - \mu_{\rm 
         </div>
         <div class="formula-box">
 $$E_{\rm rec} = \frac{\hbar^2 k^2}{2m}$$
-$^{87}$Rb D2: $E_{\rm rec}/k_{\rm B} = 362$ nK $= 3.77\times10^{-30}$ J<br>
-Heating rate: $\dot{T} \approx 2E_{\rm rec} R_{\rm sc}/k_{\rm B}$ [3D, no cooling]<br>
+$^{87}$Rb D2: $E_{\rm rec}/k_{\rm B} \approx 181$ nK, so one absorption plus one emission deposits $\sim 2E_{\rm rec}/k_B \approx 362$ nK<br>
+Heating rate: $\dot{T} \approx 2E_{\rm rec} R_{\rm sc}/k_{\rm B}$ [absorption + spontaneous emission, no cooling]<br>
 Max imaging time ($U_0$ = trap depth): $t_{\rm max} \sim U_0/(E_{\rm rec} R_{\rm sc})$<br>
 Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} \approx 55$ ms</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
@@ -782,8 +783,8 @@ Optimal threshold: minimise $P_{\rm miss} + P_{\rm false}$.
 <br>Equal $\sigma$: $\theta_{\rm opt} = (\mu_{\rm bright} + \mu_{\rm dark})/2$.
 <br>Unequal $\sigma$: solve numerically.
 <br><br>
-For ${\rm SNR} = (\mu_{\rm bright}-\mu_{\rm dark})/\bar{\sigma}$:<br>
-$\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2\sqrt{2}}\right)$, every factor-2 in SNR dramatically improves fidelity.
+For equal peak widths and ${\rm SNR} = (\mu_{\rm bright}-\mu_{\rm dark})/\sigma$:<br>
+$\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths, compute $P_{\rm miss}$ and $P_{\rm false}$ separately.
         </div>
         <div class="info-banner">
           <strong>SNR → Fidelity rule of thumb:</strong><br>
@@ -922,7 +923,8 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2\sqrt{2}}\right)$, every facto
             R_sc → Γ/2 at saturation (~3 MHz for Rb87).</p>
             <p><strong>Photon counts:</strong> With NA=0.5, η≈5%, 5ms exposure →
             ~750 detected photons. σ_bright ≈ 40e⁻ (EMCCD with excess noise). Well-separated from dark peak (~50 e⁻).</p>
-            <p><strong>Main challenge:</strong> Photon recoil heating (~362 nK/photon for Rb87).
+            <p><strong>Main challenge:</strong> Photon recoil heating (~181 nK per one-way recoil for Rb87;
+            roughly twice that per scatter cycle without cooling).
             At R_sc = 3×10⁶/s, the atom heats by ~1 mK/s.
             Limit imaging to &lt;10 ms or use concurrent Sisyphus/gray molasses cooling
             (recapture imaging, EIT imaging).</p>
@@ -1207,6 +1209,22 @@ function computeSNR(N_sig, N_bg, N_dark, sigma_read, camType, emGain) {
   return variance > 0 ? N_sig / Math.sqrt(variance) : 0;
 }
 
+function detectionFidelityGaussian(N_sig, N_bg, N_dark, sigma_read, camType, emGain) {
+  const F2 = (camType === 'emccd') ? 2 : 1;
+  const rn2 = (camType === 'emccd') ? Math.pow(sigma_read / emGain, 2)
+             : (camType === 'scmos') ? sigma_read * sigma_read : 0;
+
+  const muDark = N_bg;
+  const muBright = N_bg + N_sig;
+  const varDark = Math.max(1e-12, F2 * (N_bg + N_dark) + rn2);
+  const varBright = Math.max(1e-12, F2 * (N_sig + N_bg + N_dark) + rn2);
+  const theta = (muDark + muBright) / 2;
+
+  const pMiss = normCDF((theta - muBright) / Math.sqrt(varBright));
+  const pFalse = 1 - normCDF((theta - muDark) / Math.sqrt(varDark));
+  return Math.max(0, Math.min(1, 1 - (pMiss + pFalse) / 2));
+}
+
 function noiseComponents(N_sig, N_bg, N_dark, sigma_read, camType, emGain) {
   const F2 = (camType === 'emccd') ? 2 : 1;
   const rn2 = (camType === 'emccd') ? Math.pow(sigma_read / emGain, 2)
@@ -1281,9 +1299,9 @@ function compute() {
   const SNR = computeSNR(N_sig, N_bg, N_dark, sigma_read, camType, emGain);
 
   // ── Detection fidelity ───────────────────────────────────────
-  // Gaussian approx: threshold at (N_sig + N_bg)/2
-  // Fidelity ≈ 1 − erfc(SNR/(2√2))/2 ≈ Φ(SNR/√2) for symmetric case
-  const fidelity = normCDF(SNR / Math.sqrt(2));
+  // Gaussian threshold model with separate bright/dark variances.
+  // This avoids the common over-optimistic shortcut of mapping a one-peak SNR directly to fidelity.
+  const fidelity = detectionFidelityGaussian(N_sig, N_bg, N_dark, sigma_read, camType, emGain);
 
   // ── Min exposure for target SNR ──────────────────────────────
   let tMin10 = '—', tMin50 = '—';

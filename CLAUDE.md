@@ -320,7 +320,7 @@ Add `class="anim-in delay-N"` (N = 1 to 9, in multiples of ~100ms delay) to any 
 ## All Primary Tool Pages — Physics Summary
 
 ### 1. Atom Library (`atom-library.html`)
-15 laser-coolable atoms in 4 family tabs (alkali, alkaline-earth, rare-earth, other). Table: mass, D1/D2 wavelengths, natural linewidth Γ, I_sat, recoil temperature, Doppler temperature. US research groups per atom. Interactive family switching.
+15 laser-coolable atoms in 4 family tabs (alkali, alkaline-earth, rare-earth, other). Table: mass, D1/D2 wavelengths, natural linewidth Γ, I_sat, recoil scale, Doppler temperature. US research groups per atom. Interactive family switching.
 
 ### 2. Lab Techniques (`lab-techniques.html`)
 8 experimental techniques with deep-dive accordion sections (from thesis Ch. 6): laser cooling, MOT loading, evaporative cooling, optical tweezers, fluorescence imaging, absorption imaging, RF/microwave spectroscopy, optical lattices.
@@ -346,7 +346,7 @@ Interactive simulator for tweezer trap frequency measurement. Atom released from
 ### 9. Lab Calculators (`lab-calculators.html`)
 Large multi-section calculator suite organized in tabs:
 - **Optics**: beam waist, Rayleigh range, NA, fiber coupling, telescope magnification, dBm↔mW, AOM shift, shot noise
-- **Atomic physics**: photon recoil, Doppler temperature, recoil temperature, de Broglie wavelength, Zeeman shift, I_sat
+- **Atomic physics**: photon recoil, Doppler temperature, single-recoil and scatter-heating scales, de Broglie wavelength, Zeeman shift, I_sat
 - **Trap**: tweezer frequency ω_r = √(4U₀/mw₀²), Lamb-Dicke parameter η = k·x_zpf, cavity FSR, mode matching
 - **Clebsch-Gordan**: CG coefficient table + decomposition for arbitrary j₁, j₂, m₁, m₂
 

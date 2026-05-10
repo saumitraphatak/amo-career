@@ -147,7 +147,7 @@
       <div class="container">
 
     <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-      Quick-access calculations for the daily work of an AMO physicist, organized into four tabs: Optics (beam parameters, coupling, AOM shifts, shot noise floor), Atomic physics (recoil temperature, Doppler limit, saturation intensity, Zeeman shifts), Trapping (tweezer frequency, Lamb-Dicke parameter, cavity FSR and finesse), and Clebsch-Gordan coefficients. These are the numbers you reach for dozens of times a week, keeping them in one place avoids the mental overhead of re-deriving units every time.
+      Quick-access calculations for the daily work of an AMO physicist, organized into four tabs: Optics (beam parameters, coupling, AOM shifts, shot noise floor), Atomic physics (single-photon recoil scale, Doppler limit, saturation intensity, Zeeman shifts), Trapping (tweezer frequency, Lamb-Dicke parameter, cavity FSR and finesse), and Clebsch-Gordan coefficients. These are the numbers you reach for dozens of times a week, keeping them in one place avoids the mental overhead of re-deriving units every time.
     </div>
 
     <div data-tabs-wrap>
@@ -362,9 +362,10 @@ $${\rm NEP} = \frac{i_{\rm shot}}{R} \quad [{\rm W}]$$</div>
             <!-- 3a. Recoil -->
             <div class="calc-card">
               <h4>Photon Recoil</h4>
-              <div class="sub">Recoil velocity &amp; temperature from one photon kick. Sets the energy scale for laser cooling.</div>
+              <div class="sub">Recoil velocity, single-photon recoil energy, and two-recoil scatter heating scale. Sets the energy scale for laser cooling.</div>
               <div class="formula-box">
-$$v_{\rm rec} = \frac{\hbar k}{m} = \frac{h}{m\lambda} \qquad T_{\rm rec} = \frac{m v_{\rm rec}^2}{k_{\rm B}} = \frac{(\hbar k)^2}{m k_{\rm B}}$$
+$$v_{\rm rec} = \frac{\hbar k}{m} = \frac{h}{m\lambda} \qquad E_{\rm rec} = \frac{(\hbar k)^2}{2m}$$
+$$T_{\rm rec} = \frac{E_{\rm rec}}{k_{\rm B}} \qquad T_{\rm scatter} \approx \frac{2E_{\rm rec}}{k_{\rm B}}$$
 $$E_{\rm rec}/h = \frac{\hbar k^2}{4\pi m} \quad [\text{kHz}]$$</div>
               <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rec_lam" value="852" min="400" max="2000" step="1" oninput="calcRecoil()"><span class="unit">nm</span></div>
               <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="rec_A" value="133" min="1" max="250" step="1" oninput="calcRecoil()"><span class="unit">amu</span></div>
@@ -866,11 +867,13 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const m     = +document.getElementById('rec_A').value * amu;
       const k     = 2 * Math.PI / lam_m;
       const v_rec = hbar * k / m;
-      const T_rec = m * v_rec**2 / kB;
+      const T_rec = 0.5 * m * v_rec**2 / kB;
+      const T_scatter = 2 * T_rec;
       const E_kHz = hbar * k**2 / (2 * m) / h / 1e3;
       setRes('rec_res', [
         ['Recoil velocity v_rec', (v_rec*1e3).toFixed(4) + ' mm/s'],
-        ['Recoil temperature T_rec', (T_rec*1e9).toFixed(4) + ' nK  =  ' + (T_rec*1e6).toFixed(4) + ' µK'],
+        ['Single recoil E_rec/k_B', (T_rec*1e9).toFixed(4) + ' nK  =  ' + (T_rec*1e6).toFixed(4) + ' µK'],
+        ['Abs.+em. heating scale 2E_rec/k_B', (T_scatter*1e9).toFixed(4) + ' nK'],
         ['Recoil frequency E_rec/h', E_kHz.toFixed(4) + ' kHz'],
       ]);
     }

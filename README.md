@@ -10,7 +10,7 @@ A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists
 
 | Tool | Description |
 |---|---|
-| **Atom Library** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, T_recoil, US research groups |
+| **Atom Library** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, recoil scale, US research groups |
 | **Lab Techniques** | 8 core experimental techniques with deep-dive accordions (MOT, tweezers, evaporation, imaging, lattices) |
 | **Rydberg Calculator** | n-scaling: lifetime τ ~ n³, C₆ ~ n¹¹, blockade radius R_b vs principal quantum number |
 | **Imaging SNR Calculator** | Single-atom fluorescence SNR — full EMCCD/sCMOS noise model, detection fidelity, min exposure finder |

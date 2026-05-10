@@ -189,7 +189,7 @@
       </h1>
       <p class="page-hero-desc">
         Quantum defect theory for alkali Rydberg states, effective quantum number, binding energy,
-        orbital radius, radiative lifetime, and van der Waals blockade radius.
+        orbital radius, radiative lifetime, and approximate van der Waals blockade radius.
       </p>
     </div>
   </div>
@@ -199,7 +199,14 @@
 
       <!-- Intro -->
       <div class="concept-box anim-in" style="border-left-color:var(--c-ryd);">
-        <strong style="color:var(--c-ryd);">Rydberg atoms</strong> are atoms promoted to states with very high principal quantum number (n ≫ 1), where the valence electron is weakly bound and orbits at a distance of n²a₀, up to hundreds of nanometres from the core. These states have extraordinary properties: lifetimes scaling as n³ (reaching ~hundreds of μs at n~70), electric polarizabilities scaling as n⁷, and most importantly, van der Waals interactions scaling as n¹¹. That steep scaling makes Rydberg–Rydberg interactions billions of times stronger than ground-state interactions, enabling the <em>Rydberg blockade</em>, the mechanism behind every neutral-atom two-qubit gate. This calculator uses quantum defect theory (the Rydberg–Ritz formula) to compute state properties for the five common Rydberg series (nS₁/₂, nP₁/₂, nP₃/₂, nD₃/₂, nD₅/₂) and the blockade radius for any Rabi frequency and atom separation.
+        <strong style="color:var(--c-ryd);">Rydberg atoms</strong> are atoms promoted to states with very high principal quantum number (n ≫ 1), where the valence electron is weakly bound and orbits at a distance of n²a₀, up to hundreds of nanometres from the core. These states have extraordinary properties: lifetimes scaling as n³ (reaching ~hundreds of μs at n~70), electric polarizabilities scaling as n⁷, and most importantly, van der Waals interactions scaling roughly as n¹¹ away from resonances. That steep scaling makes Rydberg–Rydberg interactions billions of times stronger than ground-state interactions, enabling the <em>Rydberg blockade</em>, the mechanism behind neutral-atom two-qubit gates. This calculator uses quantum defect theory (the Rydberg–Ritz formula) for single-atom state properties and an n*¹¹ scaling model for quick blockade estimates.
+      </div>
+
+      <div class="info-banner anim-in delay-1">
+        <strong>Validity note:</strong> binding energies and n* values are reliable quick estimates;
+        C₆ values are order-of-magnitude estimates. Real blockade strengths depend on magnetic sublevel,
+        polarization, quantization axis, Förster defects, pair-state mixing, and electric fields. Use ARC,
+        PairInteraction, or paper-specific C₆ tables before designing an experiment.
       </div>
 
   <!-- ═══════ SECTION 1: STATE PROPERTIES ════════ -->
@@ -358,16 +365,16 @@
         <div class="theory-box" style="margin-top:.75rem;">
           <h4>Van der Waals blockade</h4>
           <p>
-            Two atoms in |n,l,j⟩ interact via U(r) = −C₆/r⁶ (van der Waals regime, r ≫ r<sub>LeRoy</sub>).
+            Two atoms in |n,l,j⟩ interact approximately via U(r) = −C₆/r⁶ in the van der Waals regime
+            and away from near-degenerate pair-state resonances.
             When |U(r)| ≫ ℏΩ, double excitation |rr⟩ is energetically forbidden —
             the Rydberg blockade. The blockade radius is defined by |U(R<sub>b</sub>)| = ℏΩ:
           </p>
           <span class="eq">R_b = (|C₆| / ℏΩ)^(1/6)</span>
           <p>
-            C₆ scales as n*¹¹, doubling n roughly multiplies R<sub>b</sub> by 2¹¹/⁶ ≈ 3.6.
-            <strong>S states</strong> have weaker (smaller C₆) blockade than <strong>P or D states</strong>
-            due to Förster resonance structure. For Rydberg gates, P₃/₂ and D₅/₂ states
-            are often preferred precisely because of their larger C₆.
+            C₆ often scales approximately as n*¹¹ within one series, so doubling n roughly
+            multiplies R<sub>b</sub> by 2¹¹/⁶ ≈ 3.6. Treat the sign and magnitude as state-specific:
+            S, P, and D states can differ strongly because of angular factors and Förster resonance structure.
           </p>
         </div>
       </div>
