@@ -40,6 +40,18 @@ Bloch Sphere · Quantum Gates · Superposition · Measurement · Entanglement ·
 
 ---
 
+## Site UX Features
+
+- **Global search** from the nav bar or `/`: species, formulas, techniques, companies, and keywords.
+- **"I am trying to..." paths** on the homepage for MOT building, single-atom imaging, qubit-species choice, trap-frequency estimates, and AMO industry interview prep.
+- **Persistent recently used tools** stored in local browser storage.
+- **Shareable calculator URLs**: calculator controls are encoded into query strings where practical.
+- **Educational depth widgets**: derivation-mode toggles, common-mistake boxes, and AMO intuition cards.
+- **Source confidence tags**: textbook, peer-reviewed, company roadmap, and rough estimate.
+- **Export helpers**: CSV export for tables and PNG/SVG export for canvas plots.
+
+---
+
 ## Tech Stack
 
 - **HTML5 / CSS3 / Vanilla JS** — zero dependencies, zero build step
@@ -135,10 +147,13 @@ Dark "quantum" theme with a unique accent color per tool:
 
 | Pattern | Implementation |
 |---|---|
-| **Nav** | `renderNav({ active: 'page-key', root: '../' })` — auto-updates count from NAV object |
+| **Nav** | `renderNav({ active: 'page-key', root: '../' })` — auto-updates count from NAV object and global search index |
 | **Math** | `$$...$$` display, `$...$` inline — KaTeX auto-renders on all pages |
 | **Accordions** | `.accordion` > `.accordion-header` + `.accordion-body` |
 | **Tabs** | `.tab-bar[data-group]` > `.tab-btn[data-tab]` + `.tab-panel[data-tab]` |
+| **Derivation modes** | `.derivation-mode` with `[data-deriv-tab]` buttons and `[data-deriv-panel]` panels |
+| **Source confidence** | `.source-tag.textbook`, `.source-tag.peer-reviewed`, `.source-tag.company-roadmap`, `.source-tag.rough-estimate` |
+| **Exports** | Auto-injected table CSV and canvas PNG/SVG buttons from `js/main.js` |
 | **Scroll reveal** | Class `anim-in` + `delay-N` (1–9) |
 | **Page layout** | `.page-wrap` > `.page-hero` > `.page-content` |
 | **Page accent** | `--page-color`, `--page-bg`, `--page-border` CSS vars on `.page-wrap` |

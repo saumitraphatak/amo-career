@@ -76,6 +76,20 @@ def test_release_recapture_is_thermometry_not_frequency_claim() -> None:
     assert_not_contains("pages/release-recapture.html", "recapture probability oscillates with the trap frequency")
 
 
+def test_site_ux_features_present() -> None:
+    assert_contains("js/main.js", "function initGlobalSearch")
+    assert_contains("js/main.js", "function initShareableCalculatorParams")
+    assert_contains("js/main.js", "function exportCanvasPNG")
+    assert_contains("js/main.js", "function exportCanvasSVG")
+    assert_contains("js/main.js", "function renderRecentTools")
+    assert_contains("home.html", "I am trying to...")
+    assert_contains("home.html", 'id="recent-tools"')
+    assert_contains("css/styles.css", ".source-tag.peer-reviewed")
+    assert_contains("css/styles.css", ".derivation-mode")
+    assert_contains("pages/imaging-calculator.html", "Common mistake, SNR is not fidelity")
+    assert_contains("pages/lab-calculators.html", "Common mistake, recoil factor-of-two")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -83,6 +97,7 @@ def main() -> None:
         test_beat_note_prefactor,
         test_qc_claims_are_qualified,
         test_release_recapture_is_thermometry_not_frequency_claim,
+        test_site_ux_features_present,
     ]
     for test in tests:
         test()

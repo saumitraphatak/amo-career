@@ -11,7 +11,7 @@
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator, scattering rate, photon collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/imaging-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=7">
+  <link rel="stylesheet" href="../css/styles.css?v=8">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -221,6 +221,60 @@
 
   <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
     Single-atom fluorescence imaging is the fundamental read-out mechanism for all tweezer and optical-lattice experiments, every circuit ends with counting atoms. A photon is scattered off the trapped atom onto a camera; the challenge is collecting enough photons for reliable 0/1 discrimination before the atom heats out of the trap. This calculator computes signal-to-noise ratio (SNR) for your specific imaging setup (species, NA, detuning, camera) and the resulting single-atom detection fidelity, plus the new Histogram Fidelity section which shows how to extract detection fidelity from the bimodal fluorescence histogram, the same analysis used in Evered et al. 2023, Manetsch et al. 2025, and Wu et al. 2022.
+  </div>
+
+  <div class="common-mistake anim-in delay-1">
+    <strong>Common mistake, SNR is not fidelity.</strong>
+    A high photon-count SNR is only a proxy. Detection fidelity is the overlap error of the
+    dark-count and bright-count histograms after choosing a threshold, and it can be limited
+    by atom loss, blinking, camera tails, or imperfect state preparation even when the raw SNR
+    looks excellent.
+  </div>
+
+  <div class="derivation-mode anim-in delay-1">
+    <div class="derivation-tabs" aria-label="Derivation mode">
+      <button class="active" type="button" data-deriv-tab="beginner">Beginner</button>
+      <button type="button" data-deriv-tab="derivation">Full derivation</button>
+      <button type="button" data-deriv-tab="assumptions">Assumptions</button>
+    </div>
+    <div class="derivation-panel" data-deriv-panel="beginner">
+      <strong>Picture:</strong> collect enough fluorescence photons that the bright-atom
+      histogram is separated from the empty-trap histogram. The useful question is not
+      "how many photons did I collect?" but "how much do the two histograms overlap?"
+    </div>
+    <div class="derivation-panel" data-deriv-panel="derivation" hidden>
+      The resonant scattering rate is
+      \(R_{\rm sc}=\Gamma s/[2(1+s+4\Delta^2/\Gamma^2)]\). The mean detected signal is
+      \(N_{\rm det}=R_{\rm sc}t_{\rm img}\eta_{\rm coll}\eta_{\rm opt}\eta_{\rm QE}\).
+      For approximately Gaussian bright and dark distributions, the threshold error is the
+      sum of the two distribution tails on the wrong side of the threshold.
+    </div>
+    <div class="derivation-panel" data-deriv-panel="assumptions" hidden>
+      The calculator assumes independent photon shot noise, a camera noise model that is
+      well described by the entered read/background terms, and a two-level scattering-rate
+      estimate. Real experiments should validate the final fidelity from measured histograms.
+    </div>
+  </div>
+
+  <div class="intuition-grid anim-in delay-1">
+    <div class="intuition-card">
+      <h4>More NA helps twice</h4>
+      <p>Sentence: Larger NA increases collected photons without increasing atom heating.</p>
+      <p class="eq-mini">ηcoll = (1 - cosθ)/2</p>
+      <p>Failure mode: assuming higher camera gain improves photon collection.</p>
+    </div>
+    <div class="intuition-card">
+      <h4>Thresholds are physics</h4>
+      <p>Sentence: The optimal threshold trades false positives against false negatives.</p>
+      <p class="eq-mini">F = 1 - (P0→1 + P1→0)/2</p>
+      <p>Failure mode: quoting SNR when state loss dominates.</p>
+    </div>
+    <div class="intuition-card">
+      <h4>Survival is separate</h4>
+      <p>Sentence: A measurement can identify an atom correctly while still ejecting it.</p>
+      <p class="eq-mini">Freadout ≠ Psurvival</p>
+      <p>Failure mode: multiplying every error into one unlabeled number.</p>
+    </div>
   </div>
 
   <!-- ═══ SECTION 1: IMAGING BEAM PARAMETERS ════════════════════ -->
@@ -1044,22 +1098,27 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.93.163602" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
         Bergamini et al. (2004), Single-atom detection with EMCCD, Science
+        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://doi.org/10.1103/PhysRevX.9.021039" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
         Liu &amp; Bhatt (2019), High-fidelity single-atom detection in optical tweezers
+        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.114.213002" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
         Hutzler et al. (2017), Eliminating light shifts for single-atom trapping
+        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://steck.us/alkalidata" target="_blank" rel="noopener">
         <span class="rl-icon">📊</span>
         Steck, Alkali Data Sheets (D1/D2 line data for all species)
+        <span class="source-confidence"><span class="source-tag textbook">textbook</span></span>
       </a>
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.87.1419" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
         Kaufman &amp; Greiner (2021), Quantum science with optical tweezers (Rev. Mod. Phys.)
+        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
     </div>
   </section>
@@ -1079,7 +1138,7 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=7"></script>
+<script src="../js/main.js?v=8"></script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 
