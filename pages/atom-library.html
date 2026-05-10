@@ -342,20 +342,6 @@
           </div>
         </div>
 
-        <!-- Spectroscopic panel — shown on atom tile click -->
-        <div id="spec-panel" style="display:none;background:var(--bg-card);border:1px solid var(--border-med);border-radius:var(--r-lg);padding:var(--sp-5);margin-bottom:var(--sp-5)">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5);align-items:start">
-            <div>
-              <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.5rem" id="spec-title">Level Diagram</div>
-              <canvas id="spec-canvas" width="320" height="200" style="width:100%;border-radius:6px;background:var(--bg-surface);border:1px solid var(--border)"></canvas>
-            </div>
-            <div>
-              <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.5rem">Transition Data</div>
-              <div id="spec-info" style="font-size:.84rem;color:var(--text-secondary);line-height:1.8"></div>
-            </div>
-          </div>
-        </div>
-
         <div class="filter-bar anim-in delay-1">
           <span class="filter-label">Filter:</span>
           <button class="filter-btn active" data-family="all">All (15)</button>
@@ -1697,14 +1683,18 @@ Narrow: 583 nm (intercombination line)</span>
       });
       if (!targetRow) return;
 
-      // Show spectroscopic panel
+      // Flash-highlight the matching table row (no scroll — spec panel handles scroll below)
+      targetRow.style.transition = 'background 200ms';
+      targetRow.style.background = 'rgba(56,189,248,0.18)';
+      setTimeout(() => { targetRow.style.background = ''; }, 1800);
+
+      // Show spectroscopic panel (placed after table in DOM, so scroll lands below the table row)
       const sp = SPEC_DATA[sym];
       if (sp) {
         const panel = document.getElementById('spec-panel');
         panel.style.display = 'block';
         document.getElementById('spec-title').textContent = sp.sym + ' — Energy Level Diagram';
         drawLevelDiagram(sp);
-        // Build info HTML
         let info = '';
         if (sp.D2lam) info += `<strong>D2 line:</strong> ${sp.D2lam} nm &nbsp;· Γ/2π = ${sp.D2G} MHz<br>`;
         if (sp.D1lam) info += `<strong>D1 line:</strong> ${sp.D1lam} nm &nbsp;· Γ/2π = ${sp.D1G} MHz<br>`;
@@ -1714,15 +1704,9 @@ Narrow: 583 nm (intercombination line)</span>
         if (sp.qubit) info += `<br><span style="color:#34d399">⚛️ ${sp.qubit}</span><br>`;
         if (sp.notes) info += `<br><em>${sp.notes}</em>`;
         document.getElementById('spec-info').innerHTML = info;
-        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Scroll to the panel — single scroll, no conflict
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
       }
-
-      // Scroll to table
-      document.getElementById('atom-table').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Flash highlight
-      targetRow.style.transition = 'background 200ms';
-      targetRow.style.background = 'rgba(56,189,248,0.18)';
-      setTimeout(() => { targetRow.style.background = ''; }, 1800);
     }
   </script>
 
