@@ -379,8 +379,8 @@
           <div class="hero-atom-sub">Alkali · Hyperfine qubit · 6.834 GHz clock transition</div>
           <div class="hero-atom-stats">
             <span class="hero-stat-chip rb">2Q fidelity 99.5%</span>
-            <span class="hero-stat-chip rb">T₂ = 12.6 s</span>
-            <span class="hero-stat-chip rb">6100-qubit array (2025)</span>
+            <span class="hero-stat-chip rb">48 logical qubits</span>
+            <span class="hero-stat-chip rb">280 physical atoms</span>
             <span class="hero-stat-chip rb">Harvard/QuEra/Pasqal</span>
           </div>
         </div>
@@ -434,18 +434,26 @@
 
     <div class="info-box">
       <strong>The core trade-off:</strong>
-      ⁸⁷Rb is the mature, well-characterised platform with the highest <em>demonstrated</em> parallel gate fidelities
-      (99.5%, 60 qubits simultaneously) and the largest coherent arrays (6100 atoms, 2025).
-      ¹⁷¹Yb has a deeper structural advantage: its J=0 ground state means the qubit (nuclear spin) is
-      isolated from electronic noise, projecting superior coherence and 99.72% two-qubit gates (2025).
-      Both are converging toward fault-tolerant thresholds from different starting points.
+      ⁸⁷Rb is the mature, well-characterised platform with the strongest <em>published</em> Rydberg-gate and logical-processor record:
+      99.5% two-qubit CZ gates on up to 60 atom pairs operated in parallel, and 48 logical qubits encoded in 280 physical atoms.
+      ¹⁷¹Yb has a different structural advantage: a J=0 ground state, nuclear-spin qubit, clock-state shelving, and alkaline-earth
+      erasure-conversion protocols. Its best published gate number is 99.40(3)% raw and 99.72(3)% with post-selection.
+      The 6100-atom, 12.6 s coherence result is a <strong>Cs-133</strong> benchmark, not an Rb-87 benchmark; it is included below only as adjacent alkali/tweezer scaling context.
     </div>
 
     <div class="stat-row">
       <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">99.5%</div><div class="stat-label">Rb87 2Q fidelity<br>(Evered et al. 2023)</div></div>
-      <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">12.6 s</div><div class="stat-label">Rb87 coherence T₂<br>(Manetsch et al. 2025)</div></div>
+      <div class="stat-card-sm rb"><div class="stat-num" style="color:#fb923c;">48</div><div class="stat-label">Rb87 logical qubits<br>(Bluvstein et al. 2024)</div></div>
       <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">99.72%</div><div class="stat-label">Yb171 2Q fidelity<br>(Muniz et al. 2025, post-sel)</div></div>
       <div class="stat-card-sm yb"><div class="stat-num" style="color:#34d399;">J = 0</div><div class="stat-label">Yb171 ground state<br>electronic protection</div></div>
+    </div>
+
+    <div class="common-mistake" style="margin-top:1rem;">
+      <strong>Source-confidence rule for this page:</strong>
+      <span class="source-tag peer-reviewed">peer-reviewed</span> numbers come directly from papers;
+      <span class="source-tag company-roadmap">company roadmap</span> numbers are useful but not equivalent to peer-reviewed benchmarks;
+      <span class="source-tag rough-estimate">rough estimate</span> entries are order-of-magnitude design guidance.
+      The Cs-133 6100-atom result is explicitly marked as adjacent alkali context, not as an Rb87 panel result.
     </div>
   </section>
 
@@ -530,7 +538,7 @@
           <li><strong>Cooling transitions:</strong> D1 at 795 nm (5S→5P₁/₂), D2 at 780 nm (5S→5P₃/₂)</li>
           <li><strong>Rydberg excitation:</strong> Two-photon via 5P₃/₂ (780 nm + 480 nm)</li>
           <li><strong>Natural linewidth:</strong> Γ/2π = 6.07 MHz (D2)</li>
-          <li><strong>C₆ coefficient:</strong> |C₆| ≈ 862,690 × 2π MHz·μm⁶ for |70S₁/₂⟩</li>
+          <li><strong>Rydberg interaction scale:</strong> Strongly state- and field-dependent; use ARC/pair-state calculations for exact C₆. Near n≈70 S-states, C₆ is order 10⁵–10⁶ × 2π MHz·μm⁶ <span class="source-tag rough-estimate">rough estimate</span></li>
         </ul>
       </div>
 
@@ -615,7 +623,7 @@
           <li><strong>Cooling transitions:</strong> ¹P₁ at 399 nm (broad), ³P₁ at 556 nm (intercombination)</li>
           <li><strong>Clock transition:</strong> ¹S₀ → ³P₀ at 578 nm (< 10 mHz linewidth)</li>
           <li><strong>Rydberg excitation:</strong> Single UV photon (~302 nm) from metastable ³P₀ state to Rydberg nP levels; overall path from ¹S₀ is two-photon (578 nm + 302 nm)</li>
-          <li><strong>Magic wavelength:</strong> 759 nm (eliminates differential light shift)</li>
+          <li><strong>Clock magic wavelength:</strong> near 759 nm for the ¹S₀–³P₀ optical clock transition; not required to cancel the two ¹S₀ nuclear-spin qubit light shifts <span class="source-tag textbook">atomic structure</span></li>
         </ul>
       </div>
     </div>
@@ -624,11 +632,11 @@
       <strong>The J=0 advantage (correctly stated):</strong> In Yb171, the ¹S₀ ground state has J=0, so the
       qubit (nuclear spin mI=±½) couples only at the nuclear magneton scale (~2.6 kHz/G, linear in B).
       Rb87 <em>clock</em> states |mF=0⟩ have <strong>zero first-order Zeeman</strong> — their sensitivity is
-      quadratic (~1288 Hz/G² × B²). At a typical bias field B₀~1 G both platforms show similar B-noise
-      sensitivity (~2.6 Hz/mG); Yb171 gains an advantage above ~1 G and Rb87 is better below ~0.3 G.
+      quadratic (575.15 Hz/G² × B² for the clock transition). At a typical bias field B₀≈1 G and noise δB=1 mG,
+      Rb87 has ≈1.15 Hz sensitivity while Yb171 has ≈2.6 Hz sensitivity; the crossover is near B₀≈2.3 G.
       The <em>primary</em> structural advantages of Yb171's J=0 ground state are: (1) <strong>collisional immunity</strong>
-      — no electronic spin means spin-exchange relaxation is highly suppressed; (2) <strong>magic wavelength</strong>
-      at 759 nm — differential AC Stark shift is zero automatically; (3) <strong>erasure conversion</strong> via ³P₀.
+      — no electronic spin means spin-exchange relaxation is highly suppressed; (2) <strong>spin-independent trapping</strong>
+      of the ¹S₀ nuclear-spin qubit to leading scalar order; and (3) <strong>erasure conversion</strong> via ³P₀.
     </div>
   </section>
 
@@ -648,13 +656,13 @@
 $$|0\rangle = |F{=}1, m_F{=}0\rangle, \quad |1\rangle = |F{=}2, m_F{=}0\rangle$$
 $$\nu_{\rm qubit} = 6{,}834{,}682{,}610.904\;\text{Hz} \approx 6.834\;\text{GHz}$$
 Clock states ($m_F{=}0$): first-order Zeeman is exactly zero.<br>
-Quadratic (second-order) Zeeman: $\delta\nu \approx +1288\;\text{Hz/G}^2 \times B^2$<br>
-Sensitivity to fluctuations $\delta B$ at bias field $B_0$: $\delta\nu \approx 2576\;\text{Hz/G}^2 \times B_0 \cdot \delta B$</div>
+Quadratic (second-order) Zeeman: $\delta\nu \approx +575.15\;\text{Hz/G}^2 \times B^2$<br>
+Sensitivity to fluctuations $\delta B$ at bias field $B_0$: $\delta\nu \approx 1150.3\;\text{Hz/G}^2 \times B_0 \cdot \delta B$</div>
         <ul>
           <li>Driven by microwave pulses at 6.834 GHz (or two-photon Raman beams)</li>
           <li><strong>Clock states |mF=0⟩: zero first-order Zeeman</strong> — symmetry cancels linear Zeeman exactly for mF=0 ↔ mF=0 transition</li>
-          <li>Residual quadratic Zeeman: ~1288 Hz/G² × B²; at B=1 G → 1288 Hz total shift, sensitivity dν/dB = 2576 Hz/G</li>
-          <li>At typical bias field B₀=1 G, noise δB=1 mG: δν ≈ 2.6 Hz — comparable to Yb171 nuclear Zeeman at same field</li>
+          <li>Residual quadratic Zeeman: 575.15 Hz/G² × B²; at B=1 G → 575.15 Hz total shift, sensitivity dν/dB = 1150.3 Hz/G <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li>At typical bias field B₀=1 G, noise δB=1 mG: δν ≈ 1.15 Hz, about 2.3× smaller than Yb171's nuclear-spin slope</li>
           <li>Differential light shift from tweezers must be calibrated or nulled</li>
         </ul>
       </div>
@@ -671,8 +679,8 @@ $$\nu_{\rm qubit}(B) = g_I \,\mu_N \, B / h \approx -\,2.592\;\text{kHz/G} \time
 Zeeman shift: ${\sim}2.6\;\text{kHz/G}$ (nuclear magneton scale; qubit frequency ~26 kHz at $B=10\;\text{G}$)</div>
         <ul>
           <li>Driven by RF pulses (kHz–MHz range in typical lab fields) or two-photon Raman</li>
-          <li>First-order Zeeman shift at nuclear magneton scale (~2.6 kHz/G); Rb87 clock states have zero first-order Zeeman and only quadratic ~1288 Hz/G²</li>
-          <li>Magic wavelength trap (759 nm) eliminates differential AC Stark shift between |0⟩ and |1⟩</li>
+          <li>First-order Zeeman shift at nuclear magneton scale (~2.6 kHz/G); Rb87 clock states have zero first-order Zeeman and quadratic 575.15 Hz/G²</li>
+          <li>For the ¹S₀ nuclear-spin qubit, scalar light shifts are spin-independent to leading order; 759 nm is the ¹S₀–³P₀ clock magic wavelength, not a special cancellation between |mI=±1/2⟩ qubit states</li>
           <li>No electronic magnetic moment in ground state → intrinsic noise immunity</li>
         </ul>
       </div>
@@ -683,13 +691,14 @@ Zeeman shift: ${\sim}2.6\;\text{kHz/G}$ (nuclear magneton scale; qubit frequency
     </div>
 
     <div class="formula-box" style="font-size:.85rem; line-height:1.9;">
-$$\underbrace{\delta\nu_{\rm Rb87}^{\rm (clock)}}_{\text{quadratic Zeeman}} \approx 2 \times 1288\;\text{Hz/G}^2 \times B_0 \cdot \delta B
+$$\underbrace{\delta\nu_{\rm Rb87}^{\rm (clock)}}_{\text{quadratic Zeeman}} \approx 2 \times 575.15\;\text{Hz/G}^2 \times B_0 \cdot \delta B
 \qquad \text{vs} \qquad
 \underbrace{\delta\nu_{\rm Yb171}}_{\text{nuclear spin, linear}} \approx 2.6\;\text{kHz/G} \times \delta B$$
 At $B_0 = 1\;\text{G}$, $\delta B = 1\;\text{mG}$:
-$\delta\nu_{\rm Rb87}^{\rm (clock)} \approx 2.6\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — <strong>comparable at 1 G.</strong><br>
-At $B_0 = 10\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 26\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — Yb171 is 10× better.<br>
-At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.26\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — Rb87 clock is <em>better</em> at low fields.
+$\delta\nu_{\rm Rb87}^{\rm (clock)} \approx 1.15\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — <strong>Rb87 clock is lower-noise at 1 G.</strong><br>
+At $B_0 = 10\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 11.5\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — Yb171 is ~4.4× better.<br>
+At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.115\;\text{Hz}$ vs $\delta\nu_{\rm Yb171} \approx 2.6\;\text{Hz}$ — Rb87 clock is much better at low fields.<br>
+Crossover: $B_0 \approx 2.26\;\text{G}$ for the assumed $\delta B=1\;\text{mG}$.
     </div>
   </section>
 
@@ -738,7 +747,7 @@ At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.26\;\text{Hz}$ vs $\de
             <strong style="color:#34d399;">Intercombination MOT</strong>, ³P₁ transition at 556 nm (Γ/2π = 182 kHz, narrow linewidth) for sub-Doppler cooling to ~5 μK without a dedicated sub-Doppler stage.
           </li>
           <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
-            <strong style="color:#34d399;">Magic-wavelength tweezer loading</strong>, 759 nm tweezers (magic wavelength for ¹S₀–³P₀). Equal light shift for both qubit states → no differential AC Stark shift.
+            <strong style="color:#34d399;">Optical tweezer loading</strong>, commonly chosen to balance trap depth, scattering, and clock-state needs. 759 nm is magic for the ¹S₀–³P₀ clock transition; the ground-state nuclear-spin qubit is already nearly spin-independent in scalar traps.
           </li>
           <li style="font-size:.86rem;color:var(--text-muted);margin-bottom:.5rem;line-height:1.55;">
             <strong style="color:#34d399;">Sideband cooling</strong>, Narrow ³P₁ line enables direct sideband-resolved cooling. Achieves ground state ⟨n⟩ &lt; 0.1.
@@ -748,8 +757,7 @@ At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.26\;\text{Hz}$ vs $\de
           </li>
         </ol>
         <div class="yb-box" style="margin-top:.8rem;">
-          <strong>Key advantage:</strong> The 759 nm magic wavelength means the tweezer shifts both qubit states
-          identically → no light-shift-induced dephasing. No differential shift cancellation is needed in the cooling laser system.
+          <strong>Key advantage:</strong> The ¹S₀ ground-state nuclear-spin qubit has almost no electronic magnetic moment and a mostly spin-independent scalar Stark shift. The 759 nm magic condition is most relevant when coherently using ³P₀ clock/shelving states.
         </div>
       </div>
     </div>
@@ -763,12 +771,12 @@ At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.26\;\text{Hz}$ vs $\de
     <!-- Dual Bloch sphere decoherence animation -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
       <div style="text-align:center;">
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#f97316;margin-bottom:.4rem;">⁸⁷Rb — T₂ = 12.6 s</div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#f97316;margin-bottom:.4rem;">⁸⁷Rb — schematic dephasing</div>
         <canvas id="rbBlochCanvas" width="200" height="220" style="border-radius:8px;background:#020810;display:block;margin:0 auto;"></canvas>
         <div id="rbBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:.3rem;"></div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#818cf8;margin-bottom:.4rem;">¹⁷¹Yb — T₂ ≈ 2 s</div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#818cf8;margin-bottom:.4rem;">¹⁷¹Yb — schematic dephasing</div>
         <canvas id="ybBlochCanvas" width="200" height="220" style="border-radius:8px;background:#020810;display:block;margin:0 auto;"></canvas>
         <div id="ybBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:.3rem;"></div>
       </div>
@@ -776,56 +784,54 @@ At $B_0 = 0.1\;\text{G}$: $\delta\nu_{\rm Rb87} \approx 0.26\;\text{Hz}$ vs $\de
     <div style="text-align:center;margin-bottom:1rem;">
       <button onclick="resetDecoAnim()" style="background:rgba(255,255,255,0.05);border:1px solid #334155;color:var(--text-secondary);
         padding:.4rem 1.2rem;border-radius:6px;font-size:.8rem;cursor:pointer;">↺ Restart</button>
-      <span style="font-size:.75rem;color:var(--text-muted);margin-left:1rem;">Watch the Bloch vector spiral inward — Yb loses coherence faster.</span>
+      <span style="font-size:.75rem;color:var(--text-muted);margin-left:1rem;">Schematic only: exact T₂ is platform-, encoding-, and sequence-dependent.</span>
     </div>
 
     <div class="chart-box" style="max-width:720px; margin:0 auto 1.5rem auto;">
       <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Coherence Times (log scale)</h3>
       <canvas id="coherenceChart" height="220"></canvas>
-      <p class="chart-caption">Published best values. Rb87 T₂=12.6 s from Manetsch et al. (Nature, 2025), XY16 dynamical decoupling, 6100-atom array. Yb171 values partially extrapolated from atomic clock experiments; tweezer T₂ not yet fully published as of 2025.</p>
+      <p class="chart-caption">Evidence audit: the 12.6(1) s, 6100-atom benchmark is Cs-133 from Manetsch et al. (Nature 2025), not Rb-87. Rb and Yb coherence numbers below are therefore treated cautiously and tagged by source confidence.</p>
     </div>
 
     <div class="side-by-side">
       <div class="atom-col rb">
         <div class="atom-col-header"><span class="atom-col-title">Rb87 Coherence</span></div>
         <ul>
-          <li><strong>T₂* (free precession):</strong> ~22 s (Manetsch 2025, with optimized gradient cancellation)</li>
-          <li><strong>T₂ (XY16 dynamical decoupling):</strong> 12.6(1) s (Manetsch 2025, 6100-qubit array)</li>
+          <li><strong>Published Rb array benchmark:</strong> 99.5% CZ gates on up to 60 atom pairs in parallel; coherence during algorithms is sufficient but not the 12.6 s Cs number <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li><strong>Adjacent alkali benchmark:</strong> Cs-133, not Rb-87, reached T₂ = 12.6(1) s in a 6100-atom array <span class="source-tag peer-reviewed">not Rb</span></li>
           <li><strong>T₁ (energy relaxation):</strong> &gt;1 s (thermal photon limited)</li>
           <li><strong>Dominant dephasing:</strong> Magnetic field gradient noise, laser phase noise, differential light shift in tweezer</li>
-          <li><strong>Second-order Zeeman:</strong> Contributes ~0.1 Hz/G² × B², small but non-zero</li>
+          <li><strong>Second-order Zeeman:</strong> 575.15 Hz/G² × B² for the 87Rb clock transition</li>
           <li><strong>Tweezer scattering:</strong> Off-resonant photon scattering at rate Γ_sc ∝ I/Δ² limits T₁</li>
         </ul>
         <div class="formula-box">
-$$T_2^* \approx 22\;\text{s} \quad \text{(6100-qubit array, 2025)}$$
-$$T_2 \approx 12.6\;\text{s} \quad \text{(XY16 DD, free oscillation)}$$
-Ops within T₂: $N_{\rm ops} \approx T_2 / t_{\rm gate} \approx 12.6\;\text{s} / 2\;\mu\text{s} \approx 6\times10^6$
+$$\text{Rb87 published gate benchmark: } \mathcal{F}_{\rm CZ}=99.5\% \text{ on up to 60 parallel atom pairs}$$
+$$\text{Rb87 logical benchmark: } 48\;\text{logical qubits from }280\;\text{physical atoms}$$
+The Cs-133 6100-atom coherence result is valuable alkali context, but should not be used as an Rb87 T₂ number.
         </div>
       </div>
       <div class="atom-col yb">
         <div class="atom-col-header"><span class="atom-col-title">Yb171 Coherence</span></div>
         <ul>
           <li><strong>T₂* (free precession, optical clock):</strong> &gt;100 s demonstrated in optical lattice clocks</li>
-          <li><strong>T₂ (in tweezer arrays):</strong> Atom Computing reports 40 s storage (2024), detailed characterization ongoing</li>
+          <li><strong>T₂ / memory:</strong> Atom Computing reports &gt;40 s nuclear-spin coherence/memory in company materials; treat as company-reported until matched to a peer-reviewed large-array benchmark <span class="source-tag company-roadmap">company</span></li>
           <li><strong>T₁ (energy relaxation):</strong> Limited by photon scattering from trap, expected comparable to Rb87</li>
           <li><strong>Dominant dephasing:</strong> Residual differential light shift (trap not perfectly magic), nuclear spin flip from electric quadrupole (suppressed by I=1/2)</li>
-          <li><strong>B-field dephasing:</strong> ~270× smaller than Rb87 due to nuclear magneton coupling</li>
-          <li><strong>Magic wavelength advantage:</strong> Differential Stark shift ΔE_light = 0 at 759 nm, eliminates entire class of dephasing</li>
+          <li><strong>B-field dephasing:</strong> linear nuclear-spin slope ≈2.6 kHz/G; compare against Rb clock-state quadratic sensitivity at the actual bias field</li>
+          <li><strong>Clock-state advantage:</strong> ¹S₀–³P₀ magic trapping near 759 nm supports clock/shelving operations; ¹S₀ nuclear-spin qubit shifts are scalar to leading order</li>
         </ul>
         <div class="formula-box">
 $$\delta\nu_{\rm Yb171} \approx g_I\mu_N B/h \approx 2.6\;\text{Hz/mG} \times B[\text{mG}]$$
-At $B = 1\;\text{G}$: $\delta\nu_{\rm Yb171} \approx 2.6\;\text{kHz}$; Rb87 clock qubit: $\delta\nu \approx 1.29\;\text{kHz}$ (quadratic Zeeman)<br>
-Magic wavelength: $\Delta\alpha(\lambda_{\rm magic}) = 0$ → no tweezer dephasing
+At $B = 1\;\text{G}$: $\delta\nu_{\rm Yb171} \approx 2.6\;\text{kHz}$; Rb87 clock qubit quadratic shift is $\approx 575\;\text{Hz}$<br>
+Clock magic wavelength: $\Delta\alpha_{1S0-3P0}(\lambda_{\rm magic}\approx759\;\text{nm}) = 0$ for clock/shelving transitions
         </div>
       </div>
     </div>
 
     <div class="insight">
-      <strong>Bottom line on coherence:</strong> Rb87 has demonstrated T₂ = 12.6 s in a 6100-qubit array (2025) —
-      remarkable and well above gate times. Yb171's nuclear spin qubit is structurally expected to achieve even longer
-      coherence (optical clock analogy: T₂ &gt; 100 s), but this has not yet been benchmarked in large tweezer arrays.
-      For gate operations where T₂ ≫ t_gate already, both platforms are effectively coherence-limited elsewhere
-      (gate errors dominate over decoherence).
+      <strong>Bottom line on coherence:</strong> Do not compare Rb and Yb using the 6100-atom, 12.6 s number as an Rb result; it is Cs-133.
+      For Rb87, the strongest peer-reviewed evidence is gate/logical-processor maturity. For Yb171, the strongest evidence is the nuclear-spin/clock-state structure and the 2025 gate benchmark.
+      For both, present-day two-qubit gate errors dominate over idle decoherence in most short circuits.
     </div>
   </section>
 
@@ -900,8 +906,8 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
         <div class="atom-col-header"><span class="atom-col-title">Rb87 Readout</span></div>
         <ul>
           <li><strong>Method:</strong> Fluorescence imaging, atoms in |F=2⟩ fluoresce on D2 cycling transition; |F=1⟩ atoms are dark (shelved or blown away)</li>
-          <li><strong>SPAM fidelity:</strong> 99.94% (3D tweezer lattice, ~160 qubits, 2024)</li>
-          <li><strong>Readout fidelity:</strong> 99.98952% imaging survival (Manetsch 2025, 6100-qubit array)</li>
+          <li><strong>SPAM/readout:</strong> high-fidelity fluorescence readout is well established in Rb arrays; exact numbers depend strongly on protocol and whether loss is included <span class="source-tag rough-estimate">protocol-dependent</span></li>
+          <li><strong>Adjacent alkali readout benchmark:</strong> Cs-133 Manetsch 2025 reports 99.98952(1)% imaging survival and &gt;99.99% imaging fidelity; not an Rb number</li>
           <li><strong>Mid-circuit measurement:</strong> Demonstrated with atom transport (Bluvstein 2022), move ancilla atoms to readout zone, measure, return data atoms</li>
           <li><strong>Limitation:</strong> Reading destroys the measured atom unless shelving to F=1 is performed before fluorescence</li>
           <li><strong>Non-destructive readout:</strong> Active area of research; clock-shift measurements explored</li>
@@ -911,7 +917,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
         <div class="atom-col-header"><span class="atom-col-title">Yb171 Readout</span></div>
         <ul>
           <li><strong>Method:</strong> Shelve one spin state to ³P₀ (dark), image the other with broad ¹P₁ transition at 399 nm, scattered photons distinguish |↑⟩ from |↓⟩</li>
-          <li><strong>SPAM fidelity:</strong> &gt;99% per site (Jenkins 2022, single-site characterization)</li>
+          <li><strong>Repetitive readout:</strong> state discrimination fidelity 0.993(4) with state-averaged survival 0.994(3) in Huie et al. PRX Quantum 2023 <span class="source-tag peer-reviewed">peer-reviewed</span></li>
           <li><strong>Advantage:</strong> ³P₀ metastable state (20 s lifetime) enables truly <em>non-destructive</em> qubit storage during readout, image one logical basis without disturbing atoms in the other</li>
           <li><strong>Clock-state readout:</strong> State-selective fluorescence on the narrow ³P₁ transition (556 nm) enables high-SNR readout</li>
           <li><strong>Mid-circuit measurement:</strong> Structurally enabled by the ³P₀ shelving protocol, single-shot QND-like readout of subsets of qubits</li>
@@ -936,7 +942,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
     <div class="chart-box" style="max-width:720px; margin:0 auto 1.5rem auto;">
       <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Array Size Milestones (physical qubits/atoms)</h3>
       <canvas id="scaleChart" height="240"></canvas>
-      <p class="chart-caption">Demonstrated physical qubit counts. Rb87 Manetsch 2025: 6100-qubit array with T₂=12.6 s, but gate fidelity not yet benchmarked at full scale. Yb171 Atom Computing Phoenix: 1180 qubits demonstrated with nuclear spin qubit encoding.</p>
+      <p class="chart-caption">Demonstrated physical qubit/atom counts. Rb87 milestones emphasize published gate and logical-processor results. Atom Computing's 1180-qubit Yb result is company-reported. The 6100-atom Manetsch benchmark is Cs-133, shown only as adjacent alkali context.</p>
     </div>
 
     <div class="side-by-side">
@@ -947,7 +953,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
           <li><strong>2022:</strong> Bluvstein et al., 24-qubit toric code, surface code 19 qubits</li>
           <li><strong>2023:</strong> Evered et al., 60 qubits with 99.5% 2Q gates</li>
           <li><strong>2024:</strong> Bluvstein et al., 280 physical qubits, 48 logical qubits (color code)</li>
-          <li><strong>2025:</strong> Manetsch et al., 6100 coherent qubits (12,000-site array, T₂=12.6 s)</li>
+          <li><strong>2025 adjacent alkali:</strong> Manetsch et al. demonstrated 6100 coherent Cs-133 atoms, not Rb87; useful scaling context but not counted as an Rb milestone</li>
           <li><strong>Rearrangement:</strong> AOD-based atom sorting achieves &gt;99% defect-free loading</li>
           <li><strong>Roadmap:</strong> 10,000+ qubit arrays, parallel Rydberg gates, photonic interconnects</li>
         </ul>
@@ -967,11 +973,9 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
     </div>
 
     <div class="info-box">
-      <strong>Current gap:</strong> Rb87 currently leads in demonstrated coherent array size (6100 vs 1180 qubits)
-      and in logical qubit demonstrations (48 logical qubits with error correction). Yb171 leads in per-pair
-      two-qubit gate fidelity and has the structural advantages for even larger arrays. As of mid-2025, no
-      platform has demonstrated &gt;99.9% two-qubit gates across 100+ qubits simultaneously, this is the key
-      engineering milestone for fault-tolerant operation.
+      <strong>Current gap:</strong> Rb87 leads this comparison in peer-reviewed logical-processor maturity (48 logical qubits, 280 physical atoms) and parallel gate demonstrations (60 pairs at 99.5%).
+      Yb171 leads in the best reported per-pair CZ number when post-selection is allowed (99.72(3)%; raw 99.40(3)%) and has structural erasure/shelving advantages.
+      The largest published coherent neutral-atom array is Cs-133 (6100 atoms), not Rb87 or Yb171.
     </div>
   </section>
 
@@ -999,7 +1003,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
     <div class="formula-box" style="font-size:.87rem; line-height:1.9;">
 $$\text{Standard QEC:} \quad d_{\rm eff} = d \quad \rightarrow \quad \varepsilon_{\rm logical} \propto \left(\frac{p}{p_{\rm th}}\right)^{\lceil d/2\rceil}$$
 $$\text{Erasure QEC:} \quad d_{\rm eff} = d-1 \quad \rightarrow \quad \varepsilon_{\rm logical} \propto \left(\frac{p}{p_{\rm th,\, erasure}}\right)^{d-1}$$
-With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure} \approx 10\times$ higher than Pauli threshold.
+With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated surface-code threshold increases from 0.937% to 4.15%.
 <br>Practical consequence: a distance-5 surface code with erasures ≈ distance-9 surface code with Pauli errors.
     </div>
 
@@ -1023,7 +1027,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
           <li>Some error conversion possible via Rydberg state monitoring (atom loss detection), but less efficient than Yb171</li>
           <li>Atom loss from the trap is detectable as an erasure (~99% efficiency for atom-loss erasure detection)</li>
           <li>But Pauli errors from coherent control noise are not detectable → remain as standard errors</li>
-          <li><strong>Net erasure fraction:</strong> Much lower than Yb171, roughly 50–70% vs Yb171's 98%</li>
+          <li><strong>Net erasure fraction:</strong> Architecture-dependent and not a universal published Rb number; atom loss is heraldable, but most coherent Pauli errors are not naturally converted to erasures <span class="source-tag rough-estimate">rough estimate</span></li>
         </ul>
       </div>
     </div>
@@ -1088,34 +1092,34 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
           </tr>
           <tr>
             <td>B-field sensitivity</td>
-            <td class="rb-td">~0 first-order; quadratic ~1288 Hz/G² × B² (clock states mF=0)</td>
+            <td class="rb-td">~0 first-order; quadratic 575.15 Hz/G² × B² (clock states mF=0)</td>
             <td class="yb-td win yb">~2.6 Hz/mG (linear, nuclear magneton scale)</td>
-            <td><span class="adv-yb">Yb</span> at B &gt; 1 G; <span class="adv-rb">Rb</span> at B &lt; 0.3 G</td>
+            <td><span class="adv-yb">Yb</span> at B &gt; 2.3 G; <span class="adv-rb">Rb</span> at lower fields</td>
           </tr>
           <tr>
             <td>Light-shift cancellation</td>
             <td class="rb-td">Requires active calibration</td>
-            <td class="yb-td win yb">Magic wavelength at 759 nm, automatic</td>
+            <td class="yb-td win yb">¹S₀ nuclear-spin scalar shift nearly spin-independent; 759 nm is clock magic for ¹S₀–³P₀</td>
             <td><span class="adv-yb">Yb</span></td>
           </tr>
 
           <tr>
             <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Coherence</td>
             <td>T₂ (best published)</td>
-            <td class="rb-td win rb">12.6 s (Manetsch 2025)</td>
-            <td class="yb-td">~40 s storage (Atom Computing 2024, preliminary)</td>
+            <td class="rb-td">No 6100-atom Rb T₂ claim; use Rb gate/logical benchmarks instead</td>
+            <td class="yb-td">&gt;40 s storage/memory claimed by Atom Computing <span class="source-tag company-roadmap">company</span></td>
             <td><span class="adv-yb">Yb</span> (structural)</td>
           </tr>
           <tr>
             <td>T₂* (free precession)</td>
-            <td class="rb-td win rb">~22 s (published)</td>
+            <td class="rb-td">Not quoted here without an Rb87 array source</td>
             <td class="yb-td">Not fully characterized in tweezers</td>
-            <td><span class="adv-rb">Rb</span> (published)</td>
+            <td><span class="adv-tie">No direct comparison</span></td>
           </tr>
           <tr>
             <td>Primary dephasing</td>
             <td class="rb-td">B-field noise, light shift</td>
-            <td class="yb-td">Residual light shift (at magic λ min.)</td>
+            <td class="yb-td">Magnetic noise plus residual tensor/vector/scattering effects; clock-state operations benefit from magic trapping</td>
             <td><span class="adv-yb">Yb</span></td>
           </tr>
 
@@ -1147,10 +1151,10 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
 
           <tr>
             <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Readout</td>
-            <td>SPAM fidelity</td>
-            <td class="rb-td win rb">99.94% (160-qubit array)</td>
-            <td class="yb-td">&gt;99% (small array, Jenkins 2022)</td>
-            <td><span class="adv-rb">Rb</span> (published at scale)</td>
+            <td>SPAM/readout fidelity</td>
+            <td class="rb-td">High; protocol-dependent. Cs 6100-array imaging benchmark is not Rb</td>
+            <td class="yb-td">0.993(4) state discrimination; 0.994(3) survival (Huie 2023)</td>
+            <td><span class="adv-tie">Protocol-dependent</span></td>
           </tr>
           <tr>
             <td>Non-destructive readout</td>
@@ -1161,10 +1165,10 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
 
           <tr>
             <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Scalability</td>
-            <td>Largest array (coherent)</td>
-            <td class="rb-td win rb">6,100 qubits (Manetsch 2025)</td>
+            <td>Largest Rb/Yb array benchmark</td>
+            <td class="rb-td win rb">280 physical atoms in logical-processor demo; 256-atom analog arrays</td>
             <td class="yb-td">1,180 qubits (Atom Computing 2023)</td>
-            <td><span class="adv-rb">Rb</span></td>
+            <td><span class="adv-rb">Rb</span> peer-reviewed logic; <span class="adv-yb">Yb</span> company count</td>
           </tr>
           <tr>
             <td>Logical qubit demos</td>
@@ -1176,14 +1180,14 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
           <tr>
             <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Error Correction</td>
             <td>Erasure conversion fraction</td>
-            <td class="rb-td">~50–70% (atom loss erasure)</td>
+            <td class="rb-td">Architecture-dependent; no universal Rb fraction</td>
             <td class="yb-td win yb">~98% (Wu et al. 2022)</td>
             <td><span class="adv-yb">Yb</span> major</td>
           </tr>
           <tr>
             <td>Qubit overhead reduction</td>
             <td class="rb-td">Standard surface code overhead</td>
-            <td class="yb-td win yb">~10× reduction via erasure conversion</td>
+            <td class="yb-td win yb">Surface-code threshold 0.937% → 4.15% in Wu et al. simulation</td>
             <td><span class="adv-yb">Yb</span></td>
           </tr>
 
@@ -1239,7 +1243,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
         </div>
         <div class="company-card">
           <h4>Endres Group, Caltech</h4>
-          <p>Manuel Endres group at Caltech. Published the 6100-qubit Rb87 array with T₂=12.6 s (Manetsch et al., Nature 2025) — the largest coherent neutral-atom array demonstrated. Focuses on scalability and coherence rather than gate fidelity.</p>
+          <p>Manuel Endres group at Caltech. Published the 6100-atom <strong>Cs-133</strong> array with T₂=12.6(1) s (Manetsch et al., Nature 2025), the largest coherent neutral-atom array demonstrated. Included here as adjacent alkali scaling context, not as an Rb87 result.</p>
         </div>
       </div>
 
@@ -1247,7 +1251,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
         <h3 style="color:#34d399;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">¹⁷¹Yb Ecosystem</h3>
         <div class="company-card">
           <h4><a href="https://atom-computing.com" target="_blank" rel="noopener">Atom Computing ↗</a></h4>
-          <p>Berkeley-based startup. Phoenix (1,225-site, 1,180-qubit Yb171 system, 2023). Uses nuclear spin qubit for extended coherence. Modular architecture. Announced 40 s quantum memory. Focus on fault-tolerant digital QC. Raised Series B funding. Key team from Jun Ye group lineage at JILA/NIST.</p>
+          <p>Berkeley-based startup. Phoenix (1,225-site, 1,180-qubit Yb171 system, 2023; company announcement). Uses nuclear spin qubits for extended coherence. Atom Computing reports &gt;40 s quantum memory in company materials. Focus: fault-tolerant digital QC with mid-circuit measurement and scalable arrays.</p>
         </div>
         <div class="company-card">
           <h4>Kaufman Group (JILA/CU Boulder)</h4>
@@ -1287,7 +1291,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
       <div class="paper-card">
         <div class="paper-title">A large-scale quantum processor with fast, full-coherence operations</div>
         <div class="paper-meta">Manetsch, Nomura, Bataille et al., Nature 647, 60–67 (2025)</div>
-        <p class="paper-desc">6100-qubit Rb87 array on a 12,000-site grid. T₂ = 12.6 s (XY16 DD), 99.98952% imaging fidelity. Largest coherent neutral-atom array demonstrated. Establishes Rb87 at 10³–10⁴ qubit scale.</p>
+        <p class="paper-desc">6100-atom <strong>Cs-133</strong> array on a 12,000-site grid. T₂ = 12.6(1) s, 99.98952(1)% imaging survival, and &gt;99.99% imaging fidelity. This is not an Rb87 result; it is listed as adjacent alkali/tweezer scaling context.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-025-09641-4" target="_blank" rel="noopener">nature.com ↗</a> · <a href="https://arxiv.org/abs/2403.12021" target="_blank" rel="noopener">arXiv:2403.12021 ↗</a></p>
       </div>
       <div class="paper-card">
@@ -1339,7 +1343,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
       <div class="paper-card">
         <div class="paper-title">Atom Computing Phoenix: 1225-site ¹⁷¹Yb nuclear spin array</div>
         <div class="paper-meta">Atom Computing, Technical whitepaper + announcement (2023)</div>
-        <p class="paper-desc">Industry announcement of Phoenix: 1,225 tweezer sites, 1,180 qubits loaded. Nuclear spin qubit. Demonstrated 40 s coherence (2024). First 1000+ qubit neutral-atom demonstration with a programmable gate platform.</p>
+        <p class="paper-desc">Industry announcement of Phoenix: 1,225 tweezer sites, 1,180 qubits loaded. Nuclear spin qubit. Atom Computing also reports &gt;40 s coherence/memory in company materials; treat these scale/memory numbers as company-reported until fully peer-reviewed.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://atom-computing.com" target="_blank" rel="noopener">atom-computing.com ↗</a></p>
       </div>
       <div class="paper-card">
@@ -1385,8 +1389,8 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
 /* ── DUAL BLOCH DECOHERENCE ANIMATION ───────────────── */
 (function() {
   const configs = [
-    { id: 'rbBlochCanvas', lbl: 'rbBlochLbl', T2: 12.6, color: '#fb923c', phi0: 0 },
-    { id: 'ybBlochCanvas', lbl: 'ybBlochLbl', T2: 2.0,  color: '#818cf8', phi0: Math.PI/3 },
+    { id: 'rbBlochCanvas', lbl: 'rbBlochLbl', T2: 4.0, color: '#fb923c', phi0: 0 },
+    { id: 'ybBlochCanvas', lbl: 'ybBlochLbl', T2: 4.0,  color: '#818cf8', phi0: Math.PI/3 },
   ];
   const R=80, CX=100, CY=110;
   const A=Math.PI/6, B=Math.PI/5;
@@ -1485,9 +1489,9 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
   // ── Coherence Time Chart ──────────────────────────────────────────
   (function() {
     const ctx = document.getElementById('coherenceChart').getContext('2d');
-    const labels = ['T₂* free prec.', 'T₂ with DD', 'Gate time (2Q)', 'Rydberg lifetime'];
-    const rb_data = [22, 12.6, 2e-6, 10e-6];
-    const yb_data = [null, 40, 3e-6, 8e-6];  // 40s Atom Computing announcement
+    const labels = ['Peer-reviewed array T₂', 'Company memory claim', 'Gate time (2Q)', 'Rydberg lifetime'];
+    const rb_data = [null, null, 2e-6, 10e-6];
+    const yb_data = [null, 40, 3e-6, 8e-6];  // 40s Atom Computing announcement / company claim
 
     new Chart(ctx, {
       type: 'bar',
@@ -1626,7 +1630,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
       { label: 'Jenkins array\n(Yb171, 2022)', atoms: 100, platform: 'yb' },
       { label: 'Bluvstein logic\n(Rb87, 2024)', atoms: 280, platform: 'rb' },
       { label: 'Phoenix 1180\n(Yb171, 2023)', atoms: 1180, platform: 'yb' },
-      { label: 'Manetsch 6100\n(Rb87, 2025)', atoms: 6100, platform: 'rb' },
+      { label: 'Manetsch 6100\n(Cs133, 2025)', atoms: 6100, platform: 'cs' },
     ];
 
     milestones.sort((a,b) => a.atoms - b.atoms);
@@ -1637,8 +1641,8 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
         labels: milestones.map(m => m.label),
         datasets: [{
           data: milestones.map(m => m.atoms),
-          backgroundColor: milestones.map(m => hexToRgba(m.platform === 'rb' ? '#fb923c' : '#34d399', 0.75)),
-          borderColor: milestones.map(m => m.platform === 'rb' ? '#fb923c' : '#34d399'),
+          backgroundColor: milestones.map(m => hexToRgba(m.platform === 'rb' ? '#fb923c' : (m.platform === 'yb' ? '#34d399' : '#94a3b8'), 0.75)),
+          borderColor: milestones.map(m => m.platform === 'rb' ? '#fb923c' : (m.platform === 'yb' ? '#34d399' : '#94a3b8')),
           borderWidth: 1.5,
         }]
       },
@@ -1651,7 +1655,7 @@ With 98% error-to-erasure conversion: effective threshold $p_{\rm th,\, erasure}
             callbacks: {
               label: (ctx) => {
                 const m = milestones[ctx.dataIndex];
-                return ` ${m.atoms} qubits, ${m.platform === 'rb' ? '⁸⁷Rb' : '¹⁷¹Yb'}`;
+                return ` ${m.atoms} atoms/qubits, ${m.platform === 'rb' ? '⁸⁷Rb' : (m.platform === 'yb' ? '¹⁷¹Yb' : '¹³³Cs context')}`;
               }
             }
           }

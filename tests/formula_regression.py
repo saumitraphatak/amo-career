@@ -90,6 +90,18 @@ def test_site_ux_features_present() -> None:
     assert_contains("pages/lab-calculators.html", "Common mistake, recoil factor-of-two")
 
 
+def test_rb_yb_panel_fact_boundaries() -> None:
+    assert_contains("pages/rb87-vs-yb171.html", "The 6100-atom, 12.6 s coherence result is a <strong>Cs-133</strong> benchmark")
+    assert_contains("pages/rb87-vs-yb171.html", "575.15 Hz/G²")
+    assert_contains("pages/rb87-vs-yb171.html", "99.40(3)% raw and 99.72(3)% with post-selection")
+    assert_contains("pages/rb87-vs-yb171.html", "48 logical qubits encoded in 280 physical atoms")
+    assert_contains("pages/rb87-vs-yb171.html", "state discrimination fidelity 0.993(4) with state-averaged survival 0.994(3)")
+    assert_not_contains("pages/rb87-vs-yb171.html", "6100-qubit Rb87")
+    assert_not_contains("pages/rb87-vs-yb171.html", "Rb87 coherence T₂")
+    assert_not_contains("pages/rb87-vs-yb171.html", "1288 Hz/G²")
+    assert_not_contains("pages/rb87-vs-yb171.html", "roughly 50–70%")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -98,6 +110,7 @@ def main() -> None:
         test_qc_claims_are_qualified,
         test_release_recapture_is_thermometry_not_frequency_claim,
         test_site_ux_features_present,
+        test_rb_yb_panel_fact_boundaries,
     ]
     for test in tests:
         test()
