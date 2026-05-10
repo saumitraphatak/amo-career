@@ -1,12 +1,12 @@
 # AMO Career Toolkit
 
-A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — covering 12 interactive research tools, lab technique guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
+A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — covering 13 interactive research tools, lab technique guides, quantum computing context, laser cooling references, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
 **Live site:** https://saumitraphatak.github.io/amo-career/
 
 ---
 
-## The 12 Research Tools
+## The 13 Research Tools
 
 | Tool | Description |
 |---|---|
@@ -19,6 +19,7 @@ A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists
 | **Gate Fidelity Budget** | 8-error Rydberg two-qubit gate budget; fidelity meter; SOTA comparison (Evered 2023: 99.5%) |
 | **Release-Recapture** | Interactive tweezer trap frequency measurement simulation |
 | **Lab Calculators** | Optics (beam waist, NA, AOM, dBm), atomic physics (recoil, Zeeman, I_sat), trap (ω_r, ω_z, η_LD), CG coefficients |
+| **Laser Cooling Simulator** | Doppler and Sisyphus cooling animation — force vs velocity, damping, momentum diffusion, sub-Doppler mechanisms |
 | **Laser Locking** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
 | **Zernike Polynomials** | Wavefront aberration visualizer — OSA/ANSI Zernike terms, Strehl ratio, SLM phase patterns |
 | **Polarimetry Explorer** | Stokes parameters, QWP rotation analysis, degree of polarization |
@@ -67,7 +68,7 @@ This site ships three files for AI-readable access:
 ```
 amo-career/
 ├── index.html              # GitHub Pages redirect → home.html
-├── home.html               # Main landing page (12 tool cards, learn section, about)
+├── home.html               # Main landing page (13 tool cards, learn section, about)
 ├── CLAUDE.md               # AI coding assistant project guide
 ├── llms.txt                # LLM site index (llmstxt.org standard)
 ├── llms-full.txt           # Full content for LLM/RAG ingestion
@@ -75,7 +76,7 @@ amo-career/
 │   └── styles.css          # Full design system (dark quantum theme, all CSS variables)
 ├── js/
 │   └── main.js             # renderNav(), canvas animation, scroll reveal, accordions, tabs
-└── pages/                  # 17 tool and content pages
+└── pages/                  # 19 tool and content pages
     ├── atom-library.html
     ├── lab-techniques.html
     ├── rydberg-calculator.html
@@ -89,8 +90,10 @@ amo-career/
     ├── zernike.html
     ├── polarimetry.html
     ├── cooling-simulator.html
-    ├── clebsch-gordan.html
-    ├── pdh-explorer.html
+    ├── laser-cooling.html
+    ├── rb-explorer.html
+    ├── rb87-vs-yb171.html
+    ├── dd-playground.html
     ├── qc-landscape.html
     └── learn-quantum.html
 ```
@@ -114,7 +117,6 @@ Dark "quantum" theme with a unique accent color per tool:
 --c-cool: #60a5fa;   /* blue        — Cooling Simulator   */
 --c-rr:   #fb923c;   /* orange      — Release-Recapture   */
 --c-calc: #fbbf24;   /* amber       — Lab Calculators     */
---c-cg:   #f472b6;   /* pink        — Clebsch-Gordan      */
 --c-lock: #f87171;   /* red         — Laser Locking       */
 --c-zern: #2dd4bf;   /* teal        — Zernike / PDH       */
 ```

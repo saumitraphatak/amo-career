@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="Learn Quantum Computing">
   <meta name="twitter:description" content="Curated quantum computing learning path from an AMO physics perspective, qubits, gates, error correction, and neutral-atom hardware.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Learn Quantum Computing","description":"Curated quantum computing learning path from an AMO physics perspective, qubits, gates, error correction, and neutral-atom hardware.","url":"https://saumitraphatak.github.io/amo-career/pages/learn-quantum.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="../css/styles.css?v=7">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -85,7 +85,7 @@
       background: #060e1c; border: 1px solid #1e293b;
       border-radius: 12px; padding: 1rem; text-align: center;
     }
-    canvas#blochCanvas, canvas#gatesBlochCanvas {
+    canvas#blochCanvas, canvas#gatesBlochCanvas, canvas#measBlochCanvas {
       display: block; margin: 0 auto;
     }
     .bloch-state {
@@ -418,7 +418,7 @@ Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive a
 </div>
 
   <!-- MZI animated canvas — full width -->
-  <canvas id="mziCanvas" class="mzi-canvas" width="640" height="180" style="width:100%;max-width:640px;height:auto;"></canvas>
+  <canvas id="mziCanvas" class="mzi-canvas" width="640" height="210" style="width:100%;max-width:640px;height:auto;"></canvas>
 
   <div class="ctrl-row" style="margin-top:1rem;">
     <div class="ctrl-group">
@@ -1771,185 +1771,185 @@ function redrawGateBloch() {
 setGateState();
 
 /* ═══════════════════════════════════════════════
-   MZI — animated canvas
+   MZI — animated canvas (proper rectangular geometry)
+   Upper and lower arms run horizontally; both converge at BS2.
    ═══════════════════════════════════════════════ */
 (function(){
   const cv = document.getElementById('mziCanvas');
   if (!cv) return;
   const cx = cv.getContext('2d');
-  const W = 640, H = 180;
+  const W = 640, H = 210;
 
-  // Layout
-  const INx=18, INy=90;
-  const BS1x=110, BSy=90;
-  const BS2x=440, armTop=42, armBot=138;
-  const OUT0x=570, OUT0y=42, OUT1x=570, OUT1y=138;
-  const DETx=600;
-  const PPmid = (BS1x+BS2x)/2; // phase-plate midpoint x
+  // Geometry: horizontal arms between beamsplitters
+  const INx = 18, INy = 105;           // photon input beam
+  const BS1x = 100, BS1y = 105;        // first beamsplitter (center)
+  const topY = 52, botY = 158;         // upper / lower arm heights
+  const DIVx = 152;                    // where arms reach horizontal height
+  const ARMend = 445;                  // where arms start converging back to BS2
+  const BS2x = 493, BS2y = 105;        // second beamsplitter (center)
+  const DETx = 565;                    // detector circle center x
+  const DET0y = topY, DET1y = botY;   // detector y positions
 
-  let photonT = 0;
-  let lastTs = 0;
-  const CYCLE = 2600;
+  // Path segment arrays (polyline nodes for arc-length photon tracking)
+  const upPath = [[BS1x, BS1y], [DIVx, topY],  [ARMend, topY],  [BS2x, BS2y]];
+  const loPath = [[BS1x, BS1y], [DIVx, botY],  [ARMend, botY],  [BS2x, BS2y]];
+
+  let photonT = 0, lastTs = 0;
+  const CYCLE = 3000; // ms per loop
 
   function getPhi() {
     const el = document.getElementById('mziPhi');
-    return el ? +el.value * Math.PI/180 : 0;
+    return el ? +el.value * Math.PI / 180 : 0;
   }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ease(t) { return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; }
 
-  function lerp(a,b,t){ return a+(b-a)*t; }
-  function easeInOut(t){ return t<0.5 ? 2*t*t : -1+(4-2*t)*t; }
-
-  function drawGlowLine(x1,y1,x2,y2,col,alpha,width){
+  // Glow line helper
+  function gline(x1, y1, x2, y2, col, alpha, w) {
     cx.save();
-    cx.globalAlpha = alpha;
-    cx.strokeStyle = col;
-    cx.lineWidth = width||1.5;
-    cx.shadowColor = col;
-    cx.shadowBlur = 6;
-    cx.beginPath(); cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.stroke();
+    cx.globalAlpha = alpha; cx.strokeStyle = col; cx.lineWidth = w || 1.5;
+    cx.shadowColor = col; cx.shadowBlur = 6;
+    cx.beginPath(); cx.moveTo(x1, y1); cx.lineTo(x2, y2); cx.stroke();
     cx.restore();
   }
 
-  function drawBS(x, y, label){
-    // Tilted beamsplitter plate
+  // Glow polyline
+  function gpoly(pts, col, alpha, w) {
+    if (pts.length < 2) return;
     cx.save();
-    cx.translate(x, y);
-    cx.rotate(Math.PI/4);
-    const g = cx.createLinearGradient(-14,0,14,0);
-    g.addColorStop(0,'rgba(167,139,250,0.05)');
-    g.addColorStop(0.5,'rgba(167,139,250,0.22)');
-    g.addColorStop(1,'rgba(167,139,250,0.05)');
-    cx.fillStyle = g;
-    cx.strokeStyle = '#a78bfa';
-    cx.lineWidth = 1.8;
-    cx.shadowColor = '#a78bfa';
-    cx.shadowBlur = 8;
-    cx.beginPath();
-    cx.roundRect(-14,-4,28,8,2);
-    cx.fill(); cx.stroke();
+    cx.globalAlpha = alpha; cx.strokeStyle = col; cx.lineWidth = w || 1.5;
+    cx.shadowColor = col; cx.shadowBlur = 5;
+    cx.beginPath(); cx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) cx.lineTo(pts[i][0], pts[i][1]);
+    cx.stroke(); cx.restore();
+  }
+
+  // Point on a polypath at normalized arc-length t ∈ [0,1]
+  function pathPt(segs, t) {
+    let lens = [], total = 0;
+    for (let i = 1; i < segs.length; i++) {
+      const d = Math.hypot(segs[i][0] - segs[i-1][0], segs[i][1] - segs[i-1][1]);
+      lens.push(d); total += d;
+    }
+    const tgt = t * total;
+    let acc = 0;
+    for (let i = 0; i < lens.length; i++) {
+      if (acc + lens[i] >= tgt) {
+        const f = (tgt - acc) / lens[i];
+        return [lerp(segs[i][0], segs[i+1][0], f), lerp(segs[i][1], segs[i+1][1], f)];
+      }
+      acc += lens[i];
+    }
+    return segs[segs.length - 1];
+  }
+
+  function drawBS(x, y, label) {
+    cx.save(); cx.translate(x, y); cx.rotate(Math.PI / 4);
+    const g = cx.createLinearGradient(-15, 0, 15, 0);
+    g.addColorStop(0, 'rgba(167,139,250,0.04)');
+    g.addColorStop(0.5, 'rgba(167,139,250,0.30)');
+    g.addColorStop(1, 'rgba(167,139,250,0.04)');
+    cx.fillStyle = g; cx.strokeStyle = '#a78bfa'; cx.lineWidth = 1.8;
+    cx.shadowColor = '#a78bfa'; cx.shadowBlur = 12;
+    cx.beginPath(); cx.roundRect(-15, -4.5, 30, 9, 2); cx.fill(); cx.stroke();
     cx.restore();
-    // Label
+    cx.fillStyle = '#c4b5fd'; cx.font = 'bold 12px Inter,sans-serif'; cx.textAlign = 'center';
+    cx.fillText(label, x, y - 15);
+  }
+
+  function drawPhasePlate(phi) {
+    const mx = (DIVx + ARMend) / 2, py = botY;
     cx.save();
-    cx.fillStyle = '#c4b5fd';
-    cx.font = 'bold 12px Inter,sans-serif';
-    cx.textAlign = 'center';
-    cx.fillText(label, x, y-16);
+    const g = cx.createLinearGradient(mx - 26, 0, mx + 26, 0);
+    g.addColorStop(0, 'rgba(251,191,36,0.0)');
+    g.addColorStop(0.3, 'rgba(251,191,36,0.22)');
+    g.addColorStop(0.7, 'rgba(251,191,36,0.22)');
+    g.addColorStop(1, 'rgba(251,191,36,0.0)');
+    cx.fillStyle = g; cx.strokeStyle = '#fbbf24'; cx.lineWidth = 1.4;
+    cx.shadowColor = '#fbbf24'; cx.shadowBlur = 8;
+    cx.beginPath(); cx.roundRect(mx - 27, py - 14, 54, 28, 4); cx.fill(); cx.stroke();
+    cx.fillStyle = '#fde68a'; cx.font = '10px JetBrains Mono,monospace'; cx.textAlign = 'center';
+    cx.fillText('φ=' + Math.round(phi * 180 / Math.PI) + '°', mx, py + 5);
     cx.restore();
   }
 
-  function drawPhasePlate(phi){
-    const mx = PPmid;
-    // on lower arm, interpolate y
-    const slope = (armBot - BSy)/(BS2x - BS1x);
-    const py = BSy + slope*(mx - BS1x);
+  function drawDetector(x, y, P, col, label) {
     cx.save();
-    const g = cx.createLinearGradient(mx-22,0,mx+22,0);
-    g.addColorStop(0,'rgba(251,191,36,0.0)');
-    g.addColorStop(0.3,'rgba(251,191,36,0.18)');
-    g.addColorStop(0.7,'rgba(251,191,36,0.18)');
-    g.addColorStop(1,'rgba(251,191,36,0.0)');
-    cx.fillStyle = g;
-    cx.strokeStyle = '#fbbf24';
-    cx.lineWidth = 1.4;
-    cx.shadowColor = '#fbbf24';
-    cx.shadowBlur = 6;
-    cx.beginPath();
-    cx.roundRect(mx-22, py-11, 44, 22, 4);
-    cx.fill(); cx.stroke();
-    cx.fillStyle = '#fde68a';
-    cx.font = '10px JetBrains Mono,monospace';
-    cx.textAlign = 'center';
-    const deg = Math.round(phi*180/Math.PI);
-    cx.fillText('φ='+deg+'°', mx, py+4);
+    cx.shadowColor = col; cx.shadowBlur = P * 22;
+    cx.globalAlpha = 0.18 + P * 0.82; cx.fillStyle = col;
+    cx.beginPath(); cx.arc(x, y, 12, 0, 2 * Math.PI); cx.fill();
+    cx.globalAlpha = 1; cx.strokeStyle = col; cx.lineWidth = 1.5;
+    cx.beginPath(); cx.arc(x, y, 12, 0, 2 * Math.PI); cx.stroke();
+    cx.restore();
+    cx.fillStyle = col; cx.font = '11px Inter,sans-serif'; cx.textAlign = 'left';
+    cx.fillText(label + '  ' + (P * 100).toFixed(0) + '%', x + 16, y + 4);
+  }
+
+  function drawPhoton(x, y, col, alpha) {
+    cx.save();
+    cx.shadowColor = col; cx.shadowBlur = 18; cx.globalAlpha = alpha;
+    cx.fillStyle = col; cx.beginPath(); cx.arc(x, y, 5.5, 0, 2 * Math.PI); cx.fill();
     cx.restore();
   }
 
-  function drawDetector(x, y, P, col, label){
-    cx.save();
-    cx.shadowColor = col;
-    cx.shadowBlur = P * 28;
-    cx.globalAlpha = 0.15 + P*0.85;
-    cx.fillStyle = col;
-    cx.beginPath(); cx.arc(x, y, 13, 0, 2*Math.PI); cx.fill();
-    cx.globalAlpha = 1;
-    cx.strokeStyle = col;
-    cx.lineWidth = 1.6;
-    cx.beginPath(); cx.arc(x, y, 13, 0, 2*Math.PI); cx.stroke();
-    cx.restore();
-    cx.fillStyle = col;
-    cx.font = '12px Inter,sans-serif';
-    cx.textAlign = 'left';
-    cx.fillText(label+' '+(P*100).toFixed(0)+'%', x+18, y+4);
-  }
-
-  function drawPhoton(x, y, col, alpha){
-    cx.save();
-    cx.shadowColor = col; cx.shadowBlur = 16;
-    cx.globalAlpha = alpha;
-    cx.fillStyle = col;
-    cx.beginPath(); cx.arc(x, y, 5, 0, 2*Math.PI); cx.fill();
-    cx.restore();
-  }
-
-  function frame(ts){
+  function frame(ts) {
     if (!lastTs) lastTs = ts;
     const dt = ts - lastTs; lastTs = ts;
-    photonT = (photonT + dt/CYCLE) % 1;
+    photonT = (photonT + dt / CYCLE) % 1;
     const phi = getPhi();
-    const P0 = Math.cos(phi/2)**2;
-    const P1 = Math.sin(phi/2)**2;
+    const P0 = Math.cos(phi / 2) ** 2;
+    const P1 = Math.sin(phi / 2) ** 2;
 
     cx.clearRect(0, 0, W, H);
+    cx.fillStyle = '#050d1a'; cx.fillRect(0, 0, W, H);
 
-    // Beam paths (static, dim)
-    drawGlowLine(INx, INy, BS1x, BSy, '#60a5fa', 0.55, 2);
-    drawGlowLine(BS1x, BSy, BS2x, armTop, '#34d399', 0.45, 1.5);
-    drawGlowLine(BS1x, BSy, BS2x, armBot, '#fbbf24', 0.45, 1.5);
-    drawGlowLine(BS2x, armTop, OUT0x, OUT0y, '#60a5fa', 0.25+P0*0.55, 1.5);
-    drawGlowLine(BS2x, armBot, OUT1x, OUT1y, '#f87171', 0.25+P1*0.55, 1.5);
+    // Background beam paths (always visible, dim)
+    gline(INx, INy, BS1x, BS1y, '#60a5fa', 0.45, 2);           // input
+    gpoly(upPath, '#34d399', 0.38, 1.5);                         // upper arm (BS1 → BS2)
+    gpoly(loPath, '#fbbf24', 0.38, 1.5);                         // lower arm (BS1 → BS2)
+    gline(BS2x, BS2y, DETx - 12, DET0y, '#60a5fa', 0.18 + P0 * 0.6, 1.5);  // output |0⟩
+    gline(BS2x, BS2y, DETx - 12, DET1y, '#f87171', 0.18 + P1 * 0.6, 1.5);  // output |1⟩
 
-    // Arm labels
-    cx.fillStyle = '#34d399'; cx.font = '10px Inter,sans-serif'; cx.textAlign='center';
-    const umid = lerp(BS1x, BS2x, 0.45);
-    const slTop = (armTop-BSy)/(BS2x-BS1x);
-    cx.fillText('arm 0  (|0⟩)', umid, BSy+slTop*(umid-BS1x)-10);
+    // Arm labels (centred on horizontal sections)
+    const armMidX = (DIVx + ARMend) / 2;
+    cx.fillStyle = '#34d399'; cx.font = '10px Inter,sans-serif'; cx.textAlign = 'center';
+    cx.fillText('arm 0  |0⟩', armMidX, topY - 9);
     cx.fillStyle = '#fbbf24';
-    const slBot = (armBot-BSy)/(BS2x-BS1x);
-    cx.fillText('arm 1  (|1⟩) + φ', umid+30, BSy+slBot*(umid+30-BS1x)+16);
+    cx.fillText('arm 1  |1⟩  + φ', armMidX, botY + 20);
 
-    // Phase plate
+    // Phase plate on lower arm
     drawPhasePlate(phi);
 
-    // Beamsplitters
-    drawBS(BS1x, BSy, 'H');
-    drawBS(BS2x, (armTop+armBot)/2, 'H');
+    // Beamsplitters (both at centre y = 105, where arms meet)
+    drawBS(BS1x, BS1y, 'H');
+    drawBS(BS2x, BS2y, 'H');
 
     // Input label
-    cx.fillStyle='#60a5fa'; cx.font='13px Inter,sans-serif'; cx.textAlign='right';
-    cx.fillText('|0⟩', INx-2, INy+4);
+    cx.fillStyle = '#60a5fa'; cx.font = '13px Inter,sans-serif'; cx.textAlign = 'right';
+    cx.fillText('|0⟩', INx - 3, INy + 4);
 
     // Detectors
-    drawDetector(DETx, OUT0y, P0, '#60a5fa', '|0⟩');
-    drawDetector(DETx, OUT1y, P1, '#f87171', '|1⟩');
+    drawDetector(DETx, DET0y, P0, '#60a5fa', '|0⟩');
+    drawDetector(DETx, DET1y, P1, '#f87171', '|1⟩');
 
-    // Animate photon
+    // Animated photon
     const t = photonT;
-    // Segment 0..0.28: input → BS1
-    // Segment 0.28..0.70: arms (two photons)
-    // Segment 0.70..1.0: BS2 → detectors
-    if (t < 0.28){
-      const p = easeInOut(t/0.28);
+    if (t < 0.18) {
+      // Single photon: input → BS1
+      const p = ease(t / 0.18);
       drawPhoton(lerp(INx, BS1x, p), INy, '#60a5fa', 1);
-    } else if (t < 0.70){
-      const p = easeInOut((t-0.28)/0.42);
-      // Upper arm photon
-      drawPhoton(lerp(BS1x, BS2x, p), lerp(BSy, armTop, p), '#34d399', 0.95);
-      // Lower arm photon
-      drawPhoton(lerp(BS1x, BS2x, p), lerp(BSy, armBot, p), '#fbbf24', 0.95);
+    } else if (t < 0.70) {
+      // Both arms active simultaneously (superposition)
+      const p = ease((t - 0.18) / 0.52);
+      const [ux, uy] = pathPt(upPath, p);
+      drawPhoton(ux, uy, '#34d399', 0.95);
+      const [lx, ly] = pathPt(loPath, p);
+      drawPhoton(lx, ly, '#fbbf24', 0.95);
     } else {
-      const p = easeInOut((t-0.70)/0.30);
-      if (P0 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(armTop, OUT0y, p), '#60a5fa', P0*0.9+0.1);
-      if (P1 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(armBot, OUT1y, p), '#f87171', P1*0.9+0.1);
+      // Interference output: photons from BS2 to respective detectors
+      const p = ease((t - 0.70) / 0.30);
+      if (P0 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(BS2y, DET0y, p), '#60a5fa', P0 * 0.9 + 0.1);
+      if (P1 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(BS2y, DET1y, p), '#f87171', P1 * 0.9 + 0.1);
     }
 
     requestAnimationFrame(frame);

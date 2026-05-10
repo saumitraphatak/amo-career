@@ -27,7 +27,7 @@
 ```
 amo-career/
 ├── index.html              # GitHub Pages redirect → home.html (do not edit)
-├── home.html               # Main landing page (hero, 12 tool cards, learn section, about)
+├── home.html               # Main landing page (hero, 13 tool cards, learn section, about)
 ├── CLAUDE.md               # This file — AI project guide
 ├── llms.txt                # LLM-readable site index (public standard)
 ├── llms-full.txt           # Full content dump for LLM/RAG ingestion
@@ -38,7 +38,7 @@ amo-career/
 │   └── styles.css          # SINGLE design system file — all variables, components
 ├── js/
 │   └── main.js             # SINGLE shared JS file — NAV data, renderNav(), all shared logic
-└── pages/                  # All tool and content pages (17 files)
+└── pages/                  # All tool and content pages (19 files)
     ├── atom-library.html       # Atom Library
     ├── lab-techniques.html     # Lab Techniques (8 techniques)
     ├── rydberg-calculator.html # Rydberg Calculator
@@ -52,8 +52,10 @@ amo-career/
     ├── zernike.html            # Zernike Polynomial Visualizer
     ├── polarimetry.html        # Polarimetry Explorer
     ├── cooling-simulator.html  # Doppler / Sisyphus Cooling Simulator
-    ├── clebsch-gordan.html     # Clebsch-Gordan Calculator
-    ├── pdh-explorer.html       # PDH Error Signal Explorer
+    ├── laser-cooling.html      # Laser cooling overview
+    ├── rb-explorer.html        # Rubidium explorer
+    ├── rb87-vs-yb171.html      # Platform comparison
+    ├── dd-playground.html      # Dipole-dipole playground
     ├── qc-landscape.html       # QC Industry Landscape
     └── learn-quantum.html      # Quantum Fundamentals (14 topics, all on one page)
 ```
@@ -66,7 +68,7 @@ All navigation is driven by the `NAV` object at the top of `js/main.js`. **To ad
 
 ```javascript
 const NAV = {
-  tools: [                   // 12 entries → "12 AMO Research Tools" in dropdown
+  tools: [                   // 12 entries in the shared nav dropdown
     { key: 'atom-library',         label: 'Atom Library',            icon: '⚛️',  color: '#38bdf8', href: 'pages/atom-library.html'         },
     { key: 'lab-techniques',       label: 'Lab Techniques',          icon: '🔬',  color: '#34d399', href: 'pages/lab-techniques.html'       },
     { key: 'rydberg-calculator',   label: 'Rydberg Calculator',      icon: '🔮',  color: '#818cf8', href: 'pages/rydberg-calculator.html'   },
@@ -112,23 +114,23 @@ Every page (except home.html) calls this at the end of `<body>`:
 
 ```html
 <!-- sub-pages use root: '../' -->
-<script src="../js/main.js?v=3"></script>
-<script src="../css/styles.css?v=3"></script>  <!-- already in <head> -->
+<script src="../js/main.js?v=7"></script>
+<script src="../css/styles.css?v=7"></script>  <!-- already in <head> -->
 <script>
   renderNav({ active: 'page-key', root: '../' });
 </script>
 
 <!-- home.html uses root: '' -->
-<script src="js/main.js?v=3"></script>
+<script src="js/main.js?v=7"></script>
 <script>
   renderNav({ active: 'home', root: '' });
 </script>
 ```
 
-**Cache busting:** The `?v=N` suffix forces browsers to reload files after changes. The current version is `v=4`. **Increment to `v=5` (then `v=6`, etc.) whenever you make significant changes to `main.js` or `styles.css`** so users don't get stale cached files. Use sed to update all pages at once:
+**Cache busting:** The `?v=N` suffix forces browsers to reload files after changes. The current version is `v=7`. **Increment to `v=8` (then `v=9`, etc.) whenever you make significant changes to `main.js` or `styles.css`** so users don't get stale cached files. Use sed to update all pages at once:
 ```bash
-sed -i '' 's/main\.js?v=4/main.js?v=5/g' pages/*.html home.html
-sed -i '' 's/styles\.css?v=4/styles.css?v=5/g' pages/*.html home.html
+sed -i '' 's/main\.js?v=7/main.js?v=8/g' pages/*.html home.html 404.html
+sed -i '' 's/styles\.css?v=7/styles.css?v=8/g' pages/*.html home.html 404.html
 ```
 
 ---
@@ -188,7 +190,7 @@ sed -i '' 's/styles\.css?v=4/styles.css?v=5/g' pages/*.html home.html
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tool Name — AMO Career</title>
-  <link rel="stylesheet" href="../css/styles.css?v=3">
+  <link rel="stylesheet" href="../css/styles.css?v=7">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <!-- Chart.js if needed: -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -219,7 +221,7 @@ sed -i '' 's/styles\.css?v=4/styles.css?v=5/g' pages/*.html home.html
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-  <script src="../js/main.js?v=3"></script>
+  <script src="../js/main.js?v=7"></script>
   <script>
     renderNav({ active: 'page-key', root: '../' });
     // page-specific JS here
@@ -307,15 +309,15 @@ Add `class="anim-in delay-N"` (N = 1 to 9, in multiples of ~100ms delay) to any 
    ```
 3. **Add tool card** to `home.html` in the tools grid
 4. **Add footer link** to `home.html` in the footer tools list
-5. **Update** the eyebrow on `home.html` ("12 AMO Research Tools" → "13 AMO Research Tools")
+5. **Update** the eyebrow on `home.html` if the number of homepage cards changes
 6. **Update** hero stat on `home.html` ("13+ Interactive Tools" → "14+")
-7. **Bump cache version**: `sed -i '' 's/v=3/v=4/g' pages/*.html home.html`
+7. **Bump cache version**: update `styles.css?v=N` and `main.js?v=N` consistently
 8. **Update** `llms.txt` and `llms-full.txt` to describe the new tool
 9. **Commit** and push to `main` → auto-deploys to GitHub Pages
 
 ---
 
-## All 12 Tool Pages — Physics Summary
+## All Primary Tool Pages — Physics Summary
 
 ### 1. Atom Library (`atom-library.html`)
 15 laser-coolable atoms in 4 family tabs (alkali, alkaline-earth, rare-earth, other). Table: mass, D1/D2 wavelengths, natural linewidth Γ, I_sat, recoil temperature, Doppler temperature. US research groups per atom. Interactive family switching.
@@ -385,8 +387,8 @@ Stokes parameter visualization for polarization state characterization. Quarter-
 ## Other Tools (Less Frequently Edited)
 
 - **`cooling-simulator.html`** — Doppler and Sisyphus cooling animation; momentum diffusion vs damping coefficient
-- **`clebsch-gordan.html`** — Wigner 3j symbols, CG decomposition, selection rules table
-- **`pdh-explorer.html`** — PDH error signal vs cavity detuning, reflection coefficient, cavity pole
+- Clebsch-Gordan coefficients live inside **`lab-calculators.html`**
+- PDH error-signal material lives inside **`laser-locking.html`**
 - **`qc-landscape.html`** — Company profiles (IonQ, Quantinuum, IBM, Google, PsiQuantum, etc.), job roles, skills mapping for AMO physicists, roadmaps
 
 ---
