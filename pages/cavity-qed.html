@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cavity QED Calculator — AMO Career</title>
+  <meta name="description" content="Interactive Cavity QED calculator: single-photon coupling g₀, cooperativity C, Purcell factor, and strong-coupling regime boundary for AMO atoms in optical cavities.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/cavity-qed.html">
+  <link rel="stylesheet" href="../css/styles.css?v=9">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    .page-wrap { --page-color: #c084fc; --page-bg: rgba(192,132,252,0.07); --page-border: rgba(192,132,252,0.2); }
+
+    /* ── Result metric grid ── */
+    .result-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-4);
+      margin: var(--sp-5) 0;
+    }
+    @media(max-width:700px) { .result-metrics { grid-template-columns: 1fr 1fr; } }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: var(--sp-4) var(--sp-5);
+      text-align: center;
+    }
+    .metric-val {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: #c084fc;
+      line-height: 1.2;
+    }
+    .metric-sym {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-top: var(--sp-1);
+    }
+    .metric-unit {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Regime banner ── */
+    .regime-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: var(--sp-4) var(--sp-5);
+      border-radius: var(--r-lg);
+      font-size: 0.925rem;
+      font-weight: 600;
+      border: 1px solid;
+      margin: var(--sp-4) 0;
+    }
+    .regime-strong   { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.3); color: #34d399; }
+    .regime-purcell  { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.3);  color: #fbbf24; }
+    .regime-weak     { background: rgba(100,116,139,0.10); border-color: rgba(100,116,139,0.3); color: #94a3b8; }
+
+    /* ── Inputs ── */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-5);
+    }
+    @media(max-width:700px) { .input-grid { grid-template-columns: 1fr; } }
+    .input-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: var(--sp-5);
+    }
+    .input-group-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #c084fc;
+      margin-bottom: var(--sp-4);
+    }
+    .field { margin-bottom: var(--sp-3); }
+    .field label {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--sp-1);
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 7px 11px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-med);
+      border-radius: var(--r-sm);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color var(--t);
+      box-sizing: border-box;
+    }
+    .field input:focus, .field select:focus { border-color: #c084fc; }
+    .field-note { font-size: 0.72rem; color: var(--text-muted); margin-top: var(--sp-1); }
+
+    /* ── Chart ── */
+    .chart-wrap { position: relative; height: 280px; margin: var(--sp-4) 0; }
+
+    /* ── Famous systems table ── */
+    .sys-table { width: 100%; border-collapse: collapse; font-size: 0.825rem; margin-top: var(--sp-3); }
+    .sys-table th {
+      padding: var(--sp-2) var(--sp-3);
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-med);
+    }
+    .sys-table td { padding: var(--sp-2) var(--sp-3); color: var(--text-secondary); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.8rem; }
+    .sys-table td:first-child { font-family: var(--font-sans); color: var(--text-primary); font-weight: 600; }
+    .sys-table tr.highlight-row td { background: rgba(192,132,252,0.06); }
+    .badge-sc { background: rgba(52,211,153,0.15); color: #34d399; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-family: var(--font-sans); }
+    .badge-pc { background: rgba(251,191,36,0.15); color: #fbbf24; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-family: var(--font-sans); }
+  </style>
+</head>
+
+<body>
+  <div id="nav-root"></div>
+
+  <main class="page-wrap" id="main-content">
+
+    <div class="page-hero">
+      <div class="container">
+        <div class="page-hero-eyebrow" style="background:rgba(192,132,252,0.08);border-color:rgba(192,132,252,0.2);color:#c084fc">
+          💎 Tool 13 · Cavity QED Calculator
+        </div>
+        <h1>Cavity QED Calculator</h1>
+        <p class="page-hero-desc">
+          Compute the single-photon vacuum Rabi coupling <em>g₀</em>, cavity decay rate <em>κ</em>,
+          single-atom cooperativity <em>C</em>, and Purcell factor for any atom–cavity system.
+          Identify the coupling regime: strong coupling, Purcell, or weak.
+        </p>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="container">
+
+        <div class="concept-box anim-in">
+          In cavity QED, a single atom couples to the quantized field of an optical resonator. Three rates determine the physics:
+          <strong>g₀</strong> (vacuum Rabi coupling), <strong>κ</strong> (cavity field decay), and <strong>γ = Γ/2</strong> (atomic dipole decay).
+          Their ratio defines the cooperativity <em>C = g₀²/(κγ)</em> — the key figure of merit. When <em>g₀ &gt; κ, γ</em> the system enters the
+          <strong>strong-coupling regime</strong> and vacuum Rabi splitting becomes observable.
+        </div>
+
+        <!-- ════════════════════════════════════════
+             SECTION 01 — INPUTS
+        ════════════════════════════════════════ -->
+        <h2 class="section-title mt-8 anim-in"><span class="accent">01</span> Cavity &amp; Atom Parameters</h2>
+
+        <div class="input-grid anim-in delay-1">
+          <!-- Cavity -->
+          <div class="input-group">
+            <div class="input-group-title">Cavity Parameters</div>
+
+            <div class="field">
+              <label>
+                <span class="tip" data-tip="Cavity finesse: F = π√R/(1−R). Typical values: Fabry-Pérot 10³–10⁶">Finesse <em>F</em></span>
+              </label>
+              <input type="number" id="cqed_F" value="50000" min="100" max="1000000" step="1000" oninput="cqedCalc()">
+              <div class="field-note">F = π√R/(1−R) → mirror R = <span id="cqed_R_display">—</span></div>
+            </div>
+
+            <div class="field">
+              <label>
+                <span class="tip" data-tip="Physical mirror separation. Shorter cavities give larger FSR but harder alignment.">Cavity length <em>L</em> (mm)</span>
+              </label>
+              <input type="number" id="cqed_L" value="0.5" min="0.01" max="500" step="0.1" oninput="cqedCalc()">
+            </div>
+
+            <div class="field">
+              <label>
+                <span class="tip" data-tip="1/e² beam radius at the atom position. Tighter waist → larger g₀ ∝ 1/√V">Mode waist <em>w₀</em> at atom (μm)</span>
+              </label>
+              <input type="number" id="cqed_w0" value="25" min="1" max="500" step="1" oninput="cqedCalc()">
+            </div>
+
+            <div class="field">
+              <label>Index of refraction <em>n</em></label>
+              <input type="number" id="cqed_n" value="1" min="1" max="4" step="0.01" oninput="cqedCalc()">
+              <div class="field-note">n = 1 for free-space cavities (usual case)</div>
+            </div>
+          </div>
+
+          <!-- Atom -->
+          <div class="input-group">
+            <div class="input-group-title">Atom / Transition</div>
+
+            <div class="field">
+              <label>Atom &amp; transition preset</label>
+              <select id="cqed_atom" onchange="applyAtomPreset()">
+                <option value="Rb87_D2">Rb-87, D2 line (780 nm)</option>
+                <option value="Rb87_D1">Rb-87, D1 line (795 nm)</option>
+                <option value="Cs133_D2">Cs-133, D2 line (852 nm)</option>
+                <option value="Cs133_D1">Cs-133, D1 line (894 nm)</option>
+                <option value="Na23_D2">Na-23, D2 line (589 nm)</option>
+                <option value="Li7_D2">Li-7, D2 line (671 nm)</option>
+                <option value="Sr88_689">Sr-88, 689 nm (narrow)</option>
+                <option value="Sr88_461">Sr-88, 461 nm (broad)</option>
+                <option value="Yb171_556">Yb-171, 556 nm (narrow)</option>
+                <option value="Yb171_399">Yb-171, 399 nm (broad)</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>
+                <span class="tip" data-tip="Transition wavelength in nm, used to compute mode frequency ω = 2πc/λ">Wavelength <em>λ</em> (nm)</span>
+              </label>
+              <input type="number" id="cqed_lam" value="780.241" min="200" max="2000" step="0.001" oninput="cqedCalc()">
+            </div>
+
+            <div class="field">
+              <label>
+                <span class="tip" data-tip="Natural linewidth (FWHM). Determines atomic dipole decay rate γ = Γ/2">Natural linewidth <em>Γ/2π</em> (MHz)</span>
+              </label>
+              <input type="number" id="cqed_Gamma" value="6.065" min="0.0001" max="100" step="0.001" oninput="cqedCalc()">
+            </div>
+
+            <div class="field">
+              <label>
+                <span class="tip" data-tip="Fraction of spontaneous emission coupled into cavity. 1 = perfect coupling (ideal two-mirror cavity with atom at antinode)">Coupling fraction <em>ξ</em></label>
+              </label>
+              <input type="number" id="cqed_xi" value="1" min="0.1" max="1" step="0.05" oninput="cqedCalc()">
+              <div class="field-note">ξ = 1 at antinode, 0.5 for random position</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+             SECTION 02 — RESULTS
+        ════════════════════════════════════════ -->
+        <h2 class="section-title mt-8 anim-in"><span class="accent">02</span> Results</h2>
+
+        <div id="regime-banner" class="regime-banner regime-weak anim-in delay-1">
+          <span id="regime-icon">⚪</span>
+          <span id="regime-text">Computing…</span>
+        </div>
+
+        <div class="result-metrics anim-in delay-1">
+          <div class="metric-card">
+            <div class="metric-val" id="res_g0">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Vacuum Rabi frequency: one photon drives atom at this rate">g₀/2π</span></div>
+            <div class="metric-unit">MHz</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="res_kappa">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Cavity field decay rate (half-linewidth): κ = FSR/(2F)">κ/2π</span></div>
+            <div class="metric-unit">MHz</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="res_gamma">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Atomic dipole decay rate: γ = Γ/2">γ/2π</span></div>
+            <div class="metric-unit">MHz</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="res_C">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Single-atom cooperativity: C = g₀²/(κγ). C > 1 means cavity wins over free space">Cooperativity <em>C</em></span></div>
+            <div class="metric-unit">dimensionless</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="res_FP">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Purcell factor: ratio of cavity-enhanced to free-space emission. Fₚ = 2C in bad-cavity limit (κ ≫ g₀)">Purcell <em>Fₚ</em></span></div>
+            <div class="metric-unit">= 2C</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="res_Vmode">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="TEM₀₀ mode volume V = πw₀²L/4 (standing wave, antinode coupling)">Mode vol. <em>V</em></span></div>
+            <div class="metric-unit">×(λ/2)³</div>
+          </div>
+        </div>
+
+        <div class="result-metrics anim-in delay-2" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
+            <div class="metric-val" style="font-size:1.1rem" id="res_FSR">—</div>
+            <div class="metric-sym">FSR</div>
+            <div class="metric-unit">GHz</div>
+          </div>
+          <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
+            <div class="metric-val" style="font-size:1.1rem" id="res_Vcavlw">—</div>
+            <div class="metric-sym">Cav. linewidth</div>
+            <div class="metric-unit">MHz (FWHM)</div>
+          </div>
+          <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
+            <div class="metric-val" style="font-size:1.1rem" id="res_n0">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Saturation photon number: mean photons that saturate atom-cavity coupling. n₀ = γ²/(2g₀²)">Sat. photons <em>n₀</em></span></div>
+            <div class="metric-unit">photons</div>
+          </div>
+          <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
+            <div class="metric-val" style="font-size:1.1rem" id="res_N0">—</div>
+            <div class="metric-sym"><span class="tip" data-tip="Critical atom number: N₀ = 2/C. Number of atoms needed to significantly affect cavity transmission">Critical atoms <em>N₀</em></span></div>
+            <div class="metric-unit">atoms</div>
+          </div>
+        </div>
+
+        <div class="formula-box anim-in delay-2" style="margin-top:var(--sp-4)">
+          $$g_0 = \sqrt{\frac{3\Gamma c^3}{2\omega^2 V}} \qquad V = \frac{\pi w_0^2 L}{4} \qquad C = \frac{g_0^2}{\kappa\gamma} \qquad \kappa = \frac{\text{FSR}}{2\mathcal{F}} \qquad \gamma = \frac{\Gamma}{2}$$
+        </div>
+
+        <!-- ════════════════════════════════════════
+             SECTION 03 — CHART
+        ════════════════════════════════════════ -->
+        <h2 class="section-title mt-8 anim-in"><span class="accent">03</span> Coupling Rates vs Finesse</h2>
+
+        <div class="concept-box anim-in delay-1">
+          Increasing finesse reduces <em>κ</em> (cavity leaks more slowly) while <em>g₀</em> and <em>γ</em> remain constant.
+          Strong coupling is reached when the <strong>purple κ line drops below g₀</strong>.
+          The vertical dashed line marks the minimum finesse for strong coupling with the current cavity geometry.
+        </div>
+
+        <div class="chart-wrap anim-in delay-2">
+          <canvas id="cqed_chart"></canvas>
+        </div>
+
+        <!-- ════════════════════════════════════════
+             SECTION 04 — THEORY
+        ════════════════════════════════════════ -->
+        <h2 class="section-title mt-8 anim-in"><span class="accent">04</span> Coupling Regimes</h2>
+
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">Strong Coupling: g₀ &gt; κ, γ — Vacuum Rabi Splitting</div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <div class="two-col-text">
+              <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8">
+                When <em>g₀ &gt; κ</em> and <em>g₀ &gt; γ</em>, the atom–cavity system enters <strong>strong coupling</strong>.
+                The cavity-QED Hamiltonian <em>H = ℏg₀(a†σ⁻ + aσ⁺)</em> drives coherent energy exchange between
+                atom and photon faster than either can decay. The normal modes of the coupled system (the <em>dressed states</em>
+                or <em>polaritons</em>) are split by 2g₀ — directly observable as a doublet in the cavity transmission spectrum
+                (vacuum Rabi splitting).
+              </p>
+              <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-top:var(--sp-3)">
+                Achieving strong coupling requires simultaneously large <em>g₀</em> (tight mode, short cavity)
+                and small <em>κ</em> (high finesse mirrors). The product gives the condition
+                <em>F &gt; πFSR/(2g₀)</em>, i.e., a minimum finesse scales as cavity length.
+              </p>
+              <div class="formula-box" style="margin-top:var(--sp-3)">
+                $$\text{Strong coupling:} \quad g_0 > \kappa,\;\gamma \quad \Leftrightarrow \quad \mathcal{F} > \frac{\pi c}{4 L g_0}$$
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">Purcell Regime: C &gt; 1 but g₀ &lt; κ — Enhanced Emission</div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8">
+              In the <strong>bad-cavity limit</strong> (κ ≫ g₀, κ ≫ γ) the photon leaks out before a coherent Rabi oscillation completes.
+              However, when C &gt; 1 the cavity still dramatically enhances the spontaneous emission rate into
+              the cavity mode. The total emission rate becomes Γ_tot = Γ(1 + 2C), and the fraction of photons emitted
+              into the cavity mode is β = 2C/(1 + 2C). This is the <strong>Purcell effect</strong>, with Purcell factor
+              <em>Fₚ = 2C</em>. Applications: efficient single-photon sources, deterministic atom–photon entanglement.
+            </p>
+          </div>
+        </div>
+
+        <div class="accordion anim-in">
+          <div class="accordion-header">
+            <div class="accordion-title">Weak Coupling: C &lt; 1 — Cavity has Little Effect</div>
+            <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+          <div class="accordion-body">
+            <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8">
+              When C &lt; 1, the cavity offers negligible enhancement of atom–photon interactions. The atom emits
+              primarily into free-space modes. This regime is typical for initial cavity characterization experiments
+              and for cavities used primarily for filtering or as reference resonators (e.g., PDH locking). Increasing
+              finesse, reducing mode volume (shorter L or smaller w₀), or choosing a higher-Γ transition all increase C.
+            </p>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+             SECTION 05 — FAMOUS SYSTEMS
+        ════════════════════════════════════════ -->
+        <h2 class="section-title mt-8 anim-in"><span class="accent">05</span> Reference Systems</h2>
+
+        <div class="data-table-wrap anim-in delay-1">
+          <table class="sys-table">
+            <thead>
+              <tr>
+                <th>Group</th>
+                <th>Atom / λ</th>
+                <th>L (mm)</th>
+                <th>Finesse</th>
+                <th>w₀ (μm)</th>
+                <th>g₀/2π (MHz)</th>
+                <th>κ/2π (MHz)</th>
+                <th>γ/2π (MHz)</th>
+                <th>C</th>
+                <th>Regime</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row">
+                <td>Kimble, Caltech (2005)</td>
+                <td>Cs, 852 nm</td>
+                <td>0.042</td>
+                <td>460 000</td>
+                <td>16</td>
+                <td>34</td>
+                <td>4.1</td>
+                <td>2.6</td>
+                <td>136</td>
+                <td><span class="badge-sc">Strong</span></td>
+              </tr>
+              <tr>
+                <td>Vuletic, MIT (2010)</td>
+                <td>Rb-87, 780 nm</td>
+                <td>1.7</td>
+                <td>130 000</td>
+                <td>57</td>
+                <td>10.4</td>
+                <td>0.36</td>
+                <td>3.0</td>
+                <td>32</td>
+                <td><span class="badge-sc">Strong</span></td>
+              </tr>
+              <tr>
+                <td>Thompson, Princeton (2013)</td>
+                <td>Sr-88, 461 nm</td>
+                <td>1.4</td>
+                <td>100 000</td>
+                <td>100</td>
+                <td>3.1</td>
+                <td>0.27</td>
+                <td>16</td>
+                <td>2.2</td>
+                <td><span class="badge-pc">Purcell</span></td>
+              </tr>
+              <tr>
+                <td>Hood Lab, Purdue (ongoing)</td>
+                <td>Cs-133, 852 nm</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>2.6</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.775rem;color:var(--text-muted);margin-top:var(--sp-3)">
+          g₀ and κ from published papers; γ = Γ/2 from Steck data sheets.
+          Cooperativity C = g₀²/(κγ). <em>Use the calculator above to reproduce these numbers.</em>
+        </p>
+
+        <!-- Hood Lab callout -->
+        <div class="hood-callout anim-in">
+          <span class="hood-callout-icon">🏔️</span>
+          <div>
+            <strong>Hood Lab context:</strong> Our Li–Cs tweezer experiments don't use a cavity, but cavity QED is
+            a natural next step — coupling a single Cs atom in a tweezer to a fiber Fabry–Pérot cavity would allow
+            single-photon-level readout without destruction. The key challenge is that the Cs D2 line (γ/2π = 2.6 MHz)
+            requires finesse &gt; 50 000 for even Purcell-regime coupling in a sub-mm cavity.
+          </div>
+        </div>
+
+        <!-- Key references -->
+        <div class="paper-refs anim-in">
+          <div class="paper-refs-head">📚 Key References</div>
+          <div class="paper-refs-list">
+            <div class="paper-ref">
+              <span>📄</span>
+              <span>Birnbaum et al. (2005). Photon blockade in an optical cavity with one trapped atom.
+                <em>Nature</em> 436, 87–90.
+                <a href="https://doi.org/10.1038/nature03804" target="_blank" rel="noopener">doi:10.1038/nature03804</a>
+              </span>
+            </div>
+            <div class="paper-ref">
+              <span>📄</span>
+              <span>Thompson et al. (1992). Observation of normal-mode splitting for an atom in an optical cavity.
+                <em>Phys. Rev. Lett.</em> 68, 1132.
+                <a href="https://doi.org/10.1103/PhysRevLett.68.1132" target="_blank" rel="noopener">doi:10.1103/PhysRevLett.68.1132</a>
+              </span>
+            </div>
+            <div class="paper-ref">
+              <span>📄</span>
+              <span>Kimble, H.J. (1998). Strong interactions of single atoms and photons in cavity QED.
+                <em>Phys. Scr.</em> T76, 127.
+                <a href="https://doi.org/10.1238/Physica.Topical.076a00127" target="_blank" rel="noopener">doi:10.1238/Physica.Topical.076a00127</a>
+              </span>
+            </div>
+            <div class="paper-ref">
+              <span>📄</span>
+              <span>Haroche &amp; Raimond (2006). <em>Exploring the Quantum: Atoms, Cavities, and Photons.</em>
+                Oxford University Press. (Nobel Prize 2012)
+              </span>
+            </div>
+            <div class="paper-ref">
+              <span>📄</span>
+              <span>Reiserer &amp; Rempe (2015). Cavity-based quantum networks with single atoms and optical photons.
+                <em>Rev. Mod. Phys.</em> 87, 1379.
+                <a href="https://doi.org/10.1103/RevModPhys.87.1379" target="_blank" rel="noopener">doi:10.1103/RevModPhys.87.1379</a>
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /container -->
+    </div><!-- /page-content -->
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
+  <script src="../js/main.js?v=9"></script>
+  <script>
+    renderNav({ active: 'cavity-qed', root: '../' });
+
+    // ── Physical constants ───────────────────────────────────────────
+    const _c   = 299792458.0;
+    const _PI  = Math.PI;
+
+    // ── Atom presets: { lam_nm, Gamma_MHz } ─────────────────────────
+    const ATOM_PRESETS = {
+      Rb87_D2:   { lam_nm: 780.241, Gamma_MHz: 6.065 },
+      Rb87_D1:   { lam_nm: 794.979, Gamma_MHz: 5.746 },
+      Cs133_D2:  { lam_nm: 852.347, Gamma_MHz: 5.234 },
+      Cs133_D1:  { lam_nm: 894.593, Gamma_MHz: 4.561 },
+      Na23_D2:   { lam_nm: 588.995, Gamma_MHz: 9.795 },
+      Li7_D2:    { lam_nm: 670.977, Gamma_MHz: 5.870 },
+      Sr88_689:  { lam_nm: 689.0,   Gamma_MHz: 0.00763 },
+      Sr88_461:  { lam_nm: 461.0,   Gamma_MHz: 32.0   },
+      Yb171_556: { lam_nm: 555.8,   Gamma_MHz: 0.1820  },
+      Yb171_399: { lam_nm: 398.9,   Gamma_MHz: 28.0   },
+    };
+
+    function applyAtomPreset() {
+      const key = document.getElementById('cqed_atom').value;
+      if (key === 'custom') return;
+      const p = ATOM_PRESETS[key];
+      document.getElementById('cqed_lam').value   = p.lam_nm;
+      document.getElementById('cqed_Gamma').value = p.Gamma_MHz;
+      cqedCalc();
+    }
+
+    // ── Main calculation ─────────────────────────────────────────────
+    let _cqChart = null;
+
+    function cqedCalc() {
+      const F      = +document.getElementById('cqed_F').value;
+      const L_mm   = +document.getElementById('cqed_L').value;
+      const w0_um  = +document.getElementById('cqed_w0').value;
+      const n      = +document.getElementById('cqed_n').value;
+      const lam_nm = +document.getElementById('cqed_lam').value;
+      const Gam_MHz= +document.getElementById('cqed_Gamma').value;
+      const xi     = +document.getElementById('cqed_xi').value;
+
+      const L_m    = L_mm * 1e-3;
+      const w0_m   = w0_um * 1e-6;
+      const lam_m  = lam_nm * 1e-9;
+      const omega  = 2 * _PI * _c / lam_m;          // rad/s
+      const Gam_rad= 2 * _PI * Gam_MHz * 1e6;       // rad/s
+      const V_mode = _PI * w0_m * w0_m * L_m / 4;   // m³
+
+      // g₀ (rad/s), then MHz
+      const g0_rad  = xi * Math.sqrt(3 * Gam_rad * _c**3 / (2 * omega**2 * V_mode));
+      const g0_MHz  = g0_rad / (2 * _PI * 1e6);
+
+      // κ = FSR/(2F)
+      const FSR_Hz  = _c / (2 * n * L_m);
+      const kap_MHz = FSR_Hz / (2 * F) / 1e6;
+
+      // γ = Γ/2
+      const gam_MHz = Gam_MHz / 2;
+
+      // Cooperativity
+      const C = g0_MHz * g0_MHz / (kap_MHz * gam_MHz);
+
+      // Purcell factor (bad cavity limit)
+      const FP = 2 * C;
+
+      // Mode volume in units of (λ/2)³
+      const halfLam3 = (lam_m / 2) ** 3;
+      const V_norm   = V_mode / halfLam3;
+
+      // Saturation photon number  n₀ = γ²/(2g₀²)
+      const n0 = (gam_MHz * gam_MHz) / (2 * g0_MHz * g0_MHz);
+
+      // Critical atom number  N₀ = 2/C
+      const N0 = 2 / C;
+
+      // Mirror reflectivity  R from finesse: F(1-R) = π√R → R via quadratic
+      const R = Math.pow((-_PI + Math.sqrt(_PI*_PI + 4*F*F)) / (2*F), 2);
+
+      // ── Update display ──────────────────────────────────────────
+      document.getElementById('cqed_R_display').textContent = (R*100).toFixed(4) + '%';
+
+      const fmt = (v, prec=3) => v < 1 ? v.toFixed(prec) : (v < 10 ? v.toFixed(2) : (v < 1000 ? v.toFixed(1) : v.toExponential(2)));
+
+      document.getElementById('res_g0').textContent    = fmt(g0_MHz);
+      document.getElementById('res_kappa').textContent = fmt(kap_MHz);
+      document.getElementById('res_gamma').textContent = fmt(gam_MHz);
+      document.getElementById('res_C').textContent     = C < 100 ? C.toFixed(2) : C.toExponential(2);
+      document.getElementById('res_FP').textContent    = FP < 100 ? FP.toFixed(2) : FP.toExponential(2);
+      document.getElementById('res_Vmode').textContent = V_norm.toExponential(2);
+      document.getElementById('res_FSR').textContent   = (FSR_Hz/1e9).toFixed(3);
+      document.getElementById('res_Vcavlw').textContent= (kap_MHz * 2).toFixed(3);
+      document.getElementById('res_n0').textContent    = n0.toExponential(2);
+      document.getElementById('res_N0').textContent    = N0.toFixed(3);
+
+      // ── Regime banner ───────────────────────────────────────────
+      const banner = document.getElementById('regime-banner');
+      const icon   = document.getElementById('regime-icon');
+      const text   = document.getElementById('regime-text');
+      banner.className = 'regime-banner';
+      if (g0_MHz > kap_MHz && g0_MHz > gam_MHz) {
+        banner.classList.add('regime-strong');
+        icon.textContent = '⚡';
+        text.textContent = `Strong coupling — g₀/2π = ${fmt(g0_MHz)} MHz > κ/2π = ${fmt(kap_MHz)} MHz. Vacuum Rabi splitting 2g₀/2π = ${fmt(2*g0_MHz)} MHz is observable. C = ${C.toFixed(1)}.`;
+      } else if (C > 1) {
+        banner.classList.add('regime-purcell');
+        icon.textContent = '🔆';
+        text.textContent = `Purcell regime — C = ${C.toFixed(2)} > 1 but g₀ < κ. Emission into cavity is enhanced ${FP.toFixed(1)}× over free space. β = ${(2*C/(1+2*C)*100).toFixed(1)}% of photons into cavity mode.`;
+      } else {
+        banner.classList.add('regime-weak');
+        icon.textContent = '⚪';
+        text.textContent = `Weak coupling — C = ${C.toFixed(3)} < 1. Cavity has little effect on atom. To reach Purcell regime, increase finesse by ${(1/C).toFixed(1)}×, or reduce w₀ by ${Math.sqrt(1/C).toFixed(2)}×.`;
+      }
+
+      // ── Update chart ────────────────────────────────────────────
+      updateCQEDChart(g0_MHz, gam_MHz, FSR_Hz / 1e6);
+    }
+
+    function updateCQEDChart(g0_fixed, gam_fixed, FSR_MHz) {
+      const Fpoints = [];
+      const kap_pts = [];
+      const g0_pts  = [];
+      const gam_pts = [];
+      for (let i = 0; i <= 60; i++) {
+        const Fi = Math.pow(10, 2 + i * (6-2)/60);  // 100 → 1e6
+        Fpoints.push(Fi);
+        kap_pts.push(FSR_MHz / (2 * Fi));
+        g0_pts.push(g0_fixed);
+        gam_pts.push(gam_fixed);
+      }
+
+      const labels = Fpoints.map(f => f.toExponential(0).replace('e+', 'e'));
+      const sharedLine = { borderWidth: 2, fill: false, tension: 0, pointRadius: 0 };
+
+      if (_cqChart) { _cqChart.destroy(); }
+      _cqChart = new Chart(document.getElementById('cqed_chart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { ...sharedLine, label: 'κ/2π (cavity)',  data: kap_pts, borderColor: '#c084fc', borderDash: [] },
+            { ...sharedLine, label: 'g₀/2π (coupling)', data: g0_pts,  borderColor: '#34d399' },
+            { ...sharedLine, label: 'γ/2π (atomic)',  data: gam_pts, borderColor: '#f87171', borderDash: [4,3] },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'category',
+              title: { display: true, text: 'Finesse F', color: '#94a3b8' },
+              ticks: { color: '#94a3b8', maxTicksLimit: 8, font: { family: 'JetBrains Mono' } },
+              grid:  { color: 'rgba(255,255,255,0.05)' },
+            },
+            y: {
+              type: 'logarithmic',
+              title: { display: true, text: 'Rate / 2π (MHz)', color: '#94a3b8' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } },
+              grid:  { color: 'rgba(255,255,255,0.05)' },
+            },
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#e2e8f0', font: { size: 12 } },
+            },
+            tooltip: {
+              backgroundColor: '#0c1526',
+              borderColor: 'rgba(192,132,252,0.3)',
+              borderWidth: 1,
+              callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)} MHz`,
+                title: ctx => `Finesse = ${parseFloat(ctx[0].label).toExponential(1)}`,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    cqedCalc();
+  </script>
+</body>
+</html>

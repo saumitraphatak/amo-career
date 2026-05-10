@@ -22,6 +22,7 @@ const NAV = {
     { key: 'laser-locking',        label: 'Laser Stabilization Guide',   icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'        },
     { key: 'zernike',              label: 'Wavefront & Aberration Viewer', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'             },
     { key: 'polarimetry',          label: 'Polarization State Analyzer', icon: '🔭',  color: '#e879f9', href: 'pages/polarimetry.html'          },
+    { key: 'cavity-qed',           label: 'Cavity QED Calculator',       icon: '💎',  color: '#c084fc', href: 'pages/cavity-qed.html'            },
   ],
   industry: [
     { key: 'qc-landscape',  label: 'Quantum Computing Industry',  icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html'  },

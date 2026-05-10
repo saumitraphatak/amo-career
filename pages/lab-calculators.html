@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="Lab Calculators">
   <meta name="twitter:description" content="Essential AMO lab calculators: photon recoil, trap depth, scattering rate, beam waist, and more.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Lab Calculators","description":"Essential AMO lab calculators: photon recoil, trap depth, scattering rate, beam waist, and more.","url":"https://saumitraphatak.github.io/amo-career/pages/lab-calculators.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=8">
+  <link rel="stylesheet" href="../css/styles.css?v=9">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
   <style>
@@ -157,6 +157,8 @@
         <button class="tab-btn" data-tab="atomic">⚛️ Atomic Physics</button>
         <button class="tab-btn" data-tab="trap">🪤 Trap &amp; Cavity</button>
         <button class="tab-btn" data-tab="cg">🔢 Clebsch–Gordan</button>
+        <button class="tab-btn" data-tab="eom">🎛️ EOM / AOM</button>
+        <button class="tab-btn" data-tab="units">🔄 Unit Converter</button>
       </div>
 
       <!-- ══════════════════════════════════════════════════════════
@@ -632,6 +634,229 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         </div>
       </div><!-- /cg tab -->
 
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 6 — EOM / AOM SIDEBANDS
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel" data-tab="eom" data-group="main">
+        <h2 class="sec-title">EOM / AOM Sideband Calculator</h2>
+        <p class="sec-sub">Bessel-function sideband depths for phase (PM) and amplitude (AM) modulation. AOM double-pass shift and efficiency.</p>
+
+        <div class="calc-grid">
+          <!-- EOM Phase/Amplitude Modulation -->
+          <div>
+            <div class="calc-card">
+              <h4>EOM Sideband Depths — Bessel Functions J<sub>n</sub>(β)</h4>
+              <div class="sub">
+                An EOM with modulation index β splits the carrier into sidebands at ±Ω, ±2Ω, … Each sideband carries
+                power fraction J<sub>n</sub>(β)² relative to the input.
+                <strong>AM:</strong> sidebands are co-phased (real amplitude modulation).
+                <strong>PM/FM:</strong> sidebands have alternating phase (±1 sidebands are π out of phase) — no net AM on a PD.
+              </div>
+              <div class="formula-box">$$P_n / P_0 = J_n(\beta)^2 \qquad \sum_{n=-\infty}^{\infty} J_n(\beta)^2 = 1$$</div>
+
+              <div class="field-row">
+                <label><span class="tip" data-tip="Modulation depth (peak phase deviation for PM). β = π V_RF / V_π for a resonant EOM">Modulation index <em>β</em></span></label>
+                <input type="number" id="eom_beta" value="1.08" min="0" max="10" step="0.05" oninput="calcEOM()">
+              </div>
+              <div class="field-row">
+                <label>Modulation type</label>
+                <select id="eom_type" onchange="calcEOM()">
+                  <option value="pm">Phase / frequency modulation (PM/FM)</option>
+                  <option value="am">Amplitude modulation (AM)</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <label><span class="tip" data-tip="Modulation frequency (sideband separation from carrier). Typical EOM: 10 MHz–3 GHz">Modulation freq. Ω/2π (MHz)</span></label>
+                <input type="number" id="eom_freq" value="20" min="0.1" max="10000" step="1" oninput="calcEOM()">
+              </div>
+              <div id="eom_res" class="result-row" style="flex-direction:column;gap:.3rem;align-items:flex-start"></div>
+
+              <div style="margin-top:.75rem">
+                <canvas id="eom_canvas" width="480" height="140" style="width:100%;border-radius:6px;background:#060e1c;border:1px solid #1e293b;"></canvas>
+                <div style="font-size:.73rem;color:var(--text-muted);margin-top:.3rem;text-align:center" id="eom_canv_label">Spectrum — carrier + sidebands (height ∝ field amplitude)</div>
+              </div>
+            </div>
+
+            <div class="calc-card" style="margin-top:.75rem">
+              <h4>Key β Values</h4>
+              <div class="sub">Special modulation depths used in common lab applications.</div>
+              <table style="width:100%;border-collapse:collapse;font-size:.83rem;margin-top:.5rem">
+                <tr style="border-bottom:1px solid #1e293b">
+                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">β</th>
+                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₀(β)²</th>
+                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₁(β)²</th>
+                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">Use</th>
+                </tr>
+                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#4ade80">1.08</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.319</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.339</td><td style="padding:4px 8px;color:var(--text-secondary)">PDH: max error signal ∝ J₀J₁</td></tr>
+                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#fbbf24">2.405</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.269</td><td style="padding:4px 8px;color:var(--text-secondary)">Carrier suppression (STIRAP, EIT)</td></tr>
+                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#c084fc">5.520</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.204</td><td style="padding:4px 8px;color:var(--text-secondary)">2nd carrier null</td></tr>
+                <tr><td style="padding:4px 8px;font-family:var(--font-mono);color:#38bdf8">0.5</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.940</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.058</td><td style="padding:4px 8px;color:var(--text-secondary)">Weak modulation (small sidebands)</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- AOM double-pass + EOM V_π -->
+          <div>
+            <div class="calc-card">
+              <h4>AOM Frequency Shift &amp; Double-Pass Setup</h4>
+              <div class="sub">
+                AOMs shift laser frequency by ±f_AOM. A <strong>double-pass</strong> configuration (retroreflect through AOM a second time)
+                shifts by 2f_AOM, is polarization-maintaining, and makes the output direction independent of frequency —
+                essential for laser locking scan ranges without beam steering.
+              </div>
+              <div class="formula-box" style="margin-bottom:.6rem">
+                $$\Delta f_{\rm single} = \pm f_{\rm AOM} \qquad \Delta f_{\rm double} = 2 f_{\rm AOM} \qquad \eta_{\rm DP} = \eta_{\rm SP}^2$$
+              </div>
+              <div class="field-row">
+                <label><span class="tip" data-tip="Acoustic drive frequency of the AOM. Common: 80 MHz (Isomet 1205), 200 MHz (IntraAction)">AOM drive frequency (MHz)</span></label>
+                <input type="number" id="aom_f" value="80" min="10" max="3000" step="1" oninput="calcAOM2()">
+              </div>
+              <div class="field-row">
+                <label><span class="tip" data-tip="First-order diffraction efficiency of a single pass through the AOM. Typically 60–85%">Single-pass efficiency η_SP (%)</span></label>
+                <input type="number" id="aom_eta" value="75" min="0" max="100" step="1" oninput="calcAOM2()">
+              </div>
+              <div class="field-row">
+                <label>Diffraction order</label>
+                <select id="aom_order" onchange="calcAOM2()">
+                  <option value="1">+1 order (blue shift)</option>
+                  <option value="-1">−1 order (red shift)</option>
+                </select>
+              </div>
+              <div id="aom2_res" class="result-row"></div>
+              <div style="margin-top:.75rem;font-size:.82rem;color:var(--text-muted);line-height:1.6">
+                <strong style="color:var(--text-secondary)">Double-pass alignment tip:</strong>
+                the cat's-eye retroreflector (λ/4 plate + mirror) must send the beam <em>back through the AOM crystal</em>,
+                not just the fiber coupler. Align by checking that the retro beam overlaps the AOM input beam on an iris,
+                then optimize the second-order extinction (should be &gt;30 dB).
+              </div>
+            </div>
+
+            <div class="calc-card" style="margin-top:.75rem">
+              <h4>EOM Half-Wave Voltage V<sub>π</sub></h4>
+              <div class="sub">Converts RF power to modulation index β = π V_RF / V_π. Useful for comparing specs across EOMs.</div>
+              <div class="formula-box">$$\beta = \frac{\pi V_{\rm RF}}{V_\pi} = \pi\sqrt{\frac{2 R P_{\rm RF}}{1}}\cdot\frac{1}{V_\pi}$$</div>
+              <div class="field-row">
+                <label><span class="tip" data-tip="Half-wave voltage of the EOM crystal. Typical: 100–400 V for bulk crystal at 1 GHz; 1–5 V for resonant waveguide EOMs">V_π of EOM (V)</span></label>
+                <input type="number" id="eomv_Vpi" value="200" min="0.1" max="1000" step="1" oninput="calcEOMvpi()">
+              </div>
+              <div class="field-row">
+                <label>RF power into EOM (dBm)</label>
+                <input type="number" id="eomv_P" value="20" min="-20" max="50" step="0.5" oninput="calcEOMvpi()">
+              </div>
+              <div class="field-row">
+                <label>Impedance R (Ω)</label>
+                <input type="number" id="eomv_R" value="50" min="1" max="300" step="1" oninput="calcEOMvpi()">
+              </div>
+              <div id="eomvpi_res" class="result-row"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hood-callout" style="margin-top:1.5rem">
+          <span class="hood-callout-icon">🏔️</span>
+          <div>
+            <strong>Hood Lab:</strong> We use a resonant EOM at 9.192 GHz to generate Cs hyperfine sidebands for
+            saturated absorption spectroscopy and a non-resonant broadband EOM at 20 MHz for PDH locking to
+            the 685 nm ULE cavity. The 9 GHz resonant EOM is particularly unforgiving — driving off resonance
+            by even 5 MHz drops the modulation depth by &gt;10 dB; always match the drive frequency to the EOM's
+            resonant frequency with a VNA before use.
+          </div>
+        </div>
+      </div><!-- /eom tab -->
+
+      <!-- ══════════════════════════════════════════════════════════
+           TAB 7 — UNIT CONVERTER
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tab-panel" data-tab="units" data-group="main">
+        <h2 class="sec-title">Unit Converter</h2>
+        <p class="sec-sub">Instant conversions for the units AMO physicists actually use. Enter any value and all equivalents update live.</p>
+
+        <div class="calc-grid">
+          <!-- Frequency conversions -->
+          <div>
+            <div class="calc-card">
+              <h4>Frequency / Energy</h4>
+              <div class="sub">Hz ↔ kHz ↔ MHz ↔ GHz ↔ cm⁻¹ ↔ nm ↔ THz</div>
+              <div class="field-row"><label>Frequency (Hz)</label>     <input type="number" id="uf_hz"   oninput="convFreq('hz')"   placeholder="e.g. 3.84e14"></div>
+              <div class="field-row"><label>Frequency (MHz)</label>    <input type="number" id="uf_mhz"  oninput="convFreq('mhz')"  placeholder="e.g. 384e6"></div>
+              <div class="field-row"><label>Frequency (GHz)</label>    <input type="number" id="uf_ghz"  oninput="convFreq('ghz')"  placeholder="e.g. 384000"></div>
+              <div class="field-row"><label>Wavenumber (cm⁻¹)</label>  <input type="number" id="uf_cm"   oninput="convFreq('cm')"   placeholder="e.g. 12820"></div>
+              <div class="field-row"><label>Wavelength (nm)</label>    <input type="number" id="uf_nm"   oninput="convFreq('nm')"   placeholder="e.g. 780"></div>
+              <div class="field-row"><label>Period (ps)</label>         <input type="number" id="uf_ps"   oninput="convFreq('ps')"   placeholder=""></div>
+            </div>
+
+            <div class="calc-card" style="margin-top:.75rem">
+              <h4>Power — mW ↔ dBm</h4>
+              <div class="sub">P[dBm] = 10 log₁₀(P[mW])</div>
+              <div class="field-row"><label>Power (mW)</label>  <input type="number" id="up_mw"  oninput="convPow('mw')"  placeholder="e.g. 10"></div>
+              <div class="field-row"><label>Power (dBm)</label> <input type="number" id="up_dbm" oninput="convPow('dbm')" placeholder="e.g. 10"></div>
+              <div class="field-row"><label>Power (μW)</label>  <input type="number" id="up_uw"  oninput="convPow('uw')"  placeholder="e.g. 1000"></div>
+            </div>
+
+            <div class="calc-card" style="margin-top:.75rem">
+              <h4>Magnetic Field</h4>
+              <div class="sub">Gauss ↔ Tesla ↔ mT</div>
+              <div class="field-row"><label>Field (Gauss)</label>  <input type="number" id="ub_G"  oninput="convB('G')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label>Field (Tesla)</label>  <input type="number" id="ub_T"  oninput="convB('T')"  placeholder="e.g. 1e-4"></div>
+              <div class="field-row"><label>Field (mT)</label>     <input type="number" id="ub_mT" oninput="convB('mT')" placeholder="e.g. 0.1"></div>
+              <div id="ub_zeeman" class="result-row" style="margin-top:.4rem"></div>
+            </div>
+          </div>
+
+          <!-- Temperature / energy -->
+          <div>
+            <div class="calc-card">
+              <h4>Temperature — Cooling Scales</h4>
+              <div class="sub">Kelvin ↔ mK ↔ μK ↔ nK ↔ μeV ↔ recoil units</div>
+              <div class="field-row">
+                <label>Atom (for recoil scale)</label>
+                <select id="ut_atom" onchange="convTemp('K')">
+                  <option value="87">Rb-87 (87 amu, 780 nm)</option>
+                  <option value="133">Cs-133 (133 amu, 852 nm)</option>
+                  <option value="7">Li-7 (7 amu, 671 nm)</option>
+                  <option value="23">Na-23 (23 amu, 589 nm)</option>
+                  <option value="88">Sr-88 (88 amu, 461 nm)</option>
+                  <option value="171">Yb-171 (171 amu, 399 nm)</option>
+                </select>
+              </div>
+              <div class="field-row"><label>Temperature (K)</label>   <input type="number" id="ut_K"    oninput="convTemp('K')"   placeholder="e.g. 1e-6"></div>
+              <div class="field-row"><label>Temperature (mK)</label>  <input type="number" id="ut_mK"   oninput="convTemp('mK')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label>Temperature (μK)</label>  <input type="number" id="ut_uK"   oninput="convTemp('uK')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label>Temperature (nK)</label>  <input type="number" id="ut_nK"   oninput="convTemp('nK')"  placeholder="e.g. 1000"></div>
+              <div class="field-row"><label>Energy (μeV)</label>      <input type="number" id="ut_ueV"  oninput="convTemp('ueV')" placeholder=""></div>
+              <div class="field-row"><label>Energy (kHz, h·f)</label> <input type="number" id="ut_kHz"  oninput="convTemp('kHz')" placeholder=""></div>
+              <div id="ut_recoil" class="result-row" style="flex-direction:column;align-items:flex-start;gap:.2rem;margin-top:.4rem"></div>
+            </div>
+
+            <div class="calc-card" style="margin-top:.75rem">
+              <h4>Angle / Solid Angle</h4>
+              <div class="sub">degrees ↔ mrad ↔ μrad</div>
+              <div class="field-row"><label>Angle (degrees)</label> <input type="number" id="ua_deg"  oninput="convAngle('deg')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label>Angle (mrad)</label>    <input type="number" id="ua_mrad" oninput="convAngle('mrad')" placeholder="e.g. 17.5"></div>
+              <div class="field-row"><label>Angle (μrad)</label>    <input type="number" id="ua_urad" oninput="convAngle('urad')" placeholder="e.g. 17453"></div>
+              <div id="ua_NA" class="result-row" style="margin-top:.4rem"></div>
+            </div>
+
+            <div class="calc-card" style="margin-top:.75rem">
+              <h4>Trap Depth — μK ↔ mK ↔ E_r</h4>
+              <div class="sub">Tweezer / optical lattice trap depth in practical units.</div>
+              <div class="field-row">
+                <label>Atom (for recoil reference)</label>
+                <select id="utd_atom" onchange="convTrapDepth('uK')">
+                  <option value="87_780">Rb-87, 780 nm</option>
+                  <option value="133_852">Cs-133, 852 nm</option>
+                  <option value="7_671">Li-7, 671 nm</option>
+                </select>
+              </div>
+              <div class="field-row"><label>Trap depth (μK)</label>   <input type="number" id="utd_uK"  oninput="convTrapDepth('uK')"  placeholder="e.g. 1000"></div>
+              <div class="field-row"><label>Trap depth (mK)</label>   <input type="number" id="utd_mK"  oninput="convTrapDepth('mK')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label>Depth / E_rec</label>     <input type="number" id="utd_Er"  oninput="convTrapDepth('Er')"  placeholder="e.g. 300"></div>
+              <div class="field-row"><label>Depth (kHz, h·f)</label>  <input type="number" id="utd_kHz" oninput="convTrapDepth('kHz')" placeholder="e.g. 20"></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /units tab -->
+
     </div><!-- /data-tabs-wrap -->
       </div>
     </div>
@@ -644,7 +869,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=8"></script>
+<script src="../js/main.js?v=9"></script>
   <script>
     renderNav({ active: 'lab-calculators', root: '../' });
 
@@ -1339,6 +1564,276 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const tj2 = parseFloat(document.getElementById('t_j2').value)||0.5;
       populateJSelect('t_J', tj1, tj2); buildTable();
     })();
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB 6 — EOM / AOM
+    // ══════════════════════════════════════════════════════════════
+
+    function besselJ(n, x) {
+      // Bessel J_n(x) via power series (accurate for moderate n, x)
+      n = Math.abs(Math.round(n));
+      let sum = 0, term = 1;
+      const halfx = x / 2;
+      for (let k = 1; k <= n; k++) term *= halfx / k;
+      for (let k = 0; k < 40; k++) {
+        sum += term;
+        term *= -(halfx * halfx) / ((k + 1) * (k + 1 + n));
+        if (Math.abs(term) < 1e-15 * Math.abs(sum) && k > 2) break;
+      }
+      return sum;
+    }
+
+    function calcEOM() {
+      const beta = +document.getElementById('eom_beta').value;
+      const type = document.getElementById('eom_type').value;
+      const rows = [];
+      let totalPow = 0;
+      for (let n = 0; n <= 5; n++) {
+        const Jn = besselJ(n, beta);
+        const pow = Jn * Jn;
+        const count = n === 0 ? 1 : 2;
+        totalPow += pow * count;
+        const pct = (pow * 100).toFixed(2);
+        const label = n === 0 ? 'Carrier (n=0)' : `Sideband n=±${n}`;
+        rows.push([label, `J${n}(β) = ${Jn.toFixed(4)}`, `${pct}% each`]);
+      }
+      const html = rows.map(([a, b, c]) =>
+        `<span class="result-lbl">${a}</span>&nbsp;<span class="result-val">${b}</span>&nbsp;<span style="color:#94a3b8;font-size:.82rem">${c}</span>`
+      ).join('<br>');
+      document.getElementById('eom_res').innerHTML = html +
+        `<br><span style="color:var(--text-muted);font-size:.78rem">β = ${beta.toFixed(3)} · PDH signal ∝ J₀J₁ = ${(besselJ(0,beta)*besselJ(1,beta)).toFixed(4)} (max at β≈1.08)</span>`;
+      drawEOMSpectrum(beta, type);
+    }
+
+    function drawEOMSpectrum(beta, type) {
+      const cv = document.getElementById('eom_canvas');
+      if (!cv) return;
+      const W = cv.clientWidth || 480, H = 140;
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#060e1c'; ctx.fillRect(0, 0, W, H);
+
+      const nMax = 5;
+      const totalSlots = 2 * nMax + 1;
+      const slotW = W / totalSlots;
+      const baseline = H - 18;
+
+      ctx.font = '10px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+
+      for (let n = -nMax; n <= nMax; n++) {
+        const Jn = besselJ(Math.abs(n), beta);
+        let amp = Math.abs(Jn);
+        // For PM: odd sidebands have alternating sign — show full height but note phase
+        const isPM = type === 'pm';
+        const isOdd = Math.abs(n) % 2 === 1;
+        const col = n === 0 ? '#34d399' : (Math.abs(n) === 1 ? '#c084fc' : (Math.abs(n) === 2 ? '#38bdf8' : '#475569'));
+        const xc = (n + nMax + 0.5) * slotW;
+        const barH = amp * (H - 40);
+
+        ctx.fillStyle = col;
+        ctx.globalAlpha = isPM && isOdd ? 0.55 : 1.0;
+        ctx.fillRect(xc - slotW * 0.22, baseline - barH, slotW * 0.44, barH);
+        ctx.globalAlpha = 1;
+
+        // Label
+        ctx.fillStyle = col;
+        ctx.fillText(`n=${n}`, xc, baseline + 14);
+        if (amp > 0.03) ctx.fillText((amp*amp*100).toFixed(1)+'%', xc, baseline - barH - 4);
+      }
+
+      // Baseline
+      ctx.beginPath(); ctx.moveTo(0, baseline); ctx.lineTo(W, baseline);
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1; ctx.stroke();
+
+      // Phase annotation for PM
+      if (type === 'pm') {
+        ctx.font = '9px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(251,191,36,0.7)';
+        ctx.textAlign = 'right';
+        ctx.fillText('PM: odd sidebands 180° out of phase (no net AM)', W - 4, 14);
+      }
+    }
+
+    function calcAOM2() {
+      const fAOM  = +document.getElementById('aom_f').value;
+      const etaSP = +document.getElementById('aom_eta').value / 100;
+      const order = +document.getElementById('aom_order').value;
+      const etaDP = etaSP * etaSP;
+      setRes('aom2_res', [
+        ['Single-pass shift',   `${order > 0 ? '+' : '−'}${fAOM} MHz`],
+        ['Double-pass shift',   `${order > 0 ? '+' : '−'}${2*fAOM} MHz`],
+        ['Single-pass efficiency', `${(etaSP*100).toFixed(1)} %`],
+        ['Double-pass efficiency', `${(etaDP*100).toFixed(1)} %`],
+        ['Double-pass power loss', `${((1-etaDP)*100).toFixed(1)} %`],
+      ]);
+    }
+
+    function calcEOMvpi() {
+      const Vpi  = +document.getElementById('eomv_Vpi').value;
+      const P_dBm= +document.getElementById('eomv_P').value;
+      const R    = +document.getElementById('eomv_R').value;
+      const P_mW = Math.pow(10, (P_dBm - 30) / 10) * 1000;  // mW
+      const V_RF = Math.sqrt(2 * R * P_mW * 1e-3);           // V_rms → V_peak
+      const beta = Math.PI * V_RF / Vpi;
+      setRes('eomvpi_res', [
+        ['V_RF (peak)', V_RF.toFixed(2) + ' V'],
+        ['Modulation index β', beta.toFixed(3)],
+        ['Carrier power', (besselJ(0,beta)**2 * 100).toFixed(2) + ' %'],
+        ['±1 sideband power', (besselJ(1,beta)**2 * 100).toFixed(2) + ' % each'],
+      ]);
+    }
+
+    // Init EOM tab
+    calcEOM(); calcAOM2(); calcEOMvpi();
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB 7 — UNIT CONVERTER
+    // ══════════════════════════════════════════════════════════════
+
+    const _h  = 6.62607015e-34;
+    const _kB = 1.380649e-23;
+    const _c2 = 299792458.0;
+    const _amu = 1.66053906660e-27;
+    const _eV = 1.602176634e-19;
+
+    function setField(id, v) {
+      if (isFinite(v) && v !== null) document.getElementById(id).value = v.toPrecision(6).replace(/\.?0+$/, '');
+      else document.getElementById(id).value = '';
+    }
+
+    function convFreq(from) {
+      let hz;
+      if (from === 'hz')  hz = +document.getElementById('uf_hz').value;
+      if (from === 'mhz') hz = +document.getElementById('uf_mhz').value * 1e6;
+      if (from === 'ghz') hz = +document.getElementById('uf_ghz').value * 1e9;
+      if (from === 'nm')  { const nm = +document.getElementById('uf_nm').value; hz = _c2 / (nm * 1e-9); }
+      if (from === 'cm')  hz = +document.getElementById('uf_cm').value * _c2 * 100;
+      if (from === 'ps')  hz = 1 / (+document.getElementById('uf_ps').value * 1e-12);
+      if (!hz || hz <= 0) return;
+      if (from !== 'hz')  setField('uf_hz',  hz);
+      if (from !== 'mhz') setField('uf_mhz', hz / 1e6);
+      if (from !== 'ghz') setField('uf_ghz', hz / 1e9);
+      if (from !== 'nm')  setField('uf_nm',  _c2 / hz * 1e9);
+      if (from !== 'cm')  setField('uf_cm',  hz / (_c2 * 100));
+      if (from !== 'ps')  setField('uf_ps',  1 / hz * 1e12);
+    }
+
+    function convPow(from) {
+      let mW;
+      if (from === 'mw')  mW = +document.getElementById('up_mw').value;
+      if (from === 'dbm') mW = Math.pow(10, +document.getElementById('up_dbm').value / 10);
+      if (from === 'uw')  mW = +document.getElementById('up_uw').value / 1000;
+      if (!isFinite(mW) || mW <= 0) return;
+      if (from !== 'mw')  setField('up_mw',  mW);
+      if (from !== 'dbm') setField('up_dbm', 10 * Math.log10(mW));
+      if (from !== 'uw')  setField('up_uw',  mW * 1000);
+    }
+
+    function convB(from) {
+      let T;
+      if (from === 'G')  T = +document.getElementById('ub_G').value * 1e-4;
+      if (from === 'T')  T = +document.getElementById('ub_T').value;
+      if (from === 'mT') T = +document.getElementById('ub_mT').value * 1e-3;
+      if (!T || T <= 0) return;
+      if (from !== 'G')  setField('ub_G',  T * 1e4);
+      if (from !== 'T')  setField('ub_T',  T);
+      if (from !== 'mT') setField('ub_mT', T * 1e3);
+      const G = T * 1e4;
+      const muB = 9.2740100783e-24;
+      const shift_MHz = muB * T / _h / 1e6;
+      document.getElementById('ub_zeeman').innerHTML =
+        `<span class="result-lbl">Zeeman shift (1 μ_B)</span>&nbsp;<span class="result-val">${shift_MHz.toFixed(4)} MHz/G × ${G.toFixed(2)} G = ${(shift_MHz * G / G * G * 1e-4 * 1e10).toFixed(4)} MHz</span>`;
+      // Simpler: shift per field
+      const shiftPerG = 1.3996 * 1e-3; // MHz/mG for 1μB, i.e., 1.3996 MHz/G
+      document.getElementById('ub_zeeman').innerHTML =
+        `<span class="result-lbl">Zeeman (g_F=1, m_F=1)</span>&nbsp;<span class="result-val">${(1.3996 * G).toFixed(4)} MHz shift</span>`;
+    }
+
+    const UT_ATOMS = {
+      '87':  { amu: 87,  lam_nm: 780.241 },
+      '133': { amu: 133, lam_nm: 852.347 },
+      '7':   { amu: 7,   lam_nm: 670.977 },
+      '23':  { amu: 23,  lam_nm: 588.995 },
+      '88':  { amu: 88,  lam_nm: 461.0   },
+      '171': { amu: 171, lam_nm: 398.9   },
+    };
+
+    function convTemp(from) {
+      let K;
+      if (from === 'K')   K = +document.getElementById('ut_K').value;
+      if (from === 'mK')  K = +document.getElementById('ut_mK').value * 1e-3;
+      if (from === 'uK')  K = +document.getElementById('ut_uK').value * 1e-6;
+      if (from === 'nK')  K = +document.getElementById('ut_nK').value * 1e-9;
+      if (from === 'ueV') K = +document.getElementById('ut_ueV').value * _eV * 1e-6 / _kB;
+      if (from === 'kHz') K = +document.getElementById('ut_kHz').value * 1e3 * _h / _kB;
+      if (!K || K <= 0) return;
+      if (from !== 'K')   setField('ut_K',   K);
+      if (from !== 'mK')  setField('ut_mK',  K * 1e3);
+      if (from !== 'uK')  setField('ut_uK',  K * 1e6);
+      if (from !== 'nK')  setField('ut_nK',  K * 1e9);
+      if (from !== 'ueV') setField('ut_ueV', K * _kB / (_eV * 1e-6));
+      if (from !== 'kHz') setField('ut_kHz', K * _kB / (_h * 1e3));
+      // Recoil reference
+      const atomKey = document.getElementById('ut_atom').value;
+      const atom = UT_ATOMS[atomKey];
+      if (atom) {
+        const m = atom.amu * _amu;
+        const lam = atom.lam_nm * 1e-9;
+        const k = 2 * Math.PI / lam;
+        const E_rec_K = _h * _h * k * k / (2 * m * _kB * 4 * Math.PI * Math.PI);  // hbar²k²/(2m·kB)
+        const n_rec = K / E_rec_K;
+        document.getElementById('ut_recoil').innerHTML =
+          `<span class="result-lbl">Recoil energy E_rec/k_B</span>&nbsp;<span class="result-val">${(E_rec_K * 1e9).toFixed(3)} nK</span><br>` +
+          `<span class="result-lbl">Temperature / E_rec</span>&nbsp;<span class="result-val">${n_rec.toFixed(2)} E_rec</span>`;
+      }
+    }
+
+    function convAngle(from) {
+      let deg;
+      if (from === 'deg')  deg = +document.getElementById('ua_deg').value;
+      if (from === 'mrad') deg = +document.getElementById('ua_mrad').value * 180 / Math.PI / 1e3;
+      if (from === 'urad') deg = +document.getElementById('ua_urad').value * 180 / Math.PI / 1e6;
+      if (!isFinite(deg)) return;
+      if (from !== 'deg')  setField('ua_deg',  deg);
+      if (from !== 'mrad') setField('ua_mrad', deg * Math.PI / 180 * 1e3);
+      if (from !== 'urad') setField('ua_urad', deg * Math.PI / 180 * 1e6);
+      const rad = deg * Math.PI / 180;
+      const NA = Math.sin(rad);
+      document.getElementById('ua_NA').innerHTML =
+        `<span class="result-lbl">sin(θ) = NA</span>&nbsp;<span class="result-val">${NA.toFixed(5)}</span>`;
+    }
+
+    const UTD_ATOMS = {
+      '87_780':  { amu: 87,  lam_nm: 780.241 },
+      '133_852': { amu: 133, lam_nm: 852.347 },
+      '7_671':   { amu: 7,   lam_nm: 670.977 },
+    };
+
+    function convTrapDepth(from) {
+      const atomKey = document.getElementById('utd_atom').value;
+      const atom = UTD_ATOMS[atomKey] || UTD_ATOMS['87_780'];
+      const m = atom.amu * _amu;
+      const lam = atom.lam_nm * 1e-9;
+      const k = 2 * Math.PI / lam;
+      const E_rec = _h * _h * k * k / (2 * m * 4 * Math.PI * Math.PI);  // in Joules
+
+      let uK;
+      if (from === 'uK')  uK = +document.getElementById('utd_uK').value;
+      if (from === 'mK')  uK = +document.getElementById('utd_mK').value * 1e3;
+      if (from === 'Er')  uK = +document.getElementById('utd_Er').value * E_rec / (_kB * 1e-6);
+      if (from === 'kHz') uK = +document.getElementById('utd_kHz').value * 1e3 * _h / (_kB * 1e-6);
+      if (!uK || uK <= 0) return;
+
+      const K = uK * 1e-6;
+      const E_J = K * _kB;
+      if (from !== 'uK')  setField('utd_uK',  uK);
+      if (from !== 'mK')  setField('utd_mK',  uK / 1e3);
+      if (from !== 'Er')  setField('utd_Er',  E_J / E_rec);
+      if (from !== 'kHz') setField('utd_kHz', E_J / (_h * 1e3));
+    }
+
   </script>
 </body>
 </html>

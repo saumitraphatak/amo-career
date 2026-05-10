@@ -11,7 +11,7 @@
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator, scattering rate, photon collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://saumitraphatak.github.io/amo-career/pages/imaging-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=8">
+  <link rel="stylesheet" href="../css/styles.css?v=9">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -554,6 +554,21 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     </div>
   </section>
 
+  <!-- Hood Lab: imaging setup context -->
+  <div class="hood-callout" style="margin:0 0 var(--sp-6) 0">
+    <span style="font-size:1.4rem">🔬</span>
+    <div>
+      <strong>Hood Lab imaging setup:</strong>
+      We image <sup>87</sup>Rb and <sup>133</sup>Cs single atoms in optical tweezers using a
+      <span class="tip" data-tip="Numerical aperture 0.6 → collection efficiency η ≈ 8%">NA = 0.6 objective</span>
+      (Mitutoyo G Plan Apo) and an EMCCD camera (Andor iXon). Typical imaging: 780 nm D2 line,
+      detuning Δ = −2Γ, saturation s ≈ 2, exposure 2 ms. We collect ~600 photons from Rb at 99%
+      survival probability with gray molasses applied during imaging.
+      The critical figure is not peak SNR but the <em>histogram separation</em> between the
+      0-atom and 1-atom peaks — we target &gt;8σ separation to achieve detection fidelity &gt; 99.9%.
+    </div>
+  </div>
+
   <hr class="section-divider">
 
   <!-- ═══ SECTION 4: SNR vs EXPOSURE TIME CHART ════════════════ -->
@@ -1087,6 +1102,66 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
 
   </section>
 
+  <!-- Hood Lab: detection fidelity context -->
+  <div class="hood-callout" style="margin:0 0 var(--sp-4) 0">
+    <span style="font-size:1.4rem">🔬</span>
+    <div>
+      <strong>Detection fidelity in practice:</strong>
+      In tweezer experiments the dominant infidelity source shifts from <em>photon shot noise</em>
+      (fixed by increasing NA or exposure) to <em>atom loss during imaging</em>
+      (fixed by reducing recoil heating via gray molasses or EIT cooling).
+      For Cs we switch to a 685 nm <span class="tip" data-tip="Gray molasses uses dark-state cooling on the D1 line to reach sub-Doppler temperatures without a magnetic field">gray molasses</span>
+      imaging scheme: the cooling rate prevents axial escape while the camera collects photons,
+      enabling ≥ 99.5% detection fidelity with only 1 ms exposure.
+      The limiting factor at that level is <em>preparation fidelity</em> (state initialization),
+      not imaging photon budget.
+    </div>
+  </div>
+
+  <!-- Key paper references -->
+  <div class="paper-refs anim-in" style="margin-bottom:var(--sp-6)">
+    <h4 style="font-size:.85rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+               color:var(--text-muted); margin:0 0 var(--sp-4) 0;">Key Papers — Single-Atom Imaging &amp; Detection</h4>
+    <div style="display:flex; flex-direction:column; gap:var(--sp-3)">
+      <div class="paper-ref">
+        <span style="color:var(--c-img); font-weight:700; flex-shrink:0">[1]</span>
+        <span>Schlosser et al., <em>Sub-Poissonian loading of single atoms in a microscopic dipole trap</em>, Nature 411, 1024 (2001) — first single-atom tweezer imaging.
+          <a href="https://doi.org/10.1038/35082512" target="_blank" rel="noopener" style="color:var(--c-img)">DOI</a>
+        </span>
+      </div>
+      <div class="paper-ref">
+        <span style="color:var(--c-img); font-weight:700; flex-shrink:0">[2]</span>
+        <span>Bakr et al., <em>A quantum gas microscope for detecting single atoms in a Hubbard-regime optical lattice</em>, Nature 462, 74 (2009) — quantum gas microscope, site-resolved imaging.
+          <a href="https://doi.org/10.1038/nature08482" target="_blank" rel="noopener" style="color:var(--c-img)">DOI</a>
+        </span>
+      </div>
+      <div class="paper-ref">
+        <span style="color:var(--c-img); font-weight:700; flex-shrink:0">[3]</span>
+        <span>Fuhrmanek et al., <em>Free-space lossless state detection of a single trapped atom</em>, PRL 106, 133003 (2011) — 99.4% detection fidelity benchmark.
+          <a href="https://doi.org/10.1103/PhysRevLett.106.133003" target="_blank" rel="noopener" style="color:var(--c-img)">DOI</a>
+        </span>
+      </div>
+      <div class="paper-ref">
+        <span style="color:var(--c-img); font-weight:700; flex-shrink:0">[4]</span>
+        <span>Evered et al., <em>High-fidelity parallel entangling gates on a neutral-atom quantum computer</em>, Nature 622, 268 (2023) — detection fidelity analysis from bimodal histogram (Supplementary Methods).
+          <a href="https://doi.org/10.1038/s41586-023-06481-y" target="_blank" rel="noopener" style="color:var(--c-img)">DOI</a>
+        </span>
+      </div>
+      <div class="paper-ref">
+        <span style="color:var(--c-img); font-weight:700; flex-shrink:0">[5]</span>
+        <span>Tuchendler et al., <em>Energy distribution and cooling of a single atom in an optical tweezer</em>, PRA 78, 033425 (2008) — atom survival and heating during imaging; release-recapture thermometry.
+          <a href="https://doi.org/10.1103/PhysRevA.78.033425" target="_blank" rel="noopener" style="color:var(--c-img)">DOI</a>
+        </span>
+      </div>
+      <div class="paper-ref">
+        <span style="color:var(--c-img); font-weight:700; flex-shrink:0">[6]</span>
+        <span>Manetsch et al., <em>A tweezer array with 6100 highly coherent atomic qubits</em>, Nature (2024) — large-scale tweezer array imaging and loading statistics at &gt;99.9% fidelity.
+          <a href="https://doi.org/10.1038/s41586-024-08253-4" target="_blank" rel="noopener" style="color:var(--c-img)">DOI</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
   <hr class="section-divider">
 
   <!-- ═══ SECTION 7: REFERENCES ════════════════════════════════ -->
@@ -1138,7 +1213,7 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=8"></script>
+<script src="../js/main.js?v=9"></script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 

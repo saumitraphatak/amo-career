@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="Atom Library">
   <meta name="twitter:description" content="Spectroscopic properties, data sheets, and research groups for 15 laser-coolable atoms used in ultracold physics experiments.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Atom Library","description":"Spectroscopic properties, data sheets, and research groups for 15 laser-coolable atoms used in ultracold physics experiments.","url":"https://saumitraphatak.github.io/amo-career/pages/atom-library.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=8">
+  <link rel="stylesheet" href="../css/styles.css?v=9">
 
   <style>
     /* ── Page-specific styles ── */
@@ -289,6 +289,20 @@
             <span class="atom-row-label">Magnetic</span>
             <div class="atom-tile" data-atom="¹⁶⁴Dy" style="background:rgba(244,114,182,0.12);color:#f472b6" onclick="selectAtom(this,'¹⁶⁴Dy')"><span class="at-mass">164</span><span class="at-sym" style="color:#f472b6">Dy</span><span class="at-stat">Boson</span></div>
             <div class="atom-tile" data-atom="¹⁶⁸Er" style="background:rgba(251,191,36,0.12);color:#fbbf24"  onclick="selectAtom(this,'¹⁶⁸Er')"><span class="at-mass">168</span><span class="at-sym" style="color:#fbbf24">Er</span><span class="at-stat">Boson</span></div>
+          </div>
+        </div>
+
+        <!-- Spectroscopic panel — shown on atom tile click -->
+        <div id="spec-panel" style="display:none;background:var(--bg-card);border:1px solid var(--border-med);border-radius:var(--r-lg);padding:var(--sp-5);margin-bottom:var(--sp-5)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5);align-items:start">
+            <div>
+              <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.5rem" id="spec-title">Level Diagram</div>
+              <canvas id="spec-canvas" width="320" height="200" style="width:100%;border-radius:6px;background:var(--bg-surface);border:1px solid var(--border)"></canvas>
+            </div>
+            <div>
+              <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.5rem">Transition Data</div>
+              <div id="spec-info" style="font-size:.84rem;color:var(--text-secondary);line-height:1.8"></div>
+            </div>
           </div>
         </div>
 
@@ -1082,7 +1096,7 @@ Narrow: 583 nm (intercombination line)</span>
   </div><!-- /page-wrap -->
 
   <!-- Scripts -->
-  <script src="../js/main.js?v=8"></script>
+  <script src="../js/main.js?v=9"></script>
   <script>
     renderNav({ active: 'atom-library', root: '../' });
   </script>
@@ -1180,6 +1194,162 @@ Narrow: 583 nm (intercombination line)</span>
       requestAnimationFrame(pulse);
     })();
 
+    /* ── Spectroscopic data ────────────────────────────────── */
+    const SPEC_DATA = {
+      '⁶Li':  { col:'#fb923c', term:'Li',  ground:'2S₁/₂', D1lam:670.992, D1G:5.87, D1HF:0.228,  D2lam:670.977, D2G:5.87, D2HF:0,      groundHF:0.228,  gF:[1,2],   sym:'⁶Li (Fermion)' },
+      '⁷Li':  { col:'#fb923c', term:'Li',  ground:'2S₁/₂', D1lam:670.992, D1G:5.87, D1HF:0.803,  D2lam:670.977, D2G:5.87, D2HF:0,      groundHF:0.803,  gF:[1,2],   sym:'⁷Li (Boson)'   },
+      '²³Na': { col:'#fbbf24', term:'Na',  ground:'3S₁/₂', D1lam:589.756, D1G:9.79, D1HF:1.108,  D2lam:588.995, D2G:9.80, D2HF:0.189,  groundHF:1.772,  gF:[1,2],   sym:'²³Na' },
+      '³⁹K':  { col:'#a78bfa', term:'K',   ground:'4S₁/₂', D1lam:770.108, D1G:5.96, D1HF:0.462,  D2lam:766.701, D2G:6.04, D2HF:0.058,  groundHF:0.462,  gF:[1,2],   sym:'³⁹K' },
+      '⁴⁰K':  { col:'#a78bfa', term:'K',   ground:'4S₁/₂', D1lam:770.108, D1G:5.96, D1HF:1.286,  D2lam:766.701, D2G:6.04, D2HF:0.17,   groundHF:1.286,  gF:[9,7],   sym:'⁴⁰K (Fermion)' },
+      '⁴¹K':  { col:'#a78bfa', term:'K',   ground:'4S₁/₂', D1lam:770.108, D1G:5.96, D1HF:0.254,  D2lam:766.701, D2G:6.04, D2HF:0.034,  groundHF:0.254,  gF:[1,2],   sym:'⁴¹K' },
+      '⁸⁵Rb': { col:'#38bdf8', term:'Rb',  ground:'5S₁/₂', D1lam:794.979, D1G:5.75, D1HF:1.264,  D2lam:780.241, D2G:6.07, D2HF:0.121,  groundHF:3.036,  gF:[2,3],   sym:'⁸⁵Rb' },
+      '⁸⁷Rb': { col:'#38bdf8', term:'Rb',  ground:'5S₁/₂', D1lam:794.979, D1G:5.75, D1HF:0.817,  D2lam:780.241, D2G:6.07, D2HF:0.267,  groundHF:6.835,  gF:[1,2],   sym:'⁸⁷Rb', qubit:'Clock qubit |F=1⟩↔|F=2⟩ at 6.835 GHz' },
+      '¹³³Cs':{ col:'#34d399', term:'Cs',  ground:'6S₁/₂', D1lam:894.593, D1G:4.56, D1HF:1.168,  D2lam:852.347, D2G:5.23, D2HF:0.452,  groundHF:9.193,  gF:[3,4],   sym:'¹³³Cs', qubit:'Clock qubit |F=3,0⟩↔|F=4,0⟩ at 9.193 GHz' },
+      '⁸⁸Sr': { col:'#60a5fa', term:'Sr',  ground:'¹S₀',   D1lam:null,    D1G:null, D1HF:null,   D2lam:461.0,   D2G:32.0, D2HF:null,   groundHF:0,      gF:null,    sym:'⁸⁸Sr', narrow:{lam:689.0, G:0.00763, label:'¹S₀→³P₁ (689 nm)'}, clock:{lam:698.0, label:'¹S₀→³P₀ (698 nm, mHz)'} },
+      '⁸⁷Sr': { col:'#60a5fa', term:'Sr',  ground:'¹S₀',   D1lam:null,    D1G:null, D1HF:null,   D2lam:461.0,   D2G:32.0, D2HF:null,   groundHF:0,      gF:null,    sym:'⁸⁷Sr (I=9/2)', narrow:{lam:689.0, G:0.00763, label:'689 nm'} },
+      '¹⁷⁴Yb':{ col:'#2dd4bf', term:'Yb',  ground:'¹S₀',   D1lam:null,    D1G:null, D1HF:null,   D2lam:399.0,   D2G:28.0, D2HF:null,   groundHF:0,      gF:null,    sym:'¹⁷⁴Yb', narrow:{lam:556.0, G:0.182, label:'¹S₀→³P₁ (556 nm)'}, clock:{lam:578.0, label:'¹S₀→³P₀ (578 nm, mHz)'} },
+      '¹⁷¹Yb':{ col:'#2dd4bf', term:'Yb',  ground:'¹S₀',   D1lam:null,    D1G:null, D1HF:null,   D2lam:399.0,   D2G:28.0, D2HF:null,   groundHF:0,      gF:null,    sym:'¹⁷¹Yb (I=1/2)', narrow:{lam:556.0, G:0.182, label:'556 nm'} },
+      '¹⁶⁴Dy':{ col:'#f472b6', term:'Dy',  ground:'⁵I₈',   D1lam:null,    D1G:null, D1HF:null,   D2lam:421.0,   D2G:null, D2HF:null,   groundHF:0,      gF:null,    sym:'¹⁶⁴Dy', notes:'μ = 10 μ_B (largest magnetic moment)' },
+      '¹⁶⁸Er':{ col:'#fbbf24', term:'Er',  ground:'³H₆',   D1lam:null,    D1G:null, D1HF:null,   D2lam:401.0,   D2G:null, D2HF:null,   groundHF:0,      gF:null,    sym:'¹⁶⁸Er', notes:'μ = 7 μ_B' },
+    };
+
+    function drawLevelDiagram(d) {
+      const cv = document.getElementById('spec-canvas');
+      if (!cv) return;
+      const W = 320, H = 200;
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#0c1526'; ctx.fillRect(0, 0, W, H);
+
+      const col = d.col;
+      const isAlkali = d.D1lam !== null;
+      const isAE = !isAlkali && d.D2lam;
+
+      if (isAlkali) {
+        // Ground state at y=172, P1/2 at y=105, P3/2 at y=35
+        const yG = 172, yP1 = 110, yP2 = 40;
+        const LW = 70, x0G = 40, x0P = 60;
+
+        // Draw ground state sub-levels (HF split)
+        const F_g = d.gF || [1, 2];
+        const hfGHz = d.groundHF || 0;
+        const hfPixGround = Math.min(hfGHz * 2.5, 18);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = col;
+        ctx.beginPath(); ctx.moveTo(x0G, yG); ctx.lineTo(x0G + LW * 1.5, yG); ctx.stroke();
+        if (hfPixGround > 3) {
+          ctx.strokeStyle = col + 'aa';
+          ctx.beginPath(); ctx.moveTo(x0G + 10, yG - hfPixGround); ctx.lineTo(x0G + LW * 1.5 - 10, yG - hfPixGround); ctx.stroke();
+        }
+
+        // D1 excited (P1/2) levels
+        ctx.strokeStyle = '#f472b6';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(x0P, yP1); ctx.lineTo(x0P + LW, yP1); ctx.stroke();
+        const hfP1 = (d.D1HF || 0) * 15;
+        if (hfP1 > 2) {
+          ctx.strokeStyle = '#f472b688';
+          ctx.beginPath(); ctx.moveTo(x0P + 5, yP1 - Math.min(hfP1, 12)); ctx.lineTo(x0P + LW - 5, yP1 - Math.min(hfP1, 12)); ctx.stroke();
+        }
+
+        // D2 excited (P3/2) levels
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(x0P, yP2); ctx.lineTo(x0P + LW, yP2); ctx.stroke();
+        const hfP2 = (d.D2HF || 0) * 25;
+        if (hfP2 > 2) {
+          ctx.lineWidth = 1;
+          for (let k = 1; k <= 3; k++) {
+            ctx.strokeStyle = `rgba(56,189,248,${0.7 - k*0.15})`;
+            ctx.beginPath(); ctx.moveTo(x0P + 5, yP2 - Math.min(hfP2*k/3, 14)); ctx.lineTo(x0P + LW - 5, yP2 - Math.min(hfP2*k/3, 14)); ctx.stroke();
+          }
+        }
+
+        // D1 arrow (left)
+        ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 2;
+        arrowBetween(ctx, 115, yP1, 115, yG - 3, '#f472b6');
+        // D2 arrow (right)
+        arrowBetween(ctx, 150, yP2, 150, yG - 3, '#38bdf8');
+
+        // Labels
+        ctx.font = 'bold 10px JetBrains Mono, monospace';
+        ctx.fillStyle = col; ctx.textAlign = 'left';
+        ctx.fillText(d.ground, x0G, yG - hfPixGround - 4);
+        if (hfGHz > 0) {
+          ctx.font = '9px Inter, sans-serif';
+          ctx.fillStyle = col + 'aa';
+          ctx.fillText(`ΔHF = ${hfGHz.toFixed(3)} GHz`, x0G, yG + 14);
+        }
+        ctx.font = '9px JetBrains Mono'; ctx.fillStyle = '#f472b6';
+        ctx.fillText('²P₁/₂', x0P + LW + 3, yP1 + 3);
+        ctx.fillText(`D1 ${d.D1lam.toFixed(0)} nm`, 108, (yG+yP1)/2 - 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText('²P₃/₂', x0P + LW + 3, yP2 + 3);
+        ctx.fillText(`D2 ${d.D2lam.toFixed(0)} nm`, 143, (yG+yP2)/2 - 2);
+
+        // Γ labels
+        ctx.font = '8px Inter'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillText(`Γ/2π=${d.D1G} MHz`, x0P, yP1 + 18);
+        ctx.fillText(`Γ/2π=${d.D2G} MHz`, x0P, yP2 + 18);
+
+      } else if (isAE) {
+        // Alkaline-earth: ¹S₀ ground, show broad + narrow + clock
+        const yG = 165, yBroad = 40, yNarrow = 100;
+        ctx.strokeStyle = col; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(40, yG); ctx.lineTo(220, yG); ctx.stroke();
+        ctx.font = 'bold 9px JetBrains Mono'; ctx.fillStyle = col; ctx.textAlign = 'left';
+        ctx.fillText('¹S₀ ground', 42, yG - 5);
+
+        // Broad cooling line
+        ctx.strokeStyle = '#f87171'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(60, yBroad); ctx.lineTo(160, yBroad); ctx.stroke();
+        arrowBetween(ctx, 100, yBroad, 100, yG - 3, '#f87171');
+        ctx.font = '9px Inter'; ctx.fillStyle = '#f87171';
+        ctx.fillText(`Broad ${d.D2lam?.toFixed(0) ?? ''}nm`, 65, yBroad - 5);
+        ctx.fillText(`Γ/2π = ${d.D2G} MHz`, 65, yBroad + 18);
+
+        // Narrow intercombination
+        if (d.narrow) {
+          ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(170, yNarrow); ctx.lineTo(270, yNarrow); ctx.stroke();
+          arrowBetween(ctx, 215, yNarrow, 215, yG - 3, col);
+          ctx.font = '9px Inter'; ctx.fillStyle = col;
+          ctx.fillText(d.narrow.label, 172, yNarrow - 5);
+          ctx.fillText(`Γ/2π = ${d.narrow.G} MHz`, 172, yNarrow + 18);
+        }
+
+        // Clock
+        if (d.clock) {
+          ctx.font = '8px Inter'; ctx.fillStyle = 'rgba(251,191,36,0.8)';
+          ctx.fillText('Clock: ' + d.clock.label, 42, H - 8);
+        }
+      } else {
+        // Magnetic atoms — simple cooling
+        ctx.font = '11px Inter'; ctx.fillStyle = col; ctx.textAlign = 'center';
+        ctx.fillText(d.sym, W/2, H/2 - 20);
+        ctx.font = '9px Inter'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        if (d.notes) ctx.fillText(d.notes, W/2, H/2 + 2);
+        if (d.D2lam) ctx.fillText(`Cooling: ${d.D2lam} nm`, W/2, H/2 + 22);
+      }
+
+      // Atom label top-right
+      ctx.font = 'bold 12px JetBrains Mono'; ctx.textAlign = 'right';
+      ctx.fillStyle = col; ctx.fillText(d.sym.split(' ')[0], W - 4, 16);
+    }
+
+    function arrowBetween(ctx, x, y1, x2, y2, col) {
+      ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      const angle = Math.atan2(y2 - y1, x2 - x);
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 6*Math.cos(angle - 0.4), y2 - 6*Math.sin(angle - 0.4));
+      ctx.lineTo(x2 - 6*Math.cos(angle + 0.4), y2 - 6*Math.sin(angle + 0.4));
+      ctx.fill();
+    }
+
     /* ── Atom tile selector ── */
     function selectAtom(tile, sym) {
       // Toggle active tile
@@ -1196,6 +1366,27 @@ Narrow: 583 nm (intercombination line)</span>
         if (cell && cell.textContent.trim() === sym) { targetRow = row; }
       });
       if (!targetRow) return;
+
+      // Show spectroscopic panel
+      const sp = SPEC_DATA[sym];
+      if (sp) {
+        const panel = document.getElementById('spec-panel');
+        panel.style.display = 'block';
+        document.getElementById('spec-title').textContent = sp.sym + ' — Energy Level Diagram';
+        drawLevelDiagram(sp);
+        // Build info HTML
+        let info = '';
+        if (sp.D2lam) info += `<strong>D2 line:</strong> ${sp.D2lam} nm &nbsp;· Γ/2π = ${sp.D2G} MHz<br>`;
+        if (sp.D1lam) info += `<strong>D1 line:</strong> ${sp.D1lam} nm &nbsp;· Γ/2π = ${sp.D1G} MHz<br>`;
+        if (sp.narrow) info += `<strong>${sp.narrow.label}:</strong> Γ/2π = ${sp.narrow.G} MHz<br>`;
+        if (sp.clock)  info += `<strong>Clock:</strong> ${sp.clock.label}<br>`;
+        if (sp.groundHF) info += `<strong>Ground HF splitting:</strong> ${sp.groundHF.toFixed(3)} GHz<br>`;
+        if (sp.qubit) info += `<br><span style="color:#34d399">⚛️ ${sp.qubit}</span><br>`;
+        if (sp.notes) info += `<br><em>${sp.notes}</em>`;
+        document.getElementById('spec-info').innerHTML = info;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
       // Scroll to table
       document.getElementById('atom-table').scrollIntoView({ behavior: 'smooth', block: 'center' });
       // Flash highlight

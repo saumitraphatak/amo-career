@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="Lab Techniques">
   <meta name="twitter:description" content="Practical instrumentation guide for AMO labs: fiber coupling, AOMs, polarimetry, laser locking, optical pumping, and RF electronics.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Lab Techniques","description":"Practical instrumentation guide for AMO labs: fiber coupling, AOMs, polarimetry, laser locking, optical pumping, and RF electronics.","url":"https://saumitraphatak.github.io/amo-career/pages/lab-techniques.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=8">
+  <link rel="stylesheet" href="../css/styles.css?v=9">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
   <style>
@@ -236,6 +236,7 @@
             <button class="tab-btn" data-tab="rf">📡 RF &amp; Electronics</button>
             <button class="tab-btn" data-tab="comp">💻 Computational Tools</button>
             <button class="tab-btn" data-tab="lasers">🔴 Laser Systems</button>
+            <button class="tab-btn" data-tab="pitfalls">⚠️ Common Pitfalls</button>
           </div>
 
           <!-- ══════════════════════════════════════════
@@ -1120,6 +1121,354 @@ SteadyStateTweezer(
 
           </div><!-- /tab lasers -->
 
+          <!-- ══════════════════════════════════════════
+               COMMON PITFALLS TAB
+               ══════════════════════════════════════════ -->
+          <div class="tab-panel" data-tab="pitfalls" data-group="main">
+            <p class="section-lead" style="margin-bottom:var(--sp-6)">
+              Tacit knowledge that isn't in any textbook — collected from years of debugging
+              in cold-atom and tweezer labs. Each section covers a specific experimental area.
+            </p>
+
+            <!-- ── AOM / EOM ─────────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">📡 AOM &amp; EOM</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>AOM double-pass: retroreflect off the AOM crystal, not the fiber coupler.</strong>
+                      The retro mirror must send the beam back through the AOM at exactly the same transverse position. If your retro mirror is after a fiber launch, you lose the double-pass frequency shift — the AOM shifts the beam twice only when both passes hit the active aperture.
+                      <br><br>
+                      <em>Diagnostic:</em> block the retro and check for a single-pass diffracted spot. Restore retro and verify the RF power needed for 80% efficiency drops by roughly half compared to single-pass.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>AOM efficiency drops if the beam is not focused inside the crystal.</strong>
+                      The acoustic wave has a finite Bragg acceptance angle. A collimated 3 mm beam has a much smaller angular spread than one focused to 100 μm — tight focus gives better efficiency for high-frequency AOMs (&gt;200 MHz) because the Bragg condition is satisfied over a wider range of angles.
+                      <br><br>
+                      <em>Rule of thumb:</em> focus to a spot size where the Rayleigh range ≈ acoustic transit length (~5–10 mm for most crystal heights).
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>EOM V<sub>π</sub> is not constant across drive frequencies.</strong>
+                      At 9.2 GHz (Cs hyperfine), a resonant EOM has dramatically lower V<sub>π</sub> than at 20 MHz (PDH). Driving an EOM off-resonance or above its bandwidth produces almost no modulation — always check the EOM spec sheet for the resonant frequency and 3 dB bandwidth.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>PM fiber after EOM scrambles your polarization state.</strong>
+                      An EOM requires linearly polarized input aligned to its crystal axis. If you launch into PM fiber before the EOM, check that the PM fast axis aligns to the EOM crystal axis, not just to some arbitrary horizontal. A quarter-wave rotated PM fiber coupling completely kills the EOM modulation depth.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /AOM accordion -->
+
+            <!-- ── Fiber Coupling ─────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">🔦 Fiber Coupling &amp; Beam Delivery</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Coupling efficiency &gt;80% but PER is only 17 dB? Your beam is elliptical or astigmatic.</strong>
+                      Polarization extinction ratio (PER) in a PM fiber requires the input beam to be perfectly linearly polarized and Gaussian. An astigmatic beam (common after an AOM) couples light into both PM axes — producing high efficiency but poor PER. Add a cylindrical lens pair to correct astigmatism before coupling into PM fiber.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Power instability through PM fiber: check the patch cable stress, not the laser.</strong>
+                      A bent PM fiber or a clamp pressing on the cable applies stress birefringence, rotating the polarization axis and beating with the PM alignment. Slow power drifts often trace to a fiber cable that rests against a moving part of the table (shutter actuator, beam dump, cooling water line) rather than the laser itself.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Mode-matching to a fiber: optimize tip/tilt first, then z-position of the lens.</strong>
+                      Counter-intuitive but true: the lens transverse position sets the input angle, and the lens z-position sets the mode waist at the fiber face. Iterate tip/tilt → z-lens → tip/tilt. Trying to optimize all three simultaneously gives slow convergence.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Don't clean fiber connectors with compressed air — use IPA and a reel cleaner.</strong>
+                      Compressed air blows particles onto the ferrule face. Use a single-use reel cleaner (Cletop-S) for APC/PC connectors. Inspect with a fiber scope before mating — a single 1-μm particle on the 9-μm core is enough to degrade coupling efficiency from 85% to 50%.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /fiber accordion -->
+
+            <!-- ── Laser Locking ──────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">🔐 Laser Locking (SAS &amp; PDH)</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>SAS crossover resonances are not real transitions — don't lock to them by accident.</strong>
+                      A crossover peak appears halfway between two real transitions that share a common ground state. It's the tallest feature on the SAS spectrum (coherent population transfer), so it's tempting to lock there. But it's 212.5 MHz below the <sup>87</sup>Rb F=2→F'=3 cycling transition, not 0 MHz.
+                      <br><br>
+                      <em>Verification:</em> compare your SAS spectrum peak positions against published Rb/Cs hyperfine intervals. For Rb87 D2: F=2→{1,2,3} = 72, 157, 267 MHz above F=2→F'=1; crossovers fall at 36, 115, 212 MHz.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>PDH error signal polarity depends on which sideband is higher in frequency.</strong>
+                      If you flip the LO phase by 180° or swap the mixer IF/RF ports, the error signal flips sign — and your PI controller drives the laser away from resonance instead of toward it. Always verify locking direction: give the laser a small push (tap the table) and confirm the lock corrects, not amplifies, the perturbation.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Servo bump tells you where your loop bandwidth is — not where you want it.</strong>
+                      The characteristic bump in the in-loop noise PSD at the servo bandwidth is not an artifact to filter away — it's diagnostic. Flattening it by lowering gain reduces bandwidth and worsens noise. Instead, improve the phase margin by adding a lead compensator or reducing cable length in the feedback path.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>High-finesse cavity drift: check temperature, not the laser.</strong>
+                      A 10 cm Zerodur spacer expands by ~0.5 nm/°C (CTE ~2×10<sup>-8</sup>/K). A 1 mK temperature drift shifts the resonance by ~2 MHz at 780 nm. If your PDH-locked laser frequency drifts slowly over minutes, the cavity is thermally drifting — improve vacuum can temperature stabilization before touching laser current.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /laser locking accordion -->
+
+            <!-- ── Optical Pumping ────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">🌀 Optical Pumping &amp; State Preparation</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Quantization axis must be defined before the pump beam arrives.</strong>
+                      If the bias magnetic field is not on (or is lower than the stray-field level ~100 mG), the atom has no preferred axis. The σ<sup>+</sup> photon pumps into different m<sub>F</sub> levels depending on local stray field direction. Always verify the bias field is on and stable before running the OP sequence.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Re-pumping power too high scrambles your state preparation.</strong>
+                      The repump beam (F=1→F'=2 for Rb87) should be weak enough to recycle dark atoms without broadening the resonance for the main pump. Too much repump power heats the sample by preventing atoms from dwelling in the F=1 dark state, and can repump atoms out of the target m<sub>F</sub> state.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>OP efficiency check: use a short probe pulse, not absorption imaging.</strong>
+                      To verify m<sub>F</sub> state purity, do a quick Stern-Gerlach separation with a field gradient before imaging. Absorption imaging along the same OP beam axis can misrepresent state purity because the imaging beam itself pumps atoms during exposure. A short (10 μs) probe pulse after Stern-Gerlach separation resolves individual m<sub>F</sub> populations cleanly.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /optical pumping accordion -->
+
+            <!-- ── Tweezer / ODT ──────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">🔴 Optical Tweezers &amp; ODT</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Intensity noise heats your atoms. Frequency noise does not (for far-detuned traps).</strong>
+                      A 1064 nm tweezer far from any transition is an intensity-noise-limited trap. The trap depth U₀ ∝ I, so fractional intensity noise δI/I directly converts to fractional trap-depth noise, driving parametric heating at 2ω<sub>trap</sub>. Frequency noise at 1064 nm has no first-order effect on the trap depth (it only shifts absolute energy by the tiny light-shift gradient).
+                      <br><br>
+                      <em>Action:</em> use a low-noise laser source at 1064 nm and servo the intensity with an AOM + photodiode + PI loop. Target RIN &lt; −140 dBc/Hz at 2ω<sub>trap</sub> (~2×100 kHz = 200 kHz).
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>SLM-generated tweezer arrays: check diffraction efficiency, not just spot count.</strong>
+                      An SLM can project 100 spots, but if your hologram algorithm doesn't compensate for the sinc envelope of the SLM pixel pitch, outer spots in the array are 30–40% dimmer than central ones. Run a weighted Gerchberg-Saxton (WGS) algorithm that measures spot intensities in a feedback loop and reweights the target amplitudes accordingly.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Evaporation ramp that works in a crossed ODT fails in a single-beam tweezer.</strong>
+                      A crossed ODT has equal radial and axial trapping in two dimensions. A single-beam tweezer has radial frequency ω<sub>r</sub> >> axial ω<sub>z</sub> — atoms escape axially first as you ramp down power. Design the evaporation ramp by monitoring axial size with in-situ imaging, not just total atom number.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /tweezer accordion -->
+
+            <!-- ── Fluorescence & Imaging ─────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">📷 Fluorescence Imaging &amp; Detection</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Camera background subtraction: take dark frames at the same temperature as your science frames.</strong>
+                      EMCCD and sCMOS dark current is strongly temperature-dependent (~2× per 6–7°C). If your camera warms up between your background run and your data run, the dark floor changes, creating a systematic offset in atom number. Let the camera thermalize for at least 30 minutes and take background frames immediately before (or interleaved with) science shots.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Single-atom fluorescence: saturation parameter determines photon budget, not just pulse duration.</strong>
+                      At high saturation s >> 1, the scattering rate plateaus at Γ/2. Going from s=10 to s=100 only gives you ~10% more photons while increasing the recoil heating by 10×. The optimal single-atom imaging uses s ≈ 1–5 with a short pulse, not maximal power.
+                      <br><br>
+                      <em>Rule of thumb:</em> for Rb87 D2 with NA=0.5 objective, s=2 gives ~400 photons in 1 ms with ~8 recoil kicks — sufficient for single-atom detection with EMCCD EM gain ~300.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Charge smear on EMCCD: don't readout during the fluorescence pulse.</strong>
+                      EMCCD vertical shift (frame transfer) takes ~1 ms. If your shutter timing overlaps with the shift, every row smears fluorescence into adjacent rows, broadening PSFs and reducing per-pixel SNR. Use a mechanical shutter or an AOM to gate the light, not just the camera trigger.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /imaging accordion -->
+
+            <!-- ── RF & Microwave ─────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">📡 RF &amp; Microwave Spectroscopy</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Calibrate your RF π-pulse time at the same bias field you use for science.</strong>
+                      The Zeeman shift moves the transition by ~0.7 MHz/G for Rb87 |F=1,m<sub>F</sub>=−1⟩→|F=2,m<sub>F</sub>=0⟩. If you calibrate the π-pulse at 1 G and run science at 3 G, you're off by 1.4 MHz — and instead of a π-pulse you're doing a Ramsey dephasing experiment. Always recalibrate Ω<sub>R</sub> and the resonance frequency when you change the bias field.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Ground loop in the RF circuit kills coherence time.</strong>
+                      An RF ground loop between your signal generator, amplifier, and antenna creates a circulating current that modulates the local magnetic field at 50/60 Hz and its harmonics. Use a single-point ground, float the amplifier chassis on rubber feet, and check T₂* with a Ramsey sequence: if you see T₂* oscillate at 50 Hz, you have a ground loop.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Avoid antenna resonances: design for broadband, not peak efficiency.</strong>
+                      A resonant antenna at 6.835 GHz (Rb87 clock transition) is efficient but narrow-band. Any drift in the antenna resonance (thermal expansion of coax, SMA connector loosening) shifts the coupling and changes your effective Rabi frequency. A broadband impedance-matched antenna (s11 &lt; −15 dB over ±100 MHz) is more robust for day-to-day reproducibility.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /RF accordion -->
+
+            <!-- ── Magnetic Fields ────────────────────────── -->
+            <div class="accordion">
+              <button class="accordion-header" aria-expanded="false">
+                <span class="accordion-title">🧲 Magnetic Field Control</span>
+                <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="accordion-body">
+                <div style="display:flex; flex-direction:column; gap:var(--sp-5)">
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Eddy currents from fast field switching limit how quickly you can apply a Feshbach field.</strong>
+                      A large metallic vacuum chamber acts as a shorted transformer: when you ramp the Feshbach coil current rapidly (&gt;1 A/ms), induced eddy currents oppose the change and the actual field at the atoms lags behind the coil current by the chamber's L/R time constant (typically 1–10 ms). Always measure the actual field delay with RF spectroscopy before assuming the field follows your current waveform.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>Stray-field zeroing: do it with atoms at the operating temperature, not room temperature.</strong>
+                      Mu-metal shielding has temperature-dependent permeability. The field zero you find at room temperature can shift by 20–50 mG when the chamber bakes out or the surrounding equipment heats up during a long experimental run. Zero the field with atoms by minimizing the Ramsey fringe decay rate at the exact operating conditions.
+                    </div>
+                  </div>
+
+                  <div class="hood-callout">
+                    <span style="font-size:1.3rem">⚠️</span>
+                    <div>
+                      <strong>MOT coil polarity: anti-Helmholtz for trapping, Helmholtz for bias field — never mix up.</strong>
+                      Anti-Helmholtz coils produce a gradient (zero at center, ∇B ≠ 0) — correct for MOT. Helmholtz produces a uniform field. If you accidentally run anti-Helmholtz during optical pumping, the atoms experience a spatially varying quantization axis and your OP efficiency drops to ~50% at best. Double-check the relay/H-bridge state before every sequence that switches between gradient and bias.
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /magnetic accordion -->
+
+            <div class="hood-callout" style="margin-top:var(--sp-6)">
+              <span style="font-size:1.3rem">🔬</span>
+              <div>
+                <strong>Hood Lab note:</strong> Most of the pitfalls above were discovered the hard way — by running a beautiful experiment for three days and then realizing the state preparation was wrong. The most common root cause is <em>not verifying assumptions</em>: always ask "how do I know the field is on?", "how do I know the fiber is PM-aligned?", "how do I know the AOM is double-passing correctly?" Build a short diagnostic sequence for each subsystem and run it at the start of every session.
+              </div>
+            </div>
+
+          </div><!-- /tab pitfalls -->
+
         </div><!-- /main tabs wrap -->
 
         <!-- ══════════════════════════════════════════
@@ -1165,7 +1514,7 @@ SteadyStateTweezer(
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=8"></script>
+<script src="../js/main.js?v=9"></script>
   <script>
     renderNav({ active: 'lab-techniques', root: '../' });
   </script>

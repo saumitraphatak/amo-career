@@ -1767,6 +1767,88 @@ canvas:not(#hero-canvas):not(#blockadeCanvas):not(#lockCanvas):not(#motCanvas):n
   }
 }
 
+/* ── Physics symbol tooltips ───────────────────────────────── */
+.tip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dashed rgba(255,255,255,0.3);
+  display: inline;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 135%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0a1628;
+  border: 1px solid rgba(56,189,248,0.35);
+  color: #94a3b8;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: normal;
+  width: max-content;
+  max-width: 240px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 300;
+}
+.tip:hover::after { opacity: 1; }
+
+/* ── Hood Lab personal callouts ─────────────────────────────── */
+.hood-callout {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  background: rgba(52,211,153,0.05);
+  border: 1px solid rgba(52,211,153,0.18);
+  border-left: 3px solid var(--c-lab);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: var(--sp-3) var(--sp-5);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: var(--sp-4) 0;
+}
+.hood-callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.hood-callout strong { color: var(--c-lab); }
+
+/* ── Paper reference block ───────────────────────────────────── */
+.paper-refs {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5) var(--sp-6);
+  margin-top: var(--sp-8);
+}
+.paper-refs-head {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border);
+}
+.paper-refs-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.paper-ref {
+  display: flex;
+  gap: var(--sp-2);
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  transition: color var(--t);
+}
+.paper-ref:hover { color: var(--text-primary); }
+.paper-ref a { color: inherit; }
+.paper-ref a:hover { color: var(--c-atom); }
+
 /* ── Small phones (≤ 480px) ── */
 @media (max-width: 480px) {
   /* Home */
