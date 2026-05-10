@@ -23,8 +23,11 @@ const NAV = {
     { key: 'zernike',              label: 'Wavefront & Aberration Viewer', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'             },
     { key: 'polarimetry',          label: 'Polarization State Analyzer', icon: '🔭',  color: '#e879f9', href: 'pages/polarimetry.html'          },
     { key: 'cavity-qed',           label: 'Cavity QED Calculator',       icon: '💎',  color: '#c084fc', href: 'pages/cavity-qed.html'            },
+    { key: 'laser-planner',        label: 'Laser System Planner',        icon: '💡',  color: '#f472b6', href: 'pages/laser-planner.html'         },
   ],
   industry: [
+    { key: 'amo-groups',    label: 'AMO Research Groups',         icon: '🌍', color: '#4ade80', href: 'pages/amo-groups.html'    },
+    { key: 'paper-syllabus',label: 'AMO Reading List',            icon: '📚', color: '#818cf8', href: 'pages/paper-syllabus.html'},
     { key: 'qc-landscape',  label: 'Quantum Computing Industry',  icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html'  },
     { key: 'rb87-vs-yb171', label: 'Rb vs Yb Qubit Comparison',   icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
     { key: 'rb-explorer',   label: 'Gate Benchmarking (RB)',      icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html'   },

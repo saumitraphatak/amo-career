@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laser System Planner — AMO Career</title>
+  <link rel="stylesheet" href="../css/styles.css?v=10">
+  <style>
+    .page-wrap { --page-color:#f472b6; --page-bg:rgba(244,114,182,0.08); --page-border:rgba(244,114,182,0.2); }
+
+    /* Atom selector */
+    .atom-selector { display:flex; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-5); }
+    .atom-btn { padding:8px 18px; border:1px solid var(--border); border-radius:var(--r); background:var(--bg-card); color:var(--text-secondary); font-size:.875rem; font-weight:600; cursor:pointer; transition:all var(--t); }
+    .atom-btn:hover { border-color:rgba(244,114,182,0.4); color:var(--text-primary); }
+    .atom-btn.active { border-color:#f472b6; background:rgba(244,114,182,0.12); color:#f472b6; }
+
+    /* Beam table */
+    .beam-table-wrap { overflow-x:auto; margin-bottom:var(--sp-5); }
+    .beam-table { width:100%; border-collapse:collapse; font-size:.8438rem; }
+    .beam-table thead th { background:rgba(244,114,182,0.06); color:#f472b6; font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:10px 14px; border-bottom:1px solid rgba(244,114,182,0.2); text-align:left; }
+    .beam-table tbody td { padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .beam-table tbody tr:last-child td { border-bottom:none; }
+    .beam-table tbody tr:hover td { background:rgba(244,114,182,0.04); }
+    .nm-badge { display:inline-block; padding:3px 10px; border-radius:999px; font-weight:700; font-size:.8125rem; font-family:var(--font-mono); }
+    .source-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:.75rem; font-weight:600; }
+    .src-commercial { background:rgba(52,211,153,0.1); color:#34d399; border:1px solid rgba(52,211,153,0.2); }
+    .src-shg  { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
+    .src-thg  { background:rgba(248,113,113,0.1); color:#f87171; border:1px solid rgba(248,113,113,0.2); }
+    .src-sfg  { background:rgba(192,132,252,0.1); color:#c084fc; border:1px solid rgba(192,132,252,0.2); }
+    .fiber-ok  { color:#34d399; font-weight:700; }
+    .fiber-no  { color:#f87171; font-weight:700; }
+
+    /* SVG diagram */
+    .diagram-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-4); margin-bottom:var(--sp-5); overflow-x:auto; }
+    .diagram-wrap svg { display:block; }
+
+    /* Warnings */
+    .warn-list { list-style:none; padding:0; margin:0; }
+    .warn-item { display:flex; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); background:rgba(251,146,60,0.06); border:1px solid rgba(251,146,60,0.18); border-radius:var(--r); margin-bottom:var(--sp-2); font-size:.8438rem; color:var(--text-secondary); }
+    .warn-icon { font-size:1rem; flex-shrink:0; }
+
+    /* NLO section */
+    .nlo-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:var(--sp-3); margin-bottom:var(--sp-5); }
+    .nlo-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-4); }
+    .nlo-card h4 { margin:0 0 6px; font-size:.875rem; color:var(--text-primary); }
+    .nlo-card p  { margin:0; font-size:.8125rem; color:var(--text-secondary); line-height:1.6; }
+
+    /* Placeholder */
+    .planner-placeholder { text-align:center; padding:var(--sp-10); color:var(--text-muted); font-size:.9rem; }
+    .planner-placeholder span { font-size:3rem; display:block; margin-bottom:var(--sp-3); }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-eyebrow">
+        <span class="page-tag">💡 AMO Career</span>
+        <span class="page-tag">Laser System Planner</span>
+      </div>
+      <h1 class="page-title"><span class="accent">Laser</span> System Planner</h1>
+      <p class="page-subtitle">
+        Select an atom species and get the complete laser system: every required wavelength,
+        source type (commercial vs SHG/SFG), typical power budget, fiber compatibility, and
+        a block-diagram of sources → beam control → delivery → chamber.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <h2 class="section-title"><span class="accent">01</span> Select Atom Species</h2>
+    <div class="atom-selector" id="atom-selector"></div>
+
+    <div id="planner-output">
+      <div class="planner-placeholder">
+        <span>💡</span>
+        Select an atom above to generate the full laser system plan.
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+/* ─────────────────────────────────────────────────────
+   LASER SYSTEM DATA
+   power_mW: typical lab budget (not absolute minimum)
+   fiber: true = fiber-deliverable; false = free-space preferred
+   shg / sfg: source wavelength → output wavelength
+   ───────────────────────────────────────────────────── */
+const LASER_DB = {
+
+  'Rb-87': {
+    label: '⁸⁷Rb', color: '#38bdf8',
+    desc: 'The workhorse of AMO. All lasers commercially available; 480 nm Rydberg arm requires SHG.',
+    beams: [
+      { label:'Cooling (D2)',       nm:780,  source:'ECDL / DL pro',   sourceType:'commercial', power:150, fiber:true,  aom:'2× AOM (MOT + imaging freq)',  use:'MOT cooling, absorption + fluorescence imaging' },
+      { label:'Repumper (D2)',      nm:780,  source:'EOM sideband on cooling laser', sourceType:'commercial', power:10, fiber:true, aom:'—', use:'Recycles F=1 population during MOT, imaging' },
+      { label:'D1 gray molasses',   nm:795,  source:'ECDL',            sourceType:'commercial', power:30,  fiber:true,  aom:'AOM',                          use:'Sub-Doppler gray molasses after MOT (<10 μK)' },
+      { label:'Optical trap (ODT)', nm:852,  source:'Ti:Saph or DFB fiber', sourceType:'commercial', power:2000, fiber:true, aom:'AOM (intensity servo)',   use:'Crossed ODT or tweezer array (SLM + high-NA obj)' },
+      { label:'Rydberg lower',      nm:780,  source:'Shared with cooling', sourceType:'commercial', power:50,  fiber:false, aom:'AOM (pulsed)',             use:'Two-photon Rydberg excitation: lower leg (5S→5P)' },
+      { label:'Rydberg upper (blue)',nm:480, source:'SHG from 960 nm ECDL', sourceType:'shg', power:200, fiber:false, aom:'AOM + fast switch',           use:'Two-photon Rydberg excitation: upper leg (5P→nS/nD)' },
+    ],
+    nlo: [
+      { title:'SHG: 960 nm → 480 nm', body:'980 nm seed (or 960 nm ECDL) doubled in a periodically poled KTP (PPKTP) crystal in a bow-tie enhancement cavity. Conversion efficiency ~30–50%. Requires temperature-controlled oven and length-lock on the cavity. Commercial turnkey systems available from Toptica (SHG pro) or home-built.' },
+    ],
+    warnings: [
+      '480 nm optics: use UV-compatible AR coatings (BBAR 400–700 nm). Standard 780 nm coatings reflect 50% at 480 nm.',
+      'Rydberg blue beam should be free-space — fiber-coupling at >50 mW/μm² risks fiber damage and stimulated scattering.',
+      'D2 repumper via EOM sideband: EOM modulation depth must be calibrated; sidebands also create unwanted frequency components that perturb the MOT if not carefully accounted for.',
+      'ODT wavelength: 852 nm is red-detuned from D2 (780 nm) but far-detuned enough for reasonable trap lifetime. Avoid 795 nm ODT — near D1 resonance causes excess scattering.',
+    ],
+    tips: 'Start with the 780 nm system and MOT before buying the 480 nm Rydberg system. A blue system adds ~$60k and 3–6 months of alignment time. Most Rb groups share the repumper via EOM sideband rather than a second laser to reduce optical table complexity.',
+  },
+
+  'Cs-133': {
+    label: '¹³³Cs', color: '#34d399',
+    desc: 'Heaviest stable alkali. Largest hyperfine qubit splitting (9.19 GHz). Gray molasses on D1 reaches <5 μK.',
+    beams: [
+      { label:'Cooling (D2)',       nm:852,  source:'ECDL',            sourceType:'commercial', power:150, fiber:true,  aom:'2× AOM',                       use:'MOT cooling, imaging' },
+      { label:'Repumper (D2)',      nm:852,  source:'EOM sideband',    sourceType:'commercial', power:10,  fiber:true,  aom:'—',                            use:'Recycles F=3 population' },
+      { label:'D1 gray molasses',   nm:894,  source:'ECDL',            sourceType:'commercial', power:40,  fiber:true,  aom:'AOM',                          use:'EIT-enhanced gray molasses; key for Cs sub-recoil cooling' },
+      { label:'Optical trap (ODT)', nm:1064, source:'Nd:YAG / fiber laser', sourceType:'commercial', power:3000, fiber:true, aom:'AOM (servo)',           use:'Crossed ODT; 1064 nm gives low scattering rate for Cs' },
+      { label:'Rydberg lower',      nm:852,  source:'Shared with cooling', sourceType:'commercial', power:50, fiber:false, aom:'AOM',                      use:'Rydberg 2-photon lower leg (6S→6P)' },
+      { label:'Rydberg upper',      nm:510,  source:'SHG from ~1020 nm', sourceType:'shg', power:200, fiber:false, aom:'AOM + EOM',                       use:'Rydberg upper leg (6P→nS/nD)' },
+    ],
+    nlo: [
+      { title:'SHG: 1020 nm → 510 nm', body:'1020 nm single-mode diode or fiber laser (Toptica, NKT) doubled in PPLN or LBO in a resonant cavity. 510 nm is bright green. Toptica SHGII unit typical. ≈100–300 mW output achievable.' },
+    ],
+    warnings: [
+      'Cs D1 gray molasses at 894 nm uses EIT-enhanced scheme: Λ-type system with coupling + probe beams near the same transition. Requires precise relative frequency control (AOM frequency synthesis at GHz level).',
+      'ODT at 1064 nm: Cs has a broad 6P manifold; 1064 nm is far enough for low scatter but still requires intensity stabilization to <0.1% for acceptable heating rate.',
+      'Cs has a very large scattering cross-section at D2 — MOT densities quickly enter optically thick regime. Use retro-reflected imaging or off-resonant absorption to avoid probe pulse distortion.',
+    ],
+    tips: 'Hood Lab (Caltech) and Chin Lab (Chicago) are the canonical Cs tweezer and Feshbach labs respectively. Hood Lab uses 852 nm + 510 nm (SHG from 1020 nm) for Rydberg excitation. The 9.19 GHz clock qubit is accessible with standard microwave electronics (no AWG needed).',
+  },
+
+  'Li-6': {
+    label: '⁶Li', color: '#fb923c',
+    desc: 'Lightest fermion in AMO. BEC-BCS crossover, broad Feshbach resonances. Requires 671 nm from a dye laser or tapered amplifier.',
+    beams: [
+      { label:'Cooling (D2)',       nm:671,  source:'ECDL + TA (Tapered Amplifier)', sourceType:'commercial', power:500, fiber:true,  aom:'2× AOM',       use:'Zeeman slower, MOT, imaging' },
+      { label:'Repumper',           nm:671,  source:'EOM sideband on cooling', sourceType:'commercial', power:30, fiber:true, aom:'—',                    use:'Recycles D1/D2 ground states (F=1/2 → F=3/2)' },
+      { label:'D1 dark SPOT',       nm:671,  source:'Shared 671 nm',   sourceType:'commercial', power:50,  fiber:true,  aom:'AOM',                        use:'D1 gray molasses for sub-Doppler cooling' },
+      { label:'ODT',                nm:1064, source:'Nd:YAG fiber laser', sourceType:'commercial', power:5000, fiber:true, aom:'AOM (servo)',              use:'Far-off-resonance trap (FORT) for evaporative cooling' },
+      { label:'Feshbach coil RF',   nm:null, source:'RF synthesizer (DC to 100 MHz)', sourceType:'commercial', power:null, fiber:false, aom:'—',          use:'Drive RF spin-flip transitions for evaporation' },
+    ],
+    nlo: [],
+    warnings: [
+      '671 nm is at the edge of what standard AlGaAs diode lasers can reach — linewidth and mode quality vary significantly across vendors. Verify single-mode operation before purchasing.',
+      'Li D-line doublet is only 10 GHz apart (vs 15 THz for Rb) — repumper via EOM is standard but sideband at 228 MHz must be on the correct hyperfine transition. Small errors destroy MOT capture.',
+      'Zeeman slower is typically required (long capture velocity range). Add 671 nm TA budget for the Zeeman beam — you need ~200 mW in the slower arm alone.',
+      'High-field Feshbach imaging: at 800–1000 G, the absorption cross-section changes and the imaging transition must be re-identified via spectroscopy. Budget for magnetic field stability <1 mG at the atoms.',
+    ],
+    tips: 'Li is the hardest alkali to laser-cool due to the unresolved hyperfine structure. The Hulet group (Rice) and Zwierlein group (MIT) have optimized Li-6 cooling sequences — their thesis documents (publicly available) are the best technical references.',
+  },
+
+  'Na-23': {
+    label: '²³Na', color: '#fbbf24',
+    desc: 'Ketterle\'s atom. MOT requires a Zeeman slower; 589 nm from dye laser or sum-frequency generation.',
+    beams: [
+      { label:'Cooling (D2)',       nm:589,  source:'SFG (1064+1319 nm) or dye laser', sourceType:'sfg', power:1000, fiber:true, aom:'2× AOM',            use:'Zeeman slower, MOT, imaging' },
+      { label:'Repumper',           nm:589,  source:'EOM sideband',    sourceType:'commercial', power:50,  fiber:true,  aom:'—',                          use:'Recycles F=1→F=2 pumping' },
+      { label:'ODT',                nm:1064, source:'Nd:YAG fiber laser', sourceType:'commercial', power:5000, fiber:true, aom:'AOM',                    use:'Crossed ODT for BEC; crossed geometry suppresses 3-body losses' },
+      { label:'Optical pumping',    nm:589,  source:'Shared MOT laser', sourceType:'sfg', power:1,  fiber:true,  aom:'AOM + shutter',                     use:'State preparation into |F=2, m_F=+2⟩ for magnetic trapping' },
+    ],
+    nlo: [
+      { title:'SFG: 1064 + 1319 nm → 589 nm', body:'Sum-frequency generation of two Nd:YAG lines (or fiber lasers at 1064 and 1319 nm) in PPLN or periodically poled KTP. This replaces the old dye laser approach and is now the standard. Commercially available from MPB Communications and NTT Electronics. ~1 W output typical.' },
+    ],
+    warnings: [
+      'Sodium requires a Zeeman slower — the D2 linewidth is 9.8 MHz (broadest stable alkali) giving a high Doppler limit (235 μK), so a slowing beam length of ~40 cm is typical.',
+      'SFG source at 589 nm requires two stabilized pump lasers. Phase-locking or tight frequency stabilization of both is necessary to maintain narrow sodium transition linewidth relative to laser linewidth.',
+      '589 nm is optically uncomfortable — at the edge of eye safety ranges for visible light, and many optical components (isolators, modulators) have reduced specifications at this wavelength. Check manufacturer specs.',
+    ],
+    tips: 'The Ketterle group at MIT pioneered the 1064+1319→589 SFG approach as an alternative to dye lasers. MIT thesis documents describe the exact crystal parameters and cavity design.',
+  },
+
+  'K-40': {
+    label: '⁴⁰K', color: '#a78bfa',
+    desc: 'Fermionic potassium. D-line doublet only 3.4 nm apart — repumper requires a separate laser or double-passed AOM.',
+    beams: [
+      { label:'Cooling (D2)',       nm:767,  source:'ECDL + TA',       sourceType:'commercial', power:500, fiber:true,  aom:'2× AOM',                     use:'MOT, Zeeman slower (optional), imaging' },
+      { label:'Repumper (D1/D2)',   nm:770,  source:'ECDL',            sourceType:'commercial', power:100, fiber:true,  aom:'AOM (double pass)',           use:'Separate laser for repumping; 3.4 nm from cooling' },
+      { label:'D1 gray molasses',   nm:770,  source:'Shared repumper laser', sourceType:'commercial', power:50, fiber:true, aom:'AOM',                    use:'Sub-Doppler cooling of ⁴⁰K; gray molasses essential for Fermi-Hubbard experiments' },
+      { label:'ODT',                nm:1064, source:'Fiber laser',     sourceType:'commercial', power:5000, fiber:true, aom:'AOM',                        use:'Far-off-resonant trap; Feshbach evaporation' },
+    ],
+    nlo: [],
+    warnings: [
+      '⁴⁰K hyperfine structure: the upper hyperfine level F=7/2 is only 1.3 GHz above F=9/2 — both MOT beams must avoid off-resonant pumping into the wrong ground state.',
+      'The D1 (770 nm) and D2 (767 nm) lines are only 3.4 nm apart. A single ECDL cannot address both without mode-hopping. Budget for two separate 767/770 nm laser systems.',
+      'K is often co-trapped with Rb (KRb experiments, DeMarco/Jin) or Li (Fermi mixture experiments). If co-trapping, ensure both species have compatible ODT wavelengths and Feshbach coil configurations.',
+    ],
+    tips: 'Fermion experiments with ⁴⁰K almost always use sympathetic cooling with bosonic ⁸⁷Rb or ⁷Li. Pure ⁴⁰K MOTs are sparse due to low natural abundance (0.012%). Consider sourcing isotopically enriched K if single-species work is planned.',
+  },
+
+  'Sr-88': {
+    label: '⁸⁸Sr', color: '#60a5fa',
+    desc: 'Bosonic alkaline-earth for optical lattice clocks. Requires 461 nm (SHG) blue MOT and 689 nm red MOT.',
+    beams: [
+      { label:'Blue MOT (¹S₀→¹P₁)', nm:461, source:'SHG from 922 nm ECDL+TA', sourceType:'shg', power:30, fiber:true, aom:'AOM',                        use:'Broad-line MOT (Γ/2π=32 MHz); primary slowing and capture' },
+      { label:'Red MOT (¹S₀→³P₁)',  nm:689, source:'ECDL (narrow-linewidth)', sourceType:'commercial', power:5, fiber:true, aom:'AOM + EOM sidebands',  use:'Narrow-line MOT (Γ/2π=7.6 kHz); T_D=180 nK; 2nd-stage cooling' },
+      { label:'Repumper 1 (³P₀→³S₁)',nm:679, source:'ECDL',                sourceType:'commercial', power:5,  fiber:true, aom:'AOM',                   use:'Repumps from metastable ³P₀ back to ground state via ³S₁' },
+      { label:'Repumper 2 (³P₂→³S₁)',nm:707, source:'ECDL',                sourceType:'commercial', power:5,  fiber:true, aom:'AOM',                   use:'Repumps from metastable ³P₂' },
+      { label:'Lattice (magic λ)',   nm:813, source:'Ti:Saph or fiber laser', sourceType:'commercial', power:1000, fiber:true, aom:'AOM (servo)',        use:'1D optical lattice at magic wavelength — light shift cancellation for clock' },
+      { label:'Clock probe (¹S₀→³P₀)', nm:698, source:'ECDL + optical cavity (10 mHz)', sourceType:'commercial', power:1, fiber:true, aom:'AOM (freq scan)', use:'Clock interrogation; requires ultra-narrow laser linewidth <1 Hz' },
+      { label:'Imaging',             nm:461, source:'Shared blue MOT laser', sourceType:'shg', power:10, fiber:true, aom:'AOM + shutter',               use:'Fluorescence or absorption imaging on broad ¹S₀→¹P₁ transition' },
+    ],
+    nlo: [
+      { title:'SHG: 922 nm → 461 nm', body:'Single-pass or resonant SHG of 922 nm ECDL+TA in BBO or LBO crystal. Typically 30–100 mW at 461 nm is sufficient for the blue MOT. Toptica TA-SHG pro is a common commercial solution.' },
+      { title:'Clock laser requirements', body:'698 nm clock laser requires a ULE (Ultra-Low Expansion) glass Fabry-Pérot cavity at the Hz level or below. Commercial options: Stable Laser Systems, OEwaves. Cavity linewidth ~1 Hz achievable; fiber noise cancellation to the atoms is required.' },
+    ],
+    warnings: [
+      'The 689 nm red MOT has Γ/2π = 7.6 kHz — the natural linewidth is comparable to the Zeeman splitting in Earth\'s field. Requires <200 mG field control at the atoms during red MOT stage.',
+      'Three-stage cooling sequence (blue MOT → repump → red MOT) requires careful timing and frequency switching. A digital delay generator and AOM RF switch network is needed.',
+      'Magic wavelength 813 nm: small deviations from the magic condition shift the clock frequency. Must be experimentally verified with a spectroscopy measurement against a reference.',
+      'Clock laser: thermal and acoustic noise couple into the cavity. Mount on an air-isolated optical table, use a temperature-controlled vacuum housing, and vibration-isolate both horizontally and vertically.',
+    ],
+    tips: 'The Ye group at JILA is the world leader in Sr optical lattice clocks. Their published supplementary materials are the most detailed technical references available outside of classified metrology labs. The Jun Ye group thesis documents (JILA Technical Notes) are freely available and essential reading.',
+  },
+
+  'Yb-171': {
+    label: '¹⁷¹Yb', color: '#2dd4bf',
+    desc: 'Fermionic ytterbium with I=1/2 nuclear spin qubit. Clock at 578 nm (SHG). Rydberg excitation still being developed.',
+    beams: [
+      { label:'Blue MOT (¹S₀→¹P₁)', nm:399, source:'SHG from 798 nm ECDL+TA', sourceType:'shg', power:30, fiber:true, aom:'AOM',                        use:'Broad-line MOT (Γ/2π=28 MHz); primary capture from oven beam' },
+      { label:'Green MOT (¹S₀→³P₁)',nm:556,  source:'DPSS or fiber laser (SHG 1112 nm)', sourceType:'shg', power:15, fiber:true, aom:'AOM',             use:'Narrow intercombination MOT (Γ/2π=182 kHz); T_D=4.4 μK' },
+      { label:'Repumper (³P₀→³S₁)', nm:1389, source:'DFB telecom laser',    sourceType:'commercial', power:5,  fiber:true,  aom:'AOM',                  use:'Repumps from dark ³P₀ metastable state; needed when ³P₀ is used as storage' },
+      { label:'Repumper (³P₂→³D₂)', nm:770,  source:'ECDL',                sourceType:'commercial', power:5,  fiber:true,  aom:'AOM',                   use:'Repumps from ³P₂ metastable state to recover trapped atoms' },
+      { label:'Optical trap (ODT)', nm:1064,  source:'Fiber laser (Yb:fiber)', sourceType:'commercial', power:5000, fiber:true, aom:'AOM',               use:'Far-off-resonance dipole trap for fermionic Yb' },
+      { label:'Clock probe (¹S₀→³P₀)', nm:578, source:'SHG from 1156 nm fiber laser', sourceType:'shg', power:1, fiber:true, aom:'AOM',                 use:'Optical clock interrogation at 518,295,836,590.863 Hz; natural linewidth ~10 mHz' },
+      { label:'Optical pumping',    nm:556,   source:'Shared green MOT', sourceType:'shg', power:1, fiber:true, aom:'AOM + σ± polarization control',      use:'Nuclear spin state preparation: select m_I = ±1/2' },
+      { label:'Lattice (magic λ)',  nm:759,   source:'Ti:Saph or 759 nm diode', sourceType:'commercial', power:500, fiber:true, aom:'AOM (servo)',       use:'1D/3D magic lattice at λ_magic=759.35 nm (Barber 2008, PRL 100, 103002)' },
+    ],
+    nlo: [
+      { title:'SHG: 798 nm → 399 nm', body:'798 nm ECDL + tapered amplifier (500 mW) doubled in BBO or PPKTP. 399 nm is UV — requires UV-grade optics and coatings throughout the beam path. Toptica TA-SHG or equivalent; ~30–50 mW at 399 nm typically.' },
+      { title:'SHG: 1112 nm → 556 nm', body:'1112 nm fiber laser or ECDL doubled in PPLN waveguide or resonant cavity. 556 nm green intercombination line. Alternatively, use a DPSS green laser (Coherent Verdi, M-Squared SolsTiS) tuned to 556 nm — but these are expensive.' },
+      { title:'SHG: 1156 nm → 578 nm', body:'The most challenging: 1156 nm fiber laser (telecoms edge) doubled in PPLN. Requires an ultra-narrow 1156 nm laser source (Redfern or NKT) + high-finesse ULE cavity at 578 nm for sub-Hz linewidth. Clock laser systems cost ~$200k. Alternatively, reference directly to an optical frequency comb.' },
+    ],
+    warnings: [
+      '399 nm UV beam: standard fiber FC/APC connectors degrade over weeks–months due to UV photodarkening. Use free-space propagation or UV-grade fibers (custom-annealed) for the 399 nm arm.',
+      'Clock laser at 578 nm: clock-state coherence time T₂* > 30 s (Ma et al. 2022) — any mechanical vibration or drift in the beam path during interrogation destroys the signal. Actively stabilize path length with fiber noise cancellation.',
+      '¹⁷¹Yb requires isotopic selectivity: natural Yb has 7 isotopes; the 399 nm oven beam contains all. Use a Zeeman slower + velocity-selective optical pumping at 556 nm to enrich for ¹⁷¹Yb before loading the MOT.',
+      'Rydberg excitation in Yb is an active research area without established commercial solutions. Typical approaches use 394 nm (UV) for ¹S₀→³P₁ + IR for ³P₁→Rydberg. Check current literature before designing the beam path.',
+    ],
+    tips: 'Thompson group (Columbia) and Takahashi group (Kyoto) are the leading Yb tweezer / nuclear spin qubit labs. McGrew et al. 2018 (Nature 564) supplementary materials describe the Yb clock laser system in detail. The green MOT at 556 nm is the key that makes Yb experimentally tractable — without it, atoms remain in the ³P₀ dark state after the blue MOT stage.',
+  },
+
+  'Dy-164': {
+    label: '¹⁶⁴Dy', color: '#f472b6',
+    desc: 'Highest magnetic moment (μ=10 μ_B) of any laser-cooled atom. Used for dipolar quantum gases, supersolids, and quantum droplets.',
+    beams: [
+      { label:'MOT cooling (broad)', nm:421, source:'ECDL + TA (blue diode)', sourceType:'commercial', power:200, fiber:true, aom:'AOM',                use:'Broad-line MOT at 421 nm (Γ/2π ≈ 32 MHz); initial capture' },
+      { label:'Narrow-line MOT',     nm:741, source:'ECDL',                  sourceType:'commercial', power:50,  fiber:true, aom:'AOM',                 use:'Narrow intercombination line (Γ/2π ≈ 1.8 kHz) for ultra-cold MOT T < 1 μK' },
+      { label:'Optical trap (ODT)', nm:1064, source:'Fiber laser',          sourceType:'commercial', power:5000, fiber:true, aom:'AOM',                 use:'Cross-beam optical trap; DDI (dipolar) physics requires pancake geometry' },
+      { label:'Imaging',             nm:421, source:'Shared MOT laser',     sourceType:'commercial', power:10,  fiber:true, aom:'AOM + shutter',        use:'Absorption imaging on broad blue transition' },
+    ],
+    nlo: [],
+    warnings: [
+      '421 nm blue: similar UV handling as Sr/Yb blue MOTs. Photodarkening in fibers, UV-grade optics required.',
+      'Dy has an extremely complex level structure (>10,000 levels below 50,000 cm⁻¹). The 421 nm MOT loads from a Zeeman slower; spontaneous emission can fall into many dark metastable states. Repumpers are often needed but their optimal wavelengths must be found empirically.',
+      'Dipolar anisotropy: Dy interactions depend on the relative orientation of the magnetic dipoles. The ODT geometry (aspect ratio, orientation relative to bias field) strongly affects what phase you access. Consult Pfau group (Stuttgart) publications before designing the trap.',
+    ],
+    tips: 'Pfau group (Stuttgart), Ferlaino group (Innsbruck), and Lev group (Stanford) are the three main Dy labs. The Pfau group discovered quantum droplets (2016) and the Ferlaino group observed supersolid phases (2019). Their supplementary materials are the best practical reference.',
+  },
+};
+
+/* ─── wavelength → visible color mapping ─── */
+function nmToColor(nm) {
+  if (!nm) return '#475569';
+  if (nm < 400) return '#7c3aed';
+  if (nm < 450) return '#6366f1';
+  if (nm < 490) return '#3b82f6';
+  if (nm < 530) return '#06b6d4';
+  if (nm < 570) return '#22c55e';
+  if (nm < 600) return '#eab308';
+  if (nm < 640) return '#f97316';
+  if (nm < 700) return '#ef4444';
+  if (nm < 810) return '#b91c1c';
+  return '#78350f';
+}
+
+/* ─── Build SVG block diagram ─── */
+function buildDiagram(beams, accentColor) {
+  const ROW = 60, TOP = 44, W = 780;
+  const H = TOP + beams.length * ROW + 16;
+  const C = { src:[10,105], aom:[130,100], del:[255,100], use:[380,180], pw:[590,60] };
+
+  let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="font-family:Inter,sans-serif;font-size:11px">
+  <defs>
+    <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,1 L0,6 L6,3.5 z" fill="#334155"/>
+    </marker>
+  </defs>`;
+
+  // Column headers
+  const headers = [['Source / Laser', 57], ['AOM / Control', 180], ['Delivery', 305], ['Chamber Use', 480], ['Power', 597]];
+  headers.forEach(([t, x]) => {
+    svg += `<text x="${x}" y="20" fill="#64748b" font-size="10" text-anchor="middle" font-weight="700" letter-spacing="0.06em">${t.toUpperCase()}</text>`;
+    svg += `<line x1="${x - 52}" y1="27" x2="${x + 52}" y2="27" stroke="#1e293b" stroke-width="1"/>`;
+  });
+
+  beams.forEach((b, i) => {
+    const y = TOP + i * ROW;
+    const cy = y + 20;
+    const col = nmToColor(b.nm);
+    const srcW = 110, boxH = 36;
+
+    // Source box
+    svg += `<rect x="8" y="${y}" width="${srcW}" height="${boxH}" rx="6" fill="${col}18" stroke="${col}55" stroke-width="1.2"/>`;
+    if (b.nm) {
+      svg += `<text x="${8 + srcW/2}" y="${y + 15}" fill="${col}" font-weight="700" font-size="12" text-anchor="middle">${b.nm} nm</text>`;
+    }
+    svg += `<text x="${8 + srcW/2}" y="${y + 28}" fill="#94a3b8" font-size="8.5" text-anchor="middle">${b.source.length > 22 ? b.source.slice(0,22)+'…' : b.source}</text>`;
+
+    // Arrow 1
+    svg += `<line x1="${8+srcW}" y1="${cy}" x2="128" y2="${cy}" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>`;
+
+    // AOM box
+    svg += `<rect x="130" y="${y}" width="118" height="${boxH}" rx="6" fill="#0c1627" stroke="#1e3a5f" stroke-width="1"/>`;
+    svg += `<text x="189" y="${y+15}" fill="#e2e8f0" font-size="9.5" text-anchor="middle" font-weight="600">${b.aom && b.aom !== '—' ? (b.aom.length>18?b.aom.slice(0,18)+'…':b.aom) : 'Direct'}</text>`;
+    svg += `<text x="189" y="${y+28}" fill="#475569" font-size="8.5" text-anchor="middle">freq / intensity</text>`;
+
+    // Arrow 2
+    svg += `<line x1="249" y1="${cy}" x2="253" y2="${cy}" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>`;
+
+    // Delivery box
+    const fibColor = b.fiber ? '#34d399' : '#f87171';
+    svg += `<rect x="255" y="${y}" width="108" height="${boxH}" rx="6" fill="#0c1627" stroke="#1e3a5f" stroke-width="1"/>`;
+    svg += `<text x="309" y="${y+15}" fill="${fibColor}" font-size="9.5" text-anchor="middle" font-weight="600">${b.fiber ? 'Fiber (FC/APC)' : 'Free-space'}</text>`;
+    svg += `<text x="309" y="${y+28}" fill="#475569" font-size="8.5" text-anchor="middle">${b.fiber ? 'noise-cancelled' : 'alignment req.'}</text>`;
+
+    // Arrow 3
+    svg += `<line x1="364" y1="${cy}" x2="378" y2="${cy}" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>`;
+
+    // Use box
+    const useText = b.use;
+    const words = useText.split(';')[0];
+    svg += `<rect x="380" y="${y}" width="188" height="${boxH}" rx="6" fill="#0c1627" stroke="#1e3a5f" stroke-width="1"/>`;
+    svg += `<text x="474" y="${y+15}" fill="#94a3b8" font-size="8.5" text-anchor="middle">${words.length>30?words.slice(0,30)+'…':words}</text>`;
+    svg += `<text x="474" y="${y+28}" fill="#475569" font-size="8" text-anchor="middle">${b.label}</text>`;
+
+    // Power
+    if (b.power) {
+      const pw = b.power >= 1000 ? (b.power/1000).toFixed(1)+' W' : b.power+' mW';
+      svg += `<text x="600" y="${cy + 5}" fill="#fbbf24" font-size="11" text-anchor="middle" font-weight="700">${pw}</text>`;
+    }
+  });
+
+  // Legend
+  const ly = H - 14;
+  svg += `<circle cx="12" cy="${ly}" r="5" fill="#34d399"/><text x="20" y="${ly+4}" fill="#64748b" font-size="9">Fiber-coupled</text>`;
+  svg += `<circle cx="112" cy="${ly}" r="5" fill="#f87171"/><text x="120" y="${ly+4}" fill="#64748b" font-size="9">Free-space</text>`;
+
+  svg += '</svg>';
+  return svg;
+}
+
+/* ─── Source badge HTML ─── */
+function srcBadge(t) {
+  const map = { commercial:'<span class="source-badge src-commercial">Commercial</span>', shg:'<span class="source-badge src-shg">SHG</span>', sfg:'<span class="source-badge src-sfg">SFG</span>', thg:'<span class="source-badge src-thg">THG</span>' };
+  return map[t] || '';
+}
+
+/* ─── Render full planner output ─── */
+function renderAtom(key) {
+  const d = LASER_DB[key];
+  if (!d) return;
+
+  document.getElementById('planner-output').innerHTML = `
+    <div style="background:rgba(${hexToRgb(d.color)},0.06);border:1px solid rgba(${hexToRgb(d.color)},0.18);border-radius:var(--r-lg);padding:var(--sp-3) var(--sp-5);margin-bottom:var(--sp-5);display:flex;align-items:center;gap:var(--sp-3)">
+      <span style="font-size:1.5rem;font-weight:800;color:${d.color}">${d.label}</span>
+      <p style="margin:0;color:var(--text-secondary);font-size:.875rem">${d.desc}</p>
+    </div>
+
+    <h2 class="section-title"><span class="accent">02</span> Required Laser Beams</h2>
+    <div class="beam-table-wrap">
+      <table class="beam-table">
+        <thead>
+          <tr>
+            <th>Beam Purpose</th><th>Wavelength</th><th>Source Type</th><th>Typical Power</th><th>Fiber?</th><th>AOM / Control</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${d.beams.map(b => `
+            <tr>
+              <td style="color:var(--text-primary);font-weight:500">${b.label}</td>
+              <td>${b.nm ? `<span class="nm-badge" style="background:${nmToColor(b.nm)}22;color:${nmToColor(b.nm)};border:1px solid ${nmToColor(b.nm)}55">${b.nm} nm</span>` : '<span style="color:var(--text-muted)">RF/DC</span>'}</td>
+              <td>${srcBadge(b.sourceType)} <span style="font-size:.8rem;color:var(--text-muted);margin-left:4px">${b.source}</span></td>
+              <td style="font-weight:600;color:#fbbf24;font-family:var(--font-mono)">${b.power ? (b.power>=1000?(b.power/1000).toFixed(1)+' W':b.power+' mW') : '—'}</td>
+              <td class="${b.fiber?'fiber-ok':'fiber-no'}">${b.fiber?'Yes ✓':'Free-space'}</td>
+              <td style="color:var(--text-muted);font-size:.8rem">${b.aom||'—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title"><span class="accent">03</span> System Block Diagram</h2>
+    <div class="diagram-wrap">${buildDiagram(d.beams, d.color)}</div>
+
+    ${d.nlo.length ? `
+    <h2 class="section-title"><span class="accent">04</span> Nonlinear Optics Required</h2>
+    <div class="nlo-grid">
+      ${d.nlo.map(n => `<div class="nlo-card"><h4>${n.title}</h4><p>${n.body}</p></div>`).join('')}
+    </div>` : ''}
+
+    <h2 class="section-title"><span class="accent">${d.nlo.length?'05':'04'}</span> Practical Warnings</h2>
+    <ul class="warn-list">
+      ${d.warnings.map(w => `<li class="warn-item"><span class="warn-icon">⚠️</span><span>${w}</span></li>`).join('')}
+    </ul>
+
+    <div style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.18);border-radius:var(--r-lg);padding:var(--sp-4) var(--sp-5);margin-top:var(--sp-5)">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#38bdf8;margin-bottom:6px">Expert tip</div>
+      <p style="margin:0;font-size:.875rem;color:var(--text-secondary);line-height:1.7">${d.tips}</p>
+    </div>
+  `;
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+/* ─── Init atom selector ─── */
+const sel = document.getElementById('atom-selector');
+Object.entries(LASER_DB).forEach(([key, d]) => {
+  const btn = document.createElement('button');
+  btn.className = 'atom-btn';
+  btn.textContent = d.label;
+  btn.title = d.desc;
+  btn.onclick = () => {
+    document.querySelectorAll('.atom-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAtom(key);
+  };
+  sel.appendChild(btn);
+});
+</script>
+
+<script src="../js/main.js?v=10"></script>
+<script>renderNav({ active: 'laser-planner', root: '../' });</script>
+</body>
+</html>

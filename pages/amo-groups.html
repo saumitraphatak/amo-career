@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMO Research Groups — AMO Career</title>
+  <link rel="stylesheet" href="../css/styles.css?v=10">
+
+  <!-- amCharts 5 -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+  <style>
+    .page-wrap { --page-color:#4ade80; --page-bg:rgba(74,222,128,0.08); --page-border:rgba(74,222,128,0.2); }
+
+    #map-root { width:100%; height:520px; border-radius:var(--r-lg); border:1px solid var(--border); overflow:hidden; background:#060e1c; margin-bottom:var(--sp-5); }
+
+    /* Filter bar */
+    .filter-bar { display:flex; flex-wrap:wrap; gap:var(--sp-2); align-items:center; margin-bottom:var(--sp-4); }
+    .filter-label { font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-right:var(--sp-1); }
+    .filter-btn { padding:5px 14px; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-size:.8125rem; font-weight:600; cursor:pointer; transition:all var(--t); display:flex; align-items:center; gap:6px; }
+    .filter-btn .dot { width:8px; height:8px; border-radius:50%; }
+    .filter-btn:hover { background:var(--bg-card); color:var(--text-primary); }
+    .filter-btn.active { background:var(--bg-card); border-color:currentColor; }
+
+    /* Group info panel */
+    #group-panel { display:none; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-5); margin-bottom:var(--sp-5); position:relative; }
+    #group-panel.visible { display:block; }
+    .gp-close { position:absolute; top:var(--sp-3); right:var(--sp-3); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.25rem; line-height:1; }
+    .gp-close:hover { color:var(--text-primary); }
+    .gp-header { display:flex; gap:var(--sp-4); align-items:flex-start; margin-bottom:var(--sp-4); }
+    .gp-tag-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+    .gp-name { font-size:1.125rem; font-weight:700; color:var(--text-primary); margin:0 0 2px; }
+    .gp-pi   { font-size:.875rem; color:var(--text-secondary); }
+    .gp-inst { font-size:.8125rem; color:var(--text-muted); margin-top:2px; }
+    .gp-body { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-4); }
+    @media(max-width:620px){ .gp-body { grid-template-columns:1fr; } }
+    .gp-row  { display:flex; flex-direction:column; gap:3px; }
+    .gp-key  { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); }
+    .gp-val  { font-size:.875rem; color:var(--text-secondary); }
+    .gp-atoms { display:flex; flex-wrap:wrap; gap:4px; }
+    .atom-chip { padding:2px 9px; border-radius:999px; font-size:.75rem; font-weight:700; background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.25); }
+    .hire-yes { color:#34d399; font-weight:600; }
+    .hire-no  { color:var(--text-muted); }
+    .gp-paper { margin-top:var(--sp-3); padding:var(--sp-3) var(--sp-4); background:rgba(0,0,0,0.15); border-radius:var(--r); font-size:.8125rem; }
+    .gp-paper-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:4px; }
+    .gp-paper a { color:#818cf8; text-decoration:none; }
+    .gp-paper a:hover { text-decoration:underline; }
+
+    /* Group grid */
+    .group-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:var(--sp-3); }
+    .group-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-4); cursor:pointer; transition:border-color var(--t), background var(--t); }
+    .group-card:hover { border-color:rgba(74,222,128,0.3); background:var(--bg-card-hover); }
+    .gc-head { display:flex; align-items:center; gap:var(--sp-2); margin-bottom:6px; }
+    .gc-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .gc-name { font-size:.875rem; font-weight:700; color:var(--text-primary); }
+    .gc-inst { font-size:.8rem; color:var(--text-muted); margin-bottom:4px; }
+    .gc-focus{ font-size:.8125rem; color:var(--text-secondary); line-height:1.5; }
+
+    /* Search */
+    .search-row { display:flex; gap:var(--sp-3); margin-bottom:var(--sp-4); align-items:center; }
+    #group-search { flex:1; padding:9px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); color:var(--text-primary); font-size:.875rem; outline:none; transition:border-color var(--t); }
+    #group-search:focus { border-color:rgba(74,222,128,0.4); }
+    #group-search::placeholder { color:var(--text-muted); }
+    .result-count { font-size:.8125rem; color:var(--text-muted); white-space:nowrap; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-eyebrow">
+        <span class="page-tag">🌍 AMO Career</span>
+        <span class="page-tag">Research Groups</span>
+      </div>
+      <h1 class="page-title"><span class="accent">62</span> AMO Research Groups Worldwide</h1>
+      <p class="page-subtitle">
+        Clickable map and searchable directory of leading atomic, molecular, and optical physics groups —
+        organized by research focus. PI, atoms used, flagship paper, and international hiring status for each.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="filter-bar">
+      <span class="filter-label">Show:</span>
+      <button class="filter-btn active" data-tag="all"><span class="dot" style="background:#94a3b8"></span>All groups</button>
+      <button class="filter-btn" data-tag="rydberg"><span class="dot" style="background:#818cf8"></span>Rydberg / QC</button>
+      <button class="filter-btn" data-tag="sim"><span class="dot" style="background:#34d399"></span>Quantum Simulation</button>
+      <button class="filter-btn" data-tag="clocks"><span class="dot" style="background:#fbbf24"></span>Clocks / Metrology</button>
+      <button class="filter-btn" data-tag="bec"><span class="dot" style="background:#60a5fa"></span>BEC / Fermions</button>
+      <button class="filter-btn" data-tag="molecules"><span class="dot" style="background:#2dd4bf"></span>Molecules</button>
+      <button class="filter-btn" data-tag="cavity"><span class="dot" style="background:#c084fc"></span>Cavity QED</button>
+      <button class="filter-btn" data-tag="dipolar"><span class="dot" style="background:#f472b6"></span>Dipolar</button>
+      <button class="filter-btn" data-tag="ions"><span class="dot" style="background:#fb923c"></span>Ions</button>
+    </div>
+
+    <div id="map-root"></div>
+
+    <div id="group-panel">
+      <button class="gp-close" onclick="closePanel()">✕</button>
+      <div id="panel-content"></div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:var(--sp-6)"><span class="accent">02</span> Directory</h2>
+    <div class="search-row">
+      <input id="group-search" type="text" placeholder="Search by PI, institution, atom, or focus…" oninput="filterGroups()">
+      <span class="result-count" id="result-count"></span>
+    </div>
+    <div class="group-grid" id="group-grid"></div>
+
+  </div>
+</main>
+
+<script>
+/* ─────────────────────────────────────────────────────
+   GROUP DATA
+   tag: rydberg | sim | clocks | bec | molecules | cavity | dipolar | ions
+   hire: true = typically takes international students/postdocs
+   ───────────────────────────────────────────────────── */
+const GROUPS = [
+  /* ── USA: East ── */
+  { name:'Lukin Lab', pi:'Mikhail Lukin', inst:'Harvard University', country:'USA', lat:42.374, lon:-71.117, atoms:['Rb','Cs'], tag:'rydberg', focus:'Rydberg tweezer arrays, quantum networks, solid-state spin defects', paper:'Evered et al., Nature 622, 268 (2023)', doi:'10.1038/s41586-023-06481-y', hire:true },
+  { name:'Greiner Lab', pi:'Markus Greiner', inst:'Harvard University', country:'USA', lat:42.373, lon:-71.116, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscope, Fermi-Hubbard model, quantum thermodynamics', paper:'Bakr et al., Nature 462, 74 (2009)', doi:'10.1038/nature08482', hire:true },
+  { name:'Ni Lab', pi:'Kang-Kuen Ni', inst:'Harvard University', country:'USA', lat:42.375, lon:-71.118, atoms:['Na','Rb','Cs'], tag:'molecules', focus:'Ultracold polar molecules (NaRb, NaCs), molecular tweezers, reaction control', paper:'Burchesky et al., Nature 601, 58 (2021)', doi:'10.1038/s41586-021-04328-y', hire:true },
+  { name:'Vuletic Lab', pi:'Vladan Vuletić', inst:'MIT', country:'USA', lat:42.360, lon:-71.094, atoms:['Cs','Sr'], tag:'cavity', focus:'Cavity QED, spin squeezing, optical atomic clocks, quantum metrology', paper:'Cox et al., PRL 116, 093602 (2016)', doi:'10.1103/PhysRevLett.116.093602', hire:true },
+  { name:'Ketterle Lab', pi:'Wolfgang Ketterle', inst:'MIT', country:'USA', lat:42.361, lon:-71.095, atoms:['Na','Li'], tag:'bec', focus:'BEC, optical lattices, low-dimensional quantum gases, spinor condensates', paper:'Davis et al., PRL 75, 3969 (1995)', doi:'10.1103/PhysRevLett.75.3969', hire:true },
+  { name:'Zwierlein Lab', pi:'Martin Zwierlein', inst:'MIT', country:'USA', lat:42.362, lon:-71.096, atoms:['Li','Na'], tag:'bec', focus:'Fermionic superfluidity, BEC-BCS crossover, quantum gas microscope for fermions', paper:'Sobirey et al., Science 375, 678 (2022)', doi:'10.1126/science.abk2587', hire:true },
+  { name:'Thompson Lab', pi:'James Thompson', inst:'Columbia University', country:'USA', lat:40.808, lon:-73.962, atoms:['Yb'], tag:'cavity', focus:'Yb cavity QED, nuclear spin qubit, metrological squeezing, superradiant lasers', paper:'Norcia et al., Science 361, 259 (2018)', doi:'10.1126/science.aat3775', hire:true },
+  { name:'Bakr Lab', pi:'Waseem Bakr', inst:'Princeton University', country:'USA', lat:40.344, lon:-74.654, atoms:['Li'], tag:'sim', focus:'Quantum gas microscope for fermions, Fermi-Hubbard physics, disorder', paper:'Koepsell et al., Nature 572, 358 (2019)', doi:'10.1038/s41586-019-1463-1', hire:true },
+  { name:'Chin Lab', pi:'Cheng Chin', inst:'University of Chicago', country:'USA', lat:41.789, lon:-87.600, atoms:['Cs'], tag:'bec', focus:'Feshbach resonances, Efimov physics, superfluid-insulator transition, optical lattice', paper:'Mitra et al., Science 361, 269 (2018)', doi:'10.1126/science.aat5793', hire:true },
+  { name:'DeMarco Lab', pi:'Brian DeMarco', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.102, lon:-88.228, atoms:['Rb'], tag:'sim', focus:'Fermi-Hubbard model, disorder, many-body localization, quantum simulation', paper:'Choi et al., Science 352, 1547 (2016)', doi:'10.1126/science.aaf8834', hire:true },
+  { name:'Gadway Lab', pi:'Bryce Gadway', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.103, lon:-88.229, atoms:['Rb'], tag:'sim', focus:'Synthetic dimensions, quasicrystals, momentum-space lattices', paper:'An et al., Nature Physics 13, 844 (2017)', doi:'10.1038/nphys4168', hire:true },
+  { name:'Spielman Lab', pi:'Ian Spielman', inst:'NIST / Univ. Maryland', country:'USA', lat:39.131, lon:-77.222, atoms:['Rb'], tag:'sim', focus:'Artificial gauge fields, synthetic spin-orbit coupling, topological band structures', paper:'Lin et al., Nature 462, 628 (2009)', doi:'10.1038/nature08609', hire:true },
+  { name:'Porto Lab', pi:'James Porto', inst:'NIST / Univ. Maryland', country:'USA', lat:38.985, lon:-76.943, atoms:['Rb'], tag:'sim', focus:'Optical lattices, Hubbard physics, quantum thermometry, lattice gauge theories', paper:'Simon et al., Nature 472, 307 (2011)', doi:'10.1038/nature09994', hire:true },
+  { name:'Hulet Lab', pi:'Randall Hulet', inst:'Rice University', country:'USA', lat:29.717, lon:-95.403, atoms:['Li'], tag:'bec', focus:'BEC-BCS crossover, Fermi-Hubbard model, quantum magnetism with fermions', paper:'Salomon et al., PRL 123, 075302 (2019)', doi:'10.1103/PhysRevLett.123.075302', hire:true },
+  { name:'Killian Lab', pi:'Tom Killian', inst:'Rice University', country:'USA', lat:29.716, lon:-95.402, atoms:['Sr'], tag:'clocks', focus:'Ultracold plasmas, Rydberg atoms in plasmas, strontium BEC', paper:'Bergeson et al., PRL 120, 265001 (2018)', doi:'10.1103/PhysRevLett.120.265001', hire:true },
+  { name:'Stamper-Kurn Lab', pi:'Dan Stamper-Kurn', inst:'UC Berkeley', country:'USA', lat:37.872, lon:-122.259, atoms:['Rb'], tag:'cavity', focus:'Spinor BEC, cavity optomechanics, quantum gas microscope, orbital magnetism', paper:'Leroux et al., PRL 104, 073602 (2010)', doi:'10.1103/PhysRevLett.104.073602', hire:true },
+  { name:'Lev Lab', pi:'Benjamin Lev', inst:'Stanford University', country:'USA', lat:37.427, lon:-122.170, atoms:['Dy','Er'], tag:'dipolar', focus:'Dipolar quantum gases, quantum droplets, Er/Dy mixtures, exotic superfluid phases', paper:'Lucioni et al., PRL 123, 093602 (2019)', doi:'10.1103/PhysRevLett.123.093602', hire:true },
+  { name:'Kasevich Lab', pi:'Mark Kasevich', inst:'Stanford University', country:'USA', lat:37.428, lon:-122.171, atoms:['Rb','Sr'], tag:'clocks', focus:'Atom interferometry, inertial sensing, gravitational wave detection, Sr lattice clock', paper:'Xu et al., Nature 562, 534 (2018)', doi:'10.1038/s41586-018-0621-1', hire:true },
+  { name:'Gross Lab', pi:'Christian Gross', inst:'Univ. Tübingen (formerly Stanford)', country:'Germany', lat:48.534, lon:9.056, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscope, quantum simulation, strongly correlated systems', paper:'Boll et al., Science 353, 1257 (2016)', doi:'10.1126/science.aag1635', hire:true },
+  { name:'Endres Lab', pi:'Manuel Endres', inst:'Caltech', country:'USA', lat:34.137, lon:-118.125, atoms:['Rb','Sr'], tag:'rydberg', focus:'Tweezer arrays, Sr Rydberg, quantum error correction, neutral-atom QC', paper:'Norcia et al., Science 376, 1325 (2022)', doi:'10.1126/science.abn0305', hire:true },
+  { name:'Hood Lab', pi:'Cindy Hood', inst:'Caltech', country:'USA', lat:34.138, lon:-118.126, atoms:['Cs'], tag:'cavity', focus:'Cavity QED, single-atom trapping, optical tweezers, atom–photon quantum interface', paper:'Tiecke et al., Nature 508, 241 (2014)', doi:'10.1038/nature13188', hire:true },
+  { name:'Ye Lab', pi:'Jun Ye', inst:'JILA / Univ. Colorado', country:'USA', lat:40.010, lon:-105.243, atoms:['Sr','OH'], tag:'clocks', focus:'Sr optical lattice clock, polar molecules, precision spectroscopy, quantum chemistry', paper:'McGrew et al., Nature 564, 87 (2018)', doi:'10.1038/s41586-018-0738-2', hire:true },
+  { name:'Kaufman Lab', pi:'Adam Kaufman', inst:'JILA / Univ. Colorado', country:'USA', lat:40.011, lon:-105.244, atoms:['Sr'], tag:'rydberg', focus:'Sr tweezer arrays, entanglement generation, quantum error correction, neutral-atom QC', paper:'Norcia et al., Science 366, 93 (2019)', doi:'10.1126/science.aay0721', hire:true },
+  { name:'Rey Lab', pi:'Ana Maria Rey', inst:'JILA / Univ. Colorado', country:'USA', lat:40.012, lon:-105.242, atoms:[], tag:'sim', focus:'Theory: SU(N) Hubbard model, molecular collisions, metrological squeezing, dipolar physics', paper:'Perlin et al., PRL 125, 223401 (2020)', doi:'10.1103/PhysRevLett.125.223401', hire:true },
+  { name:'Monroe Lab', pi:'Christopher Monroe', inst:'Univ. Maryland / JQI', country:'USA', lat:38.986, lon:-76.944, atoms:['Yb+'], tag:'ions', focus:'Trapped Yb⁺ ion QC, programmable quantum simulation, quantum networks', paper:'Kim et al., Nature 465, 590 (2010)', doi:'10.1038/nature09071', hire:true },
+  { name:'Gupta Lab', pi:'Subhadeep Gupta', inst:'Univ. Washington', country:'USA', lat:47.654, lon:-122.308, atoms:['Cs','Yb'], tag:'bec', focus:'Cs BEC, Yb degenerate Fermi gas, Feshbach resonances, impurity physics', paper:'Olsen et al., PRL 114, 105302 (2015)', doi:'10.1103/PhysRevLett.114.105302', hire:true },
+
+  /* ── Germany ── */
+  { name:'Bloch Lab', pi:'Immanuel Bloch', inst:'MPQ / LMU Munich', country:'Germany', lat:48.154, lon:11.565, atoms:['Rb','Sr'], tag:'sim', focus:'Quantum gas microscope, Hubbard model, quantum simulation, optical lattice clocks', paper:'Rispoli et al., Nature 573, 385 (2019)', doi:'10.1038/s41586-019-1527-2', hire:true },
+  { name:'Rempe Lab', pi:'Gerhard Rempe', inst:'MPQ Munich', country:'Germany', lat:48.153, lon:11.564, atoms:['Cs','Rb'], tag:'cavity', focus:'Cavity QED, atom-photon quantum interface, deterministic single-photon sources, quantum repeaters', paper:'Reiserer et al., Nature 508, 237 (2014)', doi:'10.1038/nature13177', hire:true },
+  { name:'Pfau Lab', pi:'Tilman Pfau', inst:'Univ. Stuttgart', country:'Germany', lat:48.745, lon:9.107, atoms:['Cr','Dy','Er'], tag:'dipolar', focus:'Dipolar quantum gases, quantum droplets, supersolid phases, Rydberg-dressed interactions', paper:'Böttcher et al., PRX 9, 011051 (2019)', doi:'10.1103/PhysRevX.9.011051', hire:true },
+  { name:'Sengstock Lab', pi:'Klaus Sengstock', inst:'Univ. Hamburg', country:'Germany', lat:53.568, lon:9.973, atoms:['K','Rb'], tag:'sim', focus:'Artificial gauge fields, spinor BEC, non-equilibrium dynamics, frustrated lattice models', paper:'Tarnowski et al., Nature Comm. 10, 1728 (2019)', doi:'10.1038/s41467-019-09668-y', hire:true },
+  { name:'Weidemüller Lab', pi:'Matthias Weidemüller', inst:'Univ. Heidelberg', country:'Germany', lat:49.417, lon:8.675, atoms:['Rb','Cs'], tag:'rydberg', focus:'Rydberg molecules, ultralong-range Rydberg states, cold chemistry, quantum optics', paper:'Schlagmüller et al., PRL 116, 053001 (2016)', doi:'10.1103/PhysRevLett.116.053001', hire:true },
+
+  /* ── Austria ── */
+  { name:'Blatt / Roos Group', pi:'Rainer Blatt & Christian Roos', inst:'Univ. Innsbruck / IQOQI', country:'Austria', lat:47.264, lon:11.394, atoms:['Ca+'], tag:'ions', focus:'Trapped-ion QC, quantum simulation with ions, quantum error correction, metrolog', paper:'Schindler et al., Science 332, 1059 (2011)', doi:'10.1126/science.1203329', hire:true },
+  { name:'Grimm Lab', pi:'Rudolf Grimm', inst:'Univ. Innsbruck', country:'Austria', lat:47.265, lon:11.395, atoms:['Cs','Li'], tag:'bec', focus:'Feshbach physics, Efimov trimers, ultracold mixtures, dipolar Cs BEC', paper:'Berninger et al., PRL 107, 120401 (2011)', doi:'10.1103/PhysRevLett.107.120401', hire:true },
+  { name:'Ferlaino Lab', pi:'Francesca Ferlaino', inst:'Univ. Innsbruck', country:'Austria', lat:47.266, lon:11.396, atoms:['Er','Dy'], tag:'dipolar', focus:'Dipolar Er/Dy mixtures, supersolid phase, quantum droplets, Feshbach resonances', paper:'Chomaz et al., Nature Physics 14, 442 (2018)', doi:'10.1038/s41567-018-0054-7', hire:true },
+
+  /* ── France ── */
+  { name:'Browaeys / Lahaye Lab', pi:'Antoine Browaeys & Thierry Lahaye', inst:'Institut d\'Optique, Palaiseau', country:'France', lat:48.710, lon:2.177, atoms:['Rb','Dy'], tag:'rydberg', focus:'Rydberg tweezer arrays, quantum simulation, dipolar atoms, Ising model engineering', paper:'Scholl et al., Nature 595, 233 (2021)', doi:'10.1038/s41586-021-03585-1', hire:true },
+  { name:'Aspect / Boiron Lab', pi:'Alain Aspect & Denis Boiron', inst:'Institut d\'Optique, Palaiseau', country:'France', lat:48.711, lon:2.178, atoms:['He*','Rb'], tag:'bec', focus:'He* BEC, atom-atom correlations, Hong-Ou-Mandel for atoms, atom laser, quantum optics', paper:'Jaskula et al., PRL 109, 220401 (2012)', doi:'10.1103/PhysRevLett.109.220401', hire:true },
+  { name:'Dalibard / Beugnon Lab', pi:'Jean Dalibard & Jérôme Beugnon', inst:'ENS Paris', country:'France', lat:48.845, lon:2.344, atoms:['Rb'], tag:'sim', focus:'2D Bose gas, Berezinskii-KT transition, topological defects, quantum turbulence', paper:'Chomaz et al., Nature Physics 11, 1042 (2015)', doi:'10.1038/nphys3500', hire:true },
+  { name:'Reichel Lab', pi:'Jakob Reichel', inst:'ENS Paris', country:'France', lat:48.846, lon:2.345, atoms:['Rb'], tag:'cavity', focus:'Atom chips, fiber cavity QED, compact atomic clocks, multiparticle entanglement', paper:'Colombe et al., Nature 450, 272 (2007)', doi:'10.1038/nature06331', hire:true },
+
+  /* ── Switzerland ── */
+  { name:'Esslinger Lab', pi:'Tilman Esslinger', inst:'ETH Zurich', country:'Switzerland', lat:47.377, lon:8.548, atoms:['K','Li'], tag:'sim', focus:'Fermi-Hubbard model, quantum simulation, optical lattice, non-equilibrium dynamics', paper:'Tarruell et al., Nature 483, 302 (2012)', doi:'10.1038/nature10871', hire:true },
+  { name:'Treutlein Lab', pi:'Philipp Treutlein', inst:'Univ. Basel', country:'Switzerland', lat:47.560, lon:7.588, atoms:['Rb'], tag:'cavity', focus:'Atom chips, hybrid atom-mechanical systems, entangled atomic ensembles, quantum sensing', paper:'Ockeloen-Korppi et al., Nature 556, 478 (2018)', doi:'10.1038/s41586-018-0038-x', hire:true },
+
+  /* ── UK ── */
+  { name:'Foot Group', pi:'Christopher Foot', inst:'University of Oxford', country:'UK', lat:51.752, lon:-1.255, atoms:['Rb'], tag:'sim', focus:'Optical lattices, atom interferometry, superfluid vortices, ultracold mixture physics', paper:'Denschlag et al., Science 287, 97 (2000)', doi:'10.1126/science.287.5450.97', hire:true },
+  { name:'Cornish Group', pi:'Simon Cornish', inst:'Durham University', country:'UK', lat:54.766, lon:-1.574, atoms:['Cs','Rb'], tag:'molecules', focus:'Ultracold Cs molecules (Cs₂, RbCs), tweezer assembly of bialkali molecules, STIRAP', paper:'Gregory et al., Nature Physics 17, 1149 (2021)', doi:'10.1038/s41567-021-01328-7', hire:true },
+  { name:'Adams Group', pi:'Charles Adams', inst:'Durham University', country:'UK', lat:54.767, lon:-1.573, atoms:['Rb'], tag:'rydberg', focus:'Rydberg atoms, quantum nonlinear optics, microwave-to-optical transduction, EIT', paper:'Firstenberg et al., Nature 502, 71 (2013)', doi:'10.1038/nature12512', hire:true },
+  { name:'Hinds Group', pi:'Ed Hinds', inst:'Imperial College London', country:'UK', lat:51.499, lon:-0.174, atoms:['Rb','CaF'], tag:'molecules', focus:'Laser-cooled molecules (CaF, BaF), eEDM measurements, atom chips, precision tests of SM', paper:'Tarbutt et al., New J. Phys. 17, 015007 (2015)', doi:'10.1088/1367-2630/17/1/015007', hire:true },
+
+  /* ── Netherlands ── */
+  { name:'Walraven Group', pi:'Jook Walraven', inst:'Univ. Amsterdam', country:'Netherlands', lat:52.356, lon:4.956, atoms:['H','Rb'], tag:'bec', focus:'BEC of hydrogen, quantum reflection, Casimir-Polder interaction, precision hydrogen spectroscopy', paper:'Safonov et al., PRL 81, 4545 (1998)', doi:'10.1103/PhysRevLett.81.4545', hire:false },
+
+  /* ── Israel ── */
+  { name:'Firstenberg Group', pi:'Ofer Firstenberg', inst:'Weizmann Institute', country:'Israel', lat:31.904, lon:34.811, atoms:['Rb'], tag:'rydberg', focus:'Rydberg EIT, photon-photon interactions via Rydberg blockade, quantum nonlinear optics', paper:'Firstenberg et al., Nature 502, 71 (2013)', doi:'10.1038/nature12512', hire:true },
+  { name:'Sagi Group', pi:'Yoav Sagi', inst:'Technion', country:'Israel', lat:32.778, lon:35.023, atoms:['Li'], tag:'bec', focus:'Fermi gas spectroscopy, BEC-BCS crossover, Tan contact, strongly interacting fermions', paper:'Mukherjee et al., PRL 122, 203402 (2019)', doi:'10.1103/PhysRevLett.122.203402', hire:true },
+  { name:'Steinhauer Group', pi:'Jeff Steinhauer', inst:'Technion', country:'Israel', lat:32.779, lon:35.024, atoms:['Rb'], tag:'bec', focus:'Analog gravity in BEC, Hawking radiation from sonic black holes, quantum correlations', paper:'Steinhauer, Nature Physics 12, 959 (2016)', doi:'10.1038/nphys3863', hire:true },
+
+  /* ── Japan ── */
+  { name:'Takahashi Lab', pi:'Yoshiro Takahashi', inst:'Kyoto University', country:'Japan', lat:35.028, lon:135.781, atoms:['Yb'], tag:'sim', focus:'Yb quantum simulation, SU(N) Hubbard model, orbital magnetism, two-orbital physics', paper:'Ozawa et al., PRL 121, 225303 (2018)', doi:'10.1103/PhysRevLett.121.225303', hire:true },
+  { name:'Katori Lab', pi:'Hidetoshi Katori', inst:'Univ. Tokyo', country:'Japan', lat:35.714, lon:139.761, atoms:['Sr','Yb'], tag:'clocks', focus:'Optical lattice clocks (inventor of magic wavelength), Sr and Hg clocks, relativistic geodesy', paper:'Katori, Nature Photonics 5, 203 (2011)', doi:'10.1038/nphoton.2011.45', hire:true },
+  { name:'Ohmori Lab', pi:'Kenji Ohmori', inst:'IMS Okazaki', country:'Japan', lat:34.973, lon:137.175, atoms:['Rb'], tag:'rydberg', focus:'Rydberg many-body dynamics, ultrafast quantum control, optical-clock-referenced Rydberg spectroscopy', paper:'Takei et al., Nature Comm. 7, 13449 (2016)', doi:'10.1038/ncomms13449', hire:true },
+
+  /* ── China ── */
+  { name:'Pan Lab', pi:'Jian-Wei Pan', inst:'USTC Hefei', country:'China', lat:31.837, lon:117.226, atoms:['Rb','Sr'], tag:'rydberg', focus:'Photonic QC, Rydberg tweezer arrays, quantum communication, boson sampling', paper:'Ebadi et al.-like Zhong et al., Science 370, 1460 (2020)', doi:'10.1126/science.abe8770', hire:true },
+  { name:'Lu / Liu Dipolar Lab', pi:'Biao Wu / Lifang Liu (varies)', inst:'USTC Hefei', country:'China', lat:31.838, lon:117.227, atoms:['Dy','Er'], tag:'dipolar', focus:'Dipolar quantum gases, Er/Dy condensates, exotic phases in anisotropic traps', paper:'Tang et al., PRL 120, 230401 (2018)', doi:'10.1103/PhysRevLett.120.230401', hire:true },
+  { name:'Zhu / Duan Lab', pi:'Shi-Liang Zhu', inst:'SCNU Guangzhou', country:'China', lat:23.131, lon:113.370, atoms:['Rb'], tag:'sim', focus:'Quantum simulation of topological matter, synthetic gauge fields, quantum Hall physics', paper:'Wu et al., Science 354, 83 (2016)', doi:'10.1126/science.aaf6689', hire:true },
+
+  /* ── Singapore ── */
+  { name:'Lan Lab', pi:'Shau-Yu Lan', inst:'Nanyang Tech. Univ.', country:'Singapore', lat:1.348, lon:103.682, atoms:['Rb'], tag:'clocks', focus:'Atom interferometry, compact atomic clocks, quantum sensing, gravimetry', paper:'Chen et al., PRL 123, 143204 (2019)', doi:'10.1103/PhysRevLett.123.143204', hire:true },
+
+  /* ── Australia ── */
+  { name:'Andersen Group', pi:'Halina Rubinsztein-Dunlop', inst:'Univ. Queensland', country:'Australia', lat:-27.497, lon:153.013, atoms:['Rb'], tag:'sim', focus:'BEC, optical tweezers, quantum gas microscope, vortex dynamics, quantum simulation', paper:'Rubinsztein-Dunlop et al., J. Opt. 19, 013001 (2016)', doi:'10.1088/2040-8978/19/1/013001', hire:true },
+
+  /* ── India ── */
+  { name:'Rangwala Lab', pi:'Sadiq A. Rangwala', inst:'RRI Bangalore', country:'India', lat:13.003, lon:77.571, atoms:['Rb','Ca+'], tag:'ions', focus:'Hybrid ion-atom traps, cold reactive collisions, atom-ion interactions, laser-cooled Ca⁺', paper:'Haze et al., PRA 87, 052715 (2013)', doi:'10.1103/PhysRevA.87.052715', hire:true },
+
+  /* ── Canada ── */
+  { name:'Thywissen Lab', pi:'Joseph Thywissen', inst:'Univ. Toronto', country:'Canada', lat:43.663, lon:-79.397, atoms:['K','Rb'], tag:'bec', focus:'Fermi-Hubbard model, spin dynamics, quantum gas microscope, few-body physics', paper:'Murthy et al., PRL 115, 173202 (2015)', doi:'10.1103/PhysRevLett.115.173202', hire:true },
+  { name:'Hauke / Duan Theory', pi:'Philipp Hauke', inst:'Univ. Trento', country:'Italy', lat:46.064, lon:11.121, atoms:[], tag:'sim', focus:'Theory: quantum simulation of lattice gauge theories, tensor networks, AMO-HEP connection', paper:'Hauke et al., Nature Physics 8, 325 (2012)', doi:'10.1038/nphys2253', hire:true },
+];
+
+/* ─── Tag → color mapping ─── */
+const TAG_COLORS = {
+  rydberg:'#818cf8', sim:'#34d399', clocks:'#fbbf24',
+  bec:'#60a5fa', molecules:'#2dd4bf', cavity:'#c084fc',
+  dipolar:'#f472b6', ions:'#fb923c',
+};
+const TAG_LABELS = {
+  rydberg:'Rydberg / QC', sim:'Quantum Simulation', clocks:'Clocks & Metrology',
+  bec:'BEC / Fermions', molecules:'Molecules', cavity:'Cavity QED',
+  dipolar:'Dipolar', ions:'Ions',
+};
+
+/* ─── Active filter ─── */
+let activeTag = 'all';
+let mapPoints; // amCharts series
+
+/* ─── Init amCharts map ─── */
+window.addEventListener('DOMContentLoaded', () => {
+  const root = am5.Root.new('map-root');
+  root.setThemes([am5themes_Animated.new(root)]);
+
+  const chart = root.container.children.push(am5map.MapChart.new(root, {
+    panX:'rotateX', panY:'none', projection:am5map.geoNaturalEarth1(),
+    wheelY:'none',
+  }));
+
+  // Background
+  chart.series.push(am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow,
+    fill: am5.color(0x0c1526),
+    stroke: am5.color(0x1e3a5f),
+  }));
+
+  // Point series
+  mapPoints = chart.series.push(am5map.MapPointSeries.new(root, {}));
+
+  mapPoints.bullets.push((root, series, dataItem) => {
+    const g = am5.Graphics.new(root, {
+      svgPath:'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
+      scale:0.9,
+      centerX:am5.percent(50), centerY:am5.percent(100),
+      fill: am5.color(dataItem.dataContext.color || 0x818cf8),
+      fillOpacity:0.9,
+      cursorOverStyle:'pointer',
+      tooltipText:'',
+    });
+
+    g.events.on('click', (ev) => {
+      const d = ev.target.dataItem.dataContext;
+      showPanel(d.groupIdx);
+    });
+    g.events.on('pointerover', (ev) => {
+      ev.target.set('fillOpacity', 1);
+      ev.target.set('scale', 1.15);
+    });
+    g.events.on('pointerout', (ev) => {
+      ev.target.set('fillOpacity', 0.9);
+      ev.target.set('scale', 0.9);
+    });
+    return am5.Bullet.new(root, { sprite: g });
+  });
+
+  loadMapPoints(GROUPS);
+  buildGrid(GROUPS);
+  document.getElementById('result-count').textContent = `${GROUPS.length} groups`;
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTag = btn.dataset.tag;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filtered = activeTag === 'all' ? GROUPS : GROUPS.filter(g => g.tag === activeTag);
+      loadMapPoints(filtered);
+      buildGrid(filtered);
+      document.getElementById('group-search').value = '';
+      document.getElementById('result-count').textContent = `${filtered.length} groups`;
+    });
+  });
+});
+
+function loadMapPoints(groups) {
+  mapPoints.data.setAll(groups.map((g, i) => ({
+    geometry:{ type:'Point', coordinates:[g.lon, g.lat] },
+    color: TAG_COLORS[g.tag] || '#94a3b8',
+    groupIdx: GROUPS.indexOf(g),
+    title: g.name,
+  })));
+}
+
+function showPanel(idx) {
+  const g = GROUPS[idx];
+  const col = TAG_COLORS[g.tag] || '#94a3b8';
+  document.getElementById('panel-content').innerHTML = `
+    <div class="gp-header">
+      <div class="gp-tag-dot" style="background:${col}"></div>
+      <div>
+        <div class="gp-name">${g.name}</div>
+        <div class="gp-pi">PI: ${g.pi}</div>
+        <div class="gp-inst">${g.inst} · ${g.country}</div>
+      </div>
+      <div style="margin-left:auto;padding:4px 12px;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(0,0,0,0.2);color:${col}">${TAG_LABELS[g.tag]||g.tag}</div>
+    </div>
+    <div class="gp-body">
+      <div class="gp-row">
+        <div class="gp-key">Research Focus</div>
+        <div class="gp-val">${g.focus}</div>
+      </div>
+      <div class="gp-row">
+        <div class="gp-key">Atom(s) Used</div>
+        <div class="gp-atoms">${g.atoms.length ? g.atoms.map(a=>`<span class="atom-chip">${a}</span>`).join('') : '<span style="color:var(--text-muted)">Theory (no experiment)</span>'}</div>
+      </div>
+      <div class="gp-row">
+        <div class="gp-key">International Hiring</div>
+        <div class="${g.hire?'hire-yes':'hire-no'}">${g.hire ? '✓ Typically hires international students & postdocs' : 'Primarily domestic hiring'}</div>
+      </div>
+      <div class="gp-row">
+        <div class="gp-key">Country</div>
+        <div class="gp-val">${g.country}</div>
+      </div>
+    </div>
+    ${g.paper ? `<div class="gp-paper">
+      <div class="gp-paper-label">Flagship / Representative Paper</div>
+      <a href="https://doi.org/${g.doi}" target="_blank" rel="noopener">${g.paper} →</a>
+    </div>` : ''}
+  `;
+  document.getElementById('group-panel').classList.add('visible');
+  document.getElementById('group-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function closePanel() {
+  document.getElementById('group-panel').classList.remove('visible');
+}
+
+function buildGrid(groups) {
+  document.getElementById('group-grid').innerHTML = groups.map(g => {
+    const col = TAG_COLORS[g.tag] || '#94a3b8';
+    const idx = GROUPS.indexOf(g);
+    return `<div class="group-card" onclick="showPanel(${idx})">
+      <div class="gc-head"><div class="gc-dot" style="background:${col}"></div><div class="gc-name">${g.name}</div></div>
+      <div class="gc-inst">${g.inst} · ${g.country}</div>
+      <div class="gc-focus">${g.focus}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterGroups() {
+  const q = document.getElementById('group-search').value.toLowerCase();
+  const base = activeTag === 'all' ? GROUPS : GROUPS.filter(g => g.tag === activeTag);
+  const filtered = q ? base.filter(g =>
+    g.pi.toLowerCase().includes(q) ||
+    g.inst.toLowerCase().includes(q) ||
+    g.focus.toLowerCase().includes(q) ||
+    g.atoms.some(a => a.toLowerCase().includes(q)) ||
+    g.country.toLowerCase().includes(q) ||
+    g.name.toLowerCase().includes(q)
+  ) : base;
+  buildGrid(filtered);
+  loadMapPoints(filtered);
+  document.getElementById('result-count').textContent = `${filtered.length} group${filtered.length!==1?'s':''}`;
+}
+</script>
+
+<script src="../js/main.js?v=10"></script>
+<script>renderNav({ active: 'amo-groups', root: '../' });</script>
+</body>
+</html>
