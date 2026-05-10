@@ -17,7 +17,7 @@ A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists
 | **TOF Thermometry** | Temperature from time-of-flight: σ²(t) expansion fit, PSD, BEC threshold indicator |
 | **MOT / Trap Designer** | MOT damping/spring constants + Ioffe-Pritchard trap frequencies, evaporation η, Majorana warning |
 | **Gate Fidelity Budget** | 8-error Rydberg two-qubit gate budget; fidelity meter; SOTA comparison (Evered 2023: 99.5%) |
-| **Release-Recapture** | Interactive tweezer trap frequency measurement simulation |
+| **Release-Recapture** | Interactive tweezer thermometry simulation from recapture probability vs free-flight time |
 | **Lab Calculators** | Optics (beam waist, NA, AOM, dBm), atomic physics (recoil, Zeeman, I_sat), trap (ω_r, ω_z, η_LD), CG coefficients |
 | **Laser Cooling Simulator** | Doppler and Sisyphus cooling animation — force vs velocity, damping, momentum diffusion, sub-Doppler mechanisms |
 | **Laser Locking** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
@@ -48,6 +48,16 @@ Bloch Sphere · Quantum Gates · Superposition · Measurement · Entanglement ·
 - **Google Fonts** — Inter (body) + JetBrains Mono (equations/code)
 
 No npm. No webpack. No React. Open `home.html` in a browser and it works.
+
+## Verification
+
+Run the lightweight physics regression checks after editing formulas:
+
+```bash
+python3 tests/formula_regression.py
+```
+
+These tests guard recoil-energy conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, and release-recapture wording.
 
 ---
 

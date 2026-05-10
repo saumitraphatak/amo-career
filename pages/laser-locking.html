@@ -187,6 +187,13 @@
     685 nm Cs E₂ quadrupole line (Γ/2π ≈ 117 kHz) to motivate PDH locking.
   </div>
 
+  <div class="info-banner anim-in" style="margin-bottom: 2rem;">
+    <strong>Assumptions:</strong> the SAS, beat-note, and PDH formulas are idealized small-signal models.
+    Real locks are limited by detector saturation, residual amplitude modulation, servo bandwidth and phase margin,
+    RF mixer conversion loss, optical feedback, etalon fringes, cavity drift, and acoustic pickup. Use the calculated
+    slopes and SNRs as design targets, then verify with measured error-signal slope and in-loop/out-of-loop spectra.
+  </div>
+
   <!-- ═══ LASER DRIFT / LOCK ANIMATOR ═══ -->
   <div class="anim-in" style="margin-bottom:2.5rem;">
     <div id="lockVizWrap" style="
@@ -642,12 +649,12 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
                 The beat photocurrent has a DC component I<sub>dc</sub> = R(P₁+P₂) and an AC
                 component at Δν. Shot-noise-limited SNR in bandwidth B:
               </p>
-              <span class="eq">SNR = (P₁ · P₂ · R²) / (2e · I_dc · B)</span>
+              <span class="eq">SNR_amp = 2R√(P₁P₂) / √(2eI_dcB)</span>
               <p style="margin-top:.5rem;">
-                where R is responsivity (A/W) and e is the electron charge. In RF power terms
-                at 50 Ω:
+                where R is responsivity (A/W), e is the electron charge, and the numerator is the beat-current amplitude.
+                In RF power terms at 50 Ω, using RMS beat current:
               </p>
-              <span class="eq">P_RF (dBm) = 10 log₁₀[½ · R² · P₁ · P₂ · Z₀ / 1 mW]</span>
+              <span class="eq">P_RF (dBm) = 10 log₁₀[2R²P₁P₂Z₀ / 1 mW]</span>
               <p style="margin-top:.5rem;">
                 <strong>Rule of thumb:</strong> need ≥ 20 dB SNR (linear factor 100) for a
                 reliable lock. With 0.5 mW on each arm and R = 0.5 A/W, you get ~+5 dBm RF
@@ -1260,7 +1267,7 @@ function updateBeat() {
   // Shot-noise-limited SNR in 1 MHz bandwidth
   const B_Hz    = 1e6;
   const I_dc    = R * (P1 + P2);
-  const i_ac_sq = 0.5 * R * R * P1 * P2;          // mean-square AC photocurrent
+  const i_ac_sq = 2 * R * R * P1 * P2;            // RMS beat-current squared: (2R√P1P2/√2)^2
   const i_sn_sq = 2 * e_c * I_dc * B_Hz;           // shot-noise variance
   const snr_dB  = 10 * Math.log10(i_ac_sq / i_sn_sq);
   const rf_dBm  = 10 * Math.log10(i_ac_sq * Z0 / 1e-3);

@@ -341,7 +341,10 @@ Principal quantum number n (30–120), atom species (Rb87, Cs133, Yb171, Sr88). 
 4 species (Rb87, Cs133, Yb171, Sr88). 8 error sources for Rydberg two-qubit gates: spontaneous emission εₛₑ = Γ_Ryd·t_gate, Doppler dephasing ε_D = ½(k·v_rms·t_gate)², laser phase noise ε_φ = π·Δν·t_gate, blockade leakage ε_blk = 1/(U/Ω)², SPAM ε_sp, atom loss ε_loss = t_gate/τ_trap, B-field dephasing ε_B = ½(μ_B·ΔB·t_gate/ℏ)², Rabi inhomogeneity ε_Ω = ½(π·δΩ/Ω/2)². Fidelity F = 1 − Σεᵢ. Color-coded meter (≥99.9% green). SOTA comparison: Evered 2023 (99.5%), Ma 2023 (99.3%), FTQC threshold (99%).
 
 ### 8. Release-Recapture (`release-recapture.html`)
-Interactive simulator for tweezer trap frequency measurement. Atom released from trap, evolves under gravity + thermal velocity, recaptured if within trap volume. Chart: recapture probability vs release time. Extracts trap frequency ω_r from fit.
+Interactive simulator for single-atom tweezer thermometry. Atom released from trap, evolves under gravity + thermal velocity, then is recaptured if its energy is below the Gaussian trap depth. Chart: recapture probability vs release time. Assumes known waist/depth; not a direct trap-frequency measurement.
+
+### Formula Regression Tests
+Run `python3 tests/formula_regression.py` after formula edits. The tests check recoil conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, and release-recapture wording.
 
 ### 9. Lab Calculators (`lab-calculators.html`)
 Large multi-section calculator suite organized in tabs:
