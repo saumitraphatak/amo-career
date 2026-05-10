@@ -1431,37 +1431,45 @@ Narrow: 583 nm (intercombination line)</span>
     let cmpMode = false, cmpAtoms = [];
 
     const CMP_DATA = {
-      '⁶Li':  { mass:6,   stat:'Fermion', Z:3,  fam:'Alkali',   cool_nm:671, Gamma:5.87, TD:141,  Er:7.08, I:'1',   HF:0.228, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#fb923c' },
-      '⁷Li':  { mass:7,   stat:'Boson',   Z:3,  fam:'Alkali',   cool_nm:671, Gamma:5.87, TD:141,  Er:6.07, I:'3/2', HF:0.804, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#fb923c' },
-      '²³Na': { mass:23,  stat:'Boson',   Z:11, fam:'Alkali',   cool_nm:589, Gamma:9.80, TD:235,  Er:2.40, I:'3/2', HF:1.772, mu:0,  clock:false, narrow:null,    Fesh:false, col:'#fbbf24' },
-      '³⁹K':  { mass:39,  stat:'Boson',   Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.84, I:'3/2', HF:0.462, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa' },
-      '⁴⁰K':  { mass:40,  stat:'Fermion', Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.82, I:'4',   HF:1.286, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa' },
-      '⁴¹K':  { mass:41,  stat:'Boson',   Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.80, I:'3/2', HF:0.254, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa' },
-      '⁸⁵Rb': { mass:85,  stat:'Boson',   Z:37, fam:'Alkali',   cool_nm:780, Gamma:6.07, TD:146,  Er:0.37, I:'5/2', HF:3.036, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#38bdf8' },
-      '⁸⁷Rb': { mass:87,  stat:'Boson',   Z:37, fam:'Alkali',   cool_nm:780, Gamma:6.07, TD:146,  Er:0.36, I:'3/2', HF:6.835, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#38bdf8' },
-      '¹³³Cs':{ mass:133, stat:'Boson',   Z:55, fam:'Alkali',   cool_nm:852, Gamma:5.23, TD:125,  Er:0.19, I:'7/2', HF:9.193, mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#34d399' },
-      '⁸⁸Sr': { mass:88,  stat:'Boson',   Z:38, fam:'AE',       cool_nm:461, Gamma:32.0, TD:767,  Er:0.46, I:'0',   HF:0,     mu:0,  clock:true,  narrow:0.00763, Fesh:false, col:'#60a5fa', clock_nm:698 },
-      '⁸⁷Sr': { mass:87,  stat:'Fermion', Z:38, fam:'AE',       cool_nm:461, Gamma:32.0, TD:767,  Er:0.46, I:'9/2', HF:0,     mu:0,  clock:true,  narrow:0.00763, Fesh:false, col:'#60a5fa', clock_nm:698 },
-      '¹⁷⁴Yb':{ mass:174, stat:'Boson',   Z:70, fam:'AE',       cool_nm:399, Gamma:28.0, TD:672,  Er:0.35, I:'0',   HF:0,     mu:0,  clock:true,  narrow:0.182,   Fesh:false, col:'#2dd4bf', clock_nm:578 },
-      '¹⁷¹Yb':{ mass:171, stat:'Fermion', Z:70, fam:'AE',       cool_nm:399, Gamma:28.0, TD:672,  Er:0.35, I:'1/2', HF:0,     mu:0,  clock:true,  narrow:0.182,   Fesh:false, col:'#2dd4bf', clock_nm:578 },
-      '¹⁶⁴Dy':{ mass:164, stat:'Boson',   Z:66, fam:'Magnetic', cool_nm:421, Gamma:null,  TD:null, Er:0.27, I:'0',   HF:0,     mu:10, clock:false, narrow:null,    Fesh:true,  col:'#f472b6' },
-      '¹⁶⁸Er':{ mass:168, stat:'Boson',   Z:68, fam:'Magnetic', cool_nm:401, Gamma:null,  TD:null, Er:0.27, I:'0',   HF:0,     mu:7,  clock:false, narrow:null,    Fesh:true,  col:'#fbbf24' },
+      // narrow_TD: Doppler limit of the narrow intercombination line (μK); a_a0: s-wave scattering length (a₀)
+      '⁶Li':  { mass:6,   stat:'Fermion', Z:3,  fam:'Alkali',   cool_nm:671, Gamma:5.87, TD:141,  Er:7.08, I:'1',   HF:0.228,         mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#fb923c', narrow_TD:null, a_a0:null  },
+      '⁷Li':  { mass:7,   stat:'Boson',   Z:3,  fam:'Alkali',   cool_nm:671, Gamma:5.87, TD:141,  Er:6.07, I:'3/2', HF:0.804,         mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#fb923c', narrow_TD:null, a_a0:null  },
+      '²³Na': { mass:23,  stat:'Boson',   Z:11, fam:'Alkali',   cool_nm:589, Gamma:9.80, TD:235,  Er:2.40, I:'3/2', HF:1.772,         mu:0,  clock:false, narrow:null,    Fesh:false, col:'#fbbf24', narrow_TD:null, a_a0:52    },
+      '³⁹K':  { mass:39,  stat:'Boson',   Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.84, I:'3/2', HF:0.462,         mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa', narrow_TD:null, a_a0:null  },
+      '⁴⁰K':  { mass:40,  stat:'Fermion', Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.82, I:'4',   HF:1.286,         mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa', narrow_TD:null, a_a0:null  },
+      '⁴¹K':  { mass:41,  stat:'Boson',   Z:19, fam:'Alkali',   cool_nm:767, Gamma:6.04, TD:145,  Er:0.80, I:'3/2', HF:0.254,         mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#a78bfa', narrow_TD:null, a_a0:null  },
+      '⁸⁵Rb': { mass:85,  stat:'Boson',   Z:37, fam:'Alkali',   cool_nm:780, Gamma:6.07, TD:146,  Er:0.37, I:'5/2', HF:3.036,         mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#38bdf8', narrow_TD:null, a_a0:null  },
+      // HF: 6,834,682,610.904 Hz (BIPM SI definition via Steck Rb-87 Data Sheet rev 2.3.1 §5)
+      '⁸⁷Rb': { mass:87,  stat:'Boson',   Z:37, fam:'Alkali',   cool_nm:780, Gamma:6.07, TD:146,  Er:0.36, I:'3/2', HF:6.834682611,   mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#38bdf8', narrow_TD:null, a_a0:100.9 },
+      // HF: 9,192,631,770 Hz exactly (SI definition of the second)
+      '¹³³Cs':{ mass:133, stat:'Boson',   Z:55, fam:'Alkali',   cool_nm:852, Gamma:5.23, TD:125,  Er:0.19, I:'7/2', HF:9.192631770,   mu:0,  clock:false, narrow:null,    Fesh:true,  col:'#34d399', narrow_TD:null, a_a0:280   },
+      // narrow_TD = ℏΓ/2k_B for 689 nm line (Γ/2π = 7.63 kHz) → 0.18 μK
+      '⁸⁸Sr': { mass:88,  stat:'Boson',   Z:38, fam:'AE',       cool_nm:461, Gamma:32.0, TD:767,  Er:0.46, I:'0',   HF:0,             mu:0,  clock:true,  narrow:0.00763, Fesh:false, col:'#60a5fa', narrow_TD:0.18, a_a0:null,  clock_nm:698 },
+      '⁸⁷Sr': { mass:87,  stat:'Fermion', Z:38, fam:'AE',       cool_nm:461, Gamma:32.0, TD:767,  Er:0.46, I:'9/2', HF:0,             mu:0,  clock:true,  narrow:0.00763, Fesh:false, col:'#60a5fa', narrow_TD:0.18, a_a0:null,  clock_nm:698 },
+      // narrow_TD = ℏΓ/2k_B for 556 nm line (Γ/2π = 182 kHz) → 4.4 μK; a_a0 from Kitagawa et al. 2008 PRA 77, 042703
+      '¹⁷⁴Yb':{ mass:174, stat:'Boson',   Z:70, fam:'AE',       cool_nm:399, Gamma:28.0, TD:672,  Er:0.35, I:'0',   HF:0,             mu:0,  clock:true,  narrow:0.182,   Fesh:false, col:'#2dd4bf', narrow_TD:4.4,  a_a0:105,   clock_nm:578 },
+      '¹⁷¹Yb':{ mass:171, stat:'Fermion', Z:70, fam:'AE',       cool_nm:399, Gamma:28.0, TD:672,  Er:0.35, I:'1/2', HF:0,             mu:0,  clock:true,  narrow:0.182,   Fesh:false, col:'#2dd4bf', narrow_TD:4.4,  a_a0:-3,    clock_nm:578 },
+      '¹⁶⁴Dy':{ mass:164, stat:'Boson',   Z:66, fam:'Magnetic', cool_nm:421, Gamma:null,  TD:null, Er:0.27, I:'0',   HF:0,             mu:10, clock:false, narrow:null,    Fesh:true,  col:'#f472b6', narrow_TD:null, a_a0:null  },
+      '¹⁶⁸Er':{ mass:168, stat:'Boson',   Z:68, fam:'Magnetic', cool_nm:401, Gamma:null,  TD:null, Er:0.27, I:'0',   HF:0,             mu:7,  clock:false, narrow:null,    Fesh:true,  col:'#fbbf24', narrow_TD:null, a_a0:null  },
     };
 
     // parameter row definitions: dir 1=higher better, -1=lower better, 0=neutral
     const CMP_ROWS = [
-      { key:'mass',  label:'Mass (amu)',            dir:-1, fmt: v => v,                                                  tasks:['rydberg','clocks'] },
-      { key:'stat',  label:'Statistics',            dir: 0, fmt: v => v,                                                  tasks:['sim'] },
-      { key:'I',     label:'Nuclear spin I',        dir: 0, fmt: v => v,                                                  tasks:['clocks','sim'] },
-      { key:'cool_nm',label:'Cooling λ (nm)',       dir: 0, fmt: v => v + ' nm',                                          tasks:[] },
-      { key:'Gamma', label:'Γ/2π (MHz)',             dir:-1, fmt: v => v != null ? v : '—',                               tasks:['rydberg','clocks'] },
-      { key:'TD',    label:'T_Doppler (μK)',          dir:-1, fmt: v => v != null ? v : '—',                              tasks:['rydberg','clocks'] },
-      { key:'Er',    label:'2E_r/k_B (μK)',           dir:-1, fmt: v => v,                                                tasks:['rydberg','clocks'] },
-      { key:'HF',    label:'HF qubit (GHz)',          dir: 1, fmt: v => v > 0 ? v.toFixed(3) : '—',                      tasks:['rydberg'] },
-      { key:'clock', label:'Clock transition',        dir: 0, fmt: (v,d) => v ? (d.clock_nm ? d.clock_nm+' nm ✓' : 'Yes') : 'No', tasks:['clocks'] },
-      { key:'narrow',label:'Narrow line Γ/2π (MHz)', dir:-1, fmt: v => v != null ? v : '—',                              tasks:['clocks'] },
-      { key:'mu',    label:'Magnetic μ (μ_B)',         dir: 0, fmt: v => v > 0 ? v : '0',                                tasks:['sim'] },
-      { key:'Fesh',  label:'Feshbach resonance',       dir: 0, fmt: v => v ? 'Yes ✓' : 'No',                             tasks:['sim'] },
+      { key:'mass',     label:'Mass (amu)',              dir:-1, fmt: v => v,                                                          tasks:['rydberg','clocks'] },
+      { key:'stat',     label:'Statistics',              dir: 0, fmt: v => v,                                                          tasks:['sim'] },
+      { key:'I',        label:'Nuclear spin I',          dir: 0, fmt: v => v,                                                          tasks:['clocks','sim'] },
+      { key:'cool_nm',  label:'Cooling λ (nm)',           dir: 0, fmt: v => v + ' nm',                                                  tasks:[] },
+      { key:'Gamma',    label:'Γ/2π (MHz)',               dir:-1, fmt: v => v != null ? v : '—',                                       tasks:['rydberg','clocks'] },
+      { key:'TD',       label:'T_Doppler (μK)',            dir:-1, fmt: v => v != null ? v : '—',                                      tasks:['rydberg','clocks'] },
+      { key:'Er',       label:'2E_r/k_B (μK)',             dir:-1, fmt: v => v,                                                        tasks:['rydberg','clocks'] },
+      // HF: 6 decimal places to resolve Rb (6.834683) vs Cs (9.192632)
+      { key:'HF',       label:'HF qubit (GHz)',            dir: 1, fmt: v => v > 0 ? v.toFixed(6) : '—',                              tasks:['rydberg'] },
+      { key:'clock',    label:'Clock transition',          dir: 0, fmt: (v,d) => v ? (d.clock_nm ? d.clock_nm+' nm ✓' : 'Yes') : 'No', tasks:['clocks'] },
+      { key:'narrow',   label:'Narrow line Γ/2π (MHz)',    dir:-1, fmt: v => v != null ? v : '—',                                     tasks:['clocks'] },
+      { key:'narrow_TD',label:'Narrow T_D (μK)',           dir:-1, fmt: v => v != null ? v : '—',                                     tasks:['clocks'] },
+      { key:'mu',       label:'Magnetic μ (μ_B)',           dir: 0, fmt: v => v > 0 ? v : '0',                                        tasks:['sim'] },
+      { key:'Fesh',     label:'Feshbach resonance',         dir: 0, fmt: v => v ? 'Yes ✓' : 'No',                                     tasks:['sim'] },
+      { key:'a_a0',     label:'Scattering length (a₀)',     dir: 0, fmt: v => v != null ? v + ' a₀' : '—',                            tasks:['sim'] },
     ];
 
     function parseI(s) {
@@ -1483,6 +1491,28 @@ Narrow: 583 nm (intercombination line)</span>
 
     function getVerdict(sA, sB, da, db, task, cA, cB) {
       const lines = [];
+
+      // ── Precise paper-verifiable comparison for ⁸⁷Rb vs ¹⁷¹Yb ──────────────
+      const isRbYb = (sA === '⁸⁷Rb' && sB === '¹⁷¹Yb') || (sA === '¹⁷¹Yb' && sB === '⁸⁷Rb');
+      if (isRbYb) {
+        const [Rb,Yb,cRb,cYb] = sA === '⁸⁷Rb' ? [sA,sB,cA,cB] : [sB,sA,cB,cA];
+        if (task === 'rydberg') {
+          lines.push(`${W(Rb,cRb)} quantum defect δ₀(nS₁/₂) = 3.1311 (Lorenzen &amp; Niemax 1983, <em>Phys. Scr.</em> 27, 300), giving n* = n − 3.131 and blockade radius R_b ≈ 10 μm at Ω/2π = 1 MHz for n ≈ 60–80. ${W(Yb,cYb)} has δ₀(nS₁/₂) ≈ 3.91, yielding a somewhat larger n* at the same principal quantum number; C₆ ∝ n*¹¹ so the difference compounds rapidly.`);
+          lines.push(`${W(Rb,cRb)} hyperfine qubit |F=1,m_F=0⟩↔|F=2,m_F=0⟩ at <strong>6,834,682,610.904 Hz</strong> (BIPM 2019 SI definition; Steck, <em>Rb-87 D Line Data</em> §5). Second-order Zeeman shift +575.15 Hz/G² keeps it first-order magnetic-field-insensitive. Practical T₂* ≈ 10–30 ms without decoupling, limited by ambient B-field noise.`);
+          lines.push(`${W(Yb,cYb)} encodes the qubit in nuclear spin I=1/2 (m_I = ±½), which is degenerate at B=0 — exactly first-order Zeeman-immune. Ma et al. (2022, <em>Nature Physics</em> 18, 783) measured T₂* &gt; 30 s in a Yb tweezer array, over 1000× longer than ${W(Rb,cRb)} without dynamical decoupling. Best demonstrated Rydberg CZ gate in Rb: F = 99.50 ± 0.06% (Evered et al. 2023, <em>Nature</em> 622, 268).`);
+        } else if (task === 'clocks') {
+          lines.push(`${W(Rb,cRb)} has no optical clock transition. Its D2 line (780 nm, Γ/2π = 6.07 MHz) and D1 line (795 nm, Γ/2π = 5.75 MHz) are far too broad. The best Rb frequency reference is a microwave standard at 6,834,682,610.904 Hz — useful as a local oscillator but not a primary optical clock.`);
+          lines.push(`${W(Yb,cYb)} ¹S₀→³P₀ clock transition: <strong>518,295,836,590.863 Hz</strong> (λ = 578.419 nm; McGrew et al. 2018, <em>Nature</em> 564, 87). Natural linewidth ~10 mHz (³P₀ lifetime ≈ 20 s). Fractional systematic uncertainty: 1.4×10⁻¹⁸ (McGrew 2018). Magic wavelength λ_magic = 759.35 nm for spin-independent lattice trapping (Barber et al. 2008, <em>PRL</em> 100, 103002). Blackbody radiation shift: −2.13×10⁻¹⁵ at 300 K.`);
+          lines.push(`Narrow intercombination line ¹S₀→³P₁ at 556 nm, Γ/2π = 182 kHz in ${W(Yb,cYb)} → Doppler limit T_D = ℏΓ/2k_B = <strong>4.4 μK</strong> — enabling sub-recoil pre-cooling before clock interrogation. The fermionic isotope (I=1/2) benefits from Pauli-suppressed collisional frequency shifts, critical for high-accuracy clocks.`);
+        } else if (task === 'sim') {
+          lines.push(`Scattering lengths: ${W(Rb,cRb)} a(⁸⁷Rb) = <strong>100.9 a₀</strong> (van Kempen et al. 2002, <em>PRL</em> 88, 093201); ${W(Yb,cYb)} a(¹⁷¹Yb) = <strong>−3 ± 14 a₀</strong> (Kitagawa et al. 2008, <em>PRA</em> 77, 042703). ${W(Rb,cRb)}'s large positive a supports stable BECs and repulsive Bose-Hubbard physics. ${W(Yb,cYb)}'s near-zero a places it close to the ideal non-interacting limit — exotic but not tunable.`);
+          lines.push(`${W(Rb,cRb)} has magnetic Feshbach resonances (e.g. at ~1007 G in |F=1,m_F=1⟩) enabling continuous BEC-BCS crossover scans. ${W(Yb,cYb)} has <em>no</em> Feshbach resonances: the closed-shell ¹S₀ ground state has zero electron spin (J=0, S=0), leaving no magnetic tuning handle. Optical Feshbach or orbital-state-dependent lattices are the only interaction-control routes.`);
+          lines.push(`${W(Yb,cYb)} nuclear spin I=1/2 is decoupled from the ¹S₀ electronic ground state (J=0) → SU(2) spin symmetry exact to nuclear-spin level. Two-orbital model {¹S₀,³P₀}⊗{m_I=±½} maps onto Kugel-Khomskii orbital exchange (Gorshkov et al. 2010, <em>Nature Physics</em> 6, 289; Cazalilla &amp; Rey 2014, <em>Rep. Prog. Phys.</em> 77, 124401). Orbital-spin exchange was observed by Scazza et al. (2014, <em>Nature Physics</em> 10, 779). ${W(Rb,cRb)} (I=3/2) can in principle realize SU(4) in the F=3/2 manifold but hyperfine coupling and differential Zeeman shifts break the symmetry at finite B.`);
+        }
+        return lines.map(l => `<p>${l}</p>`).join('');
+      }
+
+      // ── Generic verdict for all other atom pairs ─────────────────────────────
       if (task === 'rydberg') {
         if (da.Z !== db.Z) {
           const [ws,wc,wz,lz] = da.Z > db.Z ? [sA,cA,da.Z,db.Z] : [sB,cB,db.Z,da.Z];
@@ -1492,8 +1522,8 @@ Narrow: 583 nm (intercombination line)</span>
         }
         if (da.HF > 0 || db.HF > 0) {
           const [ws,wc,wh,lh,ls,lc] = da.HF >= db.HF ? [sA,cA,da.HF,db.HF,sB,cB] : [sB,cB,db.HF,da.HF,sA,cA];
-          if (lh < 0.1) lines.push(`${W(ws,wc)} supports a ground-state hyperfine qubit at ${wh.toFixed(3)} GHz; ${W(ls,lc)} has no ground-HF qubit. Hyperfine qubits in clock states (m_F=0) have long coherence times and are easier to address with commercial microwave sources.`);
-          else lines.push(`Both are hyperfine qubits — ${sA} at ${da.HF.toFixed(3)} GHz, ${sB} at ${db.HF.toFixed(3)} GHz. ${W(ws,wc)}'s higher splitting sits in a quieter thermal-noise floor for microwave control.`);
+          if (lh < 0.1) lines.push(`${W(ws,wc)} supports a ground-state hyperfine qubit at ${wh.toFixed(6)} GHz; ${W(ls,lc)} has no ground-HF qubit. Hyperfine qubits in clock states (m_F=0) have long coherence times and are easier to address with commercial microwave sources.`);
+          else lines.push(`Both are hyperfine qubits — ${sA} at ${da.HF.toFixed(6)} GHz, ${sB} at ${db.HF.toFixed(6)} GHz. ${W(ws,wc)}'s higher splitting sits in a quieter thermal-noise floor for microwave control.`);
         } else {
           lines.push(`Neither atom has a ground-state hyperfine qubit. Both use a clock-transition qubit (¹S₀→³P₀ stretched-state encoding), requiring a bias magnetic field and careful state preparation.`);
         }
