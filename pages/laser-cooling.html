@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="Laser Cooling, AMO Career">
   <meta name="twitter:description" content="Unified theory of optical cooling techniques, sideband, PG, GM, EIT, RSB.">
 
-  <link rel="stylesheet" href="../css/styles.css?v=6">
+  <link rel="stylesheet" href="../css/styles.css?v=7">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
@@ -276,8 +276,8 @@
         <div class="stat-grid">
           <div class="stat-card">
             <div class="stat-icon">🌡️</div>
-            <div class="stat-val">~20 µK</div>
-            <div class="stat-desc">Typical MOT temperature after Doppler cooling</div>
+            <div class="stat-val">~150 µK</div>
+            <div class="stat-desc">Doppler limit T_D = ℏΓ/(2k_B): Rb 146 µK, Cs 126 µK, Na 235 µK</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">❄️</div>
@@ -838,6 +838,21 @@
           <figcaption>Spin cooling model for gray molasses. Blue-detuned light creates a differential light shift Δs between the bright |↑⟩ and dark |↓⟩ states. Optical pumping γ₊ transfers atoms to the dark state. The coherent Raman coupling ηΩ_R (dashed) links |↑,n⟩ to |↓,n−1⟩, removing one motional quantum per Raman+pump cycle. The residual back-pumping rate γ₋ ≪ γ₊ sets the temperature floor.</figcaption>
         </figure>
 
+        <!-- ── 3-phase step-by-step animation ── -->
+        <figure style="margin:2rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-med);border-radius:var(--r-lg);overflow:hidden;">
+            <!-- phase label bar -->
+            <div id="gm-phase-bar" style="display:flex;gap:0;border-bottom:1px solid var(--border);">
+              <div data-ph="0" style="flex:1;padding:.55rem .5rem;text-align:center;font-size:.78rem;font-weight:700;font-family:Inter,sans-serif;cursor:default;transition:background .25s,color .25s;">① AC Stark shift</div>
+              <div data-ph="1" style="flex:1;padding:.55rem .5rem;text-align:center;font-size:.78rem;font-weight:700;font-family:Inter,sans-serif;cursor:default;transition:background .25s,color .25s;">② Optical pumping</div>
+              <div data-ph="2" style="flex:1;padding:.55rem .5rem;text-align:center;font-size:.78rem;font-weight:700;font-family:Inter,sans-serif;cursor:default;transition:background .25s,color .25s;">③ Dark-state + Raman</div>
+            </div>
+            <canvas id="gmAnimCanvas" width="520" height="210" style="display:block;width:100%;height:auto;"></canvas>
+            <div id="gm-caption" style="padding:.65rem 1rem;font-size:.8rem;color:var(--text-secondary);min-height:2.6rem;line-height:1.55;font-family:Inter,sans-serif;border-top:1px solid var(--border);"></div>
+          </div>
+          <figcaption>Step-by-step loop showing the three stages of gray molasses cooling. Each phase runs for ~2 s before fading into the next, cycling continuously.</figcaption>
+        </figure>
+
         <hr class="section-divider">
       </section>
 
@@ -1226,52 +1241,52 @@
         <h3 style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:1rem;border-left:3px solid #22d3ee;padding-left:.75rem;">🎬 Videos, Build the Intuition</h3>
         <div class="two-col" style="margin-bottom:2rem;">
 
-          <a class="resource-card" href="https://www.youtube.com/results?search_query=William+Phillips+Nobel+lecture+laser+cooling" target="_blank" rel="noopener">
+          <a class="resource-card" href="https://www.nobelprize.org/prizes/physics/1997/phillips/lecture/" target="_blank" rel="noopener">
             <div class="rc-header">
               <span class="rc-icon">🏅</span>
               <div>
                 <div class="rc-title">William D. Phillips, Nobel Lecture (1997)</div>
-                <div class="rc-meta">Nobel Prize YouTube channel · ~50 min</div>
+                <div class="rc-meta">Nobel Prize · "Nearly Absolute Zero: The Story of Laser Cooling"</div>
               </div>
             </div>
-            <p class="rc-desc">The clearest physical intuition for laser cooling from one of its inventors. Phillips walks through Doppler cooling, optical molasses, and sub-Doppler mechanisms with hand-drawn diagrams. Essential first watch.</p>
+            <p class="rc-desc">The clearest physical intuition for laser cooling from one of its inventors. Phillips walks through Doppler cooling, optical molasses, and sub-Doppler mechanisms with hand-drawn diagrams. The written lecture and slides are freely available on the Nobel Prize site. Essential first read.</p>
             <span class="rc-tag">Foundational · Nobel lecture</span>
           </a>
 
-          <a class="resource-card" href="https://www.youtube.com/results?search_query=laser+cooling+atoms+Veritasium+coldest" target="_blank" rel="noopener">
+          <a class="resource-card" href="https://www.youtube.com/watch?v=uh-e4UFwzqE" target="_blank" rel="noopener">
             <div class="rc-header">
               <span class="rc-icon">🎥</span>
               <div>
-                <div class="rc-title">How to Make the Coldest Thing in the Universe</div>
+                <div class="rc-title">How We Make the Coldest Things in the Universe</div>
                 <div class="rc-meta">Veritasium · ~10 min</div>
               </div>
             </div>
-            <p class="rc-desc">Visual, accessible introduction to laser cooling for a general science audience. Good for building the core mental model of photon momentum kicks before diving into the physics.</p>
+            <p class="rc-desc">Visual, accessible introduction to laser cooling for a general science audience. Good for building the core mental model of photon momentum kicks before diving into the physics. Derek Muller visits NIST to see real laser cooling in action.</p>
             <span class="rc-tag">Introductory · Visual</span>
           </a>
 
-          <a class="resource-card" href="https://www.youtube.com/results?search_query=sideband+cooling+trapped+ion+neutral+atom+lecture" target="_blank" rel="noopener">
+          <a class="resource-card" href="https://www.youtube.com/watch?v=4tIImW_3vL0" target="_blank" rel="noopener">
             <div class="rc-header">
               <span class="rc-icon">🎓</span>
               <div>
-                <div class="rc-title">Sideband Cooling, Graduate Lecture</div>
-                <div class="rc-meta">Search: "sideband cooling trapped ion lecture" · Various ICAP/DAMOP talks</div>
+                <div class="rc-title">The Coolest Stuff in the Universe — W. D. Phillips</div>
+                <div class="rc-meta">NIST / YouTube · ~60 min public lecture</div>
               </div>
             </div>
-            <p class="rc-desc">Several graduate-level recorded lectures from ICAP, DAMOP, and Les Houches summer schools cover resolved sideband cooling and the Lamb-Dicke regime in detail. Search for talks by Dietrich Leibfried (NIST) or Jun Ye (JILA).</p>
-            <span class="rc-tag">Graduate level · Sideband cooling</span>
+            <p class="rc-desc">Phillips delivers his famous public lecture on laser cooling — much more engaging than reading the Nobel text. Covers Doppler cooling, the optical molasses surprise, sub-Doppler temperatures, and BEC. Highly recommended before tackling the technical papers.</p>
+            <span class="rc-tag">Foundational · Full lecture</span>
           </a>
 
-          <a class="resource-card" href="https://www.youtube.com/results?search_query=gray+molasses+cooling+optical+tweezer+AMO+lecture" target="_blank" rel="noopener">
+          <a class="resource-card" href="https://jila.colorado.edu/yelabs/research/laser-cooling-and-trapping" target="_blank" rel="noopener">
             <div class="rc-header">
               <span class="rc-icon">🎓</span>
               <div>
-                <div class="rc-title">Gray Molasses &amp; Sub-Doppler Cooling</div>
-                <div class="rc-meta">Search: "gray molasses cooling lecture" · Summer school recordings</div>
+                <div class="rc-title">Gray Molasses &amp; EIT Cooling — Ye Lab, JILA</div>
+                <div class="rc-meta">JILA / Jun Ye group · Research overview + papers</div>
               </div>
             </div>
-            <p class="rc-desc">Recorded talks from Les Houches and Cargese summer schools cover sub-Doppler mechanisms including gray molasses and EIT cooling. Look for lectures by Jean Dalibard and Claude Cohen-Tannoudji whose theoretical framework underlies all of this.</p>
-            <span class="rc-tag">Graduate level · Sub-Doppler</span>
+            <p class="rc-desc">The Ye Lab at JILA pioneered many sub-Doppler techniques for alkaline-earth atoms. Their research pages link to key papers on gray molasses, EIT cooling, and sideband cooling in optical lattices. Excellent for connecting the theory on this page to experiment.</p>
+            <span class="rc-tag">Graduate level · Sub-Doppler · EIT</span>
           </a>
 
         </div>
@@ -2119,6 +2134,437 @@ if (typeof renderMathInElement === 'undefined') {
 
     requestAnimationFrame(frame);
   }
+  requestAnimationFrame(frame);
+})();
+
+// ── Gray Molasses 3-phase animation ────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('gmAnimCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 520, H = 210;
+
+  // Phase timing (frames at ~60fps)
+  const PHASE_HOLD = 120;   // frames each phase is fully visible
+  const PHASE_FADE = 30;    // crossfade frames
+  const TOTAL = (PHASE_HOLD + PHASE_FADE) * 3;
+
+  const CAPTIONS = [
+    'Phase ①: Blue-detuned light creates an AC Stark (light) shift. The bright state |↑⟩ is shifted up by Δs while the dark state |↓⟩ is immune — it cannot absorb photons, so it feels no light shift. This energy gap Δs drives the spin-selective dynamics.',
+    'Phase ②: The bright state |↑⟩ scatters photons (rate γ₊). Each absorption–spontaneous-emission cycle optically pumps the atom toward the dark state |↓⟩. Once in |↓⟩ the atom is transparent — it stops scattering and stops heating.',
+    'Phase ③: A coherent Raman coupling (rate ηΩ_R, Lamb-Dicke suppressed) links |↑, n⟩ to |↓, n−1⟩. Each pump cycle removes exactly one motional quantum. Scattering is blocked on |↓⟩ (✗), so cooling is nearly recoil-free. The loop repeats until ⟨n⟩ → 0.',
+  ];
+
+  const phBar = document.getElementById('gm-phase-bar');
+  const capEl = document.getElementById('gm-caption');
+
+  function setPhase(ph) {
+    if (phBar) {
+      Array.from(phBar.children).forEach((el, i) => {
+        el.style.background = i === ph ? 'rgba(96,165,250,0.18)' : 'transparent';
+        el.style.color = i === ph ? '#60a5fa' : 'var(--text-muted)';
+      });
+    }
+    if (capEl) capEl.textContent = CAPTIONS[ph];
+  }
+
+  // ── Drawing helpers ──────────────────────────────────────────────────────
+  const PINK  = '#f472b6';
+  const TEAL  = '#22d3ee';
+  const GREEN = '#4ade80';
+  const RED   = '#f87171';
+  const GRAY  = '#475569';
+  const WHITE = '#e2e8f0';
+
+  function clear() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#0c1526';
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function txt(s, x, y, color, size, align, font) {
+    ctx.font = (font || 'Inter,sans-serif') === 'mono'
+      ? `${size||11}px JetBrains Mono,monospace`
+      : `${size||11}px Inter,sans-serif`;
+    ctx.textAlign = align || 'left';
+    ctx.fillStyle = color;
+    ctx.fillText(s, x, y);
+  }
+
+  function arrow(x1, y1, x2, y2, color, w, dash) {
+    ctx.save();
+    ctx.strokeStyle = color; ctx.lineWidth = w || 1.8;
+    if (dash) ctx.setLineDash(dash); else ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    // arrowhead
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const hs = 7;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - hs * Math.cos(angle - 0.4), y2 - hs * Math.sin(angle - 0.4));
+    ctx.lineTo(x2 - hs * Math.cos(angle + 0.4), y2 - hs * Math.sin(angle + 0.4));
+    ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+    ctx.restore();
+  }
+
+  function curveArrow(cpx, cpy, x1, y1, x2, y2, color, w, dash) {
+    ctx.save();
+    ctx.strokeStyle = color; ctx.lineWidth = w || 1.8;
+    if (dash) ctx.setLineDash(dash); else ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x1, y1);
+    ctx.quadraticCurveTo(cpx, cpy, x2, y2); ctx.stroke();
+    const angle = Math.atan2(y2 - cpy, x2 - cpx);
+    const hs = 7;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - hs * Math.cos(angle - 0.4), y2 - hs * Math.sin(angle - 0.4));
+    ctx.lineTo(x2 - hs * Math.cos(angle + 0.4), y2 - hs * Math.sin(angle + 0.4));
+    ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+    ctx.restore();
+  }
+
+  function dot(x, y, r, color, glow) {
+    ctx.save();
+    if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 12; }
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Layout constants ─────────────────────────────────────────────────────
+  const LEFT = 110;   // left edge of energy levels
+  const BRIGHT_Y = 60;
+  const DARK_Y   = 150;
+  const LEVEL_W  = 280;
+  const MID_X    = LEFT + LEVEL_W / 2;
+
+  function drawBareLabels(alpha) {
+    ctx.globalAlpha = alpha;
+    txt('|↑⟩  Bright', 10, BRIGHT_Y + 4, PINK, 11);
+    txt('|↓⟩  Dark', 10, DARK_Y + 4, TEAL, 11);
+    ctx.globalAlpha = 1;
+  }
+
+  function drawLevels(brightY, darkY, alpha) {
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = PINK; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(LEFT, brightY); ctx.lineTo(LEFT + LEVEL_W, brightY); ctx.stroke();
+    ctx.strokeStyle = TEAL; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(LEFT, darkY); ctx.lineTo(LEFT + LEVEL_W, darkY); ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawShiftBrace(alpha, t) {
+    // Animated bracket showing the Δs gap
+    const bX = LEFT + LEVEL_W + 18;
+    const pulse = 1 + 0.06 * Math.sin(t * 0.12);
+    ctx.globalAlpha = alpha * 0.9;
+    ctx.strokeStyle = GRAY; ctx.lineWidth = 1; ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(bX, BRIGHT_Y); ctx.lineTo(bX + 6, BRIGHT_Y);
+    ctx.moveTo(bX + 3, BRIGHT_Y); ctx.lineTo(bX + 3, DARK_Y);
+    ctx.moveTo(bX, DARK_Y); ctx.lineTo(bX + 6, DARK_Y);
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(bX + 16, (BRIGHT_Y + DARK_Y) / 2);
+    ctx.scale(pulse, pulse);
+    txt('Δs', -8, 4, '#94a3b8', 11);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Phase 0: AC Stark shift ───────────────────────────────────────────────
+  function drawPhase0(alpha, t) {
+    ctx.globalAlpha = alpha;
+
+    // Laser beam (blue photons coming in from left)
+    const beamY = 30;
+    const nPhotons = 3;
+    for (let i = 0; i < nPhotons; i++) {
+      const px = ((t * 1.4 + i * 80) % 320) + LEFT - 60;
+      if (px > LEFT - 60 && px < LEFT + 10) {
+        ctx.globalAlpha = alpha * 0.7;
+        ctx.beginPath(); ctx.arc(px, beamY, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#60a5fa'; ctx.fill();
+        // wavy line
+        ctx.strokeStyle = 'rgba(96,165,250,0.35)'; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+        ctx.beginPath(); ctx.moveTo(px - 14, beamY); ctx.lineTo(px - 4, beamY); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+    // continuous beam line
+    ctx.globalAlpha = alpha * 0.25;
+    ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(20, beamY); ctx.lineTo(LEFT - 5, beamY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.globalAlpha = alpha;
+    txt('σ⁺ light (blue detuned)', 20, beamY - 10, '#60a5fa', 10);
+
+    // Bare levels first (fades into shifted bright)
+    const shiftAmt = 55 * Math.min(1, (t % 90) / 45); // 0→55px over first 45 frames
+    const shiftedBrightY = BRIGHT_Y - shiftAmt * 0.55; // shift bright UP
+
+    drawLevels(shiftedBrightY, DARK_Y, 1);
+    drawBareLabels(1);
+
+    // Annotation: |↑⟩ shifts up
+    if (shiftAmt > 5) {
+      ctx.globalAlpha = alpha * Math.min(1, shiftAmt / 20);
+      const aFrac = Math.min(1, shiftAmt / 20);
+      arrow(LEFT + LEVEL_W + 5, BRIGHT_Y + 2, LEFT + LEVEL_W + 5, shiftedBrightY - 2, '#f472b6', 1.5);
+      txt('+Δs', LEFT + LEVEL_W + 12, (BRIGHT_Y + shiftedBrightY) / 2 + 4, PINK, 10);
+      ctx.globalAlpha = alpha;
+
+      // Dark state label: immune
+      txt('(no shift — immune)', 10, DARK_Y + 17, GRAY, 9);
+    }
+
+    drawShiftBrace(alpha, t);
+
+    // Phonon ladder hints on bright
+    const nLevels = 3;
+    for (let n = 0; n < nLevels; n++) {
+      const ny = shiftedBrightY - n * 18;
+      if (n === 0) continue;
+      ctx.globalAlpha = alpha * 0.45;
+      ctx.strokeStyle = PINK; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(LEFT, ny); ctx.lineTo(LEFT + LEVEL_W, ny); ctx.stroke();
+      ctx.setLineDash([]);
+      txt('n='+n, LEFT - 22, ny + 4, GRAY, 8, 'right', 'mono');
+    }
+    txt('n=0', LEFT - 22, DARK_Y + 4, GRAY, 8, 'right', 'mono');
+    ctx.globalAlpha = 1;
+
+    // Atom on bright state, n=1
+    const atomX = MID_X;
+    dot(atomX, shiftedBrightY - 18, 8, PINK, true);
+    txt('atom', atomX + 12, shiftedBrightY - 15, PINK, 9);
+
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Phase 1: Optical pumping ──────────────────────────────────────────────
+  function drawPhase1(alpha, t) {
+    ctx.globalAlpha = alpha;
+
+    drawLevels(BRIGHT_Y - 30, DARK_Y, 1);
+    drawBareLabels(1);
+
+    // Shifted bright label
+    txt('(light shift +Δs)', 10, BRIGHT_Y - 30 + 16, GRAY, 9);
+    txt('(immune)', 10, DARK_Y + 17, GRAY, 9);
+
+    drawShiftBrace(alpha, t);
+
+    // Atom oscillating: starts on bright n=1, absorbed, excited, emits, lands dark n=0
+    const cycle = 80;
+    const phase = (t % cycle) / cycle;
+
+    // States: 0-0.3 on bright, 0.3-0.6 excited (absorption), 0.6-1.0 emitting → dark
+    let atomX, atomY, atomColor, atomLabel;
+    const EXCITED_Y = 15;
+
+    if (phase < 0.28) {
+      // sitting on bright |↑, n=1⟩
+      atomX = MID_X - 40;
+      atomY = BRIGHT_Y - 30 - 18;
+      atomColor = PINK;
+      atomLabel = '|↑, n=1⟩';
+    } else if (phase < 0.55) {
+      // absorbing photon — move toward excited state
+      const frac = (phase - 0.28) / 0.27;
+      atomX = MID_X - 40;
+      atomY = (BRIGHT_Y - 30 - 18) * (1 - frac) + EXCITED_Y * frac;
+      atomColor = '#fbbf24';
+      atomLabel = '|e⟩ (excited)';
+      // incoming photon arrow
+      ctx.globalAlpha = alpha * (1 - frac);
+      arrow(atomX - 50, atomY, atomX - 12, atomY, '#60a5fa', 1.5);
+      txt('γ₊', atomX - 60, atomY - 8, '#60a5fa', 10);
+      ctx.globalAlpha = alpha;
+    } else {
+      // spontaneous emission → land on dark
+      const frac = (phase - 0.55) / 0.45;
+      atomX = MID_X - 40 + (MID_X + 40 - (MID_X - 40)) * frac;
+      atomY = EXCITED_Y * (1 - frac) + DARK_Y * frac;
+      atomColor = TEAL;
+      atomLabel = '|↓, n=0⟩';
+      // emitted photon (random direction)
+      ctx.globalAlpha = alpha * frac * 0.8;
+      arrow(atomX, atomY, atomX + 35, atomY - 25, '#fbbf24', 1.2);
+      ctx.globalAlpha = alpha;
+    }
+
+    dot(atomX, atomY, 9, atomColor, true);
+    txt(atomLabel, atomX + 13, atomY + 4, atomColor, 9);
+
+    // population build-up indicator on dark state
+    const nPop = Math.floor((t % (cycle * 4)) / cycle);
+    for (let i = 0; i < Math.min(nPop, 4); i++) {
+      dot(LEFT + 40 + i * 25, DARK_Y, 5, TEAL, false);
+    }
+    if (nPop > 0) txt('population →', LEFT + 10, DARK_Y - 12, TEAL, 9);
+
+    // Large γ₊ label
+    ctx.globalAlpha = alpha;
+    ctx.font = 'bold 14px Inter,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = GREEN;
+    ctx.fillText('γ₊  (bright → dark)', W - 130, 45);
+    curveArrow(LEFT + LEVEL_W + 30, (BRIGHT_Y - 30 + DARK_Y) / 2,
+               LEFT + LEVEL_W - 10, BRIGHT_Y - 30, LEFT + LEVEL_W - 10, DARK_Y,
+               GREEN, 1.8);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Phase 2: Dark state + Raman coupling ─────────────────────────────────
+  function drawPhase2(alpha, t) {
+    ctx.globalAlpha = alpha;
+
+    // Draw 3 motional levels for each spin
+    const levels = [
+      { y: BRIGHT_Y - 36, n: 2, color: PINK,  state: '|↑,n=2⟩' },
+      { y: BRIGHT_Y - 18, n: 1, color: PINK,  state: '|↑,n=1⟩' },
+      { y: BRIGHT_Y,      n: 0, color: PINK,  state: '|↑,n=0⟩' },
+      { y: DARK_Y   - 36, n: 2, color: TEAL,  state: '|↓,n=2⟩' },
+      { y: DARK_Y   - 18, n: 1, color: TEAL,  state: '|↓,n=1⟩' },
+      { y: DARK_Y,        n: 0, color: TEAL,  state: '|↓,n=0⟩' },
+    ];
+
+    levels.forEach(lv => {
+      ctx.globalAlpha = alpha * 0.7;
+      ctx.strokeStyle = lv.color; ctx.lineWidth = lv.n === 0 ? 2.5 : 1.2;
+      ctx.setLineDash(lv.n === 0 ? [] : [4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(LEFT, lv.y); ctx.lineTo(LEFT + LEVEL_W, lv.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = alpha * 0.5;
+      txt('n='+lv.n, LEFT - 22, lv.y + 4, GRAY, 8, 'right', 'mono');
+    });
+
+    txt('|↑⟩  Bright', 10, BRIGHT_Y + 4, PINK, 11);
+    txt('|↓⟩  Dark', 10, DARK_Y + 4, TEAL, 11);
+    drawShiftBrace(alpha, t);
+
+    // Raman coupling: |↑,n=1⟩ → |↓,n=0⟩, animated
+    const cycle = 100;
+    const phase = (t % cycle) / cycle;
+
+    ctx.globalAlpha = alpha;
+
+    if (phase < 0.5) {
+      // atom on bright n=1, Raman coupling active
+      const frac = phase / 0.5;
+      const bY = BRIGHT_Y - 18;
+      const dY = DARK_Y;
+      const atomX = MID_X - 20;
+      const atomY = bY * (1 - frac) + dY * frac;
+      const col = phase < 0.25 ? PINK : TEAL;
+      dot(atomX, atomY, 9, col, true);
+
+      // dashed Raman coupling arrow (diagonal, |↑,n=1⟩ → |↓,n=0⟩)
+      ctx.globalAlpha = alpha * 0.85;
+      arrow(LEFT + LEVEL_W * 0.35, BRIGHT_Y - 18,
+            LEFT + LEVEL_W * 0.55, DARK_Y,
+            TEAL, 1.8, [5, 3]);
+      txt('ηΩR', LEFT + LEVEL_W * 0.42, (BRIGHT_Y - 18 + DARK_Y) / 2 - 4, TEAL, 10);
+      txt('(Raman)', LEFT + LEVEL_W * 0.42, (BRIGHT_Y - 18 + DARK_Y) / 2 + 8, GRAY, 8);
+
+      // Label atom state
+      const label = frac < 0.5 ? '|↑,n=1⟩' : '|↓,n=0⟩';
+      ctx.globalAlpha = alpha;
+      txt(label, atomX + 13, atomY + 4, col, 9);
+
+      // delta-n annotation
+      const pulsed = 0.6 + 0.4 * Math.sin(t * 0.2);
+      ctx.globalAlpha = alpha * pulsed;
+      txt('Δn = −1', LEFT + LEVEL_W * 0.6, (BRIGHT_Y - 18 + DARK_Y) / 2, GREEN, 10);
+    } else {
+      // atom on dark n=0, photon scatter BLOCKED
+      dot(MID_X, DARK_Y, 9, TEAL, true);
+      txt('|↓,n=0⟩', MID_X + 13, DARK_Y + 4, TEAL, 9);
+
+      // X mark — no scatter
+      const bkX = MID_X - 50, bkY = DARK_Y - 40;
+      ctx.globalAlpha = alpha;
+      ctx.font = 'bold 18px Inter,sans-serif'; ctx.textAlign = 'center';
+      ctx.fillStyle = RED;
+      ctx.fillText('✗', bkX, bkY);
+      txt('scatter blocked', bkX, bkY + 14, RED, 9, 'center');
+
+      // photon approaching and bouncing off
+      const pFrac = (phase - 0.5) / 0.5;
+      const photX = MID_X - 50 - 40 * (1 - pFrac);
+      ctx.globalAlpha = alpha * 0.6;
+      ctx.beginPath(); ctx.arc(photX, DARK_Y, 4, 0, 2 * Math.PI);
+      ctx.fillStyle = '#60a5fa'; ctx.fill();
+    }
+
+    // Always show: γ₋ ≪ γ₊ label
+    ctx.globalAlpha = alpha * 0.65;
+    ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'left';
+    ctx.fillStyle = RED;
+    ctx.fillText('γ₋ ≪ γ₊  (residual pumping sets T floor)', LEFT, H - 10);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Main loop ─────────────────────────────────────────────────────────────
+  let tick = 0;
+  let running = true;
+
+  // Pause when off-screen
+  const obs = new IntersectionObserver(entries => {
+    running = entries[0].isIntersecting;
+  }, { threshold: 0.1 });
+  obs.observe(canvas);
+
+  function frame() {
+    if (!running) { requestAnimationFrame(frame); return; }
+
+    const pt = tick % TOTAL;
+    const phaseLen = PHASE_HOLD + PHASE_FADE;
+
+    // Determine current and next phase + crossfade alpha
+    let ph0 = Math.floor(pt / phaseLen);
+    let ph1 = (ph0 + 1) % 3;
+    const within = pt - ph0 * phaseLen;
+    let a0 = 1, a1 = 0;
+    if (within >= PHASE_HOLD) {
+      const f = (within - PHASE_HOLD) / PHASE_FADE;
+      a0 = 1 - f;
+      a1 = f;
+    }
+
+    const localT = within;
+
+    clear();
+
+    // Draw blended phases
+    if (a0 > 0.02) {
+      if (ph0 === 0) drawPhase0(a0, localT);
+      else if (ph0 === 1) drawPhase1(a0, localT);
+      else drawPhase2(a0, localT);
+    }
+    if (a1 > 0.02) {
+      if (ph1 === 0) drawPhase0(a1, 0);
+      else if (ph1 === 1) drawPhase1(a1, 0);
+      else drawPhase2(a1, 0);
+    }
+
+    // Update phase bar
+    const displayPh = a1 > 0.5 ? ph1 : ph0;
+    setPhase(displayPh);
+
+    tick++;
+    requestAnimationFrame(frame);
+  }
+
+  setPhase(0);
   requestAnimationFrame(frame);
 })();
 
