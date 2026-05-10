@@ -358,6 +358,7 @@
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap;">
             <label style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#fb923c;">0.00 ms</strong></label>
             <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#fb923c;">
+            <button class="run-btn" id="playTrajBtn" type="button" onclick="toggleTrajPlay()" style="padding:.45rem .75rem;font-size:.78rem;">▶ Play</button>
           </div>
           <canvas id="trajCanvas" width="560" height="220" style="width:100%;border-radius:6px;background:#03080f;"></canvas>
           <div id="trajInfo" style="font-family:var(--mono);font-size:.78rem;color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
@@ -446,6 +447,15 @@
       <li><span class="dot">▸</span><strong>Thermometry, not direct trap-frequency metrology:</strong> Release-recapture primarily extracts temperature for a known potential. Trap frequencies enter through the assumed waist, depth, and Gaussian geometry; use parametric heating or sideband spectroscopy for a direct frequency measurement.</li>
       <li><span class="dot">▸</span><strong>Statistical noise:</strong> For N_MC = 600, standard error ≈ 1/√600 ≈ 4%. Increase to 1500 for smoother curves.</li>
     </ul>
+  </section>
+
+  <section class="section-block anim-in delay-2">
+    <div class="section-title">Sources</div>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.78.033425" target="_blank" rel="noopener">Tuchendler et al. (2008), energy distribution and thermometry of a single atom in a tweezer</a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevX.2.041014" target="_blank" rel="noopener">Kaufman et al. (2012), single-atom tweezer cooling and thermometry context</a>
+      <a class="read-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">Steck alkali data sheets for line and polarizability inputs</a>
+    </div>
   </section>
 
     </div>
@@ -719,6 +729,7 @@ function runSimulation() {
 
 /* ─── Trajectory visualiser ───────────────────────────────── */
 let _trajAtoms = [], _trajTp = null, _trajTmax = 0;
+let _trajAnim = null, _trajLastTs = 0;
 
 function buildTrajViz(tp, T_uK, dt_max_s) {
   _trajTp = tp; _trajTmax = dt_max_s;
@@ -732,7 +743,34 @@ function buildTrajViz(tp, T_uK, dt_max_s) {
   }));
   document.getElementById('trajDiv').style.display = '';
   document.getElementById('trajSlider').oninput = () => drawTrajCanvas();
+  document.getElementById('trajSlider').value = 0;
+  stopTrajPlay();
   drawTrajCanvas();
+}
+
+function stopTrajPlay() {
+  if (_trajAnim) cancelAnimationFrame(_trajAnim);
+  _trajAnim = null; _trajLastTs = 0;
+  const btn = document.getElementById('playTrajBtn');
+  if (btn) btn.textContent = '▶ Play';
+}
+
+function toggleTrajPlay() {
+  const slider = document.getElementById('trajSlider');
+  const btn = document.getElementById('playTrajBtn');
+  if (!_trajTp || !slider || !btn) return;
+  if (_trajAnim) { stopTrajPlay(); return; }
+  if (+slider.value >= 100) slider.value = 0;
+  btn.textContent = '⏸ Pause';
+  const step = (ts) => {
+    if (!_trajLastTs) _trajLastTs = ts;
+    const dt = ts - _trajLastTs; _trajLastTs = ts;
+    slider.value = Math.min(100, +slider.value + dt / 45);
+    drawTrajCanvas();
+    if (+slider.value >= 100) { stopTrajPlay(); return; }
+    _trajAnim = requestAnimationFrame(step);
+  };
+  _trajAnim = requestAnimationFrame(step);
 }
 
 function drawTrajCanvas() {
