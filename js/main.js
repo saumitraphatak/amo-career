@@ -9,41 +9,52 @@
    NAV DATA
    ───────────────────────────────────────────────────── */
 const NAV = {
-  tools: [
-    { key: 'atom-library',         label: 'Atom Library',            icon: '⚛️',  color: '#38bdf8', href: 'pages/atom-library.html'         },
-    { key: 'lab-techniques',       label: 'Lab Setup & Techniques',     icon: '🔬',  color: '#34d399', href: 'pages/lab-techniques.html'       },
-    { key: 'rydberg-calculator',   label: 'Rydberg States & Blockade',  icon: '🔮',  color: '#818cf8', href: 'pages/rydberg-calculator.html'   },
-    { key: 'imaging-calculator',   label: 'Single-Atom Detection SNR',  icon: '📷',  color: '#34d399', href: 'pages/imaging-calculator.html'   },
-    { key: 'tof-calculator',       label: 'Atom Temperature (TOF)',      icon: '🌡️',  color: '#38bdf8', href: 'pages/tof-calculator.html'        },
-    { key: 'mot-designer',         label: 'MOT & Trap Designer',         icon: '🧲',  color: '#fb923c', href: 'pages/mot-designer.html'          },
-    { key: 'fidelity-budget',      label: 'Two-Qubit Gate Error Budget', icon: '📊',  color: '#f87171', href: 'pages/fidelity-budget.html'       },
-    { key: 'release-recapture',    label: 'Tweezer Thermometry (R&R)',   icon: '🎯',  color: '#fb923c', href: 'pages/release-recapture.html'    },
-    { key: 'lab-calculators',      label: 'Quick Lab Calculators',       icon: '🧮',  color: '#fbbf24', href: 'pages/lab-calculators.html'      },
-    { key: 'laser-locking',        label: 'Laser Stabilization Guide',   icon: '🔐',  color: '#f87171', href: 'pages/laser-locking.html'        },
-    { key: 'zernike',              label: 'Wavefront & Aberration Viewer', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'             },
-    { key: 'polarimetry',          label: 'Polarization State Analyzer', icon: '🔭',  color: '#e879f9', href: 'pages/polarimetry.html'          },
-    { key: 'cavity-qed',           label: 'Cavity QED Calculator',       icon: '💎',  color: '#c084fc', href: 'pages/cavity-qed.html'            },
-    { key: 'laser-planner',        label: 'Laser System Planner',        icon: '💡',  color: '#f472b6', href: 'pages/laser-planner.html'         },
+  build: [
+    { key: 'atom-library',   label: 'Atom Library',                kind: 'Reference', icon: '⚛️', color: '#38bdf8', href: 'pages/atom-library.html'   },
+    { key: 'laser-planner',  label: 'Laser System Planner',        kind: 'Design tool', icon: '💡', color: '#f472b6', href: 'pages/laser-planner.html'  },
+    { key: 'mot-designer',   label: 'MOT & Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html'   },
+    { key: 'laser-locking',  label: 'Laser Stabilization Guide',   kind: 'Guide', icon: '🔐', color: '#f87171', href: 'pages/laser-locking.html'  },
+    { key: 'lab-techniques', label: 'Lab Setup & Techniques',      kind: 'Guide', icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
+    { key: 'polarimetry',    label: 'Polarization State Analyzer', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
+    { key: 'zernike',        label: 'Wavefront & Aberration Viewer', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
+    { key: 'cavity-qed',     label: 'Cavity QED Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
   ],
-  industry: [
-    { key: 'amo-groups',    label: 'AMO Research Groups',         icon: '🌍', color: '#4ade80', href: 'pages/amo-groups.html'    },
-    { key: 'paper-syllabus',label: 'AMO Reading List',            icon: '📚', color: '#818cf8', href: 'pages/paper-syllabus.html'},
-    { key: 'qc-landscape',  label: 'Quantum Computing Industry',  icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html'  },
-    { key: 'rb87-vs-yb171', label: 'Rb vs Yb Qubit Comparison',   icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
-    { key: 'rb-explorer',   label: 'Gate Benchmarking (RB)',      icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html'   },
-    { key: 'dd-playground', label: 'Qubit Coherence & Decoupling', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html'  },
+  measure: [
+    { key: 'imaging-calculator', label: 'Single-Atom Detection SNR',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },
+    { key: 'release-recapture',  label: 'Tweezer Thermometry (R&R)',  kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html'  },
+    { key: 'tof-calculator',     label: 'Atom Temperature (TOF)',     kind: 'Calculator', icon: '🌡️', color: '#38bdf8', href: 'pages/tof-calculator.html'     },
+    { key: 'lab-calculators',    label: 'Quick Lab Calculators',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
+    { key: 'fidelity-budget',    label: 'Two-Qubit Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html'   },
+    { key: 'rb-explorer',        label: 'Gate Benchmarking (RB)',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html'        },
+    { key: 'dd-playground',      label: 'Qubit Coherence & Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html'     },
   ],
   cooling: [
-    { label: 'Overview & Lamb-Dicke',      icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke',   color: '#60a5fa' },
-    { label: 'Resolved Sideband',          icon: '📡', href: 'pages/laser-cooling.html#resolved-sb',  color: '#60a5fa' },
-    { label: 'Unresolved Sideband',        icon: '〰️', href: 'pages/laser-cooling.html#unresolved-sb', color: '#60a5fa' },
-    { label: 'Dark-State Sideband',        icon: '🌑', href: 'pages/laser-cooling.html#dark-sb',      color: '#60a5fa' },
-    { label: 'Polarization Gradient',      icon: '🔄', href: 'pages/laser-cooling.html#pg',           color: '#60a5fa' },
-    { label: 'Gray Molasses',              icon: '☁️',  href: 'pages/laser-cooling.html#gm',           color: '#60a5fa' },
-    { label: 'EIT / Λ-Enhanced GM',        icon: '✨', href: 'pages/laser-cooling.html#eit-lgm',      color: '#60a5fa' },
-    { label: 'Raman Sideband',             icon: '🔀', href: 'pages/laser-cooling.html#rsb',          color: '#60a5fa' },
-    { label: 'Technique Comparison',       icon: '📊', href: 'pages/laser-cooling.html#comparison',   color: '#60a5fa' },
-    { label: 'Doppler Cooling Simulator',  icon: '🌡️', href: 'pages/cooling-simulator.html',          color: '#34d399', key: 'cooling-simulator' },
+    { key: 'laser-cooling',      label: 'Laser Cooling Overview',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
+    { label: 'Overview & Lamb-Dicke',      kind: 'Section', icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke',   color: '#60a5fa' },
+    { label: 'Resolved Sideband',          kind: 'Section', icon: '📡', href: 'pages/laser-cooling.html#resolved-sb',  color: '#60a5fa' },
+    { label: 'Gray Molasses',              kind: 'Section', icon: '☁️', href: 'pages/laser-cooling.html#gm',           color: '#60a5fa' },
+    { label: 'EIT / Λ-Enhanced GM',        kind: 'Section', icon: '✨', href: 'pages/laser-cooling.html#eit-lgm',      color: '#60a5fa' },
+    { label: 'Raman Sideband',             kind: 'Section', icon: '🔀', href: 'pages/laser-cooling.html#rsb',          color: '#60a5fa' },
+    { key: 'cooling-simulator', label: 'Doppler Cooling Simulator',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
+    { key: 'mot-designer',      label: 'MOT & Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html' },
+    { key: 'release-recapture', label: 'Release-Recapture Thermometry', kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html' },
+    { key: 'rydberg-calculator', label: 'Rydberg States & Blockade',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
+  ],
+  quantum: [
+    { key: 'learn-quantum',      label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
+    { key: 'qc-landscape',       label: 'Quantum Computing Industry', kind: 'Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
+    { key: 'rb87-vs-yb171',      label: 'Rb vs Yb Qubit Comparison',  kind: 'Deep dive', icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
+    { key: 'rydberg-calculator', label: 'Rydberg States & Blockade',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
+    { key: 'fidelity-budget',    label: 'Two-Qubit Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html' },
+    { key: 'rb-explorer',        label: 'Gate Benchmarking (RB)',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html' },
+    { key: 'dd-playground',      label: 'Qubit Coherence & Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html' },
+  ],
+  career: [
+    { key: 'amo-groups',     label: 'AMO Research Groups',        kind: 'Career map', icon: '🌍', color: '#4ade80', href: 'pages/amo-groups.html' },
+    { key: 'paper-syllabus', label: 'AMO Reading List',           kind: 'Syllabus', icon: '📚', color: '#818cf8', href: 'pages/paper-syllabus.html' },
+    { key: 'qc-landscape',   label: 'QC Industry Landscape',      kind: 'Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
+    { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Platform Comparison', kind: 'Deep dive', icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
+    { key: 'learn-quantum',  label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -63,6 +74,16 @@ const NAV = {
   ],
 };
 
+NAV.tools = [...new Map([
+  ...NAV.build,
+  ...NAV.measure,
+  ...NAV.cooling.filter(item => item.key),
+  ...NAV.quantum,
+  ...NAV.career,
+].map(item => [item.key || item.href, item])).values()];
+NAV.industry = NAV.career;
+
+
 /* ─────────────────────────────────────────────────────
    RENDER NAV
    Call: renderNav({ active: 'atom-library', root: '../' })
@@ -71,69 +92,49 @@ function renderNav({ active = '', root = '' } = {}) {
   const el = document.getElementById('nav-root');
   if (!el) return;
 
-  const toolsHTML = NAV.tools.map(t => `
-    <a class="nav-drop-item" href="${root}${t.href}" ${active === t.key ? 'aria-current="page"' : ''}>
-      <span class="nav-drop-dot" style="background:${t.color}"></span>
-      ${t.label}
+  const groupIsActive = group => group.some(t => t.key === active);
+  const itemHTML = t => `
+    <a class="nav-drop-item" href="${root}${t.href}" ${t.key && active === t.key ? 'aria-current="page"' : ''}>
+      <span class="nav-drop-dot" style="background:${t.color || '#38bdf8'}"></span>
+      <span style="display:flex;flex-direction:column;gap:.08rem;min-width:0">
+        <span>${t.label}</span>
+        ${t.kind ? `<small style="color:var(--text-muted);font-size:.68rem;letter-spacing:.02em">${t.kind}</small>` : ''}
+      </span>
     </a>
-  `).join('');
-
-  const learnHTML = NAV.learn.map(t => `
-    <a class="nav-drop-item" href="${root}${t.href}">
-      <span style="font-size:1rem;width:20px;text-align:center">${t.icon}</span>
-      ${t.label}
-    </a>
-  `).join('');
-
-  const industryHTML = NAV.industry.map(t => `
-    <a class="nav-drop-item" href="${root}${t.href}" ${active === t.key ? 'aria-current="page"' : ''}>
-      <span class="nav-drop-dot" style="background:${t.color}"></span>
-      ${t.label}
-    </a>
-  `).join('');
-
-  const coolingHTML = NAV.cooling.map(t => `
-    <a class="nav-drop-item" href="${root}${t.href}" ${t.key && active===t.key ? 'aria-current="page"' : ''}>
-      <span class="nav-drop-dot" style="background:${t.color}"></span>
-      ${t.label}
-    </a>
-  `).join('');
-
-  // Mobile tools
-  const mobileTools = NAV.tools.map(t => `
+  `;
+  const mobileItemHTML = t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
-      <span class="nav-drop-dot" style="background:${t.color};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
+      <span class="nav-drop-dot" style="background:${t.color || '#38bdf8'};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
       ${t.label}
     </a>
-  `).join('');
-
-  const mobileLearn = NAV.learn.map(t => `
-    <a class="nav-mobile-link" href="${root}${t.href}">
-      <span style="font-size:1.1rem">${t.icon}</span>
-      ${t.label}
-    </a>
-  `).join('');
-
-  const mobileIndustry = NAV.industry.map(t => `
-    <a class="nav-mobile-link" href="${root}${t.href}">
-      <span class="nav-drop-dot" style="background:${t.color};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
-      ${t.label}
-    </a>
-  `).join('');
-
-  const mobileCooling = NAV.cooling.map(t => `
-    <a class="nav-mobile-link" href="${root}${t.href}">
-      <span class="nav-drop-dot" style="background:${t.color};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
-      ${t.label}
-    </a>
-  `).join('');
+  `;
+  const dropdown = (label, group, section, minWidth = 520) => `
+    <div class="nav-item" role="none">
+      <button class="nav-btn ${groupIsActive(group) ? 'active' : ''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
+        ${label}
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 6l4 4 4-4"/>
+        </svg>
+      </button>
+      <div class="nav-drop" role="menu" style="min-width:${minWidth}px">
+        <div class="nav-drop-section">${section}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.05rem .25rem;">
+          ${group.map(itemHTML).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  const mobileSection = (title, group) => `
+    <div class="nav-mobile-section">
+      <div class="nav-mobile-section-title">${title}</div>
+      ${group.map(mobileItemHTML).join('')}
+    </div>
+  `;
 
   el.innerHTML = `
     <a class="skip-link" href="#main-content">Skip to content</a>
     <nav class="nav" role="navigation" aria-label="Main navigation">
       <div class="nav-inner">
-
-        <!-- Logo -->
         <a class="nav-logo" href="${root}home.html" aria-label="AMO Career home">
           <div class="nav-logo-mark">⚛️</div>
           <div>
@@ -142,116 +143,46 @@ function renderNav({ active = '', root = '' } = {}) {
           </div>
         </a>
 
-        <!-- Desktop links -->
         <div class="nav-links" role="menubar">
-
-          <!-- Tools dropdown -->
-          <div class="nav-item" role="none">
-            <button class="nav-btn ${NAV.tools.some(t=>t.key===active)?'active':''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
-              Tools
-              <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6l4 4 4-4"/>
-              </svg>
-            </button>
-            <div class="nav-drop" role="menu" style="min-width:520px">
-              <div class="nav-drop-section">${NAV.tools.length} AMO Research Tools</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;">
-                ${toolsHTML}
-              </div>
-            </div>
-          </div>
-
-          <!-- Learn dropdown -->
-          <div class="nav-item" role="none">
-            <button class="nav-btn" role="menuitem" aria-haspopup="true" aria-expanded="false">
-              Learn Quantum
-              <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6l4 4 4-4"/>
-              </svg>
-            </button>
-            <div class="nav-drop" role="menu" style="min-width:520px">
-              <div class="nav-drop-section">Quantum Fundamentals — ${NAV.learn.length} topics</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;">
-                ${learnHTML}
-              </div>
-            </div>
-          </div>
-
-          <!-- Laser Cooling dropdown -->
-          <div class="nav-item" role="none">
-            <button class="nav-btn ${'laser-cooling'===active?'active':''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
-              Laser Cooling
-              <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6l4 4 4-4"/>
-              </svg>
-            </button>
-            <div class="nav-drop" role="menu" style="min-width:520px">
-              <div class="nav-drop-section">❄️ Cooling Techniques — ${NAV.cooling.length} topics</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;">
-                ${coolingHTML}
-              </div>
-            </div>
-          </div>
-
-          <!-- QC Industry dropdown -->
-          <div class="nav-item" role="none">
-            <button class="nav-btn ${NAV.industry.some(t=>t.key===active)?'active':''}" role="menuitem" aria-haspopup="true" aria-expanded="false">
-              QC Industry
-              <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6l4 4 4-4"/>
-              </svg>
-            </button>
-            <div class="nav-drop" role="menu">
-              <div class="nav-drop-section">Quantum Computing Landscape</div>
-              ${industryHTML}
-            </div>
-          </div>
-
+          <a class="nav-btn" href="${root}home.html#intent-paths">Start Here</a>
+          ${dropdown('Build', NAV.build, 'Design and assemble an AMO experiment', 560)}
+          ${dropdown('Measure', NAV.measure, 'Diagnose signals, temperatures, gates, and coherence', 560)}
+          ${dropdown('Cool & Trap', NAV.cooling, 'Cooling, trapping, and Rydberg control', 560)}
+          ${dropdown('Quantum Computing', NAV.quantum, 'Neutral-atom QC concepts, gates, and platforms', 560)}
+          ${dropdown('Career & Literature', NAV.career, 'Groups, papers, and industry orientation', 520)}
           <a class="nav-btn" href="${root}home.html#about">About</a>
         </div>
 
-        <!-- Right side -->
         <div class="nav-right">
           <button class="nav-search-btn" id="global-search-btn" type="button" aria-label="Search AMO Career">
             <span>Search</span>
             <kbd>/</kbd>
           </button>
-          <a class="nav-cta" href="${root}home.html#tools">Explore Tools</a>
+          <a class="nav-cta" href="${root}home.html#paths">Guided Paths</a>
         </div>
 
-        <!-- Hamburger -->
         <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
-
       </div>
     </nav>
 
-    <!-- Mobile overlay -->
     <div class="nav-mobile-overlay" id="nav-mobile" role="dialog" aria-label="Mobile navigation">
       <div class="nav-mobile-section">
-        <div class="nav-mobile-section-title">Tools</div>
-        ${mobileTools}
+        <div class="nav-mobile-section-title">Start Here</div>
+        <a class="nav-mobile-link" href="${root}home.html#intent-paths"><span>🧭</span> I am trying to...</a>
+        <a class="nav-mobile-link" href="${root}home.html#paths"><span>🗺️</span> Guided Paths</a>
       </div>
-      <div class="nav-mobile-section">
-        <div class="nav-mobile-section-title">Learn Quantum</div>
-        ${mobileLearn}
-      </div>
-      <div class="nav-mobile-section">
-        <div class="nav-mobile-section-title">Laser Cooling</div>
-        ${mobileCooling}
-      </div>
-      <div class="nav-mobile-section">
-        <div class="nav-mobile-section-title">QC Industry</div>
-        ${mobileIndustry}
-      </div>
+      ${mobileSection('Build', NAV.build)}
+      ${mobileSection('Measure', NAV.measure)}
+      ${mobileSection('Cool & Trap', NAV.cooling)}
+      ${mobileSection('Quantum Computing', NAV.quantum)}
+      ${mobileSection('Career & Literature', NAV.career)}
       <div class="nav-mobile-section">
         <button class="nav-mobile-link nav-mobile-search" id="global-search-btn-mobile" type="button">
           <span>⌕</span> Search AMO Career
         </button>
-        <a class="nav-mobile-link" href="${root}home.html#about">
-          <span>👤</span> About
-        </a>
+        <a class="nav-mobile-link" href="${root}home.html#about"><span>👤</span> About</a>
       </div>
     </div>
 
@@ -272,7 +203,6 @@ function renderNav({ active = '', root = '' } = {}) {
     </div>
   `;
 
-  // Hamburger toggle
   const hamburger = document.getElementById('nav-hamburger');
   const mobileMenu = document.getElementById('nav-mobile');
   hamburger.addEventListener('click', () => {
@@ -282,14 +212,12 @@ function renderNav({ active = '', root = '' } = {}) {
     document.body.style.overflow = open ? 'hidden' : '';
   });
 
-  // Keyboard nav: click outside closes dropdowns
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.nav-item')) {
       document.querySelectorAll('.nav-item.open').forEach(i => i.classList.remove('open'));
     }
   });
 
-  // Toggle dropdown on button click (for keyboard / touch)
   document.querySelectorAll('.nav-btn[aria-haspopup]').forEach(btn => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.nav-item');
@@ -302,6 +230,7 @@ function renderNav({ active = '', root = '' } = {}) {
 
   initGlobalSearch(root);
 }
+
 
 /* ─────────────────────────────────────────────────────
    SCROLL REVEAL
@@ -500,6 +429,7 @@ const RECENT_TOOLS_KEY = 'amo_recent_tools_v1';
 const SEARCH_KEYWORDS = {
   'atom-library': 'species isotope constants Rb Cs Li Sr Yb Dy Er K Na Ca Ba Doppler linewidth recoil hyperfine Steck NIST D1 D2',
   'lab-techniques': 'optics fibers AOM polarimetry optical pumping laser systems RF antenna Gaussian process lab workflow alignment vacuum',
+  'laser-planner': 'laser system planner wavelength source diode SHG SFG AOM fiber species beam path power',
   'rydberg-calculator': 'Rydberg blockade C6 quantum defect lifetime Förster two-qubit gate radius alkali',
   'imaging-calculator': 'SNR fidelity photons EMCCD sCMOS histogram survival fluorescence single atom readout',
   'tof-calculator': 'time of flight thermometry temperature expansion PSD BEC Maxwell Boltzmann',
@@ -514,6 +444,8 @@ const SEARCH_KEYWORDS = {
   'rb87-vs-yb171': 'qubit species comparison rubidium ytterbium neutral atom hyperfine nuclear spin clock',
   'rb-explorer': 'randomized benchmarking Clifford SPAM gate fidelity decay interleaved RB',
   'dd-playground': 'coherence Ramsey echo XY16 CPMG dynamical decoupling dephasing noise',
+  'amo-groups': 'AMO research groups professors labs universities postdoc graduate school Rydberg clocks BEC molecules cavity QED',
+  'paper-syllabus': 'AMO reading list papers syllabus reviews foundational literature Nobel cooling traps clocks Rydberg',
   'cooling-simulator': 'Doppler cooling molasses scattering temperature force simulator',
   'laser-cooling': 'Lamb-Dicke sideband gray molasses EIT Raman RSB polarization gradient cooling',
   'learn-quantum': 'Bloch sphere gates superposition measurement entanglement algorithms qubit basics',
