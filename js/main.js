@@ -704,6 +704,499 @@ function initShareableCalculatorParams() {
   }
 }
 
+function isToolLikePage() {
+  return /calculator|designer|recapture|fidelity-budget|cooling-simulator|polarimetry|cavity-qed|lab-techniques|laser-cooling|tof|imaging|rydberg/.test(location.pathname);
+}
+
+function getPageContainer() {
+  return document.querySelector('.page-content > .container')
+    || document.querySelector('.page-content')
+    || document.querySelector('main .container')
+    || document.querySelector('main');
+}
+
+function getPageControls() {
+  return Array.from(document.querySelectorAll('main input[id], main select[id], main textarea[id], .page-content input[id], .page-content select[id], .page-content textarea[id]'))
+    .filter(el => !['button', 'submit', 'reset', 'hidden'].includes(el.type))
+    .filter(el => !el.closest('.global-search, .nav, .nav-mobile-overlay, .lab-notebook-panel'));
+}
+
+function setControlValue(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  if (el.tagName === 'SELECT') {
+    const requested = String(value).toLowerCase();
+    const option = Array.from(el.options).find(opt =>
+      opt.value.toLowerCase() === requested ||
+      opt.textContent.trim().toLowerCase() === requested ||
+      opt.textContent.trim().toLowerCase().includes(requested)
+    );
+    if (!option) return false;
+    el.value = option.value;
+  } else if (el.type === 'checkbox') {
+    el.checked = Boolean(value);
+  } else {
+    el.value = value;
+  }
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+  return true;
+}
+
+function refreshAfterControlChange() {
+  [
+    'onSpeciesChange',
+    'compute',
+    'calculate',
+    'update',
+    'updateCalc',
+    'updateAll',
+    'draw',
+    'runSimulation',
+  ].forEach(name => {
+    if (typeof window[name] === 'function') {
+      try { window[name](); } catch (_) { /* Page calculators are intentionally independent. */ }
+    }
+  });
+}
+
+const CALCULATOR_PRESETS = [
+  {
+    name: 'Rb87 tweezer',
+    tag: 'alkali',
+    why: 'A common neutral-atom QC starting point: 1064 nm tweezer, sub-micron waist, Rb D2 imaging.',
+    values: { speciesSel: 'Rb87', lambdaIn: 1064, powerIn: 3, waistIn: 0.85, strehlIn: 0.9, naSlide: 55, qeSlide: 80, tOptSlide: 70, detSlide: 0, satSlide: 0 },
+  },
+  {
+    name: 'Cs133 tweezer',
+    tag: 'alkali',
+    why: 'Useful for Cs tweezer thermometry and imaging estimates near a 1 mK-scale trap.',
+    values: { speciesSel: 'Cs133', lambdaIn: 1064, powerIn: 5.4, waistIn: 0.95, strehlIn: 0.9, naSlide: 55, qeSlide: 80, tOptSlide: 70, detSlide: 0, satSlide: 0 },
+  },
+  {
+    name: 'Li6 tweezer',
+    tag: 'light atom',
+    why: 'Large recoil, tight confinement, and fast motion make this a good stress test for tools.',
+    values: { speciesSel: 'Li6', lambdaIn: 1064, powerIn: 8, waistIn: 0.8, strehlIn: 0.9, naSlide: 50, qeSlide: 80, tOptSlide: 70, detSlide: 0, satSlide: -2 },
+  },
+  {
+    name: 'Yb171 clock',
+    tag: 'alkaline-earth',
+    why: 'Clock-qubit thinking: narrow-line cooling, magic trapping, low-scattering estimates.',
+    values: { speciesSel: 'Yb171', lambdaIn: 759, powerIn: 5, waistIn: 0.75, strehlIn: 0.9, naSlide: 70, qeSlide: 85, tOptSlide: 75, detSlide: 0, satSlide: -5 },
+  },
+  {
+    name: 'Sr87 narrow-line',
+    tag: 'alkaline-earth',
+    why: 'A Sr intercombination-line style preset for narrow-line cooling and clock intuition.',
+    values: { speciesSel: 'Sr87', lambdaIn: 813, powerIn: 5, waistIn: 0.8, strehlIn: 0.9, naSlide: 70, qeSlide: 85, tOptSlide: 75, detSlide: 0, satSlide: -5 },
+  },
+  {
+    name: 'typical MOT',
+    tag: 'first pass',
+    why: 'Reasonable initial knobs before you start optimizing a vapor-cell or 2D-MOT-loaded trap.',
+    values: { speciesSel: 'Rb87', detSlide: 15, satSlide: 10, beamSlide: 10, gradSlide: 15 },
+  },
+  {
+    name: 'typical high-NA objective',
+    tag: 'optics',
+    why: 'A high collection-efficiency imaging setup with realistic transmission and quantum efficiency.',
+    values: { naSlide: 60, qeSlide: 85, tOptSlide: 70, waistIn: 0.8, strehlIn: 0.9 },
+  },
+];
+
+const WORKED_EXAMPLES = {
+  'release-recapture': [
+    ['Estimate Cs trap frequencies', 'Cs133 tweezer', 'Use the Cs preset, then adjust power until the depth is near 1 mK and compare radial/axial frequencies.'],
+    ['Check sensitivity to waist', 'typical high-NA objective', 'Change waist from 0.8 to 1.2 um; the radial frequency should move roughly as 1/w0^2 at fixed depth.'],
+  ],
+  'imaging-calculator': [
+    ['How many photons for 99.9% detection?', 'typical high-NA objective', 'Increase exposure or saturation until the bright/dark histogram overlap reaches the target fidelity.'],
+    ['Why Li imaging is hard', 'Li6 tweezer', 'Compare detected photons and recoil risk against Rb/Cs for the same NA and exposure.'],
+    ['sCMOS vs EMCCD tradeoff', 'Cs133 tweezer', 'Hold the optical parameters fixed and change the camera noise model.'],
+  ],
+  'rydberg-calculator': [
+    ['Rb 70S blockade radius', 'Rb87 tweezer', 'Set Rb and n approximately 70; compare blockade radius against a 5 um tweezer spacing.'],
+    ['Cs vs Rb gate intuition', 'Cs133 tweezer', 'Compare lifetime, blockade, and estimated gate error at the same Rabi frequency.'],
+  ],
+  'mot-designer': [
+    ['What MOT gradient should I start with?', 'typical MOT', 'Use detuning around 2-3 linewidths and gradient around 10-20 G/cm, then optimize experimentally.'],
+    ['Light species sanity check', 'Li6 tweezer', 'Lithium typically needs more careful slowing/loading strategy; use this as an order-of-magnitude check only.'],
+  ],
+  'tof-calculator': [
+    ['Extract temperature from sigma^2 vs t^2', 'Rb87 tweezer', 'Change the initial size and temperature; the fitted slope is kBT/m.'],
+    ['When does initial size matter?', 'Sr87 narrow-line', 'Compare short and long TOF windows to see when sigma0 dominates.'],
+  ],
+  'fidelity-budget': [
+    ['Temperature-limited Rydberg gate', 'Cs133 tweezer', 'Sweep temperature and observe how motional error competes with Rydberg decay.'],
+    ['What does stronger blockade buy?', 'Rb87 tweezer', 'Increase blockade shift until blockade leakage is no longer the dominant term.'],
+  ],
+  'lab-calculators': [
+    ['Photon recoil sanity check', 'Cs133 tweezer', 'Compare Cs, Rb, and Li recoil temperatures; the light atom penalty should jump out.'],
+    ['Gaussian tweezer frequency estimate', 'typical high-NA objective', 'Use waist and depth to estimate whether you are in the Lamb-Dicke regime.'],
+  ],
+  default: [
+    ['Start from a real atom', 'Rb87 tweezer', 'Apply a species preset, then change one knob at a time.'],
+    ['Compare heavy and light atoms', 'Li6 tweezer', 'Use Li and Cs presets back-to-back to build recoil and trap-frequency intuition.'],
+  ],
+};
+
+function currentPageKey() {
+  const file = location.pathname.split('/').pop()?.replace('.html', '') || 'home';
+  return file;
+}
+
+function applyPreset(presetName) {
+  const preset = CALCULATOR_PRESETS.find(p => p.name === presetName);
+  if (!preset) return 0;
+  let applied = 0;
+  Object.entries(preset.values).forEach(([id, value]) => {
+    if (setControlValue(id, value)) applied += 1;
+  });
+  refreshAfterControlChange();
+  return applied;
+}
+
+function initCalculatorPresets() {
+  if (!isToolLikePage()) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.calculator-presets-panel')) return;
+
+  const panel = document.createElement('section');
+  panel.className = 'calculator-presets-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head">
+      <div>
+        <div class="eyebrow">Calculator Presets</div>
+        <h2>Start from a physically plausible setup</h2>
+        <p>Presets fill whatever matching controls exist on this page and leave the rest alone.</p>
+      </div>
+      <div class="preset-status" aria-live="polite"></div>
+    </div>
+    <div class="preset-grid">
+      ${CALCULATOR_PRESETS.map(p => `
+        <button class="preset-card" type="button" data-preset="${p.name}">
+          <span class="preset-tag">${p.tag}</span>
+          <strong>${p.name}</strong>
+          <small>${p.why}</small>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  container.prepend(panel);
+  const status = panel.querySelector('.preset-status');
+  panel.addEventListener('click', e => {
+    const btn = e.target.closest('[data-preset]');
+    if (!btn) return;
+    const count = applyPreset(btn.dataset.preset);
+    status.textContent = count ? `Applied ${count} matching parameters.` : 'No matching controls on this page.';
+  });
+}
+
+function initWorkedExamples() {
+  if (!isToolLikePage()) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.worked-examples-panel')) return;
+  const examples = WORKED_EXAMPLES[currentPageKey()] || WORKED_EXAMPLES.default;
+  const panel = document.createElement('section');
+  panel.className = 'worked-examples-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head">
+      <div>
+        <div class="eyebrow">Worked Examples</div>
+        <h2>Try the calculator like an experimentalist</h2>
+        <p>Each example gives a concrete question, a starting preset, and the knob to vary.</p>
+      </div>
+    </div>
+    <div class="worked-grid">
+      ${examples.map(([title, preset, body]) => `
+        <article class="worked-card">
+          <h3>${title}</h3>
+          <p>${body}</p>
+          <button class="mini-action" type="button" data-preset="${preset}">Apply ${preset}</button>
+        </article>
+      `).join('')}
+    </div>
+  `;
+  const afterPresets = document.querySelector('.calculator-presets-panel');
+  if (afterPresets) afterPresets.after(panel);
+  else container.prepend(panel);
+  panel.addEventListener('click', e => {
+    const btn = e.target.closest('[data-preset]');
+    if (!btn) return;
+    applyPreset(btn.dataset.preset);
+    btn.textContent = 'Preset applied';
+    setTimeout(() => { btn.textContent = `Apply ${btn.dataset.preset}`; }, 1200);
+  });
+}
+
+const ASSUMPTION_DEFS = {
+  'two-level atom': 'Treats the atom as an effective closed transition. Breaks down when hyperfine branching, dark states, or optical pumping dominate.',
+  'low saturation': 'Uses weak-excitation or near-linear scattering estimates. At high saturation, power broadening and multilevel dynamics matter.',
+  'Gaussian beam': 'Assumes an ideal TEM00 beam. Aberrations, clipping, and mode mismatch change intensity and trap frequencies.',
+  'harmonic approximation': 'Expands the trap near the bottom. It is accurate for cold atoms but not for hot tails near the trap edge.',
+  'far-detuned trap': 'Assumes the trap light mostly produces conservative AC Stark shifts. Near resonances, scattering and vector/tensor shifts require care.',
+  'classical thermometry': 'Uses classical phase-space sampling. Near the motional ground state, sideband thermometry is more direct.',
+  'Lamb-Dicke approximation': 'Assumes recoil is small compared with the trap length scale. Check eta^2(2n+1) << 1.',
+  'ballistic expansion': 'Assumes interactions and trap forces are negligible after release. Dense clouds or imperfect switch-off can violate this.',
+  'independent noise': 'Adds photon, camera, and background noise independently. Technical correlations can make real histograms wider.',
+  'Rydberg scaling estimate': 'Uses scaling laws or simplified C6 estimates. Near Förster resonances, pair-state calculations are required.',
+  'independent error budget': 'Adds gate error channels as if they are separable. Coherent errors can interfere and require full simulation.',
+};
+
+const PAGE_ASSUMPTIONS = {
+  'imaging-calculator': ['two-level atom', 'low saturation', 'independent noise'],
+  'release-recapture': ['classical thermometry', 'Gaussian beam', 'ballistic expansion', 'harmonic approximation'],
+  'tof-calculator': ['classical thermometry', 'ballistic expansion'],
+  'lab-calculators': ['Gaussian beam', 'far-detuned trap', 'harmonic approximation', 'two-level atom'],
+  'mot-designer': ['two-level atom', 'low saturation'],
+  'rydberg-calculator': ['Rydberg scaling estimate', 'independent error budget'],
+  'fidelity-budget': ['independent error budget', 'Rydberg scaling estimate', 'Lamb-Dicke approximation'],
+  'laser-cooling': ['Lamb-Dicke approximation', 'two-level atom', 'low saturation'],
+  'cooling-simulator': ['two-level atom', 'low saturation', 'classical thermometry'],
+  'polarimetry': ['independent noise'],
+  'cavity-qed': ['Gaussian beam', 'two-level atom'],
+};
+
+function initAssumptionBadges() {
+  if (!isToolLikePage()) return;
+  const assumptions = PAGE_ASSUMPTIONS[currentPageKey()] || ['user-adjustable assumption', 'rough estimate'];
+  const container = getPageContainer();
+  if (!container || document.querySelector('.assumption-panel')) return;
+  const panel = document.createElement('section');
+  panel.className = 'assumption-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head compact">
+      <div>
+        <div class="eyebrow">Assumption Badges</div>
+        <h2>Know when the formula breaks</h2>
+      </div>
+      <p class="assumption-explain" aria-live="polite">Click a badge to see the failure mode.</p>
+    </div>
+    <div class="assumption-badges">
+      ${assumptions.map(a => `<button class="assumption-badge" type="button" data-assumption="${a}">${a}</button>`).join('')}
+    </div>
+  `;
+  const afterExamples = document.querySelector('.worked-examples-panel') || document.querySelector('.calculator-presets-panel');
+  if (afterExamples) afterExamples.after(panel);
+  else container.prepend(panel);
+  const explain = panel.querySelector('.assumption-explain');
+  panel.addEventListener('click', e => {
+    const badge = e.target.closest('[data-assumption]');
+    if (!badge) return;
+    panel.querySelectorAll('.assumption-badge').forEach(b => b.classList.toggle('active', b === badge));
+    explain.textContent = ASSUMPTION_DEFS[badge.dataset.assumption] || 'This is a user-adjustable modeling choice; check the page text before treating the output as a measurement.';
+  });
+}
+
+const SOURCE_PROFILES = {
+  'qc-landscape': [
+    ['peer-reviewed', 'Use peer-reviewed papers for demonstrated fidelities, logical-qubit experiments, and algorithms.'],
+    ['company roadmap', 'Treat future dates and product claims as roadmap claims, not independent physics results.'],
+    ['rough estimate', 'Cross-platform tables compress many hardware-specific definitions into approximate comparisons.'],
+  ],
+  'rb87-vs-yb171': [
+    ['peer-reviewed', 'Atomic constants, gate demonstrations, and clock/tweezer results should trace to papers or data tables.'],
+    ['rough estimate', 'Architecture-level comparisons depend strongly on assumptions about cooling, loading, and error correction.'],
+  ],
+  'paper-syllabus': [
+    ['peer-reviewed', 'Primary source for each card is the linked paper or review.'],
+    ['textbook', 'Use textbooks/reviews for standard derivations and definitions.'],
+  ],
+  defaultTool: [
+    ['textbook', 'Core formulas follow standard AMO optics, laser-cooling, and quantum-optics references.'],
+    ['peer-reviewed', 'Benchmark numbers and experimentally demonstrated regimes should be checked against papers.'],
+    ['rough estimate', 'Calculator outputs are design estimates unless the page explicitly models the full apparatus.'],
+    ['user-adjustable assumption', 'Inputs like waist, power, collection efficiency, and background are experiment-dependent.'],
+  ],
+  defaultPage: [
+    ['textbook', 'Introductory explanations use standard AMO and quantum-information conventions.'],
+    ['peer-reviewed', 'Specific scientific claims should be traceable to the linked papers or references on the page.'],
+  ],
+};
+
+function initSourceConfidencePanels() {
+  if (!location.pathname.includes('/pages/')) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.source-confidence-panel')) return;
+  const key = currentPageKey();
+  const sources = SOURCE_PROFILES[key] || (isToolLikePage() ? SOURCE_PROFILES.defaultTool : SOURCE_PROFILES.defaultPage);
+  const tagClass = tag => String(tag).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const panel = document.createElement('details');
+  panel.className = 'source-confidence-panel workflow-panel';
+  panel.innerHTML = `
+    <summary>
+      <span>
+        <span class="eyebrow">Sources and Confidence</span>
+        <strong>How to read this page</strong>
+      </span>
+      <span class="source-summary-hint">expand</span>
+    </summary>
+    <div class="source-confidence-grid">
+      ${sources.map(([tag, body]) => `
+        <div class="source-confidence-card">
+          <span class="source-tag ${tagClass(tag)}">${tag}</span>
+          <p>${body}</p>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  const afterAssumptions = document.querySelector('.assumption-panel') || document.querySelector('.worked-examples-panel') || document.querySelector('.calculator-presets-panel');
+  if (afterAssumptions) afterAssumptions.after(panel);
+  else container.prepend(panel);
+}
+
+function initLabNotebook() {
+  if (!isToolLikePage()) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.lab-notebook-panel')) return;
+  const panel = document.createElement('section');
+  panel.className = 'lab-notebook-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head">
+      <div>
+        <div class="eyebrow">Lab Notebook Mode</div>
+        <h2>Save this calculation locally</h2>
+        <p>Snapshots stay in this browser via localStorage. Export Markdown for your notebook or JSON for scripts.</p>
+      </div>
+      <div class="notebook-count" aria-live="polite"></div>
+    </div>
+    <textarea id="labNotebookNotes" rows="3" placeholder="Notes: apparatus, assumptions, why this setting matters..."></textarea>
+    <div class="notebook-actions">
+      <button class="mini-action" type="button" data-save-notebook>Save snapshot</button>
+      <button class="mini-action" type="button" data-export-notebook-md>Export Markdown</button>
+      <button class="mini-action" type="button" data-export-notebook-json>Export JSON</button>
+      <button class="mini-action muted" type="button" data-clear-notebook>Clear local snapshots</button>
+    </div>
+  `;
+  const afterSources = document.querySelector('.source-confidence-panel') || document.querySelector('.assumption-panel') || document.querySelector('.worked-examples-panel');
+  if (afterSources) afterSources.after(panel);
+  else container.prepend(panel);
+
+  const key = 'amo_lab_notebook_v1';
+  const count = panel.querySelector('.notebook-count');
+  const read = () => {
+    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (_) { return []; }
+  };
+  const write = items => localStorage.setItem(key, JSON.stringify(items));
+  const updateCount = () => { count.textContent = `${read().length} saved snapshots`; };
+  const collectOutputs = () => Array.from(document.querySelectorAll('.result-value, .metric-value, .output-value, .kpi-value, td, .info-banner'))
+    .slice(0, 40)
+    .map(el => el.textContent.trim().replace(/\s+/g, ' '))
+    .filter(Boolean);
+  const snapshot = () => ({
+    title: document.querySelector('h1')?.textContent.trim() || currentPageKey(),
+    page: location.pathname.split('/').pop(),
+    url: location.href,
+    savedAt: new Date().toISOString(),
+    controls: Object.fromEntries(getPageControls().map(el => [el.id, el.type === 'checkbox' ? el.checked : el.value])),
+    outputs: collectOutputs(),
+    notes: panel.querySelector('#labNotebookNotes').value.trim(),
+  });
+  const toMarkdown = items => items.map(item => [
+    `# ${item.title}`,
+    `- Saved: ${item.savedAt}`,
+    `- Page: ${item.url}`,
+    item.notes ? `- Notes: ${item.notes}` : '',
+    '',
+    '## Inputs',
+    ...Object.entries(item.controls).map(([k, v]) => `- ${k}: ${v}`),
+    '',
+    '## Outputs',
+    ...item.outputs.map(v => `- ${v}`),
+  ].filter(Boolean).join('\n')).join('\n\n---\n\n');
+  panel.addEventListener('click', e => {
+    if (e.target.matches('[data-save-notebook]')) {
+      const items = read();
+      items.unshift(snapshot());
+      write(items.slice(0, 50));
+      panel.querySelector('#labNotebookNotes').value = '';
+      updateCount();
+    }
+    if (e.target.matches('[data-export-notebook-md]')) {
+      downloadText('amo-lab-notebook.md', toMarkdown(read()), 'text/markdown');
+    }
+    if (e.target.matches('[data-export-notebook-json]')) {
+      downloadText('amo-lab-notebook.json', JSON.stringify(read(), null, 2), 'application/json');
+    }
+    if (e.target.matches('[data-clear-notebook]')) {
+      write([]);
+      updateCount();
+    }
+  });
+  updateCount();
+}
+
+function initExpertModeToggles() {
+  const densePages = /laser-cooling|rydberg-calculator|imaging-calculator|fidelity-budget|polarimetry/.test(location.pathname);
+  if (!densePages) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.expert-mode-panel')) return;
+  const mode = localStorage.getItem('amo_density_mode') || 'working';
+  const panel = document.createElement('section');
+  panel.className = 'expert-mode-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head compact">
+      <div>
+        <div class="eyebrow">Reading Depth</div>
+        <h2>Beginner / Working / Expert</h2>
+      </div>
+      <div class="mode-toggle" role="group" aria-label="Reading depth">
+        <button type="button" data-mode="beginner">Beginner</button>
+        <button type="button" data-mode="working">Working</button>
+        <button type="button" data-mode="expert">Expert</button>
+      </div>
+    </div>
+    <p class="mode-copy" aria-live="polite"></p>
+  `;
+  container.prepend(panel);
+  const copy = panel.querySelector('.mode-copy');
+  const apply = next => {
+    document.body.dataset.depthMode = next;
+    localStorage.setItem('amo_density_mode', next);
+    panel.querySelectorAll('[data-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === next));
+    copy.textContent = {
+      beginner: 'Read for intuition first: formula boxes and derivation blocks are hidden so pictures, meaning, and common failure modes lead.',
+      working: 'Use the page as a lab tool: equations, knobs, and operational examples are emphasized.',
+      expert: 'Read with assumptions in mind: derivations, edge cases, and model limits are the main thing to check.',
+    }[next];
+  };
+  panel.addEventListener('click', e => {
+    const btn = e.target.closest('[data-mode]');
+    if (btn) apply(btn.dataset.mode);
+  });
+  apply(mode);
+}
+
+function initPaperToolBridge() {
+  if (currentPageKey() !== 'paper-syllabus') return;
+  const cards = document.querySelectorAll('.paper-card');
+  if (!cards.length || document.querySelector('.paper-tool-bridge')) return;
+  const root = '../';
+  const bridges = [
+    { re: /ashkin|dipole trap|optical tweez|schlosser|kaufman/i, links: [['Trap tools', 'pages/lab-calculators.html'], ['Tweezer thermometry', 'pages/release-recapture.html']] },
+    { re: /raab|mot|magneto-optical/i, links: [['MOT designer', 'pages/mot-designer.html'], ['Cooling overview', 'pages/laser-cooling.html']] },
+    { re: /dalibard|cohen|tannoudji|chu|phillips|cooling|sisyphus|gray molasses|sideband/i, links: [['Laser cooling', 'pages/laser-cooling.html'], ['Cooling simulator', 'pages/cooling-simulator.html']] },
+    { re: /rydberg|jaksch|saffman|evered|blockade|förster|foerster/i, links: [['Rydberg calculator', 'pages/rydberg-calculator.html'], ['Fidelity budget', 'pages/fidelity-budget.html']] },
+    { re: /ytterbium|yb|strontium|sr|jenkins|clock/i, links: [['Rb vs Yb', 'pages/rb87-vs-yb171.html'], ['Atom library', 'pages/atom-library.html']] },
+    { re: /kaufman|ni|molecule|molecular|polar molecule/i, links: [['Atom library', 'pages/atom-library.html'], ['AMO groups', 'pages/amo-groups.html']] },
+    { re: /manetsch|logical|fault|neutral atom|quantum processor|quera|harvard/i, links: [['QC landscape', 'pages/qc-landscape.html'], ['Rb vs Yb', 'pages/rb87-vs-yb171.html']] },
+    { re: /cavity|strong coupling|cooperativity/i, links: [['Cavity QED', 'pages/cavity-qed.html'], ['Lab techniques', 'pages/lab-techniques.html']] },
+  ];
+  cards.forEach(card => {
+    const text = card.textContent;
+    const match = bridges.find(b => b.re.test(text));
+    if (!match) return;
+    const box = document.createElement('div');
+    box.className = 'paper-tool-bridge';
+    box.innerHTML = `
+      <span>Paper-to-tool bridge:</span>
+      ${match.links.map(([label, href]) => `<a href="${root}${href.replace(/^pages\//, 'pages/')}">${label}</a>`).join('')}
+    `;
+    card.querySelector('.paper-body')?.appendChild(box);
+  });
+}
+
 function downloadText(filename, text, type = 'text/plain') {
   const blob = new Blob([text], { type });
   const url = URL.createObjectURL(blob);
@@ -778,6 +1271,7 @@ window.AMOCareer = {
   exportCanvasSVG,
   downloadText,
   recordRecentTool,
+  applyPreset,
 };
 
 /* ─────────────────────────────────────────────────────
@@ -793,6 +1287,13 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRecentTools();
   initDerivationToggles();
   initShareableCalculatorParams();
+  initCalculatorPresets();
+  initWorkedExamples();
+  initAssumptionBadges();
+  initSourceConfidencePanels();
+  initLabNotebook();
+  initExpertModeToggles();
+  initPaperToolBridge();
   initExportButtons();
 });
 
