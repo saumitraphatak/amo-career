@@ -1,8 +1,8 @@
-# AMO Career Toolkit
+# AMO Toolkit
 
 A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — covering 13 interactive research tools, lab technique guides, quantum computing context, laser cooling references, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
-**Live site:** https://saumitraphatak.github.io/amo-career/
+**Live site:** https://amotoolkit.com/
 
 ---
 

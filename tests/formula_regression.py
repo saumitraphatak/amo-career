@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Formula regression checks for the AMO Career static site.
+"""Formula regression checks for the AMO Toolkit static site.
 
 These tests intentionally avoid browser/Node dependencies so they can run on a
 plain Python install. They guard the common physics convention mistakes that are

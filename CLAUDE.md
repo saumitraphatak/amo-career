@@ -2,7 +2,7 @@
 
 > Read this file first. It replaces the need to open any HTML file to understand the project.
 
-**Live site:** https://saumitraphatak.github.io/amo-career/
+**Live site:** https://amotoolkit.com/
 **Author:** Saumitra Phatak — Purdue Physics PhD, Hood Lab (ultracold atoms / optical tweezers)
 **Purpose:** Career toolkit for AMO physicists — interactive calculators, lab technique guides, quantum computing context, and an educational quantum fundamentals section.
 

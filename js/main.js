@@ -1,5 +1,5 @@
 /* =====================================================
-   AMO Career — Shared JS
+   AMO Toolkit — Shared JS
    Nav renderer · Canvas animation · Scroll reveal · Accordions · Tabs
    ===================================================== */
 
@@ -135,11 +135,11 @@ function renderNav({ active = '', root = '' } = {}) {
     <a class="skip-link" href="#main-content">Skip to content</a>
     <nav class="nav" role="navigation" aria-label="Main navigation">
       <div class="nav-inner">
-        <a class="nav-logo" href="${root}home.html" aria-label="AMO Career home">
+        <a class="nav-logo" href="${root}home.html" aria-label="AMO Toolkit home">
           <div class="nav-logo-mark">⚛️</div>
           <div>
-            <div class="nav-logo-text"><span class="amo">AMO</span> Career</div>
-            <div class="nav-logo-sub">AMO Physics Toolkit</div>
+            <div class="nav-logo-text"><span class="amo">AMO</span> Toolkit</div>
+            <div class="nav-logo-sub">AMO physics tools</div>
           </div>
         </a>
 
@@ -154,7 +154,7 @@ function renderNav({ active = '', root = '' } = {}) {
         </div>
 
         <div class="nav-right">
-          <button class="nav-search-btn" id="global-search-btn" type="button" aria-label="Search AMO Career">
+          <button class="nav-search-btn" id="global-search-btn" type="button" aria-label="Search AMO Toolkit">
             <span>Search</span>
             <kbd>/</kbd>
           </button>
@@ -180,7 +180,7 @@ function renderNav({ active = '', root = '' } = {}) {
       ${mobileSection('Career & Literature', NAV.career)}
       <div class="nav-mobile-section">
         <button class="nav-mobile-link nav-mobile-search" id="global-search-btn-mobile" type="button">
-          <span>⌕</span> Search AMO Career
+          <span>⌕</span> Search AMO Toolkit
         </button>
         <a class="nav-mobile-link" href="${root}home.html#about"><span>👤</span> About</a>
       </div>
@@ -192,7 +192,7 @@ function renderNav({ active = '', root = '' } = {}) {
         <div class="global-search-head">
           <div>
             <div class="global-search-kicker">Find by species, formula, technique, company, keyword</div>
-            <h2 id="global-search-title">Search AMO Career</h2>
+            <h2 id="global-search-title">Search AMO Toolkit</h2>
           </div>
           <button class="global-search-close" type="button" data-search-close aria-label="Close search">×</button>
         </div>
