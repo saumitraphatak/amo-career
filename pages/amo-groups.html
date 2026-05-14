@@ -413,8 +413,25 @@ function escapeHTML(value) {
 function moveMapTooltip(pointEvent) {
   if (!mapTooltip || !pointEvent) return;
   const source = pointEvent.originalEvent || pointEvent.event || pointEvent;
-  const x = source.clientX ?? 0;
-  const y = source.clientY ?? 0;
+  const mapRect = document.getElementById('map-root')?.getBoundingClientRect();
+  let x = Number.isFinite(source.clientX) ? source.clientX : null;
+  let y = Number.isFinite(source.clientY) ? source.clientY : null;
+
+  // amCharts reports pointer positions in chart-local coordinates. Convert
+  // those to viewport coordinates for the fixed-position HTML tooltip.
+  if ((x === null || y === null) && pointEvent.point && mapRect) {
+    x = mapRect.left + pointEvent.point.x;
+    y = mapRect.top + pointEvent.point.y;
+  }
+
+  // Final fallback: anchor to the hovered sprite's global bounds.
+  if ((x === null || y === null) && pointEvent.target?.globalBounds) {
+    const b = pointEvent.target.globalBounds();
+    x = (b.left + b.right) / 2;
+    y = (b.top + b.bottom) / 2;
+  }
+
+  if (x === null || y === null) return;
   const pad = 18;
   const width = mapTooltip.offsetWidth || 260;
   const height = mapTooltip.offsetHeight || 110;
