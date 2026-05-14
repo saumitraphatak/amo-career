@@ -102,6 +102,83 @@
     .filter-btn .dot { width:8px; height:8px; border-radius:50%; }
     .filter-btn:hover { background:var(--bg-card); color:var(--text-primary); }
     .filter-btn.active { background:var(--bg-card); border-color:currentColor; }
+    .filter-matrix {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:var(--sp-3);
+      margin:0 0 var(--sp-5);
+    }
+    .filter-group {
+      border:1px solid var(--border);
+      border-radius:var(--r-lg);
+      background:rgba(15,23,42,.42);
+      padding:var(--sp-3);
+    }
+    .filter-group-title {
+      margin:0 0 10px;
+      color:var(--text-muted);
+      font-size:.7rem;
+      font-weight:800;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    .mini-filter-row { display:flex; flex-wrap:wrap; gap:7px; }
+    .mini-filter-btn,
+    .path-btn {
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(2,6,23,.24);
+      color:var(--text-secondary);
+      cursor:pointer;
+      font-size:.76rem;
+      font-weight:700;
+      padding:6px 11px;
+      transition:all var(--t);
+    }
+    .mini-filter-btn:hover,
+    .path-btn:hover {
+      border-color:rgba(74,222,128,.36);
+      color:var(--text-primary);
+      background:rgba(74,222,128,.08);
+    }
+    .mini-filter-btn.active,
+    .path-btn.active {
+      border-color:rgba(74,222,128,.72);
+      color:#bbf7d0;
+      background:rgba(74,222,128,.12);
+    }
+    .path-tree {
+      position:relative;
+      display:grid;
+      grid-template-columns:180px 1fr;
+      gap:var(--sp-3);
+      align-items:center;
+      margin:0 0 var(--sp-4);
+      padding:var(--sp-4);
+      border:1px solid rgba(125,211,252,.16);
+      border-radius:var(--r-lg);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(125,211,252,.12), transparent 28%),
+        rgba(15,23,42,.42);
+    }
+    .path-tree-label {
+      color:var(--text-primary);
+      font-size:.88rem;
+      font-weight:800;
+    }
+    .path-tree-label span {
+      display:block;
+      margin-top:3px;
+      color:var(--text-muted);
+      font-size:.72rem;
+      font-weight:600;
+      line-height:1.4;
+    }
+    .path-tree-buttons { display:flex; flex-wrap:wrap; gap:8px; }
+    @media(max-width:760px) {
+      .filter-matrix { grid-template-columns:1fr; }
+      .path-tree { grid-template-columns:1fr; }
+    }
 
     /* Group info panel */
     #group-panel { display:none; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-5); margin-bottom:var(--sp-5); position:relative; }
@@ -151,6 +228,16 @@
     .gc-name { font-size:.875rem; font-weight:700; color:var(--text-primary); }
     .gc-inst { font-size:.8rem; color:var(--text-muted); margin-bottom:4px; }
     .gc-focus{ font-size:.8125rem; color:var(--text-secondary); line-height:1.5; }
+    .gc-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
+    .gc-chip {
+      border:1px solid rgba(148,163,184,.16);
+      border-radius:999px;
+      color:var(--text-muted);
+      font-size:.68rem;
+      font-weight:800;
+      letter-spacing:.02em;
+      padding:2px 7px;
+    }
     .gc-link {
       display:inline-flex;
       align-items:center;
@@ -182,7 +269,7 @@
         <span class="page-tag">🌍 AMO Toolkit</span>
         <span class="page-tag">Research Groups</span>
       </div>
-      <h1 class="page-title"><span class="accent">62</span> AMO Research Groups Worldwide</h1>
+      <h1 class="page-title"><span class="accent">59</span> AMO Research Groups Worldwide</h1>
       <p class="page-subtitle">
         Clickable map and searchable directory of leading atomic, molecular, and optical physics groups —
         organized by research focus. PI, atoms used, flagship paper, and international hiring status for each.
@@ -203,6 +290,71 @@
       <button class="filter-btn" data-tag="cavity"><span class="dot" style="background:#c084fc"></span>Cavity QED</button>
       <button class="filter-btn" data-tag="dipolar"><span class="dot" style="background:#f472b6"></span>Dipolar</button>
       <button class="filter-btn" data-tag="ions"><span class="dot" style="background:#fb923c"></span>Ions</button>
+    </div>
+
+    <div class="path-tree" aria-label="Guided exploration paths">
+      <div class="path-tree-label">I am looking for…
+        <span>Choose a path to set several filters at once.</span>
+      </div>
+      <div class="path-tree-buttons">
+        <button class="path-btn" data-preset="neutral-qc">Neutral-atom QC</button>
+        <button class="path-btn" data-preset="molecules">Molecule assembly</button>
+        <button class="path-btn" data-preset="clocks">Clock / metrology groups</button>
+        <button class="path-btn" data-preset="fermions">Fermi gases</button>
+        <button class="path-btn" data-preset="theory">Theory groups</button>
+        <button class="path-btn" data-preset="reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="filter-matrix" aria-label="Additional filters">
+      <div class="filter-group">
+        <div class="filter-group-title">Atom / platform</div>
+        <div class="mini-filter-row">
+          <button class="mini-filter-btn active" data-filter="atom" data-value="all">All</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Rb">Rb</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Cs">Cs</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Li">Li</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Sr">Sr</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Yb">Yb</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Dy">Dy</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="Er">Er</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="molecules">Molecules</button>
+          <button class="mini-filter-btn" data-filter="atom" data-value="ions">Ions</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-title">Region</div>
+        <div class="mini-filter-row">
+          <button class="mini-filter-btn active" data-filter="region" data-value="all">All</button>
+          <button class="mini-filter-btn" data-filter="region" data-value="US">US</button>
+          <button class="mini-filter-btn" data-filter="region" data-value="Europe">Europe</button>
+          <button class="mini-filter-btn" data-filter="region" data-value="Asia">Asia</button>
+          <button class="mini-filter-btn" data-filter="region" data-value="Australia">Australia</button>
+          <button class="mini-filter-btn" data-filter="region" data-value="Canada">Canada</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-title">Career mode</div>
+        <div class="mini-filter-row">
+          <button class="mini-filter-btn active" data-filter="career" data-value="all">All</button>
+          <button class="mini-filter-btn" data-filter="career" data-value="phd">PhD-friendly</button>
+          <button class="mini-filter-btn" data-filter="career" data-value="postdoc">Postdoc-heavy</button>
+          <button class="mini-filter-btn" data-filter="career" data-value="theory">Theory</button>
+          <button class="mini-filter-btn" data-filter="career" data-value="experimental">Experimental</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-group-title">Technique</div>
+        <div class="mini-filter-row">
+          <button class="mini-filter-btn active" data-filter="technique" data-value="all">All</button>
+          <button class="mini-filter-btn" data-filter="technique" data-value="tweezer">Tweezer</button>
+          <button class="mini-filter-btn" data-filter="technique" data-value="lattice">Lattice</button>
+          <button class="mini-filter-btn" data-filter="technique" data-value="microscope">Microscope</button>
+          <button class="mini-filter-btn" data-filter="technique" data-value="cavity">Cavity</button>
+          <button class="mini-filter-btn" data-filter="technique" data-value="clock">Clock</button>
+          <button class="mini-filter-btn" data-filter="technique" data-value="molecule-assembly">Molecule assembly</button>
+        </div>
+      </div>
     </div>
 
     <div class="map-shell">
@@ -401,6 +553,7 @@ function labUrl(g) {
 
 /* ─── Active filter ─── */
 let activeTag = 'all';
+const activeFilters = { atom:'all', region:'all', career:'all', technique:'all' };
 let mapPoints; // amCharts series
 const mapTooltip = document.getElementById('map-tooltip');
 
@@ -458,6 +611,103 @@ function hideMapTooltip() {
   if (!mapTooltip) return;
   mapTooltip.classList.remove('visible');
   mapTooltip.setAttribute('aria-hidden', 'true');
+}
+
+function regionOf(g) {
+  if (g.country === 'USA') return 'US';
+  if (g.country === 'Canada') return 'Canada';
+  if (g.country === 'Australia') return 'Australia';
+  if (['Germany','Austria','France','Switzerland','UK','Netherlands','Italy'].includes(g.country)) return 'Europe';
+  if (['Israel','Japan','China','Singapore','India'].includes(g.country)) return 'Asia';
+  return g.country;
+}
+
+function careerModes(g) {
+  const modes = [];
+  const text = `${g.name} ${g.pi} ${g.inst} ${g.focus} ${g.tag}`.toLowerCase();
+  if (g.hire) modes.push('phd');
+  if (g.hire && /cavity|clock|molecule|rydberg|dipolar|fermion|feshbach|metrology|precision|qed/.test(text)) modes.push('postdoc');
+  if (g.atoms.length === 0 || text.includes('theory:')) modes.push('theory');
+  if (g.atoms.length > 0 && !text.includes('theory:')) modes.push('experimental');
+  return modes;
+}
+
+function techniques(g) {
+  const text = `${g.name} ${g.inst} ${g.focus} ${g.tag}`.toLowerCase();
+  const values = [];
+  if (/tweezer|array/.test(text)) values.push('tweezer');
+  if (/lattice|hubbard/.test(text)) values.push('lattice');
+  if (/microscope|gas microscope/.test(text)) values.push('microscope');
+  if (/cavity|qed|atom-photon|photon/.test(text)) values.push('cavity');
+  if (/clock|metrology|interferometry|precision|geodesy/.test(text)) values.push('clock');
+  if (/molecule|stirap|assembly|chemistry|reaction/.test(text)) values.push('molecule-assembly');
+  return values;
+}
+
+function atomMatches(g, atom) {
+  if (atom === 'all') return true;
+  if (atom === 'molecules') return g.tag === 'molecules' || /molecule|chemistry|reaction|stirap/i.test(g.focus);
+  if (atom === 'ions') return g.tag === 'ions' || g.atoms.some(a => a.includes('+'));
+  return g.atoms.some(a => a.replace('+','') === atom);
+}
+
+function groupMatches(g, query='') {
+  if (activeTag !== 'all' && g.tag !== activeTag) return false;
+  if (!atomMatches(g, activeFilters.atom)) return false;
+  if (activeFilters.region !== 'all' && regionOf(g) !== activeFilters.region) return false;
+  if (activeFilters.career !== 'all' && !careerModes(g).includes(activeFilters.career)) return false;
+  if (activeFilters.technique !== 'all' && !techniques(g).includes(activeFilters.technique)) return false;
+  if (!query) return true;
+  return (
+    g.pi.toLowerCase().includes(query) ||
+    g.inst.toLowerCase().includes(query) ||
+    g.focus.toLowerCase().includes(query) ||
+    g.atoms.some(a => a.toLowerCase().includes(query)) ||
+    g.country.toLowerCase().includes(query) ||
+    g.name.toLowerCase().includes(query) ||
+    TAG_LABELS[g.tag].toLowerCase().includes(query)
+  );
+}
+
+function updateFilterButtons() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tag === activeTag);
+  });
+  document.querySelectorAll('.mini-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', activeFilters[btn.dataset.filter] === btn.dataset.value);
+  });
+}
+
+function applyFilters() {
+  const q = document.getElementById('group-search').value.trim().toLowerCase();
+  const filtered = GROUPS.filter(g => groupMatches(g, q));
+  hideMapTooltip();
+  buildGrid(filtered);
+  loadMapPoints(filtered);
+  document.getElementById('result-count').textContent = `${filtered.length} group${filtered.length!==1?'s':''}`;
+  updateFilterButtons();
+}
+
+function setPreset(preset) {
+  activeTag = 'all';
+  Object.assign(activeFilters, { atom:'all', region:'all', career:'all', technique:'all' });
+  if (preset === 'neutral-qc') {
+    Object.assign(activeFilters, { technique:'tweezer', career:'experimental' });
+    activeTag = 'rydberg';
+  }
+  if (preset === 'molecules') Object.assign(activeFilters, { atom:'molecules', technique:'molecule-assembly', career:'experimental' });
+  if (preset === 'clocks') {
+    Object.assign(activeFilters, { technique:'clock' });
+    activeTag = 'clocks';
+  }
+  if (preset === 'fermions') {
+    Object.assign(activeFilters, { atom:'Li', technique:'microscope' });
+    activeTag = 'bec';
+  }
+  if (preset === 'theory') Object.assign(activeFilters, { career:'theory' });
+  document.getElementById('group-search').value = '';
+  document.querySelectorAll('.path-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.preset === preset && preset !== 'reset'));
+  applyFilters();
 }
 
 /* ─── Init amCharts map ─── */
@@ -550,14 +800,21 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       activeTag = btn.dataset.tag;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filtered = activeTag === 'all' ? GROUPS : GROUPS.filter(g => g.tag === activeTag);
-      loadMapPoints(filtered);
-      buildGrid(filtered);
-      document.getElementById('group-search').value = '';
-      document.getElementById('result-count').textContent = `${filtered.length} groups`;
+      document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
+      applyFilters();
     });
+  });
+
+  document.querySelectorAll('.mini-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilters[btn.dataset.filter] = btn.dataset.value;
+      document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
+      applyFilters();
+    });
+  });
+
+  document.querySelectorAll('.path-btn').forEach(btn => {
+    btn.addEventListener('click', () => setPreset(btn.dataset.preset));
   });
 });
 
@@ -631,29 +888,26 @@ function buildGrid(groups) {
     const col = TAG_COLORS[g.tag] || '#94a3b8';
     const idx = GROUPS.indexOf(g);
     const url = labUrl(g);
+    const atomList = g.atoms.length ? g.atoms.join(', ') : 'Theory';
+    const techniqueList = techniques(g).slice(0, 2).map(t => t.replace('-', ' '));
     return `<a class="group-card" id="group-card-${idx}" href="${url}" target="_blank" rel="noopener" title="Open ${g.name} website">
       <div class="gc-head"><div class="gc-dot" style="background:${col}"></div><div class="gc-name">${g.name}</div></div>
       <div class="gc-inst">${g.inst} · ${g.country}</div>
       <div class="gc-focus">${g.focus}</div>
+      <div class="gc-meta">
+        <span class="gc-chip">${atomList}</span>
+        <span class="gc-chip">${regionOf(g)}</span>
+        <span class="gc-chip">${TAG_LABELS[g.tag]}</span>
+        ${techniqueList.map(t => `<span class="gc-chip">${t}</span>`).join('')}
+      </div>
       <span class="gc-link">Visit lab website ↗</span>
     </a>`;
   }).join('');
 }
 
 function filterGroups() {
-  const q = document.getElementById('group-search').value.toLowerCase();
-  const base = activeTag === 'all' ? GROUPS : GROUPS.filter(g => g.tag === activeTag);
-  const filtered = q ? base.filter(g =>
-    g.pi.toLowerCase().includes(q) ||
-    g.inst.toLowerCase().includes(q) ||
-    g.focus.toLowerCase().includes(q) ||
-    g.atoms.some(a => a.toLowerCase().includes(q)) ||
-    g.country.toLowerCase().includes(q) ||
-    g.name.toLowerCase().includes(q)
-  ) : base;
-  buildGrid(filtered);
-  loadMapPoints(filtered);
-  document.getElementById('result-count').textContent = `${filtered.length} group${filtered.length!==1?'s':''}`;
+  document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
+  applyFilters();
 }
 </script>
 
