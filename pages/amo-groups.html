@@ -59,6 +59,41 @@
       font-size:.75rem;
       backdrop-filter:blur(10px);
     }
+    .map-tooltip {
+      position:fixed;
+      z-index:9999;
+      min-width:220px;
+      max-width:280px;
+      padding:12px 14px;
+      border:1px solid rgba(125,211,252,.24);
+      border-radius:14px;
+      background:rgba(2,6,23,.94);
+      box-shadow:0 18px 55px rgba(0,0,0,.36);
+      color:var(--text-secondary);
+      font-size:.78rem;
+      line-height:1.45;
+      pointer-events:none;
+      opacity:0;
+      transform:translate(12px, 12px) scale(.98);
+      transition:opacity .12s ease, transform .12s ease;
+      backdrop-filter:blur(14px);
+    }
+    .map-tooltip.visible {
+      opacity:1;
+      transform:translate(12px, 12px) scale(1);
+    }
+    .map-tooltip strong {
+      display:block;
+      color:var(--text-primary);
+      font-size:.88rem;
+      margin-bottom:3px;
+    }
+    .map-tooltip .map-tooltip-action {
+      display:block;
+      margin-top:6px;
+      color:#7dd3fc;
+      font-weight:700;
+    }
 
     /* Filter bar */
     .filter-bar { display:flex; flex-wrap:wrap; gap:var(--sp-2); align-items:center; margin-bottom:var(--sp-4); }
@@ -174,6 +209,7 @@
       <div id="map-root"></div>
       <div class="map-hint">Hover a pin for the group name · click a pin to jump to the directory card</div>
     </div>
+    <div class="map-tooltip" id="map-tooltip" role="tooltip" aria-hidden="true"></div>
 
     <div id="group-panel">
       <button class="gp-close" onclick="closePanel()">✕</button>
@@ -366,6 +402,46 @@ function labUrl(g) {
 /* ─── Active filter ─── */
 let activeTag = 'all';
 let mapPoints; // amCharts series
+const mapTooltip = document.getElementById('map-tooltip');
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
+function moveMapTooltip(pointEvent) {
+  if (!mapTooltip || !pointEvent) return;
+  const source = pointEvent.originalEvent || pointEvent.event || pointEvent;
+  const x = source.clientX ?? 0;
+  const y = source.clientY ?? 0;
+  const pad = 18;
+  const width = mapTooltip.offsetWidth || 260;
+  const height = mapTooltip.offsetHeight || 110;
+  const left = Math.min(x + 14, window.innerWidth - width - pad);
+  const top = Math.min(y + 14, window.innerHeight - height - pad);
+  mapTooltip.style.left = `${Math.max(pad, left)}px`;
+  mapTooltip.style.top = `${Math.max(pad, top)}px`;
+}
+
+function showMapTooltip(d, pointEvent) {
+  if (!mapTooltip) return;
+  mapTooltip.innerHTML = `
+    <strong>${escapeHTML(d.name)}</strong>
+    <span>${escapeHTML(d.pi)}</span><br>
+    <span>${escapeHTML(d.inst)}</span>
+    <span class="map-tooltip-action">Click to jump to this group</span>
+  `;
+  mapTooltip.classList.add('visible');
+  mapTooltip.setAttribute('aria-hidden', 'false');
+  moveMapTooltip(pointEvent);
+}
+
+function hideMapTooltip() {
+  if (!mapTooltip) return;
+  mapTooltip.classList.remove('visible');
+  mapTooltip.setAttribute('aria-hidden', 'true');
+}
 
 /* ─── Init amCharts map ─── */
 window.addEventListener('DOMContentLoaded', () => {
@@ -406,8 +482,7 @@ window.addEventListener('DOMContentLoaded', () => {
       centerX:am5.percent(50),
       centerY:am5.percent(50),
       interactive:true,
-      cursorOverStyle:'pointer',
-      tooltipText:'[bold]{name}[/]\n{pi}\n{inst}\nClick to jump to this group'
+      cursorOverStyle:'pointer'
     });
     const halo = pin.children.push(am5.Circle.new(root, {
       radius:15,
@@ -432,12 +507,17 @@ window.addEventListener('DOMContentLoaded', () => {
     pin.events.on('click', () => {
       jumpToGroup(d.groupIdx);
     });
-    pin.events.on('pointerover', () => {
+    pin.events.on('pointerover', (ev) => {
+      showMapTooltip(d, ev);
       halo.animate({ key:'radius', to:21, duration:180, easing:am5.ease.out(am5.ease.cubic) });
       dot.animate({ key:'radius', to:8.5, duration:180, easing:am5.ease.out(am5.ease.cubic) });
       core.animate({ key:'radius', to:3.2, duration:180, easing:am5.ease.out(am5.ease.cubic) });
     });
+    pin.events.on('pointermove', (ev) => {
+      moveMapTooltip(ev);
+    });
     pin.events.on('pointerout', () => {
+      hideMapTooltip();
       halo.animate({ key:'radius', to:15, duration:180, easing:am5.ease.out(am5.ease.cubic) });
       dot.animate({ key:'radius', to:6.5, duration:180, easing:am5.ease.out(am5.ease.cubic) });
       core.animate({ key:'radius', to:2.2, duration:180, easing:am5.ease.out(am5.ease.cubic) });
