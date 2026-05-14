@@ -297,10 +297,70 @@ const TAG_LABELS = {
   dipolar:'Dipolar', ions:'Ions',
 };
 
+const GROUP_WEBSITES = {
+  "Lukin Lab": "https://lukin.physics.harvard.edu/",
+  "Greiner Lab": "https://greiner.physics.harvard.edu/",
+  "Ni Lab": "https://projects.iq.harvard.edu/nilab",
+  "Vuletic Lab": "https://cua.mit.edu/groups/vuletic-group/",
+  "Ketterle Lab": "https://cua.mit.edu/groups/ketterle-group/",
+  "Zwierlein Lab": "https://cua.mit.edu/groups/zwierlein-group/",
+  "Thompson Lab": "https://jdtlab.phys.columbia.edu/",
+  "Bakr Lab": "https://bakrlab.princeton.edu/",
+  "Chin Lab": "https://ultracold.uchicago.edu/",
+  "DeMarco Lab": "https://publish.illinois.edu/bdemarco/",
+  "Gadway Lab": "https://gadwaylab.web.illinois.edu/",
+  "Spielman Lab": "https://jqi.umd.edu/people/ian-spielman",
+  "Porto Lab": "https://jqi.umd.edu/people/james-porto",
+  "Hulet Lab": "https://atomcool.rice.edu/",
+  "Killian Lab": "https://coldatoms.rice.edu/",
+  "Stamper-Kurn Lab": "https://ultracold.physics.berkeley.edu/",
+  "Lev Lab": "https://levlab.stanford.edu/",
+  "Kasevich Lab": "https://web.stanford.edu/group/kasevich/cgi-bin/wordpress/",
+  "Gross Lab": "https://uni-tuebingen.de/en/faculties/faculty-of-science/departments/physics/institutes/center-for-quantum-science/groups/prof-dr-christian-gross/",
+  "Endres Lab": "https://www.endreslab.caltech.edu/",
+  "Hood Lab": "https://hoodlab.caltech.edu/",
+  "Ye Lab": "https://jila.colorado.edu/YeLabs/",
+  "Kaufman Lab": "https://www.kaufmanlab.org/",
+  "Rey Lab": "https://jila.colorado.edu/rey/",
+  "Monroe Lab": "https://iontrap.umd.edu/",
+  "Gupta Lab": "https://faculty.washington.edu/sgupta/",
+  "Bloch Lab": "https://www.mpq.mpg.de/quantum_many_body",
+  "Rempe Lab": "https://www.mpq.mpg.de/quantum-dynamics",
+  "Pfau Lab": "https://www.pi5.uni-stuttgart.de/",
+  "Sengstock Lab": "https://www.physik.uni-hamburg.de/en/ilp/sengstock.html",
+  "Weidemüller Lab": "https://www.physi.uni-heidelberg.de/Forschung/QD/",
+  "Blatt / Roos Group": "https://www.quantumoptics.at/",
+  "Grimm Lab": "https://www.ultracold.at/",
+  "Ferlaino Lab": "https://www.erbium.at/",
+  "Browaeys / Lahaye Lab": "https://www.lcf.institutoptique.fr/groupes-de-recherche/groupe-antoine-browaeys-thierry-lahaye/",
+  "Aspect / Boiron Lab": "https://atomoptic.iogroup.fr/",
+  "Dalibard / Beugnon Lab": "https://www.lkb.upmc.fr/quantum-gases/",
+  "Reichel Lab": "https://www.lkb.upmc.fr/atomchips/",
+  "Esslinger Lab": "https://www.quantumoptics.ethz.ch/",
+  "Treutlein Lab": "https://atom.physik.unibas.ch/",
+  "Foot Group": "https://www.physics.ox.ac.uk/research/group/ultracold-atom-physics",
+  "Cornish Group": "https://www.durham.ac.uk/research/institutes-and-centres/quantum-light-matter/research/ultracold-molecules/",
+  "Adams Group": "https://www.durham.ac.uk/staff/c-s-adams/",
+  "Hinds Group": "https://www.imperial.ac.uk/centre-for-cold-matter/research/molecules/",
+  "Walraven Group": "https://iop.uva.nl/content/research-groups/qgq/qgq.html",
+  "Firstenberg Group": "https://www.weizmann.ac.il/complex/Firstenberg/",
+  "Sagi Group": "https://sagilab.net.technion.ac.il/",
+  "Steinhauer Group": "https://steinhauer.net.technion.ac.il/",
+  "Takahashi Lab": "https://yagura.scphys.kyoto-u.ac.jp/",
+  "Katori Lab": "https://www.amo.t.u-tokyo.ac.jp/",
+  "Ohmori Lab": "https://groups.ims.ac.jp/organization/ohmori_g/",
+  "Pan Lab": "https://quantum.ustc.edu.cn/web/en/node/20",
+  "Lu / Liu Dipolar Lab": "https://coldatom.ustc.edu.cn/",
+  "Zhu / Duan Lab": "https://spe.sysu.edu.cn/",
+  "Lan Lab": "https://www.ntu.edu.sg/spms/about-us/physics/research/research-groups/quantum-sensors-and-metrology",
+  "Andersen Group": "https://atomlaser.phy.uq.edu.au/",
+  "Rangwala Lab": "https://www.rri.res.in/people/faculty/sadiq-rangwala",
+  "Thywissen Lab": "https://www.physics.utoronto.ca/~jhtgroup/",
+  "Hauke / Duan Theory": "https://quantum-dynamics.unitn.it/people/philipp-hauke/"
+};
+
 function labUrl(g) {
-  if (g.website) return g.website;
-  const q = encodeURIComponent(`${g.name} ${g.pi} ${g.inst} AMO lab`);
-  return `https://www.google.com/search?q=${q}`;
+  return g.website || GROUP_WEBSITES[g.name] || '#';
 }
 
 /* ─── Active filter ─── */
@@ -340,34 +400,49 @@ window.addEventListener('DOMContentLoaded', () => {
   mapPoints = chart.series.push(am5map.MapPointSeries.new(root, {}));
 
   mapPoints.bullets.push((root, series, dataItem) => {
-    const g = am5.Graphics.new(root, {
-      svgPath:'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-      scale:0.9,
-      centerX:am5.percent(50), centerY:am5.percent(100),
-      fill: am5.color(dataItem.dataContext.color || 0x818cf8),
-      fillOpacity:0.9,
+    const d = dataItem.dataContext;
+    const color = am5.color(d.color || 0x818cf8);
+    const pin = am5.Container.new(root, {
+      centerX:am5.percent(50),
+      centerY:am5.percent(50),
+      interactive:true,
       cursorOverStyle:'pointer',
-      tooltipText:'[bold]{name}[/]\n{pi}\n{inst}\nClick to jump to this group',
-      stroke:am5.color(0x020617),
-      strokeWidth:1.2,
+      tooltipText:'[bold]{name}[/]\n{pi}\n{inst}\nClick to jump to this group'
     });
-    g.set('shadowColor', am5.color(0x000000));
-    g.set('shadowBlur', 8);
-    g.set('shadowOpacity', 0.45);
-
-    g.events.on('click', (ev) => {
-      const d = ev.target.dataItem.dataContext;
+    const halo = pin.children.push(am5.Circle.new(root, {
+      radius:15,
+      fill:color,
+      fillOpacity:.16,
+      stroke:color,
+      strokeOpacity:.32,
+      strokeWidth:1
+    }));
+    const dot = pin.children.push(am5.Circle.new(root, {
+      radius:6.5,
+      fill:color,
+      fillOpacity:1,
+      stroke:am5.color(0x020617),
+      strokeWidth:2
+    }));
+    const core = pin.children.push(am5.Circle.new(root, {
+      radius:2.2,
+      fill:am5.color(0xf8fafc),
+      fillOpacity:.95
+    }));
+    pin.events.on('click', () => {
       jumpToGroup(d.groupIdx);
     });
-    g.events.on('pointerover', (ev) => {
-      ev.target.set('fillOpacity', 1);
-      ev.target.set('scale', 1.24);
+    pin.events.on('pointerover', () => {
+      halo.animate({ key:'radius', to:21, duration:180, easing:am5.ease.out(am5.ease.cubic) });
+      dot.animate({ key:'radius', to:8.5, duration:180, easing:am5.ease.out(am5.ease.cubic) });
+      core.animate({ key:'radius', to:3.2, duration:180, easing:am5.ease.out(am5.ease.cubic) });
     });
-    g.events.on('pointerout', (ev) => {
-      ev.target.set('fillOpacity', 0.9);
-      ev.target.set('scale', 0.9);
+    pin.events.on('pointerout', () => {
+      halo.animate({ key:'radius', to:15, duration:180, easing:am5.ease.out(am5.ease.cubic) });
+      dot.animate({ key:'radius', to:6.5, duration:180, easing:am5.ease.out(am5.ease.cubic) });
+      core.animate({ key:'radius', to:2.2, duration:180, easing:am5.ease.out(am5.ease.cubic) });
     });
-    return am5.Bullet.new(root, { sprite: g });
+    return am5.Bullet.new(root, { sprite: pin });
   });
 
   loadMapPoints(GROUPS);
@@ -463,7 +538,7 @@ function buildGrid(groups) {
       <div class="gc-head"><div class="gc-dot" style="background:${col}"></div><div class="gc-name">${g.name}</div></div>
       <div class="gc-inst">${g.inst} · ${g.country}</div>
       <div class="gc-focus">${g.focus}</div>
-      <span class="gc-link">Visit lab website/search ↗</span>
+      <span class="gc-link">Visit lab website ↗</span>
     </a>`;
   }).join('');
 }
