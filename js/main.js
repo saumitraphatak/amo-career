@@ -24,9 +24,6 @@ const NAV = {
     { key: 'release-recapture',  label: 'Tweezer Thermometry (R&R)',  kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html'  },
     { key: 'tof-calculator',     label: 'Atom Temperature (TOF)',     kind: 'Calculator', icon: '🌡️', color: '#38bdf8', href: 'pages/tof-calculator.html'     },
     { key: 'lab-calculators',    label: 'Quick Lab Calculators',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
-    { key: 'fidelity-budget',    label: 'Two-Qubit Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html'   },
-    { key: 'rb-explorer',        label: 'Gate Benchmarking (RB)',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html'        },
-    { key: 'dd-playground',      label: 'Qubit Coherence & Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html'     },
   ],
   cooling: [
     { key: 'laser-cooling',      label: 'Trapped Atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
