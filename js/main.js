@@ -29,16 +29,8 @@ const NAV = {
     { key: 'dd-playground',      label: 'Qubit Coherence & Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html'     },
   ],
   cooling: [
-    { key: 'laser-cooling',      label: 'Laser Cooling Overview',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
-    { label: 'Overview & Lamb-Dicke',      kind: 'Section', icon: '📐', href: 'pages/laser-cooling.html#lamb-dicke',   color: '#60a5fa' },
-    { label: 'Resolved Sideband',          kind: 'Section', icon: '📡', href: 'pages/laser-cooling.html#resolved-sb',  color: '#60a5fa' },
-    { label: 'Gray Molasses',              kind: 'Section', icon: '☁️', href: 'pages/laser-cooling.html#gm',           color: '#60a5fa' },
-    { label: 'EIT / Λ-Enhanced GM',        kind: 'Section', icon: '✨', href: 'pages/laser-cooling.html#eit-lgm',      color: '#60a5fa' },
-    { label: 'Raman Sideband',             kind: 'Section', icon: '🔀', href: 'pages/laser-cooling.html#rsb',          color: '#60a5fa' },
+    { key: 'laser-cooling',      label: 'Trapped Atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
     { key: 'cooling-simulator', label: 'Doppler Cooling Simulator',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
-    { key: 'mot-designer',      label: 'MOT & Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html' },
-    { key: 'release-recapture', label: 'Release-Recapture Thermometry', kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html' },
-    { key: 'rydberg-calculator', label: 'Rydberg States & Blockade',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
   ],
   quantum: [
     { key: 'learn-quantum',      label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
@@ -479,7 +471,7 @@ function getSearchEntries(root = '') {
 
   byHref.set('laser-cooling:overview', {
     key: 'laser-cooling',
-    title: 'Laser Cooling Guide',
+    title: 'Trapped Atom Cooling Guide',
     icon: '❄️',
     href: `${root}pages/laser-cooling.html`,
     color: '#60a5fa',
