@@ -257,6 +257,78 @@
     #group-search:focus { border-color:rgba(74,222,128,0.4); }
     #group-search::placeholder { color:var(--text-muted); }
     .result-count { font-size:.8125rem; color:var(--text-muted); white-space:nowrap; }
+    .watchlist-intro {
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr);
+      gap:var(--sp-4);
+      align-items:start;
+      margin:var(--sp-4) 0;
+      padding:var(--sp-4);
+      border:1px solid rgba(125,211,252,.16);
+      border-radius:var(--r-lg);
+      background:linear-gradient(135deg, rgba(14,165,233,.08), rgba(15,23,42,.58));
+    }
+    .watchlist-intro p { margin:0; color:var(--text-secondary); line-height:1.65; }
+    .watchlist-note {
+      color:var(--text-muted);
+      font-size:.82rem;
+      line-height:1.55;
+      border-left:3px solid rgba(125,211,252,.38);
+      padding-left:var(--sp-3);
+    }
+    .curation-note {
+      margin:0 0 var(--sp-5);
+      padding:var(--sp-3) var(--sp-4);
+      border:1px solid rgba(251,191,36,.2);
+      border-radius:var(--r-lg);
+      background:linear-gradient(135deg, rgba(251,191,36,.08), rgba(15,23,42,.48));
+      color:var(--text-secondary);
+      font-size:.86rem;
+      line-height:1.6;
+    }
+    .curation-note strong { color:#fde68a; }
+    .watchlist-controls { display:flex; gap:var(--sp-3); margin:0 0 var(--sp-4); align-items:center; }
+    #watchlist-search { flex:1; padding:9px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); color:var(--text-primary); font-size:.875rem; outline:none; }
+    .watchlist-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4); }
+    .watchlist-section {
+      border:1px solid var(--border);
+      border-radius:var(--r-lg);
+      background:rgba(15,23,42,.48);
+      overflow:hidden;
+    }
+    .watchlist-section h3 {
+      display:flex;
+      justify-content:space-between;
+      gap:var(--sp-3);
+      margin:0;
+      padding:var(--sp-3) var(--sp-4);
+      border-bottom:1px solid var(--border);
+      color:var(--text-primary);
+      font-size:.95rem;
+    }
+    .watchlist-section h3 span { color:var(--text-muted); font-size:.72rem; font-weight:700; }
+    .watchlist-list { display:grid; gap:1px; background:rgba(148,163,184,.08); }
+    .watchlist-item {
+      display:grid;
+      gap:4px;
+      padding:var(--sp-3) var(--sp-4);
+      background:rgba(2,6,23,.58);
+    }
+    .watchlist-name { color:var(--text-primary); font-weight:800; font-size:.86rem; }
+    .watchlist-meta { color:var(--text-muted); font-size:.76rem; }
+    .watchlist-focus { color:var(--text-secondary); font-size:.79rem; line-height:1.45; }
+    .shortlist-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4); margin-top:var(--sp-5); }
+    .shortlist-card {
+      border:1px solid rgba(74,222,128,.18);
+      border-radius:var(--r-lg);
+      padding:var(--sp-4);
+      background:linear-gradient(135deg, rgba(74,222,128,.08), rgba(15,23,42,.64));
+    }
+    .shortlist-card h3 { margin:0 0 var(--sp-3); color:var(--text-primary); font-size:.95rem; }
+    .shortlist-card ul { margin:0; padding-left:1.1rem; color:var(--text-secondary); line-height:1.7; font-size:.82rem; }
+    @media(max-width:900px) {
+      .watchlist-intro, .watchlist-grid, .shortlist-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -269,15 +341,20 @@
         <span class="page-tag">🌍 AMO Toolkit</span>
         <span class="page-tag">Research Groups</span>
       </div>
-      <h1 class="page-title"><span class="accent">59</span> AMO Research Groups Worldwide</h1>
+      <h1 class="page-title"><span class="accent">100+</span> AMO Research Groups Worldwide</h1>
       <p class="page-subtitle">
-        Clickable map and searchable directory of leading atomic, molecular, and optical physics groups —
-        organized by research focus. PI, atoms used, flagship paper, and international hiring status for each.
+        Clickable map plus a broader global watchlist of leading atomic, molecular, and optical physics groups —
+        organized by research focus, region, atoms used, technique, and career relevance.
       </p>
     </div>
   </div>
 
   <div class="page-content">
+    <div class="curation-note">
+      <strong>How to read this page:</strong> this is not a strict ranking. It is a curated shortlist and map based on
+      field relevance, scientific quality, reputation, and alignment with cold-atom, tweezer, molecule, clock,
+      quantum-gas, atom-interferometry, and AMO quantum-science directions.
+    </div>
 
     <div class="filter-bar">
       <span class="filter-label">Show:</span>
@@ -368,12 +445,33 @@
       <div id="panel-content"></div>
     </div>
 
-    <h2 class="section-title" style="margin-top:var(--sp-6)"><span class="accent">02</span> Directory</h2>
+    <h2 class="section-title" style="margin-top:var(--sp-6)"><span class="accent">02</span> Featured Mapped Directory</h2>
     <div class="search-row">
       <input id="group-search" type="text" placeholder="Search by PI, institution, atom, or focus…" oninput="filterGroups()">
       <span class="result-count" id="result-count"></span>
     </div>
     <div class="group-grid" id="group-grid"></div>
+
+    <h2 class="section-title" style="margin-top:var(--sp-7)"><span class="accent">03</span> Global Watchlist</h2>
+    <div class="watchlist-intro">
+      <p>
+        The mapped directory above is the link-checked, structured set. This watchlist is broader:
+        cold atoms, optical tweezers, Rydberg arrays, quantum gases, cold molecules, optical clocks,
+        atom interferometry, ions, and AMO-adjacent theory ecosystems.
+      </p>
+      <div class="watchlist-note">
+        Not a strict ranking. Use this as a field map: search by PI, institution, country, platform, or technique,
+        then follow up through group pages, recent papers, and department listings.
+      </div>
+    </div>
+    <div class="watchlist-controls">
+      <input id="watchlist-search" type="text" placeholder="Search the broader watchlist by PI, institution, country, or topic…" oninput="renderWatchlist()">
+      <span class="result-count" id="watchlist-count"></span>
+    </div>
+    <div class="watchlist-grid" id="watchlist-grid"></div>
+
+    <h2 class="section-title" style="margin-top:var(--sp-7)"><span class="accent">04</span> Highest-Priority Shortlists</h2>
+    <div class="shortlist-grid" id="shortlist-grid"></div>
 
   </div>
 </main>
@@ -547,6 +645,177 @@ const GROUP_WEBSITES = {
   "Hauke / Duan Theory": "https://quantum-dynamics.unitn.it/people/philipp-hauke/"
 };
 
+const WATCHLIST_SECTIONS = [
+  {
+    title: 'United States',
+    entries: [
+      'Mikhail Lukin — Harvard University — Rydberg tweezer arrays; neutral-atom quantum information',
+      'Markus Greiner — Harvard University — Quantum gas microscopes; optical lattices; many-body physics',
+      'Kang-Kuen Ni — Harvard University — Ultracold molecules; molecule tweezer arrays',
+      'John Doyle — Harvard University — Cold molecules; precision AMO',
+      'Eugene Demler / theory ecosystem — Harvard / ETH-linked — Many-body AMO theory',
+      'Norman Yao — Harvard University — AMO many-body theory; Rydberg systems; quantum dynamics',
+      'Vladan Vuletic — MIT — Cavity QED; cold atoms; quantum optics',
+      'Wolfgang Ketterle — MIT — Bose gases; Fermi gases; quantum simulation',
+      'Martin Zwierlein — MIT — Strongly interacting Fermi gases; quantum matter',
+      'Richard Fletcher — MIT — Quantum gases; many-body dynamics',
+      'Soonwon Choi — MIT — Quantum many-body theory; neutral atoms; dynamics',
+      'Ronald Fernando Garcia Ruiz — MIT — Precision AMO; exotic atoms and nuclei',
+      'Hannes Bernien — University of Chicago — Rydberg tweezer arrays; quantum networks',
+      'Jonathan Simon — University of Chicago — Photonic and cold-atom quantum matter',
+      'Cheng Chin — University of Chicago — Quantum gases; optical lattices; Feshbach physics',
+      'David Schuster — University of Chicago — Hybrid quantum optics and cavity/circuit connections',
+      'Jeff Thompson — Princeton University — Neutral atoms; nanophotonics; tweezer arrays',
+      'Waseem Bakr — Princeton University — Quantum gas microscopy; Hubbard physics',
+      'Lawrence Cheuk — Princeton University — Ultracold fermions; microscopy; quantum simulation',
+      'Adam Kaufman — JILA / University of Colorado Boulder — Optical tweezer arrays; many-body spin systems',
+      'Ana Maria Rey — JILA / University of Colorado Boulder — AMO many-body theory; clocks; molecules',
+      'Jun Ye — JILA / University of Colorado Boulder — Optical clocks; ultracold strontium; molecules',
+      'Cindy Regal — JILA / University of Colorado Boulder — Tweezer arrays; hybrid quantum systems',
+      'Deborah Jin legacy / JILA molecule ecosystem — JILA / University of Colorado Boulder — Ultracold molecules',
+      'James Thompson — JILA / University of Colorado Boulder — Cavity QED; clocks; many-body AMO',
+      'Heather Lewandowski — University of Colorado Boulder — AMO education; molecular beams; precision',
+      'Benjamin Lev — Stanford University — Dipolar quantum gases; cavity QED; tweezers',
+      'Monika Schleier-Smith — Stanford University — Cavity QED; spin squeezing; cold atoms',
+      'Mark Kasevich — Stanford University — Atom interferometry; precision sensing',
+      'David DeMille — University of Chicago / former Yale — Cold molecules; EDM; precision AMO',
+      'David Weiss — Penn State — Optical lattices; neutral atoms; quantum computing',
+      'Gretchen Campbell — NIST / University of Maryland — Optical lattices; atomtronics; clocks',
+      'Trey Porto — NIST / University of Maryland — Optical lattices; atom interferometry; quantum simulation',
+      'Ian Spielman — NIST / University of Maryland — Synthetic gauge fields; quantum gases',
+      'Alexey Gorshkov — NIST / University of Maryland — AMO quantum information theory',
+      'Christopher Monroe — Duke University / IonQ — Trapped ions; AMO quantum information',
+      'Huanqian Loh — Duke University — Neutral atom tweezer arrays; Rydberg systems; molecules',
+      'Kenneth Brown — Duke University — AMO quantum information; trapped ions',
+      'David Hazzard — Rice University — AMO theory; molecules; Rydberg systems; quantum gases',
+      'Randy Hulet — Rice University — Lithium quantum gases; solitons; strongly interacting atoms',
+      'Tom Killian — Rice University — Ultracold plasmas; Rydberg atoms; cold atoms',
+      'Brian DeMarco — University of Illinois Urbana-Champaign — Quantum gases; optical lattices',
+      'Jacob Covey — University of Illinois Urbana-Champaign — Molecule and atom tweezer arrays; quantum simulation',
+      'Paul Kwiat — University of Illinois Urbana-Champaign — Quantum optics; AMO-adjacent quantum information',
+      'Bryce Gadway — University of Illinois Urbana-Champaign — Optical lattices; quantum simulation',
+      'Dan Stamper-Kurn — University of California, Berkeley — Spinor gases; cavity QED; quantum fluids',
+      'Holger Mueller — University of California, Berkeley — Atom interferometry; precision AMO',
+      'Manuel Endres — Caltech — Optical tweezer arrays; quantum simulation',
+      'Nick Hutzler — Caltech — Cold molecules; precision measurement',
+      'David Weld — University of California, Santa Barbara — Quantum gases; optical lattices; nonequilibrium physics',
+      'Brian Odom — Northwestern University — Precision AMO; ions; spectroscopy',
+      'Jonathan Hood — Purdue University — Single atoms; optical tweezers; molecule assembly',
+      'Mukund Vengalattore — Cornell University — Quantum gases; spinor condensates; nonequilibrium AMO',
+      'Erich Mueller — Cornell University — Quantum gas theory; strongly correlated AMO systems',
+      'Steven Rolston — University of Maryland — Cold atoms; Rydberg physics; ultracold plasmas',
+    ],
+  },
+  {
+    title: 'Canada',
+    entries: [
+      'Joseph Thywissen — University of Toronto — Ultracold atoms; Fermi gases',
+      'Aephraim Steinberg — University of Toronto — Quantum optics; ultracold atoms',
+      'Lindsay LeBlanc — University of Alberta — Quantum gases; synthetic dimensions',
+      'Kirk Madison — University of British Columbia — Ultracold atoms; precision and control',
+      'David Feder / theory ecosystem — University of Calgary — AMO and quantum-gas theory',
+    ],
+  },
+  {
+    title: 'Europe',
+    entries: [
+      'Immanuel Bloch — MPQ / LMU Munich, Germany — Optical lattices; quantum gas microscopes',
+      'Christian Gross — University of Tuebingen / former MPQ, Germany — Rydberg arrays; quantum simulation',
+      'Gerhard Rempe — MPQ, Germany — Cavity QED; single atoms',
+      'Ignacio Cirac — MPQ, Germany — Quantum information theory; AMO platforms',
+      'Tilman Pfau legacy group — University of Stuttgart, Germany — Dipolar gases; Rydberg atoms',
+      'Matthias Weidemueller — Heidelberg University, Germany — Rydberg gases; strongly interacting atoms',
+      'Markus Oberthaler — Heidelberg University, Germany — BECs; interferometry; quantum simulation',
+      'Selim Jochim — Heidelberg University, Germany — Few-body Fermi systems; quantum gases',
+      'Artur Widera — Kaiserslautern / Mainz, Germany — Ultracold atoms; quantum gases',
+      'Klaus Sengstock — University of Hamburg, Germany — Quantum gases; optical lattices',
+      'Andreas Hemmerich — University of Hamburg, Germany — Optical lattices; driven quantum gases',
+      'Rudolf Grimm — University of Innsbruck, Austria — Ultracold gases; mixtures; few-body physics',
+      'Francesca Ferlaino — University of Innsbruck, Austria — Dipolar atoms; Er/Dy systems; tweezers',
+      'Rainer Blatt — University of Innsbruck, Austria — Trapped ions; quantum simulation',
+      'Peter Zoller — University of Innsbruck, Austria — AMO quantum information theory',
+      'Hanns-Christoph Naegerl — University of Innsbruck, Austria — Ultracold molecules; low-dimensional gases',
+      'Jean Dalibard — College de France / ENS, France — Quantum gases; topology; fluids',
+      'Alain Aspect group legacy — Institut d\'Optique, France — Cold atoms; atom optics',
+      'Antoine Browaeys — Institut d\'Optique, France — Rydberg tweezer arrays',
+      'Thierry Lahaye — Institut d\'Optique, France — Dipolar/Rydberg/tweezer AMO',
+      'Sylvain Nascimbene — Sorbonne / LKB, France — Quantum gases; microscopy',
+      'Christophe Salomon — ENS, France — Fermi gases; precision; quantum gases',
+      'Michael Tarbutt / Hinds cold molecule ecosystem — Imperial College London, UK — Cold molecules; precision AMO',
+      'Simon Cornish — Durham University, UK — Ultracold molecules; quantum gases',
+      'Ifan Hughes / Durham AMO ecosystem — Durham University, UK — Cold atoms; Rydberg spectroscopy',
+      'Ben Sauer / Ed Hinds lineage — Imperial College London, UK — Cold molecules; precision',
+      'Ferdinand Schmidt-Kaler / Tobias Schaetz ecosystem — Germany — Ions and AMO quantum simulation',
+      'Florian Mintert / Dieter Jaksch theory ecosystem — Oxford, UK — AMO quantum theory',
+      'Chris Foot / Oxford cold atoms — University of Oxford, UK — Quantum gases; atom optics',
+      'Zoran Hadzibabic — University of Cambridge, UK — Bose gases; 2D quantum fluids',
+      'Ulrich Schneider — University of Cambridge, UK — Quantum gas microscopy; Hubbard physics',
+      'Stefan Kuhr — University of Strathclyde, UK — Quantum gas microscopy',
+      'Charles Adams — Durham University, UK — Rydberg atoms; nonlinear optics',
+      'Andrew Daley — Oxford / Strathclyde-linked — AMO many-body theory',
+      'Tilman Esslinger — ETH Zurich, Switzerland — Quantum gases; cavity QED',
+      'Philipp Treutlein — University of Basel, Switzerland — Atom chips; hybrid AMO',
+      'Christophe Galland / Swiss quantum optics ecosystem — EPFL, Switzerland — Quantum optics; AMO-adjacent',
+      'Leticia Tarruell — ICFO, Spain — Quantum gases; optical lattices',
+      'Maciej Lewenstein — ICFO, Spain — AMO many-body theory',
+      'Florian Schreck — University of Amsterdam, Netherlands — Strontium quantum gases; clocks; optical lattices',
+    ],
+  },
+  {
+    title: 'Additional Strong Groups To Watch',
+    entries: [
+      'Ben van Linden van den Heuvell / W. Vassen lineage — Amsterdam, Netherlands — Metastable helium; cold atoms',
+      'Servaas Kokkelmans — Eindhoven, Netherlands — Ultracold-collision theory',
+      'Giovanni Modugno — Florence, Italy — Quantum gases; mixtures',
+      'Massimo Inguscio / LENS ecosystem — Florence, Italy — Cold atoms; precision; quantum gases',
+      'Guglielmo Tino — Florence, Italy — Atom interferometry; precision AMO',
+      'Leonardo Fallani — Florence, Italy — Optical lattices; quantum simulation',
+      'Giacomo Roati — CNR/LENS, Italy — Quantum gases; disorder',
+      'Michal Tomza — University of Warsaw, Poland — Ultracold molecules theory',
+      'Jakub Zakrzewski — Jagiellonian University, Poland — Quantum chaos; cold-atom theory',
+      'Jacob Sherson — Aarhus University, Denmark — Quantum gases; control; machine learning',
+      'Eugene Polzik — University of Copenhagen, Denmark — Quantum optics; atomic ensembles',
+      'Anders Kastberg / Gothenburg-Lund ecosystem — Sweden — Cold atoms; AMO',
+      'Roee Ozeri — Weizmann Institute, Israel — Trapped ions; precision quantum control',
+      'Barak Dayan — Weizmann Institute, Israel — Quantum optics; atom-photon interfaces',
+      'Nir Davidson — Weizmann Institute, Israel — Cold atoms; nonlinear dynamics',
+      'Jeff Steinhauer — Technion, Israel — BEC analog gravity',
+      'CQT / NUS cold atom ecosystem — National University of Singapore — Quantum gases; AMO',
+      'Wenhui Li / CQT Rydberg ecosystem — NUS / CQT, Singapore — Rydberg atoms',
+      'Jochen Geiger / Christian Miniatura ecosystem — CQT, Singapore — AMO theory and experiment',
+      'Jian-Wei Pan — USTC, China — Quantum information; cold atoms and photons',
+      'Luming Duan — Tsinghua University, China — Quantum information; neutral atoms/ions theory',
+      'Bo Zhao — USTC, China — Ultracold molecules and atoms',
+      'USTC cold atom ecosystem — USTC, China — Quantum gases; molecules; optical lattices',
+      'Yoshiro Takahashi — Kyoto University, Japan — Yb quantum gases; optical lattices',
+      'Hidetoshi Katori — University of Tokyo / RIKEN, Japan — Optical lattice clocks',
+      'Kenji Ohmori — IMS, Japan — Ultrafast Rydberg/tweezer experiments',
+      'Shin Inouye — University of Tokyo, Japan — Quantum gases',
+      'Jaewook Ahn — KAIST, Korea — Rydberg atoms; quantum simulation',
+      'Y. Shin — Seoul National University, Korea — Quantum gases',
+      'Andrew Truscott — Australian National University — Metastable helium; quantum gases',
+      'Nick Robins / ANU atom-laser ecosystem — Australian National University — Atom optics; interferometry',
+      'Chris Vale — Swinburne University, Australia — Strongly interacting Fermi gases',
+      'Matthew Davis / Karen Kheruntsyan theory ecosystem — University of Queensland, Australia — Quantum gas theory',
+      'Halina Rubinsztein-Dunlop — University of Queensland, Australia — Atom optics; optical tweezers',
+      'Vanderlei Bagnato — University of Sao Paulo, Brazil — BECs; cold atoms',
+      'G. S. Agarwal / AMO theory ecosystem — India/US-linked — Quantum optics',
+      'Saikat Ghosh — IIT Kanpur, India — Cold atoms; Rydberg/nonlinear optics',
+      'S. A. Rangwala — RRI, India — Cold ions and molecules',
+      'IISER/IIT cold atom ecosystem — India — Quantum gases; AMO',
+      'Niels Kjaergaard — University of Otago, New Zealand — Ultracold atoms',
+      'Ashton Bradley — University of Otago, New Zealand — Quantum gas theory',
+    ],
+  },
+];
+
+const SUBFIELD_SHORTLISTS = [
+  ['Optical tweezers / Rydberg arrays', ['Mikhail Lukin — Harvard', 'Markus Greiner — Harvard', 'Vladan Vuletic — MIT', 'Antoine Browaeys — Institut d\'Optique', 'Thierry Lahaye — Institut d\'Optique', 'Adam Kaufman — JILA / CU Boulder', 'Kang-Kuen Ni — Harvard', 'Jeff Thompson — Princeton', 'Manuel Endres — Caltech', 'Hannes Bernien — University of Chicago', 'Christian Gross — Tuebingen / former MPQ', 'Immanuel Bloch — MPQ / LMU', 'Francesca Ferlaino — Innsbruck', 'Florian Schreck — Amsterdam', 'Huanqian Loh — Duke', 'Jacob Covey — UIUC', 'Kenji Ohmori — IMS Japan', 'Jaewook Ahn — KAIST']],
+  ['Cold molecules / molecule tweezers', ['Kang-Kuen Ni — Harvard', 'Jacob Covey — UIUC', 'Huanqian Loh — Duke', 'Jun Ye / JILA molecule ecosystem — JILA / CU Boulder', 'John Doyle — Harvard', 'Simon Cornish — Durham', 'Nick Hutzler — Caltech', 'Michal Tomza — Warsaw', 'Bo Zhao — USTC']],
+  ['Quantum gas microscopy / Hubbard physics', ['Markus Greiner — Harvard', 'Waseem Bakr — Princeton', 'Lawrence Cheuk — Princeton', 'Immanuel Bloch — MPQ / LMU', 'Christian Gross — Tuebingen / former MPQ', 'Stefan Kuhr — Strathclyde', 'Ulrich Schneider — Cambridge', 'Tilman Esslinger — ETH Zurich', 'Jean Dalibard / Sylvain Nascimbene — France', 'Leonardo Fallani — Florence', 'Leticia Tarruell — ICFO']],
+  ['Optical clocks / precision AMO', ['Jun Ye — JILA / CU Boulder', 'Hidetoshi Katori — University of Tokyo / RIKEN', 'Guglielmo Tino — Florence', 'Mark Kasevich — Stanford', 'Holger Mueller — UC Berkeley', 'Gretchen Campbell — NIST / UMD']],
+];
+
 function labUrl(g) {
   return g.website || GROUP_WEBSITES[g.name] || '#';
 }
@@ -711,7 +980,14 @@ function setPreset(preset) {
 }
 
 /* ─── Init amCharts map ─── */
-window.addEventListener('DOMContentLoaded', () => {
+function initGroupMap() {
+  const mapRoot = document.getElementById('map-root');
+  if (!mapRoot) return;
+  if (typeof am5 === 'undefined' || typeof am5map === 'undefined' || typeof am5geodata_worldLow === 'undefined') {
+    mapRoot.innerHTML = '<div style="padding:2rem;color:var(--text-muted)">Map library did not load. The searchable directory and watchlist below are still available.</div>';
+    return;
+  }
+
   const root = am5.Root.new('map-root');
   root.setThemes([am5themes_Animated.new(root)]);
 
@@ -793,7 +1069,13 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   loadMapPoints(GROUPS);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initGroupMap();
   buildGrid(GROUPS);
+  renderWatchlist();
+  renderShortlists();
   document.getElementById('result-count').textContent = `${GROUPS.length} groups`;
 
   // Filter buttons
@@ -903,6 +1185,51 @@ function buildGrid(groups) {
       <span class="gc-link">Visit lab website ↗</span>
     </a>`;
   }).join('');
+}
+
+function parseWatchlistEntry(entry) {
+  const parts = entry.split(' — ');
+  return {
+    name: parts[0] || entry,
+    inst: parts[1] || '',
+    focus: parts.slice(2).join(' — ') || '',
+    text: entry.toLowerCase(),
+  };
+}
+
+function renderWatchlist() {
+  const q = (document.getElementById('watchlist-search')?.value || '').trim().toLowerCase();
+  const grid = document.getElementById('watchlist-grid');
+  const count = document.getElementById('watchlist-count');
+  if (!grid) return;
+  let shown = 0;
+  grid.innerHTML = WATCHLIST_SECTIONS.map(section => {
+    const items = section.entries
+      .map(parseWatchlistEntry)
+      .filter(item => !q || item.text.includes(q));
+    shown += items.length;
+    if (!items.length) return '';
+    return `<section class="watchlist-section">
+      <h3>${escapeHTML(section.title)} <span>${items.length}</span></h3>
+      <div class="watchlist-list">
+        ${items.map(item => `<article class="watchlist-item">
+          <div class="watchlist-name">${escapeHTML(item.name)}</div>
+          <div class="watchlist-meta">${escapeHTML(item.inst)}</div>
+          <div class="watchlist-focus">${escapeHTML(item.focus)}</div>
+        </article>`).join('')}
+      </div>
+    </section>`;
+  }).join('');
+  if (count) count.textContent = `${shown} watchlist entr${shown === 1 ? 'y' : 'ies'}`;
+}
+
+function renderShortlists() {
+  const grid = document.getElementById('shortlist-grid');
+  if (!grid) return;
+  grid.innerHTML = SUBFIELD_SHORTLISTS.map(([title, items]) => `<section class="shortlist-card">
+    <h3>${escapeHTML(title)}</h3>
+    <ul>${items.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ul>
+  </section>`).join('');
 }
 
 function filterGroups() {
