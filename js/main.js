@@ -31,8 +31,6 @@ const NAV = {
   ],
   quantum: [
     { key: 'learn-quantum',      label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
-    { key: 'qc-landscape',       label: 'Quantum Computing Industry', kind: 'Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
-    { key: 'rb87-vs-yb171',      label: 'Rb vs Yb Qubit Comparison',  kind: 'Deep dive', icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
     { key: 'rydberg-calculator', label: 'Rydberg States & Blockade',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
     { key: 'fidelity-budget',    label: 'Two-Qubit Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html' },
     { key: 'rb-explorer',        label: 'Gate Benchmarking (RB)',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html' },
@@ -43,7 +41,6 @@ const NAV = {
     { key: 'paper-syllabus', label: 'AMO Reading List',           kind: 'Syllabus', icon: '📚', color: '#818cf8', href: 'pages/paper-syllabus.html' },
     { key: 'qc-landscape',   label: 'QC Industry Landscape',      kind: 'Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
     { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Platform Comparison', kind: 'Deep dive', icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
-    { key: 'learn-quantum',  label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -63,10 +60,10 @@ const NAV = {
   ],
 };
 
+NAV.trapImageCool = [...NAV.measure, ...NAV.cooling];
 NAV.tools = [...new Map([
   ...NAV.build,
-  ...NAV.measure,
-  ...NAV.cooling.filter(item => item.key),
+  ...NAV.trapImageCool,
   ...NAV.quantum,
   ...NAV.career,
 ].map(item => [item.key || item.href, item])).values()];
@@ -135,8 +132,7 @@ function renderNav({ active = '', root = '' } = {}) {
         <div class="nav-links" role="menubar">
           <a class="nav-btn" href="${root}home.html#intent-paths">Start Here</a>
           ${dropdown('Build', NAV.build, 'Design and assemble an AMO experiment', 560)}
-          ${dropdown('Measure', NAV.measure, 'Diagnose signals, temperatures, gates, and coherence', 560)}
-          ${dropdown('Cool & Trap', NAV.cooling, 'Cooling, trapping, and Rydberg control', 560)}
+          ${dropdown('Trap, Image & Cool', NAV.trapImageCool, 'Trap atoms, measure signals, and model cooling', 620)}
           ${dropdown('Quantum Computing', NAV.quantum, 'Neutral-atom QC concepts, gates, and platforms', 560)}
           ${dropdown('Career & Literature', NAV.career, 'Groups, papers, and industry orientation', 520)}
           <a class="nav-btn" href="${root}home.html#about">About</a>
@@ -163,8 +159,7 @@ function renderNav({ active = '', root = '' } = {}) {
         <a class="nav-mobile-link" href="${root}home.html#paths"><span>🗺️</span> Guided Paths</a>
       </div>
       ${mobileSection('Build', NAV.build)}
-      ${mobileSection('Measure', NAV.measure)}
-      ${mobileSection('Cool & Trap', NAV.cooling)}
+      ${mobileSection('Trap, Image & Cool', NAV.trapImageCool)}
       ${mobileSection('Quantum Computing', NAV.quantum)}
       ${mobileSection('Career & Literature', NAV.career)}
       <div class="nav-mobile-section">
@@ -1305,10 +1300,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initShareableCalculatorParams();
   initCalculatorPresets();
   initWorkedExamples();
-  initAssumptionBadges();
-  initSourceConfidencePanels();
-  initLabNotebook();
-  initExpertModeToggles();
   initPaperToolBridge();
   initExportButtons();
 });
