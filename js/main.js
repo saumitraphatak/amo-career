@@ -721,6 +721,24 @@ function getPageControls() {
     .filter(el => !el.closest('.global-search, .nav, .nav-mobile-overlay, .lab-notebook-panel'));
 }
 
+function getPresetControlMatches(preset) {
+  if (!preset?.values) return [];
+  return Object.keys(preset.values).filter(id => document.getElementById(id));
+}
+
+function getApplicablePresets() {
+  return CALCULATOR_PRESETS
+    .map(preset => ({ ...preset, matchCount: getPresetControlMatches(preset).length }))
+    .filter(preset => preset.matchCount > 0);
+}
+
+function hasCalculatorState() {
+  const controls = getPageControls()
+    .filter(el => !el.closest('.source-confidence-panel, .assumption-panel, .worked-examples-panel, .calculator-presets-panel'));
+  const outputs = document.querySelectorAll('.result-value, .metric-value, .output-value, .kpi-value, .calc-output, canvas');
+  return controls.length > 0 || outputs.length > 0;
+}
+
 function setControlValue(id, value) {
   const el = document.getElementById(id);
   if (!el) return false;
@@ -861,6 +879,8 @@ function initCalculatorPresets() {
   if (!isToolLikePage()) return;
   const container = getPageContainer();
   if (!container || document.querySelector('.calculator-presets-panel')) return;
+  const applicablePresets = getApplicablePresets();
+  if (!applicablePresets.length) return;
 
   const panel = document.createElement('section');
   panel.className = 'calculator-presets-panel workflow-panel';
@@ -869,16 +889,17 @@ function initCalculatorPresets() {
       <div>
         <div class="eyebrow">Calculator Presets</div>
         <h2>Start from a physically plausible setup</h2>
-        <p>Presets fill whatever matching controls exist on this page and leave the rest alone.</p>
+        <p>Only presets with controls on this page are shown. Applying one changes the calculator inputs immediately.</p>
       </div>
-      <div class="preset-status" aria-live="polite"></div>
+      <div class="preset-status" aria-live="polite">${applicablePresets.length} usable preset${applicablePresets.length === 1 ? '' : 's'} on this page.</div>
     </div>
     <div class="preset-grid">
-      ${CALCULATOR_PRESETS.map(p => `
+      ${applicablePresets.map(p => `
         <button class="preset-card" type="button" data-preset="${p.name}">
           <span class="preset-tag">${p.tag}</span>
           <strong>${p.name}</strong>
           <small>${p.why}</small>
+          <small class="preset-match-count">${p.matchCount} matching input${p.matchCount === 1 ? '' : 's'}</small>
         </button>
       `).join('')}
     </div>
@@ -889,7 +910,7 @@ function initCalculatorPresets() {
     const btn = e.target.closest('[data-preset]');
     if (!btn) return;
     const count = applyPreset(btn.dataset.preset);
-    status.textContent = count ? `Applied ${count} matching parameters.` : 'No matching controls on this page.';
+    status.textContent = `Applied ${count} matching parameter${count === 1 ? '' : 's'}.`;
   });
 }
 
@@ -897,7 +918,11 @@ function initWorkedExamples() {
   if (!isToolLikePage()) return;
   const container = getPageContainer();
   if (!container || document.querySelector('.worked-examples-panel')) return;
-  const examples = WORKED_EXAMPLES[currentPageKey()] || WORKED_EXAMPLES.default;
+  const rawExamples = WORKED_EXAMPLES[currentPageKey()];
+  if (!rawExamples?.length) return;
+  const usablePresetNames = new Set(getApplicablePresets().map(p => p.name));
+  const examples = rawExamples.filter(([, preset]) => usablePresetNames.has(preset));
+  if (!examples.length) return;
   const panel = document.createElement('section');
   panel.className = 'worked-examples-panel workflow-panel';
   panel.innerHTML = `
@@ -960,7 +985,8 @@ const PAGE_ASSUMPTIONS = {
 
 function initAssumptionBadges() {
   if (!isToolLikePage()) return;
-  const assumptions = PAGE_ASSUMPTIONS[currentPageKey()] || ['user-adjustable assumption', 'rough estimate'];
+  const assumptions = PAGE_ASSUMPTIONS[currentPageKey()];
+  if (!assumptions?.length) return;
   const container = getPageContainer();
   if (!container || document.querySelector('.assumption-panel')) return;
   const panel = document.createElement('section');
@@ -1050,6 +1076,7 @@ function initLabNotebook() {
   if (!isToolLikePage()) return;
   const container = getPageContainer();
   if (!container || document.querySelector('.lab-notebook-panel')) return;
+  if (!hasCalculatorState()) return;
   const panel = document.createElement('section');
   panel.className = 'lab-notebook-panel workflow-panel';
   panel.innerHTML = `

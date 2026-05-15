@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MOT & Trap Designer, AMO Toolkit</title>
+  <title>MOT Designer — AMO Toolkit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <meta name="description" content="MOT and magnetic trap designer, damping, spring constant, capture velocity, Ioffe-Pritchard trap frequencies, trap depth, and evaporation parameter.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="description" content="Interactive MOT designer: damping coefficient, spring constant, capture velocity, scattering rate, detuning optimization curves, and species comparison for Rb, Cs, Na, Li, K.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/mot-designer.html">
   <link rel="stylesheet" href="../css/styles.css?v=10">
@@ -16,107 +16,56 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
   <style>
-    :root { --page-color: var(--c-rr); }  /* orange #fb923c */
+    :root { --page-color: var(--c-rr); }
 
     .prop-card {
       background: var(--bg-card); border: 1px solid #1e293b;
       border-radius: 10px; padding: .9rem 1.1rem; transition: border-color .2s;
     }
     .prop-card:hover { border-color: rgba(251,146,60,.35); }
-    .prop-card-label {
-      font-size: .72rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: .07em; color: var(--text-muted); margin-bottom: .3rem;
-    }
-    .prop-card-val {
-      font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
-      color: #fb923c; line-height: 1;
-    }
-    .prop-card-unit { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
-    .prop-card-sub  { font-size: .75rem; color: var(--text-secondary); margin-top: .3rem; }
+    .prop-card-label { font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--text-muted); margin-bottom:.3rem; }
+    .prop-card-val   { font-family:var(--mono); font-size:1.3rem; font-weight:700; color:#fb923c; line-height:1; }
+    .prop-card-unit  { font-size:.8rem; color:var(--text-muted); margin-top:.25rem; }
+    .prop-card-sub   { font-size:.75rem; color:var(--text-secondary); margin-top:.3rem; }
 
-    .prop-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; }
-    .prop-grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; }
+    .prop-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; }
+    .prop-grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:.75rem; }
     @media(max-width:640px){ .prop-grid-3,.prop-grid-2 { grid-template-columns:1fr; } }
 
-    .ctrl-panel {
-      background: var(--bg-card); border: 1px solid #1e293b;
-      border-radius: 12px; padding: 1.25rem;
-    }
-    .ctrl-panel h5 {
-      font-size: .8rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .07em; color: #fb923c; margin: 0 0 .9rem 0;
-    }
-    .field-row { margin-bottom: .8rem; }
-    .field-row label {
-      display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
-    }
+    .ctrl-panel { background:var(--bg-card); border:1px solid #1e293b; border-radius:12px; padding:1.25rem; }
+    .ctrl-panel h5 { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#fb923c; margin:0 0 .9rem 0; }
+    .field-row { margin-bottom:.8rem; }
+    .field-row label { display:block; font-size:.78rem; color:var(--text-muted); margin-bottom:.3rem; }
     .field-row select, .field-row input[type=number] {
-      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
-      border-radius: 6px; padding: .38rem .7rem;
-      color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
+      width:100%; background:#0a1628; border:1px solid #1e3a5f;
+      border-radius:6px; padding:.38rem .7rem;
+      color:var(--text-primary); font-size:.85rem; font-family:var(--mono);
     }
     .field-row select:focus, .field-row input:focus { outline:none; border-color:#fb923c; }
     .field-row input[type=range] { width:100%; accent-color:#fb923c; margin-top:.2rem; }
-    .lbl-val { color: #fb923c; font-family: var(--mono); }
+    .lbl-val { color:#fb923c; font-family:var(--mono); }
 
     .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
     @media(max-width:800px){ .two-col { grid-template-columns:1fr; } }
 
     .theory-box {
-      background: var(--bg-card); border:1px solid #1e293b;
-      border-left: 4px solid #fb923c; border-radius:10px;
+      background:var(--bg-card); border:1px solid #1e293b;
+      border-left:4px solid #fb923c; border-radius:10px;
       padding:1rem 1.3rem; margin-bottom:1rem;
     }
     .theory-box h4 { font-size:.93rem; font-weight:700; color:#fb923c; margin:0 0 .5rem 0; }
     .theory-box p  { font-size:.86rem; color:var(--text-secondary); line-height:1.7; margin:0; }
 
-    .formula-box {
-      background:#0d0700; border:1px solid #7c2d12; border-radius:8px;
-      padding:.7rem 1rem; margin:.6rem 0;
-    }
+    .formula-box { background:#0d0700; border:1px solid #7c2d12; border-radius:8px; padding:.7rem 1rem; margin:.6rem 0; }
 
-    .chart-card {
-      background:var(--bg-card); border:1px solid #1e293b;
-      border-radius:12px; padding:1rem 1.25rem;
-    }
-    .chart-card h5 {
-      font-size:.78rem; font-weight:700; text-transform:uppercase;
-      letter-spacing:.06em; color:var(--text-muted); margin:0 0 .75rem 0;
-    }
+    .chart-card { background:var(--bg-card); border:1px solid #1e293b; border-radius:12px; padding:1rem 1.25rem; }
+    .chart-card h5 { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin:0 0 .75rem 0; }
 
-    .info-banner {
-      background:#0d0700; border:1px solid #7c2d12;
-      border-radius:8px; padding:.65rem 1rem;
-      font-size:.8rem; color:#fdba74; margin-top:.75rem; line-height:1.6;
-    }
-    .good-banner {
-      background:#052e16; border:1px solid #15803d;
-      border-radius:8px; padding:.65rem 1rem;
-      font-size:.8rem; color:#86efac; margin-top:.75rem; line-height:1.6;
-    }
-    .warn-banner {
-      background:#1c0f00; border:1px solid #92400e;
-      border-radius:8px; padding:.65rem 1rem;
-      font-size:.8rem; color:#fbbf24; margin-top:.75rem; line-height:1.6;
-    }
+    .info-banner  { background:#0d0700; border:1px solid #7c2d12; border-radius:8px; padding:.65rem 1rem; font-size:.8rem; color:#fdba74; margin-top:.75rem; line-height:1.6; }
+    .good-banner  { background:#052e16; border:1px solid #15803d; border-radius:8px; padding:.65rem 1rem; font-size:.8rem; color:#86efac; margin-top:.75rem; line-height:1.6; }
+    .warn-banner  { background:#1c0f00; border:1px solid #92400e; border-radius:8px; padding:.65rem 1rem; font-size:.8rem; color:#fbbf24; margin-top:.75rem; line-height:1.6; }
 
     .section-divider { border:none; border-top:1px solid #1e293b; margin:2rem 0; }
-
-    /* eta gauge */
-    .eta-gauge {
-      display:flex; align-items:center; gap:1rem;
-      background:var(--bg-card); border:1px solid #1e293b; border-radius:12px;
-      padding:1rem 1.25rem;
-    }
-    .eta-big {
-      font-family:var(--mono); font-size:2.5rem; font-weight:700; color:#fb923c;
-      flex-shrink:0; min-width:4rem; text-align:center;
-    }
-    .eta-bar-wrap { flex:1; }
-    .eta-bar-label { font-size:.72rem; text-transform:uppercase; letter-spacing:.07em;
-      color:var(--text-muted); margin-bottom:.35rem; }
-    .eta-bar-track { height:12px; background:#1e293b; border-radius:6px; overflow:hidden; }
-    .eta-bar-fill  { height:100%; border-radius:6px; transition:width .4s ease; }
 
     /* read links */
     .read-links { display:flex; flex-direction:column; gap:.5rem; margin-top:.75rem; }
@@ -128,17 +77,70 @@
     }
     .read-link:hover { border-color:#fb923c; color:var(--text-primary); }
     .rl-icon { font-size:1rem; flex-shrink:0; }
+
+    /* Detuning insight cards */
+    .insight-row { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; margin-top:1rem; }
+    @media(max-width:700px){ .insight-row { grid-template-columns:1fr; } }
+    .insight-card {
+      background:var(--bg-card); border:1px solid #1e293b; border-radius:10px;
+      padding:.85rem 1rem;
+    }
+    .insight-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--text-muted); margin-bottom:.25rem; }
+    .insight-val   { font-family:var(--mono); font-size:1.1rem; font-weight:700; color:#fb923c; margin-bottom:.2rem; }
+    .insight-desc  { font-size:.76rem; color:var(--text-secondary); line-height:1.55; }
+
+    /* Species comparison table */
+    .species-wrap { overflow-x:auto; border-radius:10px; border:1px solid #1e293b; }
+    .species-table { width:100%; border-collapse:collapse; font-size:.82rem; min-width:520px; }
+    .species-table th {
+      background:#06101f; color:var(--text-muted); font-size:.68rem;
+      text-transform:uppercase; letter-spacing:.07em;
+      padding:.55rem .85rem; text-align:left; border-bottom:1px solid #1e293b;
+    }
+    .species-table td { padding:.6rem .85rem; border-bottom:1px solid #0f1e35; }
+    .species-table tr:last-child td { border-bottom:none; }
+    .species-table tr.sp-active td { background:rgba(251,146,60,0.06); }
+    .species-table tr.sp-active td:first-child { border-left:3px solid #fb923c; padding-left:.6rem; }
+    .sp-name { font-weight:700; color:var(--text-primary); }
+    .sp-val  { font-family:var(--mono); color:#fb923c; }
+    .sp-tag  { font-size:.68rem; background:rgba(251,146,60,0.12); color:#fb923c; border-radius:4px; padding:.1rem .4rem; font-weight:600; }
+
+    /* Cooling cascade */
+    .cascade-wrap { display:flex; align-items:stretch; gap:0; overflow-x:auto; padding-bottom:.5rem; }
+    .cascade-arrow {
+      display:flex; align-items:center; padding:0 .3rem;
+      color:#fb923c; font-size:1.1rem; flex-shrink:0;
+    }
+    .cascade-stage {
+      flex:1; min-width:110px; max-width:180px;
+      background:var(--bg-card); border:1px solid #1e293b;
+      border-radius:10px; padding:.85rem .75rem;
+      text-align:center; flex-shrink:0;
+    }
+    .cascade-stage.cs-highlight { border-color:rgba(251,146,60,0.45); background:rgba(251,146,60,0.05); }
+    .cs-icon  { font-size:1.3rem; margin-bottom:.3rem; }
+    .cs-name  { font-size:.82rem; font-weight:700; color:var(--text-primary); margin-bottom:.3rem; line-height:1.3; }
+    .cs-temp  { font-family:var(--mono); font-size:.75rem; font-weight:700; color:#fb923c; margin-bottom:.3rem; }
+    .cs-detail{ font-size:.66rem; color:var(--text-muted); line-height:1.5; }
+
+    /* Lab tips */
+    .lab-tip {
+      background:rgba(251,146,60,0.05); border:1px solid rgba(251,146,60,0.18);
+      border-left:3px solid #fb923c; border-radius:8px;
+      padding:.65rem 1rem; font-size:.8rem; color:var(--text-secondary);
+      line-height:1.65; margin-top:.85rem;
+    }
+    .lab-tip strong { color:#fb923c; }
   </style>
 
-  <!-- Open Graph -->
   <meta property="og:type" content="article">
-  <meta property="og:title" content="MOT Designer, AMO Toolkit">
-  <meta property="og:description" content="MOT and magnetic trap designer: damping, spring constant, capture velocity, Ioffe-Pritchard trap frequencies, trap depth, and evaporation parameter.">
+  <meta property="og:title" content="MOT Designer — AMO Toolkit">
+  <meta property="og:description" content="Interactive magneto-optical trap calculator: damping, spring constant, capture velocity, detuning optimization, and species comparison for cold-atom experiments.">
   <meta property="og:url" content="https://amotoolkit.com/pages/mot-designer.html">
   <meta property="og:site_name" content="AMO Toolkit">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="MOT Designer, AMO Toolkit">
-  <meta name="twitter:description" content="MOT and magnetic trap designer: damping, spring constant, capture velocity, Ioffe-Pritchard trap frequencies, trap depth, and evaporation parameter.">
+  <meta name="twitter:title" content="MOT Designer — AMO Toolkit">
+  <meta name="twitter:description" content="Interactive MOT calculator: damping, spring constant, capture velocity, detuning optimization curves, and species comparison for cold-atom experiments.">
 </head>
 <body>
 <div id="nav-root"></div>
@@ -146,13 +148,12 @@
 <div class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#fb923c;--page-bg:rgba(251,146,60,0.07);--page-border:rgba(251,146,60,0.2);">
     <div class="container">
-      <div class="page-hero-eyebrow" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.2);color:#fb923c;">🧲 Tool 06 · MOT & Trap Designer</div>
-      <h1>
-        MOT &amp; <span class="grad-text" style="--ga:#fb923c;--gb:#fbbf24;">Trap Designer</span>
-      </h1>
+      <div class="page-hero-eyebrow" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.2);color:#fb923c;">🧲 Tool 06 · MOT Designer</div>
+      <h1>MOT <span class="grad-text" style="--ga:#fb923c;--gb:#fbbf24;">Designer</span></h1>
       <p class="page-hero-desc">
-        Full parameter design tool for magneto-optical traps and Ioffe-Pritchard magnetic traps —
-        from laser detuning and gradient to trap frequencies, depth, and evaporation efficiency.
+        Full-parameter magneto-optical trap calculator — from laser detuning and field gradient
+        to damping coefficient, spring constant, capture velocity, and scattering rate.
+        Includes a live detuning optimization curve, species comparison, and the full cooling pathway.
       </p>
     </div>
   </div>
@@ -161,20 +162,24 @@
     <div class="container">
 
   <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-    A magneto-optical trap (MOT) is the first stage of every cold-atom experiment. It simultaneously cools and confines atoms via radiation pressure from three pairs of counter-propagating beams in a magnetic quadrupole field. Understanding the damping coefficient α, the spring constant κ, and the capture velocity v_c is essential for optimizing loading rates and determining whether subsequent sub-Doppler cooling (gray molasses, PGC) is needed before loading into tweezers or a lattice. Section 02 covers the Ioffe-Pritchard magnetic trap used for evaporative cooling to quantum degeneracy.
+    A magneto-optical trap (MOT) is the first stage of every cold-atom experiment. Three pairs of
+    counter-propagating red-detuned beams with a magnetic quadrupole field simultaneously cool and
+    confine atoms via radiation pressure. Understanding α (damping), κ (spring constant), and
+    v<sub>c</sub> (capture velocity) is essential for optimizing loading rates and temperature before
+    transfer into tweezers, a lattice, or an evaporative cooling stage.
   </div>
 
   <div class="info-banner anim-in" style="margin-bottom:1.25rem;">
-    <strong>Model validity:</strong> the MOT calculator uses a 1D, low-velocity, two-level scattering-force model.
-    Real alkali MOTs are multilevel systems with Clebsch-Gordan factors, optical pumping, polarization gradients,
-    beam imbalance, reabsorption, and sub-Doppler physics. Treat α, κ, and capture velocity as scaling estimates,
-    not calibrated predictions for a loaded cloud.
+    <strong>Model validity:</strong> this calculator uses a 1D, low-velocity, two-level scattering-force model.
+    Real alkali MOTs are multilevel systems with Clebsch-Gordan factors, optical pumping, polarization
+    gradients, beam imbalance, reabsorption, and sub-Doppler physics. Treat α, κ, and capture velocity
+    as scaling estimates, not calibrated predictions for a loaded cloud.
   </div>
 
-  <!-- ═══ SECTION 1: MOT PARAMETERS ════════════════════════════ -->
+  <!-- ═══ SECTION 1: MOT PARAMETERS ══════════════════════════════ -->
   <section class="section-block anim-in delay-1">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#fb923c">01 </span>Magneto-Optical Trap (MOT)
+      <span style="color:#fb923c">01 </span>MOT Calculator
     </h2>
     <div class="two-col">
 
@@ -184,11 +189,11 @@
         <div class="field-row">
           <label>Atom species</label>
           <select id="speciesSel" onchange="onSpeciesChange()">
-            <option value="Rb87">⁸⁷Rb, D2, F=2→F′=3</option>
-            <option value="Cs133">¹³³Cs, D2, F=4→F′=5</option>
-            <option value="Na23">²³Na, D2, F=2→F′=3</option>
-            <option value="Li7">⁷Li, D2, F=2→F′=3</option>
-            <option value="K39">³⁹K, D2, F=2→F′=3</option>
+            <option value="Rb87">⁸⁷Rb — D2, F=2→F′=3</option>
+            <option value="Cs133">¹³³Cs — D2, F=4→F′=5</option>
+            <option value="Na23">²³Na — D2, F=2→F′=3</option>
+            <option value="Li7">⁷Li — D2, F=2→F′=3</option>
+            <option value="K39">³⁹K — D2, F=2→F′=3</option>
           </select>
         </div>
 
@@ -198,12 +203,12 @@
           <input type="range" id="detSlide" min="5" max="50" value="15" step="1"
             oninput="document.getElementById('detLbl').textContent=(this.value/10).toFixed(1); compute()">
           <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
-            <span>0.5Γ</span><span>−Γ (opt. Doppler)</span><span>5Γ</span>
+            <span>0.5Γ</span><span>1Γ (α opt)</span><span>5Γ</span>
           </div>
         </div>
 
         <div class="field-row">
-          <label>Saturation parameter s = I/I<sub>sat</sub>:
+          <label>Saturation s = I/I<sub>sat</sub>:
             <span class="lbl-val" id="satLbl">1.0</span></label>
           <input type="range" id="satSlide" min="1" max="30" value="10" step="1"
             oninput="document.getElementById('satLbl').textContent=(this.value/10).toFixed(1); compute()">
@@ -213,14 +218,14 @@
         </div>
 
         <div class="field-row">
-          <label>Beam 1/e² radius w (mm):
+          <label>Beam 1/e² radius w:
             <span class="lbl-val" id="beamLbl">10</span> mm</label>
           <input type="range" id="beamSlide" min="1" max="30" value="10" step="1"
             oninput="document.getElementById('beamLbl').textContent=this.value; compute()">
         </div>
 
         <div class="field-row">
-          <label>Axial B-field gradient dB/dz (G/cm):
+          <label>Axial B-gradient dB/dz:
             <span class="lbl-val" id="gradLbl">15</span> G/cm</label>
           <input type="range" id="gradSlide" min="1" max="60" value="15" step="1"
             oninput="document.getElementById('gradLbl').textContent=this.value; compute()">
@@ -231,23 +236,23 @@
         </div>
       </div>
 
-      <!-- MOT results -->
+      <!-- Results -->
       <div>
         <div class="prop-grid-3" style="margin-bottom:.75rem;">
           <div class="prop-card">
             <div class="prop-card-label">Damping coeff. α</div>
             <div class="prop-card-val" id="alphaVal">—</div>
-            <div class="prop-card-unit">10⁻²⁰ kg/s (1D, 2 beams)</div>
+            <div class="prop-card-unit">10⁻²⁰ kg/s</div>
             <div class="prop-card-sub">F = −αv</div>
           </div>
           <div class="prop-card">
             <div class="prop-card-label">Spring constant κ</div>
             <div class="prop-card-val" id="kappaVal">—</div>
             <div class="prop-card-unit">10⁻¹⁷ N/m</div>
-            <div class="prop-card-sub">F = −κr (radial)</div>
+            <div class="prop-card-sub">F = −κr</div>
           </div>
           <div class="prop-card">
-            <div class="prop-card-label">MOT trap frequency</div>
+            <div class="prop-card-label">MOT frequency</div>
             <div class="prop-card-val" id="omegaMOT">—</div>
             <div class="prop-card-unit">Hz</div>
             <div class="prop-card-sub">ω = √(κ/m)</div>
@@ -259,377 +264,407 @@
             <div class="prop-card-label">Capture velocity</div>
             <div class="prop-card-val" id="vcapVal">—</div>
             <div class="prop-card-unit">m/s</div>
-            <div class="prop-card-sub">v_cap ≈ |Δ|/k</div>
+            <div class="prop-card-sub">v_c ≈ |Δ|/k</div>
           </div>
           <div class="prop-card">
-            <div class="prop-card-label">Doppler temperature</div>
+            <div class="prop-card-label">Doppler limit T_D</div>
             <div class="prop-card-val" id="tdopVal">—</div>
             <div class="prop-card-unit">μK</div>
-            <div class="prop-card-sub">ℏΓ/2k_B (limit)</div>
+            <div class="prop-card-sub">ℏΓ/2k_B</div>
           </div>
           <div class="prop-card">
             <div class="prop-card-label">Max acceleration</div>
             <div class="prop-card-val" id="accelVal">—</div>
             <div class="prop-card-unit">m/s²</div>
-            <div class="prop-card-sub">a_max = ℏkΓs/(2m(1+s))</div>
+            <div class="prop-card-sub">ℏkΓs/2m(1+s)</div>
+          </div>
+        </div>
+
+        <div class="prop-grid-3" style="margin-bottom:.75rem;">
+          <div class="prop-card">
+            <div class="prop-card-label">Scattering rate R_sc</div>
+            <div class="prop-card-val" id="RscVal">—</div>
+            <div class="prop-card-unit">10⁶ photons/s</div>
+            <div class="prop-card-sub">Γ/2 · s/(1+s+(2Δ/Γ)²)</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Damping time τ</div>
+            <div class="prop-card-val" id="tauVal">—</div>
+            <div class="prop-card-unit">ms</div>
+            <div class="prop-card-sub">τ = m/α</div>
+          </div>
+          <div class="prop-card">
+            <div class="prop-card-label">Cloud radius σ</div>
+            <div class="prop-card-val" id="sigmaVal">—</div>
+            <div class="prop-card-unit">μm (1/e)</div>
+            <div class="prop-card-sub">√(k_BT_D/κ)</div>
           </div>
         </div>
 
         <div class="theory-box">
-          <h4>MOT force in 1D (two-beam, low velocity limit)</h4>
+          <h4>MOT force in 1D (two-beam, low-velocity limit)</h4>
           <p>
-            Each beam exerts a scattering force ℏk × R_sc on the atom. Two counter-propagating beams
-            with the quadrupole field create both a velocity-dependent damping force and a
-            position-dependent restoring force. In the low-saturation, low-velocity limit:
+            Two counter-propagating beams in a quadrupole B-field create both velocity-dependent
+            damping and position-dependent restoring forces. The effective detuning for each beam
+            shifts as Δ<sub>eff</sub> = Δ ± kv ± μ<sub>eff</sub>B(r)/ℏ.
           </p>
           <div class="formula-box">
 $$F_{\rm MOT} \approx -\alpha v - \kappa r$$
-$$\alpha = \frac{8\hbar k^2 s |\Delta|/\Gamma}{(1 + s + (2\Delta/\Gamma)^2)^2} \quad \text{[damping]}$$
-$$\kappa = \alpha \cdot \frac{\mu_{\rm eff}}{\hbar k} \cdot \frac{dB}{dz} \quad \text{[spring via B-field gradient]}$$
-$\mu_{\rm eff} = g_F m_F \mu_B$ (effective magnetic moment)
-</div>
+$$\alpha = \frac{8\hbar k^2 s|\Delta|/\Gamma}{(1+s+(2\Delta/\Gamma)^2)^2} \qquad \kappa = \frac{\mu_{\rm eff}}{\hbar k}\cdot\frac{dB}{dz}\cdot\alpha$$
+Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\Gamma$ (low-$s$ limit)
+          </div>
         </div>
       </div>
-
     </div>
 
-    <!-- ── Live MOT Visualization ─────────────────────────────── -->
+    <!-- Live 2D MOT visualization -->
     <div style="margin-top:1.25rem;">
-      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
-                  color:var(--text-muted);margin-bottom:.5rem;">
-        Live MOT Visualization &nbsp;·&nbsp; 2D cross-section (horizontal + vertical beam pair)
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.5rem;">
+        Live MOT Visualization &nbsp;·&nbsp; 2D cross-section
       </div>
       <div style="position:relative;">
         <canvas id="motCanvas" style="width:100%;border-radius:10px;background:#020810;display:block;"></canvas>
-        <div id="motCloudLbl" style="position:absolute;bottom:8px;right:12px;
-             font-family:var(--font-mono);font-size:.72rem;color:rgba(251,146,60,0.55);"></div>
+        <div id="motCloudLbl" style="position:absolute;bottom:8px;right:12px;font-family:var(--font-mono);font-size:.72rem;color:rgba(251,146,60,0.55);"></div>
       </div>
     </div>
 
+    <div class="lab-tip">
+      <strong>Lab tip:</strong> when loading atoms, start with a large detuning (~2–3Γ) and high gradient
+      for maximum capture volume, then compress (reduce detuning + increase gradient) for higher density
+      before the sub-Doppler stage. This "cMOT" step is often 10–50 ms.
+    </div>
   </section>
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 2: MAGNETIC TRAP ════════════════════════════ -->
+  <!-- ═══ SECTION 2: DETUNING OPTIMIZATION ═══════════════════════ -->
   <section class="section-block anim-in delay-2">
-    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#fb923c">02 </span>Ioffe-Pritchard Magnetic Trap
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
+      <span style="color:#fb923c">02 </span>Detuning Optimization
     </h2>
-    <div class="two-col">
-
-      <div class="ctrl-panel">
-        <h5>IP Trap Field Parameters</h5>
-
-        <div class="field-row">
-          <label>Trapping state (g<sub>F</sub> × m<sub>F</sub>):
-            <span class="lbl-val" id="stateLbl">+1.0 μ_B</span></label>
-          <select id="stateSel" onchange="compute()">
-            <option value="1.0">|F=2, m_F=+2⟩, μ_eff = +1 μ_B (Rb, Na, K)</option>
-            <option value="0.5">|F=2, m_F=+1⟩, μ_eff = +½ μ_B</option>
-            <option value="0.5">|F=1, m_F=−1⟩, μ_eff = +½ μ_B (Rb)</option>
-            <option value="1.0">|F=4, m_F=+4⟩, μ_eff = +1 μ_B (Cs)</option>
-          </select>
-        </div>
-
-        <div class="field-row">
-          <label>Radial gradient B′ (G/cm):
-            <span class="lbl-val" id="bprimeLbl">150</span> G/cm</label>
-          <input type="range" id="bprimeSlide" min="10" max="500" value="150" step="5"
-            oninput="document.getElementById('bprimeLbl').textContent=this.value; compute()">
-          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
-            <span>10 G/cm</span><span>200 G/cm</span><span>500 G/cm</span>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <label>Bias field B₀ (G):
-            <span class="lbl-val" id="b0Lbl">5</span> G</label>
-          <input type="range" id="b0Slide" min="1" max="100" value="5" step="1"
-            oninput="document.getElementById('b0Lbl').textContent=this.value; compute()">
-          <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
-            <span>1 G</span><span>20 G</span><span>100 G</span>
-          </div>
-        </div>
-
-        <div class="field-row">
-          <label>Axial curvature B″ (G/cm²):
-            <span class="lbl-val" id="bppLbl">100</span> G/cm²</label>
-          <input type="range" id="bppSlide" min="5" max="500" value="100" step="5"
-            oninput="document.getElementById('bppLbl').textContent=this.value; compute()">
-        </div>
-
-        <div class="field-row">
-          <label>Atom temperature T (μK):
-            <span class="lbl-val" id="tTrapLbl">100</span> μK</label>
-          <input type="range" id="tTrapSlide" min="1" max="500" value="100" step="1"
-            oninput="document.getElementById('tTrapLbl').textContent=this.value; compute()">
-        </div>
-      </div>
-
-      <!-- IP trap results -->
-      <div>
-        <div class="prop-grid-2" style="margin-bottom:.75rem;">
-          <div class="prop-card">
-            <div class="prop-card-label">Radial freq ω_r /2π</div>
-            <div class="prop-card-val" id="omegaR">—</div>
-            <div class="prop-card-unit">Hz</div>
-            <div class="prop-card-sub">√(μ_eff B′² / m B₀)</div>
-          </div>
-          <div class="prop-card">
-            <div class="prop-card-label">Axial freq ω_z /2π</div>
-            <div class="prop-card-val" id="omegaZ">—</div>
-            <div class="prop-card-unit">Hz</div>
-            <div class="prop-card-sub">√(μ_eff B″ / m)</div>
-          </div>
-          <div class="prop-card">
-            <div class="prop-card-label">Geometric mean freq</div>
-            <div class="prop-card-val" id="omegaBar">—</div>
-            <div class="prop-card-unit">Hz = (ω_r² ω_z)^(1/3) / 2π</div>
-            <div class="prop-card-sub">relevant for BEC T_c</div>
-          </div>
-          <div class="prop-card">
-            <div class="prop-card-label">Trap depth U₀</div>
-            <div class="prop-card-val" id="trapDepth">—</div>
-            <div class="prop-card-unit">μK</div>
-            <div class="prop-card-sub">μ_eff × B₀ / k_B</div>
-          </div>
-        </div>
-
-        <!-- Evaporation η gauge -->
-        <div class="eta-gauge">
-          <div>
-            <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.2rem">η parameter</div>
-            <div class="eta-big" id="etaVal">—</div>
-          </div>
-          <div class="eta-bar-wrap">
-            <div class="eta-bar-label">Evaporation efficiency: η = U₀ / (k_B T)</div>
-            <div class="eta-bar-track">
-              <div class="eta-bar-fill" id="etaBar" style="background:#fb923c;width:0%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.2rem">
-              <span>η=1 (poor)</span><span>η=5 (good)</span><span>η=10+ (excellent)</span>
-            </div>
-            <div id="etaNote" class="info-banner" style="margin-top:.6rem;font-size:.77rem;">—</div>
-          </div>
-        </div>
-
-        <div style="margin-top:.75rem;" id="majoranaWarn"></div>
-      </div>
-
-    </div>
-  </section>
-
-  <hr class="section-divider">
-
-  <!-- ═══ SECTION 3: TRAP PROFILE CHART ════════════════════════ -->
-  <section class="section-block anim-in delay-3">
-    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#fb923c">03 </span>Trap Potential Profile
-    </h2>
+    <p style="font-size:.84rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.65;">
+      Damping α and steady-state temperature both depend on |Δ|/Γ. The orange curve shows where your
+      current detuning sits on the tradeoff — high α wants small detuning, low temperature wants |Δ|~Γ/2.
+      Practical MOTs live at |Δ| = 1.5–2.5Γ, a compromise between the two.
+    </p>
     <div class="chart-card">
-      <h5>U(r) = μ_eff · |B(r)|, radial cut through IP trap</h5>
-      <canvas id="trapChart" height="260"></canvas>
+      <h5>α (% of max) and T_MOT / T_Doppler vs |Δ|/Γ — live operating point shown</h5>
+      <canvas id="detuneChart" height="240"></canvas>
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
         <span style="display:flex;align-items:center;gap:.4rem">
           <span style="width:20px;height:3px;background:#fb923c;display:inline-block"></span>
-          U(r), radial potential
+          Damping α (% of αmax)
         </span>
         <span style="display:flex;align-items:center;gap:.4rem">
-          <span style="width:20px;height:2px;border-top:2px dashed #fbbf24;display:inline-block"></span>
-          k_B T (atom energy)
+          <span style="width:20px;height:2px;border-top:2px solid #fbbf24;display:inline-block"></span>
+          T_MOT / T_Doppler (×100)
         </span>
         <span style="display:flex;align-items:center;gap:.4rem">
-          <span style="width:20px;height:2px;border-top:2px dashed #f87171;display:inline-block"></span>
-          Trap depth U₀ = μ_eff B₀
+          <span style="width:20px;height:2px;border-top:2px dashed rgba(255,255,255,0.4);display:inline-block"></span>
+          Your operating point
         </span>
+      </div>
+    </div>
+
+    <div class="insight-row">
+      <div class="insight-card">
+        <div class="insight-label">Optimal α detuning</div>
+        <div class="insight-val">|Δ| ≈ 0.29 Γ</div>
+        <div class="insight-desc">Maximum damping at low s. Shifts to ~0.5Γ√(1+s) with saturation. Rarely used in practice — capture velocity is too small.</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-label">Minimum temperature</div>
+        <div class="insight-val">|Δ| = Γ/2</div>
+        <div class="insight-desc">Doppler limit T_D = ℏΓ/2k_B reached here at s→0. At finite s, minimum shifts to |Δ| = (Γ/2)√(1+s).</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-label">Practical range</div>
+        <div class="insight-val">1.5 – 2.5 Γ</div>
+        <div class="insight-desc">Balances adequate damping, reasonable capture velocity, and tolerable cloud temperature. Most alkali MOTs operate here.</div>
+      </div>
+    </div>
+
+    <div class="lab-tip">
+      <strong>Lab tip:</strong> if your MOT fluorescence is high but the cloud stays hot, try moving toward
+      larger |Δ|. If loading is slow, try a smaller detuning to increase capture velocity — but watch for
+      reduced damping and a hotter cloud.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 3: SPECIES COMPARISON ══════════════════════════ -->
+  <section class="section-block anim-in delay-3">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
+      <span style="color:#fb923c">03 </span>Species at a Glance
+    </h2>
+    <p style="font-size:.84rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.65;">
+      Key MOT parameters for all five species at your current detuning and saturation settings.
+      Highlighted row is your selected atom.
+    </p>
+    <div class="species-wrap">
+      <table class="species-table" id="speciesTable">
+        <thead>
+          <tr>
+            <th>Atom</th>
+            <th>λ (nm)</th>
+            <th>Γ/2π (MHz)</th>
+            <th>T_Doppler (μK)</th>
+            <th>T_recoil (nK)</th>
+            <th>v_c at |Δ| (m/s)</th>
+            <th>α/α_Rb</th>
+          </tr>
+        </thead>
+        <tbody id="speciesTableBody"></tbody>
+      </table>
+    </div>
+    <div class="lab-tip">
+      <strong>Li note:</strong> Li's nearly degenerate D1/D2 lines cause mixing in the MOT — gray
+      molasses on D1 is the standard sub-Doppler step. <strong>K note:</strong> K39's small ground-state
+      hyperfine splitting (~461 MHz) requires careful repumper alignment to avoid optical pumping out of
+      the cycling transition.
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 4: COOLING CASCADE ═════════════════════════════ -->
+  <section class="section-block anim-in delay-4">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
+      <span style="color:#fb923c">04 </span>From MOT to Experiment — The Cooling Cascade
+    </h2>
+    <p style="font-size:.84rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.65;">
+      The MOT is stage one. Here's how temperature, atom number, and density evolve from the
+      atomic source all the way to a tweezer array or quantum gas.
+    </p>
+
+    <div class="cascade-wrap">
+      <div class="cascade-stage">
+        <div class="cs-icon">🔥</div>
+        <div class="cs-name">Atomic Source</div>
+        <div class="cs-temp">300 K → ~100 mK</div>
+        <div class="cs-detail">Oven / 2D MOT + Zeeman slower. Slows atoms from ~300 m/s to capture velocity.</div>
+      </div>
+      <div class="cascade-arrow">→</div>
+      <div class="cascade-stage cs-highlight">
+        <div class="cs-icon">🧲</div>
+        <div class="cs-name">3D MOT</div>
+        <div class="cs-temp">100 – 300 μK</div>
+        <div class="cs-detail">10⁷–10⁹ atoms. mm-scale cloud. Density ~10¹⁰/cm³. Limited by re-absorption.</div>
+      </div>
+      <div class="cascade-arrow">→</div>
+      <div class="cascade-stage">
+        <div class="cs-icon">🗜️</div>
+        <div class="cs-name">cMOT</div>
+        <div class="cs-temp">30 – 100 μK</div>
+        <div class="cs-detail">Ramp: ↑ gradient, ↓ repumper, ↑ |Δ|. Higher density for better transfer. ~10–50 ms.</div>
+      </div>
+      <div class="cascade-arrow">→</div>
+      <div class="cascade-stage">
+        <div class="cs-icon">🌫️</div>
+        <div class="cs-name">Gray Molasses / PGC</div>
+        <div class="cs-temp">2 – 20 μK</div>
+        <div class="cs-detail">Sub-Doppler. Dark states (gray molasses) or Sisyphus (PGC). B-field zeroed to &lt;50 mG.</div>
+      </div>
+      <div class="cascade-arrow">→</div>
+      <div class="cascade-stage">
+        <div class="cs-icon">🎯</div>
+        <div class="cs-name">Tweezer / Lattice</div>
+        <div class="cs-temp">5 – 30 μK in trap</div>
+        <div class="cs-detail">Single-atom loading (~50%). Site-resolved imaging. Sideband cool to n̄ &lt; 0.1.</div>
+      </div>
+      <div class="cascade-arrow">→</div>
+      <div class="cascade-stage">
+        <div class="cs-icon">⚛️</div>
+        <div class="cs-name">Experiment</div>
+        <div class="cs-temp">&lt; 1 μK</div>
+        <div class="cs-detail">Rydberg gates, quantum simulation, BEC, or quantum gas microscopy.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+      <div class="theory-box" style="margin-bottom:0;">
+        <h4>Sub-Doppler: why it works</h4>
+        <p>
+          Polarization gradients create spatially varying light shifts. Atoms climbing a potential hill
+          scatter a photon and are reborn at the bottom — net energy removed per cycle. For σ⁺σ⁻
+          beams (Sisyphus) this gives T ∝ U₀/k_B where U₀ ≪ ℏΓ, reaching 1–20 μK.
+          Gray molasses (D1 line) exploits dark states to further suppress heating.
+        </p>
+      </div>
+      <div class="theory-box" style="margin-bottom:0;">
+        <h4>Tweezer loading: the 50% barrier</h4>
+        <p>
+          Gaussian tweezers load atoms from the MOT stochastically. Parity projection — two atoms
+          collide and both leave via light-assisted collisions — caps loading at ~50% per site.
+          Blue-detuned light pulses or resolved sideband cooling can push fidelity above 90% by
+          deterministic preparation after loading.
+        </p>
       </div>
     </div>
   </section>
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 4: THEORY ════════════════════════════════════ -->
-  <section class="section-block anim-in delay-4">
+  <!-- ═══ SECTION 5: PHYSICS REFERENCE ════════════════════════════ -->
+  <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#fb923c">04 </span>Physics Reference
+      <span style="color:#fb923c">05 </span>Physics Reference
     </h2>
 
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
-        MOT force: damping and spring constant
-        <span class="accordion-icon">▶</span>
+        <span class="accordion-title">MOT force: damping, spring constant, and sign conventions</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
-          <h4>Radiation pressure and position-dependent detuning</h4>
+          <h4>Position- and velocity-dependent forces from two beams</h4>
           <p>
-            In a MOT the two counter-propagating beams create opposing radiation pressure forces.
-            For a moving atom at position r in the quadrupole field, the effective detuning
-            for each beam is Δ_eff = Δ ± kv ± μ_eff B(r)/ℏ. This creates both velocity
-            (Doppler) and position (Zeeman) dependent forces.
+            For a moving atom at position r in the quadrupole field, the effective detuning seen by each
+            beam is Δ<sub>eff</sub> = Δ ± kv ± μ<sub>eff</sub>B(r)/ℏ. Expanding to first order in kv and
+            μ<sub>eff</sub>B/ℏ|Δ| gives the linear damping + spring-constant picture.
           </p>
         </div>
-        <div class="common-mistake">
-          <strong>Common mistake, detuning sign conventions.</strong>
-          This page uses \(\Delta=\omega_L-\omega_0\), so red detuning is negative.
-          Some AMO notes use \(\Delta=\omega_0-\omega_L\), which flips every sign in the
-          damping-force algebra. Always define the convention before interpreting
-          "positive" and "negative" spring constants.
-        </div>
-        <div class="intuition-grid">
-          <div class="intuition-card">
-            <h4>MOT restoring force</h4>
-            <p>Sentence: red-detuned light plus Zeeman shifts makes the atom scatter more from the beam pushing it home.</p>
-            <p class="eq-mini">F ≈ -αv - κr</p>
-            <p>Failure mode: increasing gradient until optical pumping or capture velocity gets worse.</p>
-          </div>
-          <div class="intuition-card">
-            <h4>Capture is not temperature</h4>
-            <p>Sentence: a larger capture velocity loads more atoms but does not guarantee colder atoms.</p>
-            <p class="eq-mini">vc ∝ sqrt(aL)</p>
-            <p>Failure mode: optimizing fluorescence only and calling it temperature optimization.</p>
-          </div>
-          <div class="intuition-card">
-            <h4>Sub-Doppler needs details</h4>
-            <p>Sentence: polarization gradients, dark states, and magnetic field zeroing decide the final cloud temperature.</p>
-            <p class="eq-mini">Tfinal can be ≪ TD</p>
-            <p>Failure mode: using Doppler temperature as a hard lower bound for alkalis.</p>
-          </div>
-        </div>
         <div class="formula-box">
-$$R_{\rm sc} = \frac{\Gamma}{2} \cdot \frac{s}{1 + s + (2\Delta_{\rm eff}/\Gamma)^2}$$
-Net force (two beams, $|kv| \ll |\Delta|$): $F = F_+ - F_- \approx -\alpha v - \kappa r$<br>
-Damping (1D, 2 beams):
-$$\alpha = \frac{8\hbar k^2 s|\Delta|/\Gamma}{(1 + s + (2\Delta/\Gamma)^2)^2}$$
-Spring constant:
-$$\kappa = \frac{\mu_{eff}}{\hbar k}\cdot\frac{\partial B}{\partial r}\cdot\alpha = \mu_{eff}\cdot\frac{dB}{dz}\cdot\frac{8k^2 s|\Delta|/\Gamma}{(1+s+(2\Delta/\Gamma)^2)^2}$$
-Optimal damping: $\Delta = -\Gamma/(2\sqrt{3}) \approx -0.29\Gamma \Rightarrow \alpha_{max}$
-</div>
+$$R_{\rm sc} = \frac{\Gamma}{2}\cdot\frac{s}{1+s+(2\Delta_{\rm eff}/\Gamma)^2}$$
+Net force ($|kv|\ll|\Delta|$): $F = F_+ - F_- \approx -\alpha v - \kappa r$<br>
+$$\alpha = \frac{8\hbar k^2 s|\Delta|/\Gamma}{(1+s+(2\Delta/\Gamma)^2)^2} \quad \text{[1D, 2 beams]}$$
+$$\kappa = \frac{\mu_{\rm eff}}{\hbar k}\cdot\frac{dB}{dz}\cdot\alpha$$
+Optimal $\alpha$: $|\Delta| = \Gamma/(2\sqrt{3})\approx 0.29\,\Gamma$ (low-$s$ limit)
+        </div>
+        <div class="warn-banner" style="margin-top:.75rem;">
+          <strong>Sign convention:</strong> this page uses Δ = ω_L − ω_0, so red detuning is Δ &lt; 0.
+          Some AMO texts use Δ = ω_0 − ω_L, flipping the sign of every term in the damping algebra.
+          Always confirm the convention before comparing formulas.
+        </div>
       </div>
     </div>
 
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
-        Ioffe-Pritchard trap, field geometry
-        <span class="accordion-icon">▶</span>
+        <span class="accordion-title">Capture velocity and MOT loading rate</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
-          <h4>Non-zero minimum prevents Majorana losses</h4>
+          <h4>v_c sets the flux captured from the background vapor</h4>
           <p>
-            An IP trap combines a radial quadrupole field (wires or Ioffe bars: gradient B′) with
-            axial pinch coils that create a non-zero minimum field B₀ and axial curvature B″.
-            The non-zero field bottom eliminates Majorana spin-flip losses that plague quadrupole traps.
+            Only atoms slower than v_c ≈ |Δ|/k can be captured before they traverse the beam.
+            The loading rate L scales strongly with v_c and beam area A:
+            L ∝ n_bg · v_c⁴ · A (Maxwell-Boltzmann tail). Larger beams and larger detuning
+            dramatically increase loading — at the cost of a hotter cloud.
           </p>
         </div>
         <div class="formula-box">
-Field magnitude near trap center ($\rho \ll B_0/B'$):
-$$|B(\rho,z)| \approx B_0 + \left(\frac{B'^2}{2B_0} - \frac{B''}{2}\right)\rho^2 + \frac{B''}{2}z^2$$
-Trap frequencies:
-$$\omega_r = \sqrt{\frac{\mu_{\rm eff}(B'^2/B_0 - B'')}{m}} \quad \text{[radial]}, \qquad \omega_z = \sqrt{\frac{\mu_{\rm eff} B''}{m}} \quad \text{[axial]}$$
-Stability: $B'^2/B_0 > B''$ (radial trap not cancelled by curvature)<br>
-Trap depth: $U_0 \approx \mu_{eff} \cdot B_0$
-</div>
-        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          QUIC trap (Esslinger group) and cloverleaf trap (Ketterle group) are two common
-          IP-type implementations. Typical: B₀ = 1–10 G, B′ = 100–300 G/cm, B″ = 50–200 G/cm².
+Capture velocity: $v_c \approx |\Delta|/k$ (velocity at which Doppler shift = detuning)
+$$L \approx n_{\rm bg}\,\bar{v}\left(\frac{v_c}{\bar{v}}\right)^4 \cdot \pi w^2 \quad \bar{v}=\sqrt{8k_BT_{\rm oven}/\pi m}$$
+Stopping distance: $d = v_c^2/(2a_{\rm max})$, must satisfy $d \lesssim w$ (beam radius)<br>
+Maximum deceleration: $a_{\rm max} = \hbar k\Gamma s/(2m(1+s))$
+        </div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7;margin-top:.6rem;">
+          For Rb87 at Δ = −1.5Γ: v_c ≈ 7 m/s and a_max ≈ 10⁵ m/s². Stopping distance ~0.25 mm,
+          comfortably within a 10 mm beam. Background pressure of ~10⁻⁸ Torr gives loading rates
+          of 10⁷–10⁸ atoms/s for a standard vapor-cell MOT.
         </p>
       </div>
     </div>
 
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
-        Evaporative cooling, η parameter and runaway evaporation
-        <span class="accordion-icon">▶</span>
+        <span class="accordion-title">Sub-Doppler cooling — what lies below T_D</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
-          <h4>η = U₀ / (k_B T), truncation parameter</h4>
+          <h4>Polarization gradients and dark states break the Doppler limit</h4>
           <p>
-            Evaporative cooling removes the hottest atoms (tail of the Maxwell-Boltzmann distribution)
-            by RF or microwave induced spin-flip at a tunable cutoff energy η × k_B T. As hot atoms
-            leave and the cloud rethermalizes via elastic collisions, the temperature drops.
+            The Doppler limit T_D = ℏΓ/2k_B assumes a two-level atom. Multi-level alkalis in
+            polarization-gradient fields experience Sisyphus cooling (σ⁺σ⁻ geometry) or gray-molasses
+            cooling (D1 line, dark states), reaching temperatures 10–100× below T_D.
           </p>
         </div>
         <div class="formula-box">
-$$\frac{dT}{T} = -\frac{\eta - 4}{\eta - 3 + \ldots}\cdot\frac{dN}{N}$$
-"Runaway evaporation": $\gamma_{\rm el}/\gamma_{\rm inel} > 150$ (Rb-87 3-body limit)<br>
-Good: $\eta \gtrsim 5$; optimal: $\eta \approx 8$–$10$ (BEC achievable); insufficient: $\eta < 4$<br>
-RF evaporation ramp: $\nu_{\rm RF}(t)$ decreases from $\nu_0$ to $\nu_f$
-$$E_{cut} = h\nu_{RF} - m_F g_F \mu_B B_0$$
-</div>
+Sisyphus (PGC): $T_{\rm PGC} \approx \frac{U_0}{k_B} \propto \frac{\hbar\Omega_R^2}{\Gamma|\Delta|}$; requires $|\Delta|\gg\Gamma$, $B=0$<br>
+Gray molasses (D1): exploits $\Lambda$ dark states; $T\sim 5$–$20\,\mu$K for Rb, Cs, Li<br>
+Sideband cooling (tweezer): $T\sim \hbar\omega_{\rm trap}/k_B$; $\bar{n}&lt;0.1$ achievable<br>
+Comparison (Rb87): $T_D = 146\,\mu$K $\to$ PGC $\sim10$–$30\,\mu$K $\to$ SBC $\sim1\,\mu$K
+        </div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7;margin-top:.6rem;">
+          Key requirement for all sub-Doppler cooling: residual B-field &lt;50–100 mG at the cloud.
+          Eddy currents from switching MOT coils typically require 1–10 ms of wait time before
+          the molasses phase begins.
+        </p>
       </div>
     </div>
 
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
-        Majorana losses in quadrupole traps
-        <span class="accordion-icon">▶</span>
+        <span class="accordion-title">Density limits and reabsorption in a MOT</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
-          <h4>Spin-flip at the zero of the field</h4>
+          <h4>Peak density is set by reabsorption, not atom number</h4>
           <p>
-            A pure quadrupole trap has a zero-field point at the center. Atoms that pass near this
-            point can undergo a non-adiabatic Majorana spin-flip from a weak-field-seeking to a
-            strong-field-seeking state, ejecting them from the trap. The rate increases as the cloud
-            cools and atoms approach the zero-field region.
+            Scattered photons from atoms near the cloud center are reabsorbed by outer atoms,
+            creating an outward radiation pressure that limits peak density. This gives a
+            density-independent equilibrium: adding more atoms increases cloud size, not density.
           </p>
         </div>
         <div class="formula-box">
-$$\Gamma_M \approx \omega_r \cdot \frac{\hbar}{m\omega_r\langle r^2\rangle} \approx \omega_r \cdot \frac{T_{\rm rec}}{T}$$
-$$\omega_r = \sqrt{\frac{\mu_B B'^2}{m B_0}} \quad \text{[for quadrupole: } B_0 \to 0\text{]}$$
-For quadrupole ($B_0 = 0$): $\Gamma_M \to \infty$, catastrophic losses<br>
-Fix: add bias field (IP trap, TOP trap) or optical plug (Rb BEC 1995).<br>
-Lifetime in quadrupole: $\tau_M \sim m\bar{v}/(\mu_B B')$ where $\bar{v} = \sqrt{2k_{\rm B}T/m}$</div>
+Peak density limit: $n_{\rm max} \approx \frac{\kappa}{\sigma_{\rm sc}\,\hbar k \Gamma / 2}$ (multiple-scattering limit)<br>
+Typical Rb87 MOT: $n_{\rm peak} \sim 10^{10}$–$10^{11}$ cm$^{-3}$<br>
+cMOT fix: reducing repumper intensity pumps atoms to dark $F=1$ ground state → less reabsorption → $5$–$10\times$ density gain<br>
+Dark-SPOT MOT: shadow mask blocks repumper at center; density $\sim 10^{12}$ cm$^{-3}$
+        </div>
       </div>
     </div>
   </section>
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 5: REFERENCES ════════════════════════════════ -->
+  <!-- ═══ SECTION 6: REFERENCES ════════════════════════════════════ -->
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#fb923c">05 </span>References
+      <span style="color:#fb923c">06 </span>References
     </h2>
     <div class="read-links">
-      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.70.721" target="_blank" rel="noopener">
+      <a class="read-link" href="https://link.springer.com/book/10.1007/978-1-4612-1470-0" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Metcalf &amp; van der Straten, Laser Cooling and Trapping (textbook)
+        Metcalf &amp; van der Straten — Laser Cooling and Trapping (textbook)
         <span class="source-confidence"><span class="source-tag textbook">textbook</span></span>
       </a>
-      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.74.3352" target="_blank" rel="noopener">
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.70.721" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Petrich et al. (1995), Stable, Tightly Confining Magnetic Trap (TOP trap, first Rb BEC paper)
+        Chu (1998) — Nobel Lecture: The manipulation of neutral particles
+        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
+      </a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.61.169" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>
+        Raab et al. (1987) — Trapping of neutral sodium atoms with radiation pressure
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.75.3969" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Anderson et al. (1995), Observation of BEC in dilute Rb gas (Science)
+        Anderson et al. (1995) — Observation of BEC in a dilute atomic vapor
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
-      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.74.875" target="_blank" rel="noopener">
+      <a class="read-link" href="https://www.physics.umd.edu/courses/Phys748/class_notes/Steck_Notes.pdf" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Ketterle, Durfee &amp; Stamper-Kurn, Making, probing, and understanding BECs
-        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
-      </a>
-      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.51.R23" target="_blank" rel="noopener">
-        <span class="rl-icon">📄</span>
-        Esslinger et al. (1998), Bose-Einstein condensation in a QUIC trap
-        <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
+        Steck — Quantum and Atom Optics lecture notes (free, comprehensive)
+        <span class="source-confidence"><span class="source-tag textbook">textbook</span></span>
       </a>
     </div>
   </section>
 
     </div>
   </div>
-
-</div><!-- /page-wrap -->
+</div>
 
 <footer class="footer">
   <div class="container">
-    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center;">
       MOT Designer · AMO Toolkit · Saumitra Phatak · Purdue University
     </p>
   </div>
@@ -641,190 +676,168 @@ Lifetime in quadrupole: $\tau_M \sim m\bar{v}/(\mu_B B')$ where $\bar{v} = \sqrt
 <script>
 renderNav({ active: 'mot-designer', root: '../' });
 
-/* ═══════════════════════════════════════════════════════════════
-   CONSTANTS
-═══════════════════════════════════════════════════════════════ */
 const kB   = 1.380649e-23;
 const hbar = 1.054572e-34;
 const muB  = 9.274010e-24;
 const amu  = 1.660539e-27;
 
-/* ═══════════════════════════════════════════════════════════════
-   ATOM DATA (D2 line)
-═══════════════════════════════════════════════════════════════ */
 const ATOMS = {
-  Rb87:  { label:'⁸⁷Rb',  mass_u:86.909,  Gamma_MHz:6.065,  lambda_nm:780.241, Isat:1.669 },
-  Cs133: { label:'¹³³Cs', mass_u:132.905, Gamma_MHz:5.234,  lambda_nm:852.347, Isat:1.103 },
-  Na23:  { label:'²³Na',  mass_u:22.990,  Gamma_MHz:9.795,  lambda_nm:588.996, Isat:6.260 },
-  Li7:   { label:'⁷Li',   mass_u:7.016,   Gamma_MHz:5.924,  lambda_nm:670.977, Isat:7.590 },
-  K39:   { label:'³⁹K',   mass_u:38.964,  Gamma_MHz:6.035,  lambda_nm:766.701, Isat:1.750 },
+  Rb87:  { label:'⁸⁷Rb',  mass_u:86.909,  Gamma_MHz:6.065,  lambda_nm:780.241, Isat:1.669, muEff_muB:1.0 },
+  Cs133: { label:'¹³³Cs', mass_u:132.905, Gamma_MHz:5.234,  lambda_nm:852.347, Isat:1.103, muEff_muB:1.0 },
+  Na23:  { label:'²³Na',  mass_u:22.990,  Gamma_MHz:9.795,  lambda_nm:588.996, Isat:6.260, muEff_muB:1.0 },
+  Li7:   { label:'⁷Li',   mass_u:7.016,   Gamma_MHz:5.8724, lambda_nm:670.977, Isat:7.590, muEff_muB:1.0 },
+  K39:   { label:'³⁹K',   mass_u:38.964,  Gamma_MHz:6.035,  lambda_nm:766.701, Isat:1.750, muEff_muB:1.0 },
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   CHART
-═══════════════════════════════════════════════════════════════ */
-const trapCtx = document.getElementById('trapChart').getContext('2d');
-const TRAP_CHART = new Chart(trapCtx, {
+/* ── Detuning chart ─────────────────────────────────────────────── */
+const detuneCtx = document.getElementById('detuneChart').getContext('2d');
+const DETUNE_CHART = new Chart(detuneCtx, {
   type: 'line',
   data: {
     labels: [],
     datasets: [
-      { label: 'U(r)', data: [], borderColor: '#fb923c',
-        backgroundColor: 'rgba(251,146,60,.07)', fill: true,
-        tension: 0.3, borderWidth: 2.5, pointRadius: 0 },
-      { label: 'k_BT', data: [], borderColor: '#fbbf24',
-        borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
-      { label: 'U₀', data: [], borderColor: '#f87171',
-        borderDash: [5,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+      { label:'α (% of max)',        data:[], yAxisID:'y1', borderColor:'#fb923c',
+        backgroundColor:'rgba(251,146,60,0.08)', fill:true, tension:0.3, borderWidth:2.5, pointRadius:0 },
+      { label:'T_MOT / T_D (×100)',  data:[], yAxisID:'y1', borderColor:'#fbbf24',
+        borderWidth:2, tension:0.3, pointRadius:0, fill:false },
+      { label:'Operating point',     data:[], yAxisID:'y1', borderColor:'rgba(255,255,255,0.35)',
+        borderDash:[5,4], borderWidth:1.5, pointRadius:0, fill:false },
     ]
   },
   options: {
-    responsive: true,
+    responsive:true, animation:false,
+    interaction:{ mode:'index', intersect:false },
     scales: {
-      x: { title:{ display:true, text:'Radial distance r (mm)', color:'#94a3b8', font:{size:11} },
-           ticks:{ color:'#64748b' }, grid:{ color:'#1e293b' } },
-      y: { title:{ display:true, text:'Energy / k_B (μK)', color:'#94a3b8', font:{size:11} },
-           ticks:{ color:'#64748b' }, grid:{ color:'#1e293b' }, min:0 }
+      x: { title:{ display:true, text:'|Δ| / Γ', color:'#94a3b8', font:{size:11} },
+           ticks:{ color:'#64748b', maxTicksLimit:10 }, grid:{ color:'#1e293b' } },
+      y1:{ title:{ display:true, text:'%  (α norm.) / T ratio×100', color:'#94a3b8', font:{size:10} },
+           ticks:{ color:'#64748b' }, grid:{ color:'#1e293b' }, min:0, max:130 },
     },
-    plugins: {
-      legend: { display:false },
-      tooltip: { backgroundColor:'#0c1526', titleColor:'#fb923c',
-                 bodyColor:'#94a3b8', borderColor:'#1e3a5f', borderWidth:1 }
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ backgroundColor:'#0c1526', titleColor:'#fb923c', bodyColor:'#94a3b8',
+                borderColor:'#1e3a5f', borderWidth:1 }
     }
   }
 });
 
-/* ═══════════════════════════════════════════════════════════════
-   MAIN COMPUTE
-═══════════════════════════════════════════════════════════════ */
+/* ── Compute ────────────────────────────────────────────────────── */
 function compute() {
-  const key    = document.getElementById('speciesSel').value;
-  const atom   = ATOMS[key];
-  const mass   = atom.mass_u * amu;
-  const G      = atom.Gamma_MHz * 1e6 * 2 * Math.PI;  // rad/s
-  const k      = 2 * Math.PI / (atom.lambda_nm * 1e-9); // m⁻¹
+  const key  = document.getElementById('speciesSel').value;
+  const atom = ATOMS[key];
+  const mass = atom.mass_u * amu;
+  const G    = atom.Gamma_MHz * 1e6 * 2 * Math.PI;   // rad/s
+  const k    = 2 * Math.PI / (atom.lambda_nm * 1e-9); // m⁻¹
+  const muEff = atom.muEff_muB * muB;
 
-  const detRatio = parseFloat(document.getElementById('detSlide').value) / 10;  // |Δ|/Γ
-  const Delta    = -detRatio * atom.Gamma_MHz * 1e6 * 2 * Math.PI; // rad/s (negative = red)
-  const s        = parseFloat(document.getElementById('satSlide').value) / 10;
-  const w_mm     = parseFloat(document.getElementById('beamSlide').value);   // mm
-  const dBdz_Gcm = parseFloat(document.getElementById('gradSlide').value);   // G/cm
-  const dBdz     = dBdz_Gcm * 0.01;  // T/m  (1 G/cm = 0.01 T/m)
+  const detRatio  = parseFloat(document.getElementById('detSlide').value) / 10;
+  const Delta     = -detRatio * atom.Gamma_MHz * 1e6 * 2 * Math.PI;
+  const s         = parseFloat(document.getElementById('satSlide').value) / 10;
+  const w_mm      = parseFloat(document.getElementById('beamSlide').value);
+  const dBdz_Gcm  = parseFloat(document.getElementById('gradSlide').value);
+  const dBdz      = dBdz_Gcm * 0.01;  // T/m
 
-  const muEff = parseFloat(document.getElementById('stateSel').value) * muB; // J/T
+  const D2    = (2 * Delta / G) ** 2;
+  const denom = 1 + s + D2;
+  const denom2= denom ** 2;
 
-  const bprime_Gcm = parseFloat(document.getElementById('bprimeSlide').value); // G/cm
-  const B0_G       = parseFloat(document.getElementById('b0Slide').value);
-  const bpp_Gcm2   = parseFloat(document.getElementById('bppSlide').value);
-  const T_uK       = parseFloat(document.getElementById('tTrapSlide').value);
+  const alpha   = 8 * hbar * k * k * s * Math.abs(Delta / G) / denom2;
+  const kappa   = alpha * muEff * dBdz / (hbar * k);
+  const omegaMOT= kappa > 0 ? Math.sqrt(kappa / mass) : 0;
+  const vcap    = Math.abs(Delta) / k;
+  const T_Dopp  = hbar * G / (2 * kB);   // true Doppler limit (K)
+  const T_MOT   = hbar * G / (8 * kB) * denom / Math.abs(Delta / G);  // steady-state (K)
+  const a_max   = hbar * k * G * s / (2 * mass * (1 + s));
+  const R_sc    = G / 2 * s / denom;     // photons/s
+  const tau_damp= mass / alpha;           // s
+  const sigma_m = kappa > 0 ? Math.sqrt(kB * T_MOT / kappa) : 0;  // m
 
-  // SI conversions
-  const bprime  = bprime_Gcm * 0.01;      // T/m
-  const B0      = B0_G * 1e-4;            // T
-  const bpp     = bpp_Gcm2 * 1.0;         // T/m² (1 G/cm² = 1 T/m²)
-  const T_K     = T_uK * 1e-6;
+  document.getElementById('alphaVal').textContent  = (alpha * 1e20).toPrecision(3);
+  document.getElementById('kappaVal').textContent  = (kappa * 1e17).toPrecision(3);
+  document.getElementById('omegaMOT').textContent  = (omegaMOT / (2 * Math.PI)).toFixed(1);
+  document.getElementById('vcapVal').textContent   = vcap.toFixed(2);
+  document.getElementById('tdopVal').textContent   = (T_Dopp * 1e6).toFixed(0);
+  document.getElementById('accelVal').textContent  = a_max.toExponential(2);
+  document.getElementById('RscVal').textContent    = (R_sc / 1e6).toFixed(2);
+  document.getElementById('tauVal').textContent    = (tau_damp * 1e3).toFixed(1);
+  document.getElementById('sigmaVal').textContent  = kappa > 0 ? (sigma_m * 1e6).toFixed(0) : '—';
 
-  // ─── MOT physics ────────────────────────────────────────────
-  const D2 = (2 * Delta / G) ** 2;
-  const denom2 = (1 + s + D2) ** 2;
+  if (window.updateMOTViz) updateMOTViz(kappa, alpha, T_Dopp);
 
-  // Damping coefficient α (1D, 2 beams)
-  const alpha = 8 * hbar * k * k * s * Math.abs(Delta / G) / denom2;  // kg/s
+  updateDetuneChart(s, detRatio);
+  buildSpeciesTable(s, detRatio, dBdz_Gcm);
+}
 
-  // Spring constant κ = α × μ_eff × dB/dz / (ℏk)
-  const kappa = alpha * muEff * dBdz / (hbar * k);  // N/m
+function updateDetuneChart(s, currentX) {
+  const nPts = 100, xMin = 0.3, xMax = 5.0;
+  const labels = [], alphaArr = [], tempArr = [], markerArr = [];
 
-  // MOT trap frequency
-  const omegaMOT = kappa > 0 ? Math.sqrt(kappa / mass) : 0;  // rad/s
-
-  // Capture velocity ≈ |Δ|/k
-  const vcap = Math.abs(Delta) / k;  // m/s
-
-  // Doppler temperature
-  const T_Doppler = hbar * G / (2 * kB);  // K (true Doppler limit)
-
-  // Max acceleration (resonance, on-axis)
-  const a_max = hbar * k * (G / (2 * Math.PI)) * 2 * Math.PI * s / (2 * mass * (1 + s));
-
-  // ─── IP trap physics ─────────────────────────────────────────
-  // Radial frequency: ω_r = √(μ_eff(B′²/B₀ − B″) / m)
-  const radTerm = muEff * (bprime * bprime / B0 - bpp) / mass;
-  const omegaR  = radTerm > 0 ? Math.sqrt(radTerm) : 0;  // rad/s
-
-  // Axial frequency: ω_z = √(μ_eff B″ / m)
-  const omegaZ = Math.sqrt(muEff * bpp / mass);
-
-  // Geometric mean
-  const omegaBar = Math.pow(omegaR * omegaR * omegaZ, 1/3);
-
-  // Trap depth U₀ = μ_eff B₀ / k_B  in μK
-  const U0_uK = muEff * B0 / kB * 1e6;
-
-  // Evaporation η
-  const eta = U0_uK / T_uK;
-
-  // ─── Update DOM ─────────────────────────────────────────────
-  if (window.updateMOTViz) updateMOTViz(kappa, alpha, T_Doppler);
-
-  document.getElementById('alphaVal').textContent = (alpha * 1e20).toPrecision(3);
-  document.getElementById('kappaVal').textContent = (kappa * 1e17).toPrecision(3);
-  document.getElementById('omegaMOT').textContent = (omegaMOT / (2*Math.PI)).toFixed(1);
-  document.getElementById('vcapVal').textContent  = vcap.toFixed(2);
-  document.getElementById('tdopVal').textContent  = (T_Doppler * 1e6).toFixed(0);
-  document.getElementById('accelVal').textContent = (a_max).toExponential(2);
-
-  document.getElementById('omegaR').textContent    = omegaR > 0 ? (omegaR/(2*Math.PI)).toFixed(1) : '—';
-  document.getElementById('omegaZ').textContent    = (omegaZ/(2*Math.PI)).toFixed(1);
-  document.getElementById('omegaBar').textContent  = (omegaBar/(2*Math.PI)).toFixed(1);
-  document.getElementById('trapDepth').textContent = U0_uK.toFixed(1);
-
-  // η gauge
-  document.getElementById('etaVal').textContent = eta.toFixed(1);
-  const etaPct = Math.min(100, eta / 10 * 100);
-  document.getElementById('etaBar').style.width = etaPct + '%';
-  document.getElementById('etaBar').style.background =
-    eta >= 8 ? '#4ade80' : eta >= 5 ? '#fb923c' : '#f87171';
-
-  const etaNote = document.getElementById('etaNote');
-  if (eta >= 8) {
-    etaNote.className = 'good-banner';
-    etaNote.textContent = `η = ${eta.toFixed(1)}, excellent. Runaway evaporation to BEC is feasible. Decrease T or raise B₀.`;
-  } else if (eta >= 5) {
-    etaNote.className = 'info-banner';
-    etaNote.textContent = `η = ${eta.toFixed(1)}, good. Efficient evaporation; further cooling will improve η. Target η ≥ 8 for BEC.`;
-  } else {
-    etaNote.className = 'warn-banner';
-    etaNote.textContent = `η = ${eta.toFixed(1)}, insufficient. Evaporation is inefficient below η ≈ 5. Increase trap depth or cool further.`;
-  }
-
-  // Majorana warning (rough estimate for B0 → small)
-  const majWarn = document.getElementById('majoranaWarn');
-  if (B0_G < 3) {
-    majWarn.innerHTML = `<div class="warn-banner">⚠️ B₀ = ${B0_G} G is very small. Majorana spin-flip losses near the field zero will limit lifetime. Consider increasing B₀ or using a TOP/optical plug.</div>`;
-  } else {
-    majWarn.innerHTML = '';
-  }
-
-  // ─── Trap potential chart ─────────────────────────────────────
-  // |B(ρ)| ≈ B₀ + (B′²/(2B₀))ρ²  (radial, near centre)
-  const rMax_m = w_mm * 3e-3;  // plot to 3× beam radius
-  const rPts = [], UPts = [], kBTPts = [], U0Pts = [];
-  const nPts = 80;
+  // Find alpha maximum for normalisation
+  let aMax = 0;
   for (let i = 0; i <= nPts; i++) {
-    const r = (i / nPts) * rMax_m;   // m
-    // IP radial field: |B| = sqrt((B′r)² + B₀²)  (more accurate than Taylor)
-    const Bmag = Math.sqrt((bprime * r) ** 2 + B0 * B0);  // T
-    const U_uK = muEff * Bmag / kB * 1e6;                  // μK
-    rPts.push((r * 1e3).toFixed(2));   // mm
-    UPts.push(U_uK.toFixed(2));
-    kBTPts.push(T_uK.toFixed(2));
-    U0Pts.push(U0_uK.toFixed(2));
+    const x  = xMin + (xMax - xMin) * i / nPts;
+    const a  = x / Math.pow(1 + s + (2 * x) ** 2, 2);
+    if (a > aMax) aMax = a;
   }
-  TRAP_CHART.data.labels = rPts;
-  TRAP_CHART.data.datasets[0].data = UPts;
-  TRAP_CHART.data.datasets[1].data = kBTPts;
-  TRAP_CHART.data.datasets[2].data = U0Pts;
-  TRAP_CHART.update('none');
+  // Find T minimum for reference
+  const T_min = (1 + s + (2 * 0.5 * Math.sqrt(1 + s)) ** 2) / (4 * 0.5 * Math.sqrt(1 + s));
+
+  for (let i = 0; i <= nPts; i++) {
+    const x   = xMin + (xMax - xMin) * i / nPts;
+    const D2  = (2 * x) ** 2;
+    const den = 1 + s + D2;
+    const a_n = (x / (den * den)) / aMax * 100;          // % of max
+    const T_n = (den / (4 * x)) / T_min * 100;           // % relative to minimum
+    labels.push(x.toFixed(2));
+    alphaArr.push(a_n.toFixed(2));
+    tempArr.push(Math.min(T_n, 130).toFixed(2));          // cap so chart stays readable
+    markerArr.push(Math.abs(x - currentX) < (xMax - xMin) / nPts * 1.5 ? 110 : null);
+  }
+
+  DETUNE_CHART.data.labels                  = labels;
+  DETUNE_CHART.data.datasets[0].data        = alphaArr;
+  DETUNE_CHART.data.datasets[1].data        = tempArr;
+  DETUNE_CHART.data.datasets[2].data        = markerArr;
+  DETUNE_CHART.update('none');
+}
+
+function buildSpeciesTable(s, detRatio, dBdz_Gcm) {
+  const dBdz  = dBdz_Gcm * 0.01;
+  const curKey = document.getElementById('speciesSel').value;
+  const tbody = document.getElementById('speciesTableBody');
+
+  // Compute alpha for Rb87 at current settings as normalisation reference
+  const rb    = ATOMS.Rb87;
+  const G_rb  = rb.Gamma_MHz * 1e6 * 2 * Math.PI;
+  const k_rb  = 2 * Math.PI / (rb.lambda_nm * 1e-9);
+  const D_rb  = detRatio * rb.Gamma_MHz * 1e6 * 2 * Math.PI;
+  const den_rb= 1 + s + (2 * D_rb / G_rb) ** 2;
+  const a_rb  = 8 * hbar * k_rb * k_rb * s * detRatio / (den_rb * den_rb);
+
+  let html = '';
+  Object.entries(ATOMS).forEach(([key, atom]) => {
+    const mass  = atom.mass_u * amu;
+    const G     = atom.Gamma_MHz * 1e6 * 2 * Math.PI;
+    const k     = 2 * Math.PI / (atom.lambda_nm * 1e-9);
+    const Delta = detRatio * atom.Gamma_MHz * 1e6 * 2 * Math.PI;
+    const den   = 1 + s + (2 * Delta / G) ** 2;
+    const alpha = 8 * hbar * k * k * s * detRatio / (den * den);
+    const T_D   = hbar * G / (2 * kB) * 1e6;       // μK
+    const T_rec = hbar * hbar * k * k / (2 * mass * kB) * 1e9; // nK
+    const v_c   = Delta / k;
+    const a_ratio = (alpha / a_rb).toFixed(2);
+    const cls   = key === curKey ? ' sp-active' : '';
+    html += `<tr class="${cls}">
+      <td><span class="sp-name">${atom.label}</span></td>
+      <td class="sp-val">${atom.lambda_nm.toFixed(1)}</td>
+      <td class="sp-val">${atom.Gamma_MHz}</td>
+      <td class="sp-val">${T_D.toFixed(0)}</td>
+      <td class="sp-val">${T_rec.toFixed(0)}</td>
+      <td class="sp-val">${v_c.toFixed(2)}</td>
+      <td>${key === 'Rb87' ? '<span class="sp-tag">ref</span>' : '<span class="sp-val">'+a_ratio+'×</span>'}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
 }
 
 function onSpeciesChange() {
@@ -834,19 +847,13 @@ function onSpeciesChange() {
   compute();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MOT LIVE VISUALIZATION — 2D cross-section
-═══════════════════════════════════════════════════════════════ */
+/* ── MOT live visualization ─────────────────────────────────────── */
 (function() {
   const cvs = document.getElementById('motCanvas');
   if (!cvs) return;
   const ctx = cvs.getContext('2d');
+  let targetSigma = 35, curSigma = 35, dampRate = 0.015;
 
-  let targetSigma = 35;   // desired cloud radius in canvas px
-  let curSigma    = 35;   // smoothly interpolated toward target
-  let dampRate    = 0.015; // Langevin damping (scales with α)
-
-  // Resize: defer to RAF so getBoundingClientRect returns real layout width
   function resize() {
     const rect = cvs.parentElement.getBoundingClientRect();
     cvs.width  = rect.width || 580;
@@ -854,7 +861,6 @@ function onSpeciesChange() {
   }
   window.addEventListener('resize', () => { resize(); spawnAtoms(); });
 
-  // ── Atom particles ────────────────────────────────────────────
   const N = 28;
   let atoms = [];
   function spawnAtoms() {
@@ -862,105 +868,82 @@ function onSpeciesChange() {
     atoms = Array.from({ length: N }, () => {
       const a = Math.random() * 2 * Math.PI;
       const r = curSigma * (0.4 + Math.random() * 1.1);
-      return {
-        x: CX + r * Math.cos(a), y: CY + r * Math.sin(a),
-        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
-      };
+      return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a),
+               vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 };
     });
   }
 
-  // ── Arrow helper ──────────────────────────────────────────────
   function arrow(x1, y1, x2, y2, col) {
     ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     const ang = Math.atan2(y2 - y1, x2 - x1);
     ctx.beginPath();
     ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 - 6*Math.cos(ang-0.4), y2 - 6*Math.sin(ang-0.4));
-    ctx.lineTo(x2 - 6*Math.cos(ang+0.4), y2 - 6*Math.sin(ang+0.4));
+    ctx.lineTo(x2 - 6*Math.cos(ang-.4), y2 - 6*Math.sin(ang-.4));
+    ctx.lineTo(x2 - 6*Math.cos(ang+.4), y2 - 6*Math.sin(ang+.4));
     ctx.closePath(); ctx.fill();
   }
 
-  // ── Draw loop ─────────────────────────────────────────────────
   let _ready = false;
   function draw() {
     requestAnimationFrame(draw);
-    // Initialise on first frame — layout is guaranteed by then
     if (!_ready) { resize(); spawnAtoms(); _ready = true; }
     const W = cvs.width, H = cvs.height;
     if (!W || !H) return;
     const CX = W / 2, CY = H / 2;
-
-    // Smooth cloud size transition
     curSigma += (targetSigma - curSigma) * 0.035;
+    ctx.fillStyle = '#020810'; ctx.fillRect(0, 0, W, H);
 
-    ctx.fillStyle = '#020810';
-    ctx.fillRect(0, 0, W, H);
-
-    // ── Laser beams (4 in 2D cross-section) ─────────────────────
     const beams = [
-      { x0: 0, y0: CY, x1: W, y1: CY, l0: 'σ⁺', l1: 'σ⁻', lx0: 8, ly0: CY-7, lx1: W-26, ly1: CY-7 },
-      { x0: CX, y0: 0, x1: CX, y1: H, l0: 'σ⁻', l1: 'σ⁺', lx0: CX+5, ly0: 13, lx1: CX+5, ly1: H-5 },
+      { x0:0, y0:CY, x1:W, y1:CY, l0:'σ⁺', l1:'σ⁻', lx0:8, ly0:CY-7, lx1:W-26, ly1:CY-7 },
+      { x0:CX, y0:0, x1:CX, y1:H, l0:'σ⁻', l1:'σ⁺', lx0:CX+5, ly0:13, lx1:CX+5, ly1:H-5 },
     ];
     beams.forEach(b => {
-      [ [b.x0, b.y0], [b.x1, b.y1] ].forEach(([ex, ey]) => {
+      [[b.x0,b.y0],[b.x1,b.y1]].forEach(([ex,ey]) => {
         const g = ctx.createLinearGradient(ex, ey, CX, CY);
-        g.addColorStop(0, 'rgba(251,146,60,0.00)');
-        g.addColorStop(1, 'rgba(251,146,60,0.20)');
-        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(CX, CY);
-        ctx.strokeStyle = g; ctx.lineWidth = 18; ctx.stroke();
+        g.addColorStop(0,'rgba(251,146,60,0.00)');
+        g.addColorStop(1,'rgba(251,146,60,0.20)');
+        ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(CX,CY);
+        ctx.strokeStyle=g; ctx.lineWidth=18; ctx.stroke();
       });
-      ctx.fillStyle = 'rgba(251,146,60,0.5)';
-      ctx.font = '11px Inter, sans-serif';
-      ctx.fillText(b.l0, b.lx0, b.ly0);
-      ctx.fillText(b.l1, b.lx1, b.ly1);
+      ctx.fillStyle='rgba(251,146,60,0.5)'; ctx.font='11px Inter,sans-serif';
+      ctx.fillText(b.l0,b.lx0,b.ly0); ctx.fillText(b.l1,b.lx1,b.ly1);
     });
 
-    // ── Quadrupole B-field arrows ────────────────────────────────
-    const bCol = 'rgba(96,165,250,0.30)';
-    const D = 72;
-    arrow(CX, CY, CX - D, CY, bCol);      // ← left
-    arrow(CX, CY, CX + D, CY, bCol);      // → right
-    arrow(CX, CY, CX, CY - D * 0.7, bCol); // ↑ up
-    arrow(CX, CY, CX, CY + D * 0.7, bCol); // ↓ down
-    ctx.fillStyle = 'rgba(96,165,250,0.35)';
-    ctx.font = '10px Inter, sans-serif';
-    ctx.fillText('B', CX - D - 14, CY - 4);
+    const bCol='rgba(96,165,250,0.30)', D=72;
+    arrow(CX,CY,CX-D,CY,bCol); arrow(CX,CY,CX+D,CY,bCol);
+    arrow(CX,CY,CX,CY-D*.7,bCol); arrow(CX,CY,CX,CY+D*.7,bCol);
+    ctx.fillStyle='rgba(96,165,250,0.35)'; ctx.font='10px Inter,sans-serif';
+    ctx.fillText('B',CX-D-14,CY-4);
 
-    // ── Atom cloud glow ──────────────────────────────────────────
-    const glow = ctx.createRadialGradient(CX, CY, 0, CX, CY, curSigma * 2.3);
-    glow.addColorStop(0,    'rgba(255,220,100,0.55)');
-    glow.addColorStop(0.25, 'rgba(251,146,60,0.28)');
-    glow.addColorStop(0.65, 'rgba(200,60,20,0.08)');
-    glow.addColorStop(1,    'rgba(0,0,0,0)');
-    ctx.beginPath(); ctx.arc(CX, CY, curSigma * 2.3, 0, 2*Math.PI);
-    ctx.fillStyle = glow; ctx.fill();
+    const glow = ctx.createRadialGradient(CX,CY,0,CX,CY,curSigma*2.3);
+    glow.addColorStop(0,'rgba(255,220,100,0.55)');
+    glow.addColorStop(.25,'rgba(251,146,60,0.28)');
+    glow.addColorStop(.65,'rgba(200,60,20,0.08)');
+    glow.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath(); ctx.arc(CX,CY,curSigma*2.3,0,2*Math.PI);
+    ctx.fillStyle=glow; ctx.fill();
 
-    // ── Atom particles (Langevin dynamics) ──────────────────────
-    const sk = 0.015;  // spring constant (canvas units)
-    const noiseAmp = curSigma * Math.sqrt(dampRate * sk) * 1.6;
+    const sk=0.015, noiseAmp=curSigma*Math.sqrt(dampRate*sk)*1.6;
     atoms.forEach(a => {
-      a.vx = a.vx * (1 - dampRate) - sk * (a.x - CX) + (Math.random() - 0.5) * noiseAmp;
-      a.vy = a.vy * (1 - dampRate) - sk * (a.y - CY) + (Math.random() - 0.5) * noiseAmp;
+      a.vx = a.vx*(1-dampRate) - sk*(a.x-CX) + (Math.random()-.5)*noiseAmp;
+      a.vy = a.vy*(1-dampRate) - sk*(a.y-CY) + (Math.random()-.5)*noiseAmp;
       a.x += a.vx; a.y += a.vy;
-      const r = Math.hypot(a.x - CX, a.y - CY);
-      const al = Math.max(0, 1 - r / (curSigma * 2.8));
-      ctx.beginPath(); ctx.arc(a.x, a.y, 1.8, 0, 2*Math.PI);
-      ctx.fillStyle = `rgba(255,235,150,${(al * 0.9).toFixed(2)})`; ctx.fill();
+      const r = Math.hypot(a.x-CX,a.y-CY);
+      const al = Math.max(0,1-r/(curSigma*2.8));
+      ctx.beginPath(); ctx.arc(a.x,a.y,1.8,0,2*Math.PI);
+      ctx.fillStyle=`rgba(255,235,150,${(al*.9).toFixed(2)})`; ctx.fill();
     });
 
-    // ── Cloud size readout ───────────────────────────────────────
     const lbl = document.getElementById('motCloudLbl');
-    if (lbl) lbl.textContent = `cloud σ ≈ ${(curSigma * 10).toFixed(0)} μm`;
+    if (lbl) lbl.textContent = `cloud σ ≈ ${(curSigma*10).toFixed(0)} μm`;
   }
 
-  // ── External hook (called from compute()) ────────────────────
-  window.updateMOTViz = function(kappa_SI, alpha_SI, T_Doppler_K) {
-    const kB_loc = 1.380649e-23;
-    const SCALE  = 1e5; // px / m  → 1 px = 10 μm
-    const r_th   = kappa_SI > 0 ? Math.sqrt(kB_loc * T_Doppler_K / kappa_SI) : 350e-6;
-    targetSigma  = Math.max(10, Math.min(68, r_th * SCALE));
-    dampRate     = 0.008 + Math.min(1, alpha_SI / 5e-20) * 0.027;
+  window.updateMOTViz = function(kappa_SI, alpha_SI, T_K) {
+    const SCALE = 1e5;
+    const r_th  = kappa_SI > 0 ? Math.sqrt(kB * T_K / kappa_SI) : 350e-6;
+    targetSigma = Math.max(10, Math.min(68, r_th * SCALE));
+    dampRate    = 0.008 + Math.min(1, alpha_SI / 5e-20) * 0.027;
   };
 
   requestAnimationFrame(draw);

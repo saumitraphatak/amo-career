@@ -368,7 +368,7 @@
     <!-- Animated waterfall -->
     <div class="chart-card" style="margin-top:1rem;">
       <h5>Error waterfall — cumulative build-up</h5>
-      <p style="font-size:.78rem;color:var(--text-muted);margin:.15rem 0 .6rem 0;">Each bar adds its error to the running total. The dashed line marks the fault-tolerance threshold (0.1% error = 99.9% fidelity).</p>
+      <p style="font-size:.78rem;color:var(--text-muted);margin:.15rem 0 .6rem 0;">Each bar adds its error to the running total. The dashed line marks a practical high-fidelity target (0.1% error = 99.9% fidelity); surface-code threshold estimates are closer to ~1% for simple noise models.</p>
       <canvas id="waterfallCanvas" width="560" height="160" style="width:100%;border-radius:6px;"></canvas>
     </div>
   </section>
@@ -425,7 +425,7 @@
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Spontaneous emission from Rydberg state
-        <span class="accordion-icon">▶</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -448,7 +448,7 @@ $$\varepsilon_{se} = \Gamma_{total} \times t_{gate} = t_{gate}/\tau_{Ryd}$$
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Doppler dephasing from thermal motion
-        <span class="accordion-icon">▶</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -471,7 +471,7 @@ Example: Rb, $T=5\,\mu$K, $\lambda=480$ nm, $t_{gate}=2\,\mu$s $\Rightarrow$ $v_
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Laser phase noise (linewidth)
-        <span class="accordion-icon">▶</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -493,7 +493,7 @@ State-of-the-art: $\Delta\nu &lt; 1$ Hz (ULE cavity) $\Rightarrow T_{coh} &gt; 3
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Finite Rydberg blockade (leakage error)
-        <span class="accordion-icon">▶</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -513,7 +513,7 @@ $C_6/h$ for alkali $nS$ states near $n\sim60$--$70$ is typically order $10^2$--$
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Magnetic field noise, Rabi inhomogeneity, SPAM &amp; atom loss
-        <span class="accordion-icon">▶</span>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="formula-box">
@@ -600,7 +600,7 @@ const amu  = 1.660539e-27;
 ═══════════════════════════════════════════════════════════════ */
 const ATOMS = {
   Rb87:  { label:'⁸⁷Rb',  mass_u:86.909,  tau0_ns:1.43, lambda_Ryd_nm:480,  delta0:3.131 },
-  Cs133: { label:'¹³³Cs', mass_u:132.905, tau0_ns:1.50, lambda_Ryd_nm:510,  delta0:4.049 },
+  Cs133: { label:'¹³³Cs', mass_u:132.905, tau0_ns:1.80, lambda_Ryd_nm:510,  delta0:4.049 },
   Yb171: { label:'¹⁷¹Yb', mass_u:170.936, tau0_ns:2.00, lambda_Ryd_nm:302,  delta0:4.279 },
   Sr88:  { label:'⁸⁸Sr',  mass_u:87.906,  tau0_ns:1.80, lambda_Ryd_nm:317,  delta0:3.269 },
 };
@@ -727,9 +727,9 @@ function compute() {
 
   const fidNote   = document.getElementById('fidNote');
   if (fidelity >= 0.999) {
-    fidNote.innerHTML = '<span style="color:#4ade80">✅ Below fault-tolerance threshold, suitable for surface-code FTQC (p_th ≈ 1%).</span>';
+    fidNote.innerHTML = '<span style="color:#4ade80">Excellent: at or above the 99.9% practical target. Still compare against the exact error-correction architecture and noise bias.</span>';
   } else if (fidelity >= 0.99) {
-    fidNote.innerHTML = '<span style="color:#fbbf24">⚠️ Good fidelity, but not yet below surface-code threshold. Check dominant error source.</span>';
+    fidNote.innerHTML = '<span style="color:#fbbf24">Good: near the rough surface-code threshold scale, but below the 99.9% practical target for scalable FTQC. Check the dominant error source.</span>';
   } else {
     fidNote.innerHTML = '<span style="color:#f87171">❌ Below 99%, significant noise reduction needed. Identify and fix the dominant error.</span>';
   }
@@ -802,7 +802,7 @@ function drawWaterfall(entries, totalErr) {
   const CHART_H = H - PAD_T - PAD_B;
   const BAR_W = Math.min(38, (CHART_W / N) * 0.65);
   const COLORS = ['#f87171','#fb923c','#fbbf24','#4ade80','#38bdf8','#818cf8','#e879f9','#f472b6'];
-  const THRESHOLD = 0.001; // 99.9% fidelity
+  const THRESHOLD = 0.001; // practical 99.9% fidelity target
 
   // yMax: nice scale above totalErr and threshold
   const yMax = Math.max(totalErr * 1.15, THRESHOLD * 1.5);

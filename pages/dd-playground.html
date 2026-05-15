@@ -277,7 +277,7 @@
       <p>
         How π-pulse sequences extend qubit coherence by engineering the spectral filter function —
         from Hahn echo to XY-16, with live filter function and T₂ enhancement calculators.
-        Physics context: Rb87 neutral atom arrays (Manetsch 2025, T₂ = 12.6 s).
+        Physics context: Cs-133 neutral atom arrays (Manetsch 2025, T₂ = 12.6 s).
       </p>
     </div>
 
@@ -329,9 +329,9 @@
 
       <div class="stat-grid">
         <div class="stat-chip">
-          <div class="sc-label">Rb87 T₂*</div>
-          <div class="sc-val">~22 s</div>
-          <div class="sc-sub">Manetsch 2025 (6100-atom array)</div>
+          <div class="sc-label">Cs-133 T₂*</div>
+          <div class="sc-val">14.0 ms</div>
+          <div class="sc-sub">Free Ramsey dephasing, Manetsch 2025</div>
         </div>
         <div class="stat-chip">
           <div class="sc-label">T₂ with XY-16</div>
@@ -339,7 +339,7 @@
           <div class="sc-sub">DD-measured T₂ (pulse error limited)</div>
         </div>
         <div class="stat-chip">
-          <div class="sc-label">T₁ (Rb87)</div>
+          <div class="sc-label">T₁ (Cs-133)</div>
           <div class="sc-val">≫ T₂</div>
           <div class="sc-sub">Spontaneous emission negligible</div>
         </div>
@@ -351,10 +351,9 @@
       </div>
 
       <div class="info-box">
-        <strong>Note on Manetsch 2025:</strong> In this experiment T₂(XY-16) = 12.6 s is actually
-        <em>shorter</em> than T₂* ≈ 22 s. This is because at these timescales, coherent pulse-error
-        accumulation in the DD sequence dominates over the dephasing being suppressed.
-        For most AMO systems, T₂* ≪ T₂(DD) and DD gives a large improvement.
+        <strong>Note on Manetsch 2025:</strong> The free Ramsey dephasing time is T₂* = 14.0(1) ms, while
+        dynamical decoupling extends coherence to T₂ = 12.6(1) s. This is exactly the regime where DD matters:
+        refocusing suppresses slow magnetic-field and light-shift noise, but pulse errors eventually become the new limit.
       </div>
 
       <div class="theory">
@@ -467,8 +466,7 @@
             <strong>In neutral atom arrays:</strong> Run a Ramsey experiment on all ~100–6100 atoms simultaneously.
             Each atom is an independent clock. The ensemble-averaged signal washes out at T₂*.
             But even <em>single-atom</em> Ramsey (no ensemble average) shows coherence decay, this is the true single-qubit T₂*.
-            Manetsch 2025 measured single-atom T₂* ≈ 22 s in their 6100-qubit Rb87 array using
-            Ramsey with XY-16 DD (i.e., they used DD to first measure the long-time coherence, then applied it operationally).
+            Manetsch 2025 measured free Ramsey dephasing T₂* = 14.0(1) ms and extended the coherence to T₂ = 12.6(1) s in their 6100-atom Cs-133 array using dynamical decoupling.
           </div>
         </div>
       </div>
@@ -481,7 +479,7 @@
           <strong>Spin echo:</strong> $\varphi = \int_0^{T/2}\delta\omega\,dt - \int_{T/2}^T\delta\omega\,dt$, subtracts the two halves.
           Static fields cancel; only noise that changes between the two halves survives. Measures a longer $T_2^{\rm echo} \geq T_2^*$.<br><br>
           <strong>The ratio $T_2^{\rm echo}/T_2^*$</strong> tells you how much of the dephasing is static (large ratio → mostly static → gradient problem → DD is very effective) vs dynamic (ratio ≈ 1 → dynamic noise dominates → DD helps less).
-          In Rb87 arrays: ratio can be 10–100× showing static B-field gradient as dominant problem.
+          In alkali tweezer arrays: the ratio can be 10–100× when static B-field gradients dominate.
         </div>
       </div>
     </section>
@@ -749,7 +747,7 @@
           </p>
           <p>
             <strong>XY-16:</strong> Two concatenated XY-8 cycles. Third-order error suppression.
-            This is the sequence used in Manetsch 2025 for T₂ = 12.6 s in a 6100-atom Rb87 array.
+            This is the sequence used in Manetsch 2025 for T₂ = 12.6 s in a 6100-atom Cs-133 array.
           </p>
         </div>
       </div>
@@ -1071,7 +1069,7 @@
         <div class="theory">
           <h4>Manetsch 2025 Application</h4>
           <p>
-            Used XY-16-based sequences on 6100-qubit Rb87 array to map out the noise spectrum.
+            Used XY-16-based sequences on a 6100-atom Cs-133 array to characterize coherence and pulse-error limitations.
             Identified dominant sources:
           </p>
           <ul>
@@ -1117,8 +1115,8 @@
       <div class="atom-box">
         <h4>Manetsch et al., Nature 2025 (arXiv:2403.12021)</h4>
         <p>
-          <strong>System:</strong> 6,100-qubit Rb87 array in optical tweezers.
-          Hyperfine qubit: $|F=1, m_F=0\rangle \leftrightarrow |F=2, m_F=0\rangle$ (clock states).
+          <strong>System:</strong> 6,100-atom Cs-133 array in optical tweezers.
+          Hyperfine qubit: Cs clock-state qubit in the $6S_{1/2}$ ground-state manifold.
         </p>
         <p>
           <strong>DD sequence:</strong> XY-16 chosen over CPMG for two reasons:
@@ -1127,10 +1125,8 @@
           (2) XY-16 cancels these to 3rd order.
         </p>
         <p>
-          <strong>Results:</strong> T₂* ≈ 22 s (free precession), T₂(XY-16) = 12.6(1) s.
-          The XY-16 T₂ is actually shorter than T₂* here, this is a regime where pulse error
-          accumulation from 12 seconds of continuous pulsing exceeds the dephasing being suppressed.
-          Still, XY-16 outperforms CPMG at all pulse numbers in this system.
+          <strong>Results:</strong> T₂* = 14.0(1) ms from free Ramsey dephasing and T₂(XY-16) = 12.6(1) s under dynamical decoupling.
+          The long-time coherence is therefore a DD-enhanced memory benchmark, not a free-precession T₂*.
         </p>
         <p>
           <strong>Noise source:</strong> Primarily B-field gradient fluctuations
@@ -1182,7 +1178,7 @@
         <div class="stat-chip">
           <div class="sc-label">Array size</div>
           <div class="sc-val">6,100</div>
-          <div class="sc-sub">Rb87 atoms (Manetsch 2025)</div>
+          <div class="sc-sub">Cs-133 atoms (Manetsch 2025)</div>
         </div>
         <div class="stat-chip">
           <div class="sc-label">DD sequence</div>
@@ -1191,8 +1187,8 @@
         </div>
         <div class="stat-chip">
           <div class="sc-label">T₂* (free)</div>
-          <div class="sc-val">~22 s</div>
-          <div class="sc-sub">FID coherence time</div>
+          <div class="sc-val">14.0 ms</div>
+          <div class="sc-sub">Free Ramsey dephasing</div>
         </div>
         <div class="stat-chip">
           <div class="sc-label">T₂ (XY-16)</div>
@@ -1203,9 +1199,7 @@
 
       <div class="warn-box" style="margin-top:1rem">
         <strong>Perspective:</strong> In most AMO systems (smaller arrays, less-perfect clocks states),
-        T₂* ≪ T₂ and DD gives 10–100× improvement. Manetsch 2025 is operating in an unusual regime
-        where T₂* is already extremely long (~22 s) due to very good B-field control, so the
-        remaining improvement from DD is marginal and actually competes with pulse-error accumulation.
+        T₂* ≪ T₂ and DD gives 10–100× improvement. Manetsch 2025 shows how dramatic the gap can be between free dephasing and a carefully engineered DD sequence: milliseconds without refocusing become seconds with XY-16, until pulse errors and technical noise set the new ceiling.
       </div>
     </section>
 
@@ -1216,7 +1210,7 @@
       <div class="read-links">
         <a class="read-link" href="https://doi.org/10.1103/RevModPhys.89.035002" target="_blank" rel="noopener">Viola &amp; Knill review of dynamical decoupling control</a>
         <a class="read-link" href="https://doi.org/10.1103/RevModPhys.86.361" target="_blank" rel="noopener">Álvarez &amp; Suter, noise spectroscopy with dynamical decoupling</a>
-        <a class="read-link" href="https://www.nature.com/articles/s41586-025-09641-4" target="_blank" rel="noopener">Manetsch et al. 2025, 6100-atom Rb tweezer array and long coherence</a>
+        <a class="read-link" href="https://www.nature.com/articles/s41586-025-09641-4" target="_blank" rel="noopener">Manetsch et al. 2025, 6100-atom Cs tweezer array and long coherence</a>
       </div>
     </section>
 

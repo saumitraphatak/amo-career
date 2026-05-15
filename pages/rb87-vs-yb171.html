@@ -474,8 +474,17 @@
           <svg viewBox="0 0 320 310" width="100%" style="max-width:320px;" aria-label="Rb87 level diagram">
             <!-- Rydberg state -->
             <line x1="70" y1="22" x2="250" y2="22" stroke="#818cf8" stroke-width="2.5"/>
-            <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">nS₁/₂ (n~70)</text>
+            <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">nS₁/₂</text>
             <text x="50" y="27" fill="#818cf8" font-size="10" font-family="JetBrains Mono,monospace" text-anchor="end">Rydberg</text>
+
+            <!-- 6P3/2 intermediate used in Harvard/QuEra high-fidelity gates -->
+            <line x1="92" y1="72" x2="230" y2="72" stroke="#a78bfa" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="260" y="77" fill="#a78bfa" font-size="10" font-family="JetBrains Mono,monospace">6P₃/₂</text>
+            <text x="50" y="75" fill="#94a3b8" font-size="9" text-anchor="end">gate int.</text>
+
+            <!-- 4D5/2 state used in state-selective hiding schemes in Harvard/QuEra-style circuits -->
+            <line x1="90" y1="88" x2="230" y2="88" stroke="#22c55e" stroke-width="1.5" opacity="0.75"/>
+            <text x="260" y="92" fill="#22c55e" font-size="9" font-family="JetBrains Mono,monospace">4D₅/₂</text>
 
             <!-- 5P3/2 -->
             <line x1="70" y1="100" x2="250" y2="100" stroke="#38bdf8" stroke-width="2"/>
@@ -504,8 +513,8 @@
             <!-- 5S1/2 label -->
             <text x="155" y="298" fill="#94a3b8" font-size="11" text-anchor="middle">5S₁/₂ ground state</text>
 
-            <!-- Rydberg excitation arrows (two-photon) -->
-            <!-- 780 nm: F=2 to 5P3/2 -->
+            <!-- Rydberg excitation arrows (Harvard/QuEra high-fidelity gate path) -->
+            <!-- 420 nm: F=2 to 6P3/2 -->
             <defs>
               <marker id="arr-rb" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="#38bdf8"/>
@@ -513,22 +522,32 @@
               <marker id="arr-ryd" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
                 <polygon points="0 0, 8 3, 0 6" fill="#818cf8"/>
               </marker>
+              <marker id="arr-hide" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#22c55e"/>
+              </marker>
               <marker id="arr-emit" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
                 <polygon points="8 0, 0 3, 8 6" fill="#f472b6"/>
               </marker>
             </defs>
-            <line x1="150" y1="238" x2="150" y2="108" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arr-rb)"/>
-            <text x="134" y="175" fill="#38bdf8" font-size="10" text-anchor="middle">780 nm</text>
+            <line x1="145" y1="238" x2="145" y2="80" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arr-rb)"/>
+            <text x="126" y="160" fill="#38bdf8" font-size="10" text-anchor="middle">420 nm</text>
 
-            <!-- 480 nm: 5P3/2 to Rydberg -->
-            <line x1="170" y1="98" x2="170" y2="30" stroke="#818cf8" stroke-width="1.8" marker-end="url(#arr-ryd)"/>
-            <text x="185" y="68" fill="#818cf8" font-size="10" text-anchor="middle">480 nm</text>
+            <!-- 1013 nm: 6P3/2 to Rydberg -->
+            <line x1="175" y1="70" x2="175" y2="30" stroke="#818cf8" stroke-width="1.8" marker-end="url(#arr-ryd)"/>
+            <text x="198" y="55" fill="#818cf8" font-size="10" text-anchor="middle">1013 nm</text>
 
-            <!-- microwave qubit arrow -->
+            <!-- 1529 nm hiding beam: 5P3/2 to 4D5/2, used for state-selective shelving/hiding -->
+            <line x1="116" y1="98" x2="116" y2="91" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-hide)"/>
+            <text x="92" y="93" fill="#22c55e" font-size="8" text-anchor="middle">1529 hide</text>
+
+            <!-- microwave/Raman qubit coupling -->
             <path d="M 100 268 C 85 255 85 245 100 240" stroke="#fb923c" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
-            <text x="78" y="252" fill="#fb923c" font-size="9" text-anchor="middle">MW</text>
+            <path d="M 112 268 C 132 250 132 250 112 240" stroke="#c084fc" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+            <text x="80" y="252" fill="#fb923c" font-size="8" text-anchor="middle">MW</text>
+            <text x="128" y="252" fill="#c084fc" font-size="8" text-anchor="middle">Raman</text>
+            <text x="158" y="286" fill="#64748b" font-size="8" text-anchor="middle">852 nm tweezers/trap light separate from gate beams</text>
           </svg>
-          <div class="level-caption">Rb87 level structure. Qubit: hyperfine states of 5S₁/₂. Two-photon Rydberg excitation via 5P₃/₂ (780 nm + 480 nm). Microwave or Raman coupling for single-qubit gates.</div>
+          <div class="level-caption">Rb87 level structure. Qubit: hyperfine states of 5S₁/₂. Harvard/QuEra high-fidelity gates use two-photon Rydberg excitation through 6P₃/₂ with 420 nm + 1013 nm light; state-selective hiding can use the 5P₃/₂→4D₅/₂ transition near 1529 nm. The common 780 nm + 480 nm route via 5P₃/₂ is a different Rb Rydberg path, not the Evered 2023 gate path.</div>
         </div>
 
         <ul>
@@ -536,7 +555,8 @@
           <li><strong>Nuclear spin:</strong> I = 3/2</li>
           <li><strong>Ground state:</strong> 5S₁/₂, electronic spin J = 1/2, so F = 1 or 2</li>
           <li><strong>Cooling transitions:</strong> D1 at 795 nm (5S→5P₁/₂), D2 at 780 nm (5S→5P₃/₂)</li>
-          <li><strong>Rydberg excitation:</strong> Two-photon via 5P₃/₂ (780 nm + 480 nm)</li>
+          <li><strong>Rydberg excitation:</strong> Harvard/QuEra gate path via 6P₃/₂ (420 nm + 1013 nm); common alternative route via 5P₃/₂ (780 nm + 480 nm)</li>
+          <li><strong>State-selective hiding:</strong> Some Harvard/QuEra-style circuits use a 1529 nm beam coupling 5P₃/₂ to 4D₅/₂ for hiding/shelving operations</li>
           <li><strong>Natural linewidth:</strong> Γ/2π = 6.07 MHz (D2)</li>
           <li><strong>Rydberg interaction scale:</strong> Strongly state- and field-dependent; use ARC/pair-state calculations for exact C₆. Near n≈70 S-states, C₆ is order 10⁵–10⁶ × 2π MHz·μm⁶ <span class="source-tag rough-estimate">rough estimate</span></li>
         </ul>
@@ -553,7 +573,7 @@
           <svg viewBox="0 0 320 310" width="100%" style="max-width:320px;" aria-label="Yb171 level diagram">
             <!-- Rydberg state -->
             <line x1="70" y1="22" x2="250" y2="22" stroke="#818cf8" stroke-width="2.5"/>
-            <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">Rydberg</text>
+            <text x="260" y="27" fill="#818cf8" font-size="11" font-family="JetBrains Mono,monospace">Rydberg ³S₁</text>
 
             <!-- 3S1 or nP via UV ~300 nm -->
             <text x="50" y="62" fill="#94a3b8" font-size="9" text-anchor="end">~302 nm UV</text>
@@ -613,7 +633,7 @@
             <path d="M 100 268 C 85 255 85 245 100 240" stroke="#34d399" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
             <text x="77" y="252" fill="#34d399" font-size="9" text-anchor="middle">RF</text>
           </svg>
-          <div class="level-caption">Yb171 level structure. Qubit: nuclear spin mI=±½ in ¹S₀ ground state (J=0). Clock transition to ³P₀ at 578 nm. Rydberg excitation: single UV photon (~302 nm) from ³P₀ to Rydberg nP state. MOT on ¹P₁ at 399 nm; narrow-line cooling on ³P₁ at 556 nm.</div>
+          <div class="level-caption">Yb171 level structure. Qubit: nuclear spin mI=±½ in ¹S₀ ground state (J=0). Clock transition to ³P₀ at 578 nm. Atom Computing/Muniz-style Rydberg gates use a single 302 nm UV photon from ³P₀ to a Rydberg ³S₁ state. MOT on ¹P₁ at 399 nm; narrow-line cooling on ³P₁ at 556 nm.</div>
         </div>
 
         <ul>
@@ -622,7 +642,7 @@
           <li><strong>Ground state:</strong> ¹S₀ (J = 0, critical for qubit protection)</li>
           <li><strong>Cooling transitions:</strong> ¹P₁ at 399 nm (broad), ³P₁ at 556 nm (intercombination)</li>
           <li><strong>Clock transition:</strong> ¹S₀ → ³P₀ at 578 nm (< 10 mHz linewidth)</li>
-          <li><strong>Rydberg excitation:</strong> Single UV photon (~302 nm) from metastable ³P₀ state to Rydberg nP levels; overall path from ¹S₀ is two-photon (578 nm + 302 nm)</li>
+          <li><strong>Rydberg excitation:</strong> Single UV photon (~302 nm) from metastable ³P₀ to a Rydberg ³S₁ state in the Atom Computing/Muniz gate implementation; overall path from ¹S₀ is sequential clock shelving plus UV excitation (578 nm + 302 nm)</li>
           <li><strong>Clock magic wavelength:</strong> near 759 nm for the ¹S₀–³P₀ optical clock transition; not required to cancel the two ¹S₀ nuclear-spin qubit light shifts <span class="source-tag textbook">atomic structure</span></li>
         </ul>
       </div>
@@ -843,7 +863,7 @@ Clock magic wavelength: $\Delta\alpha_{1S0-3P0}(\lambda_{\rm magic}\approx759\;\
     <div class="chart-box" style="margin-bottom:1.5rem;">
       <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Gate Fidelity Comparison (2019–2025)</h3>
       <canvas id="fidelityChart" height="300"></canvas>
-      <p class="chart-caption">Two-qubit gate fidelities, best published values. Rb87: Evered et al. (Nature 2023). Yb171: Muniz et al. (PRX Quantum 2025, post-selection and raw). Surface code fault-tolerance threshold shown as dashed line.</p>
+      <p class="chart-caption">Two-qubit gate fidelities, best published values. Rb87: Evered et al. (Nature 2023). Yb171: Muniz et al. (PRX Quantum 2025, post-selection and raw). A practical 99.9% target line is shown as a dashed guide.</p>
     </div>
 
     <div class="side-by-side">
@@ -853,7 +873,7 @@ Clock magic wavelength: $\Delta\alpha_{1S0-3P0}(\lambda_{\rm magic}\approx759\;\
           <li><strong>Best 2Q CZ fidelity:</strong> 99.5% on 60 qubit pairs simultaneously <span class="adv-rb">Evered 2023</span></li>
           <li><strong>Parallel entanglement:</strong> 60 Bell pairs in parallel, same 99.5% per pair</li>
           <li><strong>1Q gate fidelity:</strong> &gt;99.9% (randomized benchmarking, 2024–25)</li>
-          <li><strong>Gate mechanism:</strong> Rydberg blockade CZ gate via two-photon (780+480 nm) excitation to |70S₁/₂⟩</li>
+          <li><strong>Gate mechanism:</strong> Rydberg blockade CZ gate via two-photon 420+1013 nm excitation to an nS Rydberg state (Evered et al. used |53S₁/₂⟩)</li>
           <li><strong>Gate speed:</strong> 0.5–2 μs per two-qubit gate (limited by Rabi frequency)</li>
           <li><strong>Key innovation:</strong> Optimal-control pulse shaping + atomic dark-state scattering suppression</li>
           <li><strong>Logical qubit demo:</strong> 48 logical qubits, fault-tolerant operations (Bluvstein 2024)</li>
@@ -874,7 +894,7 @@ Best: 1 − 99.5% = 0.5% total error budget
           <li><strong>Without post-selection:</strong> 99.40(3)%, still competitive with Rb87</li>
           <li><strong>Rydberg gate fidelity (F=1/2 Rydberg):</strong> 99.4(1)% (Ma et al. 2024), 3.3× improvement over earlier results</li>
           <li><strong>1Q gate fidelity:</strong> &gt;99.5% (Muniz 2025)</li>
-          <li><strong>Gate mechanism:</strong> Rydberg blockade via single UV photon (~302 nm) from ³P₀ (metastable) to Rydberg nP state</li>
+          <li><strong>Gate mechanism:</strong> Rydberg blockade via single UV photon (~302 nm) from ³P₀ (metastable) to a Rydberg ³S₁ state</li>
           <li><strong>Gate speed:</strong> ~1–5 μs per two-qubit gate (similar to Rb87)</li>
           <li><strong>Unique feature:</strong> Can encode qubit in both nuclear spin AND clock state (³P₀), dual encoding protocols</li>
           <li><strong>Array size for gate demos:</strong> 1180-qubit Atom Computing Phoenix; gate fidelity demos on smaller subsets</li>
@@ -889,7 +909,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
 
     <div class="insight">
       <strong>Gate fidelity status (2025):</strong> Both platforms now demonstrate or approach the surface-code
-      fault-tolerance threshold of 99.9% for two-qubit gates. Rb87 leads in <em>parallel</em> gate demonstrations
+      practical 99.9% two-qubit-gate target for scalable fault-tolerance. Rb87 leads in <em>parallel</em> gate demonstrations
       (60 simultaneous pairs at 99.5%), while Yb171 shows slightly higher per-pair fidelity (99.72% with post-selection).
       The error budget for Yb171 is expected to shrink further as the platform matures, given its structural
       noise advantages. The race to consistent 99.9%+ without post-selection is the key 2025–2027 target for both.
@@ -1199,9 +1219,9 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
             <td><span class="adv-rb">Rb</span></td>
           </tr>
           <tr>
-            <td>Rydberg UV laser</td>
-            <td class="rb-td win rb">480 nm (diode-pumped solid-state)</td>
-            <td class="yb-td">~302 nm UV (single photon from ³P₀); harder than Rb 480 nm diode</td>
+            <td>Rydberg excitation lasers</td>
+            <td class="rb-td win rb">420 nm + 1013 nm for Harvard/QuEra gates; 780 + 480 nm is a common alternative Rb route</td>
+            <td class="yb-td">~302 nm UV (single photon from ³P₀); harder than Rb blue/IR two-photon systems</td>
             <td><span class="adv-rb">Rb</span></td>
           </tr>
 
@@ -1331,7 +1351,7 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
       <div class="paper-card">
         <div class="paper-title">Rydberg excitation spectroscopy of ¹⁷¹Yb and improved Rydberg gate fidelity</div>
         <div class="paper-meta">Ma, Peper, Li, Knapp, Liu, Peng, Zhang, Horvath, Burgers, Thompson (Princeton), arXiv:2406.01482 (2024)</div>
-        <p class="paper-desc">CZ fidelity 99.4(1)% using F=1/2 Rydberg series (3.3× better than F=3/2). MQDT spectroscopy of ¹⁷¹Yb Rydberg states. Single-photon UV (~302 nm) excitation from ³P₀ to Rydberg nP levels. Thompson group, Princeton.</p>
+        <p class="paper-desc">CZ fidelity 99.4(1)% using F=1/2 Rydberg series (3.3× better than F=3/2). MQDT spectroscopy of ¹⁷¹Yb Rydberg states. Single-photon UV (~302 nm) excitation from ³P₀ to Rydberg states. Thompson group, Princeton.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2406.01482" target="_blank" rel="noopener">arXiv:2406.01482 ↗</a></p>
       </div>
       <div class="paper-card">
@@ -1587,7 +1607,7 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
           },
           {
             type: 'line',
-            label: 'Surface code threshold ~99.9%',
+            label: 'Practical target ~99.9%',
             data: data.map(() => 99.9),
             borderColor: '#ef4444', borderDash: [6,4], borderWidth: 1.5,
             pointRadius: 0, fill: false,

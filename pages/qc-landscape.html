@@ -543,7 +543,7 @@
         </div>
         <div class="concept-box">
           <div class="concept-box-label">🚧 The Gap</div>
-          <p>Surface codes need &lt;10⁻³ two-qubit error rates to operate below threshold — current best physical gate fidelity is ~99.9% (trapped ions, Quantinuum 2023). Breaking RSA-2048 still requires ~20 million physical qubits, roughly <strong>4–5 orders of magnitude</strong> beyond today's largest systems. Estimated timeline to cryptographically relevant QC: 2035–2040.</p>
+          <p>Useful surface-code architectures generally target &lt;10⁻³ two-qubit error rates, although threshold estimates are order 10⁻² for simple noise models — current best physical gate fidelity is ~99.9% (trapped ions, Quantinuum 2023). Breaking RSA-2048 still requires ~20 million physical qubits, roughly <strong>4–5 orders of magnitude</strong> beyond today's largest systems. Estimated timeline to cryptographically relevant QC: 2035–2040.</p>
         </div>
       </div>
     </section>
@@ -608,7 +608,7 @@
           <p>Programs decomposed into discrete unitary gates from a universal gate set, applied to qubits, then measured.
           Mathematically clean and compatible with quantum error correction.<br><br>
           <strong style="color:var(--text-secondary)">Cost:</strong> Error correction needs 100s–1000s of physical qubits per logical qubit.
-          Every gate must exceed the fault-tolerance threshold (~10⁻³ for surface codes).<br><br>
+          Every gate must be comfortably below the architecture target; practical roadmaps often aim for ~10⁻³ errors even when idealized thresholds are closer to ~10⁻².<br><br>
           <strong style="color:var(--text-secondary)">Who:</strong> IBM, Google, IonQ, Quantinuum, QuEra (Rydberg gates)</p>
         </div>
         <div class="plat-card">
@@ -669,7 +669,7 @@
           <p class="chart-caption">
             Best published 2-qubit gate fidelities. Superconducting: Google Willow / IBM Heron r2 (~99.5%).
             Trapped ions: Quantinuum H2 99.9% (arXiv:2305.03828). Neutral atoms: Evered et al., Harvard, <em>Nature</em> 2023 (99.5%).
-            Silicon spins: Mills et al. ²⁸Si, <em>Sci. Adv.</em> 2022 (99.8%). Red dashed line = surface code practical threshold ~99.9% (Fowler et al., <em>PRA</em> 2012).
+            Silicon spins: Mills et al. ²⁸Si, <em>Sci. Adv.</em> 2022 (99.8%). Red dashed line = practical high-fidelity target ~99.9% (Fowler et al., <em>PRA</em> 2012).
           </p>
         </div>
       </div>
@@ -1309,7 +1309,7 @@ State-of-art: $\langle n\rangle &lt; 0.05$ via resolved-sideband cooling on ¹�
       <div class="roadmap-item" style="background:#1c1007; border-left:4px solid #d97706;">
         <div style="flex:1;">
           <div class="ri-title" style="color:#fcd34d;">② Scale to 10,000+ Atoms</div>
-          <p class="ri-desc">Multiplexed AOD/SLM arrays + parallel imaging. Atom Computing demonstrated 1,180 loaded ¹⁷¹Yb atoms in 2023; Manetsch et al. reported 6,100 highly coherent ⁸⁷Rb atoms across 12,000 tweezer sites in 2025. The remaining challenge is not loading alone, but maintaining gate fidelity, coherence, transport, and low-loss readout across the full array.</p>
+          <p class="ri-desc">Multiplexed AOD/SLM arrays + parallel imaging. Atom Computing demonstrated 1,180 loaded ¹⁷¹Yb atoms in 2023; Manetsch et al. reported 6,100 highly coherent ¹³³Cs atoms across 12,000 tweezer sites in 2025. The remaining challenge is not loading alone, but maintaining gate fidelity, coherence, transport, and low-loss readout across the full array.</p>
         </div>
         <span class="ri-badge" style="background:#d9770622; color:#fcd34d; border:1px solid #d97706;">Near-term</span>
       </div>
@@ -1688,7 +1688,7 @@ State-of-art: $\langle n\rangle &lt; 0.05$ via resolved-sideband cooling on ¹�
             { type:'bar', label:'2Q Gate Fidelity (%)', data:pf.map(p=>p.val),
               backgroundColor:pf.map(p=>hexToRgba(p.color,0.75)),
               borderColor:pf.map(p=>p.color), borderWidth:1.5, borderRadius:4 },
-            { type:'line', label:'Surface code practical threshold ~99.9%',
+            { type:'line', label:'Practical target ~99.9%',
               data:pf.map(()=>99.9), borderColor:'#ef4444',
               borderDash:[6,4], borderWidth:2, pointRadius:0, fill:false }
           ]
@@ -1714,7 +1714,7 @@ State-of-art: $\langle n\rangle &lt; 0.05$ via resolved-sideband cooling on ¹�
       const PLAT = [
         { name:'Atom Comp.',  qubits:1180,  color:'#fb923c', note:'¹⁷¹Yb 1180 (loading)' },
         { name:'D-Wave',      qubits:7000,  color:'#e879f9', note:'Advantage2 ~7K annealers' },
-        { name:'QuEra (Na)',  qubits:256,   color:'#c4b5fd', note:'Aquila 256 atoms' },
+        { name:'QuEra (Rb)',  qubits:256,   color:'#c4b5fd', note:'Aquila 256 atoms' },
         { name:'Google (SC)', qubits:105,   color:'#34d399', note:'Willow 105Q (2024)' },
         { name:'IBM (SC)',    qubits:156,   color:'#60a5fa', note:'Heron r2 156Q (2024)' },
         { name:'Rigetti',     qubits:84,    color:'#38bdf8', note:'Ankaa-3 84Q' },
