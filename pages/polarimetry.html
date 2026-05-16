@@ -256,14 +256,44 @@
       --page-bg: rgba(232,121,249,0.06);
       --page-border: rgba(232,121,249,0.2);
     ">
-      <div class="container">
-        <div class="page-hero-eyebrow" style="background:rgba(232,121,249,0.08);border-color:rgba(232,121,249,0.2);color:var(--c-pol)">🔭 Build 06 · Polarimetry Simulator</div>
-        <h1>🔭 Polarimetry Simulator</h1>
-        <p class="page-hero-desc">
-          Interactive learning tool for optical polarimetry. Visualize any polarization state,
-          simulate the rotating-QWP measurement (Schaefer et al. 2007), extract Stokes parameters
-          via Fourier analysis, and understand why S₃ (circular) requires a QWP, not just an HWP.
-        </p>
+      <div class="container page-hero-2col">
+        <div class="page-hero-text">
+          <div class="page-hero-eyebrow" style="background:rgba(232,121,249,0.08);border-color:rgba(232,121,249,0.2);color:var(--c-pol)">🔭 Build 06 · Polarimetry Simulator</div>
+          <h1>🔭 Polarimetry Simulator</h1>
+          <p class="page-hero-desc">
+            Interactive learning tool for optical polarimetry. Visualize any polarization state,
+            simulate the rotating-QWP measurement (Schaefer et al. 2007), extract Stokes parameters
+            via Fourier analysis, and understand why S₃ (circular) requires a QWP, not just an HWP.
+          </p>
+        </div>
+        <div class="page-hero-anim" aria-hidden="true">
+          <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes po-rot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes po-ell{0%,100%{rx:55;ry:30}50%{rx:35;ry:45}}
+@keyframes po-vec{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.po-vec{transform-origin:150px 82px;animation:po-rot 3s linear infinite}
+.po-ell{animation:po-ell 6s ease-in-out infinite}
+</style>
+<!-- Propagation axis (z) -->
+<line x1="30" y1="82" x2="270" y2="82" stroke="#e879f9" stroke-width=".8" opacity=".3"/>
+<text x="265" y="78" font-size="8" fill="#e879f9" opacity=".5" font-family="monospace">z</text>
+<!-- Polarization ellipse -->
+<ellipse cx="150" cy="82" rx="55" ry="30" fill="none" stroke="#e879f9" stroke-width="1.5" opacity=".5" class="po-ell"/>
+<!-- E-field vector rotating -->
+<line x1="150" y1="82" x2="205" y2="82" stroke="#e879f9" stroke-width="2.5" class="po-vec" opacity=".9"/>
+<circle cx="205" cy="82" r="4.5" fill="#e879f9" class="po-vec" filter="url(#pof)"/>
+<!-- Stokes parameters box -->
+<text x="50" y="30" font-size="8" fill="#e879f9" opacity=".6" font-family="monospace">S₁ = cos2χ cos2ψ</text>
+<text x="50" y="42" font-size="8" fill="#e879f9" opacity=".45" font-family="monospace">S₂ = cos2χ sin2ψ</text>
+<text x="50" y="54" font-size="8" fill="#e879f9" opacity=".3" font-family="monospace">S₃ = sin2χ</text>
+<!-- Axis labels -->
+<text x="150" y="155" text-anchor="middle" font-size="8" fill="#e879f9" opacity=".6" font-family="monospace">elliptical polarization</text>
+<defs>
+  <filter id="pof"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+</svg>
+        </div>
       </div>
     </div>
 

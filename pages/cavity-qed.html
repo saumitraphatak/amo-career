@@ -143,16 +143,55 @@
   <main class="page-wrap" id="main-content">
 
     <div class="page-hero">
-      <div class="container">
-        <div class="page-hero-eyebrow" style="background:rgba(192,132,252,0.08);border-color:rgba(192,132,252,0.2);color:#c084fc">
-          💎 Build 08 · Cavity Coupling Calculator
+      <div class="container page-hero-2col">
+        <div class="page-hero-text">
+          <div class="page-hero-eyebrow" style="background:rgba(192,132,252,0.08);border-color:rgba(192,132,252,0.2);color:#c084fc">
+            💎 Build 08 · Cavity Coupling Calculator
+          </div>
+          <h1>Cavity Coupling Calculator</h1>
+          <p class="page-hero-desc">
+            Compute the single-photon vacuum Rabi coupling <em>g₀</em>, cavity decay rate <em>κ</em>,
+            single-atom cooperativity <em>C</em>, and Purcell factor for any atom–cavity system.
+            Identify the coupling regime: strong coupling, Purcell, or weak.
+          </p>
         </div>
-        <h1>Cavity Coupling Calculator</h1>
-        <p class="page-hero-desc">
-          Compute the single-photon vacuum Rabi coupling <em>g₀</em>, cavity decay rate <em>κ</em>,
-          single-atom cooperativity <em>C</em>, and Purcell factor for any atom–cavity system.
-          Identify the coupling regime: strong coupling, Purcell, or weak.
-        </p>
+        <div class="page-hero-anim" aria-hidden="true">
+          <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes cq-photon{0%{cx:70;opacity:1}49%{cx:230;opacity:1}50%{cx:230;opacity:0}51%{cx:70;opacity:0}100%{cx:70;opacity:0}}
+@keyframes cq-ph2{0%,50%{cx:230;opacity:0}51%{cx:230;opacity:1}99%{cx:70;opacity:1}100%{cx:70;opacity:0}}
+@keyframes cq-atom{0%,100%{r:7;opacity:.7}50%{r:9;opacity:1}}
+@keyframes cq-mode{0%,100%{opacity:.15}50%{opacity:.4}}
+.cq-atom{animation:cq-atom 1.4s ease-in-out infinite}
+.cq-mode{animation:cq-mode 0.9s ease-in-out infinite}
+</style>
+<!-- Cavity mirrors -->
+<rect x="30" y="40" width="18" height="85" rx="3" fill="rgba(192,132,252,0.15)" stroke="#c084fc" stroke-width="2" opacity=".85"/>
+<rect x="252" y="40" width="18" height="85" rx="3" fill="rgba(192,132,252,0.15)" stroke="#c084fc" stroke-width="2" opacity=".85"/>
+<text x="39" y="136" text-anchor="middle" font-size="7" fill="#c084fc" opacity=".6" font-family="monospace">M₁</text>
+<text x="261" y="136" text-anchor="middle" font-size="7" fill="#c084fc" opacity=".6" font-family="monospace">M₂</text>
+<!-- Standing wave modes inside cavity -->
+<path d="M48,82 Q80,55 112,82 Q144,109 176,82 Q208,55 240,82 Q252,90 252,82" fill="none" stroke="#c084fc" stroke-width="1" class="cq-mode"/>
+<path d="M48,82 Q80,109 112,82 Q144,55 176,82 Q208,109 240,82" fill="none" stroke="#c084fc" stroke-width=".8" class="cq-mode" style="animation-delay:-.45s" opacity=".6"/>
+<!-- Coupling atom -->
+<circle cx="150" cy="82" r="8" fill="#c084fc" class="cq-atom" filter="url(#cqf)"/>
+<circle cx="150" cy="82" r="4" fill="white" opacity=".7"/>
+<!-- Bouncing photon -->
+<circle cy="82" r="4.5" fill="#e9d5ff" filter="url(#cqf2)">
+  <animate attributeName="cx" values="70;230;70" dur="1.2s" repeatCount="indefinite" calcMode="linear"/>
+  <animate attributeName="opacity" values="1;1;1" dur="1.2s" repeatCount="indefinite"/>
+</circle>
+<!-- g, κ, γ labels -->
+<text x="150" y="25" text-anchor="middle" font-size="8" fill="#c084fc" opacity=".6" font-family="monospace">g / (κ, γ) coupling</text>
+<text x="150" y="152" text-anchor="middle" font-size="8" fill="#c084fc" opacity=".5" font-family="monospace">strong coupling regime</text>
+<!-- Finesse label -->
+<text x="150" y="38" text-anchor="middle" font-size="7" fill="#c084fc" opacity=".4" font-family="monospace">ℱ = π√R / (1-R)</text>
+<defs>
+  <filter id="cqf"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="cqf2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+</svg>
+        </div>
       </div>
     </div>
 
@@ -242,7 +281,7 @@
 
             <div class="field">
               <label>
-                <span class="tip" data-tip="Fraction of spontaneous emission coupled into cavity. 1 = perfect coupling (ideal two-mirror cavity with atom at antinode)">Coupling fraction <em>ξ</em></label>
+                <span class="tip" data-tip="Fraction of spontaneous emission coupled into cavity. 1 = perfect coupling (ideal two-mirror cavity with atom at antinode)">Coupling fraction <em>ξ</em></span>
               </label>
               <input type="number" id="cqed_xi" value="1" min="0.1" max="1" step="0.05" oninput="cqedCalc()">
               <div class="field-note">ξ = 1 at antinode, 0.5 for random position</div>

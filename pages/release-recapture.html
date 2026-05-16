@@ -146,15 +146,50 @@
 
 <div class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#fb923c;--page-bg:rgba(251,146,60,0.07);--page-border:rgba(251,146,60,0.2);">
-    <div class="container">
-      <div class="page-hero-eyebrow" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.2);color:#fb923c;">🎯 Trap, Image & Cool 02 · Single-atom Temperature</div>
-      <h1>
-        Single-atom <span class="grad-text" style="--ga: var(--c-rr); --gb: #fbbf24;">Temperature</span>
-      </h1>
-      <p class="page-hero-desc">
-        Monte Carlo thermometry for optical tweezers. Release atoms, let them fly ballistically under
-        gravity, then recapture, the survival curve encodes the temperature.
-      </p>
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.2);color:#fb923c;">🎯 Trap, Image & Cool 02 · Single-atom Temperature</div>
+        <h1>
+          Single-atom <span class="grad-text" style="--ga: var(--c-rr); --gb: #fbbf24;">Temperature</span>
+        </h1>
+        <p class="page-hero-desc">
+          Monte Carlo thermometry for optical tweezers. Release atoms, let them fly ballistically under
+          gravity, then recapture, the survival curve encodes the temperature.
+        </p>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes rr-atom{0%{cy:75;opacity:1}25%{cy:50;opacity:1}50%{cy:75;opacity:.3}75%{cy:50;opacity:1}100%{cy:75;opacity:1}}
+@keyframes rr-well{0%,40%{opacity:1}45%,70%{opacity:.15}75%,100%{opacity:1}}
+@keyframes rr-twz{0%,100%{opacity:.8}45%,70%{opacity:.1}}
+.rr-well{animation:rr-well 3s ease-in-out infinite}
+.rr-atom{animation:rr-atom 3s ease-in-out infinite}
+.rr-twz{animation:rr-twz 3s ease-in-out infinite}
+</style>
+<!-- Tweezer beam -->
+<path d="M150,10 L135,90 M150,10 L165,90" fill="none" stroke="#fb923c" stroke-width="1.5" class="rr-twz"/>
+<!-- Potential well -->
+<path d="M100,130 Q150,50 200,130" fill="none" stroke="#fb923c" stroke-width="2" class="rr-well"/>
+<path d="M100,130 Q150,50 200,130" fill="url(#rr-grad)" class="rr-well"/>
+<!-- Atom bouncing in well -->
+<circle cx="150" cy="75" r="8" fill="#fb923c" filter="url(#rrf)" class="rr-atom"/>
+<!-- Release label -->
+<text x="150" y="155" text-anchor="middle" font-size="8" fill="#fb923c" opacity=".6" font-family="monospace">trap → release → recapture</text>
+<!-- Time axis -->
+<line x1="30" y1="135" x2="270" y2="135" stroke="#fb923c" stroke-width=".6" opacity=".3"/>
+<text x="30" y="148" font-size="7" fill="#fb923c" opacity=".4" font-family="monospace">t=0</text>
+<text x="150" y="148" font-size="7" fill="#fb923c" opacity=".4" font-family="monospace">Δt</text>
+<text x="240" y="148" font-size="7" fill="#fb923c" opacity=".4" font-family="monospace">recapture</text>
+<defs>
+  <linearGradient id="rr-grad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fb923c" stop-opacity=".15"/>
+    <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+  </linearGradient>
+  <filter id="rrf"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+</svg>
+      </div>
     </div>
   </div>
 
