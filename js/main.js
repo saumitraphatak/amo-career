@@ -10,14 +10,14 @@
    ───────────────────────────────────────────────────── */
 const NAV = {
   build: [
-    { key: 'atom-library',   label: 'Atom Library',                kind: 'Reference', icon: '⚛️', color: '#38bdf8', href: 'pages/atom-library.html'   },
+    { key: 'atom-library',   label: 'Atomic Species Library',                kind: 'Reference', icon: '⚛️', color: '#38bdf8', href: 'pages/atom-library.html'   },
     { key: 'laser-planner',  label: 'Laser System Planner',        kind: 'Design tool', icon: '💡', color: '#f472b6', href: 'pages/laser-planner.html'  },
-    { key: 'mot-designer',   label: 'MOT & Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html'   },
-    { key: 'laser-locking',  label: 'Laser Stabilization Guide',   kind: 'Guide', icon: '🔐', color: '#f87171', href: 'pages/laser-locking.html'  },
-    { key: 'lab-techniques', label: 'Lab Setup & Techniques',      kind: 'Guide', icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
-    { key: 'polarimetry',    label: 'Polarization State Analyzer', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
-    { key: 'zernike',        label: 'Wavefront & Aberration Viewer', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
-    { key: 'cavity-qed',     label: 'Cavity QED Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
+    { key: 'mot-designer',   label: 'MOT & Magnetic Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html'   },
+    { key: 'laser-locking',  label: 'Laser Locking Guide',   kind: 'Guide', icon: '🔐', color: '#f87171', href: 'pages/laser-locking.html'  },
+    { key: 'lab-techniques', label: 'AMO Lab Techniques',      kind: 'Guide', icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
+    { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
+    { key: 'zernike',        label: 'Wavefront/Zernike Viewer', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
+    { key: 'cavity-qed',     label: 'Cavity Coupling Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
   ],
   measure: [
     { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },
@@ -30,17 +30,17 @@ const NAV = {
     { key: 'cooling-simulator', label: 'Free Space Cooling',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
   ],
   quantum: [
-    { key: 'learn-quantum',      label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
-    { key: 'rydberg-calculator', label: 'Rydberg States & Blockade',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
-    { key: 'fidelity-budget',    label: 'Two-Qubit Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html' },
-    { key: 'rb-explorer',        label: 'Gate Benchmarking (RB)',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html' },
-    { key: 'dd-playground',      label: 'Qubit Coherence & Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html' },
+    { key: 'learn-quantum',      label: 'Quantum Computing Basics',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
+    { key: 'rydberg-calculator', label: 'Rydberg Blockade Calculator',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
+    { key: 'fidelity-budget',    label: 'Rydberg Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html' },
+    { key: 'rb-explorer',        label: 'Randomized Benchmarking',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html' },
+    { key: 'dd-playground',      label: 'Dynamical Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html' },
   ],
   career: [
-    { key: 'amo-groups',     label: 'AMO Research Groups',        kind: 'Career map', icon: '🌍', color: '#4ade80', href: 'pages/amo-groups.html' },
-    { key: 'paper-syllabus', label: 'AMO Reading List',           kind: 'Syllabus', icon: '📚', color: '#818cf8', href: 'pages/paper-syllabus.html' },
-    { key: 'qc-landscape',   label: 'QC Industry Landscape',      kind: 'Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
-    { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Platform Comparison', kind: 'Deep dive', icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
+    { key: 'amo-groups',     label: 'AMO Group Finder',        kind: 'Career map', icon: '🌍', color: '#4ade80', href: 'pages/amo-groups.html' },
+    { key: 'paper-syllabus', label: 'AMO Paper Roadmap',           kind: 'Syllabus', icon: '📚', color: '#818cf8', href: 'pages/paper-syllabus.html' },
+    { key: 'qc-landscape',   label: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#a78bfa', href: 'pages/qc-landscape.html' },
+    { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#f59e0b', href: 'pages/rb87-vs-yb171.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
