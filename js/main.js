@@ -20,14 +20,14 @@ const NAV = {
     { key: 'cavity-qed',     label: 'Cavity QED Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
   ],
   measure: [
-    { key: 'imaging-calculator', label: 'Single-Atom Detection SNR',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },
-    { key: 'release-recapture',  label: 'Tweezer Thermometry (R&R)',  kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html'  },
-    { key: 'tof-calculator',     label: 'Atom Temperature (TOF)',     kind: 'Calculator', icon: '🌡️', color: '#38bdf8', href: 'pages/tof-calculator.html'     },
-    { key: 'lab-calculators',    label: 'Quick Lab Calculators',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
+    { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },
+    { key: 'release-recapture',  label: 'Single-atom Temperature',  kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html'  },
+    { key: 'tof-calculator',     label: 'MOT Temperature',     kind: 'Calculator', icon: '🌡️', color: '#38bdf8', href: 'pages/tof-calculator.html'     },
+    { key: 'lab-calculators',    label: 'Quick Lab Calculations',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
   ],
   cooling: [
-    { key: 'laser-cooling',      label: 'Trapped Atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
-    { key: 'cooling-simulator', label: 'Doppler Cooling Simulator',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
+    { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
+    { key: 'cooling-simulator', label: 'Free Space Cooling',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
   ],
   quantum: [
     { key: 'learn-quantum',      label: 'Learn Quantum',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
@@ -463,7 +463,7 @@ function getSearchEntries(root = '') {
 
   byHref.set('laser-cooling:overview', {
     key: 'laser-cooling',
-    title: 'Trapped Atom Cooling Guide',
+    title: 'Single-atom Cooling Guide',
     icon: '❄️',
     href: `${root}pages/laser-cooling.html`,
     color: '#60a5fa',

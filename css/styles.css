@@ -2129,3 +2129,177 @@ a.path-step:hover {
   .nav-links, .nav-right { display: none; }
   .nav-hamburger { display: flex; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   ATOM VISUALIZATIONS  (home.html hero)
+   ═══════════════════════════════════════════════════════════ */
+
+.hero-with-atoms {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-12);
+  align-items: center;
+}
+
+.hero-atoms {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  flex-shrink: 0;
+}
+
+.atom-box {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid color-mix(in srgb, var(--ac) 22%, transparent);
+  border-radius: 16px;
+  padding: var(--sp-4) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.atom-box:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: color-mix(in srgb, var(--ac) 50%, transparent);
+}
+
+.atom-box-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.atom-symbol {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ac);
+  letter-spacing: -0.02em;
+}
+
+.atom-name {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Stage: sets up 3D perspective context */
+.atom-stage {
+  position: relative;
+  width: var(--stage-sz);
+  height: var(--stage-sz);
+  perspective: 600px;
+}
+
+/* Nucleus */
+.atom-nucleus {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 14px; height: 14px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.55) 0%, var(--ac) 100%);
+  box-shadow:
+    0 0 0 4px rgba(255,255,255,0.05),
+    0 0 18px var(--ac),
+    0 0 36px color-mix(in srgb, var(--ac) 40%, transparent);
+  z-index: 3;
+}
+
+.atom-nucleus--heavy {
+  width: 20px; height: 20px;
+}
+
+/* Each orbit plane (one shell) — tilted via CSS 3D transforms */
+.atom-orbit-grp {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateZ(var(--rz));
+}
+
+/* Circular ring showing the orbit path */
+.orbit-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: calc(var(--r) * 2);
+  height: calc(var(--r) * 2);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-sizing: border-box;
+}
+
+/* Valence shell ring gets an accent glow */
+.orbit-ring--val {
+  border-color: color-mix(in srgb, var(--ac) 50%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ac) 18%, transparent);
+}
+
+/* Rotating arm: extends from nucleus center to orbital radius */
+.orbit-arm {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: var(--r);
+  height: 0;
+  transform-origin: 0 0;
+  animation: atom-spin var(--dur) linear infinite var(--dl);
+}
+
+@keyframes atom-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Electron dot at tip of rotating arm */
+.orbit-electron {
+  position: absolute;
+  right: -5px; top: -5px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), var(--ac));
+  box-shadow:
+    0 0 6px var(--ac),
+    0 0 12px color-mix(in srgb, var(--ac) 40%, transparent);
+}
+
+/* Valence electron: larger, pulsing glow */
+.orbit-electron--val {
+  width: 13px; height: 13px;
+  right: -6.5px; top: -6.5px;
+  box-shadow:
+    0 0 10px var(--ac),
+    0 0 24px var(--ac),
+    0 0 44px color-mix(in srgb, var(--ac) 55%, transparent);
+  animation: valence-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes valence-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--ac), 0 0 24px var(--ac),
+                0 0 44px color-mix(in srgb, var(--ac) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 16px var(--ac), 0 0 36px var(--ac),
+                0 0 64px color-mix(in srgb, var(--ac) 65%, transparent);
+  }
+}
+
+/* Electron configuration label (mono, accent-tinted) */
+.atom-config {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--ac);
+  opacity: 0.75;
+  letter-spacing: 0.02em;
+}
+
+/* Hide atom panel on screens narrower than 1100px */
+@media (max-width: 1100px) {
+  .hero-with-atoms {
+    grid-template-columns: 1fr;
+  }
+  .hero-atoms {
+    display: none;
+  }
+}
