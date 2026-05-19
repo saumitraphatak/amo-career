@@ -18,6 +18,7 @@ const NAV = {
     { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
     { key: 'zernike',        label: 'Wavefront/Zernike Viewer', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
     { key: 'cavity-qed',     label: 'Cavity Coupling Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
+    { key: 'vacuum-systems', label: 'Vacuum Systems Guide',            kind: 'Guide',      icon: '⚗️', color: '#22d3ee', href: 'pages/vacuum-systems.html' },
   ],
   measure: [
     { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },

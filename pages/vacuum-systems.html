@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vacuum Systems Guide, AMO Toolkit</title>
+  <meta name="description" content="Complete guide to ultra-high vacuum systems for AMO physics experiments: pressure regimes, pumping chains, bakeout protocols, materials, gauges, and leak detection.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/vacuum-systems.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Vacuum Systems Guide, AMO Toolkit">
+  <meta property="og:description" content="Complete guide to ultra-high vacuum systems for AMO physics: pumping chains, bakeout protocols, materials, gauges, and diagnostics.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/vacuum-systems.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Vacuum Systems">
+  <meta name="twitter:description" content="Ultra-high vacuum guide for AMO physics: pumping chains, bakeout, materials, and diagnostics.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Vacuum Systems Guide","description":"Complete guide to ultra-high vacuum systems for AMO physics experiments.","url":"https://amotoolkit.com/pages/vacuum-systems.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=10">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+  <style>
+    /* ── Vacuum page accent ── */
+    :root { --vac: #22d3ee; --vac-bg: rgba(34,211,238,0.07); --vac-border: rgba(34,211,238,0.22); }
+
+    .section-title {
+      font-size: 1.35rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .2rem 0;
+      border-left: 3px solid var(--vac); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .87rem; margin: 0 0 1.4rem .85rem; }
+    .section-block { margin-bottom: 3.2rem; }
+
+    /* Theory/concept boxes */
+    .theory-box {
+      background: var(--bg-card); border: 1px solid #0e2933;
+      border-left: 4px solid var(--vac); border-radius: 10px;
+      padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--vac); margin: 0 0 .55rem 0; }
+    .theory-box p  { font-size: .875rem; color: var(--text-secondary); line-height: 1.72; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+
+    /* Highlight / info / warn / good */
+    .info-banner { background: #071419; border: 1px solid #0e3040; border-radius: 8px;
+      padding: .65rem 1.1rem; margin: .7rem 0; color: #7dd3fc; font-size: .855rem; line-height: 1.65; }
+    .good-banner { background: #052e16; border: 1px solid #166534; border-radius: 8px;
+      padding: .65rem 1.1rem; margin: .7rem 0; color: #86efac; font-size: .855rem; line-height: 1.65; }
+    .warn-banner { background: #1c1202; border: 1px solid #78350f; border-radius: 8px;
+      padding: .65rem 1.1rem; margin: .7rem 0; color: #fcd34d; font-size: .855rem; line-height: 1.65; }
+    .danger-banner { background: #1c0505; border: 1px solid #7f1d1d; border-radius: 8px;
+      padding: .65rem 1.1rem; margin: .7rem 0; color: #fca5a5; font-size: .855rem; line-height: 1.65; }
+
+    /* Formula */
+    .formula-box {
+      background: #050d10; border: 1px solid #0e3040; border-radius: 8px;
+      padding: .85rem 1.2rem; margin: .75rem 0;
+    }
+
+    /* Grid layouts */
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media(max-width: 820px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    /* Stat cards */
+    .stat-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem;
+      margin: 1.5rem 0 2rem 0;
+    }
+    @media(max-width: 700px) { .stat-strip { grid-template-columns: 1fr 1fr; } }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--vac-border);
+      border-radius: 10px; padding: .85rem 1rem; text-align: center;
+    }
+    .stat-card .s-val { font-size: 1.15rem; font-weight: 800; color: var(--vac); font-family: var(--font-mono); }
+    .stat-card .s-lbl { font-size: .72rem; color: var(--text-muted); margin-top: .25rem; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Pressure regime table */
+    .regime-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .75rem; }
+    .regime-table th {
+      background: #051014; color: var(--text-muted); font-weight: 600;
+      padding: .6rem .9rem; border-bottom: 1px solid #0e2933; text-align: left; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .regime-table td { padding: .55rem .9rem; border-bottom: 1px solid #050d12; color: var(--text-secondary); vertical-align: middle; }
+    .regime-table tr:hover td { background: #070f14; }
+    .regime-badge {
+      display: inline-block; padding: .2rem .55rem; border-radius: 4px;
+      font-size: .72rem; font-weight: 700; font-family: var(--font-mono);
+    }
+
+    /* Interactive pressure explorer */
+    .explorer-card {
+      background: var(--bg-card); border: 1px solid var(--vac-border);
+      border-radius: 12px; padding: 1.4rem; margin: 1rem 0;
+    }
+    .explorer-card h4 { font-size: .9rem; font-weight: 700; color: var(--vac); margin: 0 0 1rem 0; }
+    .pressure-slider-wrap {
+      position: relative; margin: .5rem 0 1.2rem 0;
+    }
+    .pressure-slider {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 6px; border-radius: 4px; outline: none;
+      background: linear-gradient(to right, #7f1d1d, #b45309, #166534, #0e7490, #1e3a8a);
+      cursor: pointer;
+    }
+    .pressure-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--vac); box-shadow: 0 0 8px rgba(34,211,238,0.6); cursor: pointer;
+    }
+    .pressure-slider::-moz-range-thumb {
+      width: 20px; height: 20px; border-radius: 50%; border: none;
+      background: var(--vac); box-shadow: 0 0 8px rgba(34,211,238,0.6); cursor: pointer;
+    }
+    .slider-labels {
+      display: flex; justify-content: space-between;
+      font-size: .7rem; color: var(--text-muted); margin-top: .4rem; font-family: var(--font-mono);
+    }
+    .readout-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr) 1fr; gap: .6rem; margin-top: 1rem;
+    }
+    @media(max-width: 700px) { .readout-grid { grid-template-columns: 1fr 1fr; } }
+    .readout-card {
+      background: #040c10; border: 1px solid #0e2933; border-radius: 8px; padding: .7rem .9rem;
+    }
+    .readout-card .r-label { font-size: .68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+    .readout-card .r-value { font-size: 1rem; font-weight: 700; color: var(--vac); font-family: var(--font-mono); }
+    .readout-card .r-sub   { font-size: .68rem; color: var(--text-muted); margin-top: .1rem; }
+    .regime-label-display {
+      text-align: center; font-size: 1rem; font-weight: 800; letter-spacing: .06em;
+      padding: .5rem; margin-top: .75rem; border-radius: 6px; transition: all .3s;
+    }
+    #mol-canvas {
+      width: 100%; height: 100px; background: #030a0e; border-radius: 8px;
+      border: 1px solid #0e2933; display: block; margin-top: .75rem;
+    }
+
+    /* Pump chain diagram */
+    .pump-chain-wrap {
+      background: var(--bg-card); border: 1px solid var(--vac-border);
+      border-radius: 12px; padding: 1.4rem; margin: 1rem 0; overflow: hidden;
+    }
+
+    /* Pump accordion cards */
+    .pump-card {
+      background: #060d12; border: 1px solid #0e2933;
+      border-radius: 10px; margin: .6rem 0; overflow: hidden;
+    }
+    .pump-card-head {
+      display: flex; align-items: center; gap: .9rem;
+      padding: .9rem 1.1rem; cursor: pointer; user-select: none;
+      transition: background .2s;
+    }
+    .pump-card-head:hover { background: #07131a; }
+    .pump-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .pump-card-meta { flex: 1; min-width: 0; }
+    .pump-card-meta strong { color: var(--text-primary); font-size: .9rem; display: block; }
+    .pump-card-meta span  { color: var(--text-muted); font-size: .78rem; font-family: var(--font-mono); }
+    .pump-range-badge {
+      background: rgba(34,211,238,.12); color: var(--vac); border: 1px solid var(--vac-border);
+      padding: .2rem .6rem; border-radius: 4px; font-size: .72rem; font-weight: 700; font-family: var(--font-mono); white-space: nowrap; flex-shrink: 0;
+    }
+    .pump-chevron { color: var(--text-muted); transition: transform .25s; flex-shrink: 0; }
+    .pump-card.open .pump-chevron { transform: rotate(180deg); }
+    .pump-card-body { display: none; padding: 0 1.1rem 1rem 1.1rem; border-top: 1px solid #0e2933; }
+    .pump-card.open .pump-card-body { display: block; }
+    .pump-card-body p { font-size: .855rem; color: var(--text-secondary); line-height: 1.72; margin: .75rem 0 .5rem 0; }
+    .pump-card-body ul { padding-left: 1.2rem; margin: 0 0 .5rem 0; }
+    .pump-card-body li { font-size: .845rem; color: var(--text-secondary); line-height: 1.75; }
+    .pump-specs {
+      display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .7rem;
+    }
+    .pump-spec-pill {
+      background: #040c10; border: 1px solid #0e2933; border-radius: 4px;
+      padding: .2rem .55rem; font-size: .73rem; color: var(--text-muted); font-family: var(--font-mono);
+    }
+    .pump-spec-pill strong { color: var(--vac); }
+
+    /* Bakeout section */
+    .bakeout-wrap {
+      display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-top: 1rem; align-items: start;
+    }
+    @media(max-width: 750px) { .bakeout-wrap { grid-template-columns: 1fr; } }
+    #bakeout-svg { width: 100%; }
+
+    /* Checklist */
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li {
+      display: flex; gap: .75rem; align-items: flex-start;
+      padding: .6rem .8rem; border-bottom: 1px solid #050d12;
+      font-size: .855rem; color: var(--text-secondary); line-height: 1.65;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .cl-num {
+      flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+      background: var(--vac-bg); border: 1px solid var(--vac-border);
+      color: var(--vac); font-size: .72rem; font-weight: 700; font-family: var(--font-mono);
+      display: flex; align-items: center; justify-content: center; margin-top: .05rem;
+    }
+    .cl-phase {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+      padding: .15rem .45rem; border-radius: 3px; margin-left: .4rem; flex-shrink: 0; margin-top: .2rem;
+    }
+
+    /* General data table */
+    .data-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .data-table th {
+      background: #040c10; color: var(--text-muted); font-weight: 600; font-size: .76rem;
+      text-transform: uppercase; letter-spacing: .04em;
+      padding: .6rem .9rem; border-bottom: 1px solid #0e2933; text-align: left;
+    }
+    .data-table td { padding: .55rem .9rem; border-bottom: 1px solid #050d12; color: var(--text-secondary); vertical-align: top; }
+    .data-table tr:hover td { background: #060e14; }
+    .data-table code { font-family: var(--font-mono); font-size: .8rem; color: var(--vac); }
+
+    /* History timeline */
+    .history-line { display: flex; flex-direction: column; gap: 0; margin: 1rem 0 1.5rem 0; }
+    .hist-item {
+      display: flex; gap: 1rem; position: relative; padding-bottom: 1rem;
+    }
+    .hist-item::before {
+      content: ''; position: absolute; left: 38px; top: 28px; bottom: 0;
+      width: 1px; background: #0e2933;
+    }
+    .hist-item:last-child::before { display: none; }
+    .hist-year {
+      flex-shrink: 0; width: 72px; text-align: right;
+      font-size: .8rem; font-weight: 700; color: var(--vac); font-family: var(--font-mono);
+      padding-top: .15rem;
+    }
+    .hist-dot {
+      flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--vac); margin-top: .25rem; box-shadow: 0 0 8px rgba(34,211,238,.5);
+    }
+    .hist-text { font-size: .855rem; color: var(--text-secondary); line-height: 1.65; padding-top: 0; }
+    .hist-text strong { color: var(--text-primary); }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<div class="page-wrap" id="main-content">
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <div class="page-hero" style="--page-color:#22d3ee;--page-bg:rgba(34,211,238,0.06);--page-border:rgba(34,211,238,0.2);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee;">⚗️ Build 09 · Vacuum Systems Guide</div>
+        <h1>
+          Ultra-High <span class="grad-text" style="--ga:#22d3ee;--gb:#818cf8;">Vacuum</span>
+        </h1>
+        <p class="page-hero-desc">
+          Before you trap a single atom, you must first remove 10<sup>23</sup> of them.
+          The vacuum system is the silent foundation of every AMO experiment —
+          invisible, yet its failure destroys everything above it in minutes.
+        </p>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="gv"><feGaussianBlur stdDeviation="2.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <linearGradient id="ch-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#22d3ee" stop-opacity=".12"/>
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity=".02"/>
+            </linearGradient>
+          </defs>
+          <!-- CF flange top -->
+          <rect x="18" y="8" width="164" height="7" rx="3" fill="rgba(34,211,238,.18)" stroke="#22d3ee" stroke-width="1"/>
+          <!-- Chamber body -->
+          <rect x="24" y="15" width="152" height="100" rx="8" fill="url(#ch-g)" stroke="#22d3ee" stroke-width="1.5" opacity=".85"/>
+          <!-- Chamber ribs (aesthetic) -->
+          <line x1="24" y1="38" x2="176" y2="38" stroke="#22d3ee" stroke-width=".4" opacity=".25"/>
+          <line x1="24" y1="62" x2="176" y2="62" stroke="#22d3ee" stroke-width=".4" opacity=".25"/>
+          <line x1="24" y1="92" x2="176" y2="92" stroke="#22d3ee" stroke-width=".4" opacity=".25"/>
+          <!-- CF flange bottom -->
+          <rect x="18" y="115" width="164" height="7" rx="3" fill="rgba(34,211,238,.18)" stroke="#22d3ee" stroke-width="1"/>
+          <!-- Viewport window (circle on left side) -->
+          <circle cx="24" cy="65" r="10" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="1" opacity=".6"/>
+          <line x1="14" y1="65" x2="20" y2="65" stroke="#22d3ee" stroke-width="1" opacity=".6"/>
+          <!-- Pump port -->
+          <rect x="88" y="122" width="24" height="8" fill="rgba(34,211,238,.3)" stroke="#22d3ee" stroke-width="1"/>
+          <!-- Tube to turbo -->
+          <line x1="100" y1="130" x2="100" y2="140" stroke="#22d3ee" stroke-width="3" opacity=".6"/>
+          <!-- Turbo pump -->
+          <rect x="72" y="140" width="56" height="18" rx="4" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width="1.3"/>
+          <!-- Spinning blades -->
+          <g>
+            <line x1="100" y1="142" x2="100" y2="156" stroke="#22d3ee" stroke-width="1.2" opacity=".8">
+              <animateTransform attributeName="transform" type="rotate" from="0 100 149" to="360 100 149" dur="0.4s" repeatCount="indefinite"/>
+            </line>
+            <line x1="93" y1="149" x2="107" y2="149" stroke="#22d3ee" stroke-width="1.2" opacity=".8">
+              <animateTransform attributeName="transform" type="rotate" from="0 100 149" to="360 100 149" dur="0.4s" repeatCount="indefinite"/>
+            </line>
+          </g>
+          <text x="100" y="163" text-anchor="middle" fill="#22d3ee" font-size="5.5" font-family="monospace" opacity=".55">TURBO PUMP</text>
+
+          <!-- Gas molecules: 9 molecules, random thermal motion, fade out with phase offsets -->
+          <!-- Mol 1 -->
+          <circle r="3.5" fill="#22d3ee" filter="url(#gv)">
+            <animate attributeName="cx" values="55;90;70;45;55" dur="2.1s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="35;55;80;45;35" dur="2.1s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="1;1;1;1;.7;0" begin="0s" dur="10s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 2 -->
+          <circle r="3" fill="#67e8f9" filter="url(#gv)">
+            <animate attributeName="cx" values="130;100;145;120;130" dur="1.8s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="45;70;55;85;45" dur="1.8s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;0;1;1;1;.5;0" begin="1.5s" dur="10s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 3 -->
+          <circle r="3" fill="#22d3ee" filter="url(#gv)">
+            <animate attributeName="cx" values="75;110;95;65;75" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="70;50;100;75;70" dur="2.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;.8;.8;.8;0;0" begin="2s" dur="11s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 4 (drifts to pump port) -->
+          <circle r="3" fill="#a5f3fc" filter="url(#gv)">
+            <animate attributeName="cx" values="140;120;105;100;100" dur="3.5s" begin="0s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="60;75;90;108;130" dur="3.5s" begin="0s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="1;1;1;.7;0" begin="0s" dur="3.5s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 5 -->
+          <circle r="3.5" fill="#22d3ee" filter="url(#gv)">
+            <animate attributeName="cx" values="60;45;80;55;60" dur="1.9s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="90;65;55;95;90" dur="1.9s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;0;0;1;1;.4;0" begin="3s" dur="10s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 6 -->
+          <circle r="2.5" fill="#67e8f9" filter="url(#gv)">
+            <animate attributeName="cx" values="155;130;160;145;155" dur="2.3s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="80;95;70;100;80" dur="2.3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;0;.9;.9;.2;0" begin="4s" dur="12s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 7 (drifts to pump) -->
+          <circle r="2.5" fill="#22d3ee" filter="url(#gv)">
+            <animate attributeName="cx" values="80;90;100;100" dur="2s" begin="5s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="50;75;100;135" dur="2s" begin="5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values=".8;.8;.7;0" begin="5s" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Mol 8 -->
+          <circle r="3" fill="#a5f3fc" filter="url(#gv)">
+            <animate attributeName="cx" values="115;140;125;110;115" dur="2.7s" repeatCount="indefinite"/>
+            <animate attributeName="cy" values="30;50;40;25;30" dur="2.7s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;0;0;0;.8;.8;0" begin="6s" dur="13s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Pressure display box -->
+          <rect x="192" y="18" width="100" height="80" rx="7" fill="rgba(2,10,14,.85)" stroke="rgba(34,211,238,.3)" stroke-width="1"/>
+          <text x="242" y="35" text-anchor="middle" fill="#64748b" font-size="6" font-family="monospace">PRESSURE</text>
+          <text x="242" y="55" text-anchor="middle" fill="#22d3ee" font-size="17" font-weight="bold" font-family="monospace">10⁻¹⁰</text>
+          <text x="242" y="68" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-family="monospace">mbar</text>
+          <text x="242" y="84" text-anchor="middle" fill="#4ade80" font-size="7.5" font-family="monospace" font-weight="700">✓ UHV</text>
+
+          <!-- Number density label -->
+          <text x="100" y="109" text-anchor="middle" fill="#22d3ee" font-size="6" font-family="monospace" opacity=".35">n ≈ 2.4×10⁶ /cm³</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="container">
+
+      <!-- ══ QUICK STATS ══ -->
+      <div class="stat-strip anim-in">
+        <div class="stat-card">
+          <div class="s-val">10⁻¹⁰</div>
+          <div class="s-lbl">Target pressure (mbar)</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-val">2.7×10⁶</div>
+          <div class="s-lbl">Molecules/cm³ at UHV</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-val">~500 km</div>
+          <div class="s-lbl">Mean free path at UHV</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-val">~1000 s</div>
+          <div class="s-lbl">Atom lifetime at 10⁻¹⁰ mbar</div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 01 — WHY VACUUM?
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">01</span> Why Vacuum?</h2>
+        <p class="section-sub">The physics of the invisible enemy — and 400 years of fighting it</p>
+
+        <div class="theory-box">
+          <h4>The fundamental problem: background gas collisions</h4>
+          <p>
+            A laser-cooled atom or molecule confined in an optical tweezer is cold — maybe 5 μK — but the residual gas
+            in your chamber is at room temperature (~300 K). When a hot N₂ molecule (moving at ~470 m/s)
+            collides with your precious cold atom, the energy transfer easily exceeds the trap depth, and the atom is
+            ejected in microseconds. The collision rate per trapped atom is:
+          </p>
+          <p>
+            $$\Gamma_{\rm bg} = n_{\rm bg}\,\sigma_{\rm eff}\,\bar{v} \qquad \Rightarrow \qquad \tau_{\rm trap} = \frac{1}{\Gamma_{\rm bg}} = \frac{k_BT}{P\,\sigma_{\rm eff}\,\bar{v}}$$
+          </p>
+          <p>
+            where $n_{\rm bg} = P/k_BT$ is the background number density, $\sigma_{\rm eff} \approx 5 \times 10^{-15}$ cm²
+            is the effective loss cross-section for a hot atom on a cold atom, and $\bar{v} \approx 470$ m/s
+            for N₂. At $P = 10^{-8}$ mbar the trap lifetime is only ~10 s. At $10^{-10}$ mbar it reaches
+            ~1000 s — long enough for a multi-hour experiment.
+          </p>
+        </div>
+
+        <div class="two-col" style="margin-top:1rem">
+          <div>
+            <h3 style="font-size:.95rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">A very brief history</h3>
+            <div class="history-line">
+              <div class="hist-item">
+                <div class="hist-year">1643</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>Torricelli</strong> inverts a mercury-filled tube into a dish — the mercury column falls to 76 cm, and the empty space above it is the first reproducible vacuum. "Nature does not abhor a vacuum," he concludes: it weighs about one kilogram per cm².</div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-year">1654</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>Otto von Guericke</strong> evacuates two bronze hemispheres (30 cm diameter) with his newly invented piston pump. Two teams of eight horses cannot pull them apart — a performance staged for Emperor Ferdinand III. Atmospheric pressure is ~10⁵ N/m². The Magdeburg hemispheres remain the most theatrical experiment in physics.</div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-year">1855</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>Geissler</strong> invents the mercury displacement pump, reaching ~10⁻¹ mbar — enough for glowing gas discharge tubes and, eventually, neon signs.</div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-year">1879</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>Edison's lightbulb</strong> requires 10⁻⁴ mbar to keep the carbon filament from oxidising. A functioning vacuum system was the literal prerequisite for electric light.</div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-year">1895–97</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>Röntgen</strong> discovers X-rays and <strong>J. J. Thomson</strong> discovers the electron — both inside vacuum tubes. The two defining discoveries of modern physics happened in evacuated glass vessels.</div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-year">1960s</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>Turbomolecular and ion pumps</strong> developed for particle accelerators (CERN, Brookhaven) push the frontier to 10⁻¹¹ mbar. UHV becomes routine in surface science.</div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-year">1990s–</div>
+                <div class="hist-dot"></div>
+                <div class="hist-text"><strong>AMO physics</strong> adopts UHV as standard. BEC (Cornell & Wieman, 1995), optical tweezers, and Rydberg arrays all live at 10⁻¹⁰–10⁻¹¹ mbar.</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="theory-box" style="margin-bottom:.8rem">
+              <h4>Trap lifetime vs pressure</h4>
+              <p>The difference between 10⁻⁸ mbar and 10⁻¹⁰ mbar is 100× in pressure — and 100× in atom lifetime. Most experiments need <em>at least</em> several minutes of trap lifetime to run a meaningful protocol, so UHV is non-negotiable.</p>
+              <div style="margin-top:.7rem">
+                <svg viewBox="0 0 240 130" width="100%" style="display:block">
+                  <defs>
+                    <linearGradient id="lt-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#f87171"/>
+                      <stop offset="100%" stop-color="#22d3ee"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Grid lines -->
+                  <line x1="45" y1="10" x2="45" y2="110" stroke="#0e2933" stroke-width="1"/>
+                  <line x1="45" y1="110" x2="230" y2="110" stroke="#0e2933" stroke-width="1"/>
+                  <!-- Y labels (log10 τ) -->
+                  <text x="40" y="14" text-anchor="end" fill="#475569" font-size="7" font-family="monospace">10⁵s</text>
+                  <text x="40" y="39" text-anchor="end" fill="#475569" font-size="7" font-family="monospace">10⁴s</text>
+                  <text x="40" y="64" text-anchor="end" fill="#475569" font-size="7" font-family="monospace">10³s</text>
+                  <text x="40" y="89" text-anchor="end" fill="#475569" font-size="7" font-family="monospace">10²s</text>
+                  <text x="40" y="114" text-anchor="end" fill="#475569" font-size="7" font-family="monospace">10s</text>
+                  <!-- X labels (log10 P/mbar) -->
+                  <text x="50" y="122" fill="#475569" font-size="6.5" font-family="monospace">-11</text>
+                  <text x="89" y="122" fill="#475569" font-size="6.5" font-family="monospace">-10</text>
+                  <text x="128" y="122" fill="#475569" font-size="6.5" font-family="monospace">-9</text>
+                  <text x="167" y="122" fill="#475569" font-size="6.5" font-family="monospace">-8</text>
+                  <text x="206" y="122" fill="#475569" font-size="6.5" font-family="monospace">-7</text>
+                  <text x="120" y="130" text-anchor="middle" fill="#475569" font-size="6.5" font-family="monospace">log₁₀(P / mbar)</text>
+                  <!-- τ ∝ 1/P line: slope = -1 on log-log; x goes 50→220 (Δ=170 for 4 decades), y goes from top to 110 -->
+                  <!-- τ(10⁻¹¹) = 10⁵s → y=14; τ(10⁻⁷) = 10s → y=110 -->
+                  <!-- Each decade: Δy=24, Δx=39 -->
+                  <line x1="50" y1="13" x2="220" y2="109" stroke="url(#lt-grad)" stroke-width="2.5"/>
+                  <!-- Markers -->
+                  <circle cx="89" cy="36" r="4" fill="#22d3ee" opacity=".9"/>
+                  <text x="93" y="33" fill="#22d3ee" font-size="7" font-family="monospace">~1000 s</text>
+                  <circle cx="167" cy="84" r="4" fill="#fb923c" opacity=".9"/>
+                  <text x="171" y="81" fill="#fb923c" font-size="7" font-family="monospace">~10 s</text>
+                  <!-- Dashed UHV threshold -->
+                  <line x1="89" y1="10" x2="89" y2="110" stroke="#22d3ee" stroke-width=".8" stroke-dasharray="3,2" opacity=".4"/>
+                  <text x="90" y="108" fill="#22d3ee" font-size="6" font-family="monospace" opacity=".6">UHV</text>
+                </svg>
+              </div>
+            </div>
+            <div class="info-banner">
+              💡 <strong>Rule of thumb:</strong> Every decade of pressure improvement multiplies your atom lifetime by 10. Going from 10⁻⁸ to 10⁻¹⁰ mbar turns a 10-second lifetime into a 1000-second one.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 02 — PRESSURE LANDSCAPE
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">02</span> The Pressure Landscape</h2>
+        <p class="section-sub">Drag the slider to explore number densities, mean free paths, and what lives at each pressure</p>
+
+        <div class="explorer-card">
+          <h4>Interactive Pressure Explorer</h4>
+          <div class="pressure-slider-wrap">
+            <input type="range" class="pressure-slider" id="pslider" min="-12" max="5" step="0.05" value="-10">
+            <div class="slider-labels">
+              <span>XHV 10⁻¹²</span>
+              <span>UHV 10⁻⁹</span>
+              <span>HV 10⁻⁵</span>
+              <span>Atm 10⁵</span>
+            </div>
+          </div>
+          <canvas id="mol-canvas" height="100"></canvas>
+          <div class="regime-label-display" id="regime-label">Ultra-High Vacuum</div>
+          <div class="readout-grid">
+            <div class="readout-card">
+              <div class="r-label">Pressure</div>
+              <div class="r-value" id="disp-mbar">10⁻¹⁰ mbar</div>
+              <div class="r-sub" id="disp-pa">10⁻⁸ Pa</div>
+              <div class="r-sub" id="disp-torr">7.5×10⁻¹¹ Torr</div>
+            </div>
+            <div class="readout-card">
+              <div class="r-label">Number density</div>
+              <div class="r-value" id="disp-density">2.4×10⁶</div>
+              <div class="r-sub">molecules / cm³</div>
+            </div>
+            <div class="readout-card">
+              <div class="r-label">Mean free path</div>
+              <div class="r-value" id="disp-mfp">~500 km</div>
+              <div class="r-sub">for N₂ at 293 K</div>
+            </div>
+            <div class="readout-card">
+              <div class="r-label">Atom lifetime</div>
+              <div class="r-value" id="disp-tau">~1000 s</div>
+              <div class="r-sub">background-gas limited</div>
+            </div>
+          </div>
+        </div>
+
+        <table class="regime-table" style="margin-top:1.5rem">
+          <thead>
+            <tr>
+              <th>Regime</th>
+              <th>Pressure range (mbar)</th>
+              <th>n (cm⁻³)</th>
+              <th>Mean free path</th>
+              <th>Example applications</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="regime-badge" style="background:#7f1d1d20;color:#f87171;border-color:#7f1d1d">Atmosphere</span></td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">~10³</td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">2.7×10¹⁹</td>
+              <td>~68 nm</td>
+              <td>Ambient lab air</td>
+            </tr>
+            <tr>
+              <td><span class="regime-badge" style="background:#7c2d1220;color:#fb923c;border-color:#7c2d12">Low Vacuum</span></td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10³ – 1</td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10¹⁹ – 10¹⁶</td>
+              <td>nm – μm</td>
+              <td>Rough pumping, CVD</td>
+            </tr>
+            <tr>
+              <td><span class="regime-badge" style="background:#71350020;color:#fbbf24;border-color:#713500">Medium Vacuum</span></td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">1 – 10⁻³</td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10¹⁶ – 10¹³</td>
+              <td>μm – mm</td>
+              <td>Freeze-drying, vacuum ovens</td>
+            </tr>
+            <tr>
+              <td><span class="regime-badge" style="background:#14532d20;color:#34d399;border-color:#14532d">High Vacuum</span></td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10⁻³ – 10⁻⁶</td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10¹³ – 10¹⁰</td>
+              <td>mm – km</td>
+              <td>Thin-film deposition, SEMs</td>
+            </tr>
+            <tr>
+              <td><span class="regime-badge" style="background:#0e293320;color:#22d3ee;border-color:#0e5068">Ultra-High Vacuum</span></td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10⁻⁶ – 10⁻⁹</td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">10¹⁰ – 10⁷</td>
+              <td>10 – 10⁴ km</td>
+              <td>MOTs, surface science, particle accelerators</td>
+            </tr>
+            <tr>
+              <td><span class="regime-badge" style="background:#1e1b4b20;color:#818cf8;border-color:#1e1b4b">XHV / AMO</span></td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">&lt; 10⁻⁹</td>
+              <td style="font-family:var(--font-mono);font-size:.8rem">&lt; 10⁷</td>
+              <td>&gt; 10⁴ km</td>
+              <td>Optical tweezers, BEC, Rydberg arrays</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="formula-box" style="margin-top:1rem">
+          $$\lambda = \frac{k_B T}{\sqrt{2}\,\pi\,d^2\,P}$$
+          <p style="font-size:.8rem;color:var(--text-muted);margin:.4rem 0 0 0;">Mean free path for N₂ ($d \approx 3.7$ Å, $T = 293$ K). At $10^{-10}$ mbar: $\lambda \approx 500$ km — longer than the flight from Purdue to New York.</p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 03 — THE PUMPING CHAIN
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">03</span> The Pumping Chain</h2>
+        <p class="section-sub">No single pump spans 15 decades of pressure — you need a staged cascade</p>
+
+        <!-- Animated chain diagram -->
+        <div class="pump-chain-wrap">
+          <svg viewBox="0 0 680 200" width="100%" id="pump-chain-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+                <path d="M0,0 L7,3.5 L0,7 Z" fill="#22d3ee" opacity=".7"/>
+              </marker>
+              <filter id="glow2"><feGaussianBlur stdDeviation="2" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+
+            <!-- Chamber (center) -->
+            <rect x="265" y="60" width="150" height="80" rx="8" fill="rgba(34,211,238,.08)" stroke="#22d3ee" stroke-width="2"/>
+            <text x="340" y="92" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="700" font-family="monospace">CHAMBER</text>
+            <text x="340" y="106" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">10⁻¹⁰ mbar</text>
+            <text x="340" y="118" text-anchor="middle" fill="#64748b" font-size="7.5" font-family="monospace">~2.4×10⁶/cm³</text>
+
+            <!-- Ion pump (left of chamber) -->
+            <rect x="60" y="65" width="130" height="70" rx="6" fill="rgba(129,140,248,.08)" stroke="#818cf8" stroke-width="1.5"/>
+            <text x="125" y="92" text-anchor="middle" fill="#818cf8" font-size="9" font-weight="700" font-family="monospace">ION PUMP</text>
+            <text x="125" y="105" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">10⁻⁵→10⁻¹¹ mbar</text>
+            <text x="125" y="118" text-anchor="middle" fill="#64748b" font-size="7.5" font-family="monospace">no exhaust</text>
+
+            <!-- Arrow: chamber → ion pump -->
+            <line x1="265" y1="100" x2="193" y2="100" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)" opacity=".7"/>
+            <!-- Animated gas particle moving left -->
+            <circle r="2.5" fill="#22d3ee" filter="url(#glow2)" opacity=".8">
+              <animate attributeName="cx" values="260;200;195" dur="1.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+              <animate attributeName="cy" values="100;100;100" dur="1.8s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.8;0.8;0" dur="1.8s" repeatCount="indefinite" keyTimes="0;0.7;1"/>
+            </circle>
+
+            <!-- NEG pump (below ion pump) -->
+            <rect x="60" y="148" width="130" height="40" rx="6" fill="rgba(74,222,128,.06)" stroke="#4ade80" stroke-width="1.2"/>
+            <text x="125" y="165" text-anchor="middle" fill="#4ade80" font-size="9" font-weight="700" font-family="monospace">NEG / TSP</text>
+            <text x="125" y="178" text-anchor="middle" fill="#64748b" font-size="7.5" font-family="monospace">H₂ getter</text>
+            <line x1="125" y1="135" x2="125" y2="148" stroke="#4ade80" stroke-width="1.2" opacity=".5"/>
+
+            <!-- Turbo pump (right of chamber) -->
+            <rect x="490" y="65" width="130" height="70" rx="6" fill="rgba(251,191,36,.07)" stroke="#fbbf24" stroke-width="1.5"/>
+            <text x="555" y="88" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="700" font-family="monospace">TURBO PUMP</text>
+            <text x="555" y="101" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">10⁻²→10⁻⁸ mbar</text>
+            <!-- Spin indicator -->
+            <g>
+              <line x1="555" y1="106" x2="555" y2="118" stroke="#fbbf24" stroke-width="1.2" opacity=".8">
+                <animateTransform attributeName="transform" type="rotate" from="0 555 112" to="360 555 112" dur="0.35s" repeatCount="indefinite"/>
+              </line>
+              <line x1="549" y1="112" x2="561" y2="112" stroke="#fbbf24" stroke-width="1.2" opacity=".8">
+                <animateTransform attributeName="transform" type="rotate" from="0 555 112" to="360 555 112" dur="0.35s" repeatCount="indefinite"/>
+              </line>
+            </g>
+
+            <!-- Arrow: chamber → turbo -->
+            <line x1="415" y1="100" x2="488" y2="100" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)" opacity=".7"/>
+            <circle r="2.5" fill="#fbbf24" filter="url(#glow2)" opacity=".8">
+              <animate attributeName="cx" values="420;485" dur="1.3s" repeatCount="indefinite"/>
+              <animate attributeName="cy" values="100;100" dur="1.3s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.8;0" dur="1.3s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Rough pump (below turbo) -->
+            <rect x="490" y="152" width="130" height="40" rx="6" fill="rgba(248,113,113,.07)" stroke="#f87171" stroke-width="1.2"/>
+            <text x="555" y="169" text-anchor="middle" fill="#f87171" font-size="9" font-weight="700" font-family="monospace">ROUGH PUMP</text>
+            <text x="555" y="182" text-anchor="middle" fill="#64748b" font-size="7.5" font-family="monospace">10⁵→10⁻² mbar</text>
+            <!-- Arrow: turbo → rough -->
+            <line x1="555" y1="135" x2="555" y2="152" stroke="#f87171" stroke-width="1.2" marker-end="url(#arr)" opacity=".6"/>
+            <!-- Exhaust arrow -->
+            <line x1="620" y1="172" x2="648" y2="172" stroke="#f87171" stroke-width="1.2" marker-end="url(#arr)" opacity=".5"/>
+            <text x="652" y="176" fill="#475569" font-size="8" font-family="monospace">atm</text>
+
+            <!-- Gate valve label -->
+            <rect x="415" y="90" width="18" height="20" rx="3" fill="rgba(34,211,238,.15)" stroke="#22d3ee" stroke-width="1"/>
+            <text x="424" y="103" text-anchor="middle" fill="#22d3ee" font-size="7" font-family="monospace">GV</text>
+          </svg>
+          <p style="font-size:.76rem;color:var(--text-muted);text-align:center;margin:.5rem 0 0 0;">
+            Animated gas flow (→) shows the pumping direction. GV = gate valve (isolates the turbo from the chamber during venting or pump failure). Ion pump and NEG/TSP are always-on; turbo + rough are the initial pumpdown path.
+          </p>
+        </div>
+
+        <!-- Individual pump cards -->
+        <div style="margin-top:1.2rem">
+
+          <div class="pump-card open">
+            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+              <div class="pump-icon">🔩</div>
+              <div class="pump-card-meta">
+                <strong>Stage 1 — Rough Pump (Scroll or Diaphragm)</strong>
+                <span>Brings the system from atmosphere to backing pressure</span>
+              </div>
+              <span class="pump-range-badge">10⁵ → 10⁻² mbar</span>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="pump-card-body">
+              <p>The rough pump is first in line. It operates by mechanical compression — gas is drawn in, physically compressed, and pushed out to atmosphere. Two designs dominate AMO labs:</p>
+              <ul>
+                <li><strong>Scroll pump</strong> (recommended): Oil-free, two interleaved spiral scrolls orbit to compress gas. No oil mist, no vibration from pistons. Leybold, Agilent, and Edwards make reliable versions used in most tweezer labs.</li>
+                <li><strong>Diaphragm pump</strong>: Even simpler, no sliding contacts — a flexing membrane compresses gas. Lowest ultimate pressure (~5 mbar), best for clean low-throughput applications.</li>
+                <li><strong>Rotary vane</strong> (legacy): Uses oil-lubricated vanes. High throughput but oil backstreaming can contaminate your chamber. Always use a foreline trap if you have one.</li>
+              </ul>
+              <div class="pump-specs">
+                <span class="pump-spec-pill">Ultimate: <strong>~5×10⁻³ mbar</strong></span>
+                <span class="pump-spec-pill">Speed: <strong>5–30 m³/h</strong></span>
+                <span class="pump-spec-pill">Always backed to <strong>atmosphere</strong></span>
+              </div>
+              <div class="info-banner" style="margin-top:.75rem">💡 <strong>Always start with the rough pump.</strong> Never turn on a turbo against atmosphere — the spinning blades will vaporize on contact with air molecules at their operating speed of 50,000–90,000 RPM.</div>
+            </div>
+          </div>
+
+          <div class="pump-card">
+            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+              <div class="pump-icon">🌀</div>
+              <div class="pump-card-meta">
+                <strong>Stage 2 — Turbomolecular Pump</strong>
+                <span>The workhorse of high and ultra-high vacuum</span>
+              </div>
+              <span class="pump-range-badge">10⁻² → 10⁻⁸ mbar</span>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="pump-card-body">
+              <p>A turbo pump is essentially a very precisely machined turbine. Blades spin at 30,000–90,000 RPM — fast enough that the blade speed ($\sim$300 m/s) is comparable to the mean thermal velocity of residual gas molecules. Molecules that hit the blades are imparted a directed momentum toward the backing port; molecules trying to re-enter from the backing side are physically swept away.</p>
+              <p>The pumping mechanism is purely kinetic (molecular flow regime). This is why a turbo needs the rough pump to first bring the pressure below ~10 mbar — at higher pressures the mean free path is shorter than the blade spacing and viscous flow prevents the turbo from working.</p>
+              <ul>
+                <li><strong>Compression ratio</strong> for N₂: ~10⁹; for H₂: ~10³ (lighter molecules are harder to pump).</li>
+                <li><strong>Tip seals</strong>: Modern turbos use magnetic bearings (vibration-free, no oil). Ideal for optical experiments where vibration couples to trap displacement.</li>
+                <li><strong>Gate valve</strong>: Always place a gate valve between turbo and chamber. If power fails, the gate valve closes and protects your UHV from the backstreaming turbo.</li>
+              </ul>
+              <div class="pump-specs">
+                <span class="pump-spec-pill">Speed: <strong>50–500 L/s</strong></span>
+                <span class="pump-spec-pill">RPM: <strong>30k–90k</strong></span>
+                <span class="pump-spec-pill">Backed by: <strong>rough pump</strong></span>
+              </div>
+              <div class="warn-banner" style="margin-top:.75rem">⚠️ <strong>Never vent a spinning turbo to atmosphere.</strong> The blades are thin-walled aluminium rotating at near supersonic speeds. A vent valve on the turbo's high-vacuum port controls this — open it slowly through a restricted needle valve after powering down the pump.</div>
+            </div>
+          </div>
+
+          <div class="pump-card">
+            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+              <div class="pump-icon">⚡</div>
+              <div class="pump-card-meta">
+                <strong>Stage 3 — Ion Pump</strong>
+                <span>Solid-state, no moving parts, no vibration — the UHV workhorse</span>
+              </div>
+              <span class="pump-range-badge">10⁻⁵ → 10⁻¹¹ mbar</span>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="pump-card-body">
+              <p>Ion pumps have no mechanical parts. They work by ionizing residual gas atoms and then burying the ions inside the pump material. A strong magnetic field ($\sim$0.1 T) traps electrons in long helical orbits, massively increasing their path length and ionization cross-section. The resulting ions are accelerated into titanium cathode plates where they are implanted and chemically bound (chemisorption).</p>
+              <ul>
+                <li><strong>Pumping mechanism</strong>: Penning discharge. Residual gas is ionized; ions slam into Ti cathodes and are embedded. Reactive gases (O₂, N₂, CO) pump well; noble gases (Ar) pump poorly and can cause "argon instability" — avoid noble gas leaks.</li>
+                <li><strong>Current readout</strong>: The ion pump current is proportional to pressure — it doubles as a gauge. A 20 L/s pump at 10⁻¹⁰ mbar draws ~1 nA of current.</li>
+                <li><strong>Magnetic field</strong>: The external magnet stacks make ion pumps heavy (~5–10 kg for a 20 L/s pump). The stray field ($\sim$1 mT at 10 cm) can affect magnetic-field sensitive experiments — account for this in your layout.</li>
+              </ul>
+              <div class="pump-specs">
+                <span class="pump-spec-pill">Speed: <strong>2–200 L/s</strong></span>
+                <span class="pump-spec-pill">Power: <strong>~5 W at UHV</strong></span>
+                <span class="pump-spec-pill">HV supply: <strong>3–7 kV</strong></span>
+              </div>
+              <div class="good-banner" style="margin-top:.75rem">✓ <strong>The gold standard:</strong> Once you've baked and reached 10⁻⁸ mbar with the turbo, close the gate valve, start the ion pump, and leave it running indefinitely. Ion pumps get better with time as they outgas themselves.</div>
+            </div>
+          </div>
+
+          <div class="pump-card">
+            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+              <div class="pump-icon">🧲</div>
+              <div class="pump-card-meta">
+                <strong>Stage 4 — NEG Pump &amp; Titanium Sublimation</strong>
+                <span>Chemical getters for H₂ — the molecule ion pumps hate</span>
+              </div>
+              <span class="pump-range-badge">XHV supplement</span>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+            <div class="pump-card-body">
+              <p>Ion pumps have poor compression ratios for H₂ (the dominant residual gas at UHV). NEG (Non-Evaporable Getter) pumps and TSP (Titanium Sublimation Pumps) address this through chemisorption — gas molecules stick permanently to a reactive surface.</p>
+              <p><strong>NEG cartridges</strong> (e.g., SAES St707: Zr-V-Fe alloy) adsorb H₂, CO, N₂, and O₂ at elevated temperatures or passively near room temperature after activation at ~400°C. They have zero magnetic field, zero vibration, and zero power in passive mode — ideal for sensitivity-limited experiments.</p>
+              <p><strong>TSP</strong>: An electrical current heats a Ti filament until Ti evaporates and coats the chamber walls. The fresh Ti film aggressively chemisorbs nearly all reactive gases. A single filament firing lasts ~30 min; TSPs are typically operated every few days to maintain XHV. They can achieve transient pumping speeds of thousands of L/s.</p>
+              <div class="pump-specs">
+                <span class="pump-spec-pill">NEG speed: <strong>5–100 L/s for H₂</strong></span>
+                <span class="pump-spec-pill">TSP filament: <strong>~40 A for 45 s</strong></span>
+                <span class="pump-spec-pill">No moving parts</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 04 — BAKEOUT
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">04</span> Baking Out — Cleaning from the Inside</h2>
+        <p class="section-sub">The single most important ritual before first pump-down</p>
+
+        <div class="theory-box">
+          <h4>Why does every surface hate you?</h4>
+          <p>
+            A freshly machined stainless steel surface has roughly one monolayer of water adsorbed on every
+            exposed face — about $10^{15}$ H₂O molecules/cm². A typical AMO chamber has perhaps 5,000 cm² of internal surface.
+            That's $5 \times 10^{18}$ water molecules slowly evaporating into your vacuum over days and weeks.
+            At room temperature, the thermal desorption rate is so slow that it would take <em>years</em> to pump
+            all of that water out through the turbo. Baking dramatically accelerates desorption: the outgassing rate
+            scales roughly as $e^{-E_a/k_BT}$ where $E_a \approx 0.5$ eV for physisorbed water.
+            A modest 150°C bake speeds outgassing by a factor of ~10⁶.
+          </p>
+        </div>
+
+        <div class="bakeout-wrap">
+          <div>
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">The bakeout pressure curve</h3>
+            <svg id="bakeout-svg" viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="glow3"><feGaussianBlur stdDeviation="2" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <!-- Axes -->
+              <line x1="50" y1="10" x2="50" y2="160" stroke="#0e2933" stroke-width="1.5"/>
+              <line x1="50" y1="160" x2="370" y2="160" stroke="#0e2933" stroke-width="1.5"/>
+              <!-- Y axis labels: pressure log scale, 5 gridlines -->
+              <text x="46" y="19" text-anchor="end" fill="#475569" font-size="7.5" font-family="monospace">10⁻⁴</text>
+              <text x="46" y="57" text-anchor="end" fill="#475569" font-size="7.5" font-family="monospace">10⁻⁶</text>
+              <text x="46" y="95" text-anchor="end" fill="#475569" font-size="7.5" font-family="monospace">10⁻⁸</text>
+              <text x="46" y="133" text-anchor="end" fill="#475569" font-size="7.5" font-family="monospace">10⁻⁹</text>
+              <text x="46" y="157" text-anchor="end" fill="#475569" font-size="7.5" font-family="monospace">10⁻⁷</text>
+              <!-- Y label -->
+              <text x="10" y="95" transform="rotate(-90 10 95)" text-anchor="middle" fill="#475569" font-size="7" font-family="monospace">Pressure (mbar)</text>
+              <!-- X axis labels -->
+              <text x="80" y="173" text-anchor="middle" fill="#475569" font-size="7.5" font-family="monospace">0h</text>
+              <text x="140" y="173" text-anchor="middle" fill="#475569" font-size="7.5" font-family="monospace">8h</text>
+              <text x="200" y="173" text-anchor="middle" fill="#475569" font-size="7.5" font-family="monospace">24h</text>
+              <text x="260" y="173" text-anchor="middle" fill="#475569" font-size="7.5" font-family="monospace">48h</text>
+              <text x="320" y="173" text-anchor="middle" fill="#475569" font-size="7.5" font-family="monospace">72h</text>
+              <text x="360" y="173" text-anchor="middle" fill="#475569" font-size="7.5" font-family="monospace">cool</text>
+              <!-- Grid lines -->
+              <line x1="50" y1="19" x2="370" y2="19" stroke="#0a1f28" stroke-width=".8"/>
+              <line x1="50" y1="57" x2="370" y2="57" stroke="#0a1f28" stroke-width=".8"/>
+              <line x1="50" y1="95" x2="370" y2="95" stroke="#0a1f28" stroke-width=".8"/>
+              <line x1="50" y1="133" x2="370" y2="133" stroke="#0a1f28" stroke-width=".8"/>
+              <!-- Bakeout start / end markers -->
+              <line x1="80" y1="10" x2="80" y2="160" stroke="#fb923c" stroke-width=".8" stroke-dasharray="4,3" opacity=".5"/>
+              <text x="82" y="22" fill="#fb923c" font-size="7" font-family="monospace" opacity=".8">Bake ON 200°C</text>
+              <line x1="340" y1="10" x2="340" y2="160" stroke="#22d3ee" stroke-width=".8" stroke-dasharray="4,3" opacity=".5"/>
+              <text x="342" y="22" fill="#22d3ee" font-size="7" font-family="monospace" opacity=".8">Bake OFF</text>
+
+              <!-- Bakeout pressure curve -->
+              <!-- Phase 0: initial flat ~10⁻⁷ (pre-bake) x=50→80, y=133 -->
+              <!-- Phase 1: spike to 10⁻⁴ when bake starts x=80→100, y=133→19 -->
+              <!-- Phase 2: slow decrease 10⁻⁴→10⁻⁷ during bake x=100→340, y=19→133 -->
+              <!-- Phase 3: sharp drop 10⁻⁷→10⁻¹⁰ when bake ends x=340→370, y=133→157 -->
+              <!-- Animated path that draws itself in -->
+              <path id="bakeout-path"
+                d="M50,133 L80,133 C90,133 95,19 100,19 C150,19 250,57 340,133 C350,157 360,160 370,160"
+                fill="none" stroke="#22d3ee" stroke-width="2.5" filter="url(#glow3)"
+                stroke-dasharray="700" stroke-dashoffset="700">
+                <animate attributeName="stroke-dashoffset" from="700" to="0" dur="3s" begin="0.5s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+              </path>
+              <!-- Final point marker -->
+              <circle cx="370" cy="160" r="4" fill="#22d3ee" opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="3.3s" fill="freeze"/>
+              </circle>
+              <text x="372" y="158" fill="#22d3ee" font-size="7.5" font-family="monospace" opacity="0">10⁻¹⁰
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="3.3s" fill="freeze"/>
+              </text>
+              <!-- Temperature overlay (orange) -->
+              <!-- Ramp: 0→200°C at bake start, plateau, then drop -->
+              <path d="M50,155 L78,155 C82,100 86,85 90,83 L340,83 C344,83 348,140 352,155 L370,155"
+                fill="none" stroke="rgba(251,146,60,.4)" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <text x="195" y="79" text-anchor="middle" fill="rgba(251,146,60,.6)" font-size="7" font-family="monospace">T ≈ 200°C</text>
+            </svg>
+          </div>
+          <div>
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Bakeout protocol</h3>
+            <div class="theory-box" style="margin-bottom:.7rem">
+              <h4>Typical schedule</h4>
+              <p><strong>1. Preparation:</strong> Remove all heat-sensitive parts: viton O-rings (max ~200°C), elastomers, electronics boards, optical coatings on unprotected elements. Loosen flange bolts slightly to allow thermal expansion (re-torque during cool-down).</p>
+              <p><strong>2. Ramp up:</strong> Heat to 150–250°C at &lt;5°C/min. Fast ramps crack CF gaskets. Wrap the chamber in aluminium foil + fiberglass heating tape. Thermocouples on flange bodies, not heating tape.</p>
+              <p><strong>3. Hold:</strong> 24–72 hours at temperature. Pressure will spike, then slowly decrease. The turbo (or a dedicated bakeout turbo) should run the whole time. Do not close the gate valve during bake.</p>
+              <p><strong>4. Cool down:</strong> &lt;3°C/min. The biggest pressure drop occurs as you cool below 100°C — remaining water re-adsorbs on any cold surface outside the chamber, leaving your inner surfaces clean.</p>
+            </div>
+            <div class="warn-banner">⚠️ <strong>Viton O-rings</strong> degrade above ~200°C. CF flanges (knife-edge + Cu gasket) are UHV-grade to 450°C and are always preferred.</div>
+            <div class="danger-banner">🚫 <strong>Never bake with an ion pump running.</strong> Ion pumps have internal Alnico magnets that demagnetize above ~100°C. Start the ion pump only after the chamber has cooled and the turbo has pumped to &lt;10⁻⁷ mbar.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 05 — MATERIALS AND CONNECTIONS
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">05</span> Materials &amp; Connections</h2>
+        <p class="section-sub">Not everything belongs inside a UHV system — material choice is irreversible</p>
+
+        <div class="two-col">
+          <div>
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">CF vs KF flanges</h3>
+            <table class="data-table">
+              <thead>
+                <tr><th>Property</th><th>CF (ConFlat)</th><th>KF (ISO-KF)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Seal type</td><td>Cu knife-edge gasket</td><td>Viton O-ring + centering ring</td></tr>
+                <tr><td>Pressure range</td><td>10⁻¹² mbar → 10 bar</td><td>10⁻⁸ mbar (practical)</td></tr>
+                <tr><td>Bakeout</td><td>✓ up to 450°C</td><td>✗ max ~120°C (viton)</td></tr>
+                <tr><td>Reuse</td><td>Gasket single-use</td><td>Reusable if clean</td></tr>
+                <tr><td>Use in AMO</td><td>Main chamber, sources</td><td>Foreline, RGA ports</td></tr>
+              </tbody>
+            </table>
+            <div class="info-banner" style="margin-top:.75rem">💡 <strong>CF torque sequence:</strong> Star pattern, 4–5 passes with increasing torque. Final: typically 14–20 N·m for SS bolts on 2¾″ CF. Under-torquing leaks; over-torquing damages the knife edge.</div>
+          </div>
+          <div>
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Outgassing rate comparison</h3>
+            <table class="data-table">
+              <thead>
+                <tr><th>Material</th><th>Outgassing rate*</th><th>AMO suitability</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>304/316L SS (electropolished)</td><td><code>~10⁻¹² mbar·L/s·cm²</code></td><td style="color:#4ade80">Excellent</td></tr>
+                <tr><td>OFHC copper</td><td><code>~10⁻¹² mbar·L/s·cm²</code></td><td style="color:#4ade80">Excellent (gaskets)</td></tr>
+                <tr><td>Fused silica / quartz</td><td><code>~10⁻¹² mbar·L/s·cm²</code></td><td style="color:#4ade80">Excellent (windows)</td></tr>
+                <tr><td>Aluminium (bare)</td><td><code>~10⁻¹⁰ mbar·L/s·cm²</code></td><td style="color:#fbbf24">Acceptable; avoid bake</td></tr>
+                <tr><td>Viton</td><td><code>~10⁻⁸ mbar·L/s·cm²</code></td><td style="color:#fb923c">KF only; not baked</td></tr>
+                <tr><td>Kapton (wires)</td><td><code>~10⁻⁹ mbar·L/s·cm²</code></td><td style="color:#fbbf24">Acceptable in low flux</td></tr>
+                <tr><td>Regular rubber / PVC</td><td><code>&gt;10⁻⁶ mbar·L/s·cm²</code></td><td style="color:#f87171">Never use in UHV</td></tr>
+                <tr><td>Zinc / cadmium</td><td>High vapor pressure</td><td style="color:#f87171">Never use</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:.73rem;color:var(--text-muted);margin-top:.4rem;">*After 24h bakeout at 200°C. Values highly dependent on surface preparation.</p>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:1.2rem">
+          <div class="theory-box">
+            <h4>Copper gaskets — handle with care</h4>
+            <p>CF gaskets are OFHC (oxygen-free, high-conductivity) copper — soft enough for the SS knife edges to bite into. Key rules:</p>
+            <ul style="padding-left:1.2rem;font-size:.84rem;color:var(--text-secondary);line-height:1.75">
+              <li>Never reuse a gasket that has been fully torqued. The knife edges work-harden and deform the copper permanently.</li>
+              <li>If a flange was slightly loose, inspect the gasket for uneven bite marks — replace if in doubt.</li>
+              <li>Nickel-plated copper gaskets exist for higher corrosion resistance; use standard OFHC for baking to 400°C+.</li>
+              <li>Store gaskets in sealed bags — oxidised copper is harder and seals less reliably.</li>
+            </ul>
+          </div>
+          <div class="theory-box">
+            <h4>What never goes inside a UHV chamber</h4>
+            <ul style="padding-left:1.2rem;font-size:.84rem;color:var(--text-secondary);line-height:1.75">
+              <li><strong>Zinc or cadmium</strong> — vapor pressure too high; will plate out on optics and destroy the vacuum.</li>
+              <li><strong>Regular brass</strong> — contains zinc; dezincifies under vacuum and outgasses.</li>
+              <li><strong>PVC, regular rubber, silicone (RTV)</strong> — extreme outgassing.</li>
+              <li><strong>Fingerprints</strong> — the oils from your skin outgas for weeks. Always use nitrile gloves inside the chamber and clean parts with methanol + acetone before installation.</li>
+              <li><strong>Unprocessed plastics</strong> — PEEK and PTFE are tolerable in small amounts; avoid everything else.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 06 — DIAGNOSTICS
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">06</span> Reading Your Vacuum</h2>
+        <p class="section-sub">Gauges, RGA, and the art of finding invisible leaks</p>
+
+        <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Gauge types</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>Gauge</th><th>Pressure range</th><th>Principle</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Pirani</strong></td>
+              <td style="font-family:var(--font-mono);font-size:.79rem">10³ – 10⁻³ mbar</td>
+              <td>Thermal conductivity of gas (heated wire)</td>
+              <td>Gas-species dependent; great for rough/medium vacuum readout</td>
+            </tr>
+            <tr>
+              <td><strong>Penning (cold cathode)</strong></td>
+              <td style="font-family:var(--font-mono);font-size:.79rem">10⁻² – 10⁻⁹ mbar</td>
+              <td>Ion current in crossed E+B fields</td>
+              <td>No hot filament = no contamination; reads falsely high in strong B-fields</td>
+            </tr>
+            <tr>
+              <td><strong>Bayard-Alpert (hot-ion)</strong></td>
+              <td style="font-family:var(--font-mono);font-size:.79rem">10⁻² – 10⁻¹¹ mbar</td>
+              <td>Electron emission → gas ionization → ion current collected</td>
+              <td>Gold-plated collector reduces X-ray limit; standard UHV gauge</td>
+            </tr>
+            <tr>
+              <td><strong>Ion pump current</strong></td>
+              <td style="font-family:var(--font-mono);font-size:.79rem">10⁻⁵ – 10⁻¹¹ mbar</td>
+              <td>I ∝ P × pumping speed</td>
+              <td>Free readout from your existing ion pump supply; calibrate vs gauge</td>
+            </tr>
+            <tr>
+              <td><strong>Spinning rotor gauge</strong></td>
+              <td style="font-family:var(--font-mono);font-size:.79rem">10⁻² – 10⁻⁷ mbar</td>
+              <td>Drag on magnetically suspended rotor</td>
+              <td>Absolute, gas-independent; excellent for calibration</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="two-col" style="margin-top:1.5rem">
+          <div>
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Residual Gas Analyzer (RGA)</h3>
+            <div class="theory-box">
+              <h4>Reading the mass spectrum</h4>
+              <p>An RGA is a miniature quadrupole mass spectrometer that ionizes residual gas and sorts ions by mass-to-charge ratio. The peak heights tell you exactly what's in your vacuum. Key signatures:</p>
+              <ul style="padding-left:1.2rem;font-size:.84rem;color:var(--text-secondary);line-height:1.8">
+                <li><strong>m/z = 2 (H₂):</strong> Dominant peak in UHV — always. H₂ permeates stainless steel from the bulk. Normal, expected.</li>
+                <li><strong>m/z = 12, 16, 28, 44 (C, O, CO, CO₂):</strong> Hydrocarbon contamination or outgassing from surfaces. Drop significantly after baking.</li>
+                <li><strong>m/z = 18 (H₂O):</strong> High before bakeout, should be much smaller than H₂ after. If water stays high post-bake, suspect a small leak.</li>
+                <li><strong>m/z = 14, 28 (N, N₂):</strong> Elevated N₂ usually means a real air leak. N₂/Ar ratio ≈ 3.7 confirms atmospheric air.</li>
+                <li><strong>m/z = 40 (Ar):</strong> Unambiguous real leak indicator — Ar is not outgassed from steel.</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Helium Leak Detection</h3>
+            <div class="theory-box">
+              <h4>Finding leaks down to 10⁻¹⁰ mbar·L/s</h4>
+              <p>The He leak detector is a mass spectrometer tuned to m/z = 4, connected to your system's roughing line or directly to the pump port. He is small (0.26 nm kinetic diameter), inert, and rare in lab air (~5 ppm) — it threads through any crack the atmosphere leaks through, but faster.</p>
+              <p><strong>Procedure:</strong></p>
+              <ul style="padding-left:1.2rem;font-size:.84rem;color:var(--text-secondary);line-height:1.8">
+                <li>Pump your system to the best vacuum you can achieve.</li>
+                <li>Spray He gas gently with a wand (or medical-grade He tubing) around suspect joints — CF flanges, viewports, electrical feedthroughs.</li>
+                <li>Wait 5–10 s (He transit time through a small leak).</li>
+                <li>A rise in the He signal identifies the leaking joint.</li>
+                <li>Start from the top and work down so He (lighter than air) doesn't drift upward into non-leaking regions.</li>
+              </ul>
+              <div class="info-banner" style="margin-top:.6rem">💡 Sensitivity: ≈ 10⁻¹⁰ mbar·L/s. A "virtual leak" (trapped volume slowly releasing gas) mimics a real leak but won't respond to He spraying — the key diagnostic distinction.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+           SECTION 07 — PRACTICAL CHECKLIST
+      ═══════════════════════════════════════════ -->
+      <div class="section-block anim-in">
+        <h2 class="section-title"><span class="accent">07</span> Practical Checklist</h2>
+        <p class="section-sub">From assembly to first UHV — a condensed field guide</p>
+
+        <div class="two-col">
+          <div>
+            <div style="margin-bottom:.75rem">
+              <span style="font-size:.78rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.06em;">Assembly phase</span>
+            </div>
+            <ul class="checklist">
+              <li><div class="cl-num">1</div><div>Clean all parts with acetone then methanol; handle only with nitrile gloves from this point forward.</div></li>
+              <li><div class="cl-num">2</div><div>Verify all materials: no zinc, cadmium, PVC, or standard rubber inside the system.</div></li>
+              <li><div class="cl-num">3</div><div>Use fresh OFHC Cu gaskets on every CF flange. Torque in star pattern: 3 passes from 3 → 8 → 14 N·m.</div></li>
+              <li><div class="cl-num">4</div><div>Install a gate valve between chamber and turbo pump. Verify it closes cleanly.</div></li>
+              <li><div class="cl-num">5</div><div>Install an ion gauge on the chamber. Label its filament voltage and emission current settings.</div></li>
+              <li><div class="cl-num">6</div><div>Leak check all connections with a He leak detector at rough vacuum (10⁻² mbar) before proceeding.</div></li>
+            </ul>
+          </div>
+          <div>
+            <div style="margin-bottom:.75rem">
+              <span style="font-size:.78rem;font-weight:700;color:#22d3ee;text-transform:uppercase;letter-spacing:.06em;">Pumpdown phase</span>
+            </div>
+            <ul class="checklist">
+              <li><div class="cl-num">7</div><div>Start scroll/diaphragm pump. Rough pump to &lt;5×10⁻² mbar before starting the turbo.</div></li>
+              <li><div class="cl-num">8</div><div>Bring turbo to full speed. Open gate valve slowly. Monitor ion gauge.</div></li>
+              <li><div class="cl-num">9</div><div>Once below 10⁻⁶ mbar, begin bakeout ramp: &lt;5°C/min up to 150–200°C.</div></li>
+              <li><div class="cl-num">10</div><div>Bake for 24–72h. Run ion gauge intermittently. Monitor RGA: water peak should decrease.</div></li>
+              <li><div class="cl-num">11</div><div>Cool at &lt;3°C/min. Below 50°C: close gate valve, start ion pump, turn off turbo.</div></li>
+              <li><div class="cl-num">12</div><div>Fire TSP once (if installed). Ion pump current should read &lt;1 nA for a 20 L/s pump at UHV.</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:1rem">
+          <div class="good-banner">
+            ✓ <strong>You're at UHV when:</strong> Ion gauge reads &lt;10⁻⁹ mbar, ion pump current is stable and &lt;10 nA, RGA shows H₂ dominant with no N₂/Ar signature, and your pilot atom lifetime exceeds several minutes.
+          </div>
+          <div class="warn-banner">
+            ⚠️ <strong>Common failure modes:</strong> Virtual leak from trapped volumes (blind tapped holes, undrilled screws); fingerprint contamination on optics; bad CF torque — either sequence or final value; or baking too fast and cracking a ceramic feedthrough.
+          </div>
+        </div>
+
+        <!-- Quick reference table -->
+        <table class="data-table" style="margin-top:1.5rem">
+          <thead>
+            <tr><th>Stage</th><th>Start P (mbar)</th><th>Target P (mbar)</th><th>Time</th><th>Key action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Rough pump only</td><td>1013</td><td>~10⁻²</td><td>10–30 min</td><td>Verify no gross leaks</td></tr>
+            <tr><td>Turbo pump on</td><td>10⁻²</td><td>~10⁻⁶</td><td>1–4 hours</td><td>He leak test</td></tr>
+            <tr><td>Bakeout ramp</td><td>10⁻⁶</td><td>~10⁻⁴ (spike)</td><td>2–5 hours</td><td>Remove heat-sensitive parts</td></tr>
+            <tr><td>Bakeout hold</td><td>10⁻⁴</td><td>~10⁻⁷</td><td>24–72 hours</td><td>Monitor RGA, run turbo</td></tr>
+            <tr><td>Cool + ion pump</td><td>10⁻⁷</td><td>~10⁻¹⁰</td><td>12–24 hours</td><td>TSP fire, NEG activate</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ══ CONNECTIONS / SEE ALSO ══ -->
+      <div class="concept-box anim-in" style="border-left-color:var(--vac);margin-bottom:2rem">
+        <strong style="color:var(--vac)">See also:</strong>
+        The vacuum system is just the starting point.
+        Once you're at UHV, the next steps are trapping atoms with
+        <a href="mot-designer.html" style="color:var(--vac)">MOT &amp; Magnetic Trap</a> design,
+        characterizing your imaging with the
+        <a href="imaging-calculator.html" style="color:var(--vac)">Imaging SNR Calculator</a>,
+        measuring the resulting atom temperature via
+        <a href="tof-calculator.html" style="color:var(--vac)">TOF Thermometry</a>,
+        and transferring atoms to tweezers for
+        <a href="release-recapture.html" style="color:var(--vac)">single-atom thermometry</a>.
+      </div>
+
+    </div><!-- /.container -->
+  </div><!-- /.page-content -->
+</div><!-- /.page-wrap -->
+
+<!-- ──────── SCRIPTS ──────── -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
+<script src="../js/main.js?v=10"></script>
+<script>
+  renderNav({ active: 'vacuum-systems', root: '../' });
+
+  /* ─── Pump card toggles ─── */
+  document.querySelectorAll('.pump-card-head').forEach(h => {
+    h.addEventListener('click', () => {
+      h.parentElement.classList.toggle('open');
+    });
+  });
+
+  /* ─── Pressure Explorer ─── */
+  const slider   = document.getElementById('pslider');
+  const canvas   = document.getElementById('mol-canvas');
+  const ctx      = canvas.getContext('2d');
+
+  function fmtExp(val) {
+    const e = Math.floor(Math.log10(Math.abs(val) || 1e-300));
+    const m = val / Math.pow(10, e);
+    const mStr = (Math.abs(m - 1) < 0.05) ? '' : m.toFixed(1) + '×';
+    const sup = e => String(e).replace('-', '⁻').split('').map(c => '⁰¹²³⁴⁵⁶⁷⁸⁹⁻'['0123456789-'.indexOf(c)] ?? c).join('');
+    return mStr + '10' + sup(e);
+  }
+
+  function fmtTime(s) {
+    if (s >= 3600)  return (s/3600).toFixed(1) + ' h';
+    if (s >= 60)    return (s/60).toFixed(1) + ' min';
+    if (s >= 1)     return s.toFixed(1) + ' s';
+    if (s >= 1e-3)  return (s*1e3).toFixed(1) + ' ms';
+    if (s >= 1e-6)  return (s*1e6).toFixed(1) + ' μs';
+    return (s*1e9).toFixed(1) + ' ns';
+  }
+
+  function fmtDist(m) {
+    if (m >= 1e6)    return (m/1e6).toFixed(0) + ' Mm';
+    if (m >= 1e3)    return (m/1e3).toFixed(0) + ' km';
+    if (m >= 1)      return m.toFixed(2) + ' m';
+    if (m >= 1e-2)   return (m*100).toFixed(1) + ' cm';
+    if (m >= 1e-3)   return (m*1e3).toFixed(1) + ' mm';
+    if (m >= 1e-6)   return (m*1e6).toFixed(1) + ' μm';
+    return (m*1e9).toFixed(0) + ' nm';
+  }
+
+  const REGIMES = [
+    { min: 3,   label: 'Atmosphere',       color: '#f87171', bg: 'rgba(248,113,113,.12)' },
+    { min: 0,   label: 'Low Vacuum',       color: '#fb923c', bg: 'rgba(251,146,60,.12)' },
+    { min: -3,  label: 'Medium Vacuum',    color: '#fbbf24', bg: 'rgba(251,191,36,.12)' },
+    { min: -6,  label: 'High Vacuum',      color: '#34d399', bg: 'rgba(52,211,153,.12)' },
+    { min: -9,  label: 'Ultra-High Vacuum',color: '#22d3ee', bg: 'rgba(34,211,238,.12)' },
+    { min: -12, label: 'Extreme High Vacuum',color: '#818cf8', bg: 'rgba(129,140,248,.12)' },
+  ];
+
+  /* Molecule positions (fixed random set, scaled by density) */
+  const seeds = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), vx: (Math.random()-.5)*.6, vy: (Math.random()-.5)*.6, r: 1.5 + Math.random()*2, phase: Math.random()*Math.PI*2 }));
+  let animId = null;
+  let molCount = 0;
+  let t = 0;
+
+  function drawMolecules() {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    const n = Math.min(80, Math.round(molCount));
+    if (n === 0) return;
+    t += 0.016;
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i];
+      const x = ((s.x + s.vx * t * .3 + 100) % 1) * W;
+      const y = ((s.y + s.vy * t * .3 + 100) % 1) * H;
+      const alpha = 0.4 + 0.5 * Math.abs(Math.sin(t + s.phase));
+      ctx.beginPath();
+      ctx.arc(x, y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(34,211,238,${alpha})`;
+      ctx.shadowColor = '#22d3ee';
+      ctx.shadowBlur = 4;
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    animId = requestAnimationFrame(drawMolecules);
+  }
+
+  function updatePressure() {
+    const logP = parseFloat(slider.value);
+    const P_mbar = Math.pow(10, logP);
+    const P_Pa   = P_mbar * 100;
+    const P_Torr = P_mbar * 0.750062;
+
+    /* Physical constants */
+    const kB = 1.380649e-23;
+    const T  = 293; // K
+
+    /* Number density */
+    const n_m3  = P_Pa / (kB * T);
+    const n_cm3 = n_m3 * 1e-6;
+
+    /* Mean free path (N₂, d = 3.7e-10 m) */
+    const d      = 3.7e-10;
+    const lambda = (kB * T) / (Math.sqrt(2) * Math.PI * d * d * P_Pa);
+
+    /* Atom lifetime: Γ = n σ v̄, σ_eff ~ 5e-19 m², v̄(N₂) ~ 470 m/s */
+    const sigma = 5e-19;
+    const vbar  = 470;
+    const tau   = 1 / (n_m3 * sigma * vbar);
+
+    /* Regime */
+    let regime = REGIMES[REGIMES.length - 1];
+    for (const r of REGIMES) {
+      if (logP >= r.min) { regime = r; break; }
+    }
+
+    /* Update DOM */
+    document.getElementById('disp-mbar').textContent    = fmtExp(P_mbar) + ' mbar';
+    document.getElementById('disp-pa').textContent       = fmtExp(P_Pa) + ' Pa';
+    document.getElementById('disp-torr').textContent     = fmtExp(P_Torr) + ' Torr';
+    document.getElementById('disp-density').textContent  = fmtExp(n_cm3);
+    document.getElementById('disp-mfp').textContent      = fmtDist(lambda);
+    document.getElementById('disp-tau').textContent      = fmtTime(tau);
+
+    const label = document.getElementById('regime-label');
+    label.textContent = regime.label;
+    label.style.color      = regime.color;
+    label.style.background = regime.bg;
+
+    /* Canvas molecule count: log-map [atm=10^5 → 75 dots, UHV=10^-10 → 0] */
+    const maxLog = 5, minLog = -12;
+    const frac = Math.max(0, (logP - minLog) / (maxLog - minLog));
+    molCount = Math.round(frac * frac * 75);
+
+    if (animId) cancelAnimationFrame(animId);
+    t = 0;
+    drawMolecules();
+  }
+
+  /* Canvas DPR fix */
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  slider.addEventListener('input', updatePressure);
+  window.addEventListener('resize', () => { resizeCanvas(); updatePressure(); });
+
+  /* Init after layout */
+  requestAnimationFrame(() => {
+    resizeCanvas();
+    updatePressure();
+  });
+
+  /* KaTeX */
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.renderMathInElement) {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+        ],
+      });
+    }
+  });
+</script>
+</body>
+</html>
