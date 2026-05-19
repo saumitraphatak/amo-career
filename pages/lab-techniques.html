@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AMO Lab Techniques, AMO Toolkit</title>
+  <title>AMO Lab Operations Handbook, AMO Toolkit</title>
   <meta name="description" content="Practical instrumentation guide for optical-tweezer and ultracold-atom experiments. Fiber coupling, AOMs, polarimetry, laser locking, optical pumping, RF electronics, and laser systems.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -190,6 +190,76 @@
       .laser-card-grid { grid-template-columns: 1fr; }
       .refs-3col { grid-template-columns: 1fr; }
     }
+
+
+    /* Structured reader route cards */
+    .route-panel {
+      margin: 0 0 var(--sp-7) 0;
+      padding: var(--sp-5);
+      border: 1px solid var(--route-border, rgba(56,189,248,.2));
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .route-panel .route-kicker {
+      font-family: var(--font-mono);
+      color: var(--route-color, var(--page-color, #38bdf8));
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+    .route-panel h2 {
+      margin: 0 0 .35rem 0;
+      color: var(--text-primary);
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+      letter-spacing: -.03em;
+    }
+    .route-panel > p {
+      max-width: 900px;
+      margin: 0 0 var(--sp-4) 0;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: var(--sp-4);
+    }
+    .route-card {
+      padding: var(--sp-4);
+      border-radius: var(--r-md);
+      border: 1px solid rgba(148,163,184,.16);
+      background: rgba(2,8,23,.45);
+    }
+    .route-card .step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.35rem;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--route-color, #38bdf8) 14%, transparent);
+      color: var(--route-color, #38bdf8);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: .72rem;
+      margin-bottom: .55rem;
+    }
+    .route-card strong {
+      display: block;
+      color: var(--text-primary);
+      margin-bottom: .25rem;
+      font-size: 1rem;
+    }
+    .route-card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+
   </style>
 </head>
 
@@ -206,11 +276,10 @@
     ">
       <div class="container page-hero-2col">
         <div class="page-hero-text">
-          <div class="page-hero-eyebrow" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.2);color:var(--c-lab)">🔬 Build 05 · AMO Lab Techniques</div>
-          <h1>⚗️ AMO Lab Techniques</h1>
+          <div class="page-hero-eyebrow" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.2);color:var(--c-lab)">🔬 Build 05 · AMO Lab Operations Handbook</div>
+          <h1>AMO Lab Operations Handbook</h1>
           <p class="page-hero-desc">
-            Practical instrumentation guide for optical-tweezer and ultracold-atom experiments,
-            covering beam delivery, optical pumping, RF electronics, computational tools, and laser systems.
+            A field guide for the operations that make an AMO experiment work: align light, prepare atoms, drive RF and microwaves, lock lasers, debug failures, and turn lab intuition into numbers.
           </p>
         </div>
         <div class="page-hero-anim" aria-hidden="true">
@@ -257,25 +326,29 @@
     <div class="page-content">
       <div class="container">
 
-        <div class="concept-box anim-in">
-          This page is a practical guide for anyone entering an AMO lab, covering the <strong>how</strong>
-          and <strong>why</strong> behind the core techniques used in optical-tweezer experiments with
-          laser-cooled atoms. The emphasis is on physical reasoning: not just what to do,
-          but why each component is designed the way it is and what breaks when it goes wrong.
-          Use the tabs below to jump to a topic.
-        </div>
+        <section class="route-panel anim-in" style="--route-color:var(--c-lab);--route-border:rgba(52,211,153,.24)">
+          <div class="route-kicker">Use it as an operations handbook</div>
+          <h2>Start from the lab problem, then open the matching drawer.</h2>
+          <p>AMO technique pages are easiest to use when organized by what you are trying to do at the table, not by component names. These tabs now map to common lab actions.</p>
+          <div class="route-grid">
+            <div class="route-card"><span class="step">01</span><strong>Align light</strong><p>Fiber coupling, AOM geometry, polarimetry, beam delivery, and the diagnostics that reveal bad modes.</p></div>
+            <div class="route-card"><span class="step">02</span><strong>Prepare atoms</strong><p>Optical pumping, stretched states, repump logic, and the selection rules that decide where population goes.</p></div>
+            <div class="route-card"><span class="step">03</span><strong>Drive transitions</strong><p>RF antennas, microwaves, impedance thinking, safety, and what power actually reaches the atoms.</p></div>
+            <div class="route-card"><span class="step">04</span><strong>Stabilize and optimize</strong><p>Laser locks, control scripts, Bayesian optimization, QuTiP models, and failure patterns worth remembering.</p></div>
+          </div>
+        </section>
 
         <!-- ══════════════════════════════════════════
              MAIN TABS
              ══════════════════════════════════════════ -->
         <div data-tabs-wrap class="anim-in delay-1 mt-8">
           <div class="tab-bar" data-group="main" style="--page-color: var(--c-lab)">
-            <button class="tab-btn active" data-tab="beam">🔦 Beam Delivery</button>
-            <button class="tab-btn" data-tab="pumping">🌀 Optical Pumping</button>
-            <button class="tab-btn" data-tab="rf">📡 RF &amp; Electronics</button>
-            <button class="tab-btn" data-tab="comp">💻 Computational Tools</button>
-            <button class="tab-btn" data-tab="lasers">🔴 Laser Systems</button>
-            <button class="tab-btn" data-tab="pitfalls">⚠️ Common Pitfalls</button>
+            <button class="tab-btn active" data-tab="beam">🔦 Align Light</button>
+            <button class="tab-btn" data-tab="pumping">🌀 Prepare Atomic States</button>
+            <button class="tab-btn" data-tab="rf">📡 Drive RF &amp; Microwaves</button>
+            <button class="tab-btn" data-tab="comp">💻 Optimize &amp; Simulate</button>
+            <button class="tab-btn" data-tab="lasers">🔴 Lock &amp; Route Lasers</button>
+            <button class="tab-btn" data-tab="pitfalls">⚠️ Debugging &amp; Pitfalls</button>
           </div>
 
           <!-- ══════════════════════════════════════════

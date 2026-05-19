@@ -10,14 +10,14 @@
    ───────────────────────────────────────────────────── */
 const NAV = {
   build: [
-    { key: 'atom-library',   label: 'Atomic Species Library',                kind: 'Reference', icon: '⚛️', color: '#38bdf8', href: 'pages/atom-library.html'   },
+    { key: 'atom-library',   label: 'Atomic Species Selector',                kind: 'Reference', icon: '⚛️', color: '#38bdf8', href: 'pages/atom-library.html'   },
     { key: 'laser-planner',  label: 'Laser System Planner',        kind: 'Design tool', icon: '💡', color: '#f472b6', href: 'pages/laser-planner.html'  },
     { key: 'mot-designer',   label: 'MOT & Magnetic Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html'   },
     { key: 'laser-locking',  label: 'Laser Locking Guide',   kind: 'Guide', icon: '🔐', color: '#f87171', href: 'pages/laser-locking.html'  },
-    { key: 'lab-techniques', label: 'AMO Lab Techniques',      kind: 'Guide', icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
+    { key: 'lab-techniques', label: 'AMO Lab Operations Handbook',      kind: 'Guide', icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
     { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
     { key: 'zernike',        label: 'Zernike Wavefront Lab', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
-    { key: 'cavity-qed',     label: 'Cavity Coupling Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
+    { key: 'cavity-qed',     label: 'Cavity QED Coupling Lab',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
     { key: 'vacuum-systems',    label: 'Vacuum Systems Guide',        kind: 'Guide',      icon: '⚗️', color: '#22d3ee', href: 'pages/vacuum-systems.html'    },
     { key: 'tweezer-designer', label: 'Optical Tweezer Array Designer', kind: 'Calculator', icon: '🔦', color: '#f59e0b', href: 'pages/tweezer-designer.html' },
   ],
@@ -25,16 +25,16 @@ const NAV = {
     { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },
     { key: 'release-recapture',  label: 'Single-atom Temperature',  kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html'  },
     { key: 'tof-calculator',     label: 'MOT Temperature',     kind: 'Calculator', icon: '🌡️', color: '#38bdf8', href: 'pages/tof-calculator.html'     },
-    { key: 'lab-calculators',     label: 'Quick Lab Calculations',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
+    { key: 'lab-calculators',     label: 'Quick Lab Console',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
     { key: 'absorption-imaging', label: 'Absorption Imaging',          kind: 'Calculator', icon: '🌑', color: '#818cf8', href: 'pages/absorption-imaging.html'  },
   ],
   cooling: [
     { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },
-    { key: 'cooling-simulator', label: 'Free Space Cooling',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
+    { key: 'cooling-simulator', label: 'Laser Cooling Simulator',   kind: 'Simulator', icon: '🌡️', color: '#34d399', href: 'pages/cooling-simulator.html' },
   ],
   quantum: [
-    { key: 'learn-quantum',      label: 'Quantum Computing Basics',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
-    { key: 'rydberg-calculator', label: 'Rydberg Blockade Calculator',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
+    { key: 'learn-quantum',      label: 'Quantum Computing Learning Path',              kind: 'Learning path', icon: '🔵', color: '#c084fc', href: 'pages/learn-quantum.html' },
+    { key: 'rydberg-calculator', label: 'Rydberg Blockade Lab',  kind: 'Calculator', icon: '🔮', color: '#818cf8', href: 'pages/rydberg-calculator.html' },
     { key: 'fidelity-budget',    label: 'Rydberg Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#f87171', href: 'pages/fidelity-budget.html' },
     { key: 'rb-explorer',        label: 'Randomized Benchmarking',     kind: 'Deep dive', icon: '📈', color: '#c084fc', href: 'pages/rb-explorer.html' },
     { key: 'dd-playground',      label: 'Dynamical Decoupling', kind: 'Simulator', icon: '🛡️', color: '#4ade80', href: 'pages/dd-playground.html' },

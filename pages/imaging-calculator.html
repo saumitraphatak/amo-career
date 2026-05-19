@@ -187,6 +187,76 @@
       border-radius: 8px; padding: .65rem 1rem;
       font-size: .8rem; color: #fbbf24; margin-top: .75rem; line-height: 1.6;
     }
+
+
+    /* Structured reader route cards */
+    .route-panel {
+      margin: 0 0 var(--sp-7) 0;
+      padding: var(--sp-5);
+      border: 1px solid var(--route-border, rgba(56,189,248,.2));
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .route-panel .route-kicker {
+      font-family: var(--font-mono);
+      color: var(--route-color, var(--page-color, #38bdf8));
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+    .route-panel h2 {
+      margin: 0 0 .35rem 0;
+      color: var(--text-primary);
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+      letter-spacing: -.03em;
+    }
+    .route-panel > p {
+      max-width: 900px;
+      margin: 0 0 var(--sp-4) 0;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: var(--sp-4);
+    }
+    .route-card {
+      padding: var(--sp-4);
+      border-radius: var(--r-md);
+      border: 1px solid rgba(148,163,184,.16);
+      background: rgba(2,8,23,.45);
+    }
+    .route-card .step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.35rem;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--route-color, #38bdf8) 14%, transparent);
+      color: var(--route-color, #38bdf8);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: .72rem;
+      margin-bottom: .55rem;
+    }
+    .route-card strong {
+      display: block;
+      color: var(--text-primary);
+      margin-bottom: .25rem;
+      font-size: 1rem;
+    }
+    .route-card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+
   </style>
 
   <!-- Open Graph -->
@@ -262,9 +332,17 @@
   <div class="page-content">
     <div class="container">
 
-  <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-    Single-atom fluorescence imaging is the fundamental read-out mechanism for all tweezer and optical-lattice experiments, every circuit ends with counting atoms. A photon is scattered off the trapped atom onto a camera; the challenge is collecting enough photons for reliable 0/1 discrimination before the atom heats out of the trap. This calculator computes signal-to-noise ratio (SNR) for your specific imaging setup (species, NA, detuning, camera) and the resulting single-atom detection fidelity, plus the new Histogram Fidelity section which shows how to extract detection fidelity from the bimodal fluorescence histogram, the same analysis used in Evered et al. 2023, Manetsch et al. 2025, and Wu et al. 2022.
-  </div>
+  <section class="route-panel anim-in" style="--route-color:var(--c-img);--route-border:rgba(52,211,153,.24)">
+    <div class="route-kicker">Imaging budget workflow</div>
+    <h2>Follow the photons from atom to threshold.</h2>
+    <p>Single-atom imaging is not one number. Work through the chain in order: how many photons the atom scatters, how many your optics collect, how camera noise broadens the distributions, and how much the bright/dark histograms overlap.</p>
+    <div class="route-grid">
+      <div class="route-card"><span class="step">01</span><strong>Set the imaging transition</strong><p>Choose species, detuning, saturation, and exposure to compute the scattering rate.</p></div>
+      <div class="route-card"><span class="step">02</span><strong>Collect photons</strong><p>Set NA, transmission, QE, and camera model to turn scattered photons into detected signal.</p></div>
+      <div class="route-card"><span class="step">03</span><strong>Read SNR and fidelity</strong><p>Separate photon-count SNR from histogram overlap and atom-survival limits.</p></div>
+      <div class="route-card"><span class="step">04</span><strong>Use the histogram</strong><p>Choose a threshold and inspect the false-positive/false-negative tails directly.</p></div>
+    </div>
+  </section>
 
   <div class="common-mistake anim-in delay-1">
     <strong>Common mistake, SNR is not fidelity.</strong>
@@ -642,7 +720,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
   <!-- ── Fluorescence histogram animation ── -->
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
-      <span style="color:var(--c-img)">05 </span>Fluorescence Histogram — Single-Atom Detection
+      <span style="color:var(--c-img)">05 </span>Fluorescence Histogram — Threshold Preview
     </h2>
     <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:.75rem;">
       Each frame adds simulated imaging shots drawn from the real Poisson distributions for your settings.
@@ -665,7 +743,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
   <!-- ═══ SECTION 5: THEORY ════════════════════════════════════ -->
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:var(--c-img)">05 </span>Physics &amp; Formulas
+      <span style="color:var(--c-img)">06 </span>Physics &amp; Formulas
     </h2>
 
     <div class="accordion">
@@ -778,7 +856,7 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
   <!-- ═══ SECTION 6: IMAGING HISTOGRAM & FIDELITY ══════════════ -->
   <section class="section-block anim-in delay-5" id="histogram-section">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:var(--c-img)">06 </span>Imaging Histogram &amp; Detection Fidelity
+      <span style="color:var(--c-img)">07 </span>Imaging Histogram &amp; Detection Fidelity
     </h2>
 
     <div class="theory-box">
@@ -1210,7 +1288,7 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
   <!-- ═══ SECTION 7: REFERENCES ════════════════════════════════ -->
   <section class="section-block anim-in delay-6">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:var(--c-img)">07 </span>References &amp; Further Reading
+      <span style="color:var(--c-img)">08 </span>References &amp; Further Reading
     </h2>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.93.163602" target="_blank" rel="noopener">

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Space Cooling, AMO Toolkit</title>
+  <title>Laser Cooling Simulator, AMO Toolkit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Cooling Simulator">
   <meta name="twitter:description" content="Interactive laser cooling simulator, visualise Doppler and sub-Doppler cooling of atoms in real time.">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cooling Simulator","description":"Interactive laser cooling simulator, visualise Doppler and sub-Doppler cooling of atoms in real time.","url":"https://amotoolkit.com/pages/cooling-simulator.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser Cooling Simulator","description":"Interactive laser cooling simulator, visualise Doppler and sub-Doppler cooling of atoms in real time.","url":"https://amotoolkit.com/pages/cooling-simulator.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
   <link rel="stylesheet" href="../css/styles.css?v=10">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
@@ -133,6 +133,76 @@
 
     /* Sideband labels */
     .sb-label { font-size: .75rem; color: var(--text-muted); text-align: center; margin-top: .4rem; }
+
+
+    /* Structured reader route cards */
+    .route-panel {
+      margin: 0 0 var(--sp-7) 0;
+      padding: var(--sp-5);
+      border: 1px solid var(--route-border, rgba(56,189,248,.2));
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .route-panel .route-kicker {
+      font-family: var(--font-mono);
+      color: var(--route-color, var(--page-color, #38bdf8));
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+    .route-panel h2 {
+      margin: 0 0 .35rem 0;
+      color: var(--text-primary);
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+      letter-spacing: -.03em;
+    }
+    .route-panel > p {
+      max-width: 900px;
+      margin: 0 0 var(--sp-4) 0;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: var(--sp-4);
+    }
+    .route-card {
+      padding: var(--sp-4);
+      border-radius: var(--r-md);
+      border: 1px solid rgba(148,163,184,.16);
+      background: rgba(2,8,23,.45);
+    }
+    .route-card .step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.35rem;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--route-color, #38bdf8) 14%, transparent);
+      color: var(--route-color, #38bdf8);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: .72rem;
+      margin-bottom: .55rem;
+    }
+    .route-card strong {
+      display: block;
+      color: var(--text-primary);
+      margin-bottom: .25rem;
+      font-size: 1rem;
+    }
+    .route-card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+
   </style>
 </head>
 <body>
@@ -142,9 +212,9 @@
   <div class="page-hero" style="--page-color:#60a5fa;--page-bg:rgba(96,165,250,0.07);--page-border:rgba(96,165,250,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-      <div class="page-hero-eyebrow" style="background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.2);color:#60a5fa;">🌡️ Trap, Image & Cool 06 · Free Space Cooling</div>
+      <div class="page-hero-eyebrow" style="background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.2);color:#60a5fa;">🌡️ Trap, Image & Cool 06 · Laser Cooling Simulator</div>
       <h1>
-        Free Space <span class="grad-text" style="--ga: var(--c-cool); --gb: #818cf8;">Cooling</span>
+        Laser <span class="grad-text" style="--ga: var(--c-cool); --gb: #818cf8;">Cooling Simulator</span>
       </h1>
       <p class="page-hero-desc">
         From room temperature to quantum ground state. Explore Doppler cooling, sub-Doppler gray
@@ -194,13 +264,21 @@
   <div class="page-content">
     <div class="container">
 
-  <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-    Laser cooling exploits radiation pressure from near-resonant light to slow and cool atoms. Doppler cooling, the first stage, provides cooling whenever an atom moving toward a beam sees a red-shifted photon closer to resonance, leading to a velocity-dependent damping force with limit k_BT_D = ℏΓ/2. Sub-Doppler mechanisms (Sisyphus cooling, gray molasses) exploit light shifts, dark states, and optical pumping to cool below the Doppler limit; the single-photon recoil scale E_r/k_B = ℏ²k²/(2mk_B) is the natural lower energy scale. This simulator shows momentum-space dynamics in real time so you can see the transition from broad thermal distribution to cold peak.
-  </div>
+  <section class="route-panel anim-in" style="--route-color:var(--c-cool);--route-border:rgba(96,165,250,.24)">
+    <div class="route-kicker">Cooling landscape</div>
+    <h2>Separate free-space cooling from trapped-atom cooling.</h2>
+    <p>This page starts with velocity-space Doppler cooling, then shows why sub-Doppler and sideband methods are needed as experiments move toward optical tweezers and Lamb-Dicke physics.</p>
+    <div class="route-grid">
+      <div class="route-card"><span class="step">01</span><strong>Doppler damping</strong><p>Use detuning and saturation to see a thermal velocity distribution narrow.</p></div>
+      <div class="route-card"><span class="step">02</span><strong>Sub-Doppler mechanisms</strong><p>Connect gray molasses and Sisyphus cooling to dark states, light shifts, and recoil scales.</p></div>
+      <div class="route-card"><span class="step">03</span><strong>Sideband cooling</strong><p>Move from velocity damping to motional-state cooling in a harmonic trap.</p></div>
+      <div class="route-card"><span class="step">04</span><strong>Choose a method</strong><p>Compare linewidth, recoil, trap frequency, and required laser complexity.</p></div>
+    </div>
+  </section>
 
   <!-- ═══ LIVE COOLING ANIMATION ═══ -->
   <section class="section-block anim-in">
-    <div class="section-title">Live Free-Space Cooling Simulator</div>
+    <div class="section-title">Live Doppler Cooling Simulator</div>
     <div class="section-sub">Drag the sliders — watch the velocity distribution narrow as atoms cool</div>
     <div class="chart-card">
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.75rem;">

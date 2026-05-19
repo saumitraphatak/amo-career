@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quick Lab Calculations, AMO Toolkit</title>
+  <title>Quick Lab Console, AMO Toolkit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -126,6 +126,76 @@
     }
     .we-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .75rem; }
     @media(max-width:600px) { .we-grid { grid-template-columns: 1fr; } }
+
+
+    /* Structured reader route cards */
+    .route-panel {
+      margin: 0 0 var(--sp-7) 0;
+      padding: var(--sp-5);
+      border: 1px solid var(--route-border, rgba(56,189,248,.2));
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .route-panel .route-kicker {
+      font-family: var(--font-mono);
+      color: var(--route-color, var(--page-color, #38bdf8));
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+    .route-panel h2 {
+      margin: 0 0 .35rem 0;
+      color: var(--text-primary);
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+      letter-spacing: -.03em;
+    }
+    .route-panel > p {
+      max-width: 900px;
+      margin: 0 0 var(--sp-4) 0;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: var(--sp-4);
+    }
+    .route-card {
+      padding: var(--sp-4);
+      border-radius: var(--r-md);
+      border: 1px solid rgba(148,163,184,.16);
+      background: rgba(2,8,23,.45);
+    }
+    .route-card .step {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.35rem;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--route-color, #38bdf8) 14%, transparent);
+      color: var(--route-color, #38bdf8);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: .72rem;
+      margin-bottom: .55rem;
+    }
+    .route-card strong {
+      display: block;
+      color: var(--text-primary);
+      margin-bottom: .25rem;
+      font-size: 1rem;
+    }
+    .route-card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+
   </style>
 </head>
 <body>
@@ -135,11 +205,10 @@
     <div class="page-hero" style="--page-color:#fbbf24;--page-bg:rgba(251,191,36,0.07);--page-border:rgba(251,191,36,0.2);">
       <div class="container page-hero-2col">
         <div class="page-hero-text">
-          <div class="page-hero-eyebrow" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#fbbf24;">🧮 Trap, Image & Cool 04 · Quick Lab Calculations</div>
-          <h1>Quick Lab Calculations</h1>
+          <div class="page-hero-eyebrow" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#fbbf24;">🧮 Trap, Image & Cool 04 · Quick Lab Console</div>
+          <h1>Quick Lab Console</h1>
           <p class="page-hero-desc">
-            Quick-reference calculators for everyday experimental AMO physics.
-            Optics &amp; beams, power &amp; RF, atomic physics, trap &amp; cavity, results update instantly.
+            A console for the everyday numbers that decide whether an AMO setup is plausible: beams, RF power, recoil, trap frequencies, cavity scales, angular momentum, and unit conversions.
           </p>
         </div>
         <div class="page-hero-anim" aria-hidden="true">
@@ -182,18 +251,26 @@
     <div class="page-content">
       <div class="container">
 
-    <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-      Quick-access calculations for the daily work of an AMO physicist, organized into four tabs: Optics (beam parameters, coupling, AOM shifts, shot noise floor), Atomic physics (single-photon recoil scale, Doppler limit, saturation intensity, Zeeman shifts), Trapping (tweezer frequency, Lamb-Dicke parameter, cavity FSR and finesse), and Clebsch-Gordan coefficients. These are the numbers you reach for dozens of times a week, keeping them in one place avoids the mental overhead of re-deriving units every time.
-    </div>
+    <section class="route-panel anim-in" style="--route-color:#fbbf24;--route-border:rgba(251,191,36,.24)">
+      <div class="route-kicker">Quick lab workflows</div>
+      <h2>Pick the calculation by the lab question.</h2>
+      <p>The console is organized so you can move from a practical experimental task to the right calculator family without remembering where every formula lives.</p>
+      <div class="route-grid">
+        <div class="route-card"><span class="step">01</span><strong>Design a tweezer</strong><p>Estimate waist, Rayleigh range, trap frequencies, Lamb-Dicke parameter, and cavity-adjacent scales.</p></div>
+        <div class="route-card"><span class="step">02</span><strong>Check an AOM/RF chain</strong><p>Convert dBm, account for gain/loss, estimate deflection, and sanity-check drive powers.</p></div>
+        <div class="route-card"><span class="step">03</span><strong>Estimate atom scales</strong><p>Recoil, Doppler limits, Zeeman shifts, saturation intensity, and velocity classes.</p></div>
+        <div class="route-card"><span class="step">04</span><strong>Convert lab units fast</strong><p>Use the unit converter when notebook units, vendor units, and paper units do not agree.</p></div>
+      </div>
+    </section>
 
     <div data-tabs-wrap>
       <div class="tab-bar" data-group="main">
-        <button class="tab-btn active" data-tab="optics">🔭 Optics &amp; Beams</button>
-        <button class="tab-btn" data-tab="power">📡 Power &amp; RF</button>
-        <button class="tab-btn" data-tab="atomic">⚛️ Atomic Physics</button>
-        <button class="tab-btn" data-tab="trap">🪤 Trap &amp; Cavity</button>
-        <button class="tab-btn" data-tab="cg">🔢 Clebsch–Gordan</button>
-        <button class="tab-btn" data-tab="eom">🎛️ EOM / AOM</button>
+        <button class="tab-btn active" data-tab="optics">🔭 Beam &amp; Imaging Optics</button>
+        <button class="tab-btn" data-tab="power">📡 RF Power &amp; AOMs</button>
+        <button class="tab-btn" data-tab="atomic">⚛️ Atomic Scales</button>
+        <button class="tab-btn" data-tab="trap">🪤 Tweezers &amp; Cavities</button>
+        <button class="tab-btn" data-tab="cg">🔢 Angular Momentum</button>
+        <button class="tab-btn" data-tab="eom">🎛️ Modulators</button>
         <button class="tab-btn" data-tab="units">🔄 Unit Converter</button>
       </div>
 
