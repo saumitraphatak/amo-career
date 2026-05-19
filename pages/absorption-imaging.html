@@ -138,21 +138,74 @@
       </div>
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="ab-beam" x1="0" x2="1"><stop offset="0" stop-color="#818cf8" stop-opacity=".9"/><stop offset=".52" stop-color="#818cf8" stop-opacity=".22"/><stop offset="1" stop-color="#38bdf8" stop-opacity=".52"/></linearGradient>
-            <filter id="ab-glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <style>@keyframes ab-scan{0%,100%{opacity:.35}50%{opacity:1}}@keyframes ab-pulse{0%,100%{r:20;opacity:.7}50%{r:24;opacity:1}}.ab-p{animation:ab-pulse 2.4s ease-in-out infinite}.ab-s{animation:ab-scan 1.7s ease-in-out infinite}</style>
-          </defs>
-          <rect width="300" height="165" rx="14" fill="rgba(15,23,42,.65)"/>
-          <path d="M18 82 H282" stroke="url(#ab-beam)" stroke-width="26" stroke-linecap="round"/>
-          <circle class="ab-p" cx="145" cy="82" r="22" fill="rgba(129,140,248,.22)" stroke="#a5b4fc" stroke-width="2" filter="url(#ab-glow)"/>
-          <g opacity=".55" stroke="#c4b5fd"><path d="M132 70c9-8 20-8 29 0M130 84c11-8 25-8 36 0M136 98c7-5 18-5 25 0"/></g>
-          <rect x="226" y="42" width="42" height="80" rx="5" fill="rgba(148,163,184,.11)" stroke="#94a3b8"/>
-          <g class="ab-s"><rect x="232" y="51" width="30" height="6" fill="#a5b4fc" opacity=".82"/><rect x="232" y="70" width="30" height="6" fill="#a5b4fc" opacity=".42"/><rect x="232" y="89" width="30" height="6" fill="#a5b4fc" opacity=".2"/><rect x="232" y="108" width="30" height="6" fill="#a5b4fc" opacity=".52"/></g>
-          <text x="42" y="36" fill="#a5b4fc" font-family="JetBrains Mono,monospace" font-size="10">probe</text>
-          <text x="145" y="130" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-size="10">OD = -ln(Ishadow/Iprobe)</text>
-          <text x="247" y="137" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-size="9">camera</text>
-        </svg>
+<defs>
+  <filter id="abf"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <linearGradient id="abg" x1="0" x2="1"><stop offset="0%" stop-color="#818cf8" stop-opacity=".9"/><stop offset="45%" stop-color="#818cf8" stop-opacity=".15"/><stop offset="55%" stop-color="#818cf8" stop-opacity=".15"/><stop offset="100%" stop-color="#818cf8" stop-opacity=".7"/></linearGradient>
+  <radialGradient id="abcloud" cx="50%" cy="50%"><stop offset="0%" stop-color="#818cf8" stop-opacity=".7"/><stop offset="60%" stop-color="#818cf8" stop-opacity=".3"/><stop offset="100%" stop-color="#818cf8" stop-opacity="0"/></radialGradient>
+  <radialGradient id="abod" cx="50%" cy="50%"><stop offset="0%" stop-color="#1e1b4b" stop-opacity=".95"/><stop offset="50%" stop-color="#818cf8" stop-opacity=".08"/><stop offset="100%" stop-color="#818cf8" stop-opacity="0"/></radialGradient>
+  <style>
+    @keyframes ab-s1{0%,27%{opacity:1}33%,95%{opacity:0}100%{opacity:1}}
+    @keyframes ab-s2{0%,28%{opacity:0}33%,62%{opacity:1}67%,100%{opacity:0}}
+    @keyframes ab-s3{0%,62%{opacity:0}67%,95%{opacity:1}100%{opacity:0}}
+    @keyframes ab-scan{0%,100%{opacity:.25}50%{opacity:.85}}
+    @keyframes ab-pulse{0%,100%{r:18;opacity:.7}50%{r:22;opacity:1}}
+    .ab-s1{animation:ab-s1 7s ease-in-out infinite}
+    .ab-s2{animation:ab-s2 7s ease-in-out infinite}
+    .ab-s3{animation:ab-s3 7s ease-in-out infinite}
+    .ab-scan{animation:ab-scan 1.6s ease-in-out infinite}
+    .ab-pulse{animation:ab-pulse 2.4s ease-in-out infinite}
+  </style>
+</defs>
+<rect width="300" height="165" rx="14" fill="rgba(15,23,42,.65)"/>
+<g opacity=".06" stroke="#818cf8" stroke-width=".5"><line x1="0" y1="33" x2="300" y2="33"/><line x1="0" y1="82" x2="300" y2="82"/><line x1="0" y1="131" x2="300" y2="131"/><line x1="60" y1="0" x2="60" y2="165"/><line x1="120" y1="0" x2="120" y2="165"/><line x1="180" y1="0" x2="180" y2="165"/><line x1="240" y1="0" x2="240" y2="165"/></g>
+
+<!-- STAGE 1: Probe beam (uniform, full-intensity) -->
+<g class="ab-s1">
+  <rect x="12" y="54" width="62" height="58" rx="5" fill="rgba(129,140,248,.1)" stroke="#818cf8" stroke-width="1"/>
+  <text x="43" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">① Probe</text>
+  <rect x="16" y="58" width="54" height="50" rx="3" fill="rgba(129,140,248,.06)"/>
+  <g class="ab-scan"><rect x="18" y="61" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="69" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="77" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="85" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="93" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="101" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/></g>
+  <text x="43" y="124" text-anchor="middle" font-size="7" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">I_probe</text>
+  <path d="M88 82 H 130" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3" opacity=".4"/><polygon points="127,79 133,82 127,85" fill="#818cf8" opacity=".4"/>
+  <circle cx="150" cy="82" r="22" fill="url(#abcloud)" class="ab-pulse"/>
+  <circle cx="150" cy="82" r="12" fill="#818cf8" opacity=".25" filter="url(#abf)"/>
+  <text x="150" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">atom cloud</text>
+  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">probe illumination</text>
+</g>
+
+<!-- STAGE 2: Shadow image (beam absorbed in cloud center) -->
+<g class="ab-s2">
+  <rect x="12" y="54" width="62" height="58" rx="5" fill="rgba(129,140,248,.1)" stroke="#818cf8" stroke-width="1"/>
+  <text x="43" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">② Shadow</text>
+  <rect x="16" y="58" width="54" height="50" rx="3" fill="rgba(129,140,248,.06)"/>
+  <rect x="18" y="61" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
+  <rect x="18" y="69" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
+  <rect x="18" y="77" width="15" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/><rect x="51" y="77" width="17" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
+  <rect x="18" y="85" width="12" height="5" rx="1" fill="#a5b4fc" opacity=".5" class="ab-scan"/><rect x="54" y="85" width="14" height="5" rx="1" fill="#a5b4fc" opacity=".5" class="ab-scan"/>
+  <rect x="18" y="93" width="15" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/><rect x="51" y="93" width="17" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
+  <rect x="18" y="101" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
+  <circle cx="36" cy="82" r="8" fill="rgba(2,8,23,.6)"/>
+  <text x="43" y="124" text-anchor="middle" font-size="7" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">I_shadow</text>
+  <path d="M18 82 H 282" stroke="url(#abg)" stroke-width="20" stroke-linecap="round" opacity=".5"/>
+  <circle cx="150" cy="82" r="16" fill="rgba(129,140,248,.25)" stroke="#a5b4fc" stroke-width="1.5" filter="url(#abf)"/>
+  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">Beer-Lambert absorption</text>
+</g>
+
+<!-- STAGE 3: OD map (computed column density) -->
+<g class="ab-s3">
+  <rect x="12" y="54" width="62" height="58" rx="5" fill="rgba(129,140,248,.1)" stroke="#818cf8" stroke-width="1"/>
+  <text x="43" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">③ OD map</text>
+  <rect x="16" y="58" width="54" height="50" rx="3" fill="rgba(129,140,248,.04)"/>
+  <ellipse cx="43" cy="83" rx="16" ry="14" fill="url(#abod)"/>
+  <text x="43" y="124" text-anchor="middle" font-size="7" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">OD(x,y)</text>
+  <path d="M88 82 H 130" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3" opacity=".4"/><polygon points="127,79 133,82 127,85" fill="#818cf8" opacity=".4"/>
+  <text x="150" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">column density</text>
+  <ellipse cx="150" cy="82" rx="32" ry="28" fill="url(#abod)" filter="url(#abf)"/>
+  <ellipse cx="150" cy="82" rx="14" ry="12" fill="rgba(30,27,75,.8)"/>
+  <text x="210" y="26" font-size="8" fill="#818cf8" opacity=".65" font-family="JetBrains Mono,monospace">OD = -ln(I_s/I_p)</text>
+  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">optical depth reconstruction</text>
+</g>
+</svg>
       </div>
     </div>
   </div>

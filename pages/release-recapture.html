@@ -228,37 +228,76 @@
         </p>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
-        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-<style>
-@keyframes rr-atom{0%{cy:75;opacity:1}25%{cy:50;opacity:1}50%{cy:75;opacity:.3}75%{cy:50;opacity:1}100%{cy:75;opacity:1}}
-@keyframes rr-well{0%,40%{opacity:1}45%,70%{opacity:.15}75%,100%{opacity:1}}
-@keyframes rr-twz{0%,100%{opacity:.8}45%,70%{opacity:.1}}
-.rr-well{animation:rr-well 3s ease-in-out infinite}
-.rr-atom{animation:rr-atom 3s ease-in-out infinite}
-.rr-twz{animation:rr-twz 3s ease-in-out infinite}
-</style>
-<!-- Tweezer beam -->
-<path d="M150,10 L135,90 M150,10 L165,90" fill="none" stroke="#fb923c" stroke-width="1.5" class="rr-twz"/>
-<!-- Potential well -->
-<path d="M100,130 Q150,50 200,130" fill="none" stroke="#fb923c" stroke-width="2" class="rr-well"/>
-<path d="M100,130 Q150,50 200,130" fill="url(#rr-grad)" class="rr-well"/>
-<!-- Atom bouncing in well -->
-<circle cx="150" cy="75" r="8" fill="#fb923c" filter="url(#rrf)" class="rr-atom"/>
-<!-- Release label -->
-<text x="150" y="155" text-anchor="middle" font-size="8" fill="#fb923c" opacity=".6" font-family="monospace">trap → release → recapture</text>
-<!-- Time axis -->
-<line x1="30" y1="135" x2="270" y2="135" stroke="#fb923c" stroke-width=".6" opacity=".3"/>
-<text x="30" y="148" font-size="7" fill="#fb923c" opacity=".4" font-family="monospace">t=0</text>
-<text x="150" y="148" font-size="7" fill="#fb923c" opacity=".4" font-family="monospace">Δt</text>
-<text x="240" y="148" font-size="7" fill="#fb923c" opacity=".4" font-family="monospace">recapture</text>
-<defs>
-  <linearGradient id="rr-grad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#fb923c" stop-opacity=".15"/>
-    <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
-  </linearGradient>
-  <filter id="rrf"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-</svg>
+        <svg viewBox="0 0 340 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Release-recapture thermometry: trapped atom, ballistic expansion, recapture, and survival curve">
+          <defs>
+            <radialGradient id="rr-cloud-grad" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#fed7aa" stop-opacity="0.95"/>
+              <stop offset="55%" stop-color="#fb923c" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="rr-card" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0f172a" stop-opacity="0.92"/>
+              <stop offset="100%" stop-color="#020617" stop-opacity="0.72"/>
+            </linearGradient>
+            <filter id="rr-glow"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="rr-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#fb923c" opacity=".7"/></marker>
+            <style>
+              @keyframes rr-trapPulse{0%,32%,100%{opacity:.9}42%,68%{opacity:.22}}
+              @keyframes rr-releaseCloud{0%,30%{transform:scale(.35);opacity:.15}48%,68%{transform:scale(1.15);opacity:.75}86%,100%{transform:scale(.55);opacity:.25}}
+              @keyframes rr-survivor{0%,62%{opacity:.25;transform:translateY(0)}78%,100%{opacity:1;transform:translateY(-2px)}}
+              @keyframes rr-escape{0%,62%{opacity:.15;transform:translate(0,0)}78%,100%{opacity:.8;transform:translate(9px,-8px)}}
+              @keyframes rr-curve{0%,35%{stroke-dashoffset:105}70%,100%{stroke-dashoffset:0}}
+              .rr-trap{animation:rr-trapPulse 4.2s ease-in-out infinite}.rr-cloud{transform-box:fill-box;transform-origin:center;animation:rr-releaseCloud 4.2s ease-in-out infinite}.rr-survive{transform-box:fill-box;transform-origin:center;animation:rr-survivor 4.2s ease-in-out infinite}.rr-escape{transform-box:fill-box;transform-origin:center;animation:rr-escape 4.2s ease-in-out infinite}.rr-curve{stroke-dasharray:105;stroke-dashoffset:105;animation:rr-curve 4.2s ease-in-out infinite}.rr-label{font-family:JetBrains Mono,monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase}.rr-small{font-family:JetBrains Mono,monospace;font-size:6px}
+            </style>
+          </defs>
+
+          <rect x="1" y="1" width="338" height="188" rx="16" fill="url(#rr-card)" stroke="rgba(251,146,60,.24)"/>
+          <g opacity=".09" stroke="#fb923c" stroke-width=".6">
+            <path d="M24 32H316M24 76H316M24 120H316M24 164H316"/>
+            <path d="M74 16V174M170 16V174M266 16V174"/>
+          </g>
+
+          <g transform="translate(30 35)">
+            <text x="42" y="0" text-anchor="middle" class="rr-label" fill="#fed7aa">trap on</text>
+            <path class="rr-trap" d="M42 14 L28 67 M42 14 L56 67" fill="none" stroke="#fb923c" stroke-width="1.7" opacity=".85"/>
+            <path d="M14 76 Q42 36 70 76" fill="none" stroke="#fb923c" stroke-width="2" opacity=".75"/>
+            <path d="M14 76 Q42 36 70 76 L70 96 L14 96 Z" fill="#fb923c" opacity=".08"/>
+            <circle cx="42" cy="50" r="7" fill="#fb923c" filter="url(#rr-glow)"/>
+          </g>
+
+          <g transform="translate(126 35)">
+            <text x="42" y="0" text-anchor="middle" class="rr-label" fill="#fed7aa">release dt</text>
+            <path d="M42 22 L42 92" stroke="#64748b" stroke-width=".8" opacity=".5" stroke-dasharray="3 4"/>
+            <ellipse class="rr-cloud" cx="42" cy="58" rx="35" ry="24" fill="url(#rr-cloud-grad)"/>
+            <g fill="#fb923c" opacity=".75">
+              <circle cx="27" cy="48" r="2"/><circle cx="42" cy="56" r="2.4"/><circle cx="56" cy="47" r="1.8"/>
+              <circle cx="31" cy="68" r="1.7"/><circle cx="52" cy="72" r="2"/><circle cx="43" cy="40" r="1.5"/>
+            </g>
+            <path d="M18 96 C30 88 54 88 66 96" fill="none" stroke="#fb923c" stroke-width="1.2" opacity=".35"/>
+          </g>
+
+          <g transform="translate(222 35)">
+            <text x="42" y="0" text-anchor="middle" class="rr-label" fill="#fed7aa">recapture</text>
+            <path class="rr-trap" d="M42 14 L28 67 M42 14 L56 67" fill="none" stroke="#fb923c" stroke-width="1.4" opacity=".6"/>
+            <path d="M14 76 Q42 36 70 76" fill="none" stroke="#fb923c" stroke-width="2" opacity=".75"/>
+            <circle class="rr-survive" cx="35" cy="57" r="4" fill="#86efac" filter="url(#rr-glow)"/>
+            <circle class="rr-survive" cx="44" cy="52" r="5" fill="#fb923c" filter="url(#rr-glow)"/>
+            <circle class="rr-escape" cx="59" cy="46" r="3.5" fill="#f87171" filter="url(#rr-glow)"/>
+            <text x="42" y="96" text-anchor="middle" class="rr-small" fill="#94a3b8">green survives / red lost</text>
+          </g>
+
+          <path d="M92 142 H247" stroke="#fb923c" stroke-width="1.2" opacity=".45" marker-end="url(#rr-arrow)"/>
+          <text x="170" y="137" text-anchor="middle" class="rr-small" fill="#fb923c" opacity=".8">trap off, wait, trap on</text>
+
+          <g transform="translate(35 152)">
+            <line x1="0" y1="22" x2="95" y2="22" stroke="#64748b" stroke-width=".7" opacity=".65"/>
+            <line x1="0" y1="22" x2="0" y2="0" stroke="#64748b" stroke-width=".7" opacity=".65"/>
+            <path class="rr-curve" d="M0 2 C20 3 34 7 48 12 S75 21 95 22" fill="none" stroke="#86efac" stroke-width="2"/>
+            <text x="-2" y="-4" class="rr-small" fill="#94a3b8">Psurv</text>
+            <text x="84" y="35" class="rr-small" fill="#94a3b8">time</text>
+          </g>
+          <text x="216" y="174" class="rr-small" fill="#fed7aa" opacity=".75">hotter atom = faster drop</text>
+        </svg>
       </div>
     </div>
   </div>

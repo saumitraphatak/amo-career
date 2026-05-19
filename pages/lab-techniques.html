@@ -284,39 +284,71 @@
         </div>
         <div class="page-hero-anim" aria-hidden="true">
           <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-<style>
-@keyframes lt-beam{0%{stroke-dashoffset:60}100%{stroke-dashoffset:0}}
-@keyframes lt-glow{0%,100%{opacity:.5}50%{opacity:1}}
-@keyframes lt-waist{0%,100%{rx:18}50%{rx:6}}
-.lt-photon{stroke-dasharray:6 54;animation:lt-beam 1.4s linear infinite}
-.lt-spot{animation:lt-glow 1.8s ease-in-out infinite}
-</style>
-<!-- Beam top envelope -->
-<path d="M10,50 Q150,82 290,50" fill="none" stroke="#34d399" stroke-width="1" opacity=".35"/>
-<path d="M10,115 Q150,83 290,115" fill="none" stroke="#34d399" stroke-width="1" opacity=".35"/>
-<!-- Beam fill -->
-<path d="M10,50 Q150,82 290,50 L290,115 Q150,83 10,115 Z" fill="url(#lt-grad)" opacity=".15"/>
-<!-- Photon paths -->
-<line x1="10" y1="75" x2="290" y2="75" stroke="#34d399" stroke-width="1.5" class="lt-photon"/>
-<line x1="10" y1="90" x2="290" y2="90" stroke="#34d399" stroke-width="1.5" class="lt-photon" style="animation-delay:-.7s"/>
-<!-- Lens -->
-<ellipse cx="150" cy="82" rx="6" ry="30" fill="none" stroke="#34d399" stroke-width="2" opacity=".7"/>
-<!-- Waist glow -->
-<ellipse cx="200" cy="82" rx="4" ry="8" fill="#34d399" opacity=".3" class="lt-spot"/>
-<!-- Atom at focus -->
-<circle cx="200" cy="82" r="5" fill="#34d399" class="lt-spot" filter="url(#ltf)"/>
-<!-- Labels -->
-<text x="25" y="140" font-size="8" fill="#34d399" opacity=".6" font-family="monospace">λ laser</text>
-<text x="135" y="140" font-size="8" fill="#34d399" opacity=".6" font-family="monospace">lens</text>
-<text x="180" y="140" font-size="8" fill="#34d399" opacity=".6" font-family="monospace">focus</text>
 <defs>
-  <linearGradient id="lt-grad" x1="0" x2="1">
-    <stop offset="0%" stop-color="#34d399" stop-opacity=".05"/>
-    <stop offset="50%" stop-color="#34d399" stop-opacity=".25"/>
-    <stop offset="100%" stop-color="#34d399" stop-opacity=".05"/>
-  </linearGradient>
-  <filter id="ltf"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="ltf"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="ltf2"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <radialGradient id="ltg" cx="50%" cy="50%"><stop offset="0%" stop-color="#34d399" stop-opacity=".35"/><stop offset="100%" stop-color="#34d399" stop-opacity="0"/></radialGradient>
+  <style>
+    @keyframes lt-s1{0%,27%{opacity:1}33%,95%{opacity:0}100%{opacity:1}}
+    @keyframes lt-s2{0%,28%{opacity:0}33%,62%{opacity:1}67%,100%{opacity:0}}
+    @keyframes lt-s3{0%,62%{opacity:0}67%,95%{opacity:1}100%{opacity:0}}
+    @keyframes lt-beam{0%{stroke-dashoffset:54}100%{stroke-dashoffset:0}}
+    @keyframes lt-ph{0%{opacity:1;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:-28}}
+    @keyframes lt-pulse{0%,100%{r:8;opacity:.7}50%{r:11;opacity:1}}
+    .lt-s1{animation:lt-s1 7s ease-in-out infinite}
+    .lt-s2{animation:lt-s2 7s ease-in-out infinite}
+    .lt-s3{animation:lt-s3 7s ease-in-out infinite}
+    .lt-beam{stroke-dasharray:6,48;animation:lt-beam 1s linear infinite}
+    .lt-ph{stroke-dasharray:28;animation:lt-ph 1.1s linear infinite}
+    .lt-pulse{animation:lt-pulse 2s ease-in-out infinite}
+  </style>
 </defs>
+<rect width="300" height="165" rx="14" fill="rgba(15,23,42,.65)"/>
+<g opacity=".06" stroke="#34d399" stroke-width=".5"><line x1="0" y1="33" x2="300" y2="33"/><line x1="0" y1="82" x2="300" y2="82"/><line x1="0" y1="131" x2="300" y2="131"/><line x1="60" y1="0" x2="60" y2="165"/><line x1="120" y1="0" x2="120" y2="165"/><line x1="180" y1="0" x2="180" y2="165"/><line x1="240" y1="0" x2="240" y2="165"/></g>
+<!-- STAGE 1: MOT loading -->
+<g class="lt-s1">
+  <circle cx="150" cy="82" r="44" fill="url(#ltg)"/>
+  <line x1="285" y1="82" x2="172" y2="82" stroke="#34d399" stroke-width="5" opacity=".12"/>
+  <line x1="285" y1="82" x2="172" y2="82" stroke="#34d399" stroke-width="1.5" class="lt-beam"/>
+  <line x1="15" y1="82" x2="128" y2="82" stroke="#34d399" stroke-width="5" opacity=".12"/>
+  <line x1="15" y1="82" x2="128" y2="82" stroke="#34d399" stroke-width="1.5" class="lt-beam" style="animation-delay:-.5s"/>
+  <line x1="150" y1="10" x2="150" y2="62" stroke="#34d399" stroke-width="5" opacity=".12"/>
+  <line x1="150" y1="10" x2="150" y2="62" stroke="#34d399" stroke-width="1.5" class="lt-beam" style="animation-delay:-.25s"/>
+  <line x1="150" y1="154" x2="150" y2="102" stroke="#34d399" stroke-width="5" opacity=".12"/>
+  <line x1="150" y1="154" x2="150" y2="102" stroke="#34d399" stroke-width="1.5" class="lt-beam" style="animation-delay:-.75s"/>
+  <circle cx="137" cy="76" r="2.8" fill="#34d399" opacity=".7"/><circle cx="161" cy="88" r="2.2" fill="#34d399" opacity=".6"/>
+  <circle cx="148" cy="68" r="2" fill="#34d399" opacity=".5"/><circle cx="158" cy="76" r="2.5" fill="#34d399" opacity=".65"/>
+  <circle cx="141" cy="90" r="2" fill="#34d399" opacity=".55"/><circle cx="166" cy="74" r="2.8" fill="#34d399" opacity=".7"/>
+  <circle cx="150" cy="82" r="10" fill="#34d399" opacity=".2" filter="url(#ltf)"/><circle cx="150" cy="82" r="5" fill="#34d399" opacity=".4" filter="url(#ltf)"/>
+  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#34d399" opacity=".65" font-family="JetBrains Mono,monospace">① MOT loading</text>
+</g>
+<!-- STAGE 2: Optical tweezer -->
+<g class="lt-s2">
+  <path d="M130,8 L144,72 M170,8 L156,72" fill="none" stroke="#34d399" stroke-width="2" opacity=".55"><animate attributeName="opacity" values=".55;.8;.55" dur="1.8s" repeatCount="indefinite"/></path>
+  <path d="M100,132 Q150,50 200,132" fill="none" stroke="#34d399" stroke-width="1.8" opacity=".55"/>
+  <path d="M100,132 Q150,50 200,132 Z" fill="#34d399" opacity=".05"/>
+  <circle cx="150" cy="72" class="lt-pulse" fill="#34d399" filter="url(#ltf)"/>
+  <circle cx="150" cy="72" r="5" fill="white" opacity=".75"/>
+  <ellipse cx="150" cy="14" rx="20" ry="5" fill="none" stroke="#34d399" stroke-width="1" opacity=".3" stroke-dasharray="3,2"/>
+  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#34d399" opacity=".65" font-family="JetBrains Mono,monospace">② optical tweezer</text>
+</g>
+<!-- STAGE 3: Fluorescence imaging -->
+<g class="lt-s3">
+  <circle cx="150" cy="82" r="10" fill="#34d399" filter="url(#ltf)"/><circle cx="150" cy="82" r="5" fill="white" opacity=".8"/>
+  <line x1="150" y1="69" x2="150" y2="50" stroke="#34d399" stroke-width="1.8" class="lt-ph"/>
+  <line x1="150" y1="95" x2="150" y2="114" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.14s"/>
+  <line x1="138" y1="70" x2="127" y2="59" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.28s"/>
+  <line x1="162" y1="70" x2="173" y2="59" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.42s"/>
+  <line x1="162" y1="94" x2="173" y2="105" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.56s"/>
+  <line x1="138" y1="94" x2="127" y2="105" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.70s"/>
+  <line x1="137" y1="82" x2="112" y2="82" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.84s"/>
+  <line x1="163" y1="82" x2="188" y2="82" stroke="#34d399" stroke-width="1.8" class="lt-ph" style="animation-delay:-.98s"/>
+  <rect x="218" y="58" width="46" height="46" rx="5" fill="rgba(52,211,153,.08)" stroke="#34d399" stroke-width="1"/>
+  <circle cx="241" cy="81" r="14" fill="none" stroke="#34d399" stroke-width=".8" opacity=".5"/>
+  <circle cx="241" cy="81" r="7" fill="rgba(52,211,153,.18)"/>
+  <text x="241" y="118" text-anchor="middle" font-size="7" fill="#34d399" opacity=".6" font-family="JetBrains Mono,monospace">CCD</text>
+  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#34d399" opacity=".65" font-family="JetBrains Mono,monospace">③ fluorescence imaging</text>
+</g>
 </svg>
         </div>
       </div>

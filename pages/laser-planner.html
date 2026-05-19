@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laser System Planner — AMO Toolkit</title>
+  <meta name="description" content="Laser system planner for AMO experiments: species-specific cooling, repump, gray molasses, tweezer, Rydberg, RF, AOM, fiber, and nonlinear conversion requirements.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/laser-planner.html">
   <link rel="stylesheet" href="../css/styles.css?v=12">
   <style>
     .page-wrap { --page-color:#f472b6; --page-bg:rgba(244,114,182,0.08); --page-border:rgba(244,114,182,0.2); }
@@ -48,25 +54,55 @@
     /* Placeholder */
     .planner-placeholder { text-align:center; padding:var(--sp-10); color:var(--text-muted); font-size:.9rem; }
     .planner-placeholder span { font-size:3rem; display:block; margin-bottom:var(--sp-3); }
+
+
+    /* Native Toolkit page structure */
+    .page-wrap { --route-color: var(--page-color); }
+    .section-block { margin-bottom: var(--sp-12); }
+    .section-title .accent { color: var(--page-color); }
+    .tool-card-tags { margin-top: var(--sp-5); }
+    .planner-shell { margin-top: var(--sp-2); }
+    .beam-table-wrap,
+    .diagram-wrap,
+    .nlo-card,
+    .planner-placeholder { box-shadow: 0 14px 40px rgba(0,0,0,.16); }
+    .beam-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      background: var(--bg-card);
+      overflow-x: auto;
+    }
+    .beam-table-wrap .beam-table { margin: 0; }
+    .atom-selector { align-items: center; }
+    .reference-block {
+      border-top: 1px solid var(--border);
+      padding-top: var(--sp-6);
+      margin-top: var(--sp-8);
+    }
   </style>
 </head>
 <body>
 <div id="nav-root"></div>
 
-<main class="page-wrap">
-  <div class="page-hero">
+<main class="page-wrap" id="main-content">
+  <div class="page-hero" style="--page-color:#f472b6;--page-bg:rgba(244,114,182,0.08);--page-border:rgba(244,114,182,0.22);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-      <div class="page-eyebrow">
-        <span class="page-tag">💡 Build 02</span>
-        <span class="page-tag">Laser System Planner</span>
-      </div>
-      <h1 class="page-title"><span class="accent">Laser</span> System Planner</h1>
-      <p class="page-subtitle">
-        Select an atom species and get the complete laser system: every required wavelength,
-        source type (commercial vs SHG/SFG), typical power budget, fiber compatibility, and
-        a block-diagram of sources → beam control → delivery → chamber.
-      </p>
+        <div class="page-hero-eyebrow" style="background:rgba(244,114,182,0.08);border-color:rgba(244,114,182,0.22);color:#f9a8d4;">
+          💡 Build 02 · Laser System Planner
+        </div>
+        <h1>Laser System <span class="grad-text" style="--ga:#f9a8d4;--gb:#38bdf8;">Planner</span></h1>
+        <p class="page-hero-desc">
+          Select an atom species and get the complete laser stack: required wavelengths, source types,
+          power budgets, fiber compatibility, AOM/control notes, and a source → beam control → delivery → chamber diagram.
+        </p>
+        <div class="tool-card-tags">
+          <span class="chip">Cooling + repump</span>
+          <span class="chip">D1 / gray molasses</span>
+          <span class="chip">Tweezer light</span>
+          <span class="chip">Rydberg beams</span>
+          <span class="chip">SHG / SFG caveats</span>
+        </div>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -106,22 +142,20 @@
   <div class="page-content">
     <div class="container">
 
-    <h2 class="section-title"><span class="accent">01</span> Select Atom Species</h2>
-    <div class="atom-selector" id="atom-selector"></div>
+    <section class="section-block planner-shell anim-in">
+      <h2 class="section-title"><span class="accent">01</span> Select Atom Species</h2>
+      <div class="atom-selector" id="atom-selector"></div>
 
-    <div id="planner-output">
-      <div class="planner-placeholder">
-        <span>💡</span>
-        Select an atom above to generate the full laser system plan.
+      <div id="planner-output">
+        <div class="planner-placeholder">
+          <span>💡</span>
+          Select an atom above to generate the full laser system plan.
+        </div>
       </div>
-    </div>
+    </section>
 
-    </div>
-  </div>
-
-  <div style="padding:0 1.5rem 2rem">
-    <section style="border-top:1px solid var(--border);padding-top:1.5rem;margin-top:1.5rem">
-      <h2 style="font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.75rem">References &amp; Further Reading</h2>
+    <section class="reference-block">
+      <h2 class="section-title">References &amp; Further Reading</h2>
       <div class="read-links">
         <a class="read-link" href="https://doi.org/10.1063/1.1141263" target="_blank" rel="noopener">Wieman &amp; Hollberg (1991), <em>RSI 62</em> 1 — using diode lasers in atomic physics; laser line selection and AOM schemes</a>
         <a class="read-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">Steck alkali data sheets — D1/D2 wavelengths, linewidths, I_sat for all alkali species</a>
@@ -131,6 +165,7 @@
         <a class="read-link" href="https://doi.org/10.1007/978-3-319-92072-0" target="_blank" rel="noopener">Saleh &amp; Teich (2019), <em>Fundamentals of Photonics</em> — laser gain media, diode laser physics, AOM modulation</a>
       </div>
     </section>
+    </div>
   </div>
 </main>
 
@@ -473,13 +508,6 @@ function renderAtom(key) {
       <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#38bdf8;margin-bottom:6px">Expert tip</div>
       <p style="margin:0;font-size:.875rem;color:var(--text-secondary);line-height:1.7">${d.tips}</p>
     </div>
-<footer class="footer">
-  <div class="container">
-    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
-      Laser System Planner &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
-    </p>
-  </div>
-</footer>
 
   `;
 }
