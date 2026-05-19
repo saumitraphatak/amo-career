@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="canonical" href="https://amotoolkit.com/pages/absorption-imaging.html">
-  <link rel="stylesheet" href="../css/styles.css?v=11">
+  <link rel="stylesheet" href="../css/styles.css?v=12">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -97,7 +97,8 @@
     .route-panel h2 { margin: 0 0 .35rem; color: var(--text-primary); font-size: clamp(1.25rem,2.2vw,1.9rem); letter-spacing:-.03em; }
     .route-panel > p { max-width: 940px; margin: 0 0 var(--sp-4); color: var(--text-secondary); line-height: 1.7; }
     .route-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:var(--sp-4); }
-    .route-card { border:1px solid rgba(148,163,184,.14); border-radius:var(--r); padding:var(--sp-4); background:rgba(15,23,42,.58); }
+    .route-card { display:block; border:1px solid rgba(148,163,184,.14); border-radius:var(--r); padding:var(--sp-4); background:rgba(15,23,42,.58); text-decoration:none; transition:transform .18s ease,border-color .18s ease,background .18s ease; }
+    .route-card:hover { transform:translateY(-2px); border-color:var(--page-border); background:var(--page-bg); }
     .route-card .step { display:inline-flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:999px; margin-bottom:var(--sp-3); font-family:var(--font-mono); font-size:.72rem; font-weight:800; color:var(--page-color); background:var(--page-bg); border:1px solid var(--page-border); }
     .route-card strong { display:block; color:var(--text-primary); margin-bottom:.25rem; }
     .route-card p { margin:0; color:var(--text-secondary); font-size:.84rem; line-height:1.65; }
@@ -115,7 +116,7 @@
 <body>
 <div id="nav-root"></div>
 
-<main class="page-wrap">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#818cf8;--page-bg:rgba(129,140,248,0.08);--page-border:rgba(129,140,248,0.22);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -163,15 +164,15 @@
         <h2>Read the page like an experimental sequence</h2>
         <p>Start with the three images, then use the calculator to decide whether shot noise, read noise, saturation, or fringes dominate your atom-number estimate.</p>
         <div class="route-grid">
-          <div class="route-card"><span class="step">01</span><strong>Build OD</strong><p>Use atom, probe, reference, and dark images to compute optical depth.</p></div>
-          <div class="route-card"><span class="step">02</span><strong>Convert to atoms</strong><p>Choose species, detuning, pixel size, and magnification to get column density and atom number.</p></div>
-          <div class="route-card"><span class="step">03</span><strong>Budget noise</strong><p>Separate photon shot noise from camera read noise and identify the minimum detectable OD.</p></div>
-          <div class="route-card"><span class="step">04</span><strong>Check failure modes</strong><p>Saturation, optical pumping, finite linewidth, and fringes usually dominate before algebra does.</p></div>
+          <a class="route-card" href="#od-physics"><span class="step">01</span><strong>Build OD</strong><p>Use atom, probe, reference, and dark images to compute optical depth.</p></a>
+          <a class="route-card" href="#imaging-calculator"><span class="step">02</span><strong>Convert to atoms</strong><p>Choose species, detuning, pixel size, and magnification to get column density and atom number.</p></a>
+          <a class="route-card" href="#imaging-calculator"><span class="step">03</span><strong>Budget noise</strong><p>Separate photon shot noise from camera read noise and identify the minimum detectable OD.</p></a>
+          <a class="route-card" href="#practical-notes"><span class="step">04</span><strong>Check failure modes</strong><p>Saturation, optical pumping, finite linewidth, and fringes usually dominate before algebra does.</p></a>
         </div>
       </section>
 
     <!-- 01 Physics -->
-    <section class="section-block anim-in delay-1">
+    <section class="section-block anim-in delay-1" id="od-physics">
       <h2 class="section-title"><span class="accent">01</span> How Absorption Imaging Works</h2>
       <p class="section-desc">
         A resonant (or near-resonant) probe beam passes through the atom cloud. Atoms scatter photons
@@ -241,7 +242,7 @@
     </section>
 
     <!-- 02 Calculator -->
-    <section class="section-block anim-in delay-2">
+    <section class="section-block anim-in delay-2" id="imaging-calculator">
       <h2 class="section-title"><span class="accent">02</span> Imaging Calculator</h2>
       <p class="section-desc">
         Set your imaging parameters to get the effective cross section, probe photon budget,
@@ -266,7 +267,7 @@
           <div class="sl-row">
             <div class="sl-lbl"><span>Probe detuning Δ/Γ</span><span class="sl-val"><span id="dg-v">0.0</span></span></div>
             <input type="range" id="dg-s" min="0" max="50" step="1" value="0">
-            <div class="sl-hint"><span>0 (resonant)</span><span>50 Γ</span></div>
+            <div class="sl-hint"><span>0 (resonant)</span><span>5 Γ</span></div>
           </div>
 
           <div class="sl-row">
@@ -389,7 +390,7 @@
     </section>
 
     <!-- 04 Practical Notes -->
-    <section class="section-block anim-in delay-4">
+    <section class="section-block anim-in delay-4" id="practical-notes">
       <h2 class="section-title"><span class="accent">04</span> Practical Considerations</h2>
 
       <div class="topic-card" style="border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
@@ -408,8 +409,8 @@
           </div>
           <p style="margin-top:var(--sp-3)">
             This is exact within the two-level model. In practice, use $I/I_{\rm sat} \sim 0.1$–$0.5$ to balance
-            photon count (SNR) against saturation distortion. At $I = I_{\rm sat}$ uncorrected OD is already off by ~30%;
-            at $I = 0.1\,I_{\rm sat}$ the error is ~5%.
+            photon count (SNR) against saturation distortion. At $I = I_{\rm sat}$ uncorrected OD can be badly biased unless the saturation term is included;
+            at $I = 0.1\,I_{\rm sat}$ the correction is usually small but still worth tracking.
             If you can't apply the correction (e.g., unknown $I_{\rm sat}$ for mixed states), use $I \ll I_{\rm sat}$.
           </p>
           <p style="margin-top:var(--sp-3)">
@@ -590,7 +591,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=11"></script>
+<script src="../js/main.js?v=12"></script>
 <script>
   renderNav({ active:'absorption-imaging', root:'../' });
 
@@ -682,7 +683,15 @@
       satEl.innerHTML = `<div class="badge" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">
         ⚠ I/I_sat = ${s.toFixed(2)} — ~${(s*50).toFixed(0)}% saturation error without correction</div>`;
     } else {
-      satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation correction &lt; 5%</div>`;
+      satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation correction &lt; 5%</div>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Absorption Imaging &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+`;
     }
 
     updateChart(atom, t_us, p_cam, M, QE, σ_e, ΔΓ);

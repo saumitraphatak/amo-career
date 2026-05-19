@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="canonical" href="https://amotoolkit.com/pages/tweezer-designer.html">
-  <link rel="stylesheet" href="../css/styles.css?v=11">
+  <link rel="stylesheet" href="../css/styles.css?v=12">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -90,7 +90,8 @@
     .route-panel h2 { margin: 0 0 .35rem; color: var(--text-primary); font-size: clamp(1.25rem,2.2vw,1.9rem); letter-spacing:-.03em; }
     .route-panel > p { max-width: 940px; margin: 0 0 var(--sp-4); color: var(--text-secondary); line-height: 1.7; }
     .route-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:var(--sp-4); }
-    .route-card { border:1px solid rgba(148,163,184,.14); border-radius:var(--r); padding:var(--sp-4); background:rgba(15,23,42,.58); }
+    .route-card { display:block; border:1px solid rgba(148,163,184,.14); border-radius:var(--r); padding:var(--sp-4); background:rgba(15,23,42,.58); text-decoration:none; transition:transform .18s ease,border-color .18s ease,background .18s ease; }
+    .route-card:hover { transform:translateY(-2px); border-color:var(--page-border); background:var(--page-bg); }
     .route-card .step { display:inline-flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:999px; margin-bottom:var(--sp-3); font-family:var(--font-mono); font-size:.72rem; font-weight:800; color:var(--page-color); background:var(--page-bg); border:1px solid var(--page-border); }
     .route-card strong { display:block; color:var(--text-primary); margin-bottom:.25rem; }
     .route-card p { margin:0; color:var(--text-secondary); font-size:.84rem; line-height:1.65; }
@@ -108,7 +109,7 @@
 <body>
 <div id="nav-root"></div>
 
-<main class="page-wrap">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#f59e0b;--page-bg:rgba(245,158,11,0.08);--page-border:rgba(245,158,11,0.22);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -156,15 +157,15 @@
         <h2>Design one trap, then scale it into an array</h2>
         <p>The page now follows the actual design order: choose atom and trap wavelength, check single-site physics, then ask whether the array spacing and total power are sane.</p>
         <div class="route-grid">
-          <div class="route-card"><span class="step">01</span><strong>Choose atom + wavelength</strong><p>Start with species, resonance, trap wavelength, NA, and per-site power.</p></div>
-          <div class="route-card"><span class="step">02</span><strong>Check one tweezer</strong><p>Read depth, waist, radial/axial frequencies, scattering, and Lamb-Dicke η.</p></div>
-          <div class="route-card"><span class="step">03</span><strong>Scale to an array</strong><p>Set Nx, Ny, and spacing to estimate total optical power and crosstalk.</p></div>
-          <div class="route-card"><span class="step">04</span><strong>Reality check</strong><p>Use the reference table and notes before trusting two-level estimates near magic wavelengths.</p></div>
+          <a class="route-card" href="#single-tweezer-physics"><span class="step">01</span><strong>Choose atom + wavelength</strong><p>Start with species, resonance, trap wavelength, NA, and per-site power.</p></a>
+          <a class="route-card" href="#trap-calculator"><span class="step">02</span><strong>Check one tweezer</strong><p>Read depth, waist, radial/axial frequencies, scattering, and Lamb-Dicke η.</p></a>
+          <a class="route-card" href="#array-geometry"><span class="step">03</span><strong>Scale to an array</strong><p>Set Nx, Ny, and spacing to estimate total optical power and crosstalk.</p></a>
+          <a class="route-card" href="#tweezer-reference"><span class="step">04</span><strong>Reality check</strong><p>Use the reference table and notes before trusting two-level estimates near magic wavelengths.</p></a>
         </div>
       </section>
 
     <!-- 01 Physics -->
-    <section class="section-block anim-in delay-1">
+    <section class="section-block anim-in delay-1" id="single-tweezer-physics">
       <h2 class="section-title"><span class="accent">01</span> Single-Tweezer Physics</h2>
       <p class="section-desc">
         A tightly focused, far-red-detuned laser beam creates a conservative dipole potential.
@@ -203,7 +204,7 @@
     </section>
 
     <!-- 02 Calculator -->
-    <section class="section-block anim-in delay-2">
+    <section class="section-block anim-in delay-2" id="trap-calculator">
       <h2 class="section-title"><span class="accent">02</span> Trap Parameter Calculator</h2>
       <p class="section-desc">
         Two-level approximation using the dominant optical transition (D2 for alkali, ¹P₁ for Yb/Sr).
@@ -308,7 +309,7 @@
     </section>
 
     <!-- 03 Array -->
-    <section class="section-block anim-in delay-3">
+    <section class="section-block anim-in delay-3" id="array-geometry">
       <h2 class="section-title"><span class="accent">03</span> Array Geometry</h2>
       <p class="section-desc">
         Tweezer arrays are produced by a spatial light modulator (SLM) imposing a holographic phase
@@ -342,7 +343,7 @@
     </section>
 
     <!-- 04 Reference -->
-    <section class="section-block anim-in delay-4">
+    <section class="section-block anim-in delay-4" id="tweezer-reference">
       <h2 class="section-title"><span class="accent">04</span> Species &amp; Wavelength Reference</h2>
       <p class="section-desc">
         Typical tweezer parameters at NA 0.55 and 30 mW. Magic wavelengths eliminate differential
@@ -410,9 +411,7 @@
           <p style="margin-top:var(--sp-3)">
             <strong>AOD (acousto-optic deflector):</strong> two crossed AODs can deflect to any (x,y) position in
             ~μs by changing the RF frequency. Enables rapid rearrangement ("sorting") of atoms to fill defects —
-            key for scaling. Power efficiency per site scales as 1/N (time-multiplexed), limiting total site count
-            to ~100 before per-site power becomes inadequate. Combining SLM (static pattern) + AOD (dynamic
-            rearrangement) is the current best practice in Harvard/MIT style experiments.
+            key for scaling. In time-averaged operation the effective power per site scales roughly as 1/N, while multi-tone static operation trades power uniformity against RF bandwidth and diffraction efficiency. Combining a static pattern with a dynamic steering beam is common when fast rearrangement is needed.
           </p>
         </div>
       </div>
@@ -534,11 +533,6 @@
               and energy levels for all elements including Yb and Sr.
             </li>
             <li>
-              <strong>Camy-Peyret et al. — Tweezer tutorial lectures</strong> (Les Houches summer school notes, various years)
-              — informal lecture notes from cold-atom summer schools covering tweezer design from an experimentalist perspective.
-              Search "Les Houches optical tweezers" for free PDF versions.
-            </li>
-            <li>
               <strong>Lukin group resources</strong> (lukin.physics.harvard.edu) — open-access papers on tweezer arrays,
               Rydberg gates, and atom assembly protocols.
             </li>
@@ -553,7 +547,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=11"></script>
+<script src="../js/main.js?v=12"></script>
 <script>
   renderNav({ active:'tweezer-designer', root:'../' });
 
@@ -644,7 +638,15 @@
     } else if (r.η < 0.3) {
       ldEl.innerHTML = `<div class="badge badge-caution">⚠ Lamb-Dicke ok (η=${r.η.toFixed(2)}) but Γ_sc=${gsc_kHz.toFixed(1)} kHz ≥ ωᵣ=${ωr_kHz.toFixed(1)} kHz</div>`;
     } else {
-      ldEl.innerHTML = `<div class="badge badge-warn">✗ η=${r.η.toFixed(2)} — outside Lamb-Dicke regime (need η ≪ 0.3)</div>`;
+      ldEl.innerHTML = `<div class="badge badge-warn">✗ η=${r.η.toFixed(2)} — outside Lamb-Dicke regime (need η ≪ 0.3)</div>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Optical Tweezer Designer &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+`;
     }
 
     updateChart(atom, NA, PmW*1e-3);

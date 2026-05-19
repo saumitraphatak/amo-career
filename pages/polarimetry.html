@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=10">
+  <link rel="stylesheet" href="../css/styles.css?v=12">
 
   <style>
     /* ── Polarimetry-specific design tokens ── */
@@ -758,7 +758,7 @@ Inverse (S₀=1):
     </div><!-- /page-content -->
   </div><!-- /page-wrap -->
 
-  <script src="../js/main.js?v=11"></script>
+  <script src="../js/main.js?v=12"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';
@@ -1038,7 +1038,15 @@ Inverse (S₀=1):
       if(method==='hwp'&&i===3){html+=`<div class="pol-ex-row"><span class="pol-ex-lbl" style="color:${clr[i]}">${lbl[i]}</span><div class="pol-ex-bw"><div class="pol-ex-b" style="width:0"></div></div><span class="pol-ex-v" style="color:var(--pol-orange)">N/A</span><span class="pol-ex-d">−</span></div>`;continue;}
       const vin=Sin[i],vex=Sext[i],bw=Math.min(100,Math.abs(vex)/(Math.max(Math.abs(Sin[0]),1))*100),diff=Math.abs(vin-vex);
       const dclr=diff<0.005?'var(--pol-green)':diff<0.05?'var(--pol-orange)':'var(--pol-red)';
-      html+=`<div class="pol-ex-row"><span class="pol-ex-lbl" style="color:${clr[i]}">${lbl[i]}</span><div class="pol-ex-bw"><div class="pol-ex-b" style="width:${bw}%;background:${clr[i]}"></div></div><span class="pol-ex-v">${vex.toFixed(3)}</span><span class="pol-ex-d" style="color:${dclr}">${diff<0.001?'≈0 ✓':'Δ'+diff.toFixed(3)}</span></div>`;
+      html+=`<div class="pol-ex-row"><span class="pol-ex-lbl" style="color:${clr[i]}">${lbl[i]}</span><div class="pol-ex-bw"><div class="pol-ex-b" style="width:${bw}%;background:${clr[i]}"></div></div><span class="pol-ex-v">${vex.toFixed(3)}</span><span class="pol-ex-d" style="color:${dclr}">${diff<0.001?'≈0 ✓':'Δ'+diff.toFixed(3)}</span></div>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Polarimetry Explorer &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+`;
     }
     document.getElementById('pol-extraction').innerHTML=html;
   }
