@@ -85,6 +85,40 @@
     .h-stat .v { font-size: 1.1rem; font-weight: 800; color: var(--ent); font-family: var(--font-mono); }
     .h-stat .l { font-size: .67rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: .1rem; }
 
+
+    .page-hero-2col { grid-template-columns: minmax(0,1fr) minmax(360px,430px); }
+    .page-hero .page-hero-anim { width: min(430px,100%); height: auto; background: transparent; border: 0; overflow: visible; }
+    .ent-hero-visual {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--ent-border);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 28% 42%, rgba(14,165,233,.16), transparent 30%),
+        radial-gradient(circle at 74% 44%, rgba(129,140,248,.16), transparent 32%),
+        linear-gradient(145deg, rgba(5,16,28,.92), rgba(8,12,26,.96));
+      box-shadow: 0 24px 70px rgba(0,0,0,.26);
+      padding: .35rem;
+    }
+    .ent-hero-visual svg { display:block; width:100%; height:auto; }
+    .ent-hero-note {
+      display: inline-flex;
+      gap: .45rem;
+      align-items: center;
+      margin-top: .8rem;
+      color: var(--text-muted);
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+    .ent-hero-note strong { color: var(--ok); }
+    .hero-stats { margin-top: 1.25rem; }
+    @media(max-width:960px) {
+      .page-hero .page-hero-anim { display: block; width: 100%; }
+      .page-hero-2col { grid-template-columns: 1fr; }
+      .ent-hero-visual { margin-top: 1rem; }
+      .hero-stats { grid-template-columns: 1fr 1fr; }
+    }
+
     /* ── section template ───────────────────────────────── */
     .ent-section { padding: 2.8rem 0 1rem; scroll-margin-top: 108px; }
     .sec-num { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ent); margin-bottom: .3rem; }
@@ -261,138 +295,132 @@
 <body>
 <div id="nav-root"></div>
 
+<main class="page-wrap" id="main-content">
+
 <!-- ══════════════════ HERO ══════════════════ -->
-<div class="page-hero" id="top">
-  <div class="container hero-2col">
-    <div>
-      <div class="hero-eyebrow">🔗 Quantum Computing · Deep Dive</div>
-      <h1 class="hero-title">
-        Remote<br><span class="hero-grad">Entanglement</span><br>Generation
+<div class="page-hero" id="top" style="--page-color:#0ea5e9;--page-bg:rgba(14,165,233,0.07);--page-border:rgba(14,165,233,0.22);">
+  <div class="container page-hero-2col">
+    <div class="page-hero-text">
+      <div class="page-hero-eyebrow" style="background:rgba(14,165,233,0.08);border-color:rgba(14,165,233,0.22);color:#38bdf8;">
+        🔗 Quantum Computing · Deep Dive
+      </div>
+      <h1>
+        Remote <span class="grad-text" style="--ga:#38bdf8;--gb:#818cf8;">Entanglement</span> Generation
       </h1>
-      <p class="hero-desc">
+      <p class="page-hero-desc">
         The single qubit is not the bottleneck. The <em>connection</em> between qubits is.
-        Remote entanglement generation — using photons to link atoms in separate quantum processors —
-        is the missing piece that turns a handful of tweezer arrays into a scalable quantum computer.
+        Remote entanglement generation uses photons to link atoms in separate quantum processors,
+        turning independent tweezer modules into a scalable quantum computer.
       </p>
       <div class="hero-stats">
-        <div class="h-stat"><div class="v">~22 kHz</div><div class="l">Achievable Bell pair rate</div></div>
-        <div class="h-stat"><div class="v">&lt;10⁻³</div><div class="l">Required link error rate</div></div>
-        <div class="h-stat"><div class="v">33 km</div><div class="l">Record: Rb entanglement via fiber</div></div>
-        <div class="h-stat"><div class="v">2020s</div><div class="l">Neutral atom experiments</div></div>
+        <div class="h-stat"><div class="v">~22 kHz</div><div class="l">Bell-pair-rate target</div></div>
+        <div class="h-stat"><div class="v">&lt;10⁻³</div><div class="l">Link-error goal</div></div>
+        <div class="h-stat"><div class="v">33 km</div><div class="l">Rb fiber-link record</div></div>
+        <div class="h-stat"><div class="v">BSM</div><div class="l">Heralds success</div></div>
       </div>
     </div>
-    <!-- Animated protocol diagram -->
-    <div aria-hidden="true">
-      <svg viewBox="0 0 340 190" width="100%" xmlns="http://www.w3.org/2000/svg" id="hero-proto-svg">
-        <defs>
-          <filter id="hglow"><feGaussianBlur stdDeviation="3" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="hglow2"><feGaussianBlur stdDeviation="1.5" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <linearGradient id="fiber-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#0ea5e9" stop-opacity=".6"/>
-            <stop offset="100%" stop-color="#818cf8" stop-opacity=".6"/>
-          </linearGradient>
-        </defs>
 
-        <!-- Node A (left) -->
-        <rect x="5" y="45" width="80" height="100" rx="8" fill="rgba(14,165,233,.07)" stroke="#0ea5e9" stroke-width="1.4"/>
-        <!-- Tweezer array (tiny dots grid) -->
-        <g opacity=".7">
-          <circle cx="25" cy="72" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="40" cy="72" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="55" cy="72" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="70" cy="72" r="2" fill="#0ea5e9" opacity=".4"/>
-          <circle cx="25" cy="85" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="40" cy="85" r="3.5" fill="#fbbf24" filter="url(#hglow)"/><!-- communication qubit -->
-          <circle cx="55" cy="85" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="70" cy="85" r="2" fill="#0ea5e9" opacity=".4"/>
-          <circle cx="25" cy="98" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="40" cy="98" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-          <circle cx="55" cy="98" r="3" fill="#0ea5e9" filter="url(#hglow2)"/>
-        </g>
-        <text x="45" y="130" text-anchor="middle" fill="#0ea5e9" font-size="8" font-family="monospace" font-weight="700">NODE A</text>
-        <text x="45" y="140" text-anchor="middle" fill="#475569" font-size="6.5" font-family="monospace">tweezer array</text>
+    <div class="page-hero-anim">
+      <div class="ent-hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 380 205" xmlns="http://www.w3.org/2000/svg" role="img">
+          <defs>
+            <filter id="ent-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="ent-soft"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <linearGradient id="ent-fiber" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity=".85"/>
+              <stop offset="50%" stop-color="#64748b" stop-opacity=".45"/>
+              <stop offset="100%" stop-color="#818cf8" stop-opacity=".85"/>
+            </linearGradient>
+            <marker id="ent-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#4ade80"/>
+            </marker>
+          </defs>
 
-        <!-- Node B (right) -->
-        <rect x="255" y="45" width="80" height="100" rx="8" fill="rgba(129,140,248,.07)" stroke="#818cf8" stroke-width="1.4"/>
-        <g opacity=".7">
-          <circle cx="270" cy="72" r="2" fill="#818cf8" opacity=".4"/>
-          <circle cx="284" cy="72" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="298" cy="72" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="313" cy="72" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="270" cy="85" r="2" fill="#818cf8" opacity=".4"/>
-          <circle cx="284" cy="85" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="298" cy="85" r="3.5" fill="#fbbf24" filter="url(#hglow)"/><!-- comm qubit -->
-          <circle cx="313" cy="85" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="284" cy="98" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="298" cy="98" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-          <circle cx="313" cy="98" r="3" fill="#818cf8" filter="url(#hglow2)"/>
-        </g>
-        <text x="295" y="130" text-anchor="middle" fill="#818cf8" font-size="8" font-family="monospace" font-weight="700">NODE B</text>
-        <text x="295" y="140" text-anchor="middle" fill="#475569" font-size="6.5" font-family="monospace">tweezer array</text>
+          <g opacity=".12" stroke="#1e3a5f" stroke-width=".45">
+            <path d="M20 40H360M20 85H360M20 130H360M20 175H360"/>
+            <path d="M55 20V190M110 20V190M165 20V190M220 20V190M275 20V190M330 20V190"/>
+          </g>
 
-        <!-- Optical fiber line -->
-        <path d="M85,90 Q170,75 255,90" fill="none" stroke="url(#fiber-grad)" stroke-width="2" stroke-dasharray="6,3" opacity=".6"/>
-        <text x="170" y="68" text-anchor="middle" fill="#475569" font-size="6.5" font-family="monospace">optical fiber</text>
+          <path d="M75 96 C135 32 245 32 305 96" fill="none" stroke="#4ade80" stroke-width="2.8" stroke-linecap="round" opacity="0" filter="url(#ent-glow)">
+            <animate attributeName="opacity" values="0;0;0;0.9;0.9;0" keyTimes="0;0.58;0.66;0.72;0.9;1" dur="4s" repeatCount="indefinite"/>
+            <animate attributeName="stroke-dasharray" values="1 16;1 16;9 8;9 8;9 8;1 16" keyTimes="0;0.58;0.66;0.72;0.9;1" dur="4s" repeatCount="indefinite"/>
+          </path>
+          <text x="190" y="45" text-anchor="middle" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">heralded atom-atom Bell pair
+            <animate attributeName="opacity" values="0;0;0;1;1;0" keyTimes="0;0.62;0.72;0.78;0.9;1" dur="4s" repeatCount="indefinite"/>
+          </text>
 
-        <!-- BSM Station (center) -->
-        <rect x="138" y="100" width="64" height="50" rx="6" fill="rgba(14,165,233,.08)" stroke="#0ea5e9" stroke-width="1.2"/>
-        <!-- Beamsplitter -->
-        <line x1="150" y1="110" x2="190" y2="148" stroke="#fbbf24" stroke-width="2" opacity=".7"/>
-        <text x="170" y="119" text-anchor="middle" fill="#fbbf24" font-size="6.5" font-family="monospace" font-weight="700">BS</text>
-        <!-- Detectors -->
-        <rect x="138" y="138" width="16" height="10" rx="3" fill="rgba(74,222,128,.15)" stroke="#4ade80" stroke-width="1" id="det-A"/>
-        <rect x="186" y="138" width="16" height="10" rx="3" fill="rgba(74,222,128,.15)" stroke="#4ade80" stroke-width="1" id="det-B"/>
-        <text x="170" y="158" text-anchor="middle" fill="#0ea5e9" font-size="6" font-family="monospace">BSM Station</text>
+          <rect x="26" y="52" width="92" height="108" rx="14" fill="rgba(14,165,233,.08)" stroke="#0ea5e9" stroke-width="2"/>
+          <text x="72" y="147" text-anchor="middle" fill="#38bdf8" font-size="10" font-family="monospace" font-weight="700">NODE A</text>
+          <text x="72" y="158" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">memory array</text>
+          <g opacity=".72">
+            <circle cx="54" cy="75" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="72" cy="75" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="90" cy="75" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="54" cy="96" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="72" cy="96" r="6" fill="#fbbf24" filter="url(#ent-glow)"/>
+            <circle cx="90" cy="96" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="54" cy="117" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="72" cy="117" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+            <circle cx="90" cy="117" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+          </g>
+          <text x="72" y="55" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="monospace" opacity=".85">communication atom</text>
 
-        <!-- Animated photon A: from atom (40,85) along fiber to BSM (158,125) -->
-        <circle r="4" fill="#fbbf24" filter="url(#hglow)" id="photon-A">
-          <animateMotion path="M-130,-5 Q-80,-20 0,40" dur="2.5s" begin="0.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
-          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" begin="0.5s" repeatCount="indefinite"/>
-        </circle>
-        <!-- Animate photon from (40,85) to BSM -->
-        <circle r="4" fill="#fbbf24" filter="url(#hglow)">
-          <animateMotion path="M40,85 Q100,75 158,125" dur="2.5s" begin="0.5s" repeatCount="indefinite" additive="replace" calcMode="spline" keySplines="0.4 0 0.6 1" from="" to="">
-          </animateMotion>
-        </circle>
+          <rect x="262" y="52" width="92" height="108" rx="14" fill="rgba(129,140,248,.08)" stroke="#818cf8" stroke-width="2"/>
+          <text x="308" y="147" text-anchor="middle" fill="#818cf8" font-size="10" font-family="monospace" font-weight="700">NODE B</text>
+          <text x="308" y="158" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">memory array</text>
+          <g opacity=".72">
+            <circle cx="290" cy="75" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="308" cy="75" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="326" cy="75" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="290" cy="96" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="308" cy="96" r="6" fill="#fbbf24" filter="url(#ent-glow)"/>
+            <circle cx="326" cy="96" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="290" cy="117" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="308" cy="117" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+            <circle cx="326" cy="117" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+          </g>
+          <text x="308" y="55" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="monospace" opacity=".85">communication atom</text>
 
-        <!-- Photon B: from (298,85) to BSM (182,125) -->
-        <circle r="4" fill="#fbbf24" filter="url(#hglow)">
-          <animateMotion path="M298,85 Q240,75 182,125" dur="2.5s" begin="0.8s" repeatCount="indefinite" additive="replace" calcMode="spline" keySplines="0.4 0 0.6 1">
-          </animateMotion>
-          <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" begin="0.8s" repeatCount="indefinite"/>
-        </circle>
+          <path d="M79 96 C120 77 145 82 166 108" fill="none" stroke="url(#ent-fiber)" stroke-width="3" stroke-dasharray="7 5" opacity=".72"/>
+          <path d="M301 96 C260 77 235 82 214 108" fill="none" stroke="url(#ent-fiber)" stroke-width="3" stroke-dasharray="7 5" opacity=".72"/>
+          <text x="190" y="82" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">photons meet at a Bell-state measurement</text>
 
-        <!-- Entanglement link flash (after detection) -->
-        <path d="M85,90 Q170,60 255,90" fill="none" stroke="#4ade80" stroke-width="2.5" filter="url(#hglow)" opacity="0">
-          <animate attributeName="opacity" values="0;0;0.8;0" keyTimes="0;0.7;0.8;1" dur="3s" begin="2.5s" repeatCount="indefinite"/>
-        </path>
+          <rect x="152" y="102" width="76" height="66" rx="11" fill="rgba(14,165,233,.08)" stroke="#38bdf8" stroke-width="1.8"/>
+          <line x1="168" y1="113" x2="211" y2="155" stroke="#fbbf24" stroke-width="3" opacity=".76"/>
+          <text x="190" y="124" text-anchor="middle" fill="#fbbf24" font-size="8" font-family="monospace" font-weight="700">50:50 BS</text>
+          <rect x="160" y="148" width="20" height="12" rx="4" fill="rgba(74,222,128,.12)" stroke="#4ade80" stroke-width="1.5"/>
+          <rect x="200" y="148" width="20" height="12" rx="4" fill="rgba(74,222,128,.12)" stroke="#4ade80" stroke-width="1.5"/>
+          <text x="170" y="145" text-anchor="middle" fill="#94a3b8" font-size="6" font-family="monospace">D1</text>
+          <text x="210" y="145" text-anchor="middle" fill="#94a3b8" font-size="6" font-family="monospace">D2</text>
+          <text x="190" y="178" text-anchor="middle" fill="#38bdf8" font-size="8" font-family="monospace">central BSM station</text>
 
-        <!-- Classical herald arrows -->
-        <line x1="145" y1="148" x2="100" y2="148" stroke="#4ade80" stroke-width="1" opacity="0" marker-end="url(#arr-g)">
-          <animate attributeName="opacity" values="0;0;1;0" keyTimes="0;0.7;0.85;1" dur="3s" begin="2.5s" repeatCount="indefinite"/>
-        </line>
-        <line x1="195" y1="148" x2="245" y2="148" stroke="#4ade80" stroke-width="1" opacity="0">
-          <animate attributeName="opacity" values="0;0;1;0" keyTimes="0;0.7;0.85;1" dur="3s" begin="2.5s" repeatCount="indefinite"/>
-        </line>
-        <text x="85" y="165" text-anchor="middle" fill="#4ade80" font-size="7" font-family="monospace" opacity="0">HERALD
-          <animate attributeName="opacity" values="0;0;1;0" keyTimes="0;0.7;0.85;1" dur="3s" begin="2.5s" repeatCount="indefinite"/>
-        </text>
-        <text x="257" y="165" text-anchor="middle" fill="#4ade80" font-size="7" font-family="monospace" opacity="0">HERALD
-          <animate attributeName="opacity" values="0;0;1;0" keyTimes="0;0.7;0.85;1" dur="3s" begin="2.5s" repeatCount="indefinite"/>
-        </text>
+          <circle r="5" fill="#fbbf24" filter="url(#ent-glow)">
+            <animateMotion path="M79 96 C120 77 145 82 166 108" dur="4s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.12;0.55;0.64;1" dur="4s" repeatCount="indefinite"/>
+          </circle>
+          <circle r="5" fill="#fbbf24" filter="url(#ent-glow)">
+            <animateMotion path="M301 96 C260 77 235 82 214 108" dur="4s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.12;0.55;0.64;1" dur="4s" repeatCount="indefinite"/>
+          </circle>
 
-        <defs>
-          <marker id="arr-g" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill="#4ade80"/>
-          </marker>
-        </defs>
+          <g opacity="0">
+            <circle cx="170" cy="154" r="9" fill="none" stroke="#4ade80" stroke-width="2"/>
+            <circle cx="210" cy="154" r="9" fill="none" stroke="#4ade80" stroke-width="2"/>
+            <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.58;0.66;0.78;1" dur="4s" repeatCount="indefinite"/>
+          </g>
+          <text x="190" y="94" text-anchor="middle" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">two clicks =&gt; success
+            <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.58;0.66;0.82;1" dur="4s" repeatCount="indefinite"/>
+          </text>
 
-        <!-- Labels -->
-        <text x="40" y="85" text-anchor="middle" fill="#fbbf24" font-size="5.5" font-family="monospace" opacity=".6">comm qubit</text>
-        <text x="298" y="85" text-anchor="middle" fill="#fbbf24" font-size="5.5" font-family="monospace" opacity=".6">comm qubit</text>
-      </svg>
+          <path d="M160 162 C132 186 100 181 82 160" fill="none" stroke="#4ade80" stroke-width="1.3" marker-end="url(#ent-arrow)" opacity="0">
+            <animate attributeName="opacity" values="0;0;0;1;1;0" keyTimes="0;0.64;0.72;0.78;0.9;1" dur="4s" repeatCount="indefinite"/>
+          </path>
+          <path d="M220 162 C248 186 280 181 298 160" fill="none" stroke="#4ade80" stroke-width="1.3" marker-end="url(#ent-arrow)" opacity="0">
+            <animate attributeName="opacity" values="0;0;0;1;1;0" keyTimes="0;0.64;0.72;0.78;0.9;1" dur="4s" repeatCount="indefinite"/>
+          </path>
+        </svg>
+      </div>
+      <div class="ent-hero-note"><strong>What the animation means:</strong> the photons are measured; the atoms survive as the remote entangled pair.</div>
     </div>
   </div>
 </div>
@@ -1191,6 +1219,7 @@
 
 </div><!-- /.container -->
 </div><!-- /.page-content -->
+</main>
 
 <!-- ──────── SCRIPTS ──────── -->
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>

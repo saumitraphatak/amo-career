@@ -18,13 +18,15 @@ const NAV = {
     { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
     { key: 'zernike',        label: 'Zernike Wavefront Lab', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
     { key: 'cavity-qed',     label: 'Cavity Coupling Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
-    { key: 'vacuum-systems', label: 'Vacuum Systems Guide',            kind: 'Guide',      icon: '⚗️', color: '#22d3ee', href: 'pages/vacuum-systems.html' },
+    { key: 'vacuum-systems',    label: 'Vacuum Systems Guide',        kind: 'Guide',      icon: '⚗️', color: '#22d3ee', href: 'pages/vacuum-systems.html'    },
+    { key: 'tweezer-designer', label: 'Optical Tweezer Array Designer', kind: 'Calculator', icon: '🔦', color: '#f59e0b', href: 'pages/tweezer-designer.html' },
   ],
   measure: [
     { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#34d399', href: 'pages/imaging-calculator.html' },
     { key: 'release-recapture',  label: 'Single-atom Temperature',  kind: 'Simulator', icon: '🎯', color: '#fb923c', href: 'pages/release-recapture.html'  },
     { key: 'tof-calculator',     label: 'MOT Temperature',     kind: 'Calculator', icon: '🌡️', color: '#38bdf8', href: 'pages/tof-calculator.html'     },
-    { key: 'lab-calculators',    label: 'Quick Lab Calculations',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
+    { key: 'lab-calculators',     label: 'Quick Lab Calculations',      kind: 'Calculator', icon: '🧮', color: '#fbbf24', href: 'pages/lab-calculators.html'    },
+    { key: 'absorption-imaging', label: 'Absorption Imaging',          kind: 'Calculator', icon: '🌑', color: '#818cf8', href: 'pages/absorption-imaging.html'  },
   ],
   cooling: [
     { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#60a5fa', href: 'pages/laser-cooling.html' },

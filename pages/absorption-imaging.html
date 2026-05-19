@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absorption Imaging Calculator — AMO Toolkit</title>
+  <link rel="stylesheet" href="../css/styles.css?v=11">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    .page-wrap { --page-color:#818cf8; --page-bg:rgba(129,140,248,0.08); --page-border:rgba(129,140,248,0.2); }
+
+    .ab-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-5); margin:var(--sp-5) 0; }
+    @media(max-width:700px){ .ab-grid{grid-template-columns:1fr} }
+
+    .calc-panel { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-5); }
+    .calc-panel-head { font-size:.73rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--page-color); margin-bottom:var(--sp-4); }
+
+    .sl-row { display:flex; flex-direction:column; gap:var(--sp-1); margin-bottom:var(--sp-4); }
+    .sl-lbl { display:flex; justify-content:space-between; font-size:.8rem; color:var(--text-secondary); }
+    .sl-val { color:var(--page-color); font-weight:600; font-family:var(--font-mono); }
+    .sl-hint{ display:flex; justify-content:space-between; font-size:.68rem; color:var(--text-muted); }
+    input[type=range]{ width:100%; accent-color:var(--page-color); }
+
+    .out-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-3); }
+    .out-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:var(--r-md); padding:10px 14px; }
+    .out-card.hi { border-color:rgba(129,140,248,0.4); }
+    .out-lbl { font-size:.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
+    .out-val { font-size:1.15rem; font-weight:700; color:var(--page-color); font-family:var(--font-mono); }
+    .out-unit{ font-size:.72rem; color:var(--text-muted); margin-top:1px; }
+    .out-card.warn .out-val { color:#f87171; }
+    .out-card.ok   .out-val { color:#4ade80; }
+
+    .badge { display:inline-flex; align-items:center; gap:6px; border-radius:var(--r); padding:6px 10px; font-size:.78rem; }
+    .badge-warn { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:#f87171; }
+    .badge-ok   { background:rgba(74,222,128,0.1);  border:1px solid rgba(74,222,128,0.3);  color:#4ade80; }
+
+    .chart-wrap { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-5); margin-top:var(--sp-5); }
+    .chart-hed  { font-size:.82rem; color:var(--text-secondary); margin-bottom:var(--sp-3); }
+
+    .sp-sel { width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border-med); border-radius:var(--r);
+              color:var(--text-primary); padding:7px 10px; font-size:.85rem; margin-bottom:var(--sp-4); }
+
+    /* Imaging schematic SVG */
+    .schem-wrap { background:rgba(0,0,0,0.25); border:1px solid var(--border); border-radius:var(--r-lg);
+                  padding:var(--sp-5); margin:var(--sp-5) 0; overflow-x:auto; }
+    .schem-wrap svg { display:block; margin:0 auto; }
+
+    .ref-tbl { width:100%; border-collapse:collapse; font-size:.81rem; }
+    .ref-tbl th { text-align:left; color:var(--text-muted); font-weight:500; padding:6px 10px;
+                  border-bottom:1px solid var(--border); font-size:.7rem; text-transform:uppercase; letter-spacing:.04em; }
+    .ref-tbl td { padding:7px 10px; color:var(--text-secondary); border-bottom:1px solid rgba(255,255,255,0.03);
+                  font-family:var(--font-mono); font-size:.79rem; }
+    .ref-tbl td:first-child { color:var(--text-primary); font-family:inherit; font-weight:500; }
+    .ref-tbl td:last-child  { font-family:inherit; font-size:.76rem; }
+    .ref-tbl tr:hover td { background:rgba(255,255,255,0.02); }
+
+    .three-img { display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--sp-4); margin:var(--sp-5) 0; }
+    @media(max-width:580px){ .three-img{grid-template-columns:1fr} }
+    .img-frame { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-md);
+                 padding:var(--sp-4); text-align:center; }
+    .img-frame-title { font-size:.72rem; font-weight:600; text-transform:uppercase;
+                       letter-spacing:.06em; color:var(--page-color); margin-bottom:var(--sp-2); }
+    .img-frame-eq   { font-size:.78rem; color:var(--text-muted); margin-top:var(--sp-2); }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-eyebrow">
+        <span class="page-tag">📐 Measure</span>
+        <span class="page-tag">AMO Toolkit</span>
+      </div>
+      <h1 class="page-title"><span class="accent">Absorption Imaging</span> Calculator</h1>
+      <p class="page-subtitle">
+        Optical depth, column density, atom number, photon shot noise, read noise,
+        and minimum detectable atom number — for any species, detuning, probe intensity, and camera.
+      </p>
+      <div class="page-hero-tags">
+        <span class="chip">Beer-Lambert OD</span>
+        <span class="chip">Saturation correction</span>
+        <span class="chip">Shot noise budget</span>
+        <span class="chip">7 atom species</span>
+        <span class="chip">SNR vs intensity</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- 01 Physics -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="accent">01</span> How Absorption Imaging Works</h2>
+      <p class="section-desc">
+        A resonant (or near-resonant) probe beam passes through the atom cloud. Atoms scatter photons
+        out of the beam, leaving a shadow on the camera. Three images are taken: probe with atoms,
+        probe without atoms, and a dark frame (no light). The optical depth (OD) is:
+      </p>
+
+      <div class="three-img">
+        <div class="img-frame">
+          <div class="img-frame-title">① Probe + atoms</div>
+          <svg width="80" height="60" viewBox="0 0 80 60">
+            <defs><linearGradient id="g1" x1="0" y1="0.5" x2="1" y2="0.5">
+              <stop offset="0" stop-color="#818cf8" stop-opacity="0.7"/>
+              <stop offset="0.45" stop-color="#818cf8" stop-opacity="0.4"/>
+              <stop offset="0.55" stop-color="#818cf8" stop-opacity="0.15"/>
+              <stop offset="1" stop-color="#818cf8" stop-opacity="0.05"/>
+            </linearGradient></defs>
+            <rect x="0" y="20" width="80" height="20" rx="2" fill="url(#g1)"/>
+            <circle cx="40" cy="30" r="10" fill="rgba(129,140,248,0.25)" stroke="#818cf8" stroke-width="1"/>
+            <text x="40" y="53" text-anchor="middle" fill="#64748b" font-size="9">I_shadow</text>
+          </svg>
+          <div class="img-frame-eq">I_shadow = I_probe · e^(−OD)</div>
+        </div>
+        <div class="img-frame">
+          <div class="img-frame-title">② Probe only</div>
+          <svg width="80" height="60" viewBox="0 0 80 60">
+            <rect x="0" y="20" width="80" height="20" rx="2" fill="rgba(129,140,248,0.6)"/>
+            <text x="40" y="53" text-anchor="middle" fill="#64748b" font-size="9">I_probe</text>
+          </svg>
+          <div class="img-frame-eq">Reference (no atoms)</div>
+        </div>
+        <div class="img-frame">
+          <div class="img-frame-title">③ Dark frame</div>
+          <svg width="80" height="60" viewBox="0 0 80 60">
+            <rect x="0" y="20" width="80" height="20" rx="2" fill="rgba(100,116,139,0.15)"/>
+            <text x="40" y="53" text-anchor="middle" fill="#64748b" font-size="9">I_dark</text>
+          </svg>
+          <div class="img-frame-eq">Background subtraction</div>
+        </div>
+      </div>
+
+      <div class="formula-box" style="background:var(--page-bg);border-color:var(--page-border)">
+        $$\text{OD} = -\ln\!\left(\frac{I_{\rm shadow} - I_{\rm dark}}{I_{\rm probe} - I_{\rm dark}}\right)
+        \qquad
+        n_{2D} = \frac{\text{OD}}{\sigma(\Delta)}
+        \qquad
+        N = \frac{\text{OD}\cdot A_{\rm pixel, obj}}{\sigma} \cdot N_{\rm pixels}$$
+      </div>
+
+      <p class="section-desc" style="margin-top:var(--sp-4)">
+        where $\sigma(\Delta) = \sigma_0 / (1 + 4\Delta^2/\Gamma^2)$ is the detuning-dependent cross section
+        and $\sigma_0 = 3\lambda^2/(2\pi)$ for a closed two-level transition. The object-plane pixel size is
+        $p_{\rm obj} = p_{\rm cam}/M$ (camera pixel size divided by magnification). At high probe intensities
+        ($I \gtrsim 0.1 \cdot I_{\rm sat}$) saturation correction is needed:
+      </p>
+
+      <div class="formula-box" style="background:var(--page-bg);border-color:var(--page-border)">
+        $$\text{OD}_{\rm true} = \text{OD}_{\rm meas} + \frac{I_{\rm probe} - I_{\rm shadow}}{I_{\rm sat}}$$
+      </div>
+
+      <div class="stat-strip" style="--sc:#818cf8">
+        <div class="stat-item"><div class="stat-val">3λ²/2π</div><div class="stat-label">Resonant cross section σ₀</div></div>
+        <div class="stat-item"><div class="stat-val">OD ~ 1–3</div><div class="stat-label">Sweet spot for SNR</div></div>
+        <div class="stat-item"><div class="stat-val">√(2/N_ph)</div><div class="stat-label">Shot noise on OD</div></div>
+        <div class="stat-item"><div class="stat-val">0.01–0.1</div><div class="stat-label">Typical fringe noise (OD)</div></div>
+      </div>
+    </section>
+
+    <!-- 02 Calculator -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="accent">02</span> Imaging Calculator</h2>
+      <p class="section-desc">
+        Set your imaging parameters to get the effective cross section, probe photon budget,
+        OD noise, and minimum detectable atom number. Uses cycling transition cross sections.
+      </p>
+
+      <div class="ab-grid">
+        <div class="calc-panel">
+          <div class="calc-panel-head">Imaging Parameters</div>
+
+          <label class="sl-lbl" style="margin-bottom:4px"><span>Atom species</span></label>
+          <select class="sp-sel" id="sp-sel">
+            <option value="Rb87">Rb-87</option>
+            <option value="Cs133">Cs-133</option>
+            <option value="Li6">Li-6</option>
+            <option value="Li7">Li-7</option>
+            <option value="Na23">Na-23</option>
+            <option value="K39">K-39</option>
+            <option value="K40">K-40</option>
+          </select>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Probe detuning Δ/Γ</span><span class="sl-val"><span id="dg-v">0.0</span></span></div>
+            <input type="range" id="dg-s" min="0" max="50" step="1" value="0">
+            <div class="sl-hint"><span>0 (resonant)</span><span>50 Γ</span></div>
+          </div>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Saturation I/I_sat</span><span class="sl-val"><span id="sat-v">0.10</span></span></div>
+            <input type="range" id="sat-s" min="1" max="100" step="1" value="10">
+            <div class="sl-hint"><span>0.01</span><span>1.00</span></div>
+          </div>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Exposure time</span><span class="sl-val"><span id="texp-v">20</span> μs</span></div>
+            <input type="range" id="texp-s" min="1" max="200" step="1" value="20">
+            <div class="sl-hint"><span>1 μs</span><span>200 μs</span></div>
+          </div>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Camera pixel size</span><span class="sl-val"><span id="pix-v">6.5</span> μm</span></div>
+            <input type="range" id="pix-s" min="10" max="200" step="5" value="65">
+            <div class="sl-hint"><span>1 μm</span><span>20 μm</span></div>
+          </div>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Magnification</span><span class="sl-val"><span id="mag-v">5.0</span>×</span></div>
+            <input type="range" id="mag-s" min="5" max="200" step="5" value="50">
+            <div class="sl-hint"><span>0.5×</span><span>20×</span></div>
+          </div>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Camera QE</span><span class="sl-val"><span id="qe-v">0.80</span></span></div>
+            <input type="range" id="qe-s" min="50" max="100" step="5" value="80">
+            <div class="sl-hint"><span>0.50</span><span>1.00</span></div>
+          </div>
+
+          <div class="sl-row">
+            <div class="sl-lbl"><span>Read noise σ_e</span><span class="sl-val"><span id="rn-v">5</span> e⁻</span></div>
+            <input type="range" id="rn-s" min="1" max="50" step="1" value="5">
+            <div class="sl-hint"><span>1 e⁻</span><span>50 e⁻</span></div>
+          </div>
+        </div>
+
+        <div class="calc-panel">
+          <div class="calc-panel-head">Imaging Budget</div>
+          <div class="out-grid">
+            <div class="out-card">
+              <div class="out-lbl">Cross section σ(Δ)</div>
+              <div class="out-val" id="o-sig">—</div>
+              <div class="out-unit">×10⁻¹³ m²</div>
+            </div>
+            <div class="out-card">
+              <div class="out-lbl">Obj. pixel size</div>
+              <div class="out-val" id="o-pobj">—</div>
+              <div class="out-unit">μm in object plane</div>
+            </div>
+            <div class="out-card hi">
+              <div class="out-lbl">Photons/pixel</div>
+              <div class="out-val" id="o-nph">—</div>
+              <div class="out-unit">detected (probe)</div>
+            </div>
+            <div class="out-card">
+              <div class="out-lbl">OD shot noise δOD</div>
+              <div class="out-val" id="o-shot">—</div>
+              <div class="out-unit">from probe photons</div>
+            </div>
+            <div class="out-card">
+              <div class="out-lbl">OD read noise δOD</div>
+              <div class="out-val" id="o-read">—</div>
+              <div class="out-unit">from camera read</div>
+            </div>
+            <div class="out-card hi">
+              <div class="out-lbl">Total δOD (3σ min)</div>
+              <div class="out-val" id="o-dtot">—</div>
+              <div class="out-unit">minimum detectable OD</div>
+            </div>
+            <div class="out-card" style="grid-column:1/-1">
+              <div class="out-lbl">Min detectable N (in 10 μm cloud)</div>
+              <div class="out-val" id="o-nmin">—</div>
+              <div class="out-unit">atoms (3σ, 10 μm radius cloud)</div>
+            </div>
+          </div>
+          <div id="sat-status" style="margin-top:var(--sp-3)"></div>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-hed">
+          <strong style="color:var(--text-primary)">OD noise (δOD) vs probe intensity</strong>
+          — shot noise falls as 1/√s, read noise dominates at low s. Optimal I/I_sat marked.
+        </div>
+        <canvas id="ab-chart" height="100"></canvas>
+      </div>
+    </section>
+
+    <!-- 03 Reference Table -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="accent">03</span> Species Reference</h2>
+      <p class="section-desc">
+        Resonant cross section and saturation intensity for the cycling imaging transition.
+        OD column shows the expected optical depth for 1000 atoms uniformly distributed
+        in a 10 μm radius disk.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ref-tbl">
+          <thead>
+            <tr>
+              <th>Species</th><th>λ (nm)</th><th>σ₀ (×10⁻¹³ m²)</th>
+              <th>I_sat (mW/cm²)</th><th>OD / 1000 atoms</th><th>Imaging transition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Rb-87</td><td>780.24</td><td>2.907</td><td>1.669</td><td>~0.93</td><td>D2 F=2→F'=3 (cycling)</td></tr>
+            <tr><td>Cs-133</td><td>852.11</td><td>3.467</td><td>1.099</td><td>~1.10</td><td>D2 F=4→F'=5 (cycling)</td></tr>
+            <tr><td>Li-6</td><td>670.98</td><td>2.141</td><td>2.54</td><td>~0.68</td><td>D2 (approx cycling)</td></tr>
+            <tr><td>Li-7</td><td>670.98</td><td>2.141</td><td>2.54</td><td>~0.68</td><td>D2 (approx cycling)</td></tr>
+            <tr><td>Na-23</td><td>589.00</td><td>1.657</td><td>9.39</td><td>~0.53</td><td>D2 F=2→F'=3 (cycling)</td></tr>
+            <tr><td>K-39</td><td>766.70</td><td>2.812</td><td>1.75</td><td>~0.89</td><td>D2 F=2→F'=3 (cycling)</td></tr>
+            <tr><td>K-40</td><td>766.90</td><td>2.812</td><td>1.75</td><td>~0.89</td><td>D2 F=9/2→F'=11/2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04 Practical Notes -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="accent">04</span> Practical Considerations</h2>
+
+      <div class="topic-card" style="border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="topic-header">
+          <span>Saturation correction — when and how to apply it</span>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="topic-body">
+          <p>
+            The standard OD formula $-\ln(I_{\rm out}/I_{\rm in})$ underestimates atom number when
+            $I/I_{\rm sat} \gtrsim 0.1$, because saturation reduces the absorption cross section.
+            The corrected formula adds back the "consumed photons" term:
+          </p>
+          <div class="formula-box" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.2)">
+            $$\text{OD}_{\rm true} = -\ln\!\left(\frac{I_{\rm out}}{I_{\rm in}}\right) + \frac{I_{\rm in} - I_{\rm out}}{I_{\rm sat}}$$
+          </div>
+          <p style="margin-top:var(--sp-3)">
+            This is exact within the two-level model. In practice, use $I/I_{\rm sat} \sim 0.1$–$0.5$ to balance
+            photon count (SNR) against saturation distortion. At $I = I_{\rm sat}$ uncorrected OD is already off by ~30%;
+            at $I = 0.1\,I_{\rm sat}$ the error is ~5%.
+            If you can't apply the correction (e.g., unknown $I_{\rm sat}$ for mixed states), use $I \ll I_{\rm sat}$.
+          </p>
+          <p style="margin-top:var(--sp-3)">
+            For high-field imaging (Paschen-Back regime, B &gt; 100 G), the cycling transition breaks down and
+            the effective cross section must be computed from the actual magnetic sublevel populations. Imaging
+            at the stretched states $|F, m_F=\pm F\rangle$ restores a near-cycling cross section.
+          </p>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="topic-header">
+          <span>Fringe noise — the real limit at high atom numbers</span>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="topic-body">
+          <p>
+            At large probe photon counts (N_ph &gt; 1000/pixel), shot noise $\delta\text{OD} = \sqrt{2/N_{\rm ph}}$
+            becomes negligible — but OD noise floors around 0.01–0.1 remain due to <em>imaging fringes</em>:
+            interference patterns from dust, optical surfaces, or air currents that shift slightly between the
+            probe and reference frames.
+          </p>
+          <p style="margin-top:var(--sp-3)">
+            <strong>PCA / eigenface removal:</strong> take a library of reference images (no atoms), decompose
+            into principal components, and subtract the best fit from each probe image. This suppresses common
+            fringe modes, reducing effective noise to ~0.002–0.01 OD in well-optimized setups.
+            Implementation: <code>ref_lib @ pinv(ref_lib) @ probe</code> gives the optimal projection.
+          </p>
+          <p style="margin-top:var(--sp-3)">
+            <strong>Practical tips:</strong> take probe and reference within the same camera frame (jitter-limited
+            by vibration, not drift), enclose beam path, use antireflection-coated optics, keep the probe pulse
+            &lt; 50 μs to freeze air fluctuations, and take the reference frame immediately (within 1 ms) after
+            the probe frame.
+          </p>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="topic-header">
+          <span>Single-atom vs ensemble imaging — key differences</span>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="topic-body">
+          <p>
+            For <strong>single atoms in tweezers</strong>, absorption imaging is typically not used —
+            the OD of one atom in a ~μm² area is OD ~ 10⁻⁴ to 10⁻³, well below any noise floor.
+            Instead, <em>fluorescence imaging</em> (collecting photons scattered by the atom during a
+            detection pulse) is the standard, giving ~50–200 detected photons per atom and a
+            detection fidelity &gt; 99%.
+          </p>
+          <p style="margin-top:var(--sp-3)">
+            Absorption imaging is most powerful for <strong>ensemble experiments</strong>: MOTs (10⁶–10⁹ atoms),
+            BECs (10³–10⁶ atoms), and Fermi gases, where the column density OD is 0.1–5 across a ~10–100 μm cloud.
+            For atom numbers below ~500 in a MOT-scale trap, fluorescence wins even for ensembles.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 References -->
+    <section class="content-section">
+      <h2 class="section-title"><span class="accent">05</span> References &amp; Further Reading</h2>
+      <p class="section-desc">
+        Key papers on absorption imaging technique, saturation correction, fringe removal, and ensemble thermometry.
+      </p>
+
+      <div class="topic-card" style="border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="topic-header">
+          <span>Core technique papers</span>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="topic-body">
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
+            <li>
+              <strong>Reinaudi et al. (2007)</strong> — "Strong saturation absorption imaging of dense clouds of ultracold atoms."
+              <em>Opt. Lett.</em> <strong>32</strong>, 3143–3145.
+              Derives the saturation-corrected OD formula used in this calculator. Essential reading before imaging
+              any cloud with OD > 1 or I > 0.1 I_sat.
+              <a href="https://doi.org/10.1364/OL.32.003143" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+            </li>
+            <li>
+              <strong>Ockeloen et al. (2010)</strong> — "Detection of small atom numbers through image processing."
+              <em>Phys. Rev. A</em> <strong>82</strong>, 061606(R).
+              Introduces PCA/eigenface fringe removal for absorption images. Demonstrates detection of ~10 atoms
+              in a BEC with standard CCD cameras. Includes MATLAB code outline.
+              <a href="https://doi.org/10.1103/PhysRevA.82.061606" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+            </li>
+            <li>
+              <strong>Hueck et al. (2017)</strong> — "Calibrating high intensity absorption imaging of ultracold atoms."
+              <em>Rev. Sci. Instrum.</em> <strong>88</strong>, 123702.
+              Rigorous treatment of saturation correction beyond the two-level model, including sublevel populations
+              and polarization effects. Provides calibration procedure for I_sat in the actual experimental setup.
+              <a href="https://doi.org/10.1063/1.5006809" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+            </li>
+            <li>
+              <strong>Schmidutz et al. (2014)</strong> — "Quantum Joule-Thomson Effect in a Saturated Homogeneous Bose Gas."
+              <em>Phys. Rev. Lett.</em> <strong>112</strong>, 040403.
+              Appendix contains a concise, pedagogical summary of the three-image absorption technique and noise
+              sources — useful as a quick reference alongside this calculator.
+              <a href="https://doi.org/10.1103/PhysRevLett.112.040403" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+            </li>
+            <li>
+              <strong>Ketterle, Durfee &amp; Stamper-Kurn (1999)</strong> — "Making, probing and understanding Bose-Einstein condensates."
+              In: <em>Bose-Einstein Condensation in Atomic Gases</em>, Proc. Int. School of Physics "Enrico Fermi."
+              arXiv:cond-mat/9904034. Sections 3–5 give a complete treatment of absorption imaging, cross sections,
+              and cloud reconstruction for BEC experiments. The standard reference for BEC groups.
+              <a href="https://arxiv.org/abs/cond-mat/9904034" target="_blank" rel="noopener" style="color:var(--page-color)">arXiv →</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="topic-header">
+          <span>Atomic data: cross sections &amp; I_sat</span>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="topic-body">
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
+            <li>
+              <strong>Steck atomic data pages</strong> (steck.us/alkalidata) — comprehensive tables of σ₀, I_sat,
+              hyperfine A/B coefficients, transition dipole matrix elements, and Clebsch-Gordan factors for the cycling
+              transition. Values used in this calculator are taken directly from these tables.
+            </li>
+            <li>
+              <strong>Steck, "Rubidium-87 D Line Data" (2019)</strong> — steck.us/alkalidata/rubidium87numbers.pdf —
+              Table 7 gives cycling-transition σ₀ = 2.907×10⁻¹³ m² and I_sat = 1.669 mW/cm² for the
+              F=2→F'=3 D2 line used in this calculator.
+            </li>
+            <li>
+              <strong>NIST Atomic Spectra Database</strong> (physics.nist.gov/asd) — Einstein A-coefficients and
+              oscillator strengths for transitions not covered by Steck (e.g., Sr, Yb, Dy, Er).
+            </li>
+            <li>
+              <strong>Loftus et al. (2004)</strong> — "Narrow line cooling and momentum-space crystals."
+              <em>Phys. Rev. A</em> <strong>70</strong>, 031401(R). Contains saturation intensity and
+              cross section data for the Sr ¹S₀→³P₁ intercombination line, useful if imaging Sr on the narrow line.
+              <a href="https://doi.org/10.1103/PhysRevA.70.031401" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="topic-header">
+          <span>Textbooks &amp; lecture notes</span>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="topic-body">
+          <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
+            <li>
+              <strong>Metcalf &amp; van der Straten, <em>Laser Cooling and Trapping</em> (1999)</strong> — Springer.
+              Chapter 2 derives the resonant cross section σ₀ = 3λ²/2π from the oscillator model and discusses
+              the role of degeneracy, polarization, and hyperfine pumping in real atoms.
+            </li>
+            <li>
+              <strong>Foot, <em>Atomic Physics</em> (2005)</strong> — Oxford University Press.
+              Chapter 8 "Doppler cooling" and Chapter 9 contain derivations of the scattering force, relevant
+              for understanding the probe-atom interaction during the imaging pulse.
+            </li>
+            <li>
+              <strong>Pethick &amp; Smith, <em>Bose-Einstein Condensation in Dilute Gases</em> (2002, 2008)</strong>
+              — Cambridge University Press. Appendix covers absorption imaging as a diagnostic tool for BEC density profiles.
+            </li>
+            <li>
+              <strong>Inguscio &amp; Fallani, <em>Atomic Physics: Precise Measurements and Ultracold Matter</em> (2013)</strong>
+              — Oxford University Press. Chapter 4 covers time-of-flight expansion and absorption imaging together,
+              useful for connecting this calculator to the TOF thermometry tool.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
+<script src="../js/main.js?v=11"></script>
+<script>
+  renderNav({ active:'absorption-imaging', root:'../' });
+
+  const hbar = 1.054571817e-34, kB = 1.380649e-23, c_light = 299792458;
+
+  // σ₀ = 3λ²/2π for cycling transition
+  const SPECIES = {
+    Rb87:  { name:'Rb-87',  λ:780.24e-9, Γ:2*Math.PI*6.065e6, σ0:2.907e-13, Isat:16.69  },
+    Cs133: { name:'Cs-133', λ:852.11e-9, Γ:2*Math.PI*5.234e6, σ0:3.467e-13, Isat:10.99  },
+    Li6:   { name:'Li-6',   λ:670.98e-9, Γ:2*Math.PI*5.872e6, σ0:2.141e-13, Isat:25.4   },
+    Li7:   { name:'Li-7',   λ:670.98e-9, Γ:2*Math.PI*5.872e6, σ0:2.141e-13, Isat:25.4   },
+    Na23:  { name:'Na-23',  λ:589.00e-9, Γ:2*Math.PI*9.795e6, σ0:1.657e-13, Isat:93.9   },
+    K39:   { name:'K-39',   λ:766.70e-9, Γ:2*Math.PI*6.035e6, σ0:2.812e-13, Isat:17.5   },
+    K40:   { name:'K-40',   λ:766.90e-9, Γ:2*Math.PI*6.035e6, σ0:2.812e-13, Isat:17.5   },
+  };
+
+  const selSp  = document.getElementById('sp-sel');
+  const slDG   = document.getElementById('dg-s');
+  const slSat  = document.getElementById('sat-s');
+  const slTexp = document.getElementById('texp-s');
+  const slPix  = document.getElementById('pix-s');
+  const slMag  = document.getElementById('mag-s');
+  const slQE   = document.getElementById('qe-s');
+  const slRN   = document.getElementById('rn-s');
+  let   abChart = null;
+
+  function calcImaging(atom, ΔΓ, s, t_us, p_cam_um, M, QE, σ_e) {
+    const σ_Δ  = atom.σ0 / (1 + 4*ΔΓ*ΔΓ);          // m²
+    const p_obj = p_cam_um / M;                        // object-plane pixel μm
+    const A_obj = (p_obj * 1e-6) * (p_obj * 1e-6);   // m²
+    const I_probe = s * atom.Isat;                     // W/m² (Isat in W/m²)
+    const ħω  = hbar * 2*Math.PI*c_light / atom.λ;
+    const Φ   = I_probe / ħω;                          // photons/m²/s
+    const N_ph = Φ * (t_us*1e-6) * A_obj * QE;        // detected photons/pixel
+
+    const δOD_shot = N_ph > 0 ? Math.sqrt(2 / N_ph) : Infinity;
+    const δOD_read = N_ph > 0 ? (σ_e * Math.sqrt(2)) / N_ph : Infinity;
+    const δOD_tot  = Math.sqrt(δOD_shot*δOD_shot + δOD_read*δOD_read);
+    const OD_min   = 3 * δOD_tot;
+
+    // N_min for 10 μm radius cloud
+    const r_cloud = 10e-6; // m
+    const A_cloud = Math.PI * r_cloud * r_cloud;
+    const N_min   = OD_min * A_cloud / σ_Δ;
+
+    return { σ_Δ, p_obj, N_ph, δOD_shot, δOD_read, δOD_tot, OD_min, N_min };
+  }
+
+  function updateCalc() {
+    const atom  = SPECIES[selSp.value];
+    const ΔΓ   = +slDG.value / 10;
+    const s     = +slSat.value / 100;
+    const t_us  = +slTexp.value;
+    const p_cam = +slPix.value / 10;  // slider: 10→200 maps to 1.0→20.0 μm
+    const M     = +slMag.value / 10;
+    const QE    = +slQE.value / 100;
+    const σ_e   = +slRN.value;
+
+    document.getElementById('dg-v').textContent   = ΔΓ.toFixed(1);
+    document.getElementById('sat-v').textContent  = s.toFixed(2);
+    document.getElementById('texp-v').textContent = t_us;
+    document.getElementById('pix-v').textContent  = p_cam.toFixed(1);
+    document.getElementById('mag-v').textContent  = M.toFixed(1);
+    document.getElementById('qe-v').textContent   = QE.toFixed(2);
+    document.getElementById('rn-v').textContent   = σ_e;
+
+    const r = calcImaging(atom, ΔΓ, s, t_us, p_cam, M, QE, σ_e);
+
+    document.getElementById('o-sig').textContent  = (r.σ_Δ*1e13).toFixed(2);
+    document.getElementById('o-pobj').textContent = r.p_obj.toFixed(2);
+
+    const N = r.N_ph;
+    document.getElementById('o-nph').textContent =
+      N >= 1e6 ? (N/1e6).toFixed(1)+'M' : N >= 1e3 ? (N/1e3).toFixed(1)+'k' : N.toFixed(0);
+
+    document.getElementById('o-shot').textContent = r.δOD_shot < 1 ? r.δOD_shot.toFixed(4) : '>1';
+    document.getElementById('o-read').textContent = r.δOD_read < 1 ? r.δOD_read.toFixed(4) : '>1';
+    document.getElementById('o-dtot').textContent = r.OD_min  < 1 ? r.OD_min.toFixed(4)   : '>1';
+
+    const Nmin = r.N_min;
+    document.getElementById('o-nmin').textContent =
+      Nmin >= 1e6 ? '>1M' : Nmin >= 1e3 ? (Nmin/1e3).toFixed(1)+'k' : Nmin.toFixed(0);
+
+    // Saturation warning
+    const satEl = document.getElementById('sat-status');
+    if (s > 0.5) {
+      satEl.innerHTML = `<div class="badge badge-warn">⚠ I/I_sat = ${s.toFixed(2)} — apply saturation correction</div>`;
+    } else if (s > 0.1) {
+      satEl.innerHTML = `<div class="badge" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:#fbbf24">
+        ⚠ I/I_sat = ${s.toFixed(2)} — ~${(s*50).toFixed(0)}% saturation error without correction</div>`;
+    } else {
+      satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation correction &lt; 5%</div>`;
+    }
+
+    updateChart(atom, t_us, p_cam, M, QE, σ_e, ΔΓ);
+  }
+
+  function updateChart(atom, t_us, p_cam, M, QE, σ_e, ΔΓ) {
+    const sVals = [], shotArr = [], readArr = [], totArr = [];
+    let optS = 0, optDOD = Infinity;
+
+    for (let si = 1; si <= 200; si++) {
+      const s = si / 100;
+      const r = calcImaging(atom, ΔΓ, s, t_us, p_cam, M, QE, σ_e);
+      sVals.push(s.toFixed(2));
+      shotArr.push(r.δOD_shot < 5 ? r.δOD_shot : NaN);
+      readArr.push(r.δOD_read < 5 ? r.δOD_read : NaN);
+      const tot = r.δOD_tot < 5 ? r.δOD_tot : NaN;
+      totArr.push(tot);
+      if (isFinite(tot) && tot < optDOD) { optDOD = tot; optS = s; }
+    }
+
+    const ctx = document.getElementById('ab-chart').getContext('2d');
+    if (abChart) abChart.destroy();
+    abChart = new Chart(ctx, {
+      data: { labels: sVals, datasets: [
+        { type:'line', label:'Total δOD', data:totArr,
+          borderColor:'#818cf8', backgroundColor:'rgba(129,140,248,0.1)',
+          fill:true, tension:0.3, pointRadius:0 },
+        { type:'line', label:'Shot noise', data:shotArr,
+          borderColor:'#4ade80', backgroundColor:'transparent',
+          tension:0.3, pointRadius:0, borderDash:[3,2] },
+        { type:'line', label:'Read noise', data:readArr,
+          borderColor:'#f87171', backgroundColor:'transparent',
+          tension:0.3, pointRadius:0, borderDash:[6,3] },
+      ]},
+      options: {
+        responsive:true, interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{ labels:{ color:'#94a3b8', font:{size:11} } },
+          annotation:{} // no plugin needed
+        },
+        scales:{
+          x:{ title:{display:true,text:'Probe intensity I/I_sat',color:'#94a3b8',font:{size:11}},
+              ticks:{ color:'#64748b', maxTicksLimit:10 }, grid:{color:'rgba(255,255,255,0.04)'} },
+          y:{ title:{display:true,text:'δOD (noise on OD)',color:'#94a3b8',font:{size:11}},
+              ticks:{ color:'#64748b' }, grid:{color:'rgba(255,255,255,0.04)'},
+              min:0 },
+        }
+      }
+    });
+  }
+
+  const allSliders = [selSp, slDG, slSat, slTexp, slPix, slMag, slQE, slRN];
+  allSliders.forEach(el => el.addEventListener('input', updateCalc));
+  updateCalc();
+</script>
+</body>
+</html>
