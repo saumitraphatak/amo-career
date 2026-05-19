@@ -714,6 +714,13 @@ function currentPageKey() {
   return file;
 }
 
+function hasCalculatorState() {
+  const controls = getPageControls()
+    .filter(el => !el.closest('.source-confidence-panel, .assumption-panel'));
+  const outputs = document.querySelectorAll('.result-value, .metric-value, .output-value, .kpi-value, .calc-output, canvas');
+  return controls.length > 0 || outputs.length > 0;
+}
+
 const ASSUMPTION_DEFS = {
   'two-level atom': 'Treats the atom as an effective closed transition. Breaks down when hyperfine branching, dark states, or optical pumping dominate.',
   'low saturation': 'Uses weak-excitation or near-linear scattering estimates. At high saturation, power broadening and multilevel dynamics matter.',
