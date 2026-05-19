@@ -1280,6 +1280,62 @@ function initExportButtons() {
   });
 }
 
+/* ─────────────────────────────────────────────────────
+   COPY-ON-CLICK RESULT VALUES
+   Click any computed result value to copy it.
+   ───────────────────────────────────────────────────── */
+function initCopyOnClick() {
+  const SEL = [
+    '.prop-card-val', '.blk-val', '.fid-value',
+    '.result-val', '.out-val', '.calc-metric-val',
+    '.metric-val', '.sc-val', '.sl-val',
+  ].join(',');
+
+  function showTip(el) {
+    const r = el.getBoundingClientRect();
+    const tip = document.createElement('div');
+    tip.textContent = '✓ copied';
+    tip.style.cssText = [
+      'position:fixed',
+      `top:${r.top - 30}px`,
+      `left:${r.left + r.width / 2}px`,
+      'transform:translateX(-50%)',
+      'background:#1e293b',
+      'border:1px solid #4ade80',
+      'color:#4ade80',
+      'font-size:.7rem',
+      'font-family:var(--font-mono,monospace)',
+      'padding:3px 8px',
+      'border-radius:4px',
+      'pointer-events:none',
+      'z-index:9999',
+      'opacity:1',
+      'transition:opacity .4s .5s',
+    ].join(';');
+    document.body.appendChild(tip);
+    requestAnimationFrame(() => requestAnimationFrame(() => { tip.style.opacity = '0'; }));
+    setTimeout(() => tip.remove(), 950);
+  }
+
+  document.addEventListener('click', e => {
+    const el = e.target.closest(SEL);
+    if (!el) return;
+    const text = el.textContent.trim();
+    if (!text || text === '—' || text === '–') return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => showTip(el)).catch(() => {});
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); showTip(el); } catch (_) {}
+      document.body.removeChild(ta);
+    }
+  });
+}
+
 window.AMOCareer = {
   exportTableCSV,
   exportCanvasPNG,
@@ -1306,6 +1362,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initWorkedExamples();
   initPaperToolBridge();
   initExportButtons();
+  initCopyOnClick();
 });
 
 /* ─────────────────────────────────────────────────────────

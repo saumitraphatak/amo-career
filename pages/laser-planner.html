@@ -10,7 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="canonical" href="https://amotoolkit.com/pages/laser-planner.html">
-  <link rel="stylesheet" href="../css/styles.css?v=12">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Laser System Planner — AMO Toolkit">
+  <meta property="og:description" content="Plan and document your laser system: wavelengths, power budgets, AOMs, isolators, and fiber paths for ultracold atom experiments.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/laser-planner.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Laser System Planner">
+  <meta name="twitter:description" content="Plan and document your laser system: wavelengths, power budgets, AOMs, isolators, and fiber paths for ultracold atom experiments.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser System Planner","description":"Plan and document your laser system: wavelengths, power budgets, AOMs, isolators, and fiber paths for ultracold atom experiments.","url":"https://amotoolkit.com/pages/laser-planner.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=13">
   <style>
     .page-wrap { --page-color:#f472b6; --page-bg:rgba(244,114,182,0.08); --page-border:rgba(244,114,182,0.2); }
 
@@ -105,36 +114,81 @@
         </div>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
-        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-<style>
-@keyframes lp-beam{0%{stroke-dashoffset:300}100%{stroke-dashoffset:0}}
-@keyframes lp-glow{0%,100%{opacity:.5}50%{opacity:1}}
-.lp-beam{stroke-dasharray:6,4;animation:lp-beam 2s linear infinite}
-.lp-glow{animation:lp-glow 2.2s ease-in-out infinite}
-</style>
-<!-- Beam path -->
-<line x1="55" y1="82" x2="255" y2="82" stroke="#f472b6" stroke-width="2" class="lp-beam"/>
-<!-- LASER box -->
-<rect x="10" y="65" width="45" height="34" rx="5" fill="rgba(244,114,182,0.1)" stroke="#f472b6" stroke-width="1.5" opacity=".85"/>
-<text x="32" y="86" text-anchor="middle" font-size="8" fill="#f472b6" font-weight="700">LASER</text>
-<!-- AOM -->
-<rect x="90" y="68" width="38" height="28" rx="4" fill="rgba(244,114,182,0.08)" stroke="#f472b6" stroke-width="1.2" opacity=".75"/>
-<text x="109" y="85" text-anchor="middle" font-size="7.5" fill="#f472b6" font-weight="600">AOM</text>
-<text x="109" y="110" text-anchor="middle" font-size="6.5" fill="#f472b6" opacity=".5">±80 MHz</text>
-<!-- Fiber coupler -->
-<ellipse cx="170" cy="82" rx="5" ry="18" fill="none" stroke="#f472b6" stroke-width="1.5" opacity=".7"/>
-<text x="170" y="114" text-anchor="middle" font-size="6.5" fill="#f472b6" opacity=".5">fiber</text>
-<!-- Lens -->
-<ellipse cx="220" cy="82" rx="4" ry="20" fill="none" stroke="#f472b6" stroke-width="1.5" opacity=".7"/>
-<text x="220" y="116" text-anchor="middle" font-size="6.5" fill="#f472b6" opacity=".5">f = 60mm</text>
-<!-- Atom -->
-<circle cx="260" cy="82" r="8" fill="#f472b6" class="lp-glow" filter="url(#lpf)"/>
-<circle cx="260" cy="82" r="4" fill="white" opacity=".7"/>
-<text x="260" y="106" text-anchor="middle" font-size="6.5" fill="#f472b6" opacity=".6">trap</text>
-<defs>
-  <filter id="lpf"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-</svg>
+        <svg viewBox="0 0 340 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Laser system planner diagram showing species selection mapped to cooling, trapping, Rydberg, and RF control beams">
+          <defs>
+            <linearGradient id="lp-card" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0f172a" stop-opacity="0.94"/>
+              <stop offset="100%" stop-color="#020617" stop-opacity="0.74"/>
+            </linearGradient>
+            <filter id="lp-soft"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <style>
+              @keyframes lp-pulse{0%,100%{opacity:.35}50%{opacity:1}}
+              @keyframes lp-flow{0%{stroke-dashoffset:70}100%{stroke-dashoffset:0}}
+              @keyframes lp-chip{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+              .lp-flow{stroke-dasharray:5 5;animation:lp-flow 2.8s linear infinite}.lp-pulse{animation:lp-pulse 2.6s ease-in-out infinite}.lp-chip{transform-box:fill-box;transform-origin:center;animation:lp-chip 3.2s ease-in-out infinite}.lp-label{font-family:JetBrains Mono,monospace;font-size:7px;letter-spacing:.06em}.lp-mini{font-family:JetBrains Mono,monospace;font-size:6px}.lp-card-title{font-family:JetBrains Mono,monospace;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+            </style>
+          </defs>
+
+          <rect x="1" y="1" width="338" height="188" rx="16" fill="url(#lp-card)" stroke="rgba(244,114,182,.26)"/>
+          <g opacity=".07" stroke="#f472b6" stroke-width=".6">
+            <path d="M24 36H316M24 75H316M24 114H316M24 153H316"/>
+            <path d="M72 18V172M170 18V172M268 18V172"/>
+          </g>
+
+          <!-- species input -->
+          <g class="lp-chip" transform="translate(24 62)">
+            <rect x="0" y="0" width="70" height="54" rx="12" fill="rgba(244,114,182,.09)" stroke="rgba(244,114,182,.55)"/>
+            <text x="35" y="18" text-anchor="middle" class="lp-card-title" fill="#f9a8d4">species</text>
+            <text x="35" y="38" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" font-weight="700" fill="#e2e8f0">Rb / Cs</text>
+            <text x="35" y="49" text-anchor="middle" class="lp-mini" fill="#94a3b8">Li · Sr · Yb</text>
+          </g>
+
+          <!-- planner core -->
+          <g transform="translate(121 44)">
+            <rect x="0" y="0" width="98" height="90" rx="14" fill="rgba(15,23,42,.82)" stroke="rgba(56,189,248,.45)"/>
+            <text x="49" y="18" text-anchor="middle" class="lp-card-title" fill="#38bdf8">laser stack</text>
+            <line x1="18" y1="31" x2="80" y2="31" stroke="#334155"/>
+            <text x="18" y="47" class="lp-label" fill="#f9a8d4">λ</text><text x="37" y="47" class="lp-mini" fill="#cbd5e1">wavelength</text>
+            <text x="18" y="62" class="lp-label" fill="#fbbf24">P</text><text x="37" y="62" class="lp-mini" fill="#cbd5e1">power</text>
+            <text x="18" y="77" class="lp-label" fill="#34d399">ctrl</text><text x="50" y="77" class="lp-mini" fill="#cbd5e1">AOM / EOM</text>
+          </g>
+
+          <!-- connection in -->
+          <path class="lp-flow" d="M95 89 C106 89 111 89 121 89" fill="none" stroke="#f472b6" stroke-width="1.4" opacity=".75"/>
+          <circle class="lp-pulse" cx="108" cy="89" r="3" fill="#f472b6" filter="url(#lp-soft)"/>
+
+          <!-- output branches -->
+          <g stroke-width="1.35" fill="none" opacity=".85">
+            <path class="lp-flow" d="M219 66 C235 52 246 43 264 38" stroke="#38bdf8"/>
+            <path class="lp-flow" d="M219 84 C238 80 249 80 264 80" stroke="#fbbf24"/>
+            <path class="lp-flow" d="M219 101 C236 113 248 124 264 132" stroke="#a78bfa"/>
+          </g>
+
+          <!-- beam families -->
+          <g transform="translate(264 24)">
+            <rect x="0" y="0" width="58" height="28" rx="8" fill="rgba(56,189,248,.09)" stroke="rgba(56,189,248,.55)"/>
+            <text x="29" y="12" text-anchor="middle" class="lp-label" fill="#7dd3fc">cool / repump</text>
+            <text x="29" y="23" text-anchor="middle" class="lp-mini" fill="#94a3b8">D1 · D2</text>
+          </g>
+          <g transform="translate(264 66)">
+            <rect x="0" y="0" width="58" height="28" rx="8" fill="rgba(251,191,36,.09)" stroke="rgba(251,191,36,.55)"/>
+            <text x="29" y="12" text-anchor="middle" class="lp-label" fill="#fde68a">trap</text>
+            <text x="29" y="23" text-anchor="middle" class="lp-mini" fill="#94a3b8">ODT / lattice</text>
+          </g>
+          <g transform="translate(264 118)">
+            <rect x="0" y="0" width="58" height="34" rx="8" fill="rgba(167,139,250,.09)" stroke="rgba(167,139,250,.55)"/>
+            <text x="29" y="12" text-anchor="middle" class="lp-label" fill="#c4b5fd">Rydberg</text>
+            <text x="29" y="23" text-anchor="middle" class="lp-mini" fill="#94a3b8">lower + upper</text>
+            <text x="29" y="31" text-anchor="middle" class="lp-mini" fill="#f9a8d4">SHG/SFG?</text>
+          </g>
+
+          <!-- bottom control rail -->
+          <g transform="translate(74 153)">
+            <rect x="0" y="0" width="192" height="20" rx="10" fill="rgba(15,23,42,.72)" stroke="rgba(244,114,182,.22)"/>
+            <text x="16" y="13" class="lp-mini" fill="#f9a8d4">output:</text>
+            <text x="52" y="13" class="lp-mini" fill="#cbd5e1">source type · AOM/EOM · fiber? · power budget</text>
+          </g>
+        </svg>
       </div>
     </div>
   </div>
@@ -167,6 +221,35 @@
     </section>
     </div>
   </div>
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="laser-locking.html">
+        <span class="see-also-icon">🔐</span>
+        <div>
+          <div class="see-also-name">Laser Locking</div>
+          <div class="see-also-desc">SAS, PDH, and offset locking guide</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="lab-calculators.html">
+        <span class="see-also-icon">🧮</span>
+        <div>
+          <div class="see-also-name">Lab Calculators</div>
+          <div class="see-also-desc">Optics, atomic physics, and trap calculators</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="lab-techniques.html">
+        <span class="see-also-icon">🔬</span>
+        <div>
+          <div class="see-also-name">Lab Techniques</div>
+          <div class="see-also-desc">MOT, tweezers, imaging, and cooling techniques</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
 </main>
 
 <script>
@@ -533,7 +616,7 @@ Object.entries(LASER_DB).forEach(([key, d]) => {
 });
 </script>
 
-<script src="../js/main.js?v=12"></script>
+<script src="../js/main.js?v=13"></script>
 <script>renderNav({ active: 'laser-planner', root: '../' });</script>
 </body>
 </html>

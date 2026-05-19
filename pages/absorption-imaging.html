@@ -10,7 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="canonical" href="https://amotoolkit.com/pages/absorption-imaging.html">
-  <link rel="stylesheet" href="../css/styles.css?v=12">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Absorption Imaging Lab — AMO Toolkit">
+  <meta property="og:description" content="Absorption imaging calculator for cold-atom ensembles: optical depth, column density, atom number, saturation correction, photon shot noise, and practical imaging limits.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/absorption-imaging.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Absorption Imaging Lab">
+  <meta name="twitter:description" content="Absorption imaging calculator for cold-atom ensembles: optical depth, column density, atom number, saturation correction, photon shot noise, and practical imaging limits.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Absorption Imaging Lab","description":"Absorption imaging calculator for cold-atom ensembles: optical depth, column density, atom number, saturation correction, photon shot noise, and practical imaging limits.","url":"https://amotoolkit.com/pages/absorption-imaging.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=13">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
@@ -137,75 +146,96 @@
         </div>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
-        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <filter id="abf"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  <linearGradient id="abg" x1="0" x2="1"><stop offset="0%" stop-color="#818cf8" stop-opacity=".9"/><stop offset="45%" stop-color="#818cf8" stop-opacity=".15"/><stop offset="55%" stop-color="#818cf8" stop-opacity=".15"/><stop offset="100%" stop-color="#818cf8" stop-opacity=".7"/></linearGradient>
-  <radialGradient id="abcloud" cx="50%" cy="50%"><stop offset="0%" stop-color="#818cf8" stop-opacity=".7"/><stop offset="60%" stop-color="#818cf8" stop-opacity=".3"/><stop offset="100%" stop-color="#818cf8" stop-opacity="0"/></radialGradient>
-  <radialGradient id="abod" cx="50%" cy="50%"><stop offset="0%" stop-color="#1e1b4b" stop-opacity=".95"/><stop offset="50%" stop-color="#818cf8" stop-opacity=".08"/><stop offset="100%" stop-color="#818cf8" stop-opacity="0"/></radialGradient>
-  <style>
-    @keyframes ab-s1{0%,27%{opacity:1}33%,95%{opacity:0}100%{opacity:1}}
-    @keyframes ab-s2{0%,28%{opacity:0}33%,62%{opacity:1}67%,100%{opacity:0}}
-    @keyframes ab-s3{0%,62%{opacity:0}67%,95%{opacity:1}100%{opacity:0}}
-    @keyframes ab-scan{0%,100%{opacity:.25}50%{opacity:.85}}
-    @keyframes ab-pulse{0%,100%{r:18;opacity:.7}50%{r:22;opacity:1}}
-    .ab-s1{animation:ab-s1 7s ease-in-out infinite}
-    .ab-s2{animation:ab-s2 7s ease-in-out infinite}
-    .ab-s3{animation:ab-s3 7s ease-in-out infinite}
-    .ab-scan{animation:ab-scan 1.6s ease-in-out infinite}
-    .ab-pulse{animation:ab-pulse 2.4s ease-in-out infinite}
-  </style>
-</defs>
-<rect width="300" height="165" rx="14" fill="rgba(15,23,42,.65)"/>
-<g opacity=".06" stroke="#818cf8" stroke-width=".5"><line x1="0" y1="33" x2="300" y2="33"/><line x1="0" y1="82" x2="300" y2="82"/><line x1="0" y1="131" x2="300" y2="131"/><line x1="60" y1="0" x2="60" y2="165"/><line x1="120" y1="0" x2="120" y2="165"/><line x1="180" y1="0" x2="180" y2="165"/><line x1="240" y1="0" x2="240" y2="165"/></g>
+        <svg viewBox="0 0 340 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Absorption imaging workflow: probe image, atom shadow image, dark frame, optical-depth map, and atom number">
+          <defs>
+            <linearGradient id="ai-card" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0f172a" stop-opacity="0.94"/>
+              <stop offset="100%" stop-color="#020617" stop-opacity="0.72"/>
+            </linearGradient>
+            <radialGradient id="ai-shadow" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#020617" stop-opacity="0.88"/>
+              <stop offset="45%" stop-color="#312e81" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="ai-od" cx="50%" cy="50%" r="58%">
+              <stop offset="0%" stop-color="#f8fafc" stop-opacity="0.96"/>
+              <stop offset="34%" stop-color="#a5b4fc" stop-opacity="0.86"/>
+              <stop offset="72%" stop-color="#38bdf8" stop-opacity="0.36"/>
+              <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="ai-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <style>
+              @keyframes ai-beam{0%{stroke-dashoffset:44}100%{stroke-dashoffset:0}}
+              @keyframes ai-shadowPulse{0%,100%{opacity:.72;transform:scale(.96)}50%{opacity:1;transform:scale(1.05)}}
+              @keyframes ai-scan{0%{transform:translateY(-17px);opacity:.15}45%,65%{opacity:.75}100%{transform:translateY(17px);opacity:.15}}
+              @keyframes ai-math{0%,26%{opacity:.35}42%,100%{opacity:1}}
+              .ai-beam{stroke-dasharray:6 5;animation:ai-beam 2.4s linear infinite}.ai-shadow{transform-box:fill-box;transform-origin:center;animation:ai-shadowPulse 3.8s ease-in-out infinite}.ai-scan{animation:ai-scan 3.8s ease-in-out infinite}.ai-math{animation:ai-math 3.8s ease-in-out infinite}.ai-label{font-family:JetBrains Mono,monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase}.ai-mini{font-family:JetBrains Mono,monospace;font-size:6px}.ai-num{font-family:JetBrains Mono,monospace;font-size:9px;font-weight:700}
+            </style>
+          </defs>
 
-<!-- STAGE 1: Probe beam (uniform, full-intensity) -->
-<g class="ab-s1">
-  <rect x="12" y="54" width="62" height="58" rx="5" fill="rgba(129,140,248,.1)" stroke="#818cf8" stroke-width="1"/>
-  <text x="43" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">① Probe</text>
-  <rect x="16" y="58" width="54" height="50" rx="3" fill="rgba(129,140,248,.06)"/>
-  <g class="ab-scan"><rect x="18" y="61" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="69" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="77" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="85" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="93" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/><rect x="18" y="101" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7"/></g>
-  <text x="43" y="124" text-anchor="middle" font-size="7" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">I_probe</text>
-  <path d="M88 82 H 130" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3" opacity=".4"/><polygon points="127,79 133,82 127,85" fill="#818cf8" opacity=".4"/>
-  <circle cx="150" cy="82" r="22" fill="url(#abcloud)" class="ab-pulse"/>
-  <circle cx="150" cy="82" r="12" fill="#818cf8" opacity=".25" filter="url(#abf)"/>
-  <text x="150" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">atom cloud</text>
-  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">probe illumination</text>
-</g>
+          <rect x="1" y="1" width="338" height="188" rx="16" fill="url(#ai-card)" stroke="rgba(129,140,248,.28)"/>
+          <g opacity=".07" stroke="#818cf8" stroke-width=".6">
+            <path d="M22 34H318M22 78H318M22 122H318M22 166H318"/>
+            <path d="M86 18V172M170 18V172M254 18V172"/>
+          </g>
 
-<!-- STAGE 2: Shadow image (beam absorbed in cloud center) -->
-<g class="ab-s2">
-  <rect x="12" y="54" width="62" height="58" rx="5" fill="rgba(129,140,248,.1)" stroke="#818cf8" stroke-width="1"/>
-  <text x="43" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">② Shadow</text>
-  <rect x="16" y="58" width="54" height="50" rx="3" fill="rgba(129,140,248,.06)"/>
-  <rect x="18" y="61" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
-  <rect x="18" y="69" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
-  <rect x="18" y="77" width="15" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/><rect x="51" y="77" width="17" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
-  <rect x="18" y="85" width="12" height="5" rx="1" fill="#a5b4fc" opacity=".5" class="ab-scan"/><rect x="54" y="85" width="14" height="5" rx="1" fill="#a5b4fc" opacity=".5" class="ab-scan"/>
-  <rect x="18" y="93" width="15" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/><rect x="51" y="93" width="17" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
-  <rect x="18" y="101" width="50" height="5" rx="1" fill="#a5b4fc" opacity=".7" class="ab-scan"/>
-  <circle cx="36" cy="82" r="8" fill="rgba(2,8,23,.6)"/>
-  <text x="43" y="124" text-anchor="middle" font-size="7" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">I_shadow</text>
-  <path d="M18 82 H 282" stroke="url(#abg)" stroke-width="20" stroke-linecap="round" opacity=".5"/>
-  <circle cx="150" cy="82" r="16" fill="rgba(129,140,248,.25)" stroke="#a5b4fc" stroke-width="1.5" filter="url(#abf)"/>
-  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">Beer-Lambert absorption</text>
-</g>
+          <!-- physical experiment line -->
+          <g transform="translate(22 24)">
+            <text x="0" y="0" class="ai-label" fill="#a5b4fc">probe beam</text>
+            <path class="ai-beam" d="M8 30 H118" fill="none" stroke="#818cf8" stroke-width="5" stroke-linecap="round" opacity=".72"/>
+            <ellipse cx="72" cy="30" rx="17" ry="14" fill="url(#ai-shadow)" class="ai-shadow" filter="url(#ai-glow)"/>
+            <text x="72" y="55" text-anchor="middle" class="ai-mini" fill="#94a3b8">atom cloud absorbs light</text>
+            <path d="M126 30 H160" stroke="#818cf8" stroke-width="1.2" stroke-dasharray="4 4" opacity=".65"/>
+            <rect x="166" y="8" width="34" height="44" rx="6" fill="rgba(129,140,248,.09)" stroke="rgba(165,180,252,.75)"/>
+            <rect x="173" y="16" width="20" height="4" rx="1" fill="#a5b4fc" opacity=".7"/>
+            <rect x="173" y="27" width="20" height="4" rx="1" fill="#a5b4fc" opacity=".38"/>
+            <rect x="173" y="38" width="20" height="4" rx="1" fill="#a5b4fc" opacity=".7"/>
+            <line class="ai-scan" x1="170" y1="30" x2="196" y2="30" stroke="#38bdf8" stroke-width="1.4" opacity=".8"/>
+            <text x="183" y="64" text-anchor="middle" class="ai-mini" fill="#94a3b8">camera</text>
+          </g>
 
-<!-- STAGE 3: OD map (computed column density) -->
-<g class="ab-s3">
-  <rect x="12" y="54" width="62" height="58" rx="5" fill="rgba(129,140,248,.1)" stroke="#818cf8" stroke-width="1"/>
-  <text x="43" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">③ OD map</text>
-  <rect x="16" y="58" width="54" height="50" rx="3" fill="rgba(129,140,248,.04)"/>
-  <ellipse cx="43" cy="83" rx="16" ry="14" fill="url(#abod)"/>
-  <text x="43" y="124" text-anchor="middle" font-size="7" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">OD(x,y)</text>
-  <path d="M88 82 H 130" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3" opacity=".4"/><polygon points="127,79 133,82 127,85" fill="#818cf8" opacity=".4"/>
-  <text x="150" y="48" text-anchor="middle" font-size="7.5" fill="#818cf8" opacity=".7" font-family="JetBrains Mono,monospace">column density</text>
-  <ellipse cx="150" cy="82" rx="32" ry="28" fill="url(#abod)" filter="url(#abf)"/>
-  <ellipse cx="150" cy="82" rx="14" ry="12" fill="rgba(30,27,75,.8)"/>
-  <text x="210" y="26" font-size="8" fill="#818cf8" opacity=".65" font-family="JetBrains Mono,monospace">OD = -ln(I_s/I_p)</text>
-  <text x="150" y="156" text-anchor="middle" font-size="8" fill="#818cf8" opacity=".55" font-family="JetBrains Mono,monospace">optical depth reconstruction</text>
-</g>
-</svg>
+          <!-- three raw frames -->
+          <g transform="translate(24 103)">
+            <text x="0" y="-12" class="ai-label" fill="#a5b4fc">raw images</text>
+            <g>
+              <rect x="0" y="0" width="48" height="42" rx="7" fill="rgba(129,140,248,.08)" stroke="rgba(129,140,248,.45)"/>
+              <rect x="7" y="9" width="34" height="22" rx="3" fill="rgba(165,180,252,.52)"/>
+              <text x="24" y="55" text-anchor="middle" class="ai-mini" fill="#cbd5e1">probe</text>
+            </g>
+            <g transform="translate(62 0)">
+              <rect x="0" y="0" width="48" height="42" rx="7" fill="rgba(129,140,248,.08)" stroke="rgba(129,140,248,.45)"/>
+              <rect x="7" y="9" width="34" height="22" rx="3" fill="rgba(165,180,252,.52)"/>
+              <ellipse cx="24" cy="20" rx="12" ry="9" fill="url(#ai-shadow)"/>
+              <text x="24" y="55" text-anchor="middle" class="ai-mini" fill="#cbd5e1">atoms</text>
+            </g>
+            <g transform="translate(124 0)">
+              <rect x="0" y="0" width="48" height="42" rx="7" fill="rgba(129,140,248,.08)" stroke="rgba(129,140,248,.45)"/>
+              <rect x="7" y="9" width="34" height="22" rx="3" fill="rgba(15,23,42,.92)"/>
+              <text x="24" y="55" text-anchor="middle" class="ai-mini" fill="#cbd5e1">dark</text>
+            </g>
+          </g>
+
+          <!-- math arrow and OD output -->
+          <g class="ai-math">
+            <path d="M206 124 H237" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="4 4" opacity=".85"/>
+            <text x="221" y="116" text-anchor="middle" class="ai-mini" fill="#38bdf8">-ln ratio</text>
+            <g transform="translate(246 85)">
+              <rect x="0" y="0" width="70" height="72" rx="12" fill="rgba(56,189,248,.08)" stroke="rgba(56,189,248,.45)"/>
+              <text x="35" y="15" text-anchor="middle" class="ai-label" fill="#7dd3fc">OD map</text>
+              <ellipse cx="35" cy="38" rx="22" ry="18" fill="url(#ai-od)" filter="url(#ai-glow)"/>
+              <ellipse cx="35" cy="38" rx="9" ry="7" fill="#0f172a" opacity=".34"/>
+              <text x="35" y="64" text-anchor="middle" class="ai-mini" fill="#cbd5e1">n_col = OD / sigma</text>
+            </g>
+          </g>
+
+          <g transform="translate(198 28)" class="ai-math">
+            <rect x="0" y="0" width="118" height="34" rx="10" fill="rgba(15,23,42,.76)" stroke="rgba(129,140,248,.24)"/>
+            <text x="10" y="14" class="ai-mini" fill="#94a3b8">OD(x,y)</text>
+            <text x="50" y="14" class="ai-num" fill="#e2e8f0">= -ln(Ia/Ip)</text>
+            <text x="10" y="27" class="ai-mini" fill="#94a3b8">sum pixels</text>
+            <text x="72" y="27" class="ai-num" fill="#7dd3fc">-> atom number</text>
+          </g>
+        </svg>
       </div>
     </div>
   </div>
@@ -644,7 +674,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
-<script src="../js/main.js?v=12"></script>
+<script src="../js/main.js?v=13"></script>
 <script>
   renderNav({ active:'absorption-imaging', root:'../' });
 
@@ -737,6 +767,35 @@
         ⚠ I/I_sat = ${s.toFixed(2)} — ~${(s*50).toFixed(0)}% saturation error without correction</div>`;
     } else {
       satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation correction &lt; 5%</div>
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="imaging-calculator.html">
+        <span class="see-also-icon">📷</span>
+        <div>
+          <div class="see-also-name">Imaging SNR Calculator</div>
+          <div class="see-also-desc">SNR, photon counts, and detection fidelity</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="release-recapture.html">
+        <span class="see-also-icon">🎯</span>
+        <div>
+          <div class="see-also-name">Release-Recapture</div>
+          <div class="see-also-desc">Single-atom temperature from survival probability</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="lab-techniques.html">
+        <span class="see-also-icon">🔬</span>
+        <div>
+          <div class="see-also-name">Lab Techniques</div>
+          <div class="see-also-desc">MOT, tweezers, imaging, and cooling techniques</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
 <footer class="footer">
   <div class="container">
     <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
