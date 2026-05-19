@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <link rel="stylesheet" href="../css/styles.css?v=13">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
   <style>
     /* ── Polarimetry-specific design tokens ── */
@@ -369,17 +370,17 @@
               <div class="pol-card pol-card-cyan">
                 <div class="pol-h3">Linear Polarization</div>
                 <p class="pol-p">E-field oscillates in a fixed plane at angle α. Created by a linear polarizer or PBS.</p>
-                <div class="pol-formula">S = [1, <span class="fs1">cos 2α</span>, <span class="fs2">sin 2α</span>, 0]</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;\textcolor{#06b6d4}{\cos 2\alpha},\;\textcolor{#8b5cf6}{\sin 2\alpha},\;0\bigr]$$</div>
               </div>
               <div class="pol-card pol-card-purple">
                 <div class="pol-h3">Circular Polarization</div>
                 <p class="pol-p">E-field rotates in a circle. <strong>RCP</strong>: clockwise looking into beam. Created by linear + QWP at 45°.</p>
-                <div class="pol-formula">S = [1, 0, 0, <span class="fs3">±1</span>]</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;0,\;0,\;\textcolor{#10b981}{\pm 1}\bigr]$$</div>
               </div>
               <div class="pol-card pol-card-green" style="margin-bottom:0">
                 <div class="pol-h3">Elliptical Polarization</div>
                 <p class="pol-p">Most general case. Described by orientation ψ and ellipticity χ. Linear/circular are special cases.</p>
-                <div class="pol-formula">S = [1, <span class="fs1">cos2χ·cos2ψ</span>, <span class="fs2">cos2χ·sin2ψ</span>, <span class="fs3">sin2χ</span>]</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;\textcolor{#06b6d4}{\cos 2\chi\cos 2\psi},\;\textcolor{#8b5cf6}{\cos 2\chi\sin 2\psi},\;\textcolor{#10b981}{\sin 2\chi}\bigr]$$</div>
               </div>
             </div>
           </div>
@@ -445,22 +446,22 @@
               <div class="pol-card pol-card-cyan">
                 <div class="pol-h4">S₀, Total Intensity</div>
                 <p class="pol-p">Total beam power. For normalized states, S₀ = 1.</p>
-                <div class="pol-formula">S₀ = I_H + I_V</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_0 = I_H + I_V$$</div>
               </div>
               <div class="pol-card pol-card-cyan">
                 <div class="pol-h4">S₁ (Q), Horizontal vs Vertical</div>
                 <p class="pol-p">+1 = fully horizontal, −1 = fully vertical, 0 = equal.</p>
-                <div class="pol-formula">S₁ = I(0°) − I(90°)</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_1 = I(0°) - I(90°)$$</div>
               </div>
               <div class="pol-card pol-card-purple">
                 <div class="pol-h4">S₂ (U), Diagonal Preference</div>
                 <p class="pol-p">+1 = fully +45°, −1 = fully −45°, 0 = symmetric.</p>
-                <div class="pol-formula">S₂ = I(45°) − I(135°)</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_2 = I(45°) - I(135°)$$</div>
               </div>
               <div class="pol-card pol-card-green" style="margin-bottom:0">
                 <div class="pol-h4">S₃ (V), Circular Handedness</div>
                 <p class="pol-p">+1 = fully RCP, −1 = fully LCP. <strong>Cannot be measured with HWP+PBS alone!</strong></p>
-                <div class="pol-formula">S₃ = I_RCP − I_LCP</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_3 = I_{\rm RCP} - I_{\rm LCP}$$</div>
               </div>
             </div>
             <div>
@@ -498,19 +499,14 @@
           <div class="pol-grid2">
             <div>
               <div class="pol-h3">Fully Polarized Light</div>
-              <div class="pol-formula">S₀² = S₁² + S₂² + S₃²
-
-DOP = √(S₁²+S₂²+S₃²) / S₀
-  1.0 = fully polarized
-  0.0 = unpolarized</div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_0^2 = S_1^2 + S_2^2 + S_3^2$$</div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathrm{DOP} = \frac{\sqrt{S_1^2+S_2^2+S_3^2}}{S_0}$$</div>
+              <p class="pol-p" style="font-size:12px;margin:.25rem 0">DOP = 1.0 for fully polarized; DOP = 0.0 for unpolarized light.</p>
             </div>
             <div>
               <div class="pol-h3">Ellipse Parameters</div>
-              <div class="pol-formula">ψ = ½ atan2(S₂, S₁)   <span class="fc">[orientation 0–180°]</span>
-χ = ½ arcsin(S₃/S₀)  <span class="fc">[ellipticity ±45°]</span>
-
-χ = 0    → Linear
-χ = ±45° → Circular</div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\psi &= \tfrac{1}{2}\,\mathrm{atan2}(S_2,\,S_1) & &\text{[orientation, }0{-}180°]\\ \chi &= \tfrac{1}{2}\arcsin(S_3/S_0) & &\text{[ellipticity, }\pm 45°]\end{aligned}$$</div>
+              <p class="pol-p" style="font-size:12px;margin:.25rem 0">χ = 0 → Linear &nbsp;|&nbsp; χ = ±45° → Circular</p>
             </div>
           </div>
         </div>
@@ -522,10 +518,8 @@ DOP = √(S₁²+S₂²+S₃²) / S₀
           <div class="pol-h2">Method A: Classical (6 Separate Measurements)</div>
           <div class="pol-card">
             <p class="pol-p">Directly measure I with a linear polarizer at 0°, 45°, 90°, 135°, and with a QWP for circular.</p>
-            <div class="pol-formula">S₀ = I(0°) + I(90°)
-S₁ = I(0°) − I(90°)
-S₂ = I(45°) − I(135°)
-S₃ = I_RCP − I_LCP   <span class="fc">← requires QWP at 45°</span></div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}S_0 &= I(0°)+I(90°) \\ S_1 &= I(0°)-I(90°) \\ S_2 &= I(45°)-I(135°) \\ S_3 &= I_{\rm RCP}-I_{\rm LCP}\end{aligned}$$</div>
+            <p class="pol-p" style="font-size:12px;margin:.25rem 0">S₃ requires a QWP at 45° before the detector.</p>
             <div class="pol-warn"><strong>Limitation:</strong> Six separate alignments. Drift between shots introduces error. Tedious for S₃.</div>
           </div>
 
@@ -540,10 +534,8 @@ S₃ = I_RCP − I_LCP   <span class="fc">← requires QWP at 45°</span></div>
               <div class="pol-beam"></div>
               <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
             </div>
-            <div class="pol-formula">I(θ) = ½ [S₀ + <span class="fs1">S₁</span>·cos(4θ) + <span class="fs2">S₂</span>·sin(4θ)]
-
-<span class="fc">Note: No S₃ term, circular component is INVISIBLE!</span>
-<span class="fc">For circular input [S₁=S₂=0]: I(θ) = S₀/2 = FLAT LINE</span></div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \tfrac{1}{2}\bigl[S_0 + \textcolor{#06b6d4}{S_1}\cos(4\theta) + \textcolor{#8b5cf6}{S_2}\sin(4\theta)\bigr]$$</div>
+            <p class="pol-p" style="font-size:12px;margin:.25rem 0"><strong>No S₃ term</strong> — circular component is invisible. For circular input [S₁=S₂=0]: I(θ) = S₀/2 = flat line.</p>
             <div class="pol-warn"><strong>Key limitation:</strong> HWP flips S₃ but PBS transmits only linear, so S₃ cancels out. To detect circular, you need a fixed QWP at 45° first (Scenario 2), or use Method C below.</div>
           </div>
 
@@ -558,20 +550,13 @@ S₃ = I_RCP − I_LCP   <span class="fc">← requires QWP at 45°</span></div>
               <div class="pol-beam"></div>
               <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
             </div>
-            <div class="pol-formula">I(θ) = ½ [S₀ + S₁·cos²(2θ) + S₂·sin(2θ)cos(2θ) − S₃·sin(2θ)]
-
-Using trig identities:
-
-I(θ) = <span class="fh">a₀</span> + <span class="fs3">b₂</span>·sin(2θ) + <span class="fs1">a₄</span>·cos(4θ) + <span class="fs2">b₄</span>·sin(4θ)
-
-where:
-  <span class="fh">a₀</span> = S₀/2 + S₁/4     <span class="fc">← DC offset</span>
-  <span class="fs3">b₂</span> = −S₃/2           <span class="fc">← 2nd harmonic encodes S₃!</span>
-  <span class="fs1">a₄</span> = S₁/4            <span class="fc">← 4th harmonic cosine</span>
-  <span class="fs2">b₄</span> = S₂/4            <span class="fc">← 4th harmonic sine</span>
-
-Recovery:
-  <span class="fs1">S₁ = 4·a₄</span>     <span class="fs2">S₂ = 4·b₄</span>     <span class="fs3">S₃ = −2·b₂</span>     S₀ = 2·a₀ − 2·a₄</div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \tfrac{1}{2}\bigl[S_0 + S_1\cos^2(2\theta) + S_2\sin(2\theta)\cos(2\theta) - S_3\sin(2\theta)\bigr]$$</div>
+            <p class="pol-p" style="font-size:12px;margin:.5rem 0">Using trig identities (Schaefer 2007 expansion):</p>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \textcolor{#facc15}{a_0} + \textcolor{#10b981}{b_2}\sin(2\theta) + \textcolor{#06b6d4}{a_4}\cos(4\theta) + \textcolor{#8b5cf6}{b_4}\sin(4\theta)$$</div>
+            <p class="pol-p" style="font-size:12px;margin:.5rem 0">where:</p>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\textcolor{#facc15}{a_0} &= S_0/2 + S_1/4 &\quad&\text{(DC offset)}\\\textcolor{#10b981}{b_2} &= -S_3/2 &\quad&\text{(2nd harmonic encodes }S_3\text{!)}\\\textcolor{#06b6d4}{a_4} &= S_1/4 &\quad&\text{(4th harmonic cosine)}\\\textcolor{#8b5cf6}{b_4} &= S_2/4 &\quad&\text{(4th harmonic sine)}\end{aligned}$$</div>
+            <p class="pol-p" style="font-size:12px;margin:.5rem 0">Recovery:</p>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\textcolor{#06b6d4}{S_1 = 4a_4}\qquad \textcolor{#8b5cf6}{S_2 = 4b_4}\qquad \textcolor{#10b981}{S_3 = -2b_2}\qquad S_0 = 2a_0 - 2a_4$$</div>
             <div class="pol-good"><strong>Why this wins:</strong> S₃ appears in the 2nd harmonic, unique to the QWP method. A single continuous rotation gives all four parameters via Fourier analysis. Noise averages out across the full sweep.</div>
           </div>
 
@@ -703,43 +688,22 @@ Recovery:
             <div>
               <div class="pol-h2" style="margin-top:0">Mueller Matrices</div>
               <div class="pol-h3">Horizontal Linear Polarizer</div>
-              <div class="pol-formula">M_LP = ½ | 1  1  0  0 |
-           | 1  1  0  0 |
-           | 0  0  0  0 |
-           | 0  0  0  0 |</div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$M_{\rm LP} = \frac{1}{2}\begin{pmatrix}1&1&0&0\\1&1&0&0\\0&0&0&0\\0&0&0&0\end{pmatrix}$$</div>
               <div class="pol-h3" style="margin-top:14px">HWP (fast axis at θ)</div>
-              <div class="pol-formula">M_HWP = | 1      0         0       0  |
-         | 0   cos4θ      sin4θ    0  |
-         | 0   sin4θ     −cos4θ   0  |
-         | 0      0         0      −1 |
-<span class="fc">Note: S₃ → −S₃  (flips circular handedness, but PBS still loses it)</span></div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$M_{\rm HWP}(\theta) = \begin{pmatrix}1&0&0&0\\0&\cos4\theta&\sin4\theta&0\\0&\sin4\theta&-\cos4\theta&0\\0&0&0&-1\end{pmatrix}$$</div>
+              <p class="pol-p" style="font-size:12px;margin:.25rem 0">Note: S₃ → −S₃ (flips circular handedness, but PBS still loses it).</p>
               <div class="pol-h3" style="margin-top:14px">QWP (fast axis at θ)</div>
-              <div class="pol-formula">M_QWP = | 1       0           0         0    |
-         | 0    cos²2θ    sin2θcos2θ  −sin2θ |
-         | 0  sin2θcos2θ   sin²2θ     cos2θ  |
-         | 0    sin2θ       −cos2θ      0    |
-<span class="fc">This matrix generates the S₃ → sin(2θ) term in I(θ)</span></div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$M_{\rm QWP}(\theta) = \begin{pmatrix}1&0&0&0\\0&\cos^2 2\theta&\sin 2\theta\cos 2\theta&-\sin 2\theta\\0&\sin 2\theta\cos 2\theta&\sin^2 2\theta&\cos 2\theta\\0&\sin 2\theta&-\cos 2\theta&0\end{pmatrix}$$</div>
+              <p class="pol-p" style="font-size:12px;margin:.25rem 0">This matrix generates the S₃ → sin(2θ) term in I(θ).</p>
             </div>
             <div>
               <div class="pol-h2" style="margin-top:0">Jones Vectors & Matrices</div>
-              <div class="pol-formula"><span class="fc">H linear:  </span>[1, 0]ᵀ
-<span class="fc">V linear:  </span>[0, 1]ᵀ
-<span class="fc">+45°:      </span>1/√2 · [1,  1]ᵀ
-<span class="fc">−45°:      </span>1/√2 · [1, −1]ᵀ
-<span class="fc">RCP:       </span>1/√2 · [1, −i]ᵀ
-<span class="fc">LCP:       </span>1/√2 · [1, +i]ᵀ</div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\text{H linear:}\;&[1,\,0]^\top \\ \text{V linear:}\;&[0,\,1]^\top \\ {+45°:}\;&\tfrac{1}{\sqrt{2}}[1,\,1]^\top \\ {-45°:}\;&\tfrac{1}{\sqrt{2}}[1,\,-1]^\top \\ \text{RCP:}\;&\tfrac{1}{\sqrt{2}}[1,\,-i]^\top \\ \text{LCP:}\;&\tfrac{1}{\sqrt{2}}[1,\,+i]^\top\end{aligned}$$</div>
               <div class="pol-h3" style="margin-top:14px">Jones → Stokes</div>
-              <div class="pol-formula">For [Ex, Ey·e^(iδ)] normalized to S₀=1:
-
-S₀ = |Ex|² + |Ey|²
-S₁ = |Ex|² − |Ey|²
-S₂ = 2|Ex||Ey|·cos(δ)
-S₃ = 2|Ex||Ey|·sin(δ)
-
-Inverse (S₀=1):
-|Ex| = √[(1+S₁)/2]
-|Ey| = √[(1−S₁)/2]
- δ   = atan2(S₃, S₂)</div>
+              <p class="pol-p" style="font-size:12.5px">For $[E_x,\,E_y e^{i\delta}]$ normalized to $S_0=1$:</p>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}S_0 &= |E_x|^2+|E_y|^2\\S_1 &= |E_x|^2-|E_y|^2\\S_2 &= 2|E_x||E_y|\cos\delta\\S_3 &= 2|E_x||E_y|\sin\delta\end{aligned}$$</div>
+              <p class="pol-p" style="font-size:12.5px">Inverse (S₀=1):</p>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}|E_x| &= \sqrt{(1+S_1)/2}\\|E_y| &= \sqrt{(1-S_1)/2}\\\delta &= \mathrm{atan2}(S_3,\,S_2)\end{aligned}$$</div>
             </div>
           </div>
 
@@ -781,7 +745,9 @@ Inverse (S₀=1):
     </div><!-- /page-content -->
   </div><!-- /page-wrap -->
 
-  <script src="../js/main.js?v=13"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
+<script src="../js/main.js?v=13"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';

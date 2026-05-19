@@ -21,6 +21,7 @@
   <meta name="twitter:description" content="Interactive laser cooling simulator, visualise Doppler and sub-Doppler cooling of atoms in real time.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser Cooling Simulator","description":"Interactive laser cooling simulator, visualise Doppler and sub-Doppler cooling of atoms in real time.","url":"https://amotoolkit.com/pages/cooling-simulator.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
   <link rel="stylesheet" href="../css/styles.css?v=13">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
   <style>
@@ -50,6 +51,7 @@
     .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
     .theory-box p:last-child { margin-bottom: 0; }
     .eq { font-family: var(--mono); font-size: .88rem; color: #f0abfc; display: block; margin: .5rem 0; text-align: center; }
+    .formula-box { border-color: rgba(96,165,250,0.25); }
 
     /* Two-col layout */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
@@ -319,7 +321,7 @@
       <h4>Why Cold Atoms for Quantum Computing?</h4>
       <p>
         Gate fidelity for a two-qubit Rydberg entangling gate scales as
-        <span class="eq">ℱ ≈ 1 − α⟨n⟩ − β/Ω_R</span>
+        <div class="formula-box">$$\mathcal{F} \approx 1 - \alpha\langle n\rangle - \beta/\Omega_R$$</div>
         where ⟨n⟩ is the mean vibrational quantum number and Ω_R is the Rabi frequency.
         Each cooling stage suppresses thermal motion, reducing state-preparation errors from &gt;10% to &lt;0.5%.
         Resolved-sideband cooling to ⟨n⟩ &lt; 0.1 is now routine in tweezer arrays.
@@ -347,17 +349,17 @@
             A two-level atom moving with velocity v along a laser beam of detuning δ = ω_L − ω_0
             experiences a Doppler-shifted resonance at ω_0 − kv. The scattering rate
           </p>
-          <span class="eq">Γ_sc = (Γ/2) · s₀ / [1 + s₀ + (2δ'/Γ)²]</span>
+          <div class="formula-box">$$\Gamma_{\rm sc} = \frac{\Gamma}{2}\cdot\frac{s_0}{1 + s_0 + (2\delta\'/\Gamma)^2}$$</div>
           <p>
             where δ' = δ + kv is the effective detuning and s₀ = I/I_sat. With counter-propagating
             beams the net force becomes velocity-dependent:
           </p>
-          <span class="eq">F(v) ≈ −αv,    α = ℏk² · 4|δ|s₀Γ / (1 + s₀ + (2δ/Γ)²)²</span>
+          <div class="formula-box">$$F(v) \approx -\alpha v, \qquad \alpha = \hbar k^2 \cdot \frac{4|\delta|\,s_0\,\Gamma}{(1 + s_0 + (2\delta/\Gamma)^2)^2}$$</div>
           <p>
             This viscous force (α &gt; 0 for red detuning δ &lt; 0) cools atoms. The minimum
             Doppler temperature is set by the balance between velocity damping and momentum diffusion:
           </p>
-          <span class="eq">T_D = ℏΓ / (2k_B)</span>
+          <div class="formula-box">$$T_D = \frac{\hbar\Gamma}{2k_{\rm B}}$$</div>
         </div>
 
         <div class="two-col" style="margin-top: 1.25rem;">
@@ -458,7 +460,7 @@
                 At the top it optically pumps to |m_F = −F⟩ (lowest potential at that location),
                 and the cycle repeats, Sisyphus loses kinetic energy each half-cycle.
               </p>
-              <span class="eq">T_Sisyphus ∝ U₀²/(E_r) ∝ I²/(δ² E_r)</span>
+              <div class="formula-box">$$T_{\rm Sisyphus} \propto \frac{U_0^2}{E_r} \propto \frac{I^2}{\delta^2\,E_r}$$</div>
               <p>
                 The single-photon recoil energy E_r = ℏ²k²/(2m) sets the microscopic scale for random kicks.
                 For Cs D2, E_r/k_B ≈ 99 nK. In practice, polarization-gradient cooling reaches
@@ -473,7 +475,7 @@
                 Sisyphus PGC inefficient. Instead, a <strong>Λ-system gray molasses</strong>
                 (D1 line at 671 nm) exploits a dark state between |F=1/2⟩ and |F=3/2⟩:
               </p>
-              <span class="eq">|dark⟩ = cos θ |F=1/2⟩ − sin θ |F=3/2⟩</span>
+              <div class="formula-box">$$|\mathrm{dark}\rangle = \cos\theta\,|F\!=\!1/2\rangle - \sin\theta\,|F\!=\!3/2\rangle$$</div>
               <p>
                 Dark-state atoms are velocity-selected: slow atoms stay dark (low scatter),
                 fast atoms couple to the bright state and get cooled. GM achieves
@@ -546,12 +548,12 @@
                 An atom in a harmonic potential with trap frequency ω_trap/2π has quantised
                 motional states |n⟩. The motional sidebands appear at:
               </p>
-              <span class="eq">ω_carrier ± n·ω_trap/2π</span>
+              <div class="formula-box">$$\omega_{\rm carrier} \pm n\cdot\omega_{\rm trap}/2\pi$$</div>
               <p>
                 In the Lamb-Dicke regime (η² = E_r/ℏω ≪ 1), transition rates on the red
                 sideband (RSB, ω − ω_trap) go as η²n, while the blue sideband (BSB) goes as η²(n+1).
               </p>
-              <span class="eq">η = k√(ℏ/2mω_trap) = √(E_r/ℏω_trap)</span>
+              <div class="formula-box">$$\eta = k\sqrt{\dfrac{\hbar}{2m\omega_{\rm trap}}} = \sqrt{\dfrac{E_r}{\hbar\omega_{\rm trap}}}$$</div>
             </div>
             <div class="theory-box">
               <h4>Resolved Sideband Cooling Cycle</h4>
@@ -559,7 +561,7 @@
                 Drive the RSB: |g,n⟩ → |e,n−1⟩. Spontaneous emission returns mostly to |g,n−1⟩
                 (Lamb-Dicke suppression). Each cycle removes one vibrational quantum:
               </p>
-              <span class="eq">⟨ṅ⟩ = −Γ_cool · n + Γ_heat</span>
+              <div class="formula-box">$$\langle\dot{n}\rangle = -\Gamma_{\rm cool}\cdot n + \Gamma_{\rm heat}$$</div>
               <p>
                 Steady-state: ⟨n⟩_ss = (Γ_heat/Γ_cool) ≈ η²Γ²/(4ω²) for weak sideband.
                 In practice ⟨n⟩_ss &lt; 0.1 is achievable.
@@ -574,7 +576,7 @@
                 The dark state suppresses carrier scattering while the RSB absorption is enhanced,
                 achieving faster cooling rates than conventional RSB cooling.
               </p>
-              <span class="eq">⟨n⟩_EIT ≈ (γ_dark/ω_trap)² · 1/4</span>
+              <div class="formula-box">$$\langle n\rangle_{\rm EIT} \approx \frac{1}{4}\!\left(\frac{\gamma_{\rm dark}}{\omega_{\rm trap}}\right)^{\!2}$$</div>
               <p>
                 EIT is especially useful for motional frequencies ω_trap &lt; Γ (unresolved sideband
                 regime), enabling ground-state cooling in shallower traps.
@@ -792,7 +794,7 @@ R_b = (abs(C6) / (hbar * <span class="num">2</span>*np.pi*<span class="num">1e6<
                 For master equation simulation of the density matrix ρ under sideband cooling
                 (Lindblad form):
               </p>
-              <span class="eq">ρ̇ = −i[H_eff, ρ] + Σ_k (L_k ρ L_k† − ½{L_k†L_k, ρ})</span>
+              <div class="formula-box">$$\dot{\rho} = -i[H_{\rm eff},\rho] + \sum_k\!\left(L_k\rho L_k^\dagger - \tfrac{1}{2}\{L_k^\dagger L_k,\rho\}\right)$$</div>
             </div>
             <div class="code-block"><span class="kw">import</span> qutip <span class="kw">as</span> qt
 N = <span class="num">30</span>  <span class="cm"># Fock space truncation</span>
@@ -877,6 +879,8 @@ result = qt.mesolve(H, rho0, tlist, c_ops,
 </footer>
 <!-- /page-wrap -->
 
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
 <script src="../js/main.js?v=13"></script>
 <script>
 renderNav({ active: 'cooling-simulator', root: '../' });

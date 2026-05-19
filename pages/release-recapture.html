@@ -21,6 +21,7 @@
   <meta name="twitter:description" content="Interactive release-recapture thermometry simulator, estimate atom temperature from recapture probability in optical tweezers.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Single-atom Temperature","description":"Interactive release-recapture thermometry simulator, estimate atom temperature from recapture probability in optical tweezers.","url":"https://amotoolkit.com/pages/release-recapture.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
   <link rel="stylesheet" href="../css/styles.css?v=13">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
   <style>
@@ -45,6 +46,7 @@
     .theory-box p:last-child { margin-bottom: 0; }
     .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc; display: block;
           margin: .5rem 0; text-align: center; }
+    .formula-box { border-color: rgba(251,146,60,0.25); }
 
     /* Simulator card */
     .sim-card {
@@ -330,17 +332,17 @@
             The trap depth of an optical tweezer is set by the AC Stark shift. For an alkali atom
             with D1 and D2 resonances, the scalar dynamic polarizability is (in atomic units):
           </p>
-          <span class="eq">α(ω) = Σⱼ ΔEⱼ|dⱼ|² / [3(ΔEⱼ² − ω²)] + α_core</span>
+          <div class="formula-box">$$\alpha(\omega) = \sum_j \frac{\Delta E_j\,|d_j|^2}{3(\Delta E_j^2 - \omega^2)} + \alpha_{\rm core}$$</div>
           <p>
             where ΔEⱼ = E_excited − E_ground in Hartree, dⱼ is the reduced matrix element in
             units of e·a₀, and ω is in atomic units (Eₕ/ℏ). Converting to SI and computing
             the peak intensity:
           </p>
-          <span class="eq">U₀ = α_SI · I_peak / (c·ε₀),    I_peak = S·2P/(π·w₀²)</span>
+          <div class="formula-box">$$U_0 = \frac{\alpha_{\rm SI}\,I_{\rm peak}}{c\,\varepsilon_0}, \qquad I_{\rm peak} = \frac{2SP}{\pi w_0^2}$$</div>
           <p>
             where S is the Strehl ratio (1 = perfect focus). The trap frequency is then:
           </p>
-          <span class="eq">ωᵣ = √(4U₀/mw₀²),    ωᵤ = √(2U₀/mzᴿ²)</span>
+          <div class="formula-box">$$\omega_r = \sqrt{\frac{4U_0}{mw_0^2}}, \qquad \omega_z = \sqrt{\frac{2U_0}{mz_R^2}}$$</div>
         </div>
 
         <div class="theory-box">
@@ -349,12 +351,12 @@
             In the harmonic approximation of the Gaussian well, the thermal position
             distribution has widths:
           </p>
-          <span class="eq">σᵣ = √(k_BT/mωᵣ²) = √(k_BTw₀²/4U₀)</span>
-          <span class="eq">σᵤ = √(k_BT/mωᵤ²) = √(k_BTzᴿ²/2U₀)</span>
+          <div class="formula-box">$$\sigma_r = \sqrt{\dfrac{k_{\rm B}T}{m\omega_r^2}} = \sqrt{\dfrac{k_{\rm B}T\,w_0^2}{4U_0}}$$</div>
+          <div class="formula-box">$$\sigma_z = \sqrt{\dfrac{k_{\rm B}T}{m\omega_z^2}} = \sqrt{\dfrac{k_{\rm B}T\,z_R^2}{2U_0}}$$</div>
           <p>
             Velocities are sampled from a Maxwell-Boltzmann distribution:
           </p>
-          <span class="eq">vₓ,ᵧ,ᵤ ~ 𝒩(0, √(k_BT/m))</span>
+          <div class="formula-box">$$v_{x,y,z} \sim \mathcal{N}\!\left(0,\,\sqrt{k_{\rm B}T/m}\right)$$</div>
         </div>
       </div>
 
@@ -364,13 +366,13 @@
           <p>
             During the release time Δt, atoms propagate freely under gravity (along ẑ):
           </p>
-          <span class="eq">x(Δt) = x₀ + vₓΔt</span>
-          <span class="eq">y(Δt) = y₀ + vᵧΔt</span>
-          <span class="eq">z(Δt) = z₀ + vᵤΔt − ½gΔt²</span>
+          <div class="formula-box">$$x(\Delta t) = x_0 + v_x\,\Delta t$$</div>
+          <div class="formula-box">$$y(\Delta t) = y_0 + v_y\,\Delta t$$</div>
+          <div class="formula-box">$$z(\Delta t) = z_0 + v_z\,\Delta t - \tfrac{1}{2}g\Delta t^2$$</div>
           <p>
             The z-velocity acquires a gravitational component:
           </p>
-          <span class="eq">vᵤ(Δt) = vᵤ₀ − gΔt</span>
+          <div class="formula-box">$$v_z(\Delta t) = v_{z0} - g\,\Delta t$$</div>
         </div>
 
         <div class="theory-box">
@@ -379,12 +381,12 @@
             After the tweezer is re-switched on, an atom at position (x_f, y_f, z_f) with
             velocity v_f is recaptured if its total energy is negative (bound state):
           </p>
-          <span class="eq">E_total = ½m|v_f|² + U(r_f) &lt; 0</span>
+          <div class="formula-box">$$E_{\rm total} = \tfrac{1}{2}m|\mathbf{v}_f|^2 + U(\mathbf{r}_f) < 0$$</div>
           <p>
             where the Gaussian trap potential is:
           </p>
-          <span class="eq">U(ρ,z) = −U₀ · (w₀/w(z))² · exp(−2ρ²/w(z)²)</span>
-          <span class="eq">w(z) = w₀√(1 + z²/zᴿ²)</span>
+          <div class="formula-box">$$U(\rho,z) = -U_0\!\left(\frac{w_0}{w(z)}\right)^{\!2}\exp\!\left(\frac{-2\rho^2}{w(z)^2}\right)$$</div>
+          <div class="formula-box">$$w(z) = w_0\sqrt{1 + z^2/z_R^2}$$</div>
           <p>
             So the recapture condition becomes:
             <strong>½m|v_f|² &lt; U₀·(w₀/w(z_f))²·exp(−2ρ_f²/w(z_f)²)</strong>
@@ -547,7 +549,7 @@
       <p>
         In atomic units, with ω_au = Eₕ/ℏ ≈ 4.134×10¹⁶ rad/s and ω_laser = 2πc/λ:
       </p>
-      <span class="eq">α(ω) = Σⱼ∈{D1,D2} ΔEⱼ · |dⱼ|² / [3(ΔEⱼ² − (ω/ω_au)²)] + α_core</span>
+      <div class="formula-box">$$\alpha(\omega) = \sum_{j\in\{D1,D2\}} \frac{\Delta E_j\,|d_j|^2}{3\!\left(\Delta E_j^2 - (\omega/\omega_{\rm au})^2\right)} + \alpha_{\rm core}$$</div>
       <p>
         SI conversion: α_SI = α_au × 4πε₀a₀³ = α_au × 1.6488×10⁻⁴¹ C·m²/V.
         Note: for wavelengths far from resonance (λ ≫ D1, D2 wavelengths for blue detuning,
@@ -589,6 +591,8 @@
 
 </div><!-- /page-wrap -->
 
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
 <script src="../js/main.js?v=13"></script>
 <script>
 renderNav({ active: 'release-recapture', root: '../' });

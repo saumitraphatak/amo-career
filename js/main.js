@@ -709,238 +709,9 @@ function getPageControls() {
     .filter(el => !el.closest('.global-search, .nav, .nav-mobile-overlay, .lab-notebook-panel'));
 }
 
-function getPresetControlMatches(preset) {
-  if (!preset?.values) return [];
-  return Object.keys(preset.values).filter(id => document.getElementById(id));
-}
-
-function getApplicablePresets() {
-  return CALCULATOR_PRESETS
-    .map(preset => ({ ...preset, matchCount: getPresetControlMatches(preset).length }))
-    .filter(preset => preset.matchCount > 0);
-}
-
-function hasCalculatorState() {
-  const controls = getPageControls()
-    .filter(el => !el.closest('.source-confidence-panel, .assumption-panel, .worked-examples-panel, .calculator-presets-panel'));
-  const outputs = document.querySelectorAll('.result-value, .metric-value, .output-value, .kpi-value, .calc-output, canvas');
-  return controls.length > 0 || outputs.length > 0;
-}
-
-function setControlValue(id, value) {
-  const el = document.getElementById(id);
-  if (!el) return false;
-  if (el.tagName === 'SELECT') {
-    const requested = String(value).toLowerCase();
-    const option = Array.from(el.options).find(opt =>
-      opt.value.toLowerCase() === requested ||
-      opt.textContent.trim().toLowerCase() === requested ||
-      opt.textContent.trim().toLowerCase().includes(requested)
-    );
-    if (!option) return false;
-    el.value = option.value;
-  } else if (el.type === 'checkbox') {
-    el.checked = Boolean(value);
-  } else {
-    el.value = value;
-  }
-  el.dispatchEvent(new Event('input', { bubbles: true }));
-  el.dispatchEvent(new Event('change', { bubbles: true }));
-  return true;
-}
-
-function refreshAfterControlChange() {
-  [
-    'onSpeciesChange',
-    'compute',
-    'calculate',
-    'update',
-    'updateCalc',
-    'updateAll',
-    'draw',
-    'runSimulation',
-  ].forEach(name => {
-    if (typeof window[name] === 'function') {
-      try { window[name](); } catch (_) { /* Page calculators are intentionally independent. */ }
-    }
-  });
-}
-
-const CALCULATOR_PRESETS = [
-  {
-    name: 'Rb87 tweezer',
-    tag: 'alkali',
-    why: 'A common neutral-atom QC starting point: 1064 nm tweezer, sub-micron waist, Rb D2 imaging.',
-    values: { speciesSel: 'Rb87', lambdaIn: 1064, powerIn: 3, waistIn: 0.85, strehlIn: 0.9, naSlide: 55, qeSlide: 80, tOptSlide: 70, detSlide: 0, satSlide: 0 },
-  },
-  {
-    name: 'Cs133 tweezer',
-    tag: 'alkali',
-    why: 'Useful for Cs tweezer thermometry and imaging estimates near a 1 mK-scale trap.',
-    values: { speciesSel: 'Cs133', lambdaIn: 1064, powerIn: 5.4, waistIn: 0.95, strehlIn: 0.9, naSlide: 55, qeSlide: 80, tOptSlide: 70, detSlide: 0, satSlide: 0 },
-  },
-  {
-    name: 'Li6 tweezer',
-    tag: 'light atom',
-    why: 'Large recoil, tight confinement, and fast motion make this a good stress test for tools.',
-    values: { speciesSel: 'Li6', lambdaIn: 1064, powerIn: 8, waistIn: 0.8, strehlIn: 0.9, naSlide: 50, qeSlide: 80, tOptSlide: 70, detSlide: 0, satSlide: -2 },
-  },
-  {
-    name: 'Yb171 clock',
-    tag: 'alkaline-earth',
-    why: 'Clock-qubit thinking: narrow-line cooling, magic trapping, low-scattering estimates.',
-    values: { speciesSel: 'Yb171', lambdaIn: 759, powerIn: 5, waistIn: 0.75, strehlIn: 0.9, naSlide: 70, qeSlide: 85, tOptSlide: 75, detSlide: 0, satSlide: -5 },
-  },
-  {
-    name: 'Sr87 narrow-line',
-    tag: 'alkaline-earth',
-    why: 'A Sr intercombination-line style preset for narrow-line cooling and clock intuition.',
-    values: { speciesSel: 'Sr87', lambdaIn: 813, powerIn: 5, waistIn: 0.8, strehlIn: 0.9, naSlide: 70, qeSlide: 85, tOptSlide: 75, detSlide: 0, satSlide: -5 },
-  },
-  {
-    name: 'typical MOT',
-    tag: 'first pass',
-    why: 'Reasonable initial knobs before you start optimizing a vapor-cell or 2D-MOT-loaded trap.',
-    values: { speciesSel: 'Rb87', detSlide: 15, satSlide: 10, beamSlide: 10, gradSlide: 15 },
-  },
-  {
-    name: 'typical high-NA objective',
-    tag: 'optics',
-    why: 'A high collection-efficiency imaging setup with realistic transmission and quantum efficiency.',
-    values: { naSlide: 60, qeSlide: 85, tOptSlide: 70, waistIn: 0.8, strehlIn: 0.9 },
-  },
-];
-
-const WORKED_EXAMPLES = {
-  'release-recapture': [
-    ['Estimate Cs trap frequencies', 'Cs133 tweezer', 'Use the Cs preset, then adjust power until the depth is near 1 mK and compare radial/axial frequencies.'],
-    ['Check sensitivity to waist', 'typical high-NA objective', 'Change waist from 0.8 to 1.2 um; the radial frequency should move roughly as 1/w0^2 at fixed depth.'],
-  ],
-  'imaging-calculator': [
-    ['How many photons for 99.9% detection?', 'typical high-NA objective', 'Increase exposure or saturation until the bright/dark histogram overlap reaches the target fidelity.'],
-    ['Why Li imaging is hard', 'Li6 tweezer', 'Compare detected photons and recoil risk against Rb/Cs for the same NA and exposure.'],
-    ['sCMOS vs EMCCD tradeoff', 'Cs133 tweezer', 'Hold the optical parameters fixed and change the camera noise model.'],
-  ],
-  'rydberg-calculator': [
-    ['Rb 70S blockade radius', 'Rb87 tweezer', 'Set Rb and n approximately 70; compare blockade radius against a 5 um tweezer spacing.'],
-    ['Cs vs Rb gate intuition', 'Cs133 tweezer', 'Compare lifetime, blockade, and estimated gate error at the same Rabi frequency.'],
-  ],
-  'mot-designer': [
-    ['What MOT gradient should I start with?', 'typical MOT', 'Use detuning around 2-3 linewidths and gradient around 10-20 G/cm, then optimize experimentally.'],
-    ['Light species sanity check', 'Li6 tweezer', 'Lithium typically needs more careful slowing/loading strategy; use this as an order-of-magnitude check only.'],
-  ],
-  'tof-calculator': [
-    ['Extract temperature from sigma^2 vs t^2', 'Rb87 tweezer', 'Change the initial size and temperature; the fitted slope is kBT/m.'],
-    ['When does initial size matter?', 'Sr87 narrow-line', 'Compare short and long TOF windows to see when sigma0 dominates.'],
-  ],
-  'fidelity-budget': [
-    ['Temperature-limited Rydberg gate', 'Cs133 tweezer', 'Sweep temperature and observe how motional error competes with Rydberg decay.'],
-    ['What does stronger blockade buy?', 'Rb87 tweezer', 'Increase blockade shift until blockade leakage is no longer the dominant term.'],
-  ],
-  'lab-calculators': [
-    ['Photon recoil sanity check', 'Cs133 tweezer', 'Compare Cs, Rb, and Li recoil temperatures; the light atom penalty should jump out.'],
-    ['Gaussian tweezer frequency estimate', 'typical high-NA objective', 'Use waist and depth to estimate whether you are in the Lamb-Dicke regime.'],
-  ],
-  default: [
-    ['Start from a real atom', 'Rb87 tweezer', 'Apply a species preset, then change one knob at a time.'],
-    ['Compare heavy and light atoms', 'Li6 tweezer', 'Use Li and Cs presets back-to-back to build recoil and trap-frequency intuition.'],
-  ],
-};
-
 function currentPageKey() {
   const file = location.pathname.split('/').pop()?.replace('.html', '') || 'home';
   return file;
-}
-
-function applyPreset(presetName) {
-  const preset = CALCULATOR_PRESETS.find(p => p.name === presetName);
-  if (!preset) return 0;
-  let applied = 0;
-  Object.entries(preset.values).forEach(([id, value]) => {
-    if (setControlValue(id, value)) applied += 1;
-  });
-  refreshAfterControlChange();
-  return applied;
-}
-
-function initCalculatorPresets() {
-  if (!isToolLikePage()) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.calculator-presets-panel')) return;
-  const applicablePresets = getApplicablePresets();
-  if (!applicablePresets.length) return;
-
-  const panel = document.createElement('section');
-  panel.className = 'calculator-presets-panel workflow-panel';
-  panel.innerHTML = `
-    <div class="workflow-panel-head">
-      <div>
-        <div class="eyebrow">Calculator Presets</div>
-        <h2>Start from a physically plausible setup</h2>
-        <p>Only presets with controls on this page are shown. Applying one changes the calculator inputs immediately.</p>
-      </div>
-      <div class="preset-status" aria-live="polite">${applicablePresets.length} usable preset${applicablePresets.length === 1 ? '' : 's'} on this page.</div>
-    </div>
-    <div class="preset-grid">
-      ${applicablePresets.map(p => `
-        <button class="preset-card" type="button" data-preset="${p.name}">
-          <span class="preset-tag">${p.tag}</span>
-          <strong>${p.name}</strong>
-          <small>${p.why}</small>
-          <small class="preset-match-count">${p.matchCount} matching input${p.matchCount === 1 ? '' : 's'}</small>
-        </button>
-      `).join('')}
-    </div>
-  `;
-  container.prepend(panel);
-  const status = panel.querySelector('.preset-status');
-  panel.addEventListener('click', e => {
-    const btn = e.target.closest('[data-preset]');
-    if (!btn) return;
-    const count = applyPreset(btn.dataset.preset);
-    status.textContent = `Applied ${count} matching parameter${count === 1 ? '' : 's'}.`;
-  });
-}
-
-function initWorkedExamples() {
-  if (!isToolLikePage()) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.worked-examples-panel')) return;
-  const rawExamples = WORKED_EXAMPLES[currentPageKey()];
-  if (!rawExamples?.length) return;
-  const usablePresetNames = new Set(getApplicablePresets().map(p => p.name));
-  const examples = rawExamples.filter(([, preset]) => usablePresetNames.has(preset));
-  if (!examples.length) return;
-  const panel = document.createElement('section');
-  panel.className = 'worked-examples-panel workflow-panel';
-  panel.innerHTML = `
-    <div class="workflow-panel-head">
-      <div>
-        <div class="eyebrow">Worked Examples</div>
-        <h2>Try the calculator like an experimentalist</h2>
-        <p>Each example gives a concrete question, a starting preset, and the knob to vary.</p>
-      </div>
-    </div>
-    <div class="worked-grid">
-      ${examples.map(([title, preset, body]) => `
-        <article class="worked-card">
-          <h3>${title}</h3>
-          <p>${body}</p>
-          <button class="mini-action" type="button" data-preset="${preset}">Apply ${preset}</button>
-        </article>
-      `).join('')}
-    </div>
-  `;
-  const afterPresets = document.querySelector('.calculator-presets-panel');
-  if (afterPresets) afterPresets.after(panel);
-  else container.prepend(panel);
-  panel.addEventListener('click', e => {
-    const btn = e.target.closest('[data-preset]');
-    if (!btn) return;
-    applyPreset(btn.dataset.preset);
-    btn.textContent = 'Preset applied';
-    setTimeout(() => { btn.textContent = `Apply ${btn.dataset.preset}`; }, 1200);
-  });
 }
 
 const ASSUMPTION_DEFS = {
@@ -991,8 +762,8 @@ function initAssumptionBadges() {
       ${assumptions.map(a => `<button class="assumption-badge" type="button" data-assumption="${a}">${a}</button>`).join('')}
     </div>
   `;
-  const afterExamples = document.querySelector('.worked-examples-panel') || document.querySelector('.calculator-presets-panel');
-  if (afterExamples) afterExamples.after(panel);
+  const afterIntro = document.querySelector('.source-confidence-panel');
+  if (afterIntro) afterIntro.after(panel);
   else container.prepend(panel);
   const explain = panel.querySelector('.assumption-explain');
   panel.addEventListener('click', e => {
@@ -1055,7 +826,7 @@ function initSourceConfidencePanels() {
       `).join('')}
     </div>
   `;
-  const afterAssumptions = document.querySelector('.assumption-panel') || document.querySelector('.worked-examples-panel') || document.querySelector('.calculator-presets-panel');
+  const afterAssumptions = document.querySelector('.assumption-panel');
   if (afterAssumptions) afterAssumptions.after(panel);
   else container.prepend(panel);
 }
@@ -1084,7 +855,7 @@ function initLabNotebook() {
       <button class="mini-action muted" type="button" data-clear-notebook>Clear local snapshots</button>
     </div>
   `;
-  const afterSources = document.querySelector('.source-confidence-panel') || document.querySelector('.assumption-panel') || document.querySelector('.worked-examples-panel');
+  const afterSources = document.querySelector('.source-confidence-panel') || document.querySelector('.assumption-panel');
   if (afterSources) afterSources.after(panel);
   else container.prepend(panel);
 
@@ -1342,7 +1113,6 @@ window.AMOCareer = {
   exportCanvasSVG,
   downloadText,
   recordRecentTool,
-  applyPreset,
 };
 
 /* ─────────────────────────────────────────────────────
@@ -1358,8 +1128,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRecentTools();
   initDerivationToggles();
   initShareableCalculatorParams();
-  initCalculatorPresets();
-  initWorkedExamples();
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
