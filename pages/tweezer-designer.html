@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Optical Tweezer Array Designer — AMO Toolkit</title>
+  <title>Tweezer Array Design Lab — AMO Toolkit</title>
+  <meta name="description" content="Optical tweezer array design calculator for AMO experiments: trap depth, radial and axial frequencies, Lamb-Dicke parameter, scattering rate, array spacing, total power, and crosstalk checks.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/tweezer-designer.html">
   <link rel="stylesheet" href="../css/styles.css?v=11">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -55,37 +61,110 @@
     .ref-tbl td:first-child { color:var(--text-primary); font-family:inherit; font-weight:500; }
     .ref-tbl td:last-child  { font-family:inherit; font-size:.76rem; }
     .ref-tbl tr:hover td { background:rgba(255,255,255,0.02); }
+
+
+    /* Native Toolkit page structure */
+    .page-wrap { --route-color: var(--page-color); }
+    .section-block { margin-bottom: var(--sp-12); }
+    .section-block .section-desc,
+    .content-section .section-desc { max-width: 920px; margin: 0 0 var(--sp-5) 0; }
+    .section-title .accent { color: var(--page-color); }
+    .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); }
+    .route-panel {
+      margin: 0 0 var(--sp-8) 0;
+      padding: var(--sp-5);
+      border: 1px solid var(--page-border);
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .route-kicker {
+      font-family: var(--font-mono);
+      color: var(--page-color);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+    .route-panel h2 { margin: 0 0 .35rem; color: var(--text-primary); font-size: clamp(1.25rem,2.2vw,1.9rem); letter-spacing:-.03em; }
+    .route-panel > p { max-width: 940px; margin: 0 0 var(--sp-4); color: var(--text-secondary); line-height: 1.7; }
+    .route-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:var(--sp-4); }
+    .route-card { border:1px solid rgba(148,163,184,.14); border-radius:var(--r); padding:var(--sp-4); background:rgba(15,23,42,.58); }
+    .route-card .step { display:inline-flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:999px; margin-bottom:var(--sp-3); font-family:var(--font-mono); font-size:.72rem; font-weight:800; color:var(--page-color); background:var(--page-bg); border:1px solid var(--page-border); }
+    .route-card strong { display:block; color:var(--text-primary); margin-bottom:.25rem; }
+    .route-card p { margin:0; color:var(--text-secondary); font-size:.84rem; line-height:1.65; }
+    .calc-panel,
+    .chart-wrap,
+    .arr-wrap,
+    .img-frame,
+    .out-card { box-shadow: 0 14px 40px rgba(0,0,0,.16); }
+    .calc-panel-head { display:flex; align-items:center; gap:.5rem; }
+    .calc-panel-head::before { content:''; width:.55rem; height:.55rem; border-radius:999px; background:var(--page-color); box-shadow:0 0 16px var(--page-color); }
+    .sp-sel, .field-row select, .field-row input, input[type=range] { accent-color: var(--page-color); }
+
   </style>
 </head>
 <body>
 <div id="nav-root"></div>
 
 <main class="page-wrap">
-  <div class="page-hero">
-    <div class="page-hero-inner">
-      <div class="page-eyebrow">
-        <span class="page-tag">🏗️ Build</span>
-        <span class="page-tag">AMO Toolkit</span>
+  <div class="page-hero" style="--page-color:#f59e0b;--page-bg:rgba(245,158,11,0.08);--page-border:rgba(245,158,11,0.22);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.22);color:#fbbf24;">
+          🔦 Build 10 · Tweezer Array Design Lab
+        </div>
+        <h1>Tweezer Array <span class="grad-text" style="--ga:#fbbf24;--gb:#fb7185;">Design</span> Lab</h1>
+        <p class="page-hero-desc">
+          Design the trap before you build the waveform: estimate waist, depth, trap frequencies, Lamb-Dicke parameter,
+          off-resonant scattering, site spacing, total power, and array crosstalk from one coherent set of knobs.
+        </p>
+        <div class="tool-card-tags">
+          <span class="chip">Trap depth</span>
+          <span class="chip">Radial / axial frequencies</span>
+          <span class="chip">Lamb-Dicke η</span>
+          <span class="chip">Scattering rate</span>
+          <span class="chip">Array geometry</span>
+        </div>
       </div>
-      <h1 class="page-title"><span class="accent">Optical Tweezer</span> Array Designer</h1>
-      <p class="page-subtitle">
-        Design single-atom optical tweezer traps: trap depth, harmonic frequencies, Lamb-Dicke parameter,
-        scattering rate from trap light, and array geometry — for any species and wavelength.
-      </p>
-      <div class="page-hero-tags">
-        <span class="chip">Far-off-resonance trap</span>
-        <span class="chip">Trap frequencies</span>
-        <span class="chip">Lamb-Dicke η</span>
-        <span class="chip">Array geometry</span>
-        <span class="chip">8 atom species</span>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="twz-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <style>@keyframes twz-breathe{0%,100%{opacity:.55;transform:scale(.95)}50%{opacity:1;transform:scale(1.08)}}.site{transform-box:fill-box;transform-origin:center;animation:twz-breathe 2.4s ease-in-out infinite}.site:nth-child(2n){animation-delay:-.8s}.site:nth-child(3n){animation-delay:-1.4s}</style>
+          </defs>
+          <rect width="300" height="165" rx="14" fill="rgba(15,23,42,.65)"/>
+          <g opacity=".16" stroke="#f59e0b"><path d="M30 42H270M30 82H270M30 122H270M70 24V142M110 24V142M150 24V142M190 24V142M230 24V142"/></g>
+          <g fill="#f59e0b" filter="url(#twz-glow)">
+            <circle class="site" cx="70" cy="42" r="5"/><circle class="site" cx="110" cy="42" r="5"/><circle class="site" cx="150" cy="42" r="5"/><circle class="site" cx="190" cy="42" r="5"/><circle class="site" cx="230" cy="42" r="5"/>
+            <circle class="site" cx="70" cy="82" r="5"/><circle class="site" cx="110" cy="82" r="7"/><circle class="site" cx="150" cy="82" r="5"/><circle class="site" cx="190" cy="82" r="5"/><circle class="site" cx="230" cy="82" r="5"/>
+            <circle class="site" cx="70" cy="122" r="5"/><circle class="site" cx="110" cy="122" r="5"/><circle class="site" cx="150" cy="122" r="5"/><circle class="site" cx="190" cy="122" r="5"/><circle class="site" cx="230" cy="122" r="5"/>
+          </g>
+          <path d="M31 148 C78 134 96 151 143 139 S220 138 269 148" fill="none" stroke="#fbbf24" stroke-width="2" opacity=".6"/>
+          <text x="150" y="24" text-anchor="middle" fill="#fbbf24" font-family="JetBrains Mono,monospace" font-size="10">power / spacing / crosstalk</text>
+          <text x="150" y="157" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-size="9">d / w₀ should be safely above ~3</text>
+        </svg>
       </div>
     </div>
   </div>
 
   <div class="page-content">
+    <div class="container">
+      <section class="route-panel anim-in">
+        <div class="route-kicker">Tweezer-design workflow</div>
+        <h2>Design one trap, then scale it into an array</h2>
+        <p>The page now follows the actual design order: choose atom and trap wavelength, check single-site physics, then ask whether the array spacing and total power are sane.</p>
+        <div class="route-grid">
+          <div class="route-card"><span class="step">01</span><strong>Choose atom + wavelength</strong><p>Start with species, resonance, trap wavelength, NA, and per-site power.</p></div>
+          <div class="route-card"><span class="step">02</span><strong>Check one tweezer</strong><p>Read depth, waist, radial/axial frequencies, scattering, and Lamb-Dicke η.</p></div>
+          <div class="route-card"><span class="step">03</span><strong>Scale to an array</strong><p>Set Nx, Ny, and spacing to estimate total optical power and crosstalk.</p></div>
+          <div class="route-card"><span class="step">04</span><strong>Reality check</strong><p>Use the reference table and notes before trusting two-level estimates near magic wavelengths.</p></div>
+        </div>
+      </section>
 
     <!-- 01 Physics -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-1">
       <h2 class="section-title"><span class="accent">01</span> Single-Tweezer Physics</h2>
       <p class="section-desc">
         A tightly focused, far-red-detuned laser beam creates a conservative dipole potential.
@@ -124,7 +203,7 @@
     </section>
 
     <!-- 02 Calculator -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-2">
       <h2 class="section-title"><span class="accent">02</span> Trap Parameter Calculator</h2>
       <p class="section-desc">
         Two-level approximation using the dominant optical transition (D2 for alkali, ¹P₁ for Yb/Sr).
@@ -229,7 +308,7 @@
     </section>
 
     <!-- 03 Array -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-3">
       <h2 class="section-title"><span class="accent">03</span> Array Geometry</h2>
       <p class="section-desc">
         Tweezer arrays are produced by a spatial light modulator (SLM) imposing a holographic phase
@@ -263,7 +342,7 @@
     </section>
 
     <!-- 04 Reference -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-4">
       <h2 class="section-title"><span class="accent">04</span> Species &amp; Wavelength Reference</h2>
       <p class="section-desc">
         Typical tweezer parameters at NA 0.55 and 30 mW. Magic wavelengths eliminate differential
@@ -340,7 +419,7 @@
     </section>
 
     <!-- 05 References -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-5">
       <h2 class="section-title"><span class="accent">05</span> References &amp; Further Reading</h2>
       <p class="section-desc">
         Key papers and reviews for optical tweezer physics, array assembly, and single-atom experiments.
@@ -468,6 +547,7 @@
       </div>
     </section>
 
+    </div>
   </div><!-- /page-content -->
 </main>
 

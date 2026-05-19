@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Absorption Imaging Calculator — AMO Toolkit</title>
+  <title>Absorption Imaging Lab — AMO Toolkit</title>
+  <meta name="description" content="Absorption imaging calculator for cold-atom ensembles: optical depth, column density, atom number, saturation correction, photon shot noise, read noise, and practical imaging limits.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/absorption-imaging.html">
   <link rel="stylesheet" href="../css/styles.css?v=11">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -62,37 +68,110 @@
     .img-frame-title { font-size:.72rem; font-weight:600; text-transform:uppercase;
                        letter-spacing:.06em; color:var(--page-color); margin-bottom:var(--sp-2); }
     .img-frame-eq   { font-size:.78rem; color:var(--text-muted); margin-top:var(--sp-2); }
+
+
+    /* Native Toolkit page structure */
+    .page-wrap { --route-color: var(--page-color); }
+    .section-block { margin-bottom: var(--sp-12); }
+    .section-block .section-desc,
+    .content-section .section-desc { max-width: 920px; margin: 0 0 var(--sp-5) 0; }
+    .section-title .accent { color: var(--page-color); }
+    .table-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); }
+    .route-panel {
+      margin: 0 0 var(--sp-8) 0;
+      padding: var(--sp-5);
+      border: 1px solid var(--page-border);
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+    }
+    .route-kicker {
+      font-family: var(--font-mono);
+      color: var(--page-color);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+    .route-panel h2 { margin: 0 0 .35rem; color: var(--text-primary); font-size: clamp(1.25rem,2.2vw,1.9rem); letter-spacing:-.03em; }
+    .route-panel > p { max-width: 940px; margin: 0 0 var(--sp-4); color: var(--text-secondary); line-height: 1.7; }
+    .route-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:var(--sp-4); }
+    .route-card { border:1px solid rgba(148,163,184,.14); border-radius:var(--r); padding:var(--sp-4); background:rgba(15,23,42,.58); }
+    .route-card .step { display:inline-flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:999px; margin-bottom:var(--sp-3); font-family:var(--font-mono); font-size:.72rem; font-weight:800; color:var(--page-color); background:var(--page-bg); border:1px solid var(--page-border); }
+    .route-card strong { display:block; color:var(--text-primary); margin-bottom:.25rem; }
+    .route-card p { margin:0; color:var(--text-secondary); font-size:.84rem; line-height:1.65; }
+    .calc-panel,
+    .chart-wrap,
+    .arr-wrap,
+    .img-frame,
+    .out-card { box-shadow: 0 14px 40px rgba(0,0,0,.16); }
+    .calc-panel-head { display:flex; align-items:center; gap:.5rem; }
+    .calc-panel-head::before { content:''; width:.55rem; height:.55rem; border-radius:999px; background:var(--page-color); box-shadow:0 0 16px var(--page-color); }
+    .sp-sel, .field-row select, .field-row input, input[type=range] { accent-color: var(--page-color); }
+
   </style>
 </head>
 <body>
 <div id="nav-root"></div>
 
 <main class="page-wrap">
-  <div class="page-hero">
-    <div class="page-hero-inner">
-      <div class="page-eyebrow">
-        <span class="page-tag">📐 Measure</span>
-        <span class="page-tag">AMO Toolkit</span>
+  <div class="page-hero" style="--page-color:#818cf8;--page-bg:rgba(129,140,248,0.08);--page-border:rgba(129,140,248,0.22);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.22);color:#a5b4fc;">
+          🌑 Trap, Image &amp; Cool 05 · Absorption Imaging
+        </div>
+        <h1>Absorption <span class="grad-text" style="--ga:#a5b4fc;--gb:#38bdf8;">Imaging</span> Lab</h1>
+        <p class="page-hero-desc">
+          Turn shadow images into optical depth, column density, atom number, and a realistic noise floor.
+          Built for cold-atom ensembles where saturation, detuning, camera noise, and fringes decide whether the number you report is trustworthy.
+        </p>
+        <div class="tool-card-tags">
+          <span class="chip">Beer-Lambert OD</span>
+          <span class="chip">Saturation correction</span>
+          <span class="chip">Photon shot noise</span>
+          <span class="chip">Camera read noise</span>
+          <span class="chip">Fringe limits</span>
+        </div>
       </div>
-      <h1 class="page-title"><span class="accent">Absorption Imaging</span> Calculator</h1>
-      <p class="page-subtitle">
-        Optical depth, column density, atom number, photon shot noise, read noise,
-        and minimum detectable atom number — for any species, detuning, probe intensity, and camera.
-      </p>
-      <div class="page-hero-tags">
-        <span class="chip">Beer-Lambert OD</span>
-        <span class="chip">Saturation correction</span>
-        <span class="chip">Shot noise budget</span>
-        <span class="chip">7 atom species</span>
-        <span class="chip">SNR vs intensity</span>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ab-beam" x1="0" x2="1"><stop offset="0" stop-color="#818cf8" stop-opacity=".9"/><stop offset=".52" stop-color="#818cf8" stop-opacity=".22"/><stop offset="1" stop-color="#38bdf8" stop-opacity=".52"/></linearGradient>
+            <filter id="ab-glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <style>@keyframes ab-scan{0%,100%{opacity:.35}50%{opacity:1}}@keyframes ab-pulse{0%,100%{r:20;opacity:.7}50%{r:24;opacity:1}}.ab-p{animation:ab-pulse 2.4s ease-in-out infinite}.ab-s{animation:ab-scan 1.7s ease-in-out infinite}</style>
+          </defs>
+          <rect width="300" height="165" rx="14" fill="rgba(15,23,42,.65)"/>
+          <path d="M18 82 H282" stroke="url(#ab-beam)" stroke-width="26" stroke-linecap="round"/>
+          <circle class="ab-p" cx="145" cy="82" r="22" fill="rgba(129,140,248,.22)" stroke="#a5b4fc" stroke-width="2" filter="url(#ab-glow)"/>
+          <g opacity=".55" stroke="#c4b5fd"><path d="M132 70c9-8 20-8 29 0M130 84c11-8 25-8 36 0M136 98c7-5 18-5 25 0"/></g>
+          <rect x="226" y="42" width="42" height="80" rx="5" fill="rgba(148,163,184,.11)" stroke="#94a3b8"/>
+          <g class="ab-s"><rect x="232" y="51" width="30" height="6" fill="#a5b4fc" opacity=".82"/><rect x="232" y="70" width="30" height="6" fill="#a5b4fc" opacity=".42"/><rect x="232" y="89" width="30" height="6" fill="#a5b4fc" opacity=".2"/><rect x="232" y="108" width="30" height="6" fill="#a5b4fc" opacity=".52"/></g>
+          <text x="42" y="36" fill="#a5b4fc" font-family="JetBrains Mono,monospace" font-size="10">probe</text>
+          <text x="145" y="130" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-size="10">OD = -ln(Ishadow/Iprobe)</text>
+          <text x="247" y="137" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-size="9">camera</text>
+        </svg>
       </div>
     </div>
   </div>
 
   <div class="page-content">
+    <div class="container">
+      <section class="route-panel anim-in">
+        <div class="route-kicker">Absorption-imaging workflow</div>
+        <h2>Read the page like an experimental sequence</h2>
+        <p>Start with the three images, then use the calculator to decide whether shot noise, read noise, saturation, or fringes dominate your atom-number estimate.</p>
+        <div class="route-grid">
+          <div class="route-card"><span class="step">01</span><strong>Build OD</strong><p>Use atom, probe, reference, and dark images to compute optical depth.</p></div>
+          <div class="route-card"><span class="step">02</span><strong>Convert to atoms</strong><p>Choose species, detuning, pixel size, and magnification to get column density and atom number.</p></div>
+          <div class="route-card"><span class="step">03</span><strong>Budget noise</strong><p>Separate photon shot noise from camera read noise and identify the minimum detectable OD.</p></div>
+          <div class="route-card"><span class="step">04</span><strong>Check failure modes</strong><p>Saturation, optical pumping, finite linewidth, and fringes usually dominate before algebra does.</p></div>
+        </div>
+      </section>
 
     <!-- 01 Physics -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-1">
       <h2 class="section-title"><span class="accent">01</span> How Absorption Imaging Works</h2>
       <p class="section-desc">
         A resonant (or near-resonant) probe beam passes through the atom cloud. Atoms scatter photons
@@ -162,7 +241,7 @@
     </section>
 
     <!-- 02 Calculator -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-2">
       <h2 class="section-title"><span class="accent">02</span> Imaging Calculator</h2>
       <p class="section-desc">
         Set your imaging parameters to get the effective cross section, probe photon budget,
@@ -280,7 +359,7 @@
     </section>
 
     <!-- 03 Reference Table -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-3">
       <h2 class="section-title"><span class="accent">03</span> Species Reference</h2>
       <p class="section-desc">
         Resonant cross section and saturation intensity for the cycling imaging transition.
@@ -310,7 +389,7 @@
     </section>
 
     <!-- 04 Practical Notes -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-4">
       <h2 class="section-title"><span class="accent">04</span> Practical Considerations</h2>
 
       <div class="topic-card" style="border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
@@ -391,7 +470,7 @@
     </section>
 
     <!-- 05 References -->
-    <section class="content-section">
+    <section class="section-block anim-in delay-5">
       <h2 class="section-title"><span class="accent">05</span> References &amp; Further Reading</h2>
       <p class="section-desc">
         Key papers on absorption imaging technique, saturation correction, fringe removal, and ensemble thermometry.
@@ -505,6 +584,7 @@
       </div>
     </section>
 
+    </div>
   </div>
 </main>
 

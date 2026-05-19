@@ -86,8 +86,8 @@
     .h-stat .l { font-size: .67rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: .1rem; }
 
 
-    .page-hero-2col { grid-template-columns: minmax(0,1fr) minmax(360px,430px); }
-    .page-hero .page-hero-anim { width: min(430px,100%); height: auto; background: transparent; border: 0; overflow: visible; }
+    .page-hero-2col { grid-template-columns: minmax(470px,0.95fr) minmax(520px,720px); }
+    .page-hero .page-hero-anim { width: min(720px,100%); height: auto; background: transparent; border: 0; overflow: visible; }
     .ent-hero-visual {
       position: relative;
       overflow: hidden;
@@ -112,7 +112,7 @@
     }
     .ent-hero-note strong { color: var(--ok); }
     .hero-stats { margin-top: 1.25rem; }
-    @media(max-width:960px) {
+    @media(max-width:1100px) {
       .page-hero .page-hero-anim { display: block; width: 100%; }
       .page-hero-2col { grid-template-columns: 1fr; }
       .ent-hero-visual { margin-top: 1rem; }
@@ -321,106 +321,142 @@
     </div>
 
     <div class="page-hero-anim">
-      <div class="ent-hero-visual" aria-hidden="true">
-        <svg viewBox="0 0 380 205" xmlns="http://www.w3.org/2000/svg" role="img">
+      <div class="ent-hero-visual">
+        <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Remote entanglement optical link: two atom traps coupled by fibers to a Bell-state measurement station">
           <defs>
             <filter id="ent-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <filter id="ent-soft"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <linearGradient id="ent-fiber" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#38bdf8" stop-opacity=".85"/>
-              <stop offset="50%" stop-color="#64748b" stop-opacity=".45"/>
-              <stop offset="100%" stop-color="#818cf8" stop-opacity=".85"/>
+            <linearGradient id="trapBeamL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fbbf24" stop-opacity="0"/><stop offset="1" stop-color="#fbbf24" stop-opacity=".8"/></linearGradient>
+            <linearGradient id="trapBeamR" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fbbf24" stop-opacity="0"/><stop offset="1" stop-color="#fbbf24" stop-opacity=".8"/></linearGradient>
+            <linearGradient id="fiberGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#38bdf8" stop-opacity=".75"/>
+              <stop offset=".5" stop-color="#94a3b8" stop-opacity=".5"/>
+              <stop offset="1" stop-color="#818cf8" stop-opacity=".75"/>
             </linearGradient>
-            <marker id="ent-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-              <path d="M0,0 L7,3.5 L0,7 Z" fill="#4ade80"/>
-            </marker>
+            <path id="leftPhotonPath" d="M76,236 C132,237 132,267 198,258 C268,248 305,236 372,220 C398,214 410,202 421,184"/>
+            <path id="rightPhotonPath" d="M644,236 C586,237 556,231 506,222 C470,215 446,204 433,184"/>
+            <path id="heraldLeft" d="M420,102 C326,84 194,92 80,222"/>
+            <path id="heraldRight" d="M434,102 C508,96 602,116 640,222"/>
+            <marker id="ent-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4ade80"/></marker>
+            <style>
+              @keyframes ent-click { 0%,56%,100%{opacity:0;transform:scale(.4)} 63%,75%{opacity:1;transform:scale(1)} }
+              @keyframes ent-bell { 0%,66%,100%{opacity:0} 74%,90%{opacity:1} }
+              @keyframes ent-wave { 0%,100%{stroke-dashoffset:0} 50%{stroke-dashoffset:18} }
+              @keyframes ent-spin { to { transform: rotate(360deg); } }
+              .fiber-line{fill:none;stroke:url(#fiberGrad);stroke-width:5;stroke-linecap:round;opacity:.86}
+              .fiber-loop{fill:none;stroke:#7dd3fc;stroke-width:5;stroke-linecap:round;opacity:.72}
+              .label{fill:#cbd5e1;font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:700}
+              .mini{fill:#94a3b8;font-family:JetBrains Mono,monospace;font-size:10px}
+              .photon-wave{fill:none;stroke:#fbbf24;stroke-width:2;stroke-dasharray:5 5;animation:ent-wave 1.1s linear infinite}
+              .click-ring{transform-box:fill-box;transform-origin:center;animation:ent-click 4.6s ease-in-out infinite}
+              .bell-ok{animation:ent-bell 4.6s ease-in-out infinite}
+              .spin-orbit{transform-box:fill-box;transform-origin:center;animation:ent-spin 5s linear infinite}
+            </style>
           </defs>
 
-          <g opacity=".12" stroke="#1e3a5f" stroke-width=".45">
-            <path d="M20 40H360M20 85H360M20 130H360M20 175H360"/>
-            <path d="M55 20V190M110 20V190M165 20V190M220 20V190M275 20V190M330 20V190"/>
+          <rect x="4" y="4" width="712" height="352" rx="22" fill="rgba(2,8,23,.2)" stroke="rgba(14,165,233,.12)"/>
+          <g opacity=".10" stroke="#1e3a5f" stroke-width=".7">
+            <path d="M30 292H690M30 242H690M30 192H690M30 142H690M30 92H690"/>
+            <path d="M90 30V320M180 30V320M270 30V320M360 30V320M450 30V320M540 30V320M630 30V320"/>
           </g>
 
-          <path d="M75 96 C135 32 245 32 305 96" fill="none" stroke="#4ade80" stroke-width="2.8" stroke-linecap="round" opacity="0" filter="url(#ent-glow)">
-            <animate attributeName="opacity" values="0;0;0;0.9;0.9;0" keyTimes="0;0.58;0.66;0.72;0.9;1" dur="4s" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dasharray" values="1 16;1 16;9 8;9 8;9 8;1 16" keyTimes="0;0.58;0.66;0.72;0.9;1" dur="4s" repeatCount="indefinite"/>
-          </path>
-          <text x="190" y="45" text-anchor="middle" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">heralded atom-atom Bell pair
-            <animate attributeName="opacity" values="0;0;0;1;1;0" keyTimes="0;0.62;0.72;0.78;0.9;1" dur="4s" repeatCount="indefinite"/>
-          </text>
+          <!-- BSM station -->
+          <path d="M386,22 H644 Q668,22 668,46 V174 Q668,198 644,198 H481 Q454,198 447,221 C441,196 421,199 399,198 H386 Q362,198 362,174 V46 Q362,22 386,22 Z"
+                fill="rgba(15,23,42,.72)" stroke="#cbd5e1" stroke-width="2.4" stroke-dasharray="3 10" stroke-linecap="round"/>
+          <text x="675" y="124" class="label" font-size="22">BSM</text>
+          <text x="512" y="42" class="mini" text-anchor="middle">Bell-state measurement</text>
 
-          <rect x="26" y="52" width="92" height="108" rx="14" fill="rgba(14,165,233,.08)" stroke="#0ea5e9" stroke-width="2"/>
-          <text x="72" y="147" text-anchor="middle" fill="#38bdf8" font-size="10" font-family="monospace" font-weight="700">NODE A</text>
-          <text x="72" y="158" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">memory array</text>
-          <g opacity=".72">
-            <circle cx="54" cy="75" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="72" cy="75" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="90" cy="75" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="54" cy="96" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="72" cy="96" r="6" fill="#fbbf24" filter="url(#ent-glow)"/>
-            <circle cx="90" cy="96" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="54" cy="117" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="72" cy="117" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
-            <circle cx="90" cy="117" r="4" fill="#0ea5e9" filter="url(#ent-soft)"/>
+          <!-- BSM optics: fiber BS, waveplates, PBS, detectors -->
+          <rect x="452" y="204" width="18" height="56" rx="3" fill="#64748b" stroke="#cbd5e1" stroke-width="1.5"/>
+          <text x="478" y="235" class="label" font-size="15">fiber</text>
+          <text x="478" y="252" class="label" font-size="15">BS</text>
+          <path d="M461,204 C450,178 437,164 416,150" class="fiber-line"/>
+          <path d="M461,204 C474,178 498,164 531,150" class="fiber-line"/>
+
+          <g transform="translate(404 77)">
+            <rect x="0" y="46" width="50" height="5" fill="#7dd3fc" opacity=".95"/><text x="-13" y="53" class="mini">λ/4</text>
+            <rect x="0" y="64" width="50" height="5" fill="#7dd3fc" opacity=".82"/><text x="-13" y="71" class="mini">λ/2</text>
+            <rect x="4" y="0" width="34" height="34" fill="#334155" stroke="#cbd5e1" stroke-width="2"/><path d="M6,2 L36,32" stroke="#94a3b8" stroke-width="3"/>
+            <text x="45" y="22" class="label">PBS</text>
+            <path d="M-18,17 A17,17 0 0 1 0,2 V32 A17,17 0 0 1 -18,17" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="-46" y="24" class="label">V₂</text>
+            <rect x="6" y="-38" width="28" height="18" rx="9" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+            <path d="M6,-38 A14,14 0 0 1 34,-38" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+            <text x="10" y="-51" class="label">H₂</text>
+            <text x="41" y="-23" class="label" font-size="13">APD</text>
           </g>
-          <text x="72" y="55" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="monospace" opacity=".85">communication atom</text>
-
-          <rect x="262" y="52" width="92" height="108" rx="14" fill="rgba(129,140,248,.08)" stroke="#818cf8" stroke-width="2"/>
-          <text x="308" y="147" text-anchor="middle" fill="#818cf8" font-size="10" font-family="monospace" font-weight="700">NODE B</text>
-          <text x="308" y="158" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">memory array</text>
-          <g opacity=".72">
-            <circle cx="290" cy="75" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="308" cy="75" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="326" cy="75" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="290" cy="96" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="308" cy="96" r="6" fill="#fbbf24" filter="url(#ent-glow)"/>
-            <circle cx="326" cy="96" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="290" cy="117" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="308" cy="117" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
-            <circle cx="326" cy="117" r="4" fill="#818cf8" filter="url(#ent-soft)"/>
+          <g transform="translate(542 77)">
+            <rect x="0" y="46" width="50" height="5" fill="#7dd3fc" opacity=".95"/><text x="55" y="53" class="mini">λ/4</text>
+            <rect x="0" y="64" width="50" height="5" fill="#7dd3fc" opacity=".82"/><text x="55" y="71" class="mini">λ/2</text>
+            <rect x="4" y="0" width="34" height="34" fill="#334155" stroke="#cbd5e1" stroke-width="2"/><path d="M6,32 L36,2" stroke="#94a3b8" stroke-width="3"/>
+            <path d="M38,2 A17,17 0 0 1 56,17 A17,17 0 0 1 38,32" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="67" y="24" class="label">V₁</text>
+            <rect x="6" y="-38" width="28" height="18" rx="9" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+            <path d="M6,-38 A14,14 0 0 1 34,-38" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+            <text x="10" y="-51" class="label">H₁</text>
           </g>
-          <text x="308" y="55" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="monospace" opacity=".85">communication atom</text>
 
-          <path d="M79 96 C120 77 145 82 166 108" fill="none" stroke="url(#ent-fiber)" stroke-width="3" stroke-dasharray="7 5" opacity=".72"/>
-          <path d="M301 96 C260 77 235 82 214 108" fill="none" stroke="url(#ent-fiber)" stroke-width="3" stroke-dasharray="7 5" opacity=".72"/>
-          <text x="190" y="82" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">photons meet at a Bell-state measurement</text>
+          <!-- traps and objectives -->
+          <g transform="translate(38 215)">
+            <path d="M-38,12 L0,-6 L0,30 Z" fill="url(#trapBeamL)" opacity=".85"/>
+            <circle cx="0" cy="12" r="7" fill="#818cf8" filter="url(#ent-glow)"/>
+            <path d="M1,12 q13,-10 24,0 q10,10 23,0" class="photon-wave"/>
+            <rect x="46" y="-10" width="42" height="44" rx="5" fill="rgba(226,232,240,.14)" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M52,-6 C63,10 63,16 52,30M82,-6 C70,10 70,16 82,30" fill="none" stroke="#c4b5fd" stroke-width="2" opacity=".9"/>
+            <polygon points="90,2 138,12 90,24" fill="#ef4444" opacity=".88"/>
+            <rect x="134" y="8" width="18" height="8" rx="2" fill="#475569" stroke="#cbd5e1"/>
+            <text x="28" y="70" class="label" text-anchor="middle">trap 2</text>
+          </g>
+          <g transform="translate(644 215)">
+            <path d="M114,12 L76,-6 L76,30 Z" fill="url(#trapBeamR)" opacity=".85"/>
+            <circle cx="76" cy="12" r="7" fill="#818cf8" filter="url(#ent-glow)"/>
+            <path d="M75,12 q-13,-10 -24,0 q-10,10 -23,0" class="photon-wave"/>
+            <rect x="-12" y="-10" width="42" height="44" rx="5" fill="rgba(226,232,240,.14)" stroke="#cbd5e1" stroke-width="2"/>
+            <path d="M-6,-6 C5,10 5,16 -6,30M24,-6 C12,10 12,16 24,30" fill="none" stroke="#c4b5fd" stroke-width="2" opacity=".9"/>
+            <polygon points="-14,2 -62,12 -14,24" fill="#ef4444" opacity=".88"/>
+            <rect x="-78" y="8" width="18" height="8" rx="2" fill="#475569" stroke="#cbd5e1"/>
+            <text x="38" y="70" class="label" text-anchor="middle">trap 1</text>
+          </g>
 
-          <rect x="152" y="102" width="76" height="66" rx="11" fill="rgba(14,165,233,.08)" stroke="#38bdf8" stroke-width="1.8"/>
-          <line x1="168" y1="113" x2="211" y2="155" stroke="#fbbf24" stroke-width="3" opacity=".76"/>
-          <text x="190" y="124" text-anchor="middle" fill="#fbbf24" font-size="8" font-family="monospace" font-weight="700">50:50 BS</text>
-          <rect x="160" y="148" width="20" height="12" rx="4" fill="rgba(74,222,128,.12)" stroke="#4ade80" stroke-width="1.5"/>
-          <rect x="200" y="148" width="20" height="12" rx="4" fill="rgba(74,222,128,.12)" stroke="#4ade80" stroke-width="1.5"/>
-          <text x="170" y="145" text-anchor="middle" fill="#94a3b8" font-size="6" font-family="monospace">D1</text>
-          <text x="210" y="145" text-anchor="middle" fill="#94a3b8" font-size="6" font-family="monospace">D2</text>
-          <text x="190" y="178" text-anchor="middle" fill="#38bdf8" font-size="8" font-family="monospace">central BSM station</text>
+          <!-- fibers and compensator -->
+          <path d="M190,247 C170,264 210,284 262,270 C305,258 346,239 405,222 C430,215 446,214 461,204" class="fiber-line"/>
+          <path d="M566,247 C535,247 502,232 461,204" class="fiber-line"/>
+          <ellipse cx="225" cy="265" rx="55" ry="16" class="fiber-loop"/>
+          <rect x="303" y="220" width="125" height="36" rx="5" fill="rgba(226,232,240,.12)" stroke="#cbd5e1" stroke-width="3"/>
+          <rect x="310" y="226" width="111" height="24" fill="#94a3b8" opacity=".22"/>
+          <text x="214" y="217" class="label" text-anchor="middle">single-mode</text>
+          <text x="214" y="237" class="label" text-anchor="middle">fiber</text>
+          <text x="365" y="198" class="label" text-anchor="middle">polarization</text>
+          <text x="365" y="217" class="label" text-anchor="middle">compensator</text>
 
-          <circle r="5" fill="#fbbf24" filter="url(#ent-glow)">
-            <animateMotion path="M79 96 C120 77 145 82 166 108" dur="4s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.12;0.55;0.64;1" dur="4s" repeatCount="indefinite"/>
+          <!-- flying photons -->
+          <circle r="6" fill="#fbbf24" filter="url(#ent-glow)">
+            <animateMotion dur="4.6s" repeatCount="indefinite"><mpath href="#leftPhotonPath"/></animateMotion>
+            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.13;0.56;0.64;1" dur="4.6s" repeatCount="indefinite"/>
           </circle>
-          <circle r="5" fill="#fbbf24" filter="url(#ent-glow)">
-            <animateMotion path="M301 96 C260 77 235 82 214 108" dur="4s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.12;0.55;0.64;1" dur="4s" repeatCount="indefinite"/>
+          <circle r="6" fill="#fbbf24" filter="url(#ent-glow)">
+            <animateMotion dur="4.6s" repeatCount="indefinite"><mpath href="#rightPhotonPath"/></animateMotion>
+            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.13;0.56;0.64;1" dur="4.6s" repeatCount="indefinite"/>
           </circle>
-
-          <g opacity="0">
-            <circle cx="170" cy="154" r="9" fill="none" stroke="#4ade80" stroke-width="2"/>
-            <circle cx="210" cy="154" r="9" fill="none" stroke="#4ade80" stroke-width="2"/>
-            <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.58;0.66;0.78;1" dur="4s" repeatCount="indefinite"/>
+          <g class="click-ring" opacity="0">
+            <circle cx="424" cy="40" r="17" fill="none" stroke="#4ade80" stroke-width="3"/>
+            <circle cx="564" cy="40" r="17" fill="none" stroke="#4ade80" stroke-width="3"/>
           </g>
-          <text x="190" y="94" text-anchor="middle" fill="#4ade80" font-size="8" font-family="monospace" opacity="0">two clicks =&gt; success
-            <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.58;0.66;0.82;1" dur="4s" repeatCount="indefinite"/>
-          </text>
 
-          <path d="M160 162 C132 186 100 181 82 160" fill="none" stroke="#4ade80" stroke-width="1.3" marker-end="url(#ent-arrow)" opacity="0">
-            <animate attributeName="opacity" values="0;0;0;1;1;0" keyTimes="0;0.64;0.72;0.78;0.9;1" dur="4s" repeatCount="indefinite"/>
-          </path>
-          <path d="M220 162 C248 186 280 181 298 160" fill="none" stroke="#4ade80" stroke-width="1.3" marker-end="url(#ent-arrow)" opacity="0">
-            <animate attributeName="opacity" values="0;0;0;1;1;0" keyTimes="0;0.64;0.72;0.78;0.9;1" dur="4s" repeatCount="indefinite"/>
-          </path>
+          <!-- herald signals and final atom entanglement -->
+          <path d="M420,102 C326,84 194,92 80,222" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#ent-arrow)" class="bell-ok"/>
+          <path d="M434,102 C508,96 602,116 640,222" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#ent-arrow)" class="bell-ok"/>
+          <text x="360" y="64" fill="#4ade80" font-family="JetBrains Mono,monospace" font-size="11" class="bell-ok">two detector clicks herald success</text>
+          <path d="M72,229 C202,142 510,142 648,229" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" opacity="0" class="bell-ok"/>
+          <text x="360" y="322" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono,monospace" font-size="12" class="bell-ok">atoms left in a remote Bell state; photons are consumed by the measurement</text>
+
+          <!-- scale -->
+          <line x1="55" y1="334" x2="665" y2="334" stroke="#cbd5e1" stroke-width="2"/>
+          <path d="M55,334 l12,-6 v12 zM665,334 l-12,-6 v12 z" fill="#cbd5e1"/>
+          <text x="360" y="345" text-anchor="middle" fill="#cbd5e1" font-size="17" font-family="Inter,system-ui,sans-serif">20 m optical link</text>
         </svg>
       </div>
-      <div class="ent-hero-note"><strong>What the animation means:</strong> the photons are measured; the atoms survive as the remote entangled pair.</div>
+      <div class="ent-hero-note"><strong>What the animation means:</strong> each atom emits a photon into a fiber; the BSM consumes the photons, and a two-click pattern heralds that the two distant atoms are entangled.</div>
     </div>
   </div>
 </div>
