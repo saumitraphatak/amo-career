@@ -4,22 +4,22 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wavefront/Zernike Viewer, AMO Toolkit</title>
+  <title>Zernike Wavefront Lab — AMO Toolkit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <meta name="description" content="Interactive Zernike polynomial visualiser for wavefront analysis and aberration characterisation in AMO physics optics setups.">
+  <meta name="description" content="Interactive Zernike wavefront lab for learning optical aberrations, Strehl ratio, SLM phase masks, far-field Fourier optics, and hologram design in AMO experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/zernike.html">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Zernike Polynomials, AMO Toolkit">
-  <meta property="og:description" content="Interactive Zernike polynomial visualiser for wavefront analysis and optical aberration characterisation in AMO experiments.">
+  <meta property="og:title" content="Zernike Wavefront Lab, AMO Toolkit">
+  <meta property="og:description" content="Interactive Zernike wavefront lab for aberration intuition, Strehl ratio, SLM phase masks, far-field optics, and hologram design in AMO experiments.">
   <meta property="og:url" content="https://amotoolkit.com/pages/zernike.html">
   <meta property="og:site_name" content="AMO Toolkit">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Zernike Polynomials">
-  <meta name="twitter:description" content="Interactive Zernike polynomial visualiser for wavefront analysis and optical aberration characterisation in AMO experiments.">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Zernike Polynomials","description":"Interactive Zernike polynomial visualiser for wavefront analysis and optical aberration characterisation in AMO experiments.","url":"https://amotoolkit.com/pages/zernike.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <meta name="twitter:title" content="Zernike Wavefront Lab">
+  <meta name="twitter:description" content="Interactive Zernike wavefront lab for aberration intuition, Strehl ratio, SLM phase masks, far-field optics, and hologram design in AMO experiments.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Zernike Wavefront Lab","description":"Interactive Zernike wavefront lab for aberration intuition, Strehl ratio, SLM phase masks, far-field optics, and hologram design in AMO experiments.","url":"https://amotoolkit.com/pages/zernike.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
   <link rel="stylesheet" href="../css/styles.css?v=10">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -190,6 +190,133 @@
       writing-mode: vertical-lr; transform: rotate(180deg);
       text-align: center; align-self: center; margin-right: 4px; flex-shrink: 0;
     }
+
+
+    /* Narrative flow for the Zernike lab */
+    .zern-flow {
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:var(--sp-5);
+      margin:0 0 var(--sp-7);
+      align-items:stretch;
+    }
+    @media(max-width:900px){ .zern-flow{ grid-template-columns:1fr; } }
+    .zern-flow-card {
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(145deg,rgba(8,22,31,.96),rgba(8,14,28,.96));
+      border:1px solid rgba(45,212,191,.18);
+      border-radius:var(--r-xl);
+      padding:var(--sp-6);
+    }
+    .zern-flow-card::after {
+      content:'';
+      position:absolute;
+      right:-80px;
+      top:-80px;
+      width:230px;
+      height:230px;
+      border-radius:50%;
+      background:radial-gradient(circle,rgba(45,212,191,.16),transparent 68%);
+      pointer-events:none;
+    }
+    .zern-flow-card h2 { margin:0 0 var(--sp-3); font-size:1.35rem; }
+    .zern-flow-card p { color:var(--text-secondary); line-height:1.75; margin:0; }
+    .zern-flow-equation {
+      margin-top:var(--sp-4);
+      display:flex;
+      flex-wrap:wrap;
+      gap:var(--sp-2);
+      align-items:center;
+      font-family:var(--font-mono);
+      color:#99f6e4;
+      font-size:.88rem;
+    }
+    .zern-flow-equation span {
+      border:1px solid rgba(45,212,191,.18);
+      background:rgba(45,212,191,.07);
+      border-radius:999px;
+      padding:.28rem .65rem;
+    }
+    .zern-path {
+      display:grid;
+      gap:var(--sp-3);
+    }
+    .zern-path-step {
+      display:grid;
+      grid-template-columns:44px 1fr;
+      gap:var(--sp-3);
+      align-items:start;
+      background:rgba(8,14,28,.72);
+      border:1px solid rgba(96,165,250,.14);
+      border-radius:var(--r-lg);
+      padding:var(--sp-4);
+    }
+    .zern-path-num {
+      width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      color:#021014;
+      background:linear-gradient(135deg,#2dd4bf,#60a5fa);
+      font-family:var(--font-mono);
+      font-weight:900;
+      font-size:.82rem;
+    }
+    .zern-path-step b { color:var(--text-primary); display:block; margin-bottom:.15rem; }
+    .zern-path-step p { color:var(--text-muted); font-size:.84rem; line-height:1.55; margin:0; }
+    .zern-orient {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:var(--sp-3);
+      margin:0 0 var(--sp-5);
+    }
+    @media(max-width:900px){ .zern-orient{ grid-template-columns:1fr; } }
+    .zern-orient-card {
+      background:rgba(12,21,38,.82);
+      border:1px solid rgba(45,212,191,.14);
+      border-radius:var(--r-lg);
+      padding:var(--sp-4);
+      min-height:118px;
+    }
+    .zern-orient-card small {
+      display:block;
+      color:var(--c-zern);
+      font-size:.68rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight:800;
+      margin-bottom:.35rem;
+    }
+    .zern-orient-card b { color:var(--text-primary); }
+    .zern-orient-card p { margin:.25rem 0 0; color:var(--text-muted); font-size:.84rem; line-height:1.6; }
+    .zern-tab-intro {
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:var(--sp-4);
+      align-items:center;
+      background:linear-gradient(90deg,rgba(45,212,191,.08),rgba(96,165,250,.035));
+      border:1px solid rgba(45,212,191,.16);
+      border-left:4px solid var(--c-zern);
+      border-radius:var(--r-lg);
+      padding:var(--sp-4) var(--sp-5);
+      margin-bottom:var(--sp-5);
+    }
+    @media(max-width:760px){ .zern-tab-intro{ grid-template-columns:1fr; } }
+    .zern-tab-intro h3 { margin:0 0 .25rem; font-size:1.02rem; }
+    .zern-tab-intro p { margin:0; color:var(--text-secondary); line-height:1.65; font-size:.9rem; }
+    .zern-tab-badge {
+      color:#051014;
+      background:#2dd4bf;
+      border-radius:999px;
+      padding:.35rem .75rem;
+      font-weight:900;
+      font-family:var(--font-mono);
+      font-size:.72rem;
+      white-space:nowrap;
+    }
+
   </style>
 </head>
 <body>
@@ -199,14 +326,14 @@
   <div class="page-hero" style="--page-color:#2dd4bf;--page-bg:rgba(45,212,191,0.07);--page-border:rgba(45,212,191,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.2);color:#2dd4bf;">🌊 Build 07 · Wavefront/Zernike Viewer</div>
+        <div class="page-hero-eyebrow" style="background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.2);color:#2dd4bf;">🌊 Build 07 · Zernike Wavefront Lab</div>
         <h1>
-          Wavefront <span class="grad-text" style="--ga: var(--c-zern); --gb: #60a5fa;">& Aberration Viewer</span>
+          Zernike <span class="grad-text" style="--ga: var(--c-zern); --gb: #60a5fa;">Wavefront Lab</span>
         </h1>
         <p class="page-hero-desc">
-          The orthonormal basis for optical wavefront aberrations over a circular pupil.
-          Visualise Zernike modes, build arbitrary wavefronts, and explore SLM phase-to-far-field
-          Fourier optics, LG beams, OAM, PSF.
+          Learn the optical language behind imperfect objectives, shaped tweezers, SLM holograms, and PSFs.
+          Start from one Zernike mode, combine aberrations, watch the Strehl ratio fall, then use Fourier optics
+          to connect pupil phase to the light pattern in the focal plane.
         </p>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
@@ -242,25 +369,55 @@
 
   <div class="page-content">
     <div class="container">
-  <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
-    Zernike polynomials Z_n^m(ρ,θ) are the standard orthonormal basis for wavefront aberrations on a circular aperture. In AMO experiments they matter for: spatial light modulators (SLMs) that generate arbitrary tweezer arrays and structured light (the SLM's phase pattern is a sum of Zernike modes), high-NA objectives where residual spherical aberration and coma degrade the PSF and increase the tweezer waist, and aberration-corrected imaging paths for single-atom detection. This visualizer lets you decompose any wavefront into Zernike modes, visualize the resulting phase map, and compute the Strehl ratio, a single number summarizing how close your optics are to diffraction-limited performance.
-  </div>
-  <section class="section-block anim-in delay-1">
+  <section class="zern-flow anim-in" aria-label="Zernike page learning flow">
+    <div class="zern-flow-card">
+      <h2>What problem is this page solving?</h2>
+      <p>
+        A high-NA objective, SLM, vacuum viewport, or imperfect relay does not just make light dimmer;
+        it changes the phase across the pupil. Zernike modes are the clean vocabulary for naming those
+        phase errors. Once you know the mode, you can predict the PSF damage, estimate Strehl, and decide
+        whether to shim, realign, pre-compensate on an SLM, or stop worrying.
+      </p>
+      <div class="zern-flow-equation">
+        <span>pupil phase → focal field</span>
+        <span>W(ρ,θ)=ΣcₙᵐZₙᵐ</span>
+        <span>Strehl≈exp[-(2πσ)²]</span>
+      </div>
+    </div>
+    <div class="zern-path" aria-label="Recommended workflow">
+      <div class="zern-path-step"><div class="zern-path-num">01</div><div><b>Name the aberration</b><p>Start with one Zernike mode. Learn what defocus, astigmatism, coma, and spherical aberration look like.</p></div></div>
+      <div class="zern-path-step"><div class="zern-path-num">02</div><div><b>Quantify optical damage</b><p>Combine modes, compute RMS wavefront error, and watch the Strehl ratio and PSF respond.</p></div></div>
+      <div class="zern-path-step"><div class="zern-path-num">03</div><div><b>Connect to AMO hardware</b><p>Use SLM and Fourier-optics panels to see how phase masks become tweezers, OAM beams, or distorted spots.</p></div></div>
+      <div class="zern-path-step"><div class="zern-path-num">04</div><div><b>Correct or synthesize</b><p>Use Gerchberg-Saxton for phase retrieval, then use the mode atlas as a reference sheet.</p></div></div>
+    </div>
+  </section>
+
+  <section class="zern-orient anim-in delay-1" aria-label="Why Zernike modes matter in AMO experiments">
+    <div class="zern-orient-card"><small>Single atoms</small><b>PSF quality is survival and fidelity.</b><p>Aberrations broaden the focus, lower collection efficiency, and make single-atom images harder to classify.</p></div>
+    <div class="zern-orient-card"><small>Tweezers</small><b>Wavefront error becomes trap error.</b><p>A distorted phase front changes waist, depth, spacing, and uniformity across large tweezer arrays.</p></div>
+    <div class="zern-orient-card"><small>SLMs</small><b>Holograms are intentional aberrations.</b><p>The same math used to diagnose bad optics also creates LG beams, OAM modes, and programmable spot arrays.</p></div>
+  </section>
+
+  <section class="section-block anim-in delay-2">
     <div data-tabs-wrap>
-      <div class="tab-bar" data-group="zern-main">
-        <button class="tab-btn active" data-tab="single">🌀 Single Mode</button>
-        <button class="tab-btn" data-tab="wavefront">🔧 Wavefront Builder</button>
-        <button class="tab-btn" data-tab="slm">📡 SLM &amp; Far Field</button>
-        <button class="tab-btn" data-tab="gallery">🗺️ Mode Gallery</button>
-        <button class="tab-btn" data-tab="gs">⚡ Gerchberg-Saxton</button>
+      <div class="tab-bar" data-group="zern-main" aria-label="Zernike wavefront lab workflow tabs">
+        <button class="tab-btn active" data-tab="single">01 · Learn a Mode</button>
+        <button class="tab-btn" data-tab="wavefront">02 · Build &amp; Diagnose</button>
+        <button class="tab-btn" data-tab="slm">03 · SLM → Far Field</button>
+        <button class="tab-btn" data-tab="gs">04 · Recover Hologram</button>
+        <button class="tab-btn" data-tab="gallery">05 · Mode Atlas</button>
       </div>
 
       <!-- ══════════════ TAB 1: SINGLE MODE ══════════════ -->
       <div class="tab-panel active" data-tab="single">
+        <div class="zern-tab-intro">
+          <div><h3>Start with one aberration at a time.</h3><p>Move through radial order <em>n</em> and azimuthal order <em>m</em>. The goal is pattern recognition: when a real image looks comet-tailed, stretched, or ringy, you should know which knob to suspect.</p></div>
+          <span class="zern-tab-badge">intuition first</span>
+        </div>
 
-        <!-- Definition (collapsed) -->
+        <!-- Definition -->
         <div class="theory-box">
-          <h4>Zernike Polynomial Definition (OSA/ANSI)</h4>
+          <h4>Mathematical convention used here (OSA/ANSI)</h4>
           <p>Orthonormal over the unit disk ρ ≤ 1 in polar coordinates (ρ, θ):</p>
           <div class="formula-box">
 $$Z_n^m(\rho,\theta) = \begin{cases} \sqrt{2(n+1)}\,R_n^{|m|}(\rho)\cos(m\theta) & m > 0 \\ \sqrt{2(n+1)}\,R_n^{|m|}(\rho)\sin(|m|\theta) & m < 0 \\ \sqrt{n+1}\,R_n^0(\rho) & m = 0 \end{cases}$$
@@ -314,6 +471,10 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
 
       <!-- ══════════════ TAB 2: WAVEFRONT BUILDER ══════════════ -->
       <div class="tab-panel" data-tab="wavefront">
+        <div class="zern-tab-intro">
+          <div><h3>Now combine modes like a real optical system.</h3><p>Real objectives rarely have a single pure aberration. Add terms, read RMS wavefront error, and use the PSF/Strehl output as the practical verdict.</p></div>
+          <span class="zern-tab-badge">diagnose</span>
+        </div>
         <div class="theory-box">
           <h4>Wavefront from Zernike Expansion</h4>
           <p>
@@ -370,6 +531,10 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
 
       <!-- ══════════════ TAB 3: SLM ══════════════ -->
       <div class="tab-panel" data-tab="slm">
+        <div class="zern-tab-intro">
+          <div><h3>Turn pupil phase into focal-plane light.</h3><p>This is the bridge from aberration language to AMO hardware: SLM phase masks, vortex beams, diffraction orders, and tweezer-array Fourier optics.</p></div>
+          <span class="zern-tab-badge">hardware bridge</span>
+        </div>
         <div class="theory-box">
           <h4>SLM Phase → Far-Field Intensity</h4>
           <p>
@@ -485,32 +650,12 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
         </div>
       </div>
 
-      <!-- ══════════════ TAB 4: MODE GALLERY ══════════════ -->
-      <div class="tab-panel" data-tab="gallery">
-        <div class="theory-box" style="margin-bottom:1.25rem;">
-          <h4>Zernike Pyramid, all modes at a glance</h4>
-          <p>
-            Every Zernike polynomial Z_n^m arranged in the standard pyramid (OSA/ANSI order).
-            Columns index the azimuthal frequency m, rows the radial order n.
-            Cosine modes (m &gt; 0) on the right, sine modes (m &lt; 0) on the left.
-            <strong>Blue</strong> = negative wavefront, <strong>white</strong> = zero,
-            <strong>red</strong> = positive (RdBu colormap).
-          </p>
-        </div>
-
-        <div class="ctrl-panel" style="margin-bottom:1.25rem; max-width:340px;">
-          <div class="field-row">
-            <label>Max radial order n<sub>max</sub>: <span class="lbl-val" id="galNval">6</span></label>
-            <input type="range" id="galNslide" min="1" max="10" value="6"
-              oninput="document.getElementById('galNval').textContent=this.value; renderGallery()">
-          </div>
-        </div>
-
-        <div id="galleryWrap" style="overflow-x:auto;"></div>
-      </div>
-
-      <!-- ══════════════ TAB 5: GERCHBERG-SAXTON ══════════════ -->
+      <!-- ══════════════ TAB 4: GERCHBERG-SAXTON ══════════════ -->
       <div class="tab-panel" data-tab="gs">
+        <div class="zern-tab-intro">
+          <div><h3>Ask the inverse question: what phase makes this light?</h3><p>Gerchberg-Saxton is the workhorse idea behind many SLM tweezer-array holograms: alternate between planes, keep the desired amplitudes, update the phase.</p></div>
+          <span class="zern-tab-badge">inverse design</span>
+        </div>
         <div class="theory-box">
           <h4>Gerchberg-Saxton (GS) Algorithm — iterative phase retrieval</h4>
           <p>
@@ -592,6 +737,36 @@ GS convergence criterion: RMSE = $\sqrt{\frac{1}{P}\sum_i \left(|E_i|^2 - T_i\ri
           </div>
         </div>
       </div>
+
+      <!-- ══════════════ TAB 5: MODE GALLERY ══════════════ -->
+      <div class="tab-panel" data-tab="gallery">
+        <div class="zern-tab-intro">
+          <div><h3>Use this as the cheat sheet.</h3><p>Once you understand the workflow, the atlas is a fast visual reference for identifying modes by eye and remembering the OSA/ANSI indexing structure.</p></div>
+          <span class="zern-tab-badge">reference</span>
+        </div>
+        <div class="theory-box" style="margin-bottom:1.25rem;">
+          <h4>Zernike Pyramid, all modes at a glance</h4>
+          <p>
+            Every Zernike polynomial Z_n^m arranged in the standard pyramid (OSA/ANSI order).
+            Columns index the azimuthal frequency m, rows the radial order n.
+            Cosine modes (m &gt; 0) on the right, sine modes (m &lt; 0) on the left.
+            <strong>Blue</strong> = negative wavefront, <strong>white</strong> = zero,
+            <strong>red</strong> = positive (RdBu colormap).
+          </p>
+        </div>
+
+        <div class="ctrl-panel" style="margin-bottom:1.25rem; max-width:340px;">
+          <div class="field-row">
+            <label>Max radial order n<sub>max</sub>: <span class="lbl-val" id="galNval">6</span></label>
+            <input type="range" id="galNslide" min="1" max="10" value="6"
+              oninput="document.getElementById('galNval').textContent=this.value; renderGallery()">
+          </div>
+        </div>
+
+        <div id="galleryWrap" style="overflow-x:auto;"></div>
+      </div>
+
+
 
     </div><!-- /data-tabs-wrap -->
   </section>
@@ -1131,7 +1306,7 @@ function computeSLM() {
 computeSLM();
 
 /* ═══════════════════════════════════════════════════════
-   TAB 4: MODE GALLERY, Zernike pyramid
+   TAB 5: MODE GALLERY, Zernike pyramid
    ═══════════════════════════════════════════════════════ */
 const GAL_SIZE = 72;   // px per thumbnail canvas
 const GAL_GRID = makePolarGrid(GAL_SIZE);

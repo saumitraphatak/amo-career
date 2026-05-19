@@ -16,7 +16,7 @@ const NAV = {
     { key: 'laser-locking',  label: 'Laser Locking Guide',   kind: 'Guide', icon: '🔐', color: '#f87171', href: 'pages/laser-locking.html'  },
     { key: 'lab-techniques', label: 'AMO Lab Techniques',      kind: 'Guide', icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
     { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
-    { key: 'zernike',        label: 'Wavefront/Zernike Viewer', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
+    { key: 'zernike',        label: 'Zernike Wavefront Lab', kind: 'Simulator', icon: '🌊', color: '#2dd4bf', href: 'pages/zernike.html'      },
     { key: 'cavity-qed',     label: 'Cavity Coupling Calculator',       kind: 'Calculator', icon: '💎', color: '#c084fc', href: 'pages/cavity-qed.html'   },
     { key: 'vacuum-systems', label: 'Vacuum Systems Guide',            kind: 'Guide',      icon: '⚗️', color: '#22d3ee', href: 'pages/vacuum-systems.html' },
   ],
