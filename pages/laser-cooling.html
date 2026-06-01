@@ -128,6 +128,10 @@
       border-radius: 12px; padding: 1.25rem; text-align: center;
     }
     .level-diagram canvas { display: block; margin: 0 auto; max-width: 100%; }
+    .level-diagram .cooling-gif {
+      display: block; width: 100%; max-width: 640px; height: auto;
+      margin: 0 auto; border-radius: 10px; background: #fff;
+    }
     .level-diagram figcaption { font-size: .75rem; color: var(--text-muted); margin-top: .5rem; }
 
     /* ─── Insight callout ───────────────────────────── */
@@ -589,8 +593,8 @@
 
         <!-- DIAGRAM: Resolved SB cooling cycle animation -->
         <figure class="level-diagram" style="margin-top:1.5rem;">
-          <canvas id="sbCoolCanvas" width="440" height="200" style="width:100%;max-width:440px;display:block;margin:0 auto;border-radius:8px;"></canvas>
-          <figcaption>Animated cooling cycle. The cyan dot (atom population) is driven by a red sideband laser from |g,n⟩ to |e,n−1⟩ (orange arrow), then returns via spontaneous emission (green dashed arrow) to |g,n−1⟩. Each cycle removes one motional quantum. The ground state |n=0⟩ is dark, no red sideband transition exists, so population accumulates there.</figcaption>
+          <img class="cooling-gif" src="../assets/cooling/resolved-sideband-cooling.gif" alt="Resolved sideband cooling animation" loading="lazy">
+          <figcaption>Resolved sideband cooling cycle. The population is driven from a higher motional state to the excited-state red sideband, then decays into the next-lower motional state.</figcaption>
         </figure>
 
         <hr class="section-divider">
@@ -888,19 +892,10 @@
           <figcaption>Spin cooling model for gray molasses. Blue-detuned light creates a differential light shift Δs between the bright |↑⟩ and dark |↓⟩ states. Optical pumping γ₊ transfers atoms to the dark state. The coherent Raman coupling ηΩ_R (dashed) links |↑,n⟩ to |↓,n−1⟩, removing one motional quantum per Raman+pump cycle. The residual back-pumping rate γ₋ ≪ γ₊ sets the temperature floor.</figcaption>
         </figure>
 
-        <!-- ── 3-phase step-by-step animation ── -->
-        <figure style="margin:2rem 0;">
-          <div style="background:var(--bg-card);border:1px solid var(--border-med);border-radius:var(--r-lg);overflow:hidden;">
-            <!-- phase label bar -->
-            <div id="gm-phase-bar" style="display:flex;gap:0;border-bottom:1px solid var(--border);">
-              <div data-ph="0" style="flex:1;padding:.55rem .5rem;text-align:center;font-size:.78rem;font-weight:700;font-family:Inter,sans-serif;cursor:default;transition:background .25s,color .25s;">① AC Stark shift</div>
-              <div data-ph="1" style="flex:1;padding:.55rem .5rem;text-align:center;font-size:.78rem;font-weight:700;font-family:Inter,sans-serif;cursor:default;transition:background .25s,color .25s;">② Optical pumping</div>
-              <div data-ph="2" style="flex:1;padding:.55rem .5rem;text-align:center;font-size:.78rem;font-weight:700;font-family:Inter,sans-serif;cursor:default;transition:background .25s,color .25s;">③ Dark-state + Raman</div>
-            </div>
-            <canvas id="gmAnimCanvas" width="560" height="290" style="display:block;width:100%;height:auto;"></canvas>
-            <div id="gm-caption" style="padding:.65rem 1rem;font-size:.8rem;color:var(--text-secondary);min-height:2.6rem;line-height:1.55;font-family:Inter,sans-serif;border-top:1px solid var(--border);"></div>
-          </div>
-          <figcaption>Step-by-step loop showing the three stages of gray molasses cooling. Each phase runs for ~2 s before fading into the next, cycling continuously.</figcaption>
+        <!-- ── Gray-molasses cooling cycle animation ── -->
+        <figure class="level-diagram" style="margin:2rem 0;">
+          <img class="cooling-gif" src="../assets/cooling/gray-molasses-cooling.gif" alt="Gray molasses dark-state cooling animation" loading="lazy">
+          <figcaption>Dark-state cooling loop. Raman coupling transfers population from a dark motional state into the neighboring bright state, excitation promotes it to the excited state, and spontaneous decay returns it to the lower dark motional state.</figcaption>
         </figure>
 
         <hr class="section-divider">
