@@ -77,6 +77,21 @@
       font-size:.75rem;
       backdrop-filter:blur(10px);
     }
+    .map-count-badge {
+      position:absolute;
+      right:18px;
+      top:16px;
+      z-index:2;
+      padding:7px 14px;
+      border:1px solid rgba(148,163,184,.16);
+      border-radius:999px;
+      background:color-mix(in srgb, var(--bg-card) 72%, transparent);
+      color:var(--text-primary);
+      font-size:.78rem;
+      font-weight:700;
+      backdrop-filter:blur(10px);
+    }
+    .map-count-badge strong { color:#4ade80; }
     .map-tooltip {
       position:fixed;
       z-index:9999;
@@ -479,6 +494,7 @@
           <button class="mini-filter-btn" data-filter="region" data-value="Asia">Asia</button>
           <button class="mini-filter-btn" data-filter="region" data-value="Australia">Australia</button>
           <button class="mini-filter-btn" data-filter="region" data-value="Canada">Canada</button>
+          <button class="mini-filter-btn" data-filter="region" data-value="South America">South America</button>
         </div>
       </div>
       <div class="filter-group">
@@ -507,7 +523,8 @@
 
     <div class="map-shell">
       <div id="map-root"></div>
-      <div class="map-hint">Hover a pin for the group name · click a pin to jump to the directory card</div>
+      <div class="map-count-badge" id="map-count-badge"><strong id="map-count-num"></strong> groups mapped</div>
+      <div class="map-hint">Scroll or use +/− to zoom, drag to pan · hover a pin for details · click a pin to open the full profile</div>
     </div>
     <div class="map-tooltip" id="map-tooltip" role="tooltip" aria-hidden="true"></div>
 
@@ -675,7 +692,75 @@ const GROUPS = [
 
   /* ── Canada ── */
   { name:'Thywissen Lab', pi:'Joseph Thywissen', inst:'Univ. Toronto', country:'Canada', lat:43.663, lon:-79.397, atoms:['K','Rb'], tag:'bec', focus:'Fermi-Hubbard model, spin dynamics, quantum gas microscope, few-body physics', paper:'Murthy et al., PRL 115, 173202 (2015)', doi:'10.1103/PhysRevLett.115.173202', hire:true },
+  { name:'Steinberg Lab', pi:'Aephraim Steinberg', inst:'Univ. Toronto', country:'Canada', lat:43.662, lon:-79.396, atoms:['Rb'], tag:'sim', focus:'Foundations of quantum mechanics with ultracold atoms and quantum optics, weak measurement, tunneling time', hire:true },
+  { name:'LeBlanc Lab', pi:'Lindsay LeBlanc', inst:'Univ. Alberta', country:'Canada', lat:53.523, lon:-113.526, atoms:['Rb','K'], tag:'sim', focus:'Dual-species Rb-K quantum gases, synthetic spin-orbit coupling, non-equilibrium many-body dynamics', hire:true },
+  { name:'Madison Lab', pi:'Kirk Madison', inst:'Univ. British Columbia', country:'Canada', lat:49.261, lon:-123.246, atoms:['Rb','Li'], tag:'sim', focus:'Ultracold atom/molecule collisions, precision atomic sensors, quantum pressure metrology', hire:true },
   { name:'Hauke / Duan Theory', pi:'Philipp Hauke', inst:'Univ. Trento', country:'Italy', lat:46.064, lon:11.121, atoms:[], tag:'sim', focus:'Theory: quantum simulation of lattice gauge theories, tensor networks, AMO-HEP connection', paper:'Hauke et al., Nature Physics 8, 325 (2012)', doi:'10.1038/nphys2253', hire:true },
+
+  /* ── USA: More East / Midwest / West ── */
+  { name:'Simon Lab', pi:'Jonathan Simon', inst:'University of Chicago', country:'USA', lat:41.790, lon:-87.599, atoms:['Rb'], tag:'cavity', focus:'Photonic and cold-atom quantum matter, synthetic photonic materials, topological photon fluids', hire:true },
+  { name:'DeMille Group', pi:'David DeMille', inst:'University of Chicago', country:'USA', lat:41.788, lon:-87.601, atoms:['SrF','CaF'], tag:'molecules', focus:'Laser-cooled polar molecules, electron EDM searches, precision tests of fundamental symmetries', paper:'Shuman et al., Nature 467, 820 (2010)', doi:'10.1038/nature09443', hire:true },
+  { name:'Regal Lab', pi:'Cindy Regal', inst:'JILA / Univ. Colorado', country:'USA', lat:40.009, lon:-105.245, atoms:['Rb'], tag:'cavity', focus:'Optical tweezer arrays, hybrid quantum systems, single-phonon control in mechanical oscillators', hire:true },
+  { name:'J.K. Thompson Lab', pi:'James K. Thompson', inst:'JILA / Univ. Colorado', country:'USA', lat:40.013, lon:-105.241, atoms:['Rb'], tag:'cavity', focus:'Cavity QED, spin squeezing beyond the standard quantum limit, superradiant lasers', hire:true },
+  { name:'Schleier-Smith Lab', pi:'Monika Schleier-Smith', inst:'Stanford University', country:'USA', lat:37.426, lon:-122.174, atoms:['Rb'], tag:'cavity', focus:'Cavity-mediated interactions among laser-cooled atoms for quantum simulation and metrology', hire:true },
+  { name:'Weiss Lab', pi:'David Weiss', inst:'Penn State University', country:'USA', lat:40.798, lon:-77.860, atoms:['Cs'], tag:'rydberg', focus:'Optical tweezer arrays for neutral-atom quantum computing, 1D Bose gases, electron EDM tests', hire:true },
+  { name:'Covey Lab', pi:'Jacob Covey', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.105, lon:-88.227, atoms:['Sr','Yb'], tag:'rydberg', focus:'Alkaline-earth atom tweezer arrays for distributed quantum computing and atomic-array clocks', hire:true },
+  { name:'Cheuk Lab', pi:'Lawrence Cheuk', inst:'Princeton University', country:'USA', lat:40.345, lon:-74.653, atoms:['CaF'], tag:'molecules', focus:'Laser-cooled molecules trapped in optical tweezer arrays for quantum simulation and information', hire:true },
+  { name:'Loh Lab', pi:'Huanqian Loh', inst:'Duke University', country:'USA', lat:36.002, lon:-78.938, atoms:['Rb','Cs'], tag:'rydberg', focus:'Tweezer-trapped atom arrays as building blocks for quantum computing, simulation, and sensing', hire:true },
+  { name:'Brown Lab', pi:'Kenneth Brown', inst:'Duke University', country:'USA', lat:36.000, lon:-78.940, atoms:['Ca+','Yb+'], tag:'ions', focus:'Trapped-ion quantum computing, quantum error correction, ion-trap architecture design', hire:true },
+  { name:'Hutzler Lab', pi:'Nick Hutzler', inst:'Caltech', country:'USA', lat:34.139, lon:-118.124, atoms:['YbOH'], tag:'molecules', focus:'Laser-cooled polyatomic molecules for precision tests of fundamental symmetries and new-physics searches', hire:true },
+  { name:'Weld Group', pi:'David Weld', inst:'UC Santa Barbara', country:'USA', lat:34.414, lon:-119.849, atoms:['Li','Sr'], tag:'sim', focus:'Floquet engineering, quantum quasicrystals, non-equilibrium dynamics in quantum degenerate gases', hire:true },
+  { name:'Müller Group', pi:'Holger Müller', inst:'UC Berkeley', country:'USA', lat:37.874, lon:-122.257, atoms:['Cs'], tag:'clocks', focus:'Atom interferometry for tests of gravity and the equivalence principle, precision measurement of constants', hire:true },
+  { name:'Campbell Lab', pi:'Gretchen Campbell', inst:'NIST / JQI, Univ. Maryland', country:'USA', lat:38.988, lon:-76.941, atoms:['Rb'], tag:'bec', focus:'Atomtronics, superfluid circuits, quantum sensing with ring-trapped Bose-Einstein condensates', hire:true },
+  { name:'Odom Lab', pi:'Brian Odom', inst:'Northwestern University', country:'USA', lat:42.057, lon:-87.675, atoms:['ions'], tag:'ions', focus:'Sympathetically-cooled trapped molecular ions, precision spectroscopy, tests of fundamental constants', hire:true },
+
+  /* ── Germany: theory & additional groups ── */
+  { name:'Cirac Theory Division', pi:'Ignacio Cirac', inst:'MPQ Munich', country:'Germany', lat:48.155, lon:11.567, atoms:[], tag:'sim', focus:'Theory: quantum information science, tensor networks, AMO platforms for quantum computing', hire:true },
+  { name:'Oberthaler Lab', pi:'Markus Oberthaler', inst:'Univ. Heidelberg', country:'Germany', lat:49.400, lon:8.673, atoms:['Rb'], tag:'bec', focus:'Bose-Einstein condensates, matter-wave interferometry, quantum-enhanced metrology, entanglement generation', hire:true },
+  { name:'Jochim Lab', pi:'Selim Jochim', inst:'Univ. Heidelberg', country:'Germany', lat:49.399, lon:8.675, atoms:['Li'], tag:'bec', focus:'Few-body Fermi systems, deterministic single-atom preparation, quantum simulation with mesoscopic ensembles', hire:true },
+  { name:'Hemmerich Lab', pi:'Andreas Hemmerich', inst:'Univ. Hamburg', country:'Germany', lat:53.567, lon:9.975, atoms:['Rb'], tag:'sim', focus:'Driven optical lattices, non-equilibrium quantum gases, cavity-mediated self-organization', hire:true },
+
+  /* ── Austria: theory & additional groups ── */
+  { name:'Zoller Theory Group', pi:'Peter Zoller', inst:'Univ. Innsbruck / IQOQI', country:'Austria', lat:47.263, lon:11.393, atoms:[], tag:'sim', focus:'Theory: AMO quantum information, quantum simulation architectures, open quantum systems', hire:true },
+  { name:'Nägerl Lab', pi:'Hanns-Christoph Nägerl', inst:'Univ. Innsbruck', country:'Austria', lat:47.267, lon:11.397, atoms:['Cs'], tag:'molecules', focus:'Ultracold molecule formation, low-dimensional quantum gases, precision molecular spectroscopy', hire:true },
+  { name:'Bernien Lab', pi:'Hannes Bernien', inst:'Univ. Innsbruck', country:'Austria', lat:47.262, lon:11.392, atoms:['Rb','Cs'], tag:'rydberg', focus:'Large-scale optical tweezer arrays, dual-species Rydberg entanglement, quantum simulation atom-by-atom', hire:true },
+
+  /* ── France: additional groups ── */
+  { name:'Salomon Lab', pi:'Christophe Salomon', inst:'ENS Paris', country:'France', lat:48.847, lon:2.343, atoms:['Li'], tag:'bec', focus:'Ultracold Fermi gases, precision atomic clocks, tests of fundamental physics in space (ACES/PHARAO)', hire:true },
+
+  /* ── UK: additional groups ── */
+  { name:'Hadzibabic Lab', pi:'Zoran Hadzibabic', inst:'Univ. Cambridge', country:'UK', lat:52.205, lon:0.115, atoms:['Rb'], tag:'bec', focus:'Homogeneous Bose gases in a box trap, 2D superfluidity, far-from-equilibrium quantum dynamics', hire:true },
+  { name:'Schneider Lab', pi:'Ulrich Schneider', inst:'Univ. Cambridge', country:'UK', lat:52.203, lon:0.114, atoms:['K'], tag:'sim', focus:'Quantum gas microscopy, Hubbard physics, engineered disorder and many-body localization', hire:true },
+  { name:'Kuhr Lab', pi:'Stefan Kuhr', inst:'Univ. Strathclyde', country:'UK', lat:55.862, lon:-4.243, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscopy, single-atom-resolved imaging of optical lattices', hire:true },
+
+  /* ── Spain ── */
+  { name:'Tarruell Lab', pi:'Leticia Tarruell', inst:'ICFO Barcelona', country:'Spain', lat:41.276, lon:1.989, atoms:['K','Sr'], tag:'sim', focus:'Ultracold quantum-gas microscopy of strontium (QUIONE), engineered quantum matter, atom-light interfaces', hire:true },
+
+  /* ── Netherlands: additional groups ── */
+  { name:'Schreck Lab', pi:'Florian Schreck', inst:'Univ. Amsterdam', country:'Netherlands', lat:52.355, lon:4.955, atoms:['Sr'], tag:'clocks', focus:'Strontium quantum gases, optical lattice clocks, compact ultracold-atom technology for space and metrology', hire:true },
+
+  /* ── Italy ── */
+  { name:'Tino Lab', pi:'Guglielmo Tino', inst:'Univ. Florence / LENS', country:'Italy', lat:43.770, lon:11.256, atoms:['Sr'], tag:'clocks', focus:'Atom interferometry, precision tests of gravity, strontium optical clocks for geodesy', hire:true },
+
+  /* ── Denmark ── */
+  { name:'Sherson Lab', pi:'Jacob Sherson', inst:'Aarhus University', country:'Denmark', lat:56.163, lon:10.204, atoms:['Rb'], tag:'sim', focus:'Quantum control of ultracold atoms, citizen-science-guided optimization (ScienceAtHome), hybrid intelligence', hire:true },
+  { name:'Polzik Lab', pi:'Eugene Polzik', inst:'Niels Bohr Institute, Copenhagen', country:'Denmark', lat:55.699, lon:12.563, atoms:['Cs'], tag:'cavity', focus:'Quantum optics with atomic ensembles, quantum memory, teleportation between light and matter', hire:true },
+
+  /* ── Israel: additional groups ── */
+  { name:'Ozeri Lab', pi:'Roee Ozeri', inst:'Weizmann Institute', country:'Israel', lat:31.906, lon:34.809, atoms:['Sr+'], tag:'ions', focus:'Trapped-ion quantum information and sensing, ion-atom hybrid systems, decoherence-free quantum control', hire:true },
+  { name:'Davidson Lab', pi:'Nir Davidson', inst:'Weizmann Institute', country:'Israel', lat:31.903, lon:34.812, atoms:['Rb'], tag:'bec', focus:'Cold-atom nonlinear dynamics, optical trapping architectures, atom-based quantum simulators', hire:true },
+
+  /* ── Singapore: additional groups ── */
+  { name:'Li Lab', pi:'Wenhui Li', inst:'CQT / Nat. Univ. Singapore', country:'Singapore', lat:1.297, lon:103.776, atoms:['Rb'], tag:'rydberg', focus:'Ultracold Rydberg gases, Rydberg-atom microwave sensing, dipole-dipole interaction physics', hire:true },
+
+  /* ── South Korea ── */
+  { name:'Ahn Lab', pi:'Jaewook Ahn', inst:'KAIST', country:'South Korea', lat:36.372, lon:127.361, atoms:['Rb'], tag:'rydberg', focus:'Rydberg-atom graphs for combinatorial optimization, ultrafast quantum control, atom-based quantum computing', hire:true },
+
+  /* ── Australia: additional groups ── */
+  { name:'Truscott Group', pi:'Andrew Truscott', inst:'Australian National University', country:'Australia', lat:-35.278, lon:149.119, atoms:['He*'], tag:'bec', focus:'Metastable helium Bose-Einstein condensates, atom-optics quantum correlation experiments', hire:true },
+
+  /* ── Brazil ── */
+  { name:'Bagnato Group', pi:'Vanderlei Bagnato', inst:'USP São Carlos', country:'Brazil', lat:-22.018, lon:-47.891, atoms:['Rb'], tag:'bec', focus:'Bose-Einstein condensation, quantum turbulence in atomic superfluids, ultracold-atom precision sensors', hire:true },
 ];
 
 /* ─── Tag → color mapping ─── */
@@ -749,7 +834,47 @@ const GROUP_WEBSITES = {
   "Andersen Group": "https://atomlaser.phy.uq.edu.au/",
   "Rangwala Lab": "https://www.rri.res.in/people/faculty/sadiq-rangwala",
   "Thywissen Lab": "https://www.thywissenlab.ca/",
-  "Hauke / Duan Theory": "https://quantum-dynamics.unitn.it/people/philipp-hauke/"
+  "Hauke / Duan Theory": "https://quantum-dynamics.unitn.it/people/philipp-hauke/",
+  "Steinberg Lab": "https://www.physics.utoronto.ca/~aephraim/aephraim.html",
+  "LeBlanc Lab": "https://sites.ualberta.ca/~ljleblan/",
+  "Madison Lab": "https://phas.ubc.ca/kirk-madison",
+  "Simon Lab": "http://simonlab.uchicago.edu/",
+  "DeMille Group": "https://demillegroup.psd.uchicago.edu/",
+  "Regal Lab": "https://jila.colorado.edu/regal",
+  "J.K. Thompson Lab": "https://jila.colorado.edu/thompson",
+  "Schleier-Smith Lab": "https://sites.google.com/stanford.edu/sslab/",
+  "Weiss Lab": "https://sites.psu.edu/dsweiss/",
+  "Covey Lab": "https://sites.google.com/view/coveylab/",
+  "Cheuk Lab": "https://sites.google.com/view/cheuk-lab/",
+  "Loh Lab": "https://lohlab.pratt.duke.edu/",
+  "Brown Lab": "https://brownlab.pratt.duke.edu/",
+  "Hutzler Lab": "https://www.hutzlerlab.com/",
+  "Weld Group": "https://web.physics.ucsb.edu/~weld/",
+  "Müller Group": "https://matterswaves.com/",
+  "Campbell Lab": "https://www.nist.gov/people/gretchen-k-campbell",
+  "Odom Lab": "https://faculty.wcas.northwestern.edu/brian-odom/",
+  "Cirac Theory Division": "https://www.mpq.mpg.de/ignacio-cirac",
+  "Oberthaler Lab": "https://www.kip.uni-heidelberg.de/matterwave/",
+  "Jochim Lab": "https://www.physi.uni-heidelberg.de/Forschung/index.php?lang=en&leiter=jochim",
+  "Hemmerich Lab": "https://www.physik.uni-hamburg.de/en/iqp/hemmerich/personen/hemmerich.html",
+  "Zoller Theory Group": "https://iqoqi.at/en/people/staff/staff/peter-zoller",
+  "Nägerl Lab": "https://ultracold.at/",
+  "Bernien Lab": "https://bernienlab.com/",
+  "Salomon Lab": "https://www.lkb.fr/ultracoldfermigases/",
+  "Hadzibabic Lab": "https://www.zh.phy.cam.ac.uk/",
+  "Schneider Lab": "https://www.phy.cam.ac.uk/profile/prof-ulrich-schneider/",
+  "Kuhr Lab": "https://www.strath.ac.uk/staff/kuhrstefanprof/",
+  "Tarruell Lab": "http://www.qge.icfo.es/",
+  "Schreck Lab": "https://strontiumbec.com/",
+  "Tino Lab": "http://coldatoms.lens.unifi.it/tino/",
+  "Sherson Lab": "https://pure.au.dk/portal/en/persons/jacob-sherson",
+  "Polzik Lab": "https://quantop.nbi.ku.dk/",
+  "Ozeri Lab": "https://www.weizmann.ac.il/complex/ozeri/",
+  "Davidson Lab": "https://www.weizmann.ac.il/complex/NirDavidson/home",
+  "Li Lab": "https://www.quantumlah.org/research/group/Wenhui-Li",
+  "Ahn Lab": "http://uqol.kaist.ac.kr/",
+  "Truscott Group": "https://physics.anu.edu.au/people/profile.php?ID=9",
+  "Bagnato Group": "https://www2.ifsc.usp.br/portal-ifsc/grupos-de-pesquisa/"
 };
 
 const WATCHLIST_SECTIONS = [
@@ -972,11 +1097,17 @@ function moveMapTooltip(pointEvent) {
 
 function showMapTooltip(d, pointEvent) {
   if (!mapTooltip) return;
+  const col = TAG_COLORS[d.tag] || '#5c503c';
   mapTooltip.innerHTML = `
+    <span style="display:inline-flex;align-items:center;gap:6px;margin-bottom:4px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${col};flex:none;"></span>
+      <span style="color:${col};font-size:.7rem;font-weight:700;letter-spacing:.03em;">${escapeHTML(TAG_LABELS[d.tag] || d.tag)}</span>
+    </span>
     <strong>${escapeHTML(d.name)}</strong>
     <span>${escapeHTML(d.pi)}</span><br>
     <span>${escapeHTML(d.inst)}</span>
-    <span class="map-tooltip-action">Click to jump to this group</span>
+    ${d.focus ? `<span style="display:block;margin-top:6px;color:var(--text-muted);">${escapeHTML(d.focus.length > 92 ? d.focus.slice(0, 89) + '…' : d.focus)}</span>` : ''}
+    <span class="map-tooltip-action">Click to open the full profile</span>
   `;
   mapTooltip.classList.add('visible');
   mapTooltip.setAttribute('aria-hidden', 'false');
@@ -993,8 +1124,9 @@ function regionOf(g) {
   if (g.country === 'USA') return 'US';
   if (g.country === 'Canada') return 'Canada';
   if (g.country === 'Australia') return 'Australia';
-  if (['Germany','Austria','France','Switzerland','UK','Netherlands','Italy'].includes(g.country)) return 'Europe';
-  if (['Israel','Japan','China','Singapore','India'].includes(g.country)) return 'Asia';
+  if (['Germany','Austria','France','Switzerland','UK','Netherlands','Italy','Spain','Denmark'].includes(g.country)) return 'Europe';
+  if (['Israel','Japan','China','Singapore','India','South Korea'].includes(g.country)) return 'Asia';
+  if (g.country === 'Brazil') return 'South America';
   return g.country;
 }
 
@@ -1099,10 +1231,23 @@ function initGroupMap() {
   root.setThemes([am5themes_Animated.new(root)]);
 
   const chart = root.container.children.push(am5map.MapChart.new(root, {
-    panX:'rotateX', panY:'none', projection:am5map.geoNaturalEarth1(),
-    wheelY:'none',
+    panX:'rotateX', panY:'translateY', projection:am5map.geoNaturalEarth1(),
+    wheelY:'zoom',
+    maxZoomLevel:16,
     homeZoomLevel:1.08,
   }));
+
+  const zoomControl = chart.set('zoomControl', am5map.ZoomControl.new(root, {}));
+  zoomControl.homeButton.set('visible', true);
+  [zoomControl.plusButton, zoomControl.minusButton, zoomControl.homeButton].forEach(btn => {
+    btn.get('background').setAll({
+      fill: am5.color(0x0c1526),
+      fillOpacity: 0.85,
+      stroke: am5.color(0x2d3f57),
+      strokeOpacity: 0.6,
+    });
+    btn.get('icon')?.setAll({ stroke: am5.color(0xe2e8f0) });
+  });
 
   const polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
     geoJSON: am5geodata_worldLow,
@@ -1155,7 +1300,8 @@ function initGroupMap() {
       fillOpacity:.95
     }));
     pin.events.on('click', () => {
-      jumpToGroup(d.groupIdx);
+      hideMapTooltip();
+      showPanel(d.groupIdx);
     });
     pin.events.on('pointerover', (ev) => {
       showMapTooltip(d, ev);
@@ -1215,17 +1361,12 @@ function loadMapPoints(groups) {
     name:g.name,
     pi:g.pi,
     inst:g.inst,
+    tag:g.tag,
+    focus:g.focus,
     title:g.name,
   })));
-}
-
-function jumpToGroup(idx) {
-  const card = document.getElementById(`group-card-${idx}`);
-  if (!card) return;
-  document.querySelectorAll('.group-card.is-highlighted').forEach(el => el.classList.remove('is-highlighted'));
-  card.classList.add('is-highlighted');
-  card.scrollIntoView({ behavior:'smooth', block:'center' });
-  window.setTimeout(() => card.classList.remove('is-highlighted'), 2600);
+  const badge = document.getElementById('map-count-num');
+  if (badge) badge.textContent = groups.length;
 }
 
 function showPanel(idx) {
@@ -1263,9 +1404,16 @@ function showPanel(idx) {
       <div class="gp-paper-label">Flagship / Representative Paper</div>
       <a href="https://doi.org/${g.doi}" target="_blank" rel="noopener">${g.paper} →</a>
     </div>` : ''}
+    <a class="gc-link" style="margin-top:var(--sp-3)" href="${labUrl(g)}" target="_blank" rel="noopener">Visit lab website ↗</a>
   `;
   document.getElementById('group-panel').classList.add('visible');
   document.getElementById('group-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  document.querySelectorAll('.group-card.is-highlighted').forEach(el => el.classList.remove('is-highlighted'));
+  const card = document.getElementById(`group-card-${idx}`);
+  if (card) {
+    card.classList.add('is-highlighted');
+    window.setTimeout(() => card.classList.remove('is-highlighted'), 2600);
+  }
 }
 
 function closePanel() {
@@ -1279,7 +1427,8 @@ function buildGrid(groups) {
     const url = labUrl(g);
     const atomList = g.atoms.length ? g.atoms.join(', ') : 'Theory';
     const techniqueList = techniques(g).slice(0, 2).map(t => t.replace('-', ' '));
-    return `<a class="group-card" id="group-card-${idx}" href="${url}" target="_blank" rel="noopener" title="Open ${g.name} website">
+    return `<div class="group-card" id="group-card-${idx}" role="button" tabindex="0" title="Open full profile for ${escapeHTML(g.name)}"
+        onclick="showPanel(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPanel(${idx});}">
       <div class="gc-head"><div class="gc-dot" style="background:${col}"></div><div class="gc-name">${g.name}</div></div>
       <div class="gc-inst">${g.inst} · ${g.country}</div>
       <div class="gc-focus">${g.focus}</div>
@@ -1289,8 +1438,8 @@ function buildGrid(groups) {
         <span class="gc-chip">${TAG_LABELS[g.tag]}</span>
         ${techniqueList.map(t => `<span class="gc-chip">${t}</span>`).join('')}
       </div>
-      <span class="gc-link">Visit lab website ↗</span>
-    </a>`;
+      <a class="gc-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Visit lab website ↗</a>
+    </div>`;
   }).join('');
 }
 
