@@ -8,47 +8,56 @@ img, svg { display: block; max-width: 100%; }
 button { font-family: inherit; cursor: pointer; color: inherit; }
 ul, ol { list-style: none; }
 
-/* 2. Design Tokens */
+/* 2. Design Tokens — "Lab Notebook" system
+   Warm paper + ink, replacing the previous dark-navy/neon-gradient theme. */
 :root {
-  /* Backgrounds */
-  --bg-base:        #02080f;
-  --bg-surface:     #060e1c;
-  --bg-card:        #0c1526;
-  --bg-card-hover:  #101d30;
-  --bg-glass:       rgba(6, 14, 28, 0.88);
+  /* Backgrounds — aged paper, not screen-glow navy */
+  --bg-base:        #efe7d6;
+  --bg-surface:     #f2ead9;
+  --bg-card:        #faf5e9;
+  --bg-card-hover:  #f5eeda;
+  --bg-glass:       #f2ead9;  /* solid now — no more frosted-glass blur */
 
-  /* Borders */
-  --border:         rgba(56, 189, 248, 0.10);
-  --border-med:     rgba(56, 189, 248, 0.18);
-  --border-strong:  rgba(56, 189, 248, 0.28);
+  /* Borders — soft ink-brown hairlines, not neon-blue glows */
+  --border:         rgba(58, 42, 24, 0.14);
+  --border-med:     rgba(58, 42, 24, 0.24);
+  --border-strong:  rgba(58, 42, 24, 0.40);
 
-  /* Text */
-  --text-primary:   #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted:     #475569;
+  /* Text — iron-gall ink, not slate-on-navy */
+  --text-primary:   #22190f;
+  --text-secondary: #5c503c;
+  --text-muted:     #8c8066;
 
-  /* ── Tool Accent Colors ── */
-  --c-atom:     #38bdf8;   /* Atom Library             — sky blue  */
-  --c-lab:      #34d399;   /* Lab Techniques            — emerald   */
-  --c-qc:       #a78bfa;   /* QC Landscape              — violet    */
-  --c-cool:     #60a5fa;   /* Cooling Simulator         — blue      */
-  --c-rr:       #fb923c;   /* Release-Recapture         — orange    */
-  --c-calc:     #fbbf24;   /* Lab Calculators           — amber     */
-  --c-cg:       #f472b6;   /* Clebsch-Gordan            — pink      */
-  --c-lock:     #f87171;   /* Laser Locking             — rose      */
-  --c-zern:     #2dd4bf;   /* Zernike                   — teal      */
-  --c-pol:      #e879f9;   /* Polarimetry Explorer      — fuchsia   */
-  --c-ryd:      #818cf8;   /* Rydberg Calculator        — indigo    */
-  --c-img:      #34d399;   /* Imaging Calculator        — emerald   */
-  --c-tof:      #38bdf8;   /* TOF Thermometry           — sky       */
-  --c-mot:      #fb923c;   /* MOT Designer              — orange    */
-  --c-noise:    #f87171;   /* Noise & Fidelity Budget   — rose      */
+  /* ── Ink accents: three pen colors instead of a 16-hue neon rainbow ── */
+  --ink-rust:   #a13c1c;   /* red pen — the accent used most often   */
+  --ink-blue:   #2c4a63;   /* fountain-pen blue-black — secondary    */
+  --ink-green:  #3f5d3f;   /* chalkboard green — tertiary            */
+
+  /* Tool accent colors now map onto the three inks above (see main.js /
+     home.html inline styles for the actual per-tool hex, which were
+     bulk-remapped to one of the three --ink-* values). These vars remain
+     for any CSS that still references them directly. */
+  --c-atom:     var(--ink-rust);
+  --c-lab:      var(--ink-blue);
+  --c-qc:       var(--ink-blue);
+  --c-cool:     var(--ink-rust);
+  --c-rr:       var(--ink-green);
+  --c-calc:     var(--ink-blue);
+  --c-cg:       var(--ink-blue);
+  --c-lock:     var(--ink-rust);
+  --c-zern:     var(--ink-rust);
+  --c-pol:      var(--ink-green);
+  --c-ryd:      var(--ink-green);
+  --c-img:      var(--ink-blue);
+  --c-tof:      var(--ink-rust);
+  --c-mot:      var(--ink-green);
+  --c-noise:    var(--ink-rust);
 
   /* Learn-track color */
-  --c-learn:    #c084fc;   /* purple-ish, secondary */
+  --c-learn:    var(--ink-blue);
 
-  /* Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Fonts — a printed-serif system, not the default Inter/sans look */
+  --font-sans: 'Source Serif 4', 'Iowan Old Style', Palatino, 'Palatino Linotype', Georgia, serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 
   /* Spacing */
@@ -65,16 +74,16 @@ ul, ol { list-style: none; }
   --sp-20: 5rem;
   --sp-24: 6rem;
 
-  /* Radii */
-  --r-sm: 0.375rem;
-  --r:    0.75rem;
-  --r-lg: 1rem;
-  --r-xl: 1.375rem;
-  --r-2xl: 1.75rem;
+  /* Radii — index-card corners, not pill/bubble corners */
+  --r-sm: 2px;
+  --r:    3px;
+  --r-lg: 4px;
+  --r-xl: 5px;
+  --r-2xl: 6px;
 
-  /* Shadows */
-  --shadow:    0 4px 20px rgba(0,0,0,0.55);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.65);
+  /* Shadows — flat paper drop-shadow, warm-toned, not glowing black */
+  --shadow:    0 2px 8px rgba(40, 30, 15, 0.14);
+  --shadow-lg: 0 4px 16px rgba(40, 30, 15, 0.20);
 
   /* Transitions */
   --t: 0.22s ease;
@@ -168,9 +177,7 @@ code, .mono {
   z-index: 900;
   height: 64px;
   background: var(--bg-glass);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-med);
 }
 
 .nav-inner {
@@ -195,13 +202,13 @@ code, .mono {
 .nav-logo-mark {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--c-atom) 0%, var(--c-qc) 100%);
+  border-radius: var(--r-sm);
+  background: var(--ink-rust);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 17px;
-  box-shadow: 0 0 16px rgba(56,189,248,0.35);
+  box-shadow: var(--shadow);
 }
 
 .nav-logo-text {
@@ -433,20 +440,20 @@ code, .mono {
 }
 
 #hero-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.55;
+  /* The old particle/network animation read as generic "AI/tech" chrome —
+     dropped in favor of the static graph-paper texture in .hero-grad. */
+  display: none;
 }
 
 .hero-grad {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 90% 55% at 50% -5%,  rgba(56,189,248,0.11)  0%, transparent 62%),
-    radial-gradient(ellipse 55% 45% at 85% 55%,  rgba(167,139,250,0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 35% at 10% 75%,  rgba(52,211,153,0.05)  0%, transparent 55%);
+  /* Faint engineering graph-paper grid instead of a colorful glow aura */
+  background-image:
+    linear-gradient(rgba(58,42,24,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58,42,24,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, black, transparent 85%);
   pointer-events: none;
 }
 
@@ -462,11 +469,11 @@ code, .mono {
   align-items: center;
   gap: var(--sp-2);
   padding: 5px 14px;
-  background: rgba(56,189,248,0.09);
-  border: 1px solid rgba(56,189,248,0.22);
-  border-radius: 100px;
+  background: rgba(161,60,28,0.08);
+  border: 1px solid rgba(161,60,28,0.24);
+  border-radius: var(--r-sm);
   font-size: 0.8rem;
-  color: var(--c-atom);
+  color: var(--ink-rust);
   font-weight: 600;
   letter-spacing: 0.03em;
   margin-bottom: var(--sp-6);
@@ -475,7 +482,7 @@ code, .mono {
 .hero-badge-dot {
   width: 6px;
   height: 6px;
-  background: var(--c-atom);
+  background: var(--ink-rust);
   border-radius: 50%;
   animation: blink 2.2s ease-in-out infinite;
 }
@@ -488,10 +495,7 @@ code, .mono {
 .hero-title { margin-bottom: var(--sp-5); }
 .hero-title .word-amo {
   display: block;
-  background: linear-gradient(110deg, var(--c-atom) 0%, var(--c-qc) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--ink-rust);
 }
 
 .hero-subtitle {
@@ -527,15 +531,16 @@ code, .mono {
 }
 
 .btn-primary {
-  background: linear-gradient(130deg, var(--c-atom) 0%, #0ea5e9 100%);
-  color: #020c18;
-  box-shadow: 0 0 22px rgba(56,189,248,0.28);
+  background: var(--ink-rust);
+  color: var(--bg-card);
+  box-shadow: var(--shadow);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 36px rgba(56,189,248,0.42);
-  color: #020c18;
+  box-shadow: var(--shadow-lg);
+  background: #8a3216; /* slightly darker rust on hover, no glow */
+  color: var(--bg-card);
 }
 
 .btn-ghost {
@@ -935,7 +940,7 @@ code, .mono {
   align-items: center;
   gap: var(--sp-2);
   padding: 0.55rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   border: 1px solid rgba(125, 211, 252, 0.22);
   background:
     linear-gradient(135deg, rgba(125, 211, 252, 0.08), rgba(52, 211, 153, 0.035)),
@@ -997,7 +1002,7 @@ code, .mono {
   align-items: center;
   gap: var(--sp-2);
   padding: 0.62rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   border: 1px solid rgba(125, 211, 252, 0.18);
   background: rgba(255,255,255,0.025);
   font-size: 0.86rem;
@@ -1075,10 +1080,10 @@ code, .mono {
   gap: 0.45rem;
   white-space: nowrap;
   padding: 0.45rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(52,211,153,0.08);
-  border: 1px solid rgba(52,211,153,0.18);
-  color: #8cf6c9;
+  border-radius: var(--r-sm);
+  background: rgba(63,93,63,0.08);
+  border: 1px solid rgba(63,93,63,0.22);
+  color: var(--ink-green);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -1089,8 +1094,8 @@ code, .mono {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 14px rgba(74,222,128,0.8);
+  background: var(--ink-green);
+  box-shadow: none;
 }
 
 .about-stack {
@@ -1620,10 +1625,11 @@ code, .mono {
    UTILITIES
    ===================================================== */
 .text-gradient {
-  background: linear-gradient(110deg, var(--c-atom) 0%, var(--c-qc) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Solid ink color, not a gradient clip — one confident color beats a
+     rainbow blend for a printed/notebook look. */
+  color: var(--ink-rust);
+  background: none;
+  -webkit-text-fill-color: currentColor;
 }
 
 .divider { height: 1px; background: var(--border); border: none; margin: 0; }
@@ -1644,7 +1650,7 @@ code, .mono {
   gap: var(--sp-2);
   height: 38px;
   padding: 0 var(--sp-3);
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: rgba(15,23,42,.72);
   color: var(--text-secondary);
@@ -1679,8 +1685,8 @@ body.search-open { overflow: hidden; }
 .global-search-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(2,6,23,.76);
-  backdrop-filter: blur(10px);
+  background: rgba(34,25,15,.55);
+  backdrop-filter: blur(4px);
 }
 .global-search-panel {
   position: relative;
@@ -1710,7 +1716,7 @@ body.search-open { overflow: hidden; }
 .global-search-close {
   width: 36px;
   height: 36px;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: rgba(255,255,255,.04);
   color: var(--text-primary);
@@ -1727,7 +1733,7 @@ body.search-open { overflow: hidden; }
   font: 600 1rem var(--font-sans);
   outline: none;
 }
-.global-search-input:focus { box-shadow: 0 0 0 4px rgba(56,189,248,.12); }
+.global-search-input:focus { box-shadow: 0 0 0 3px rgba(161,60,28,.16); }
 .global-search-results {
   display: grid;
   gap: .65rem;
@@ -1777,14 +1783,14 @@ body.search-open { overflow: hidden; }
   align-items: center;
   gap: .55rem;
   padding: .7rem .9rem;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   border: 1px solid rgba(148,163,184,.16);
   background: rgba(15,23,42,.72);
   color: var(--text-secondary);
   text-decoration: none;
 }
 .recent-tool:hover { color: var(--text-primary); border-color: rgba(56,189,248,.35); }
-.recent-tool-dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 16px currentColor; }
+.recent-tool-dot { width: 9px; height: 9px; border-radius: 50%; }
 .intent-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -1817,7 +1823,7 @@ body.search-open { overflow: hidden; }
 .source-tag {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   border: 1px solid rgba(148,163,184,.25);
   padding: .12rem .45rem;
   font: 700 .64rem var(--mono);
@@ -1847,7 +1853,7 @@ body.search-open { overflow: hidden; }
 }
 .derivation-tabs button, .mini-action {
   border: 1px solid rgba(148,163,184,.22);
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   background: rgba(255,255,255,.04);
   color: var(--text-secondary);
   padding: .45rem .75rem;
@@ -1899,7 +1905,7 @@ body.search-open { overflow: hidden; }
   margin-top: var(--sp-4);
   padding: .65rem .8rem;
   border: 1px solid rgba(56,189,248,.22);
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   background: rgba(56,189,248,.07);
   color: var(--text-secondary);
   font-size: .82rem;
@@ -1978,7 +1984,7 @@ body.search-open { overflow: hidden; }
   display: inline-flex;
   width: fit-content;
   border: 1px solid rgba(56,189,248,.26);
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   background: rgba(56,189,248,.08);
   color: #7dd3fc;
   padding: .18rem .55rem;
@@ -1996,7 +2002,7 @@ body.search-open { overflow: hidden; }
   border: 1px solid rgba(251,191,36,.24);
   background: rgba(251,191,36,.08);
   color: #fde68a;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   padding: .45rem .7rem;
   font-size: .78rem;
   font-weight: 800;
@@ -2055,7 +2061,7 @@ body.search-open { overflow: hidden; }
   border: 1px solid rgba(129,140,248,.24);
   background: rgba(129,140,248,.08);
   color: #c4b5fd;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   padding: .45rem .75rem;
   font-size: .78rem;
   font-weight: 900;
@@ -2104,7 +2110,7 @@ body[data-depth-mode="expert"] .source-confidence-panel {
   border: 1px solid rgba(52,211,153,.22);
   background: rgba(52,211,153,.08);
   color: #86efac !important;
-  border-radius: 999px;
+  border-radius: var(--r-sm);
   padding: .2rem .55rem;
   text-decoration: none;
 }
@@ -2344,20 +2350,22 @@ a.path-step:hover {
 }
 
 .atom-box {
-  background: rgba(255,255,255,0.025);
-  border: 1px solid color-mix(in srgb, var(--ac) 22%, transparent);
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid color-mix(in srgb, var(--ac) 30%, var(--border-med));
+  border-radius: var(--r-lg);
   padding: var(--sp-4) var(--sp-5);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--sp-3);
-  transition: border-color 0.3s, background 0.3s;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .atom-box:hover {
-  background: rgba(255,255,255,0.04);
-  border-color: color-mix(in srgb, var(--ac) 50%, transparent);
+  background: var(--bg-card-hover);
+  border-color: color-mix(in srgb, var(--ac) 55%, var(--border-med));
+  box-shadow: var(--shadow-lg);
 }
 
 .atom-box-label {
