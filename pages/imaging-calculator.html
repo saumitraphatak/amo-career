@@ -296,22 +296,22 @@
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 <style>
-@keyframes ic-ph{0%{cx:50;opacity:1}100%{cx:210;opacity:0}}
-@keyframes ic-ph2{0%{cx:50;opacity:0.8}100%{cx:210;opacity:0}}
+/* transform:translateX() instead of animating cx directly — Safari does
+   not reliably animate raw SVG geometry attributes via CSS keyframes. */
+@keyframes ic-ph{0%{transform:translateX(0);opacity:1}100%{transform:translateX(160px);opacity:0}}
 @keyframes ic-glow{0%,100%{opacity:.7}50%{opacity:1}}
-@keyframes ic-px{0%{opacity:.2}50%{opacity:.9}100%{opacity:.2}}
-.ic-photon{animation:ic-ph 1.4s linear infinite}
+.ic-photon{animation:ic-ph 1.4s linear infinite;transform-box:fill-box;transform-origin:center}
 .ic-glow{animation:ic-glow 1.8s ease-in-out infinite}
 </style>
 <!-- Atom source -->
 <circle cx="50" cy="82" r="10" fill="#1c805b" class="ic-glow" filter="url(#icf)"/>
 <circle cx="50" cy="82" r="5" fill="white" opacity=".8"/>
 <!-- Photons -->
-<circle cy="82" r="3" fill="#1c805b" class="ic-photon"/>
-<circle cy="72" r="2.5" fill="#1c805b" class="ic-photon" style="animation-delay:-.47s"/>
-<circle cy="92" r="2.5" fill="#1c805b" class="ic-photon" style="animation-delay:-.94s"/>
-<circle cy="65" r="2" fill="#1c805b" class="ic-photon" style="animation-delay:-1.17s;animation-duration:1.8s"/>
-<circle cy="99" r="2" fill="#1c805b" class="ic-photon" style="animation-delay:-.3s;animation-duration:1.8s"/>
+<circle cx="50" cy="82" r="3" fill="#1c805b" class="ic-photon"/>
+<circle cx="50" cy="72" r="2.5" fill="#1c805b" class="ic-photon" style="animation-delay:-.47s"/>
+<circle cx="50" cy="92" r="2.5" fill="#1c805b" class="ic-photon" style="animation-delay:-.94s"/>
+<circle cx="50" cy="65" r="2" fill="#1c805b" class="ic-photon" style="animation-delay:-1.17s;animation-duration:1.8s"/>
+<circle cx="50" cy="99" r="2" fill="#1c805b" class="ic-photon" style="animation-delay:-.3s;animation-duration:1.8s"/>
 <!-- Lens -->
 <ellipse cx="165" cy="82" rx="5" ry="28" fill="none" stroke="#1c805b" stroke-width="2" opacity=".7"/>
 <!-- Detector grid -->

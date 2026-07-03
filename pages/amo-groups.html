@@ -283,10 +283,12 @@
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 <style>
-@keyframes ag-pulse{0%,100%{r:5;opacity:.7}50%{r:7;opacity:1}}
+/* transform:scale() instead of animating r directly — Safari does not
+   reliably animate raw SVG geometry attributes via CSS keyframes. */
+@keyframes ag-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.4);opacity:1}}
 @keyframes ag-link{0%,100%{opacity:.1}50%{opacity:.5}}
 @keyframes ag-travel{0%{offset-distance:0%;opacity:1}100%{offset-distance:100%;opacity:0}}
-.ag-node{animation:ag-pulse 2s ease-in-out infinite}
+.ag-node{animation:ag-pulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 .ag-link{animation:ag-link 2s ease-in-out infinite}
 </style>
 <!-- Network links -->

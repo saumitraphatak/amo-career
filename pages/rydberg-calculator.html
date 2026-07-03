@@ -273,11 +273,13 @@
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 <style>
-@keyframes ry-block{0%,100%{r:52;opacity:.18}50%{r:58;opacity:.32}}
-@keyframes ry-pulse{0%,100%{opacity:.8;r:7}50%{opacity:1;r:8}}
+/* transform:scale() instead of animating r directly — Safari does not
+   reliably animate raw SVG geometry attributes via CSS keyframes. */
+@keyframes ry-block{0%,100%{transform:scale(1);opacity:.18}50%{transform:scale(1.115);opacity:.32}}
+@keyframes ry-pulse{0%,100%{opacity:.8;transform:scale(.875)}50%{opacity:1;transform:scale(1)}}
 @keyframes ry-link{0%,100%{opacity:.15}50%{opacity:.5}}
-.ry-sphere{animation:ry-block 2.8s ease-in-out infinite}
-.ry-atom{animation:ry-pulse 1.4s ease-in-out infinite}
+.ry-sphere{animation:ry-block 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.ry-atom{animation:ry-pulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 .ry-link{stroke-dasharray:4 4;animation:ry-link 1.4s ease-in-out infinite}
 </style>
 <!-- Blockade sphere (left atom) -->

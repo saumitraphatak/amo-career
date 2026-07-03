@@ -234,29 +234,31 @@
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 <style>
-@keyframes cs-atom{0%{cx:260}100%{cx:140}}
-@keyframes cs-photon{0%{cx:30;opacity:1}50%{cx:140;opacity:1}55%{opacity:0}100%{cx:140;opacity:0}}
-@keyframes cs-emit{0%,50%{opacity:0}55%{cx:140;cy:82;opacity:1}100%{cx:260;cy:30;opacity:0}}
-@keyframes cs-vel{0%{width:80px}100%{width:25px}}
+/* translate()-based keyframes instead of animating cx/cy/width directly —
+   Safari does not reliably animate raw SVG geometry attributes via CSS,
+   which left these shapes stuck at their base position in Safari. */
+@keyframes cs-atom{0%{transform:translateX(0)}100%{transform:translateX(-120px)}}
+@keyframes cs-photon{0%{transform:translateX(0);opacity:1}50%{transform:translateX(110px);opacity:1}55%{opacity:0}100%{transform:translateX(110px);opacity:0}}
+@keyframes cs-emit{0%,50%{opacity:0}55%{transform:translate(0,0);opacity:1}100%{transform:translate(120px,-52px);opacity:0}}
 @keyframes cs-glow{0%,100%{opacity:.6}50%{opacity:1}}
-.cs-atom{animation:cs-atom 4s ease-out infinite}
-.cs-photon{animation:cs-photon 1.2s ease-in infinite;fill:#076ce7}
-.cs-emit{animation:cs-emit 1.2s ease-out infinite}
+.cs-atom{animation:cs-atom 4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.cs-photon{animation:cs-photon 1.2s ease-in infinite;fill:#076ce7;transform-box:fill-box;transform-origin:center}
+.cs-emit{animation:cs-emit 1.2s ease-out infinite;transform-box:fill-box;transform-origin:center}
 .cs-glow{animation:cs-glow 1.8s ease-in-out infinite}
 </style>
 <!-- Velocity arrow (shrinking) -->
 <text x="245" y="55" font-size="7" fill="#076ce7" opacity=".5" font-family="monospace" text-anchor="end">v →</text>
 <!-- Atom -->
-<circle cy="82" r="10" fill="#076ce7" class="cs-atom cs-glow" filter="url(#csf)">
+<circle cx="260" cy="82" r="10" fill="#076ce7" class="cs-atom cs-glow" filter="url(#csf)">
 </circle>
-<circle cy="82" r="5" fill="white" opacity=".8" class="cs-atom"/>
+<circle cx="260" cy="82" r="5" fill="white" opacity=".8" class="cs-atom"/>
 <!-- Incoming photon (blue-detuned laser from left) -->
-<circle cy="82" r="4" class="cs-photon"/>
-<circle cy="82" r="4" class="cs-photon" style="animation-delay:-.4s"/>
-<circle cy="82" r="4" class="cs-photon" style="animation-delay:-.8s"/>
+<circle cx="30" cy="82" r="4" class="cs-photon"/>
+<circle cx="30" cy="82" r="4" class="cs-photon" style="animation-delay:-.4s"/>
+<circle cx="30" cy="82" r="4" class="cs-photon" style="animation-delay:-.8s"/>
 <!-- Emitted photon (random direction) -->
-<circle r="3" fill="#046de2" class="cs-emit"/>
-<circle r="3" fill="#046de2" class="cs-emit" style="animation-delay:-.4s"/>
+<circle cx="140" cy="82" r="3" fill="#046de2" class="cs-emit"/>
+<circle cx="140" cy="82" r="3" fill="#046de2" class="cs-emit" style="animation-delay:-.4s"/>
 <!-- Laser arrow from left -->
 <line x1="10" y1="82" x2="45" y2="82" stroke="#076be6" stroke-width="2" opacity=".5"/>
 <polygon points="45,78 55,82 45,86" fill="#076ce7" opacity=".5"/>

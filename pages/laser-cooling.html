@@ -253,28 +253,30 @@
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 <style>
-@keyframes lc2-abs{0%{cx:30;opacity:1}40%{cx:150;opacity:1}50%{opacity:0;cx:150}100%{cx:150;opacity:0}}
-@keyframes lc2-emit{0%,40%{opacity:0;cx:150;cy:82}50%{opacity:1}100%{opacity:0;cx:230;cy:25}}
+/* translate()-based keyframes instead of animating cx/cy/x2 directly —
+   Safari does not reliably animate raw SVG geometry attributes via CSS,
+   which left these shapes stuck at their base position in Safari. */
+@keyframes lc2-abs{0%{transform:translateX(0);opacity:1}40%{transform:translateX(120px);opacity:1}50%{opacity:0;transform:translateX(120px)}100%{transform:translateX(120px);opacity:0}}
+@keyframes lc2-emit{0%,40%{opacity:0;transform:translate(0,0)}50%{opacity:1}100%{opacity:0;transform:translate(80px,-57px)}}
 @keyframes lc2-atom{0%{fill:#0b7c8d}45%{fill:var(--bg-card)}55%{fill:#0b7c8d}100%{fill:#0b7c8d}}
-@keyframes lc2-vel{0%{x2:220}100%{x2:170}}
-.lc2-abs{animation:lc2-abs 1.6s ease-in infinite}
-.lc2-emit{animation:lc2-emit 1.6s ease-out infinite}
+.lc2-abs{animation:lc2-abs 1.6s ease-in infinite;transform-box:fill-box;transform-origin:center}
+.lc2-emit{animation:lc2-emit 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
 .lc2-atom{animation:lc2-atom 1.6s ease-in-out infinite}
 </style>
 <!-- Atom -->
 <circle cx="150" cy="82" r="14" fill="#0b7c8d" class="lc2-atom" filter="url(#lc2f)"/>
 <circle cx="150" cy="82" r="6" fill="white" opacity=".7"/>
 <!-- Incoming photons (from left, red-detuned laser) -->
-<circle cy="82" r="4" class="lc2-abs" fill="#0b7c8d"/>
-<circle cy="82" r="4" class="lc2-abs" fill="#0b7c8d" style="animation-delay:-.53s"/>
-<circle cy="82" r="4" class="lc2-abs" fill="#0b7c8d" style="animation-delay:-1.06s"/>
+<circle cx="30" cy="82" r="4" class="lc2-abs" fill="#0b7c8d"/>
+<circle cx="30" cy="82" r="4" class="lc2-abs" fill="#0b7c8d" style="animation-delay:-.53s"/>
+<circle cx="30" cy="82" r="4" class="lc2-abs" fill="#0b7c8d" style="animation-delay:-1.06s"/>
 <!-- Laser arrows -->
 <line x1="10" y1="82" x2="35" y2="82" stroke="#0b7c8d" stroke-width="2" opacity=".6"/>
 <polygon points="35,78 45,82 35,86" fill="#0b7c8d" opacity=".6"/>
 <text x="8" y="70" font-size="7" fill="#0b7c8d" opacity=".7" font-family="monospace">σ⁺ laser</text>
 <!-- Emitted photons (random directions) -->
-<circle r="3" fill="#067c8c" class="lc2-emit"/>
-<circle r="3" fill="#067c8c" class="lc2-emit" style="animation-delay:-.53s"/>
+<circle cx="150" cy="82" r="3" fill="#067c8c" class="lc2-emit"/>
+<circle cx="150" cy="82" r="3" fill="#067c8c" class="lc2-emit" style="animation-delay:-.53s"/>
 <!-- Momentum kick arrow -->
 <line x1="175" y1="100" x2="145" y2="100" stroke="#0b7c8d" stroke-width="1.5" opacity=".5"/>
 <polygon points="145,97 135,100 145,103" fill="#0b7c8d" opacity=".5"/>
@@ -1785,7 +1787,7 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.fillStyle=col; ctx.fill();
     ctx.shadowBlur=0;
     ctx.beginPath(); ctx.arc(x,y,r,0,2*Math.PI);
-    ctx.strokeStyle='rgba(34,25,15,0.35)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.strokeStyle=amoInk(0.35); ctx.lineWidth=1.5; ctx.stroke();
   }
 
   function drawFrame(ts) {
@@ -2027,7 +2029,7 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.fillStyle=atomColor; ctx.fill();
     ctx.shadowBlur=0;
     ctx.beginPath(); ctx.arc(atomX,atomY,8,0,2*Math.PI);
-    ctx.strokeStyle='rgba(34,25,15,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.strokeStyle=amoInk(0.4); ctx.lineWidth=1.5; ctx.stroke();
     // spin label on atom
     ctx.font='bold 10px Inter,sans-serif'; ctx.textAlign='center';
     ctx.fillStyle='#fff'; ctx.fillText(onCurve==='up'?'↑':'↓', atomX, atomY+3.5);
@@ -2215,7 +2217,7 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.fillStyle = aColor; ctx.fill();
     ctx.shadowBlur = 0;
     ctx.beginPath(); ctx.arc(atomX, drawY, 9, 0, 2*Math.PI);
-    ctx.strokeStyle='rgba(34,25,15,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.strokeStyle=amoInk(0.4); ctx.lineWidth=1.5; ctx.stroke();
 
     // ── ⟨n⟩ readout ───────────────────────────────────────────
     ctx.font='bold 13px JetBrains Mono,monospace'; ctx.textAlign='right';

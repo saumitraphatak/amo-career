@@ -160,6 +160,7 @@
     .pol-table td .m { font-family: var(--font-mono); font-size: 12px; color: var(--pol-cyan2); }
     .pol-table tr:last-child td { border-bottom: none; }
     .pol-table tr:hover td { background: rgba(34,25,15,0.03); }
+    [data-theme="dark"] .pol-table tr:hover td { background: rgba(226,232,240,0.05); }
     .tc { text-align: center; }
     .ck { color: var(--pol-green); font-size: 15px; }
     .cr { color: var(--pol-red); font-size: 15px; }
@@ -227,6 +228,7 @@
     .pol-ex-row:last-child { border-bottom: none; }
     .pol-ex-lbl { font-family: var(--font-mono); font-weight: 700; }
     .pol-ex-bw { background: rgba(34,25,15,0.08); border-radius: 3px; height: 5px; overflow: hidden; }
+    [data-theme="dark"] .pol-ex-bw { background: rgba(226,232,240,0.12); }
     .pol-ex-b { height: 5px; border-radius: 3px; transition: width 0.3s; }
     .pol-ex-v { font-family: var(--font-mono); font-size: 11.5px; text-align: right; }
     .pol-ex-d { font-family: var(--font-mono); font-size: 10.5px; text-align: right; opacity: 0.75; }
@@ -888,14 +890,14 @@
     const cx=W/2, cy=H/2, sc=Math.min(W,H)/2*0.78; let t=0;
     function frame() {
       ctx.clearRect(0,0,W,H);
-      ctx.strokeStyle='rgba(34,25,15,0.06)';ctx.lineWidth=1;
+      ctx.strokeStyle=amoInk(0.06);ctx.lineWidth=1;
       for(let g=-sc;g<=sc;g+=sc/2){ctx.beginPath();ctx.moveTo(cx+g,10);ctx.lineTo(cx+g,H-10);ctx.stroke();ctx.beginPath();ctx.moveTo(10,cy+g);ctx.lineTo(W-10,cy+g);ctx.stroke();}
-      ctx.strokeStyle='rgba(34,25,15,0.18)';ctx.lineWidth=1.5;
+      ctx.strokeStyle=amoInk(0.18);ctx.lineWidth=1.5;
       ctx.beginPath();ctx.moveTo(12,cy);ctx.lineTo(W-12,cy);ctx.stroke();
       ctx.beginPath();ctx.moveTo(cx,12);ctx.lineTo(cx,H-12);ctx.stroke();
-      ctx.fillStyle='rgba(34,25,15,0.25)';ctx.font='11px Inter';ctx.fillText('x',W-20,cy-5);ctx.fillText('y',cx+5,20);
+      ctx.fillStyle=amoInk(0.25);ctx.font='11px Inter';ctx.fillText('x',W-20,cy-5);ctx.fillText('y',cx+5,20);
       // Ellipse trace
-      ctx.strokeStyle='rgba(34,25,15,0.1)';ctx.lineWidth=1;ctx.beginPath();
+      ctx.strokeStyle=amoInk(0.1);ctx.lineWidth=1;ctx.beginPath();
       for(let i=0;i<=100;i++){const a=i/100*2*Math.PI;const x=cx+sc*Ex*Math.cos(a);const y=cy-sc*Ey*Math.cos(a+delta);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
       ctx.closePath();ctx.stroke();
       // E-field vector
@@ -903,7 +905,7 @@
       const grad=ctx.createLinearGradient(cx,cy,ex,ey);grad.addColorStop(0,'rgba(6,182,212,0)');grad.addColorStop(1,clr||'#06b6d4');
       ctx.strokeStyle=grad;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
       ctx.shadowBlur=10;ctx.shadowColor=clr||'#06b6d4';ctx.fillStyle=clr||'#06b6d4';ctx.beginPath();ctx.arc(ex,ey,5,0,2*Math.PI);ctx.fill();ctx.shadowBlur=0;
-      ctx.fillStyle='rgba(34,25,15,0.25)';ctx.beginPath();ctx.arc(cx,cy,3,0,2*Math.PI);ctx.fill();
+      ctx.fillStyle=amoInk(0.25);ctx.beginPath();ctx.arc(cx,cy,3,0,2*Math.PI);ctx.fill();
       t+=0.04;polAnimEfield=requestAnimationFrame(frame);
     }
     frame();
@@ -1020,8 +1022,8 @@
     const tracs=[{x:thetas,y:noisyI,mode:'lines',name:'Measured I(θ)',line:{color:'#e879f9',width:useNoise?1.5:2},hovertemplate:'θ=%{x}°<br>I=%{y:.4f}<extra></extra>'}];
     if(fitI) tracs.push({x:thetas,y:fitI,mode:'lines',name:'Fourier fit',line:{color:'#f59e0b',width:2,dash:'dot'},hovertemplate:'θ=%{x}°<br>fit=%{y:.4f}<extra></extra>'});
     const iLay={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:'Source Serif 4',color:'#5c503c',size:10},
-      xaxis:{title:'QWP Angle θ (°)',gridcolor:'rgba(34,25,15,0.08)',tickvals:[0,90,180,270,360],range:[0,360]},
-      yaxis:{title:'I(θ)',gridcolor:'rgba(34,25,15,0.08)',rangemode:'tozero'},
+      xaxis:{title:'QWP Angle θ (°)',gridcolor:amoInk(0.08),tickvals:[0,90,180,270,360],range:[0,360]},
+      yaxis:{title:'I(θ)',gridcolor:amoInk(0.08),rangemode:'tozero'},
       margin:{l:45,r:12,t:12,b:40},legend:{orientation:'h',y:1.08,x:0,font:{size:10}}};
     if(!polSimInited.intensity){Plotly.newPlot('pol-plot-intensity',tracs,iLay,{responsive:true,displaylogo:false,toImageButtonOptions:{filename:'intensity_curve',scale:2,format:'png'}});polSimInited.intensity=true;}
     else Plotly.react('pol-plot-intensity',tracs,iLay);
@@ -1090,8 +1092,8 @@
 
   function polUpdateFourierPlot(thetas, Is) {
     const layo={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{family:'Source Serif 4',color:'#5c503c',size:10},
-      xaxis:{title:'θ (°)',gridcolor:'rgba(34,25,15,0.08)',tickvals:[0,90,180,270,360],range:[0,360]},
-      yaxis:{title:'Component value',gridcolor:'rgba(34,25,15,0.08)'},
+      xaxis:{title:'θ (°)',gridcolor:amoInk(0.08),tickvals:[0,90,180,270,360],range:[0,360]},
+      yaxis:{title:'Component value',gridcolor:amoInk(0.08)},
       margin:{l:45,r:12,t:12,b:40},legend:{orientation:'h',y:-0.3,x:0,font:{size:9}}};
 
     if(polMethod!=='qwp'){
@@ -1122,10 +1124,10 @@
     const cx=W/2,cy=H/2,sc=Math.min(W,H)/2*0.76; let t=0;
     function frame() {
       ctx.clearRect(0,0,W,H);
-      ctx.strokeStyle='rgba(34,25,15,0.05)';ctx.lineWidth=1;
+      ctx.strokeStyle=amoInk(0.05);ctx.lineWidth=1;
       ctx.beginPath();ctx.moveTo(12,cy);ctx.lineTo(W-12,cy);ctx.stroke();
       ctx.beginPath();ctx.moveTo(cx,8);ctx.lineTo(cx,H-8);ctx.stroke();
-      ctx.fillStyle='rgba(34,25,15,0.2)';ctx.font='10px Inter';ctx.fillText('x',W-18,cy-4);ctx.fillText('y',cx+4,15);
+      ctx.fillStyle=amoInk(0.2);ctx.font='10px Inter';ctx.fillText('x',W-18,cy-4);ctx.fillText('y',cx+4,15);
       // Ellipse
       ctx.strokeStyle='rgba(232,121,249,0.15)';ctx.lineWidth=1;ctx.beginPath();
       for(let i=0;i<=100;i++){const a=i/100*2*Math.PI;const x=cx+sc*Ex*Math.cos(a);const y=cy-sc*Ey*Math.cos(a+delta);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}

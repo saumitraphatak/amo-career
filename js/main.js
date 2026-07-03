@@ -35,6 +35,16 @@ function applyTheme(theme) {
   window.dispatchEvent(new Event('resize'));
 }
 
+// Theme-aware "ink" colour for canvas/Plotly drawing code that can't use
+// CSS variables directly. Mirrors --text-primary in both themes so grid
+// lines, axes, and labels stay visible whichever theme is active.
+function amoInk(alpha) {
+  return document.documentElement.getAttribute('data-theme') === 'dark'
+    ? `rgba(226,232,240,${alpha})`
+    : `rgba(34,25,15,${alpha})`;
+}
+window.amoInk = amoInk;
+
 // Applied immediately on script load (before renderNav) to minimize flash.
 applyTheme(getStoredTheme());
 

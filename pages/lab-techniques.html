@@ -302,13 +302,15 @@
     @keyframes lt-s3{0%,62%{opacity:0}67%,95%{opacity:1}100%{opacity:0}}
     @keyframes lt-beam{0%{stroke-dashoffset:54}100%{stroke-dashoffset:0}}
     @keyframes lt-ph{0%{opacity:1;stroke-dashoffset:0}100%{opacity:0;stroke-dashoffset:-28}}
-    @keyframes lt-pulse{0%,100%{r:8;opacity:.7}50%{r:11;opacity:1}}
+    /* transform:scale() instead of animating r directly — Safari does not
+       reliably animate raw SVG geometry attributes via CSS keyframes. */
+    @keyframes lt-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.375);opacity:1}}
     .lt-s1{animation:lt-s1 7s ease-in-out infinite}
     .lt-s2{animation:lt-s2 7s ease-in-out infinite}
     .lt-s3{animation:lt-s3 7s ease-in-out infinite}
     .lt-beam{stroke-dasharray:6,48;animation:lt-beam 1s linear infinite}
     .lt-ph{stroke-dasharray:28;animation:lt-ph 1.1s linear infinite}
-    .lt-pulse{animation:lt-pulse 2s ease-in-out infinite}
+    .lt-pulse{animation:lt-pulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
   </style>
 </defs>
 <rect width="300" height="165" rx="14" fill="color-mix(in srgb, var(--bg-surface) 65%, transparent)"/>
@@ -335,7 +337,7 @@
   <path d="M130,8 L144,72 M170,8 L156,72" fill="none" stroke="#1c805b" stroke-width="2" opacity=".55"><animate attributeName="opacity" values=".55;.8;.55" dur="1.8s" repeatCount="indefinite"/></path>
   <path d="M100,132 Q150,50 200,132" fill="none" stroke="#1c805b" stroke-width="1.8" opacity=".55"/>
   <path d="M100,132 Q150,50 200,132 Z" fill="#1c805b" opacity=".05"/>
-  <circle cx="150" cy="72" class="lt-pulse" fill="#1c805b" filter="url(#ltf)"/>
+  <circle cx="150" cy="72" r="8" class="lt-pulse" fill="#1c805b" filter="url(#ltf)"/>
   <circle cx="150" cy="72" r="5" fill="white" opacity=".75"/>
   <ellipse cx="150" cy="14" rx="20" ry="5" fill="none" stroke="#1c805b" stroke-width="1" opacity=".3" stroke-dasharray="3,2"/>
   <text x="150" y="156" text-anchor="middle" font-size="8" fill="#1c805b" opacity=".65" font-family="JetBrains Mono,monospace">② optical tweezer</text>
@@ -2084,7 +2086,7 @@ SteadyStateTweezer(
         // ── Lens ──
         ctx.beginPath();
         ctx.ellipse(lensX, CY, 5, lensH/2, 0, 0, 2*Math.PI);
-        ctx.strokeStyle='rgba(34,25,15,0.5)'; ctx.lineWidth=1.5;
+        ctx.strokeStyle=amoInk(0.5); ctx.lineWidth=1.5;
         ctx.fillStyle='rgba(100,200,255,0.07)'; ctx.fill(); ctx.stroke();
 
         // ── Focused beam (converging to fiber) ──
@@ -2102,7 +2104,7 @@ SteadyStateTweezer(
 
         // ── Fiber cladding + core ──
         // Cladding (dark)
-        ctx.fillStyle='#faf5e9'; ctx.strokeStyle='rgba(34,25,15,0.2)'; ctx.lineWidth=1;
+        ctx.fillStyle='#faf5e9'; ctx.strokeStyle=amoInk(0.2); ctx.lineWidth=1;
         ctx.beginPath(); ctx.roundRect(fiberX-3,CY-fiberR,W-fiberX+3,fiberR*2,2); ctx.fill(); ctx.stroke();
         // Core (lit up, pulsing)
         const corePulse = 0.7 + 0.3*Math.sin(phase*3);
