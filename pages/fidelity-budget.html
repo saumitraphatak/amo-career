@@ -42,7 +42,7 @@
       line-height: 1; transition: color .3s;
     }
     .fid-bar-track {
-      height: 14px; background: #1e293b; border-radius: 7px; overflow: hidden; margin-bottom: .35rem;
+      height: 14px; background: var(--bg-card); border-radius: 7px; overflow: hidden; margin-bottom: .35rem;
     }
     .fid-bar-fill {
       height: 100%; border-radius: 7px; transition: width .5s ease, background .3s;
@@ -64,7 +64,7 @@
     .budget-table td:nth-child(3) { font-family: var(--mono); color: var(--text-secondary); }
     .budget-table tr.dominant td { background: rgba(248,113,113,.05); }
     .budget-table tr.dominant td:first-child { font-weight: 600; color: var(--text-primary); }
-    .bbar { height: 6px; background: #1e293b; border-radius:3px; overflow:hidden; min-width:80px; }
+    .bbar { height: 6px; background: var(--bg-card); border-radius:3px; overflow:hidden; min-width:80px; }
     .bbar-fill { height:100%; border-radius:3px; }
 
     /* ─── SOTA comparison ────────────────────────── */
@@ -95,8 +95,8 @@
       border-radius: 6px; padding: .38rem .7rem;
       color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
     }
-    .field-row select:focus, .field-row input:focus { outline:none; border-color:#f87171; }
-    .field-row input[type=range] { width:100%; accent-color:#f87171; margin-top:.2rem; }
+    .field-row select:focus, .field-row input:focus { outline:none; border-color:#e20b0b; }
+    .field-row input[type=range] { width:100%; accent-color:#e20b0b; margin-top:.2rem; }
     .lbl-val { color: #e20b0b; font-family: var(--mono); }
 
     .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
@@ -106,7 +106,7 @@
 
     .theory-box {
       background: var(--bg-card); border:1px solid #1e293b;
-      border-left:4px solid #f87171; border-radius:10px;
+      border-left:4px solid #e20b0b; border-radius:10px;
       padding:1rem 1.3rem; margin-bottom:1rem;
     }
     .theory-box h4 { font-size:.93rem; font-weight:700; color:#e20b0b; margin:0 0 .5rem 0; }
@@ -127,12 +127,12 @@
     }
 
     .info-banner {
-      background:#100007; border:1px solid #7f1d1d; border-radius:8px;
-      padding:.65rem 1rem; font-size:.8rem; color:#fca5a5; margin-top:.75rem; line-height:1.6;
+      background:var(--bg-card); border:1px solid #7f1d1d; border-radius:8px;
+      padding:.65rem 1rem; font-size:.8rem; color:#e20808; margin-top:.75rem; line-height:1.6;
     }
     .good-banner {
-      background:#052e16; border:1px solid #15803d; border-radius:8px;
-      padding:.65rem 1rem; font-size:.8rem; color:#86efac; margin-top:.75rem; line-height:1.6;
+      background:var(--bg-card); border:1px solid #15803d; border-radius:8px;
+      padding:.65rem 1rem; font-size:.8rem; color:#11823a; margin-top:.75rem; line-height:1.6;
     }
 
     .section-divider { border:none; border-top:1px solid #1e293b; margin:2rem 0; }
@@ -144,7 +144,7 @@
       padding:.55rem .85rem; font-size:.82rem; color:var(--text-secondary);
       text-decoration:none; transition:border-color .15s,color .15s;
     }
-    .read-link:hover { border-color:#f87171; color:var(--text-primary); }
+    .read-link:hover { border-color:#e20b0b; color:var(--text-primary); }
     .rl-icon { font-size:1rem; flex-shrink:0; }
   </style>
 
@@ -220,7 +220,7 @@
   <div class="page-content">
     <div class="container">
 
-  <div class="concept-box anim-in" style="border-left-color:var(--page-color,#38bdf8);">
+  <div class="concept-box anim-in" style="border-left-color:var(--page-color,#0678ab);">
     A two-qubit Rydberg CZ gate must achieve raw fidelity F > 99% to meet common fault-tolerance thresholds for practical quantum error correction (surface-code thresholds are order 1%, depending on noise model and decoder). But which error source dominates? This tool builds a complete error budget across 8 contributions, spontaneous emission from the Rydberg state, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, B-field dephasing, and Rabi inhomogeneity, so you can immediately see which term to attack first. Compare against published Rydberg-gate benchmarks from Rb and Yb platforms.
   </div>
 
@@ -432,12 +432,12 @@
     <div class="three-col" style="margin-bottom:1rem;">
       <div class="sota-card">
         <div class="sota-label">Evered et al. 2023 (Harvard)</div>
-        <div class="sota-val" style="color:#18823e">99.5%</div>
+        <div class="sota-val" style="color:#18813e">99.5%</div>
         <div class="sota-desc">Rb-87, n=70 CZ gate with 60 pairs in parallel. Nature 622, 2023.</div>
       </div>
       <div class="sota-card">
         <div class="sota-label">Muniz et al. 2025 (Atom/JILA)</div>
-        <div class="sota-val" style="color:#18823e">99.72%</div>
+        <div class="sota-val" style="color:#18813e">99.72%</div>
         <div class="sota-desc">¹⁷¹Yb nuclear-spin CZ gate with post-selection; 99.40% without post-selection. PRX Quantum 2025.</div>
       </div>
       <div class="sota-card">
@@ -805,7 +805,7 @@ function compute() {
 
   const fidNote   = document.getElementById('fidNote');
   if (fidelity >= 0.999) {
-    fidNote.innerHTML = '<span style="color:#18823e">Excellent: at or above the 99.9% practical target. Still compare against the exact error-correction architecture and noise bias.</span>';
+    fidNote.innerHTML = '<span style="color:#18813e">Excellent: at or above the 99.9% practical target. Still compare against the exact error-correction architecture and noise bias.</span>';
   } else if (fidelity >= 0.99) {
     fidNote.innerHTML = '<span style="color:#926a03">Good: near the rough surface-code threshold scale, but below the 99.9% practical target for scalable FTQC. Check the dominant error source.</span>';
   } else {

@@ -63,7 +63,7 @@
     /* Mode chips */
     .mode-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .75rem 0 1rem 0; }
     .mode-chip {
-      background: #0c1e3a; border: 1px solid var(--border-med);
+      background: var(--bg-card); border: 1px solid var(--border-med);
       border-radius: 20px; padding: .2rem .65rem;
       color: var(--c-zern); font-size: .78rem; font-family: var(--mono);
     }
@@ -109,14 +109,14 @@
 
     /* Results strip */
     .result-strip {
-      background: #020b04; border: 1px solid #15803d;
+      background: var(--bg-card); border: 1px solid #15803d;
       border-radius: 8px; padding: .6rem 1rem;
       display: flex; gap: 1.5rem; flex-wrap: wrap;
       font-family: var(--mono); font-size: .82rem; margin-top: .75rem;
     }
     .r-pair { display: flex; flex-direction: column; }
-    .r-lbl { color: #86efac; font-size: .75rem; }
-    .r-val { color: #18823e; font-size: 1rem; font-weight: 700; }
+    .r-lbl { color: #11823a; font-size: .75rem; }
+    .r-val { color: #18813e; font-size: 1rem; font-weight: 700; }
 
     /* Wavefront builder mode rows */
     .wf-modes { margin-bottom: 1rem; }
@@ -131,17 +131,17 @@
       color: var(--text-primary); font-size: .82rem; font-family: var(--mono); width: 100%;
     }
     .wf-row button {
-      background: #1e293b; border: none; border-radius: 5px;
+      background: var(--bg-card); border: none; border-radius: 5px;
       color: #64748b; cursor: pointer; font-size: .9rem; padding: .3rem;
     }
-    .wf-row button:hover { color: #ef4444; }
+    .wf-row button:hover { color: #e01313; }
 
     .add-mode-btn, .compute-btn {
       border: none; border-radius: 7px; padding: .5rem 1rem;
       font-size: .85rem; font-weight: 600; cursor: pointer; margin-right: .5rem;
     }
     .add-mode-btn { background: var(--border-med); color: var(--c-zern); }
-    .add-mode-btn:hover { background: #1e4a6f; }
+    .add-mode-btn:hover { background: var(--bg-card); }
     .compute-btn { background: var(--c-zern); color: #000; }
     .compute-btn:hover { opacity: .9; }
 
@@ -150,12 +150,12 @@
     .compute-status.ok { color: #1c805b; }
 
     /* Strehl indicator */
-    .strehl-bar-wrap { height: 6px; background: #1e293b; border-radius: 3px; margin-top: .4rem; }
+    .strehl-bar-wrap { height: 6px; background: var(--bg-card); border-radius: 3px; margin-top: .4rem; }
     .strehl-bar { height: 100%; border-radius: 3px; transition: width .3s; }
 
     /* SLM info banner */
-    .info-banner { background: #0a1020; border: 1px solid #1e3a6e; border-radius: 8px;
-      padding: .65rem 1rem; margin: .6rem 0; color: #93c5fd; font-size: .85rem; }
+    .info-banner { background: var(--bg-card); border: 1px solid #1e3a6e; border-radius: 8px;
+      padding: .65rem 1rem; margin: .6rem 0; color: #046de1; font-size: .85rem; }
 
     /* LG table */
     .lg-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .5rem; }
@@ -212,7 +212,7 @@
     .zern-flow-card {
       position:relative;
       overflow:hidden;
-      background:linear-gradient(145deg,rgba(8,22,31,.96),rgba(8,14,28,.96));
+      background:linear-gradient(145deg,color-mix(in srgb, var(--bg-card) 96%, transparent),color-mix(in srgb, var(--bg-card) 96%, transparent));
       border:1px solid rgba(45,212,191,.18);
       border-radius:var(--r-xl);
       padding:var(--sp-6);
@@ -237,7 +237,7 @@
       gap:var(--sp-2);
       align-items:center;
       font-family:var(--font-mono);
-      color:#99f6e4;
+      color:#0b7f69;
       font-size:.88rem;
     }
     .zern-flow-equation span {
@@ -255,7 +255,7 @@
       grid-template-columns:44px 1fr;
       gap:var(--sp-3);
       align-items:start;
-      background:rgba(8,14,28,.72);
+      background:color-mix(in srgb, var(--bg-card) 72%, transparent);
       border:1px solid rgba(96,165,250,.14);
       border-radius:var(--r-lg);
       padding:var(--sp-4);
@@ -357,7 +357,7 @@
 <circle cx="150" cy="82" r="62" fill="none" stroke="#1a7e72" stroke-width="1.5" opacity=".5"/>
 <!-- Wavefront rings (inside pupil) -->
 <ellipse cx="150" cy="82" rx="48" ry="38" fill="none" stroke="#1a7e72" stroke-width="1" class="zk-ring" opacity=".6"/>
-<ellipse cx="150" cy="82" rx="32" ry="50" fill="none" stroke="#505ff5" stroke-width="1" class="zk-ring" style="animation-delay:-.5s" opacity=".6"/>
+<ellipse cx="150" cy="82" rx="32" ry="50" fill="none" stroke="#4f5ff5" stroke-width="1" class="zk-ring" style="animation-delay:-.5s" opacity=".6"/>
 <ellipse cx="150" cy="82" rx="55" ry="22" fill="none" stroke="#e20b0b" stroke-width="1" class="zk-ring" style="animation-delay:-1s" opacity=".5"/>
 <!-- Wavefront phase blobs -->
 <ellipse cx="120" cy="65" rx="25" ry="18" fill="#1a7e72" opacity=".12" class="zk-hue"/>
@@ -1730,7 +1730,7 @@ async function runGS() {
       const x1=boxes[i].x+BW+2, x2=boxes[i+1].x-2, y=BY+BH/2;
       cx.strokeStyle='#334155'; cx.lineWidth=1.5;
       cx.beginPath(); cx.moveTo(x1,y); cx.lineTo(x2-8,y); cx.stroke();
-      cx.fillStyle='#334155';
+      cx.fillStyle='#faf5e9';
       cx.beginPath(); cx.moveTo(x2,y); cx.lineTo(x2-8,y-4); cx.lineTo(x2-8,y+4); cx.closePath(); cx.fill();
     }
 
@@ -1744,7 +1744,7 @@ async function runGS() {
     cx.lineTo(boxes[0].x+BW/2, BY+BH);
     cx.stroke();
     cx.setLineDash([]);
-    cx.fillStyle='#334155';
+    cx.fillStyle='#faf5e9';
     cx.beginPath(); cx.moveTo(boxes[0].x+BW/2,BY+BH); cx.lineTo(boxes[0].x+BW/2-4,BY+BH+8); cx.lineTo(boxes[0].x+BW/2+4,BY+BH+8); cx.closePath(); cx.fill();
 
     // Animated photon dot traversing the cycle

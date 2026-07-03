@@ -90,7 +90,7 @@
       color: var(--text-secondary); display: flex; align-items: center; gap: .4rem;
     }
     .temp-chip button { background: none; border: none; color: #64748b; cursor: pointer; font-size: .9rem; padding: 0; }
-    .temp-chip button:hover { color: #ef4444; }
+    .temp-chip button:hover { color: #e01313; }
 
     .run-btn {
       background: var(--c-rr); color: #000; border: none;
@@ -127,7 +127,7 @@
       padding: .5rem .9rem; border-bottom: 1px solid #0f1e35;
       color: var(--text-secondary); font-family: var(--mono); font-size: .82rem;
     }
-    .sum-table tr:hover td { background: #0c1a2e; }
+    .sum-table tr:hover td { background: var(--bg-card); }
 
     /* Status */
     .sim-status {
@@ -157,12 +157,12 @@
       padding: var(--sp-5);
       border: 1px solid var(--route-border, rgba(56,189,248,.2));
       border-radius: var(--r-lg);
-      background: linear-gradient(145deg, rgba(15,23,42,.86), rgba(2,8,23,.94));
+      background: linear-gradient(145deg, color-mix(in srgb, var(--bg-card) 86%, transparent), color-mix(in srgb, var(--bg-card) 94%, transparent));
       box-shadow: 0 18px 60px rgba(0,0,0,.18);
     }
     .route-panel .route-kicker {
       font-family: var(--font-mono);
-      color: var(--route-color, var(--page-color, #38bdf8));
+      color: var(--route-color, var(--page-color, #0678ab));
       text-transform: uppercase;
       letter-spacing: .12em;
       font-size: .75rem;
@@ -190,7 +190,7 @@
       padding: var(--sp-4);
       border-radius: var(--r-md);
       border: 1px solid rgba(148,163,184,.16);
-      background: rgba(2,8,23,.45);
+      background: color-mix(in srgb, var(--bg-card) 45%, transparent);
     }
     .route-card .step {
       display: inline-flex;
@@ -200,7 +200,7 @@
       padding: .15rem .45rem;
       border-radius: 999px;
       background: color-mix(in srgb, var(--route-color, #38bdf8) 14%, transparent);
-      color: var(--route-color, #38bdf8);
+      color: var(--route-color, #0678ab);
       font-family: var(--font-mono);
       font-weight: 800;
       font-size: .72rem;
@@ -471,9 +471,9 @@
         </div>
         <div style="display:flex; gap:.5rem; align-items:center; margin-top:.5rem;">
           <input type="number" id="tempAddIn" placeholder="e.g. 15" min="0.1" max="1000" step="0.5"
-            style="width:110px; background:#0a1628; border:1px solid #1e3a5f; border-radius:6px;
+            style="width:110px; background:var(--bg-card); border:1px solid #1e3a5f; border-radius:6px;
                    padding:.35rem .6rem; color:var(--text-primary); font-family:var(--mono); font-size:.83rem;">
-          <button onclick="addTemp()" style="background:#1e3a5f; border:none; border-radius:6px;
+          <button onclick="addTemp()" style="background:var(--bg-card); border:none; border-radius:6px;
             padding:.38rem .8rem; color:var(--c-rr); cursor:pointer; font-size:.83rem;">+ Add T</button>
         </div>
       </div>
@@ -490,7 +490,7 @@
           <p style="font-size:.8rem;color:var(--text-muted);margin:.2rem 0 .6rem 0;">Drag the slider to change release time τ. Green = recaptured, red = escaped.</p>
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap;">
             <label style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#b75404;">0.00 ms</strong></label>
-            <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#fb923c;">
+            <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#b75404;">
             <button class="run-btn" id="playTrajBtn" type="button" onclick="toggleTrajPlay()" style="padding:.45rem .75rem;font-size:.78rem;">▶ Play</button>
           </div>
           <canvas id="trajCanvas" width="560" height="220" style="width:100%;border-radius:6px;background:#faf5e9;"></canvas>
@@ -599,6 +599,42 @@
 
 </div><!-- /page-wrap -->
 
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="tof-calculator.html">
+        <span class="see-also-icon">🌡️</span>
+        <div>
+          <div class="see-also-name">TOF Thermometry</div>
+          <div class="see-also-desc">Temperature from time-of-flight expansion</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="imaging-calculator.html">
+        <span class="see-also-icon">📷</span>
+        <div>
+          <div class="see-also-name">Imaging SNR Calculator</div>
+          <div class="see-also-desc">SNR, photon counts, and detection fidelity</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="absorption-imaging.html">
+        <span class="see-also-icon">📸</span>
+        <div>
+          <div class="see-also-name">Absorption Imaging</div>
+          <div class="see-also-desc">Beer-Lambert OD and atom number from images</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Release-Recapture Simulator &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer></script>
 <script src="../js/main.js?v=14"></script>
@@ -644,44 +680,7 @@ function renderChips() {
   row.innerHTML = temps_uK.map((T, i) =>
     `<div class="temp-chip">${T} μK
        <button title="remove" onclick="removeTemp(${i})">×</button>
-     </div>
-
-<section class="see-also">
-  <div class="container">
-    <p class="see-also-title">See Also</p>
-    <div class="see-also-grid">
-      <a class="see-also-card" href="tof-calculator.html">
-        <span class="see-also-icon">🌡️</span>
-        <div>
-          <div class="see-also-name">TOF Thermometry</div>
-          <div class="see-also-desc">Temperature from time-of-flight expansion</div>
-        </div>
-      </a>
-      <a class="see-also-card" href="imaging-calculator.html">
-        <span class="see-also-icon">📷</span>
-        <div>
-          <div class="see-also-name">Imaging SNR Calculator</div>
-          <div class="see-also-desc">SNR, photon counts, and detection fidelity</div>
-        </div>
-      </a>
-      <a class="see-also-card" href="absorption-imaging.html">
-        <span class="see-also-icon">📸</span>
-        <div>
-          <div class="see-also-name">Absorption Imaging</div>
-          <div class="see-also-desc">Beer-Lambert OD and atom number from images</div>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-<footer class="footer">
-  <div class="container">
-    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
-      Release-Recapture Simulator &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
-    </p>
-  </div>
-</footer>
-`
+     </div>`
   ).join('');
 }
 function addTemp() {
@@ -969,7 +968,7 @@ function drawTrajCanvas() {
   ctx.fillStyle=g; ctx.fillRect(cx-bw*3,0,bw*6,H);
   ctx.beginPath(); ctx.arc(cx,cy,bw*0.9,0,2*Math.PI);
   ctx.fillStyle='rgba(34,211,238,0.12)'; ctx.fill();
-  ctx.strokeStyle='rgba(34,211,238,0.35)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.strokeStyle='rgba(11,124,142,0.35)'; ctx.lineWidth=1; ctx.stroke();
   ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
   ctx.fillStyle='rgba(11,124,141,0.5)'; ctx.fillText('tweezer',cx,cy-bw-5);
   // Atoms

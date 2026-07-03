@@ -981,13 +981,13 @@ function initExportButtons() {
     btn.className = 'mini-action export-float';
     btn.textContent = 'Export PNG';
     btn.addEventListener('click', () => exportCanvasPNG(canvas, `${canvas.id || 'amo-career-plot-' + (i + 1)}.png`));
-    parent.insertBefore(btn, canvas);
+    canvas.before(btn);
     const svgBtn = document.createElement('button');
     svgBtn.type = 'button';
     svgBtn.className = 'mini-action export-float';
     svgBtn.textContent = 'Export SVG';
     svgBtn.addEventListener('click', () => exportCanvasSVG(canvas, `${canvas.id || 'amo-career-plot-' + (i + 1)}.svg`));
-    parent.insertBefore(svgBtn, canvas);
+    canvas.before(svgBtn);
   });
 }
 
