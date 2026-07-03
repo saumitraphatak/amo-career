@@ -53,7 +53,7 @@
     .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
     .theory-box p:last-child { margin-bottom: 0; }
 
-    .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc; display: block;
+    .eq { font-family: var(--mono); font-size: .87rem; color: var(--ink-blue); display: block;
           margin: .5rem 0; text-align: center; }
 
     /* Step boxes */
@@ -66,7 +66,7 @@
 
     /* Formula boxes */
     .formula-box {
-      background: #080f08; border: 1px solid #1a3a1a;
+      background: var(--bg-card); border: 1px solid var(--border-med);
       border-radius: 8px; padding: .75rem 1.1rem; margin: .7rem 0;
     }
 
@@ -93,7 +93,7 @@
     .field-row { margin-bottom: .8rem; }
     .field-row label { font-size: .8rem; color: var(--text-muted); display: block; margin-bottom: .3rem; }
     .field-row select, .field-row input {
-      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      width: 100%; background: var(--bg-surface); border: 1px solid var(--border-med);
       border-radius: 6px; padding: .4rem .75rem;
       color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
     }
@@ -117,7 +117,7 @@
     /* Summary table */
     .sum-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
     .sum-table th {
-      background: #0a1628; color: var(--text-muted); font-weight: 600;
+      background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
       padding: .6rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
     }
     .sum-table td {
@@ -130,7 +130,7 @@
 
     /* Hierarchy display */
     .hier-box {
-      background: #050c18; border: 1px solid #1e3a5f; border-radius: 10px;
+      background: #050c18; border: 1px solid var(--border-med); border-radius: 10px;
       padding: 1rem 1.25rem; font-family: var(--mono); font-size: .82rem;
       color: #94a3b8; white-space: pre; overflow-x: auto; line-height: 1.75;
     }
@@ -141,7 +141,7 @@
     /* Lab example */
     .lab-card {
       background: linear-gradient(135deg, #0d1f3c, #0a1528);
-      border: 1px solid #1e3a5f; border-radius: 10px; padding: 1.1rem 1.4rem;
+      border: 1px solid var(--border-med); border-radius: 10px; padding: 1.1rem 1.4rem;
     }
     .lab-card h5 { font-size: .9rem; font-weight: 700; color: #60a5fa; margin: 0 0 .7rem 0; }
     .lab-card ul { padding-left: 1.2rem; margin: 0; }
@@ -149,7 +149,7 @@
 
     /* Practical notes accordion */
     .prac-toggle {
-      background: #0a1628; border: 1px solid #1e293b; border-radius: 8px;
+      background: var(--bg-surface); border: 1px solid #1e293b; border-radius: 8px;
       padding: .6rem 1rem; cursor: pointer; width: 100%; text-align: left;
       color: var(--text-muted); font-size: .85rem; margin-top: .75rem;
     }
@@ -160,7 +160,7 @@
 
     /* Slope table */
     .slope-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .75rem; }
-    .slope-table th { background: #0a1628; color: var(--text-muted); font-weight: 600;
+    .slope-table th { background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
       padding: .5rem .8rem; border: 1px solid #1e293b; text-align: left; }
     .slope-table td { padding: .5rem .8rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
   </style>
@@ -1252,7 +1252,7 @@ function buildSASCharts() {
   const ctx2 = document.getElementById('sasChart2').getContext('2d');
   const commonOpts = {
     responsive: true,
-    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+    plugins: { legend: { labels: { color: '#5c503c', font: { size: 10 } } } },
     scales: {
       x: { ticks: { color: '#64748b', maxTicksLimit: 7 }, grid: { color: '#1e293b' } },
       y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
@@ -1262,13 +1262,13 @@ function buildSASCharts() {
     { label: 'SAS transmission', data: [], borderColor: '#38bdf8', borderWidth: 1.5, pointRadius: 0 }
   ]}, options: { ...commonOpts, scales: { ...commonOpts.scales,
     x: { ...commonOpts.scales.x, title: { display: false } },
-    y: { ...commonOpts.scales.y, title: { display: true, text: 'Transmission', color: '#94a3b8' } }
+    y: { ...commonOpts.scales.y, title: { display: true, text: 'Transmission', color: '#5c503c' } }
   }}});
   sasChart2 = new Chart(ctx2, { type: 'line', data: { labels: [], datasets: [
     { label: 'Error signal', data: [], borderColor: '#f59e0b', borderWidth: 1.5, pointRadius: 0 }
   ]}, options: { ...commonOpts, scales: { ...commonOpts.scales,
-    x: { ...commonOpts.scales.x, title: { display: true, text: 'Detuning from line centre (MHz)', color: '#94a3b8' } },
-    y: { ...commonOpts.scales.y, title: { display: true, text: 'Error (norm.)', color: '#94a3b8' } }
+    x: { ...commonOpts.scales.x, title: { display: true, text: 'Detuning from line centre (MHz)', color: '#5c503c' } },
+    y: { ...commonOpts.scales.y, title: { display: true, text: 'Error (norm.)', color: '#5c503c' } }
   }}});
 }
 function updateSAS() {
@@ -1427,7 +1427,7 @@ function buildPDHCharts() {
     type: 'line',
     options: {
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } },
+      plugins: { legend: { labels: { color: '#5c503c', font: { size: 10 } } } },
       scales: {
         x: { ticks: { color: '#64748b', maxTicksLimit: 7 }, grid: { color: '#1e293b' } },
         y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
@@ -1441,7 +1441,7 @@ function buildPDHCharts() {
     { label: 'PDH error signal', data: [], borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0 },
     { label: 'Zero', data: [], borderColor: '#334155', borderWidth: 1, borderDash: [4,4], pointRadius: 0 }
   ]}, options: { ...base.options, scales: { ...base.options.scales,
-    x: { ...base.options.scales.x, title: { display: true, text: 'Detuning (kHz)', color: '#94a3b8' } }
+    x: { ...base.options.scales.x, title: { display: true, text: 'Detuning (kHz)', color: '#5c503c' } }
   }}});
 }
 function updatePDH() {
@@ -1735,7 +1735,7 @@ updateBeat();
     ctx.fillText(locked ? 'LOCKED' : `${freq >= 0 ? '+' : ''}${freq.toFixed(1)} MHz`, needleX, labelY);
 
     // Profile labels
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = '#8c8066';
     ctx.font = '9.5px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('Absorption + Lamb dip', profileCX, H - 8);
@@ -1777,7 +1777,7 @@ updateBeat();
     ctx.fillText('+60 MHz', traceX + 3, 24);
     ctx.fillText('  0 MHz', traceX + 3, H / 2 + 13);
     ctx.fillText('−60 MHz', traceX + 3, H - 24);
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = '#8c8066';
     ctx.textAlign = 'center';
     ctx.fillText('laser frequency vs time', traceX + traceW / 2, H - 8);
 

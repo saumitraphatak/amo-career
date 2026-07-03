@@ -50,7 +50,7 @@
     .field-row { display: flex; align-items: center; gap: .6rem; margin-bottom: .45rem; flex-wrap: wrap; }
     .field-row label { font-size: .82rem; color: var(--text-muted); min-width: 200px; }
     .field-row input[type="number"], .field-row select {
-      background: #0c1526;
+      background: var(--bg-card);
       border: 1px solid #2a3a52;
       color: var(--text-primary);
       border-radius: 6px;
@@ -114,13 +114,13 @@
     .cg-note { font-size: .82rem; color: var(--text-muted); font-style: italic; }
     .sym-details { margin-top: .75rem; }
     .sym-details summary { cursor: pointer; font-size: .85rem; color: var(--c-cg); font-weight: 600; margin-bottom: .5rem; }
-    .sym-details[open] summary { color: #e879f9; }
+    .sym-details[open] summary { color: #bf0adb; }
     .cg-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #1e293b; margin-top: .75rem; }
     table.cgt { width: 100%; border-collapse: collapse; font-size: .85rem; }
     table.cgt th { background: #1e1b4b; color: #c4b5fd; padding: .5rem .7rem; text-align: center; border-bottom: 2px solid #312e81; font-family: var(--font-mono); white-space: nowrap; }
     table.cgt th:first-child { text-align: left; }
     table.cgt td { padding: .4rem .7rem; text-align: center; border-bottom: 1px solid #1a2236; font-family: var(--font-mono); font-size: .84rem; }
-    table.cgt tr:hover td { background: #0c1526; }
+    table.cgt tr:hover td { background: var(--bg-card); }
     table.cgt td.zero { color: #334155; }
     table.cgt td.pos  { color: #4ade80; font-weight: 600; }
     table.cgt td.neg  { color: #f87171; font-weight: 600; }
@@ -128,7 +128,7 @@
     .tbl-controls-cg { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; align-items: center; }
     .tbl-controls-cg label { font-size: .83rem; color: var(--text-muted); }
     .tbl-controls-cg input[type="number"], .tbl-controls-cg select {
-      background: #0c1526; border: 1px solid #2a3a52; color: var(--text-primary);
+      background: var(--bg-card); border: 1px solid #2a3a52; color: var(--text-primary);
       border-radius: 6px; padding: .28rem .55rem; font-size: .85rem;
       font-family: var(--font-mono); width: 90px;
     }
@@ -372,7 +372,7 @@ $$w_0 = \frac{\lambda f}{\pi w_{\rm in}} \quad \text{[Gaussian]} \qquad d_{\rm A
         <hr class="divider">
         <h3 style="font-size:1rem;font-weight:700;color:var(--text-primary);margin:0 0 .3rem 0;">Gaussian Beam Profile</h3>
         <p style="font-size:.83rem;color:var(--text-muted);margin:0 0 .75rem 0;">Side-view of beam propagation from the waist. Uses λ and w₀ from the Rayleigh Range inputs above.</p>
-        <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;text-align:center;">
+        <div style="background:var(--bg-surface);border:1px solid #1e293b;border-radius:10px;padding:.75rem;text-align:center;">
           <canvas id="gbCanvas" width="560" height="120" style="width:100%;border-radius:6px;"></canvas>
           <div id="gbInfo" style="font-family:var(--font-mono);font-size:.77rem;color:var(--text-muted);margin-top:.35rem;"></div>
         </div>
@@ -415,7 +415,7 @@ $$P\,[\text{dBm}] = 10\cdot\log_{10}(P\,[\text{mW}]) \qquad P\,[\text{mW}] = 10^
               <div class="field-row"><label>Input power (dBm)</label><input type="number" id="gain_in" value="-10" min="-60" max="60" step="1" oninput="calcGain()"><span class="unit">dBm</span></div>
               <div class="field-row" style="align-items:flex-start;">
                 <label style="padding-top:.3rem;">Gains/losses (dB), comma-sep</label>
-                <input type="text" id="gain_list" value="-10, +30, -3, -6" oninput="calcGain()" style="width:180px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem; font-family:var(--font-mono);">
+                <input type="text" id="gain_list" value="-10, +30, -3, -6" oninput="calcGain()" style="width:180px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem; font-family:var(--font-mono);">
               </div>
               <div id="gain_res" class="result-row"></div>
             </div>
@@ -433,7 +433,7 @@ $$\theta_B = \frac{\lambda_{\rm opt}}{2\Lambda} \quad \text{[Bragg angle]} \qqua
               <div class="field-row"><label>AOM drive frequency (MHz)</label><input type="number" id="aom_freq" value="80" min="1" max="3000" step="1" oninput="calcAOM()"><span class="unit">MHz</span></div>
               <div class="field-row">
                 <label>Sound velocity v_s (m/s)</label>
-                <select id="aom_vs" onchange="calcAOM()" style="width:180px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.83rem;">
+                <select id="aom_vs" onchange="calcAOM()" style="width:180px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.83rem;">
                   <option value="613">TeO₂ slow shear 613 m/s</option>
                   <option value="617">TeO₂ slow shear 617 m/s</option>
                   <option value="5960">SiO₂ 5960 m/s</option>
@@ -446,7 +446,7 @@ $$\theta_B = \frac{\lambda_{\rm opt}}{2\Lambda} \quad \text{[Bragg angle]} \qqua
               </div>
               <div class="field-row">
                 <label>Diffraction order n</label>
-                <select id="aom_ord" onchange="calcAOM()" style="width:80px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem;">
+                <select id="aom_ord" onchange="calcAOM()" style="width:80px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem;">
                   <option value="1" selected>+1</option>
                   <option value="-1">−1</option>
                   <option value="2">+2</option>
@@ -553,7 +553,7 @@ $$\Delta E = g_F\,m_F\,\mu_B\,B \qquad \Delta f = \frac{\Delta E}{h} \quad [\tex
 $$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transition]} \qquad \tau = \frac{1}{\Gamma/2\pi}$$</div>
               <div class="field-row">
                 <label>Preset transition</label>
-                <select id="sat_preset" onchange="applySatPreset()" style="width:220px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.82rem;">
+                <select id="sat_preset" onchange="applySatPreset()" style="width:220px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.82rem;">
                   <option value="852,5.23">¹³³Cs D2 852 nm (Γ/2π=5.23 MHz)</option>
                   <option value="780,6.07">⁸⁷Rb D2 780 nm (Γ/2π=6.07 MHz)</option>
                   <option value="589,9.80">²³Na D2 589 nm (Γ/2π=9.80 MHz)</option>
@@ -730,7 +730,7 @@ Time-rev: $\langle j_1 m_1;j_2 m_2|JM\rangle = (-1)^{j_1+j_2-J}\langle j_1{-}m_1
             <div class="tbl-controls-cg">
               <span><label>j₁ </label><input type="number" id="t_j1" value="1" min="0" max="6" step="0.5" oninput="onTJ1Change()"></span>
               <span><label>j₂ </label><input type="number" id="t_j2" value="0.5" min="0" max="6" step="0.5" oninput="onTJ2Change()"></span>
-              <span><label>J </label><select id="t_J" onchange="buildTable()" style="width:70px; background:#0c1526; border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.28rem .55rem; font-size:.85rem; font-family:var(--font-mono);"></select></span>
+              <span><label>J </label><select id="t_J" onchange="buildTable()" style="width:70px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.28rem .55rem; font-size:.85rem; font-family:var(--font-mono);"></select></span>
             </div>
             <div class="cg-table-wrap"><div id="cg_table_container" style="padding:.25rem;"></div></div>
             <div id="cg_decomp" class="formula-box" style="margin-top:1rem; white-space:pre-wrap;"></div>
@@ -744,10 +744,10 @@ $$\langle \alpha', j', m' \mid T^{(k)}_q \mid \alpha, j, m\rangle = \langle j, m
 The CG coefficient carries ALL $m$-dependence.<br>
 The reduced matrix element is independent of $m$, $m'$, $q$.</div>
             <div class="we-grid">
-              <div class="formula-box"><strong style="color:#a78bfa">E1 ($k=1$): </strong> $\Delta j = 0,\pm1$ (no $0\to0$); $\Delta m = 0$ ($\pi$), $\pm1$ ($\sigma^\pm$)<br>
-<strong style="color:#a78bfa">M1 ($k=1$): </strong> Same $\Delta j$, $\Delta m$; $\Delta l = 0$</div>
-              <div class="formula-box"><strong style="color:#a78bfa">E2 ($k=2$): </strong> $\Delta j = 0,\pm1,\pm2$; $\Delta m = 0,\pm1,\pm2$<br>
-<strong style="color:#a78bfa">Hyperfine: </strong> All $\langle F,m_F|T|F',m_{F'}\rangle$ reduce to one $\langle F\|T\|F'\rangle$ via Wigner–Eckart</div>
+              <div class="formula-box"><strong style="color:#7a4ff7">E1 ($k=1$): </strong> $\Delta j = 0,\pm1$ (no $0\to0$); $\Delta m = 0$ ($\pi$), $\pm1$ ($\sigma^\pm$)<br>
+<strong style="color:#7a4ff7">M1 ($k=1$): </strong> Same $\Delta j$, $\Delta m$; $\Delta l = 0$</div>
+              <div class="formula-box"><strong style="color:#7a4ff7">E2 ($k=2$): </strong> $\Delta j = 0,\pm1,\pm2$; $\Delta m = 0,\pm1,\pm2$<br>
+<strong style="color:#7a4ff7">Hyperfine: </strong> All $\langle F,m_F|T|F',m_{F'}\rangle$ reduce to one $\langle F\|T\|F'\rangle$ via Wigner–Eckart</div>
             </div>
             <div class="formula-box" style="margin-top:.75rem;">
 Wigner 3j relation:
@@ -795,7 +795,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <div id="eom_res" class="result-row" style="flex-direction:column;gap:.3rem;align-items:flex-start"></div>
 
               <div style="margin-top:.75rem">
-                <canvas id="eom_canvas" width="480" height="140" style="width:100%;border-radius:6px;background:#060e1c;border:1px solid #1e293b;"></canvas>
+                <canvas id="eom_canvas" width="480" height="140" style="width:100%;border-radius:6px;background:var(--bg-surface);border:1px solid #1e293b;"></canvas>
                 <div style="font-size:.73rem;color:var(--text-muted);margin-top:.3rem;text-align:center" id="eom_canv_label">Spectrum — carrier + sidebands (height ∝ field amplitude)</div>
               </div>
             </div>
@@ -1428,7 +1428,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       cv.width = W; cv.height = H;
       const ctx = cv.getContext('2d');
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = '#060e1c'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#f2ead9'; ctx.fillRect(0, 0, W, H);
 
       // z range: -3.5*zR to +3.5*zR
       const zMax = 3.5 * zR;
@@ -1665,7 +1665,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const resEl = document.getElementById('single_result');
       const symEl = document.getElementById('sym_details');
       if (exact === '0') {
-        resEl.innerHTML = `<span class="cg-bra">${bra}</span><span style="color:#94a3b8; font-size:1.2rem; font-family:var(--font-mono);">=</span><span class="cg-zero">0</span><span class="cg-note">(selection rule)</span>`;
+        resEl.innerHTML = `<span class="cg-bra">${bra}</span><span style="color:#5c503c; font-size:1.2rem; font-family:var(--font-mono);">=</span><span class="cg-zero">0</span><span class="cg-note">(selection rule)</span>`;
         symEl.style.display = 'none';
       } else {
         resEl.innerHTML = `<span class="cg-bra">${bra} =</span><span class="cg-exact">${exact}</span><span class="cg-bra">≈</span><span class="cg-dec">${val.toFixed(8)}</span>`;
@@ -1750,7 +1750,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         rows.push([label, `J${n}(β) = ${Jn.toFixed(4)}`, `${pct}% each`]);
       }
       const html = rows.map(([a, b, c]) =>
-        `<span class="result-lbl">${a}</span>&nbsp;<span class="result-val">${b}</span>&nbsp;<span style="color:#94a3b8;font-size:.82rem">${c}</span>`
+        `<span class="result-lbl">${a}</span>&nbsp;<span class="result-val">${b}</span>&nbsp;<span style="color:#5c503c;font-size:.82rem">${c}</span>`
       ).join('<br>');
       document.getElementById('eom_res').innerHTML = html +
         `<br><span style="color:var(--text-muted);font-size:.78rem">β = ${beta.toFixed(3)} · PDH signal ∝ J₀J₁ = ${(besselJ(0,beta)*besselJ(1,beta)).toFixed(4)} (max at β≈1.08)</span>`;
@@ -1764,7 +1764,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       cv.width = W; cv.height = H;
       const ctx = cv.getContext('2d');
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = '#060e1c'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#f2ead9'; ctx.fillRect(0, 0, W, H);
 
       const nMax = 5;
       const totalSlots = 2 * nMax + 1;
@@ -1780,7 +1780,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         // For PM: odd sidebands have alternating sign — show full height but note phase
         const isPM = type === 'pm';
         const isOdd = Math.abs(n) % 2 === 1;
-        const col = n === 0 ? '#34d399' : (Math.abs(n) === 1 ? '#c084fc' : (Math.abs(n) === 2 ? '#38bdf8' : '#475569'));
+        const col = n === 0 ? '#34d399' : (Math.abs(n) === 1 ? '#c084fc' : (Math.abs(n) === 2 ? '#38bdf8' : '#8c8066'));
         const xc = (n + nMax + 0.5) * slotW;
         const barH = amp * (H - 40);
 

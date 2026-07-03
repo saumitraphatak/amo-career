@@ -42,7 +42,7 @@
     /* ─── Sticky anchor nav ─────────────────────────── */
     .topic-nav {
       position: sticky; top: 64px; z-index: 50;
-      background: rgba(2,8,15,0.92); backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg-base) 92%, transparent); backdrop-filter: blur(12px);
       border-bottom: 1px solid #1e293b;
       overflow-x: auto; white-space: nowrap;
       padding: .45rem 1rem; display: flex; gap: .35rem;
@@ -82,7 +82,7 @@
     .theory-box p:last-child { margin-bottom: 0; }
 
     .formula-box {
-      background: #060e1c; border: 1px solid #0c2233; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 8px;
       padding: .85rem 1.1rem; margin: .6rem 0;
       overflow-x: auto;
     }
@@ -90,7 +90,7 @@
       font-size: .72rem; color: #22d3ee; font-weight: 600;
       text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem;
     }
-    .eq { font-family: var(--font-mono); font-size: .87rem; color: #f0abfc;
+    .eq { font-family: var(--font-mono); font-size: .87rem; color: var(--ink-blue);
           display: block; margin: .4rem 0; text-align: center; }
 
     /* ─── Two / three col ───────────────────────────── */
@@ -112,7 +112,7 @@
     .ctrl-group label { font-size: .78rem; color: var(--text-muted); display: block; margin-bottom: .3rem; }
     .ctrl-group input[type=range] { width: 100%; accent-color: #22d3ee; display: block; }
     .ctrl-group input[type=number] {
-      width: 100%; background: #060e1c; border: 1px solid #1e293b;
+      width: 100%; background: var(--bg-surface); border: 1px solid #1e293b;
       border-radius: 6px; padding: .4rem .6rem;
       color: var(--text-primary); font-size: .85rem; font-family: var(--font-mono);
     }
@@ -121,7 +121,7 @@
 
     .result-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: .75rem; }
     .result-chip {
-      background: #060e1c; border: 1px solid #1e293b; border-radius: 8px;
+      background: var(--bg-surface); border: 1px solid #1e293b; border-radius: 8px;
       padding: .5rem .9rem; flex: 1; min-width: 120px;
     }
     .result-chip .r-label { font-size: .72rem; color: var(--text-muted); margin-bottom: .2rem; }
@@ -132,7 +132,7 @@
 
     /* ─── Level diagram ─────────────────────────────── */
     .level-diagram {
-      background: #060e1c; border: 1px solid #1e293b;
+      background: var(--bg-surface); border: 1px solid #1e293b;
       border-radius: 12px; padding: 1.25rem; text-align: center;
     }
     .level-diagram canvas { display: block; margin: 0 auto; max-width: 100%; }
@@ -153,7 +153,7 @@
     /* ─── Comparison table ──────────────────────────── */
     .compare-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
     .compare-table th {
-      background: #0c1526; color: var(--text-muted); font-weight: 600;
+      background: var(--bg-card); color: var(--text-muted); font-weight: 600;
       padding: .6rem .8rem; text-align: left; border-bottom: 1px solid #1e293b;
       font-size: .77rem; text-transform: uppercase; letter-spacing: .05em;
     }
@@ -369,7 +369,7 @@
         </div>
 
         <!-- Phonon ladder animation -->
-        <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-top:1rem;">
+        <div style="background:var(--bg-surface);border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-top:1rem;">
           <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Phonon ladder — watch the atom cool step-by-step to |n=0⟩ via sideband absorption + spontaneous emission</div>
           <canvas id="phononLadderCanvas" width="560" height="200" style="width:100%;border-radius:5px;"></canvas>
         </div>
@@ -1805,7 +1805,7 @@ if (typeof renderMathInElement === 'undefined') {
       else { currentN=4; state='drive'; stateStart=ts; prog=0; }
     }
 
-    ctx.clearRect(0,0,W,H); ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#f2ead9'; ctx.fillRect(0,0,W,H);
 
     // ── Column headers ─────────────────────────────────────────
     ctx.font='11px Inter,sans-serif'; ctx.textAlign='center';
@@ -1820,7 +1820,7 @@ if (typeof renderMathInElement === 'undefined') {
       ctx.strokeStyle = isGS ? '#4ade80' : (i===currentN && (state==='drive'||state==='pause'||state==='reset') ? '#38bdf8' : 'rgba(56,189,248,0.4)');
       ctx.lineWidth = isGS ? 2.5 : 1.5; ctx.stroke();
       ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right';
-      ctx.fillStyle= isGS ? '#4ade80' : '#475569';
+      ctx.fillStyle= isGS ? '#4ade80' : '#8c8066';
       ctx.fillText('n='+i, gX-lvlHalf-5, y+4);
       if (isGS) {
         ctx.font='8px Inter,sans-serif'; ctx.textAlign='center';
@@ -1834,7 +1834,7 @@ if (typeof renderMathInElement === 'undefined') {
       ctx.strokeStyle = active ? '#f472b6' : 'rgba(244,114,182,0.35)';
       ctx.lineWidth = active ? 2 : 1.3; ctx.stroke();
       ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left';
-      ctx.fillStyle='#475569'; ctx.fillText('n='+i, eX+lvlHalf+5, y+4);
+      ctx.fillStyle='#8c8066'; ctx.fillText('n='+i, eX+lvlHalf+5, y+4);
     }
 
     // ── Harmonic potential label ────────────────────────────────
@@ -1938,7 +1938,7 @@ if (typeof renderMathInElement === 'undefined') {
 
     const t = (ts / CYCLE_MS) % 1;  // 0..1
 
-    ctx.clearRect(0,0,W,H); ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+    ctx.clearRect(0,0,W,H); ctx.fillStyle='#f2ead9'; ctx.fillRect(0,0,W,H);
 
     // ── Potential curves ─────────────────────────────────────────
     // V_up (blue, spin ↑)
@@ -2105,7 +2105,7 @@ if (typeof renderMathInElement === 'undefined') {
     const W = cv.clientWidth || 560;
     if (cv.width !== W) cv.width = W;
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#f2ead9'; ctx.fillRect(0,0,W,H);
 
     const CW = W - PAD_L - PAD_R;
     const atomX = PAD_L + CW * 0.38;
@@ -2137,7 +2137,7 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.beginPath(); ctx.moveTo(PAD_L-43,PAD_T+6); ctx.lineTo(PAD_L-40,PAD_T); ctx.lineTo(PAD_L-37,PAD_T+6);
     ctx.strokeStyle='rgba(71,85,105,0.5)'; ctx.lineWidth=1; ctx.stroke();
     ctx.save(); ctx.translate(PAD_L-52,H/2); ctx.rotate(-Math.PI/2);
-    ctx.font='9px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#475569';
+    ctx.font='9px Inter,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#8c8066';
     ctx.fillText('Energy  E = (n+½)ℏν', 0, 0); ctx.restore();
 
     // ── RSB photon arrow (absorb phase) ────────────────────────
@@ -2250,7 +2250,7 @@ if (typeof renderMathInElement === 'undefined') {
   function setPhase(ph) {
     if (phBar) Array.from(phBar.children).forEach((el, i) => {
       el.style.background = i === ph ? 'rgba(96,165,250,0.15)' : 'transparent';
-      el.style.color = i === ph ? '#60a5fa' : '#475569';
+      el.style.color = i === ph ? '#60a5fa' : '#8c8066';
     });
     if (capEl) capEl.textContent = CAPTIONS[ph];
   }
@@ -2275,7 +2275,7 @@ if (typeof renderMathInElement === 'undefined') {
 
   // ── Drawing utilities ─────────────────────────────────────────────────────
   function clear() {
-    ctx.fillStyle = '#0c1526';
+    ctx.fillStyle = '#faf5e9';
     ctx.fillRect(0, 0, W, H);
   }
 
@@ -2384,7 +2384,7 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.strokeStyle = '#4a5568'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(42, EY); ctx.lineTo(W - 24, EY); ctx.stroke();
     ctx.setLineDash([]); ctx.restore();
-    mono('|e⟩', W - 22, EY + 4, '#94a3b8', 11);
+    mono('|e⟩', W - 22, EY + 4, '#5c503c', 11);
 
     drawWell(BX, '#f472b6');
     drawWell(DX, '#22d3ee');

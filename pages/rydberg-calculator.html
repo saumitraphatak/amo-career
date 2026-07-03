@@ -90,7 +90,7 @@
       display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
     }
     .field-row select, .field-row input[type=number] {
-      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      width: 100%; background: var(--bg-surface); border: 1px solid var(--border-med);
       border-radius: 6px; padding: .38rem .7rem;
       color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
     }
@@ -113,10 +113,10 @@
     .theory-box h4 { font-size: .93rem; font-weight: 700; color: var(--c-ryd); margin: 0 0 .5rem 0; }
     .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
     .formula-box {
-      background: #08070f; border: 1px solid #2d1f6e; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 8px;
       padding: .7rem 1rem; margin: .6rem 0;
     }
-    .eq { font-family: var(--mono); font-size: .87rem; color: #c4b5fd;
+    .eq { font-family: var(--mono); font-size: .87rem; color: var(--ink-blue);
           display: block; margin: .4rem 0; text-align: center; }
 
     /* ─── Chart card ─────────────────────────────────── */
@@ -153,7 +153,7 @@
     /* ─── Blockade visualizer ────────────────────────── */
     .blk-viz-wrap {
       margin-top: .9rem;
-      background: #02080f;
+      background: var(--bg-base);
       border: 1px solid #1e293b;
       border-radius: 12px;
       overflow: hidden;
@@ -1020,12 +1020,12 @@ function updateChart(species, orbKey, Omega_MHz) {
         },
         scales: {
           x: {
-            title: { display: true, text: 'Principal quantum number n', color: '#94a3b8' },
+            title: { display: true, text: 'Principal quantum number n', color: '#5c503c' },
             ticks: { color: '#64748b', maxTicksLimit: 10 },
             grid: { color: '#1e293b' }
           },
           y: {
-            title: { display: true, text: 'Blockade radius R_b (μm)', color: '#94a3b8' },
+            title: { display: true, text: 'Blockade radius R_b (μm)', color: '#5c503c' },
             ticks: { color: '#64748b' },
             grid: { color: '#1e293b' }
           }
@@ -1091,7 +1091,7 @@ function updateChart(species, orbKey, Omega_MHz) {
     ctx.clearRect(0, 0, W, H);
 
     // Background
-    ctx.fillStyle = '#02080f';
+    ctx.fillStyle = '#efe7d6';
     ctx.fillRect(0, 0, W, H);
 
     const cx   = W / 2;
@@ -1162,7 +1162,7 @@ function updateChart(species, orbKey, Omega_MHz) {
     [[x1, rulerY - 4, rulerY + 4], [x2, rulerY - 4, rulerY + 4]].forEach(([x, y1, y2]) => {
       ctx.beginPath(); ctx.moveTo(x, y1); ctx.lineTo(x, y2); ctx.stroke();
     });
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = '#8c8066';
     ctx.font = '11px JetBrains Mono, monospace';
     ctx.textAlign = 'center';
     ctx.fillText(`r = ${r.toFixed(1)} μm`, cx, rulerY + 15);

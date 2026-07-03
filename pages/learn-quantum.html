@@ -38,7 +38,7 @@
     /* ─── Sticky anchor nav ──────────────────────────── */
     .topic-nav {
       position: sticky; top: 64px; z-index: 50;
-      background: rgba(2,8,15,0.92); backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg-base) 92%, transparent); backdrop-filter: blur(12px);
       border-bottom: 1px solid #1e293b;
       overflow-x: auto; white-space: nowrap;
       padding: .45rem 1rem; display: flex; gap: .35rem;
@@ -77,10 +77,10 @@
     .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
 
     .formula-box {
-      background: #080f0a; border: 1px solid #1a3a1a; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 8px;
       padding: .7rem 1rem; margin: .6rem 0;
     }
-    .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc;
+    .eq { font-family: var(--mono); font-size: .87rem; color: var(--ink-blue);
           display: block; margin: .4rem 0; text-align: center; }
 
     /* ─── Two / three col ────────────────────────────── */
@@ -90,7 +90,7 @@
 
     /* ─── Bloch sphere canvas ────────────────────────── */
     .bloch-wrap {
-      background: #060e1c; border: 1px solid #1e293b;
+      background: var(--bg-surface); border: 1px solid #1e293b;
       border-radius: 12px; padding: 1rem; text-align: center;
     }
     canvas#blochCanvas, canvas#gatesBlochCanvas, canvas#measBlochCanvas {
@@ -108,7 +108,7 @@
     .ctrl-val { color: var(--c-qc); font-family: var(--mono); font-size: .82rem; }
 
     .ctrl-select {
-      background: #0a1628; border: 1px solid #1e3a5f; border-radius: 7px;
+      background: var(--bg-surface); border: 1px solid var(--border-med); border-radius: 7px;
       padding: .35rem .7rem; color: var(--text-primary);
       font-size: .85rem; font-family: var(--mono);
     }
@@ -145,7 +145,7 @@
 
     /* Matrix display */
     .matrix-wrap {
-      display: inline-block; background: #0a1628; border: 1px solid #1e293b;
+      display: inline-block; background: var(--bg-surface); border: 1px solid #1e293b;
       border-radius: 8px; padding: .75rem 1rem; font-family: var(--mono); font-size: .85rem;
     }
     .matrix-wrap table { border-collapse: collapse; }
@@ -154,7 +154,7 @@
 
     /* Truth table */
     .truth-table { border-collapse: collapse; font-family: var(--mono); font-size: .83rem; }
-    .truth-table th { background: #0a1628; color: var(--text-muted); padding: .45rem .7rem;
+    .truth-table th { background: var(--bg-surface); color: var(--text-muted); padding: .45rem .7rem;
       border: 1px solid #1e293b; font-weight: 600; }
     .truth-table td { padding: .4rem .7rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
     .truth-table .hilite { color: var(--c-qc); font-weight: 700; }
@@ -196,7 +196,7 @@
     .read-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
     .read-link {
       display: inline-flex; align-items: center; gap: .35rem;
-      background: #0a1628; border: 1px solid #1e3a5f; border-radius: 6px;
+      background: var(--bg-surface); border: 1px solid var(--border-med); border-radius: 6px;
       padding: .28rem .65rem; font-size: .77rem; color: #93c5fd;
       text-decoration: none; transition: border-color .15s, color .15s;
     }
@@ -214,13 +214,13 @@
     .res-item span { font-size: .75rem; color: var(--text-muted); margin-top: .1rem; }
 
     /* ─── QEC styles ─────────────────────────────────── */
-    .qec-threshold { background: #060e1c; border: 1px solid #1e293b; border-radius: 12px; padding: 1rem; }
+    .qec-threshold { background: var(--bg-surface); border: 1px solid #1e293b; border-radius: 12px; padding: 1rem; }
 
     /* ─── Hyperfine / QEC tables ─────────────────────── */
     table.hf-table { border-collapse: collapse; width: 100%; font-size: .82rem; }
-    table.hf-table th { background: #0a1628; color: var(--text-muted); padding: .4rem .6rem; border: 1px solid #1e293b; font-weight: 600; text-align: left; }
+    table.hf-table th { background: var(--bg-surface); color: var(--text-muted); padding: .4rem .6rem; border: 1px solid #1e293b; font-weight: 600; text-align: left; }
     table.hf-table td { padding: .38rem .6rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
-    table.hf-table tr:hover td { background: #0a1628; }
+    table.hf-table tr:hover td { background: var(--bg-surface); }
     table.hf-table .hi { color: var(--c-qc); font-weight: 700; }
     table.hf-table .mono { font-family: var(--mono); font-size: .78rem; }
 
@@ -1769,7 +1769,7 @@ function drawBloch(canvasId, theta, phi, opts) {
   });
 
   // |0⟩ and |1⟩ labels
-  const [z0x,z0y] = bsProject(0,0,1.15); ctx.fillStyle='#94a3b8'; ctx.font='12px Inter'; ctx.fillText('|0⟩',z0x+4,z0y);
+  const [z0x,z0y] = bsProject(0,0,1.15); ctx.fillStyle='#5c503c'; ctx.font='12px Inter'; ctx.fillText('|0⟩',z0x+4,z0y);
   const [z1x,z1y] = bsProject(0,0,-1.15); ctx.fillText('|1⟩',z1x+4,z1y);
 
   // ── Arc trail (animated gate rotation) ─────────
@@ -1815,7 +1815,7 @@ function drawBloch(canvasId, theta, phi, opts) {
 
   // Dotted projection lines
   const [prx,pry] = bsProject(bx,by,0);
-  ctx.setLineDash([2,3]); ctx.strokeStyle='#475569'; ctx.lineWidth=1;
+  ctx.setLineDash([2,3]); ctx.strokeStyle='#8c8066'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(prx,pry); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(BS_CX,BS_CY); ctx.lineTo(prx,pry); ctx.stroke();
   ctx.setLineDash([]);
@@ -1900,7 +1900,7 @@ function applyGateBtn(name) {
 
   document.getElementById('gateMatrix').innerHTML =
     `<strong style="font-size:.8rem;color:var(--c-qc)">${g.label}</strong><br>
-     <span style="color:#94a3b8;font-size:.78rem">${GATE_LABELS[name]}</span>`;
+     <span style="color:#5c503c;font-size:.78rem">${GATE_LABELS[name]}</span>`;
   document.getElementById('gateDesc').textContent = g.desc;
 
   // Animated SLERP rotation along the great-circle arc
@@ -2163,9 +2163,9 @@ let measChart;
       ]
     },
     options: { responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: '#5c503c', font: { size: 11 } } } },
       scales: { y: { min: 0, ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
-                x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } } }
+                x: { ticks: { color: '#5c503c' }, grid: { color: '#1e293b' } } }
     }
   });
 })();
@@ -2357,7 +2357,7 @@ ${labels.map((l,i)=>`  ${l}: amplitude = ${b.amps[i]>=0?'+':''}${b.amps[i].toFix
       borderWidth:2, borderRadius:5}]},
       options:{responsive:true,plugins:{legend:{display:false}},
         scales:{y:{min:0,max:100,ticks:{color:'#64748b',callback:v=>v+'%'},grid:{color:'#1e293b'}},
-                x:{ticks:{color:'#94a3b8'},grid:{color:'#1e293b'}}}}});
+                x:{ticks:{color:'#5c503c'},grid:{color:'#1e293b'}}}}});
   },20);
 }
 renderBellInfo();
@@ -2371,9 +2371,9 @@ let rydChart;
   rydChart = new Chart(ctx,{type:'line',data:{labels:[],datasets:[
     {label:'V(R) = C₆/R⁶',data:[],borderColor:'#f87171',borderWidth:2,pointRadius:0},
     {label:'ℏΩ_R (blockade threshold)',data:[],borderColor:'#fbbf24',borderWidth:1.5,borderDash:[5,4],pointRadius:0}
-  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
-    scales:{x:{title:{display:true,text:'Atom separation R (μm)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
-            y:{title:{display:true,text:'Energy / h (MHz)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'},type:'logarithmic'}}}});
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#5c503c',font:{size:11}}}},
+    scales:{x:{title:{display:true,text:'Atom separation R (μm)',color:'#5c503c'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
+            y:{title:{display:true,text:'Energy / h (MHz)',color:'#5c503c'},ticks:{color:'#64748b'},grid:{color:'#1e293b'},type:'logarithmic'}}}});
   updateRydberg();
 })();
 
@@ -2502,9 +2502,9 @@ let rabiChart;
   rabiChart = new Chart(ctx,{type:'line',data:{labels:[],datasets:[
     {label:'P₁(t)',data:[],borderColor:'#a78bfa',borderWidth:2,pointRadius:0,fill:true,backgroundColor:'#a78bfa18'},
     {label:'P₀(t)',data:[],borderColor:'#60a5fa',borderWidth:1.5,pointRadius:0,borderDash:[4,3]}
-  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
-    scales:{x:{title:{display:true,text:'Time (μs)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
-            y:{min:0,max:1,title:{display:true,text:'Population',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}}}}});
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#5c503c',font:{size:11}}}},
+    scales:{x:{title:{display:true,text:'Time (μs)',color:'#5c503c'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
+            y:{min:0,max:1,title:{display:true,text:'Population',color:'#5c503c'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}}}}});
   updateRabi();
 })();
 
@@ -2588,12 +2588,12 @@ function updateRabi() {
     bCtx.setLineDash([]);
 
     // Axes
-    [[[1,0,0],'x','#334155'],[[0,1,0],'y','#334155'],[[0,0,1],'z','#475569']].forEach(([v,n,c]) => {
+    [[[1,0,0],'x','#334155'],[[0,1,0],'y','#334155'],[[0,0,1],'z','#8c8066']].forEach(([v,n,c]) => {
       const [sx,sy] = proj(v[0]*1.25,v[1]*1.25,v[2]*1.25);
       const [ox,oy] = proj(-v[0]*.5,-v[1]*.5,-v[2]*.5);
       bCtx.beginPath(); bCtx.moveTo(ox,oy); bCtx.lineTo(sx,sy);
       bCtx.strokeStyle = c; bCtx.lineWidth = 1; bCtx.stroke();
-      bCtx.fillStyle = '#475569'; bCtx.font='10px Inter,sans-serif';
+      bCtx.fillStyle = '#8c8066'; bCtx.font='10px Inter,sans-serif';
       bCtx.fillText(n, sx+3, sy+4);
     });
     // |0⟩ |1⟩
@@ -2752,8 +2752,8 @@ let decohChart;
     {label:'P₁(t) = e^{−t/T₁}/2 + ½',data:[],borderColor:'#f87171',borderWidth:2,pointRadius:0},
     {label:'|ρ₀₁(t)| = ½ e^{−t/T₂}',data:[],borderColor:'#a78bfa',borderWidth:2,pointRadius:0,borderDash:[5,3]},
     {label:'P₁ steady state = 0',data:[],borderColor:'#334155',borderWidth:1,borderDash:[2,4],pointRadius:0}
-  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
-    scales:{x:{title:{display:true,text:'Time (ms)',color:'#94a3b8'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#5c503c',font:{size:11}}}},
+    scales:{x:{title:{display:true,text:'Time (ms)',color:'#5c503c'},ticks:{color:'#64748b'},grid:{color:'#1e293b'}},
             y:{min:0,max:1,ticks:{color:'#64748b'},grid:{color:'#1e293b'}}}}});
   updateDecohere();
 })();
@@ -2828,18 +2828,18 @@ function updateDecohere() {
     options: {
       parsing: false,
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 14 } } },
+      plugins: { legend: { labels: { color: '#5c503c', font: { size: 10 }, boxWidth: 14 } } },
       scales: {
         x: {
           type: 'linear',
-          title: { display: true, text: 'Physical error rate p (%)', color: '#94a3b8' },
+          title: { display: true, text: 'Physical error rate p (%)', color: '#5c503c' },
           ticks: { color: '#64748b', callback: v => v.toFixed(2) + '%' },
           grid: { color: '#1e293b' },
           min: 0, max: 1.5,
         },
         y: {
           type: 'logarithmic',
-          title: { display: true, text: 'Logical error rate p_L', color: '#94a3b8' },
+          title: { display: true, text: 'Logical error rate p_L', color: '#5c503c' },
           ticks: { color: '#64748b' },
           grid: { color: '#1e293b' },
           min: 1e-10, max: 1,
@@ -2957,7 +2957,7 @@ function opReset() {
     cx.clearRect(0, 0, W, H);
 
     // Title
-    cx.fillStyle = '#94a3b8';
+    cx.fillStyle = '#5c503c';
     cx.font = '11px Inter,sans-serif';
     cx.textAlign = 'center';
     cx.fillText(steps[step].title, W/2, 16);
@@ -3079,7 +3079,7 @@ function opReset() {
     cx.clearRect(0,0,W,H);
 
     // Title
-    cx.fillStyle = '#94a3b8';
+    cx.fillStyle = '#5c503c';
     cx.font = '10.5px Inter,sans-serif';
     cx.textAlign = 'center';
     cx.fillText(snapshots[step].title, W/2, 14);
@@ -3176,7 +3176,7 @@ function opReset() {
 
     // Title
     const titles = ['Rydberg ordering (Δ/Ω → large)', 'Z₂ ordered phase', 'Disordered phase (small Δ/Ω)'];
-    cx.fillStyle = '#94a3b8'; cx.font = '11px Inter,sans-serif'; cx.textAlign = 'center';
+    cx.fillStyle = '#5c503c'; cx.font = '11px Inter,sans-serif'; cx.textAlign = 'center';
     cx.fillText(titles[phase], W/2, 13);
 
     for (let r=0; r<ROWS; r++) {

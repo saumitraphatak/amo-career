@@ -51,14 +51,14 @@
 
     /* Theory boxes */
     .theory-box {
-      background: var(--bg-card); border: 1px solid #1e3a5f;
+      background: var(--bg-card); border: 1px solid var(--border-med);
       border-left: 4px solid var(--c-cool); border-radius: 10px;
       padding: 1.1rem 1.4rem; margin-bottom: 1rem;
     }
     .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--c-cool); margin: 0 0 .6rem 0; }
     .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
     .theory-box p:last-child { margin-bottom: 0; }
-    .eq { font-family: var(--mono); font-size: .88rem; color: #f0abfc; display: block; margin: .5rem 0; text-align: center; }
+    .eq { font-family: var(--mono); font-size: .88rem; color: var(--ink-blue); display: block; margin: .5rem 0; text-align: center; }
     .formula-box { border-color: rgba(96,165,250,0.25); }
 
     /* Two-col layout */
@@ -85,7 +85,7 @@
     /* Comparison table */
     .comp-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
     .comp-table th {
-      background: #0a1628; color: var(--text-muted); font-weight: 600;
+      background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
       padding: .6rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
     }
     .comp-table td { padding: .55rem .9rem; border-bottom: 1px solid #0f1e35; color: var(--text-secondary); vertical-align: top; }
@@ -108,7 +108,7 @@
 
     /* Code block */
     .code-block {
-      background: #050c18; border: 1px solid #1e3a5f;
+      background: #050c18; border: 1px solid var(--border-med);
       border-radius: 8px; padding: 1rem 1.25rem;
       font-family: var(--mono); font-size: .8rem;
       color: #94a3b8; white-space: pre; overflow-x: auto;
@@ -943,11 +943,11 @@ const hbar = 1.0546e-34, kB = 1.3806e-23, amu = 1.6605e-27;
       },
       scales: {
         x: {
-          title: { display: true, text: 'log₁₀(T / K)', color: '#94a3b8' },
+          title: { display: true, text: 'log₁₀(T / K)', color: '#5c503c' },
           ticks: { color: '#64748b', callback: v => `10^${v}` },
           grid: { color: '#1e293b' },
         },
-        y: { ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: '#0f1e35' } }
+        y: { ticks: { color: '#5c503c', font: { size: 12 } }, grid: { color: '#0f1e35' } }
       }
     }
   });
@@ -965,11 +965,11 @@ function buildForceChart() {
     ]},
     options: {
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: '#5c503c', font: { size: 11 } } } },
       scales: {
-        x: { title: { display: true, text: 'v / (Γ/k)', color: '#94a3b8' },
+        x: { title: { display: true, text: 'v / (Γ/k)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
-        y: { title: { display: true, text: 'F (arb.)', color: '#94a3b8' },
+        y: { title: { display: true, text: 'F (arb.)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
       }
     }
@@ -1019,11 +1019,11 @@ function updateForce() {
     }]},
     options: {
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: '#5c503c', font: { size: 11 } } } },
       scales: {
-        x: { title: { display: true, text: 'δ / Γ', color: '#94a3b8' },
+        x: { title: { display: true, text: 'δ / Γ', color: '#5c503c' },
              ticks: { color: '#64748b', maxTicksLimit: 7 }, grid: { color: '#1e293b' } },
-        y: { title: { display: true, text: 'T_D (ℏΓ/2k_B)', color: '#94a3b8' },
+        y: { title: { display: true, text: 'T_D (ℏΓ/2k_B)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' }, max: 6 }
       }
     }
@@ -1048,13 +1048,13 @@ function updateForce() {
     options: {
       responsive: true,
       plugins: {
-        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        legend: { labels: { color: '#5c503c', font: { size: 11 } } },
         annotation: { annotations: [] }
       },
       scales: {
-        x: { title: { display: true, text: 'x / λ', color: '#94a3b8' },
+        x: { title: { display: true, text: 'x / λ', color: '#5c503c' },
              ticks: { color: '#64748b', maxTicksLimit: 5 }, grid: { color: '#1e293b' } },
-        y: { title: { display: true, text: 'U (arb.)', color: '#94a3b8' },
+        y: { title: { display: true, text: 'U (arb.)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
       }
     }
@@ -1075,9 +1075,9 @@ function buildSBChart() {
       responsive: true,
       plugins: { legend: { display: false } },
       scales: {
-        x: { title: { display: true, text: 'Probe detuning (ω_trap units)', color: '#94a3b8' },
+        x: { title: { display: true, text: 'Probe detuning (ω_trap units)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
-        y: { title: { display: true, text: 'Transition rate (arb.)', color: '#94a3b8' },
+        y: { title: { display: true, text: 'Transition rate (arb.)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
       }
     }
@@ -1118,11 +1118,11 @@ function buildEvoChart() {
     ]},
     options: {
       responsive: true,
-      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: '#5c503c', font: { size: 11 } } } },
       scales: {
-        x: { title: { display: true, text: 'Γ_cool · t', color: '#94a3b8' },
+        x: { title: { display: true, text: 'Γ_cool · t', color: '#5c503c' },
              ticks: { color: '#64748b', maxTicksLimit: 6 }, grid: { color: '#1e293b' } },
-        y: { title: { display: true, text: '⟨n⟩', color: '#94a3b8' },
+        y: { title: { display: true, text: '⟨n⟩', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
       }
     }
@@ -1164,8 +1164,8 @@ function updateCoolEvo() {
       responsive: true,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `log₁₀(T) = ${ctx.raw}` } } },
       scales: {
-        x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#1e293b' } },
-        y: { title: { display: true, text: 'log₁₀(T / K)', color: '#94a3b8' },
+        x: { ticks: { color: '#5c503c', font: { size: 11 } }, grid: { color: '#1e293b' } },
+        y: { title: { display: true, text: 'log₁₀(T / K)', color: '#5c503c' },
              ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
       }
     }

@@ -91,7 +91,7 @@
       display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: .3rem;
     }
     .field-row select, .field-row input[type=number] {
-      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      width: 100%; background: var(--bg-surface); border: 1px solid var(--border-med);
       border-radius: 6px; padding: .38rem .7rem;
       color: var(--text-primary); font-size: .85rem; font-family: var(--mono);
     }
@@ -113,7 +113,7 @@
     .theory-box p  { font-size:.86rem; color:var(--text-secondary); line-height:1.7; margin:0; }
 
     .formula-box {
-      background:#100007; border:1px solid #7f1d1d; border-radius:8px;
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius:8px;
       padding:.7rem 1rem; margin:.6rem 0;
     }
 
@@ -707,8 +707,8 @@ const ERR_CHART = new Chart(errCtx, {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#0c1526', titleColor: '#f87171',
-        bodyColor: '#94a3b8', borderColor: '#1e3a5f', borderWidth: 1,
+        backgroundColor: '#faf5e9', titleColor: '#f87171',
+        bodyColor: '#5c503c', borderColor: '#1e3a5f', borderWidth: 1,
         callbacks: {
           label: ctx => ` ε = ${ctx.raw.toExponential(2)}  (${(ctx.raw * 100).toFixed(3)}%)`
         }
@@ -717,11 +717,11 @@ const ERR_CHART = new Chart(errCtx, {
     scales: {
       x: {
         type: 'logarithmic',
-        title: { display: true, text: 'Error εᵢ (log scale)', color: '#94a3b8', font: { size: 11 } },
+        title: { display: true, text: 'Error εᵢ (log scale)', color: '#5c503c', font: { size: 11 } },
         ticks: { color: '#64748b' }, grid: { color: '#1e293b' },
         min: 1e-6, max: 1,
       },
-      y: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: '#1e293b' } }
+      y: { ticks: { color: '#5c503c', font: { size: 11 } }, grid: { color: '#1e293b' } }
     }
   }
 });
@@ -897,7 +897,7 @@ function drawWaterfall(entries, totalErr) {
     const t = 1 - Math.pow(1 - progress, 3);
 
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#0c1526'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#faf5e9'; ctx.fillRect(0,0,W,H);
 
     // Grid lines
     for (const frac of [0.25,0.5,0.75,1.0]) {
@@ -959,7 +959,7 @@ function drawWaterfall(entries, totalErr) {
     ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
 
     // Y axis ticks
-    ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right'; ctx.fillStyle='#475569';
+    ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='right'; ctx.fillStyle='#8c8066';
     for (const frac of [0,0.25,0.5,0.75,1.0]) {
       const v = yMax * frac;
       ctx.fillText(v.toExponential(1), PAD_L-4, toY(v)+3);

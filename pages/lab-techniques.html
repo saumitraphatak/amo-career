@@ -169,7 +169,7 @@
 
     /* Code block */
     pre.code-block {
-      background: rgba(6,14,28,0.95);
+      background: color-mix(in srgb, var(--bg-surface) 95%, transparent);
       border: 1px solid var(--border-med);
       border-radius: var(--r);
       padding: var(--sp-5);
@@ -400,7 +400,7 @@
             <div class="tech-section">
               <div class="tech-section-title">1 · Optical Fiber Coupling</div>
               <!-- Fiber coupling animation -->
-              <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
+              <div style="background:var(--bg-surface);border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
                 <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Mode-matching visualiser — beam waist animated into fiber</div>
                 <canvas id="fiberCouplingCanvas" width="560" height="80" style="width:100%;border-radius:5px;"></canvas>
               </div>
@@ -525,7 +525,7 @@
             <div class="tech-section">
               <div class="tech-section-title">2 · Double-Pass Acousto-Optic Modulators (AOMs)</div>
               <!-- AOM Bragg animation -->
-              <div style="background:#060e1c;border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
+              <div style="background:var(--bg-surface);border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
                 <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Cat's-eye double-pass AOM (Fig. 3). Laser → PBS → lenses → AOM: 0th order blocked, +1st order (ν₀+f) deflected at Bragg angle θ_B → QWP → cat's-eye lens ↔ mirror → retroreflects → AOM again (+f) → lens → PBS. After the double QWP pass the beam is H-pol; PBS deflects it to FC. Output: ν₀+2f, direction unchanged, frequency-agile.</div>
                 <canvas id="aomCanvas" width="560" height="195" style="width:100%;border-radius:5px;"></canvas>
               </div>
@@ -1932,22 +1932,22 @@ SteadyStateTweezer(
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#0c1526',
+              backgroundColor: '#faf5e9',
               borderColor: 'rgba(56,189,248,0.3)',
               borderWidth: 1,
-              titleColor: '#e2e8f0',
-              bodyColor: '#94a3b8',
+              titleColor: '#22190f',
+              bodyColor: '#5c503c',
             },
           },
           scales: {
             x: {
               title: { display: true, text: 'Cooling detuning (Γ units)', color: '#64748b', font: { size: 11 } },
-              ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 10 },
+              ticks: { color: '#5c503c', font: { size: 10 }, maxTicksLimit: 10 },
               grid:  { color: 'rgba(100,100,150,0.1)' },
             },
             y: {
               title: { display: true, text: 'Atom survival', color: '#64748b', font: { size: 11 } },
-              ticks: { color: '#94a3b8', font: { size: 10 } },
+              ticks: { color: '#5c503c', font: { size: 10 } },
               grid:  { color: 'rgba(100,100,150,0.1)' },
               min: -0.05, max: 1.0,
             },
@@ -1973,7 +1973,7 @@ SteadyStateTweezer(
 
       function frame(ts) {
         ctx.clearRect(0,0,W,H);
-        ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#f2ead9'; ctx.fillRect(0,0,W,H);
         const t = (ts * 0.0008) % (2*Math.PI);
 
         // Propagating photon phase (ripple along beam)
@@ -2100,7 +2100,7 @@ SteadyStateTweezer(
       function frame(ts) {
         const W = cv.clientWidth || 560;
         if (cv.width !== W) cv.width = W;
-        ctx.clearRect(0,0,W,H); ctx.fillStyle='#060e1c'; ctx.fillRect(0,0,W,H);
+        ctx.clearRect(0,0,W,H); ctx.fillStyle='#f2ead9'; ctx.fillRect(0,0,W,H);
 
         const L = layout(W, H);
         const {RY, FCY, laserX, pbsX, PBS_S, lens1X, lens2X,

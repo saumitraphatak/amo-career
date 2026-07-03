@@ -37,7 +37,7 @@
     /* ── Sticky topic nav ───────────────────────────────── */
     .topic-nav {
       position: sticky; top: 64px; z-index: 50;
-      background: rgba(2,8,15,0.92); backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg-base) 92%, transparent); backdrop-filter: blur(12px);
       border-bottom: 1px solid #1e293b;
       overflow-x: auto; white-space: nowrap;
       padding: .45rem 1rem; display: flex; gap: .35rem;
@@ -85,7 +85,7 @@
 
     /* ── Formula / math box ─────────────────────────────── */
     .formula-box {
-      background: #040d06; border: 1px solid #1a3d1a;
+      background: var(--bg-card); border: 1px solid var(--border-med);
       border-radius: 8px; padding: .8rem 1.2rem;
       margin: .75rem 0; overflow-x: auto;
     }
@@ -137,7 +137,7 @@
       border-bottom: 1px solid #1a2520;
     }
     .dd-table tr:last-child td { border-bottom: none; }
-    .dd-table tr:hover td { background: #0c1526; }
+    .dd-table tr:hover td { background: var(--bg-card); }
     .dd-table code { font-family: var(--mono); font-size: .85em; color: var(--accent); }
 
     /* ── SVG pulse diagrams ─────────────────────────────── */
@@ -150,7 +150,7 @@
 
     /* ── Chart containers ───────────────────────────────── */
     .chart-box {
-      background: #0c1526; border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid #1e293b;
       border-radius: 12px; padding: 1.25rem; margin: 1.25rem 0;
     }
     .chart-box h4 {
@@ -220,7 +220,7 @@
 
     /* ── Neutral atom highlight box ─────────────────────── */
     .atom-box {
-      background: linear-gradient(135deg, #061a0f 0%, #0c1526 100%);
+      background: linear-gradient(135deg, #061a0f 0%, var(--bg-card) 100%);
       border: 1px solid var(--accent-border);
       border-radius: 12px; padding: 1.4rem 1.6rem; margin: 1rem 0;
     }
@@ -1466,7 +1466,7 @@ function initFilterChart() {
         {
           label: 'FID (no pulses)',
           data: d.labels.map((w,i) => ({x: w, y: d.fidY[i]})),
-          borderColor: '#94a3b8', backgroundColor: 'transparent',
+          borderColor: '#5c503c', backgroundColor: 'transparent',
           borderWidth: 2, pointRadius: 0, tension: 0.1
         },
         {
@@ -1501,25 +1501,25 @@ function initFilterChart() {
       scales: {
         x: {
           type: 'logarithmic',
-          title: { display: true, text: 'ω (rad/s)', color: '#94a3b8', font: {size: 12} },
+          title: { display: true, text: 'ω (rad/s)', color: '#5c503c', font: {size: 12} },
           ticks: { color: '#64748b', maxTicksLimit: 8 },
           grid: { color: '#1e293b' }
         },
         y: {
           type: 'logarithmic',
-          title: { display: true, text: '|Ỹ(ω,T)|² or S(ω)', color: '#94a3b8', font: {size: 12} },
+          title: { display: true, text: '|Ỹ(ω,T)|² or S(ω)', color: '#5c503c', font: {size: 12} },
           ticks: { color: '#64748b', maxTicksLimit: 6 },
           grid: { color: '#1e293b' }
         }
       },
       plugins: {
         legend: {
-          labels: { color: '#94a3b8', boxWidth: 20, font: {size: 11} }
+          labels: { color: '#5c503c', boxWidth: 20, font: {size: 11} }
         },
         tooltip: {
-          backgroundColor: '#0c1526',
-          titleColor: '#e2e8f0',
-          bodyColor: '#94a3b8',
+          backgroundColor: '#faf5e9',
+          titleColor: '#22190f',
+          bodyColor: '#5c503c',
           borderColor: '#1e293b',
           borderWidth: 1,
           callbacks: {
@@ -1596,7 +1596,7 @@ function initT2Chart() {
       datasets: [{
         label: 'T₂(N) / T₂*',
         data: enhancements,
-        backgroundColor: enhancements.map((v,i) => i === 0 ? '#475569' : `rgba(74,222,128,${0.4 + 0.6*i/7})`),
+        backgroundColor: enhancements.map((v,i) => i === 0 ? '#8c8066' : `rgba(74,222,128,${0.4 + 0.6*i/7})`),
         borderColor: enhancements.map((v,i) => i === 0 ? '#64748b' : '#4ade80'),
         borderWidth: 1,
         borderRadius: 4
@@ -1607,12 +1607,12 @@ function initT2Chart() {
       animation: { duration: 300 },
       scales: {
         x: {
-          title: { display: true, text: 'Number of pulses N (CPMG)', color: '#94a3b8', font: {size: 12} },
+          title: { display: true, text: 'Number of pulses N (CPMG)', color: '#5c503c', font: {size: 12} },
           ticks: { color: '#64748b' },
           grid: { color: '#1e293b' }
         },
         y: {
-          title: { display: true, text: 'T₂(N) / T₂*  (enhancement factor)', color: '#94a3b8', font: {size: 12} },
+          title: { display: true, text: 'T₂(N) / T₂*  (enhancement factor)', color: '#5c503c', font: {size: 12} },
           ticks: { color: '#64748b' },
           grid: { color: '#1e293b' },
           beginAtZero: true
@@ -1621,9 +1621,9 @@ function initT2Chart() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0c1526',
-          titleColor: '#e2e8f0',
-          bodyColor: '#94a3b8',
+          backgroundColor: '#faf5e9',
+          titleColor: '#22190f',
+          bodyColor: '#5c503c',
           borderColor: '#1e293b',
           borderWidth: 1,
           callbacks: {
@@ -1649,7 +1649,7 @@ function updateT2Chart() {
   // Update bar chart
   t2Chart.data.datasets[0].data = enhancements;
   t2Chart.data.datasets[0].backgroundColor = enhancements.map((v,i) =>
-    i === 0 ? '#475569' : `rgba(74,222,128,${0.35 + 0.65*i/7})`
+    i === 0 ? '#8c8066' : `rgba(74,222,128,${0.35 + 0.65*i/7})`
   );
   t2Chart.update('none');
 
@@ -1775,7 +1775,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // z axis
     const[za,zb]=proj(0,0,1.2),[zc,zd]=proj(0,0,-0.5);
     ctx.beginPath();ctx.moveTo(zc,zd);ctx.lineTo(za,zb);ctx.strokeStyle='#334155';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillStyle='#475569';ctx.font='10px Inter';ctx.fillText('|0⟩',za+3,zb+3);
+    ctx.fillStyle='#8c8066';ctx.font='10px Inter';ctx.fillText('|0⟩',za+3,zb+3);
     const[ze,zf]=proj(0,0,-1.15);ctx.fillText('|1⟩',ze+3,zf);
     // equator x axis label
     const[xa,xb]=proj(1.2,0,0);ctx.fillText('+x',xa+2,xb+3);

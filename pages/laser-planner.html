@@ -452,7 +452,7 @@ const LASER_DB = {
 
 /* ─── wavelength → visible color mapping ─── */
 function nmToColor(nm) {
-  if (!nm) return '#475569';
+  if (!nm) return '#8c8066';
   if (nm < 400) return '#7c3aed';
   if (nm < 450) return '#6366f1';
   if (nm < 490) return '#3b82f6';
@@ -496,15 +496,15 @@ function buildDiagram(beams, accentColor) {
     if (b.nm) {
       svg += `<text x="${8 + srcW/2}" y="${y + 15}" fill="${col}" font-weight="700" font-size="12" text-anchor="middle">${b.nm} nm</text>`;
     }
-    svg += `<text x="${8 + srcW/2}" y="${y + 28}" fill="#94a3b8" font-size="8.5" text-anchor="middle">${b.source.length > 22 ? b.source.slice(0,22)+'…' : b.source}</text>`;
+    svg += `<text x="${8 + srcW/2}" y="${y + 28}" fill="#5c503c" font-size="8.5" text-anchor="middle">${b.source.length > 22 ? b.source.slice(0,22)+'…' : b.source}</text>`;
 
     // Arrow 1
     svg += `<line x1="${8+srcW}" y1="${cy}" x2="128" y2="${cy}" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>`;
 
     // AOM box
     svg += `<rect x="130" y="${y}" width="118" height="${boxH}" rx="6" fill="#0c1627" stroke="#1e3a5f" stroke-width="1"/>`;
-    svg += `<text x="189" y="${y+15}" fill="#e2e8f0" font-size="9.5" text-anchor="middle" font-weight="600">${b.aom && b.aom !== '—' ? (b.aom.length>18?b.aom.slice(0,18)+'…':b.aom) : 'Direct'}</text>`;
-    svg += `<text x="189" y="${y+28}" fill="#475569" font-size="8.5" text-anchor="middle">freq / intensity</text>`;
+    svg += `<text x="189" y="${y+15}" fill="#22190f" font-size="9.5" text-anchor="middle" font-weight="600">${b.aom && b.aom !== '—' ? (b.aom.length>18?b.aom.slice(0,18)+'…':b.aom) : 'Direct'}</text>`;
+    svg += `<text x="189" y="${y+28}" fill="#8c8066" font-size="8.5" text-anchor="middle">freq / intensity</text>`;
 
     // Arrow 2
     svg += `<line x1="249" y1="${cy}" x2="253" y2="${cy}" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>`;
@@ -513,7 +513,7 @@ function buildDiagram(beams, accentColor) {
     const fibColor = b.fiber ? '#34d399' : '#f87171';
     svg += `<rect x="255" y="${y}" width="108" height="${boxH}" rx="6" fill="#0c1627" stroke="#1e3a5f" stroke-width="1"/>`;
     svg += `<text x="309" y="${y+15}" fill="${fibColor}" font-size="9.5" text-anchor="middle" font-weight="600">${b.fiber ? 'Fiber (FC/APC)' : 'Free-space'}</text>`;
-    svg += `<text x="309" y="${y+28}" fill="#475569" font-size="8.5" text-anchor="middle">${b.fiber ? 'noise-cancelled' : 'alignment req.'}</text>`;
+    svg += `<text x="309" y="${y+28}" fill="#8c8066" font-size="8.5" text-anchor="middle">${b.fiber ? 'noise-cancelled' : 'alignment req.'}</text>`;
 
     // Arrow 3
     svg += `<line x1="364" y1="${cy}" x2="378" y2="${cy}" stroke="#334155" stroke-width="1.5" marker-end="url(#arr)"/>`;
@@ -522,8 +522,8 @@ function buildDiagram(beams, accentColor) {
     const useText = b.use;
     const words = useText.split(';')[0];
     svg += `<rect x="380" y="${y}" width="188" height="${boxH}" rx="6" fill="#0c1627" stroke="#1e3a5f" stroke-width="1"/>`;
-    svg += `<text x="474" y="${y+15}" fill="#94a3b8" font-size="8.5" text-anchor="middle">${words.length>30?words.slice(0,30)+'…':words}</text>`;
-    svg += `<text x="474" y="${y+28}" fill="#475569" font-size="8" text-anchor="middle">${b.label}</text>`;
+    svg += `<text x="474" y="${y+15}" fill="#5c503c" font-size="8.5" text-anchor="middle">${words.length>30?words.slice(0,30)+'…':words}</text>`;
+    svg += `<text x="474" y="${y+28}" fill="#8c8066" font-size="8" text-anchor="middle">${b.label}</text>`;
 
     // Power
     if (b.power) {

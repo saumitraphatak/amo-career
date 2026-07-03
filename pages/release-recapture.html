@@ -52,7 +52,7 @@
     .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--c-rr); margin: 0 0 .6rem 0; }
     .theory-box p  { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
     .theory-box p:last-child { margin-bottom: 0; }
-    .eq { font-family: var(--mono); font-size: .87rem; color: #f0abfc; display: block;
+    .eq { font-family: var(--mono); font-size: .87rem; color: var(--ink-blue); display: block;
           margin: .5rem 0; text-align: center; }
     .formula-box { border-color: rgba(251,146,60,0.25); }
 
@@ -74,18 +74,18 @@
     }
     .ctrl-field label { font-size: .8rem; color: var(--text-muted); display: block; margin-bottom: .35rem; }
     .ctrl-field input, .ctrl-field select {
-      width: 100%; background: #0a1628; border: 1px solid #1e3a5f;
+      width: 100%; background: var(--bg-surface); border: 1px solid var(--border-med);
       border-radius: 7px; padding: .45rem .75rem;
       color: var(--text-primary); font-size: .87rem; font-family: var(--mono);
     }
     .ctrl-field input:focus, .ctrl-field select:focus {
       outline: none; border-color: var(--c-rr);
     }
-    .ctrl-field select option { background: #0a1628; }
+    .ctrl-field select option { background: var(--bg-surface); }
 
     .temp-row { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
     .temp-chip {
-      background: #0a1628; border: 1px solid #1e3a5f; border-radius: 6px;
+      background: var(--bg-surface); border: 1px solid var(--border-med); border-radius: 6px;
       padding: .3rem .65rem; font-family: var(--mono); font-size: .8rem;
       color: var(--text-secondary); display: flex; align-items: center; gap: .4rem;
     }
@@ -109,7 +109,7 @@
     @media(max-width: 800px) { .results-grid { grid-template-columns: 1fr; } }
 
     .chart-card {
-      background: #060e1c; border: 1px solid #1e293b;
+      background: var(--bg-surface); border: 1px solid #1e293b;
       border-radius: 10px; padding: 1.1rem;
     }
     .chart-card h5 {
@@ -120,7 +120,7 @@
     /* Summary table */
     .sum-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .75rem; }
     .sum-table th {
-      background: #0a1628; color: var(--text-muted); font-weight: 600;
+      background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
       padding: .55rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
     }
     .sum-table td {
@@ -864,7 +864,7 @@ function runSimulation() {
         options: {
           responsive: true,
           plugins: {
-            legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+            legend: { labels: { color: '#5c503c', font: { size: 11 } } },
             tooltip: {
               callbacks: {
                 label: ctx => `P_cap = ${(ctx.raw*100).toFixed(1)}%`
@@ -873,12 +873,12 @@ function runSimulation() {
           },
           scales: {
             x: {
-              title: { display: true, text: 'Release time Δt (ms)', color: '#94a3b8' },
+              title: { display: true, text: 'Release time Δt (ms)', color: '#5c503c' },
               ticks: { color: '#64748b', maxTicksLimit: 8 },
               grid: { color: '#1e293b' }
             },
             y: {
-              title: { display: true, text: 'Recapture probability', color: '#94a3b8' },
+              title: { display: true, text: 'Recapture probability', color: '#5c503c' },
               ticks: { color: '#64748b', callback: v => (v*100).toFixed(0)+'%' },
               grid: { color: '#1e293b' },
               min: 0, max: 1
@@ -990,7 +990,7 @@ function drawTrajCanvas() {
   ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='left';
   ctx.fillStyle='rgba(74,222,128,0.85)'; ctx.fillText('● recaptured',10,16);
   ctx.fillStyle='rgba(248,113,113,0.85)'; ctx.fillText('● escaped',10,30);
-  ctx.fillStyle='#94a3b8'; ctx.fillText('τ = '+(dt*1e3).toFixed(3)+' ms  |  P_cap ≈ '+pRecap+'%',10,H-8);
+  ctx.fillStyle='#5c503c'; ctx.fillText('τ = '+(dt*1e3).toFixed(3)+' ms  |  P_cap ≈ '+pRecap+'%',10,H-8);
   document.getElementById('trajInfo').textContent =
     'w₀='+( tp.w0*1e6).toFixed(2)+'μm · U₀='+(tp.U0/kB*1e6).toFixed(0)+'μK · ωᵣ/2π='+(tp.wr/(2*Math.PI)/1e3).toFixed(1)+'kHz';
 }

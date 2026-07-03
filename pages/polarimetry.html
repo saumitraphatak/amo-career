@@ -25,17 +25,29 @@
   <style>
     /* ── Polarimetry-specific design tokens ── */
     :root {
-      --c-pol: #e879f9;          /* fuchsia accent for this page */
+      --c-pol: var(--ink-blue);          /* fuchsia accent for this page */
+      --c-pol-dim: color-mix(in srgb, var(--ink-blue) 12%, transparent);
+      --c-pol-border: color-mix(in srgb, var(--ink-blue) 30%, transparent);
+      /* local aliases for simulator components */
+      --pol-bg: var(--bg-base);
+      --pol-card: var(--bg-card);
+      --pol-card2: var(--bg-card-hover);
+      --pol-border: var(--border);
+      --pol-border2: var(--border-med);
+      --pol-text: var(--text-primary);
+      --pol-text2: var(--text-secondary);
+      --pol-cyan: #047c90;
+      --pol-cyan2: #0a5a68;
+      --pol-purple: #804df5;
+      --pol-green: #0b815a;
+      --pol-orange: #a15c07;
+      --pol-red: #b83a3a;
+      --pol-yellow: #896e03;
+    }
+    [data-theme="dark"] {
+      --c-pol: #e879f9;
       --c-pol-dim: rgba(232,121,249,0.12);
       --c-pol-border: rgba(232,121,249,0.25);
-      /* local aliases for simulator components */
-      --pol-bg: #02080f;
-      --pol-card: #0c1526;
-      --pol-card2: #0e1a2e;
-      --pol-border: rgba(255,255,255,0.07);
-      --pol-border2: rgba(255,255,255,0.12);
-      --pol-text: #e2e8f0;
-      --pol-text2: #94a3b8;
       --pol-cyan: #06b6d4;
       --pol-cyan2: #67e8f9;
       --pol-purple: #8b5cf6;
@@ -378,17 +390,17 @@
               <div class="pol-card pol-card-cyan">
                 <div class="pol-h3">Linear Polarization</div>
                 <p class="pol-p">E-field oscillates in a fixed plane at angle α. Created by a linear polarizer or PBS.</p>
-                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;\textcolor{#06b6d4}{\cos 2\alpha},\;\textcolor{#8b5cf6}{\sin 2\alpha},\;0\bigr]$$</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;\textcolor{#047c90}{\cos 2\alpha},\;\textcolor{#804df5}{\sin 2\alpha},\;0\bigr]$$</div>
               </div>
               <div class="pol-card pol-card-purple">
                 <div class="pol-h3">Circular Polarization</div>
                 <p class="pol-p">E-field rotates in a circle. <strong>RCP</strong>: clockwise looking into beam. Created by linear + QWP at 45°.</p>
-                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;0,\;0,\;\textcolor{#10b981}{\pm 1}\bigr]$$</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;0,\;0,\;\textcolor{#0b815a}{\pm 1}\bigr]$$</div>
               </div>
               <div class="pol-card pol-card-green" style="margin-bottom:0">
                 <div class="pol-h3">Elliptical Polarization</div>
                 <p class="pol-p">Most general case. Described by orientation ψ and ellipticity χ. Linear/circular are special cases.</p>
-                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;\textcolor{#06b6d4}{\cos 2\chi\cos 2\psi},\;\textcolor{#8b5cf6}{\cos 2\chi\sin 2\psi},\;\textcolor{#10b981}{\sin 2\chi}\bigr]$$</div>
+                <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\mathbf{S} = \bigl[1,\;\textcolor{#047c90}{\cos 2\chi\cos 2\psi},\;\textcolor{#804df5}{\cos 2\chi\sin 2\psi},\;\textcolor{#0b815a}{\sin 2\chi}\bigr]$$</div>
               </div>
             </div>
           </div>
@@ -542,7 +554,7 @@
               <div class="pol-beam"></div>
               <div class="pol-el pol-el-det"><div class="en">DETECTOR</div></div>
             </div>
-            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \tfrac{1}{2}\bigl[S_0 + \textcolor{#06b6d4}{S_1}\cos(4\theta) + \textcolor{#8b5cf6}{S_2}\sin(4\theta)\bigr]$$</div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \tfrac{1}{2}\bigl[S_0 + \textcolor{#047c90}{S_1}\cos(4\theta) + \textcolor{#804df5}{S_2}\sin(4\theta)\bigr]$$</div>
             <p class="pol-p" style="font-size:12px;margin:.25rem 0"><strong>No S₃ term</strong> — circular component is invisible. For circular input [S₁=S₂=0]: I(θ) = S₀/2 = flat line.</p>
             <div class="pol-warn"><strong>Key limitation:</strong> HWP flips S₃ but PBS transmits only linear, so S₃ cancels out. To detect circular, you need a fixed QWP at 45° first (Scenario 2), or use Method C below.</div>
           </div>
@@ -560,11 +572,11 @@
             </div>
             <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \tfrac{1}{2}\bigl[S_0 + S_1\cos^2(2\theta) + S_2\sin(2\theta)\cos(2\theta) - S_3\sin(2\theta)\bigr]$$</div>
             <p class="pol-p" style="font-size:12px;margin:.5rem 0">Using trig identities (Schaefer 2007 expansion):</p>
-            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \textcolor{#facc15}{a_0} + \textcolor{#10b981}{b_2}\sin(2\theta) + \textcolor{#06b6d4}{a_4}\cos(4\theta) + \textcolor{#8b5cf6}{b_4}\sin(4\theta)$$</div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$I(\theta) = \textcolor{#896e03}{a_0} + \textcolor{#0b815a}{b_2}\sin(2\theta) + \textcolor{#047c90}{a_4}\cos(4\theta) + \textcolor{#804df5}{b_4}\sin(4\theta)$$</div>
             <p class="pol-p" style="font-size:12px;margin:.5rem 0">where:</p>
-            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\textcolor{#facc15}{a_0} &= S_0/2 + S_1/4 &\quad&\text{(DC offset)}\\\textcolor{#10b981}{b_2} &= -S_3/2 &\quad&\text{(2nd harmonic encodes }S_3\text{!)}\\\textcolor{#06b6d4}{a_4} &= S_1/4 &\quad&\text{(4th harmonic cosine)}\\\textcolor{#8b5cf6}{b_4} &= S_2/4 &\quad&\text{(4th harmonic sine)}\end{aligned}$$</div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\textcolor{#896e03}{a_0} &= S_0/2 + S_1/4 &\quad&\text{(DC offset)}\\\textcolor{#0b815a}{b_2} &= -S_3/2 &\quad&\text{(2nd harmonic encodes }S_3\text{!)}\\\textcolor{#047c90}{a_4} &= S_1/4 &\quad&\text{(4th harmonic cosine)}\\\textcolor{#804df5}{b_4} &= S_2/4 &\quad&\text{(4th harmonic sine)}\end{aligned}$$</div>
             <p class="pol-p" style="font-size:12px;margin:.5rem 0">Recovery:</p>
-            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\textcolor{#06b6d4}{S_1 = 4a_4}\qquad \textcolor{#8b5cf6}{S_2 = 4b_4}\qquad \textcolor{#10b981}{S_3 = -2b_2}\qquad S_0 = 2a_0 - 2a_4$$</div>
+            <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\textcolor{#047c90}{S_1 = 4a_4}\qquad \textcolor{#804df5}{S_2 = 4b_4}\qquad \textcolor{#0b815a}{S_3 = -2b_2}\qquad S_0 = 2a_0 - 2a_4$$</div>
             <div class="pol-good"><strong>Why this wins:</strong> S₃ appears in the 2nd harmonic, unique to the QWP method. A single continuous rotation gives all four parameters via Fourier analysis. Noise averages out across the full sweep.</div>
           </div>
 

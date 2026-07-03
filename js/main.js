@@ -6,6 +6,44 @@
 'use strict';
 
 /* ─────────────────────────────────────────────────────
+   THEME — light (default) / dark toggle, persisted
+   ───────────────────────────────────────────────────── */
+const THEME_KEY = 'amo-theme';
+
+function getStoredTheme() {
+  return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+    btn.setAttribute('aria-pressed', theme === 'dark');
+    btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    const icon = btn.querySelector('[data-theme-icon]') || btn;
+    icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+    const label = btn.querySelector('[data-theme-label]');
+    if (label) label.textContent = theme === 'dark' ? 'Light theme' : 'Dark theme';
+  });
+}
+
+// Applied immediately on script load (before renderNav) to minimize flash.
+applyTheme(getStoredTheme());
+
+function initThemeToggle() {
+  document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const next = getStoredTheme() === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+    });
+  });
+}
+
+/* ─────────────────────────────────────────────────────
    NAV DATA
    ───────────────────────────────────────────────────── */
 const NAV = {
@@ -143,6 +181,7 @@ function renderNav({ active = '', root = '' } = {}) {
         </div>
 
         <div class="nav-right">
+          <button class="nav-theme-toggle" data-theme-toggle type="button" aria-pressed="false" aria-label="Switch to dark theme">🌙</button>
           <button class="nav-search-btn" id="global-search-btn" type="button" aria-label="Search AMO Toolkit">
             <span>Search</span>
             <kbd>/</kbd>
@@ -169,6 +208,9 @@ function renderNav({ active = '', root = '' } = {}) {
       <div class="nav-mobile-section">
         <button class="nav-mobile-link nav-mobile-search" id="global-search-btn-mobile" type="button">
           <span>⌕</span> Search AMO Toolkit
+        </button>
+        <button class="nav-mobile-link" data-theme-toggle type="button" aria-pressed="false">
+          <span data-theme-icon>🌙</span> <span data-theme-label>Dark theme</span>
         </button>
         <a class="nav-mobile-link" href="${root}home.html#about"><span>👤</span> About</a>
       </div>
@@ -217,6 +259,8 @@ function renderNav({ active = '', root = '' } = {}) {
   });
 
   initGlobalSearch(root);
+  initThemeToggle();
+  applyTheme(getStoredTheme());
 }
 
 
