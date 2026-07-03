@@ -30,8 +30,8 @@ function applyTheme(theme) {
   });
   // #hero-canvas is display:none in light mode, so anything that measured
   // its size while hidden (offsetWidth/Height = 0) needs to re-measure now
-  // that the toggle may have changed its visibility. initHeroCanvas()
-  // listens for 'resize' to do exactly that.
+  // that the toggle may have changed its visibility. home.html's inline
+  // hero-canvas script listens for 'resize' to do exactly that.
   window.dispatchEvent(new Event('resize'));
 }
 
@@ -324,122 +324,6 @@ function initTabs() {
         });
       });
     });
-  });
-}
-
-/* ─────────────────────────────────────────────────────
-   HERO CANVAS — floating atom particle network
-   ───────────────────────────────────────────────────── */
-function initHeroCanvas() {
-  const canvas = document.getElementById('hero-canvas');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  let W, H, particles, animId;
-
-  // Quantum color palette
-  const COLORS = ['#38bdf8', '#a78bfa', '#34d399', '#f472b6', '#60a5fa', '#2dd4bf'];
-
-  function resize() {
-    W = canvas.width  = canvas.offsetWidth;
-    H = canvas.height = canvas.offsetHeight;
-  }
-
-  function mkParticle() {
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    return {
-      x:  Math.random() * W,
-      y:  Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r:  Math.random() * 2 + 1.2,
-      color,
-      alpha: Math.random() * 0.5 + 0.3,
-      pulse: Math.random() * Math.PI * 2,  // phase offset
-    };
-  }
-
-  function init() {
-    resize();
-    const count = Math.min(90, Math.floor((W * H) / 9500));
-    particles = Array.from({ length: count }, mkParticle);
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    const now = performance.now() * 0.001;
-
-    // Update & draw particles
-    particles.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-
-      // Soft bounce
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-
-      // Pulsing glow
-      const pulseFactor = 0.7 + 0.3 * Math.sin(now * 1.5 + p.pulse);
-      const r = p.r * pulseFactor;
-
-      // Glow
-      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 6);
-      grad.addColorStop(0,   p.color + 'cc');
-      grad.addColorStop(0.4, p.color + '33');
-      grad.addColorStop(1,   'transparent');
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r * 6, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // Core dot
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.alpha * pulseFactor;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    });
-
-    // Draw connecting lines between nearby particles
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const a = particles[i], b = particles[j];
-        const dx = a.x - b.x, dy = a.y - b.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const maxDist = 130;
-        if (dist < maxDist) {
-          const opacity = (1 - dist / maxDist) * 0.18;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(56,189,248,${opacity})`;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-        }
-      }
-    }
-
-    animId = requestAnimationFrame(draw);
-  }
-
-  // Handle resize with debounce
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { init(); }, 200);
-  });
-
-  init();
-  draw();
-
-  // Cleanup on page hide
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      cancelAnimationFrame(animId);
-    } else {
-      draw();
-    }
   });
 }
 
@@ -1179,7 +1063,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initAccordions();
   initTabs();
   initSmoothScroll();
-  initHeroCanvas();
   initRecentTracking();
   renderRecentTools();
   initDerivationToggles();
