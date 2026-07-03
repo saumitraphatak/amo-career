@@ -28,6 +28,11 @@ function applyTheme(theme) {
     const label = btn.querySelector('[data-theme-label]');
     if (label) label.textContent = theme === 'dark' ? 'Light theme' : 'Dark theme';
   });
+  // #hero-canvas is display:none in light mode, so anything that measured
+  // its size while hidden (offsetWidth/Height = 0) needs to re-measure now
+  // that the toggle may have changed its visibility. initHeroCanvas()
+  // listens for 'resize' to do exactly that.
+  window.dispatchEvent(new Event('resize'));
 }
 
 // Applied immediately on script load (before renderNav) to minimize flash.
