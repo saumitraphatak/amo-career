@@ -695,9 +695,97 @@ $S_0 = A - C \;\mid\; S_1 = 2C \;\mid\; S_2 = 2D \;\mid\; S_3 = B$
               </div>
             </div><!-- /tech-section polarimetry -->
 
-            <!-- 4. Laser Freq Stabilisation → cross-reference -->
+            <!-- 4. Interferometers -->
             <div class="tech-section">
-              <div class="tech-section-title">4 · Laser Frequency Stabilisation</div>
+              <div class="tech-section-title">4 · Interferometers: Fabry&ndash;P&eacute;rot, Michelson &amp; Mach&ndash;Zehnder</div>
+              <div class="concept-box">
+                These three come up in almost every AMO lab conversation, often in the same sentence: a
+                <strong>Fabry&ndash;P&eacute;rot</strong> cavity locks the laser, a <strong>Michelson</strong> wavemeter tells you what
+                wavelength it's actually at, and a <strong>Mach&ndash;Zehnder</strong> sequence is how the atoms themselves
+                become the interferometer. The three differ mainly in <em>what happens to the light between the
+                splitting and the recombining</em>.
+              </div>
+
+              <div class="two-col-half">
+                <div>
+                  <h3 style="color:var(--text-primary);font-size:1rem;margin-bottom:var(--sp-3)">Fabry&ndash;P&eacute;rot (cavity)</h3>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.75;margin-bottom:var(--sp-3)">
+                    Two parallel, partially-reflective mirrors facing each other. Light doesn't split into separate
+                    arms at all &mdash; it bounces back and forth between the same two mirrors, interfering with itself
+                    on every round trip. Resonances occur when the round-trip path is an integer number of
+                    wavelengths.
+                  </p>
+                  <div class="formula-box" style="font-size:0.875rem">$$\text{FSR} = \frac{c}{2L}, \qquad \mathcal{F} = \frac{\pi\sqrt{R}}{1-R}, \qquad \delta\nu_{\rm FWHM} = \frac{\text{FSR}}{\mathcal{F}}$$</div>
+                  <p style="color:var(--text-muted);font-size:0.78rem;margin-top:var(--sp-2)">
+                    L = mirror spacing, R = mirror reflectivity, ℱ = finesse. Higher finesse &rarr; narrower, sharper
+                    resonances &rarr; a more sensitive frequency discriminator.
+                  </p>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.75;margin-top:var(--sp-3)">
+                    <strong>Where it shows up:</strong> PDH reference cavities for laser locking, spectrum analyzers
+                    for checking single-mode operation, mode-cleaning/filter cavities, cavity QED (this page's
+                    <a href="cavity-qed.html">Cavity QED Coupling Lab</a> is entirely built on this geometry).
+                  </p>
+                </div>
+                <div>
+                  <h3 style="color:var(--text-primary);font-size:1rem;margin-bottom:var(--sp-3)">Michelson</h3>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.75;margin-bottom:var(--sp-3)">
+                    A beamsplitter sends light down two arms, each ending in a mirror that <strong>retroreflects</strong>
+                    the light straight back the way it came. Both beams recombine at the same beamsplitter they
+                    started from. The signature feature: each arm is traversed twice, there and back.
+                  </p>
+                  <div class="formula-box" style="font-size:0.875rem">$$I \;\propto\; 1 + \cos\!\left(\frac{4\pi\,\Delta L}{\lambda}\right)$$</div>
+                  <p style="color:var(--text-muted);font-size:0.78rem;margin-top:var(--sp-2)">
+                    ΔL = arm-length difference. The factor of 4π (not 2π) comes from light making the round trip in
+                    each arm.
+                  </p>
+                  <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.75;margin-top:var(--sp-3)">
+                    <strong>Where it shows up:</strong> wavemeters (fringe-counting against a stabilized reference
+                    laser to read out an unknown wavelength), coherence-length measurements, beam-pointing and
+                    optical-path diagnostics.
+                  </p>
+                </div>
+              </div>
+
+              <h3 style="color:var(--text-primary);font-size:1rem;margin:var(--sp-5) 0 var(--sp-3)">Mach&ndash;Zehnder</h3>
+              <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.8;max-width:760px">
+                A first beamsplitter sends light down two <strong>separate, one-way</strong> arms &mdash; nothing is
+                retroreflected. A second beamsplitter recombines them, producing two distinct output ports whose
+                relative intensity encodes the phase difference accumulated between the arms. Because each arm is a
+                genuine single-pass path, you can put something <em>inside</em> it &mdash; a vapor cell, a phase
+                modulator, or a freely-falling atom.
+              </p>
+              <div class="formula-box" style="font-size:0.875rem;margin-top:var(--sp-3)">$$P_{\rm out} = \tfrac{1}{2}\bigl[1 + \cos(\Delta\phi)\bigr], \qquad \Delta\phi = \phi_1 - \phi_2$$</div>
+              <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.8;margin-top:var(--sp-3);max-width:760px">
+                <strong>Where it shows up:</strong> this is the geometry behind <strong>atom interferometry</strong> &mdash;
+                a &pi;/2&ndash;&pi;&ndash;&pi;/2 sequence of Raman or Bragg pulses splits, redirects, and recombines an atomic
+                wavepacket in momentum space exactly like a beamsplitter&ndash;mirror&ndash;beamsplitter sequence does for
+                light. That's how cold-atom gravimeters (measuring g), gyroscopes (rotation via the Sagnac effect),
+                and equivalence-principle tests work. It's also the standard geometry for fiber/EOM phase-to-amplitude
+                readout and for differential probe-vs-reference measurements.
+              </p>
+
+              <table class="stokes-table" style="margin-top:var(--sp-5)">
+                <thead><tr><th>Interferometer</th><th>What happens between BS and recombination</th><th>Typical AMO role</th></tr></thead>
+                <tbody>
+                  <tr><td>Fabry&ndash;P&eacute;rot</td><td>Light resonates between the same two mirrors, no separate arms</td><td>Laser locking, spectrum analysis, cavity QED</td></tr>
+                  <tr><td>Michelson</td><td>Two arms, each retroreflected back to the starting beamsplitter</td><td>Wavemeters, coherence length, alignment</td></tr>
+                  <tr><td>Mach&ndash;Zehnder</td><td>Two separate one-way arms, recombined at a second beamsplitter</td><td>Atom interferometry, EOM readout, differential probing</td></tr>
+                </tbody>
+              </table>
+
+              <div style="margin-top:var(--sp-4)">
+                <div class="tip-box">
+                  <strong>Quick day-to-day distinguisher:</strong> if the two arms retroreflect back through the same
+                  beamsplitter, it's a Michelson. If light in each arm only ever travels one-way before hitting a
+                  <em>second</em> beamsplitter, it's a Mach&ndash;Zehnder. When a cold-atom physicist says "the
+                  interferometer" with no qualifier, they almost always mean the Mach&ndash;Zehnder atom-optics sequence.
+                </div>
+              </div>
+            </div><!-- /tech-section interferometers -->
+
+            <!-- 5. Laser Freq Stabilisation → cross-reference -->
+            <div class="tech-section">
+              <div class="tech-section-title">5 · Laser Frequency Stabilisation</div>
               <div class="concept-box" style="display:flex; align-items:flex-start; gap:var(--sp-5);">
                 <span style="font-size:2rem; flex-shrink:0;">🔐</span>
                 <div>
