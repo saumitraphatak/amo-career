@@ -1,36 +1,43 @@
 # AMO Toolkit
 
-A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — covering 13 interactive research tools, lab technique guides, quantum computing context, laser cooling references, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
+A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 20+ interactive research tools organized by workflow (Build, Measure, Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
 **Live site:** https://amotoolkit.com/
 
 ---
 
-## The 13 Research Tools
+## The Research Tools
+
+Organized by workflow — build the apparatus, measure what it does, cool and trap atoms, then connect the result to quantum computing and career decisions.
 
 | Tool | Description |
 |---|---|
-| **Atom Library** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, recoil scale, US research groups |
-| **Lab Techniques** | 8 core experimental techniques with deep-dive accordions (MOT, tweezers, evaporation, imaging, lattices) |
-| **Rydberg Calculator** | n-scaling: lifetime τ ~ n³, C₆ ~ n¹¹, blockade radius R_b vs principal quantum number |
-| **Imaging SNR Calculator** | Single-atom fluorescence SNR — full EMCCD/sCMOS noise model, detection fidelity, min exposure finder |
-| **TOF Thermometry** | Temperature from time-of-flight: σ²(t) expansion fit, PSD, BEC threshold indicator |
-| **MOT / Trap Designer** | MOT damping/spring constants + Ioffe-Pritchard trap frequencies, evaporation η, Majorana warning |
-| **Gate Fidelity Budget** | 8-error Rydberg two-qubit gate budget; fidelity meter; SOTA comparison (Evered 2023: 99.5%) |
-| **Release-Recapture** | Interactive tweezer thermometry simulation from recapture probability vs free-flight time |
-| **Lab Calculators** | Optics (beam waist, NA, AOM, dBm), atomic physics (recoil, Zeeman, I_sat), trap (ω_r, ω_z, η_LD), CG coefficients |
+| **Atomic Species Selector** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, recoil scale, US research groups |
+| **Laser System Planner** | Pick a species, get required laser beams, wavelengths, block diagram, nonlinear-optics needs |
+| **MOT & Magnetic Trap Designer** | MOT damping/spring constants + Ioffe-Pritchard trap frequencies, evaporation η, Majorana warning |
+| **Laser Locking Guide** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
+| **AMO Lab Operations Handbook** | 8 core experimental techniques with deep-dive accordions (MOT, tweezers, evaporation, imaging, lattices) |
+| **Polarimetry Simulator** | Stokes parameters, QWP rotation analysis, degree of polarization |
+| **Zernike Wavefront Lab** | Wavefront aberration visualizer — OSA/ANSI Zernike terms, Strehl ratio, SLM phase patterns |
+| **Cavity QED Coupling Lab** | Atom-cavity coupling rates, finesse, strong/weak/bad-cavity regime classifier |
+| **Vacuum Systems Guide** | Pressure regimes, pumping chain, bake-out, materials, gauges, practical checklist |
+| **Tweezer Array Design Lab** | Single-tweezer trap physics, trap-parameter calculator, array geometry, species reference |
+| **Single-atom Imaging** | Fluorescence SNR — full EMCCD/sCMOS noise model, detection fidelity, min exposure finder |
+| **Single-atom Temperature** | Interactive tweezer thermometry simulation from recapture probability vs free-flight time |
+| **MOT Temperature** | Temperature from time-of-flight: σ²(t) expansion fit, PSD, BEC threshold indicator |
+| **Quick Lab Console** | Optics (beam waist, NA, AOM, dBm), atomic physics (recoil, Zeeman, I_sat), trap (ω_r, ω_z, η_LD), CG coefficients |
+| **Absorption Imaging Lab** | Beer-Lambert optical density imaging, species reference, practical considerations |
+| **Single-atom Cooling** | Laser cooling deep dive — narrative companion to the cooling simulator |
 | **Laser Cooling Simulator** | Doppler and Sisyphus cooling animation — force vs velocity, damping, momentum diffusion, sub-Doppler mechanisms |
-| **Laser Locking** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
-| **Zernike Polynomials** | Wavefront aberration visualizer — OSA/ANSI Zernike terms, Strehl ratio, SLM phase patterns |
-| **Polarimetry Explorer** | Stokes parameters, QWP rotation analysis, degree of polarization |
-
----
-
-## Quantum Computing Section
-
-| Resource | Description |
-|---|---|
-| **QC Landscape** | Where AMO physics skills fit — company profiles, hardware platforms, job roles, career roadmaps |
+| **Rydberg Blockade Lab** | n-scaling: lifetime τ ~ n³, C₆ ~ n¹¹, blockade radius R_b vs principal quantum number |
+| **Rydberg Gate Error Budget** | 8-error Rydberg two-qubit gate budget; fidelity meter; SOTA comparison (Evered 2023: 99.5%) |
+| **Randomized Benchmarking** | Gate-fidelity characterization — Clifford twirling, decay model, interleaved RB, SOTA results |
+| **Dynamical Decoupling** | π-pulse sequences as spectral filters extending qubit coherence (T₂, T₂*) |
+| **Remote Entanglement** | Photon-mediated entanglement between separate qubit/tweezer modules |
+| **AMO Group Finder** | Directory of 100+ AMO research groups, mapped and prioritized for grad/postdoc applications |
+| **AMO Paper Roadmap** | 53 papers organized by career stage, from undergrad entry to postdoc |
+| **Quantum Industry Map** | Company profiles, hardware platforms, job roles, career roadmaps |
+| **Rb vs Yb Qubit Comparison** | Side-by-side platform comparison for choosing a neutral-atom qubit species |
 
 ---
 
@@ -69,7 +76,7 @@ Run the lightweight physics regression checks after editing formulas:
 python3 tests/formula_regression.py
 ```
 
-These tests guard recoil-energy conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, and release-recapture wording.
+These tests guard recoil-energy conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, release-recapture wording, presence of key site UX features, and Rb/Yb comparison-panel fact boundaries.
 
 ---
 
@@ -90,34 +97,29 @@ This site ships three files for AI-readable access:
 ```
 amo-career/
 ├── index.html              # GitHub Pages redirect → home.html
-├── home.html               # Main landing page (13 tool cards, learn section, about)
+├── home.html               # Main landing page (workflow-grouped tool cards, learn section, about)
+├── 404.html                # Custom 404 page
 ├── CLAUDE.md               # AI coding assistant project guide
+├── CNAME                   # Custom domain: amotoolkit.com
 ├── llms.txt                # LLM site index (llmstxt.org standard)
 ├── llms-full.txt           # Full content for LLM/RAG ingestion
 ├── css/
 │   └── styles.css          # Full design system (dark quantum theme, all CSS variables)
 ├── js/
-│   └── main.js             # renderNav(), canvas animation, scroll reveal, accordions, tabs
-└── pages/                  # 19 tool and content pages
-    ├── atom-library.html
-    ├── lab-techniques.html
-    ├── rydberg-calculator.html
-    ├── imaging-calculator.html
-    ├── tof-calculator.html
-    ├── mot-designer.html
-    ├── fidelity-budget.html
-    ├── release-recapture.html
-    ├── lab-calculators.html
-    ├── laser-locking.html
-    ├── zernike.html
-    ├── polarimetry.html
-    ├── cooling-simulator.html
-    ├── laser-cooling.html
-    ├── rb-explorer.html
-    ├── rb87-vs-yb171.html
-    ├── dd-playground.html
-    ├── qc-landscape.html
-    └── learn-quantum.html
+│   └── main.js             # renderNav(), global search, canvas animation, scroll reveal, accordions, tabs
+├── tests/
+│   └── formula_regression.py
+└── pages/                  # 27 tool and content pages, grouped by NAV workflow category
+    ├── atom-library.html, laser-planner.html, mot-designer.html, laser-locking.html,
+    │   lab-techniques.html, polarimetry.html, zernike.html, cavity-qed.html,
+    │   vacuum-systems.html, tweezer-designer.html          # Build
+    ├── imaging-calculator.html, release-recapture.html, tof-calculator.html,
+    │   lab-calculators.html, absorption-imaging.html       # Measure
+    ├── laser-cooling.html, cooling-simulator.html          # Cool
+    ├── learn-quantum.html, rydberg-calculator.html, fidelity-budget.html,
+    │   rb-explorer.html, dd-playground.html, remote-entanglement.html   # Quantum
+    └── amo-groups.html, paper-syllabus.html, qc-landscape.html,
+        rb87-vs-yb171.html                                  # Career
 ```
 
 ---
@@ -147,7 +149,7 @@ Dark "quantum" theme with a unique accent color per tool:
 
 | Pattern | Implementation |
 |---|---|
-| **Nav** | `renderNav({ active: 'page-key', root: '../' })` — auto-updates count from NAV object and global search index |
+| **Nav** | `renderNav({ active: 'page-key', root: '../' })` — driven by the `NAV` object (grouped into Build/Measure/Cooling/Quantum/Career) and feeds the global search index |
 | **Math** | `$$...$$` display, `$...$` inline — KaTeX auto-renders on all pages |
 | **Accordions** | `.accordion` > `.accordion-header` + `.accordion-body` |
 | **Tabs** | `.tab-bar[data-group]` > `.tab-btn[data-tab]` + `.tab-panel[data-tab]` |
