@@ -71,7 +71,7 @@ def test_qc_claims_are_qualified() -> None:
 
 
 def test_release_recapture_is_thermometry_not_frequency_claim() -> None:
-    assert_contains("pages/release-recapture.html", "Release-recapture is a quick way to estimate the temperature")
+    assert_contains("pages/release-recapture.html", "Release-recapture is action-first thermometry")
     assert_contains("pages/release-recapture.html", "Thermometry, not direct trap-frequency metrology")
     assert_not_contains("pages/release-recapture.html", "recapture probability oscillates with the trap frequency")
 

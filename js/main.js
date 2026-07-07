@@ -45,7 +45,10 @@ function amoInk(alpha) {
 }
 window.amoInk = amoInk;
 
-// Applied immediately on script load (before renderNav) to minimize flash.
+// The actual flash-prevention happens via an inline <head> script (before
+// first paint, before this file is even fetched). This call just syncs
+// toggle-button icons/aria-state and re-dispatches 'resize' once the DOM
+// (and any [data-theme-toggle] buttons from renderNav) exist.
 applyTheme(getStoredTheme());
 
 function initThemeToggle() {
@@ -712,7 +715,7 @@ function initAssumptionBadges() {
       ${assumptions.map(a => `<button class="assumption-badge" type="button" data-assumption="${a}">${a}</button>`).join('')}
     </div>
   `;
-  const afterIntro = document.querySelector('.source-confidence-panel');
+  const afterIntro = document.querySelector('.source-confidence-panel') || document.querySelector('.page-playbook-panel');
   if (afterIntro) afterIntro.after(panel);
   else container.prepend(panel);
   const explain = panel.querySelector('.assumption-explain');
@@ -776,7 +779,7 @@ function initSourceConfidencePanels() {
       `).join('')}
     </div>
   `;
-  const afterAssumptions = document.querySelector('.assumption-panel');
+  const afterAssumptions = document.querySelector('.assumption-panel') || document.querySelector('.expert-mode-panel') || document.querySelector('.page-playbook-panel');
   if (afterAssumptions) afterAssumptions.after(panel);
   else container.prepend(panel);
 }
@@ -805,7 +808,7 @@ function initLabNotebook() {
       <button class="mini-action muted" type="button" data-clear-notebook>Clear local snapshots</button>
     </div>
   `;
-  const afterSources = document.querySelector('.source-confidence-panel') || document.querySelector('.assumption-panel');
+  const afterSources = document.querySelector('.source-confidence-panel') || document.querySelector('.assumption-panel') || document.querySelector('.page-playbook-panel');
   if (afterSources) afterSources.after(panel);
   else container.prepend(panel);
 
@@ -885,7 +888,9 @@ function initExpertModeToggles() {
     </div>
     <p class="mode-copy" aria-live="polite"></p>
   `;
-  container.prepend(panel);
+  const afterPlaybook = document.querySelector('.page-playbook-panel');
+  if (afterPlaybook) afterPlaybook.after(panel);
+  else container.prepend(panel);
   const copy = panel.querySelector('.mode-copy');
   const apply = next => {
     document.body.dataset.depthMode = next;
@@ -932,6 +937,192 @@ function initPaperToolBridge() {
     card.querySelector('.paper-body')?.appendChild(box);
   });
 }
+
+
+const PAGE_PLAYBOOKS = {
+  'atom-library': ['Choose a species', 'Compare transition constants, recoil scales, and cooling limits before opening design tools.', 'Use data-sheet links when a number will enter an experiment.'],
+  'laser-planner': ['Plan laser architecture', 'Select a species to see required wavelengths, power classes, nonlinear optics, and control elements.', 'Treat powers as starting points; vendors, linewidths, and beam geometry still need lab-specific checks.'],
+  'mot-designer': ['Estimate MOT behavior', 'Adjust detuning, saturation, beam size, and gradients to see damping, scattering, and capture trends.', 'Use it for scale and intuition before measuring loading curves.'],
+  'laser-locking': ['Choose a stabilization route', 'Compare saturated absorption, PDH, and beat-note locking from signal generation to failure modes.', 'Keep sign conventions and RF prefactors visible when translating to the lab.'],
+  'lab-techniques': ['Orient lab practice', 'Use the technique cards as an operations checklist for alignment, loading, imaging, and troubleshooting.', 'Open calculators from the related-tool panel when a number is needed.'],
+  'polarimetry': ['Debug polarization', 'Move from Stokes vectors to waveplate rotations and Mueller-matrix intuition.', 'Use the references when matching angle conventions to your polarimeter.'],
+  'zernike': ['Diagnose aberrations', 'Explore low-order Zernike modes, Strehl degradation, and SLM phase patterns.', 'Use exported plots as qualitative diagnostics, not direct wavefront-sensor replacement.'],
+  'cavity-qed': ['Classify cavity regimes', 'Enter finesse, length, waist, and atomic linewidth to estimate g0, kappa, gamma, C, and Purcell scales.', 'Check Hz versus angular-frequency conventions before comparing with papers.'],
+  'vacuum-systems': ['Design UHV choices', 'Move from pressure regimes to pumps, gauges, bakeout, materials, and leak checks.', 'Use the checklist style for planning and lab debugging.'],
+  'tweezer-designer': ['Design tweezer geometry', 'Estimate trap depth, frequencies, Lamb-Dicke parameter, scattering, array spacing, and power budget.', 'Check validity when atoms are hot or when aberrations dominate the waist.'],
+  'imaging-calculator': ['Estimate readout fidelity', 'Set species, NA, exposure, saturation, camera model, and background to compare photons, SNR, and fidelity.', 'Use histogram separation, not only SNR, when discussing survival and state detection.'],
+  'release-recapture': ['Fit temperature from survival', 'Set trap geometry, release times, and Monte Carlo size to model recapture probability.', 'This is thermometry for an assumed potential, not direct trap-frequency metrology.'],
+  'tof-calculator': ['Extract cloud temperature', 'Fit sigma-squared versus time-squared and compare PSD, recoil, and Doppler scales.', 'Be careful with pixel calibration and initial cloud size.'],
+  'lab-calculators': ['Get quick AMO numbers', 'Use the tabbed console for optics, recoil, Zeeman shifts, traps, cavities, and Clebsch-Gordan coefficients.', 'Confirm unit conventions before copying results into a notebook.'],
+  'absorption-imaging': ['Analyze ensemble images', 'Connect optical depth, column density, atom number, saturation correction, and shot noise.', 'Check imaging intensity and detuning before trusting OD at high density.'],
+  'laser-cooling': ['Understand cooling mechanisms', 'Read across Lamb-Dicke, sideband, gray molasses, EIT, Raman, and comparison sections.', 'Use the animations as mechanism cartoons; use equations and references for quantitative claims.'],
+  'cooling-simulator': ['Build cooling intuition', 'Tune detuning, saturation, recoil, and sub-Doppler parameters to see forces and diffusion.', 'Use trends rather than exact numbers when a multilevel model is required.'],
+  'learn-quantum': ['Learn neutral-atom QC language', 'Move topic by topic through qubits, gates, measurement, Rydberg blockade, error correction, and algorithms.', 'Use this as conceptual scaffolding before opening hardware-specific calculators.'],
+  'rydberg-calculator': ['Estimate blockade scales', 'Adjust n, Rabi frequency, spacing, and species to compare lifetime, C6, blockade radius, and gate scales.', 'Near Förster resonances, treat simple scaling laws as estimates.'],
+  'fidelity-budget': ['Build gate-error intuition', 'Vary independent error channels to see which terms limit a Rydberg two-qubit gate.', 'Coherent errors can combine nonlinearly; this is a budget, not a full master-equation solver.'],
+  'rb-explorer': ['Interpret benchmarking data', 'Connect decay curves, SPAM offsets, Clifford twirling, and interleaved RB to gate fidelity.', 'Do not overinterpret RB as a full diagnosis of coherent or leakage errors.'],
+  'dd-playground': ['Explore coherence protection', 'Compare CPMG, XY-style sequences, and filter functions against noise spectra.', 'Pulse errors and finite Rabi frequency matter in real experiments.'],
+  'remote-entanglement': ['Map networking tradeoffs', 'Follow photon collection, Bell-state measurement, loss, and rate bottlenecks for remote links.', 'Use rates as order-of-magnitude design estimates.'],
+  'amo-groups': ['Find research fits', 'Filter groups by platform, species, technique, and career relevance.', 'Use this as a discovery map; verify current openings and project direction on group pages.'],
+  'paper-syllabus': ['Read with purpose', 'Follow staged paper lists and use paper-to-tool bridges to connect literature to calculators.', 'Prefer primary papers for claims and reviews for orientation.'],
+  'qc-landscape': ['Translate AMO skills to industry', 'Compare hardware platforms, company claims, job roles, and roadmap maturity.', 'Separate demonstrated hardware from roadmap language.'],
+  'rb87-vs-yb171': ['Compare qubit species', 'Use side-by-side evidence for Rb and Yb choices across cooling, gates, imaging, clocks, and scaling.', 'Check whether a benchmark is Rb, Yb, Cs, or architecture-level before reusing it.'],
+};
+
+const RELATED_TOOLS = {
+  'atom-library': ['laser-planner', 'mot-designer', 'lab-calculators'],
+  'laser-planner': ['atom-library', 'laser-locking', 'lab-techniques'],
+  'mot-designer': ['atom-library', 'tof-calculator', 'cooling-simulator'],
+  'laser-locking': ['lab-techniques', 'polarimetry', 'zernike'],
+  'lab-techniques': ['laser-planner', 'vacuum-systems', 'lab-calculators'],
+  'polarimetry': ['laser-locking', 'lab-techniques', 'zernike'],
+  'zernike': ['tweezer-designer', 'imaging-calculator', 'polarimetry'],
+  'cavity-qed': ['atom-library', 'lab-calculators', 'remote-entanglement'],
+  'vacuum-systems': ['lab-techniques', 'mot-designer', 'atom-library'],
+  'tweezer-designer': ['atom-library', 'release-recapture', 'rydberg-calculator'],
+  'imaging-calculator': ['release-recapture', 'tweezer-designer', 'absorption-imaging'],
+  'release-recapture': ['imaging-calculator', 'tweezer-designer', 'laser-cooling'],
+  'tof-calculator': ['mot-designer', 'absorption-imaging', 'cooling-simulator'],
+  'lab-calculators': ['atom-library', 'tweezer-designer', 'cavity-qed'],
+  'absorption-imaging': ['tof-calculator', 'imaging-calculator', 'atom-library'],
+  'laser-cooling': ['cooling-simulator', 'release-recapture', 'lab-calculators'],
+  'cooling-simulator': ['laser-cooling', 'mot-designer', 'tof-calculator'],
+  'learn-quantum': ['rydberg-calculator', 'fidelity-budget', 'rb-explorer'],
+  'rydberg-calculator': ['fidelity-budget', 'rb87-vs-yb171', 'learn-quantum'],
+  'fidelity-budget': ['rydberg-calculator', 'rb-explorer', 'qc-landscape'],
+  'rb-explorer': ['fidelity-budget', 'dd-playground', 'learn-quantum'],
+  'dd-playground': ['rb-explorer', 'learn-quantum', 'rb87-vs-yb171'],
+  'remote-entanglement': ['cavity-qed', 'fidelity-budget', 'qc-landscape'],
+  'amo-groups': ['paper-syllabus', 'qc-landscape', 'rb87-vs-yb171'],
+  'paper-syllabus': ['amo-groups', 'learn-quantum', 'laser-cooling'],
+  'qc-landscape': ['amo-groups', 'fidelity-budget', 'rb87-vs-yb171'],
+  'rb87-vs-yb171': ['atom-library', 'rydberg-calculator', 'qc-landscape'],
+};
+
+const REFERENCE_TRAILS = {
+  'atom-library': [
+    ['data sheet', 'Steck alkali data sheets and NIST ASD anchor the alkali transition constants.'],
+    ['review', 'Use species-specific cold-atom reviews for scattering, cooling, and clock-transition context.'],
+  ],
+  'laser-planner': [
+    ['lab practice', 'Beam lists follow common AMO laser architectures for alkali and alkaline-earth experiments.'],
+    ['vendor/data sheet', 'Final diode, SHG, fiber, and AOM choices should be checked against current vendor specifications.'],
+  ],
+  'amo-groups': [
+    ['live web', 'Group membership, openings, and topics change; use the directory as a starting map.'],
+    ['career context', 'Filter tags summarize public group descriptions rather than ranking scientific quality.'],
+  ],
+  'paper-syllabus': [
+    ['primary literature', 'Paper cards point to the original paper or review when possible.'],
+    ['reading path', 'Ordering is pedagogical: entry points first, then mechanism and frontier papers.'],
+  ],
+  'laser-cooling': [
+    ['review', 'Cooling limits and mechanisms should be checked against laser-cooling reviews and primary tweezer papers.'],
+    ['theory model', 'The unified cooling language follows effective Hamiltonian, optical pumping, and Lamb-Dicke approximations.'],
+  ],
+  'qc-landscape': [
+    ['peer-reviewed', 'Demonstrated fidelities and logical-qubit claims should trace to papers.'],
+    ['roadmap', 'Company roadmaps and projected qubit counts are not experimental demonstrations.'],
+  ],
+  'rb87-vs-yb171': [
+    ['peer-reviewed', 'Species comparisons rely on cited clock, tweezer, gate, and imaging benchmarks.'],
+    ['scope note', 'Some array-scale benchmarks are Cs or architecture-level context, not Rb/Yb measurements.'],
+  ],
+  defaultTool: [
+    ['textbook', 'Core equations use standard AMO, optics, and quantum-optics conventions.'],
+    ['peer-reviewed', 'Experimental benchmark numbers should be traced to the page references or source confidence panel.'],
+  ],
+  defaultPage: [
+    ['curated source', 'This page is a guide or map; verify time-sensitive details from linked primary sources.'],
+    ['context note', 'Use the page for orientation, not as a substitute for current papers or group websites.'],
+  ],
+};
+
+function navItemByKey(key) {
+  return [...NAV.tools, ...NAV.learn].find(item => item.key === key);
+}
+
+function initPagePlaybookPanel() {
+  if (!location.pathname.includes('/pages/')) return;
+  const key = currentPageKey();
+  const play = PAGE_PLAYBOOKS[key];
+  const container = getPageContainer();
+  if (!play || !container || document.querySelector('.page-playbook-panel')) return;
+  const panel = document.createElement('section');
+  panel.className = 'page-playbook-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head compact">
+      <div>
+        <div class="eyebrow">Page Playbook</div>
+        <h2>${play[0]}</h2>
+      </div>
+    </div>
+    <div class="page-playbook-grid">
+      <div><span>Use it for</span><p>${play[1]}</p></div>
+      <div><span>Read with care</span><p>${play[2]}</p></div>
+    </div>
+  `;
+  container.prepend(panel);
+}
+
+function initReferenceTrailPanel() {
+  if (!location.pathname.includes('/pages/')) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.reference-trail-panel')) return;
+  const key = currentPageKey();
+  const refs = REFERENCE_TRAILS[key] || (isToolLikePage() ? REFERENCE_TRAILS.defaultTool : REFERENCE_TRAILS.defaultPage);
+  const panel = document.createElement('section');
+  panel.className = 'reference-trail-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head compact">
+      <div>
+        <div class="eyebrow">References and Source Trail</div>
+        <h2>What the page is grounded in</h2>
+      </div>
+    </div>
+    <div class="source-confidence-grid">
+      ${refs.map(([tag, body]) => `
+        <div class="source-confidence-card">
+          <span class="source-tag ${String(tag).toLowerCase().replace(/[^a-z0-9]+/g, '-')}">${tag}</span>
+          <p>${body}</p>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  const explicitRefs = Array.from(container.querySelectorAll('h2,h3,strong')).find(el => /references|further reading|key references/i.test(el.textContent));
+  const anchor = explicitRefs?.closest('section, .content-section, .section-block, .tool-section');
+  if (anchor) anchor.before(panel);
+  else container.appendChild(panel);
+}
+
+function initRelatedToolsPanel() {
+  if (!location.pathname.includes('/pages/')) return;
+  const key = currentPageKey();
+  const related = RELATED_TOOLS[key];
+  const container = getPageContainer();
+  if (!related?.length || !container || document.querySelector('.auto-related-tools')) return;
+  const root = location.pathname.includes('/pages/') ? '' : 'pages/';
+  const cards = related.map(k => navItemByKey(k)).filter(Boolean).map(item => `
+    <a class="see-also-card" href="${root}${item.href.replace(/^pages\//, '')}">
+      <span class="see-also-icon">${item.icon || '•'}</span>
+      <div>
+        <div class="see-also-name">${item.label}</div>
+        <div class="see-also-desc">${item.kind || 'AMO Toolkit page'}</div>
+      </div>
+    </a>
+  `).join('');
+  if (!cards) return;
+  const panel = document.createElement('section');
+  panel.className = 'see-also auto-related-tools';
+  panel.innerHTML = `
+    <div class="see-also-title">Related tools</div>
+    <div class="see-also-grid">${cards}</div>
+  `;
+  const footer = container.querySelector('footer, .footer');
+  if (footer) footer.before(panel);
+  else container.appendChild(panel);
+}
+
 
 function downloadText(filename, text, type = 'text/plain') {
   const blob = new Blob([text], { type });
@@ -1076,7 +1267,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initRecentTracking();
   renderRecentTools();
   initDerivationToggles();
+  initPagePlaybookPanel();
+  initAssumptionBadges();
+  initSourceConfidencePanels();
+  initReferenceTrailPanel();
+  initRelatedToolsPanel();
   initShareableCalculatorParams();
+  initLabNotebook();
+  initExpertModeToggles();
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
