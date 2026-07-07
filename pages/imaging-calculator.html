@@ -358,8 +358,11 @@
     <div class="route-grid">
       <div class="route-card"><span class="step">01</span><strong>Set the imaging transition</strong><p>Choose species, detuning, saturation, and exposure to compute the scattering rate.</p></div>
       <div class="route-card"><span class="step">02</span><strong>Collect photons</strong><p>Set NA, transmission, QE, and camera model to turn scattered photons into detected signal.</p></div>
-      <div class="route-card"><span class="step">03</span><strong>Read SNR and fidelity</strong><p>Separate photon-count SNR from histogram overlap and atom-survival limits.</p></div>
-      <div class="route-card"><span class="step">04</span><strong>Use the histogram</strong><p>Choose a threshold and inspect the false-positive/false-negative tails directly.</p></div>
+      <div class="route-card"><span class="step">03</span><strong>Read the SNR meter</strong><p>See the combined signal-to-noise ratio update live from your current inputs.</p></div>
+      <div class="route-card"><span class="step">04</span><strong>Check exposure time</strong><p>See how SNR grows with exposure and where the SNR=10 and SNR=50 targets fall.</p></div>
+      <div class="route-card"><span class="step">05</span><strong>Understand the histogram</strong><p>Learn what the bright/dark peaks and their overlap mean for detection fidelity.</p></div>
+      <div class="route-card"><span class="step">06</span><strong>Use the histogram</strong><p>Choose a threshold and inspect the false-positive/false-negative tails directly.</p></div>
+      <div class="route-card"><span class="step">07</span><strong>Check the formulas</strong><p>See the underlying scattering-rate, SNR, and fidelity equations this tool is built on.</p></div>
     </div>
   </section>
 
@@ -711,146 +714,12 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     </div>
   </section>
 
-  <!-- ── Fluorescence histogram animation ── -->
-  <section class="section-block anim-in delay-5">
-    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
-      <span style="color:var(--c-img)">05 </span>Fluorescence Histogram — Threshold Preview
-    </h2>
-    <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:.75rem;">
-      Each frame adds simulated imaging shots drawn from the real Poisson distributions for your settings.
-      <strong style="color:#1c805b;">Green = atom present</strong> (N_sig photons) ·
-      <strong style="color:#4f72a4;">Gray = empty tweezer</strong> (N_bg background) ·
-      <strong style="color:#926a03;">dashed = optimal threshold θ</strong>.
-      Detection fidelity = 1 − P(miss) − P(false alarm).
-    </p>
-    <canvas id="fluorHistCanvas" width="600" height="210"
-      style="width:100%;border-radius:8px;background:#faf5e9;display:block;"></canvas>
-    <div style="display:flex;gap:1.5rem;margin-top:.5rem;flex-wrap:wrap;">
-      <div id="histFidReadout" style="font-family:var(--font-mono);font-size:.82rem;color:#1c805b;font-weight:700;"></div>
-      <div id="histShotCount"  style="font-family:var(--font-mono);font-size:.78rem;color:var(--text-muted);"></div>
-      <div id="histErrReadout" style="font-family:var(--font-mono);font-size:.78rem;color:#e20b0b;"></div>
-    </div>
-  </section>
-
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 5: THEORY ════════════════════════════════════ -->
-  <section class="section-block anim-in delay-5">
-    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:var(--c-img)">06 </span>Physics &amp; Formulas
-    </h2>
-
-    <div class="accordion">
-      <button class="accordion-header" aria-expanded="false">
-        Collection geometry, solid angle
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
-      </button>
-      <div class="accordion-body">
-        <div class="theory-box">
-          <h4>Geometric collection fraction η_geo</h4>
-          <p>A high-NA objective collects photons into a cone defined by the half-angle
-             θ_max = arcsin(NA/n), where n is the refractive index of the medium (n=1 in air/vacuum).</p>
-        </div>
-        <div class="formula-box">
-$$\eta_{\rm geo} = \frac{1 - \sqrt{1 - {\rm NA}^2}}{2} \quad \text{[exact, for } n=1\text{]}$$
-$$\approx \frac{{\rm NA}^2}{4} \quad \text{[paraxial, NA} \ll 1\text{]}$$
-Example: NA $= 0.6 \Rightarrow \eta_{\rm geo} = 10\%$; NA $= 0.8 \Rightarrow \eta_{\rm geo} = 20\%$</div>
-        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          Note that isotropic emission into 4π steradians means even NA=0.95 captures only ~26%
-          of photons geometrically. High-NA objectives (0.5–0.85) are typical for tweezer experiments.
-        </p>
-      </div>
-    </div>
-
-    <div class="accordion">
-      <button class="accordion-header" aria-expanded="false">
-        Camera noise model, EMCCD vs sCMOS
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
-      </button>
-      <div class="accordion-body">
-        <div class="theory-box">
-          <h4>Noise variance per pixel per frame</h4>
-          <p>Each camera type has a distinct noise model. The total variance σ²_total
-             determines the denominator of SNR = N_sig / σ_total.</p>
-        </div>
-        <div class="formula-box">
-EMCCD (excess noise factor $F = \sqrt{2}$):
-$$\sigma^2 = F^2(N_{\rm sig} + N_{\rm bg} + N_{\rm dark}) + (\sigma_{\rm read}/G)^2 = 2(N_{\rm sig} + N_{\rm bg} + N_{\rm dark}) + (\sigma_{\rm read}/G)^2$$
-sCMOS (no multiplication noise):
-$$\sigma^2 = N_{\rm sig} + N_{\rm bg} + N_{\rm dark} + \sigma_{\rm read}^2$$
-Ideal: $\sigma^2 = N_{\rm sig} + N_{\rm bg} + N_{\rm dark}$<br>
-where $G$ = EM gain, $\sigma_{\rm read}$ = read noise (e$^-$ RMS)</div>
-        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          For EMCCD the read noise is divided by EM gain G, making it negligible at high gain
-          (G ≳ 50). The penalty is the √2 excess noise factor that increases shot noise variance
-          by 2×. For sCMOS cameras (1–2 e⁻ read noise), read noise is the dominant term at low
-          photon counts.
-        </p>
-      </div>
-    </div>
-
-    <div class="accordion">
-      <button class="accordion-header" aria-expanded="false">
-        Detection fidelity, Poisson statistics
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
-      </button>
-      <div class="accordion-body">
-        <div class="theory-box">
-          <h4>Binary atom detection</h4>
-          <p>We distinguish "atom present" (Poisson mean μ<sub>sig</sub>) from "no atom"
-             (Poisson mean μ<sub>bg</sub>) by choosing a threshold θ. The optimal threshold
-             minimises total error probability.</p>
-        </div>
-        <div class="formula-box">
-For Gaussian approximation ($\mu \gg 1$):
-$$P_{\rm miss} = \Phi\!\left(\frac{-(\mu_{\rm sig} - \theta)}{\sqrt{\sigma^2_{\rm sig}}}\right) \quad \text{[false negative]}$$
-$$P_{\rm false} = 1 - \Phi\!\left(\frac{\theta - \mu_{\rm bg}}{\sqrt{\sigma^2_{\rm bg}}}\right) \quad \text{[false positive]}$$
-Optimal $\theta \approx (\mu_{\rm sig} + \mu_{\rm bg})/2$<br>
-Detection fidelity: $\mathcal{F} = 1 - (P_{\rm miss} + P_{\rm false})/2$.<br>
-If the bright and dark peaks have equal variance and ${\rm SNR}=(\mu_{\rm sig}-\mu_{\rm bg})/\sigma$,
-then $\mathcal{F}\approx\Phi({\rm SNR}/2)$. The calculator below uses the bright and dark variances separately.</div>
-        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that fidelity scales as
-          erfc(SNR), doubling SNR dramatically reduces error. Background suppression (e.g.
-          dark-field or EIT imaging) improves fidelity by reducing μ_bg without reducing μ_sig.
-        </p>
-      </div>
-    </div>
-
-    <div class="accordion">
-      <button class="accordion-header" aria-expanded="false">
-        Recoil heating &amp; imaging limits
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
-      </button>
-      <div class="accordion-body">
-        <div class="theory-box">
-          <h4>Photon recoil vs trap depth</h4>
-          <p>Every scattered photon imparts a recoil kick ℏk. At scattering rate R_sc the atom
-             heats at rate dE/dt = E_rec × R_sc (in a σ⁺/σ⁻ Sisyphus beam, this is partially
-             cancelled; in a σ beam near resonance it accumulates).</p>
-        </div>
-        <div class="formula-box">
-$$E_{\rm rec} = \frac{\hbar^2 k^2}{2m}$$
-$^{87}$Rb D2: $E_{\rm rec}/k_{\rm B} \approx 181$ nK, so one absorption plus one emission deposits $\sim 2E_{\rm rec}/k_B \approx 362$ nK<br>
-Heating rate: $\dot{T} \approx 2E_{\rm rec} R_{\rm sc}/k_{\rm B}$ [absorption + spontaneous emission, no cooling]<br>
-Max imaging time ($U_0$ = trap depth): $t_{\rm max} \sim U_0/(E_{\rm rec} R_{\rm sc})$<br>
-Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} \approx 55$ ms</div>
-        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          In practice, tweezer imaging uses repump + imaging beams in a gray molasses or
-          Λ-enhanced dark SPOT configuration to scatter &gt;1000 photons without losing the atom.
-          This pushes fidelity above 99.5% in optimized tweezer experiments (Bergamini 2004; Blodgett et al. 2023; Manetsch et al. 2025).
-        </p>
-      </div>
-    </div>
-
-  </section>
-
-  <hr class="section-divider">
-
-  <!-- ═══ SECTION 6: IMAGING HISTOGRAM & FIDELITY ══════════════ -->
+    <!-- ═══ SECTION 5: IMAGING HISTOGRAM & FIDELITY (theory) ══════════════ -->
   <section class="section-block anim-in delay-5" id="histogram-section">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:var(--c-img)">07 </span>Imaging Histogram &amp; Detection Fidelity
+      <span style="color:var(--c-img)">05 </span>Imaging Histogram &amp; Detection Fidelity
     </h2>
 
     <div class="theory-box">
@@ -1279,6 +1148,141 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
 
   <hr class="section-divider">
 
+    <!-- ── SECTION 6: Fluorescence histogram animation (live preview) ── -->
+  <section class="section-block anim-in delay-5">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:.5rem;">
+      <span style="color:var(--c-img)">06 </span>Fluorescence Histogram — Threshold Preview
+    </h2>
+    <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:.75rem;">
+      Each frame adds simulated imaging shots drawn from the real Poisson distributions for your settings.
+      <strong style="color:#1c805b;">Green = atom present</strong> (N_sig photons) ·
+      <strong style="color:#4f72a4;">Gray = empty tweezer</strong> (N_bg background) ·
+      <strong style="color:#926a03;">dashed = optimal threshold θ</strong>.
+      Detection fidelity = 1 − P(miss) − P(false alarm).
+    </p>
+    <canvas id="fluorHistCanvas" width="600" height="210"
+      style="width:100%;border-radius:8px;background:#faf5e9;display:block;"></canvas>
+    <div style="display:flex;gap:1.5rem;margin-top:.5rem;flex-wrap:wrap;">
+      <div id="histFidReadout" style="font-family:var(--font-mono);font-size:.82rem;color:#1c805b;font-weight:700;"></div>
+      <div id="histShotCount"  style="font-family:var(--font-mono);font-size:.78rem;color:var(--text-muted);"></div>
+      <div id="histErrReadout" style="font-family:var(--font-mono);font-size:.78rem;color:#e20b0b;"></div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+    <!-- ═══ SECTION 7: PHYSICS & FORMULAS ════════════════════════════════════ -->
+  <section class="section-block anim-in delay-5">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:var(--c-img)">07 </span>Physics &amp; Formulas
+    </h2>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Collection geometry, solid angle
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Geometric collection fraction η_geo</h4>
+          <p>A high-NA objective collects photons into a cone defined by the half-angle
+             θ_max = arcsin(NA/n), where n is the refractive index of the medium (n=1 in air/vacuum).</p>
+        </div>
+        <div class="formula-box">
+$$\eta_{\rm geo} = \frac{1 - \sqrt{1 - {\rm NA}^2}}{2} \quad \text{[exact, for } n=1\text{]}$$
+$$\approx \frac{{\rm NA}^2}{4} \quad \text{[paraxial, NA} \ll 1\text{]}$$
+Example: NA $= 0.6 \Rightarrow \eta_{\rm geo} = 10\%$; NA $= 0.8 \Rightarrow \eta_{\rm geo} = 20\%$</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          Note that isotropic emission into 4π steradians means even NA=0.95 captures only ~26%
+          of photons geometrically. High-NA objectives (0.5–0.85) are typical for tweezer experiments.
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Camera noise model, EMCCD vs sCMOS
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Noise variance per pixel per frame</h4>
+          <p>Each camera type has a distinct noise model. The total variance σ²_total
+             determines the denominator of SNR = N_sig / σ_total.</p>
+        </div>
+        <div class="formula-box">
+EMCCD (excess noise factor $F = \sqrt{2}$):
+$$\sigma^2 = F^2(N_{\rm sig} + N_{\rm bg} + N_{\rm dark}) + (\sigma_{\rm read}/G)^2 = 2(N_{\rm sig} + N_{\rm bg} + N_{\rm dark}) + (\sigma_{\rm read}/G)^2$$
+sCMOS (no multiplication noise):
+$$\sigma^2 = N_{\rm sig} + N_{\rm bg} + N_{\rm dark} + \sigma_{\rm read}^2$$
+Ideal: $\sigma^2 = N_{\rm sig} + N_{\rm bg} + N_{\rm dark}$<br>
+where $G$ = EM gain, $\sigma_{\rm read}$ = read noise (e$^-$ RMS)</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          For EMCCD the read noise is divided by EM gain G, making it negligible at high gain
+          (G ≳ 50). The penalty is the √2 excess noise factor that increases shot noise variance
+          by 2×. For sCMOS cameras (1–2 e⁻ read noise), read noise is the dominant term at low
+          photon counts.
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Detection fidelity, Poisson statistics
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Binary atom detection</h4>
+          <p>We distinguish "atom present" (Poisson mean μ<sub>sig</sub>) from "no atom"
+             (Poisson mean μ<sub>bg</sub>) by choosing a threshold θ. The optimal threshold
+             minimises total error probability.</p>
+        </div>
+        <div class="formula-box">
+For Gaussian approximation ($\mu \gg 1$):
+$$P_{\rm miss} = \Phi\!\left(\frac{-(\mu_{\rm sig} - \theta)}{\sqrt{\sigma^2_{\rm sig}}}\right) \quad \text{[false negative]}$$
+$$P_{\rm false} = 1 - \Phi\!\left(\frac{\theta - \mu_{\rm bg}}{\sqrt{\sigma^2_{\rm bg}}}\right) \quad \text{[false positive]}$$
+Optimal $\theta \approx (\mu_{\rm sig} + \mu_{\rm bg})/2$<br>
+Detection fidelity: $\mathcal{F} = 1 - (P_{\rm miss} + P_{\rm false})/2$.<br>
+If the bright and dark peaks have equal variance and ${\rm SNR}=(\mu_{\rm sig}-\mu_{\rm bg})/\sigma$,
+then $\mathcal{F}\approx\Phi({\rm SNR}/2)$. The calculator below uses the bright and dark variances separately.</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that fidelity scales as
+          erfc(SNR), doubling SNR dramatically reduces error. Background suppression (e.g.
+          dark-field or EIT imaging) improves fidelity by reducing μ_bg without reducing μ_sig.
+        </p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-header" aria-expanded="false">
+        Recoil heating &amp; imaging limits
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="accordion-body">
+        <div class="theory-box">
+          <h4>Photon recoil vs trap depth</h4>
+          <p>Every scattered photon imparts a recoil kick ℏk. At scattering rate R_sc the atom
+             heats at rate dE/dt = E_rec × R_sc (in a σ⁺/σ⁻ Sisyphus beam, this is partially
+             cancelled; in a σ beam near resonance it accumulates).</p>
+        </div>
+        <div class="formula-box">
+$$E_{\rm rec} = \frac{\hbar^2 k^2}{2m}$$
+$^{87}$Rb D2: $E_{\rm rec}/k_{\rm B} \approx 181$ nK, so one absorption plus one emission deposits $\sim 2E_{\rm rec}/k_B \approx 362$ nK<br>
+Heating rate: $\dot{T} \approx 2E_{\rm rec} R_{\rm sc}/k_{\rm B}$ [absorption + spontaneous emission, no cooling]<br>
+Max imaging time ($U_0$ = trap depth): $t_{\rm max} \sim U_0/(E_{\rm rec} R_{\rm sc})$<br>
+Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} \approx 55$ ms</div>
+        <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
+          In practice, tweezer imaging uses repump + imaging beams in a gray molasses or
+          Λ-enhanced dark SPOT configuration to scatter &gt;1000 photons without losing the atom.
+          This pushes fidelity above 99.5% in optimized tweezer experiments (Bergamini 2004; Blodgett et al. 2023; Manetsch et al. 2025).
+        </p>
+      </div>
+    </div>
+
+  </section>
+  <hr class="section-divider">
+
   <!-- ═══ SECTION 7: REFERENCES ════════════════════════════════ -->
   <section class="section-block anim-in delay-6">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
@@ -1357,7 +1361,7 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=18"></script>
+<script src="../js/main.js?v=19"></script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 

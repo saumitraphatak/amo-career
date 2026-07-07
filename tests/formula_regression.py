@@ -113,6 +113,34 @@ def test_rb_yb_panel_fact_boundaries() -> None:
     assert_not_contains("pages/rb87-vs-yb171.html", "roughly 50–70%")
 
 
+def test_cavity_qed_conventions() -> None:
+    assert_contains("pages/cavity-qed.html", "g_0 = \\xi\\sqrt{\\frac{3\\pi\\Gamma c^3}{2\\omega^2 V}}")
+    assert_contains("pages/cavity-qed.html", "const g0_rad  = xi * Math.sqrt(3 * _PI * Gam_rad * _c**3 / (2 * omega**2 * V_mode));")
+    assert_contains("pages/cavity-qed.html", "F &gt; \\mathrm{FSR}/(2g₀)")
+    assert_contains("pages/cavity-qed.html", "\\mathcal{F} > \\frac{\\pi c}{2 L g_0}")
+    assert_not_contains("pages/cavity-qed.html", "Math.sqrt(3 * Gam_rad")
+
+
+def test_currentness_and_wording_guardrails() -> None:
+    assert_contains("pages/laser-planner.html", "≈518,295,836,590,864 Hz")
+    assert_contains("pages/laser-planner.html", "versus about 7 THz for Rb")
+    assert_contains("pages/vacuum-systems.html", "Respect the ion-pump bake rating")
+    assert_contains("pages/qc-landscape.html", "#AQ 64 Tempo benchmark")
+    assert_contains("pages/atom-library.html", "518,295,836,590,864 Hz")
+    assert_contains("pages/remote-entanglement.html", "6,100-atom Cs benchmark")
+    assert_contains("pages/remote-entanglement.html", "magnetic sensitivity is suppressed to the nuclear-magneton scale")
+    assert_contains("pages/tweezer-designer.html", "key Rb benchmark for neutral-atom gates")
+    assert_contains("pages/paper-syllabus.html", "mid-circuit readout, feed-forward, and several logical encodings")
+    assert_not_contains("pages/atom-library.html", "518,295,836,590.863 Hz")
+    assert_not_contains("pages/remote-entanglement.html", "A single optical tweezer array can hold ~1,000–3,000 atoms today")
+    assert_not_contains("pages/tweezer-designer.html", "current SOTA benchmark")
+    assert_not_contains("pages/remote-entanglement.html", "every serious neutral-atom quantum computing company")
+    assert_not_contains("pages/remote-entanglement.html", "has no magnetic moment to first order")
+    assert_not_contains("pages/vacuum-systems.html", "the molecule ion pumps hate")
+    assert_not_contains("pages/vacuum-systems.html", "Never bake with an ion pump running")
+    assert_not_contains("pages/laser-planner.html", "vs 15 THz for Rb")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -123,6 +151,8 @@ def main() -> None:
         test_release_recapture_is_thermometry_not_frequency_claim,
         test_site_ux_features_present,
         test_rb_yb_panel_fact_boundaries,
+        test_cavity_qed_conventions,
+        test_currentness_and_wording_guardrails,
     ]
     for test in tests:
         test()
