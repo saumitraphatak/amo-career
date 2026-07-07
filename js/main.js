@@ -1267,18 +1267,24 @@ document.addEventListener('DOMContentLoaded', () => {
   initRecentTracking();
   renderRecentTools();
   initDerivationToggles();
-  initPagePlaybookPanel();
-  initAssumptionBadges();
-  initSourceConfidencePanels();
-  initReferenceTrailPanel();
   initRelatedToolsPanel();
   initShareableCalculatorParams();
-  initLabNotebook();
   initExpertModeToggles();
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
+  updateHeroStats();
 });
+
+// home.html's hero stats used to be hand-typed numbers that silently went
+// stale as tools were added (see CLAUDE.md known issues). Derive them from
+// NAV directly so they can never drift again.
+function updateHeroStats() {
+  const toolsEl = document.getElementById('stat-tools-count');
+  if (toolsEl) toolsEl.textContent = NAV.tools.length;
+  const conceptsEl = document.getElementById('stat-concepts-count');
+  if (conceptsEl) conceptsEl.textContent = NAV.learn.length;
+}
 
 /* ─────────────────────────────────────────────────────────
    KATEX AUTO-RENDER

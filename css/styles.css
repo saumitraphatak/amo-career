@@ -2698,3 +2698,45 @@ a.path-step:hover {
   .page-hero-2col { grid-template-columns: 1fr; }
   .page-hero-anim { display: none; }
 }
+
+/* =====================================================
+   PRINT
+   Guides, syllabi, and formula-heavy tool pages are exactly
+   the kind of content people want as a clean PDF/printout.
+   ===================================================== */
+@media print {
+  /* Chrome that means nothing on paper */
+  .nav, .nav-mobile-overlay, .global-search, .skip-link,
+  .hero-badge, .hero-actions, .hero-stats, #hero-canvas, .hero-grad,
+  .footer, .workflow-panel, .recent-tools-panel,
+  [data-theme-toggle], .tool-card-cta, .path-step-arrow,
+  .back-to-top, .scroll-reveal-observer-target {
+    display: none !important;
+  }
+
+  * { animation: none !important; transition: none !important; box-shadow: none !important; }
+
+  html, body { background: #fff !important; color: #111 !important; }
+  .page-wrap, .page-content, .container { max-width: 100% !important; }
+
+  a { color: #111 !important; text-decoration: underline; }
+  h1, h2, h3, h4 { color: #000 !important; }
+
+  /* Force every accordion open and every tab panel visible — nothing
+     collapsed or hidden behind interaction should be lost on paper. */
+  .accordion-body { display: block !important; max-height: none !important; }
+  .accordion-chevron { display: none !important; }
+  .tab-bar { display: none !important; }
+  .tab-panel { display: block !important; margin-bottom: var(--sp-6); }
+
+  .formula-box, .atom-box, .tool-card, .path-card,
+  .info-banner, [class*="-panel"] {
+    background: #f7f7f7 !important;
+    border: 1px solid #ccc !important;
+    color: #111 !important;
+  }
+
+  .page-hero { background: none !important; }
+
+  @page { margin: 1.5cm; }
+}

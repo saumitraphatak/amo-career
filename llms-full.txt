@@ -3,7 +3,7 @@
 **Live site:** https://amotoolkit.com/
 **Author:** Saumitra Phatak — Physics PhD candidate, Purdue University, Hood Lab (ultracold atoms / optical tweezers)
 **Source:** https://github.com/saumitraphatak/amo-career
-**Purpose:** Career and research toolkit for Atomic, Molecular & Optical (AMO) physicists. Contains 13 interactive physics tools, a quantum computing industry landscape, 14 quantum fundamentals topics, and experimental technique guides. Built with pure HTML/CSS/Vanilla JS — no build tools, KaTeX for math rendering, Chart.js for interactive plots.
+**Purpose:** Career and research toolkit for Atomic, Molecular & Optical (AMO) physicists. Contains 22+ interactive physics tools/guides across 27 pages, a quantum computing industry landscape, 14 quantum fundamentals topics, career/literature reference pages, and experimental technique guides. Built with pure HTML/CSS/Vanilla JS — no build tools, KaTeX for math rendering, Chart.js for interactive plots.
 
 ---
 
@@ -12,24 +12,32 @@
 ```
 home.html               — Landing page (tool grid, learn section, about)
 pages/atom-library.html
-pages/lab-techniques.html
-pages/rydberg-calculator.html
-pages/imaging-calculator.html
-pages/tof-calculator.html
+pages/laser-planner.html
 pages/mot-designer.html
-pages/fidelity-budget.html
-pages/release-recapture.html
-pages/lab-calculators.html
 pages/laser-locking.html
-pages/zernike.html
+pages/lab-techniques.html
 pages/polarimetry.html
-pages/cooling-simulator.html
+pages/zernike.html
+pages/cavity-qed.html
+pages/vacuum-systems.html
+pages/tweezer-designer.html
+pages/imaging-calculator.html
+pages/release-recapture.html
+pages/tof-calculator.html
+pages/lab-calculators.html
+pages/absorption-imaging.html
 pages/laser-cooling.html
-pages/rb-explorer.html
-pages/rb87-vs-yb171.html
-pages/dd-playground.html
-pages/qc-landscape.html
+pages/cooling-simulator.html
 pages/learn-quantum.html
+pages/rydberg-calculator.html
+pages/fidelity-budget.html
+pages/rb-explorer.html
+pages/dd-playground.html
+pages/remote-entanglement.html
+pages/amo-groups.html
+pages/paper-syllabus.html
+pages/qc-landscape.html
+pages/rb87-vs-yb171.html
 ```
 
 ---
@@ -570,6 +578,215 @@ Measure via rotating-waveplate Stokes polarimetry
 
 ---
 
+## TOOL 13: LASER SYSTEM PLANNER
+**URL:** https://amotoolkit.com/pages/laser-planner.html
+**Accent color:** #f472b6 (pink)
+
+Design tool, not a calculator: pick an atom species and get the laser system needed to run it.
+### Sections
+01 Select Atom Species — 02 Required Laser Beams (cooling, repump, imaging, Rydberg/clock as applicable, with wavelengths) — 03 System Block Diagram (source → AOM/EOM → fiber → chamber) — 04 Nonlinear Optics Required (SHG/frequency-doubling stages needed to reach each wavelength from available diode/fiber laser lines)
+Output is species-specific: which beams you need, their wavelengths, and what nonlinear-optics hardware bridges the gap from a stock diode/fiber laser to that wavelength.
+
+---
+
+## TOOL 14: CAVITY QED COUPLING LAB
+**URL:** https://amotoolkit.com/pages/cavity-qed.html
+**Accent color:** #c084fc (violet)
+
+**Single-photon coupling rate:**
+$$g_0 = \xi\sqrt{\frac{3\Gamma c^3}{2\omega^2 V}} \qquad V = \frac{\pi w_0^2 L}{4} \qquad C = \frac{g_0^2}{\kappa\gamma} \qquad \kappa = \frac{\text{FSR}}{2\mathcal{F}} \qquad \gamma = \frac{\Gamma}{2}$$
+
+**Strong-coupling condition:**
+$$\text{Strong coupling:} \quad g_0 > \kappa,\;\gamma \quad \Leftrightarrow \quad \mathcal{F} > \frac{\pi c}{4 L g_0}$$
+
+Classifies a given atom-cavity system into strong / weak / bad-cavity coupling regimes given cavity length L, waist w₀, finesse F, and atomic linewidth Γ; charts coupling rate vs finesse; includes reference systems and a common-mistakes section.
+
+---
+
+## TOOL 15: VACUUM SYSTEMS GUIDE
+**URL:** https://amotoolkit.com/pages/vacuum-systems.html
+**Accent color:** #22d3ee (cyan)
+
+Reference guide, not a calculator, for why UHV matters in cold-atom experiments.
+### Sections
+01 Why Vacuum? — 02 The Pressure Landscape (rough/high/ultra-high regimes) — 03 The Pumping Chain (roughing, turbo, ion, getter pumps) — 04 Baking Out — 05 Materials & Connections (conflat flanges, leak checking) — 06 Reading Your Vacuum (gauge types) — 07 Practical Checklist
+
+**Mean free path (kinetic theory):**
+$$\lambda = \frac{k_B T}{\sqrt{2}\,\pi\,d^2\,P}$$
+
+---
+
+## TOOL 16: TWEEZER ARRAY DESIGN LAB
+**URL:** https://amotoolkit.com/pages/tweezer-designer.html
+**Accent color:** #f59e0b (amber)
+
+**Gaussian-beam trap depth (far-detuned dipole trap):**
+$$U_0 = -\frac{3\pi c^2}{2\omega_0^3}\,\frac{\Gamma}{\Delta}\,I_0$$
+
+**Radial trap frequency:**
+$$\omega_r = \sqrt{\frac{4|U_0|}{m w_0^2}}$$
+
+### Sections
+01 Single-Tweezer Physics (waist, depth, trap frequency) — 02 Trap Parameter Calculator — 03 Array Geometry (spacing, SLM/AOD generation) — 04 Species & Wavelength Reference (common tweezer-trapped atoms) — 05 References & Further Reading
+
+---
+
+## TOOL 17: ABSORPTION IMAGING LAB
+**URL:** https://amotoolkit.com/pages/absorption-imaging.html
+**Accent color:** #818cf8 (indigo)
+
+Companion to the fluorescence Imaging SNR Calculator, focused on Beer-Lambert absorption imaging.
+
+**Measured optical density:**
+$$\text{OD} = -\ln\!\left(\frac{I_{\rm shadow} - I_{\rm dark}}{I_{\rm probe} - I_{\rm dark}}\right)$$
+
+**Saturation-corrected optical density (accounts for high-intensity/near-resonant imaging):**
+$$\text{OD}_{\rm true} = \text{OD}_{\rm meas} + \frac{I_{\rm probe} - I_{\rm shadow}}{I_{\rm sat}}$$
+$$\text{OD}_{\rm true} = -\ln\!\left(\frac{I_{\rm out}}{I_{\rm in}}\right) + \frac{I_{\rm in} - I_{\rm out}}{I_{\rm sat}}$$
+
+### Sections
+01 How Absorption Imaging Works — 02 Imaging Calculator — 03 Species Reference — 04 Practical Considerations (resonant vs off-resonant, saturation effects, high-intensity imaging) — 05 References & Further Reading
+
+---
+
+## TOOL 18: RANDOMIZED BENCHMARKING EXPLORER
+**URL:** https://amotoolkit.com/pages/rb-explorer.html
+**Accent color:** #c084fc (violet)
+
+Not about rubidium — RB as in the gate-fidelity-characterization protocol. Covers the SPAM problem and Clifford-group twirling.
+
+**Exponential decay model:**
+$$F(m) = A \cdot p^m + B$$
+
+**Average error rate from decay parameter p (dimension d, with 1-/2-qubit special cases):**
+$$r_C = \frac{(d-1)(1-p)}{d} \quad \text{[1Q: } r_C = \tfrac{1-p}{2}\text{, 2Q: } r_C = \tfrac{3(1-p)}{4}\text{]}$$
+
+**Per-gate error estimate:**
+$$\varepsilon_{\rm gate} \approx \frac{r_C}{\bar{n}} \quad \text{where } \bar{n} \approx 1.875 \text{ (1Q)}, \approx 2.0 \text{ (2Q)}$$
+
+**Useful circuit depth (fidelity ≈ 1/e):**
+$$N_{\rm useful} = \frac{1}{2r_C}$$
+
+**Interleaved RB (IRB) — isolating a single gate's error:**
+$$r_{\rm gate} = \frac{d-1}{d}\left(1 - \frac{p_{\rm int}}{p_{\rm ref}}\right)$$
+
+Includes working calculators for both standard RB and interleaved RB, plus SOTA neutral-atom results.
+
+---
+
+## TOOL 19: DYNAMICAL DECOUPLING PLAYGROUND
+**URL:** https://amotoolkit.com/pages/dd-playground.html
+**Accent color:** #4ade80 (green)
+
+Interactive playground for qubit coherence and π-pulse decoupling sequences.
+
+**Free-induction decay — Gaussian dephasing vs Markovian/exponential:**
+$$W_{\rm FID}(T) = e^{-(T/T_2^*)^2} \qquad W_{\rm FID}(T) = e^{-T/T_2^*}$$
+
+**General dephasing via noise filter function:**
+$$\chi(T) = \frac{1}{2\pi}\int_0^\infty S(\omega)\,|\tilde{Y}(\omega,T)|^2\,d\omega, \qquad T_2 \text{ defined by } \chi(T_2) = 1$$
+
+**Hahn echo filter function:**
+$$|\tilde{Y}_{\rm HE}(\omega,T)|^2 \propto \frac{\sin^4(\omega T/4)}{\omega^2}$$
+
+**CPMG pulse timing and filter function (N pulses):**
+$$t_k^{\rm CPMG} = \frac{(2k-1)\,T}{2N}, \quad k = 1,\ldots,N$$
+$$|\tilde{Y}_{\rm CPMG-N}(\omega,T)|^2 = \frac{4\sin^2(\omega\tau)\sin^2(N\omega\tau)}{\omega^2}, \quad \tau = \frac{T}{2N}$$
+
+**CPMG scaling under power-law noise S(ω) ∝ ω⁻ᵅ:**
+$$T_2^{\rm CPMG}(N) \propto N^{\alpha/(1+\alpha)}$$
+
+**Noise-spectroscopy inversion (extracting S(ω) from a DD scan):**
+$$S(\omega_c) \approx \frac{\chi(T,N)}{|\tilde{Y}(\omega_c,T)|^2 \Delta\omega_{\rm peak}}$$
+
+Shows how DD sequences (Hahn echo, CPMG, etc.) act as spectral filter functions that extend coherence by refocusing low-frequency noise.
+
+---
+
+## TOOL 20: REMOTE ENTANGLEMENT
+**URL:** https://amotoolkit.com/pages/remote-entanglement.html
+**Accent color:** #0ea5e9 (sky)
+
+Deep dive on photon-mediated entanglement between physically separated qubits/tweezer modules — connecting independent quantum processors, not single-qubit fidelity, is framed as the scaling bottleneck.
+
+**Heralded entanglement success probability (single-photon collection, both sides):**
+$$p_{\rm success} = \frac{\eta_A \cdot \eta_B}{2}$$
+
+**Photon collection efficiency (NA-limited):**
+$$\eta_{\rm coll} = \frac{1 - \sqrt{1-\text{NA}^2}}{2} \approx \frac{\text{NA}^2}{4}$$
+
+**Bell-state projection after a Bell-state measurement (BSM):**
+$$|\Psi_{\rm after\ BSM}\rangle = \frac{1}{\sqrt{2}}\!\left(|{\uparrow}_A\, {\uparrow}_B\rangle + e^{i\theta}|{\downarrow}_A\, {\downarrow}_B\rangle\right) = |\Phi^+\rangle \;\;\text{or}\;\; |\Phi^-\rangle$$
+
+**Fidelity bound from HOM-type interference visibility M:**
+$$\mathcal{F} \leq \frac{1 + M}{2}$$
+
+**Entanglement generation rate:**
+$$\text{duty cycle} = p_{\rm success} \times f_{\rm rep} \times \tau_{\rm attempt}$$
+
+Covers heralded entanglement protocols, photon collection/loss budgets, and reference experimental results linking remote atoms via optical fiber/free-space photon links.
+
+---
+
+## TOOL 21: COOLING SIMULATOR (expanded)
+**URL:** https://amotoolkit.com/pages/cooling-simulator.html
+**Accent color:** #60a5fa (blue)
+
+**Scattering rate:**
+$$\Gamma_{\rm sc} = \frac{\Gamma}{2}\cdot\frac{s_0}{1 + s_0 + (2\delta'/\Gamma)^2}$$
+
+**Doppler cooling force and damping coefficient:**
+$$F(v) \approx -\alpha v, \qquad \alpha = \hbar k^2 \cdot \frac{4|\delta|\,s_0\,\Gamma}{(1 + s_0 + (2\delta/\Gamma)^2)^2}$$
+
+**Doppler temperature limit:**
+$$T_D = \frac{\hbar\Gamma}{2k_{\rm B}}$$
+
+**Sisyphus (sub-Doppler) temperature scaling:**
+$$T_{\rm Sisyphus} \propto \frac{U_0^2}{E_r} \propto \frac{I^2}{\delta^2\,E_r}$$
+
+**Gray-molasses dark state:**
+$$|\mathrm{dark}\rangle = \cos\theta\,|F\!=\!1/2\rangle - \sin\theta\,|F\!=\!3/2\rangle$$
+
+Interactive Doppler + Sisyphus cooling animation; velocity distribution narrows over time; equilibrium temperature k_BT = D_p/|α| where D_p is the momentum-diffusion coefficient.
+
+---
+
+## TOOL 22: SINGLE-ATOM COOLING (deep dive)
+**URL:** https://amotoolkit.com/pages/laser-cooling.html
+**Accent color:** #60a5fa (blue)
+
+Narrative/derivation companion to the Cooling Simulator — same physics, textbook-style walkthrough rather than an interactive tool. Includes the resolved-sideband and gray-molasses cooling animations (GIFs) as visual aids.
+
+**Laser linewidth requirement for resolved-sideband cooling:**
+$$\delta\nu_\text{laser} \lesssim \eta\, \Omega_R \lesssim \eta\, \nu$$
+
+---
+
+## CAREER & REFERENCE PAGES
+
+### AMO Group Finder (`pages/amo-groups.html`)
+**Accent color:** #4ade80 (green)
+Career-mapping tool: a directory of 100+ AMO research groups. Sections: 02 Featured Directory (most relevant groups, deeply profiled), 03 Global Watchlist (broader list), 04 Highest-Priority Shortlists (narrowing down where to apply for grad school/postdoc positions by subfield — ultracold atoms, Rydberg, cavity QED, precision measurement, etc.).
+
+### AMO Paper Roadmap (`pages/paper-syllabus.html`)
+**Accent color:** #818cf8 (indigo)
+"53 Papers That Build an AMO Career" — a curated reading list organized by career stage, presented as 4 tabs: 🎓 Undergrad Entry, 🔬 Grad Year 1, ⚛️ Advanced Grad, 🚀 Postdoc/Career. Guides a physicist through foundational and current AMO/QC literature in order, with explicit guidance not to read all 53 papers the same way.
+
+### Rb87 vs Yb171 Qubit Comparison (`pages/rb87-vs-yb171.html`)
+**Accent color:** #f59e0b (amber)
+Side-by-side platform comparison (Rb87 alkali vs Yb171 alkaline-earth-like) for choosing a qubit species. 12 sections: Why These Two Atoms, Atomic Physics Deep Dive, Qubit Encoding, Laser Cooling & State Prep, Coherence & Decoherence, Gate Performance, Readout & SPAM, Array Size & Scalability, Erasure Conversion (Yb171's structural advantage), Full Head-to-Head Comparison, Companies & Ecosystem, Key Papers & References.
+
+Sample qubit encodings:
+$$|0\rangle = |F{=}1, m_F{=}0\rangle, \quad |1\rangle = |F{=}2, m_F{=}0\rangle \quad \text{(Rb87 clock states)}$$
+$$|0\rangle = |m_I{=}-\tfrac{1}{2}\rangle, \quad |1\rangle = |m_I{=}+\tfrac{1}{2}\rangle \quad \text{(Yb171 nuclear-spin qubit)}$$
+
+Gate fidelity decomposition used for the head-to-head comparison:
+$$\mathcal{F}_{\rm CZ} = 1 - \varepsilon_{\rm Ryd} - \varepsilon_{\rm scatt} - \varepsilon_{\rm D} - \varepsilon_{\rm \Omega}$$
+
+Published benchmarks cited: Rb87 CZ fidelity 99.5% (up to 60 parallel atom pairs); Yb171 nuclear-spin qubit differential Zeeman shift ≈ 2.6 Hz/mG.
+
+---
+
 ## QC INDUSTRY LANDSCAPE
 **URL:** https://amotoolkit.com/pages/qc-landscape.html
 **Accent color:** #a78bfa (violet)
@@ -799,11 +1016,7 @@ Controlled by magnetic field near Feshbach resonance
 
 ## OTHER TOOLS
 
-### Cooling Simulator (`pages/cooling-simulator.html`)
-Doppler cooling: F(v) = −αv for |v| ≪ Γ/k
-Sisyphus cooling: σ⁺/σ⁻ polarization gradient → sub-Doppler; momentum diffusion coefficient D_p
-Equilibrium temperature: k_BT = D_p/|α|
-Interactive animation shows velocity distribution narrowing over time.
+Sub-features embedded inside other tool pages (not standalone pages):
 
 ### Clebsch-Gordan Coefficients (`pages/lab-calculators.html`)
 ⟨j₁m₁;j₂m₂|JM⟩ via Wigner 3j:
@@ -840,5 +1053,5 @@ Inter — body text; JetBrains Mono (--font-mono) — equations and code display
 
 ---
 
-*This file was generated for LLM/RAG ingestion. It represents content as of 2026-04-11.*
+*This file was generated for LLM/RAG ingestion. It represents content as of 2026-07-07.*
 *For the canonical, up-to-date content see the live site or source repository.*
