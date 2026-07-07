@@ -37,7 +37,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cavity QED Coupling Lab","description":"Interactive cavity QED calculator: single-photon coupling g₀, cooperativity C, critical photon number, Purcell factor, and strong-coupling conditions.","url":"https://amotoolkit.com/pages/cavity-qed.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Cavity QED Coupling Lab","item":"https://amotoolkit.com/pages/cavity-qed.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=17">
+  <link rel="stylesheet" href="../css/styles.css?v=18">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -545,7 +545,7 @@
         </div>
 
         <div class="formula-box anim-in delay-2" style="margin-top:var(--sp-4)">
-          $$g_0 = \xi\sqrt{\frac{3\Gamma c^3}{2\omega^2 V}} \qquad V = \frac{\pi w_0^2 L}{4} \qquad C = \frac{g_0^2}{\kappa\gamma} \qquad \kappa = \frac{\text{FSR}}{2\mathcal{F}} \qquad \gamma = \frac{\Gamma}{2}$$
+          $$g_0 = \xi\sqrt{\frac{3\pi\Gamma c^3}{2\omega^2 V}} \qquad V = \frac{\pi w_0^2 L}{4} \qquad C = \frac{g_0^2}{\kappa\gamma} \qquad \kappa = \frac{\text{FSR}}{2\mathcal{F}} \qquad \gamma = \frac{\Gamma}{2}$$
         </div>
         <p class="anim-in delay-2" style="font-size:.82rem;color:var(--text-muted);margin-top:.65rem;line-height:1.7">
           Convention used here: rates are displayed as angular rates divided by 2π. The calculator uses a TEM₀₀ standing-wave mode volume and treats ξ as an amplitude-level overlap factor. For real experiments, multiply by Clebsch-Gordan coefficients, polarization projections, antinode position, and transverse mode overlap.
@@ -610,10 +610,11 @@
               <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-top:var(--sp-3)">
                 Achieving strong coupling requires simultaneously large <em>g₀</em> (tight mode, short cavity)
                 and small <em>κ</em> (high finesse mirrors). The product gives the condition
-                <em>F &gt; πFSR/(2g₀)</em>, i.e., a minimum finesse scales as cavity length.
+                <em>F &gt; \mathrm{FSR}/(2g₀)</em> when both rates are expressed in Hz,
+                i.e., a minimum finesse scales with the free spectral range and inversely with coupling.
               </p>
               <div class="formula-box" style="margin-top:var(--sp-3)">
-                $$\text{Strong coupling:} \quad g_0 > \kappa,\;\gamma \quad \Leftrightarrow \quad \mathcal{F} > \frac{\pi c}{4 L g_0}$$
+                $$\text{Strong coupling:} \quad g_0 > \kappa,\;\gamma \quad \Leftrightarrow \quad \mathcal{F} > \frac{\pi c}{2 L g_0}\quad\text{for angular }g_0$$
               </div>
             </div>
           </div>
@@ -849,7 +850,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-  <script src="../js/main.js?v=17"></script>
+  <script src="../js/main.js?v=18"></script>
   <script>
     renderNav({ active: 'cavity-qed', root: '../' });
 
@@ -917,7 +918,7 @@
       const V_mode = _PI * w0_m * w0_m * L_m / 4;   // m³
 
       // g₀ (rad/s), then MHz
-      const g0_rad  = xi * Math.sqrt(3 * Gam_rad * _c**3 / (2 * omega**2 * V_mode));
+      const g0_rad  = xi * Math.sqrt(3 * _PI * Gam_rad * _c**3 / (2 * omega**2 * V_mode));
       const g0_MHz  = g0_rad / (2 * _PI * 1e6);
 
       // κ = FSR/(2F)

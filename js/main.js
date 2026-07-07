@@ -68,7 +68,7 @@ const NAV = {
   build: [
     { key: 'atom-library',   label: 'Atomic Species Selector',                kind: 'Reference', icon: '⚛️', color: '#a13c1c', href: 'pages/atom-library.html'   },
     { key: 'laser-planner',  label: 'Laser System Planner',        kind: 'Design tool', icon: '💡', color: '#2c4a63', href: 'pages/laser-planner.html'  },
-    { key: 'mot-designer',   label: 'MOT & Magnetic Trap Designer',         kind: 'Calculator', icon: '🧲', color: '#3f5d3f', href: 'pages/mot-designer.html'   },
+    { key: 'mot-designer',   label: 'MOT Designer',                         kind: 'Calculator', icon: '🧲', color: '#3f5d3f', href: 'pages/mot-designer.html'   },
     { key: 'laser-locking',  label: 'Laser Locking Guide',   kind: 'Guide', icon: '🔐', color: '#a13c1c', href: 'pages/laser-locking.html'  },
     { key: 'lab-techniques', label: 'AMO Lab Operations Handbook',      kind: 'Guide', icon: '🔬', color: '#2c4a63', href: 'pages/lab-techniques.html' },
     { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#3f5d3f', href: 'pages/polarimetry.html'    },
@@ -367,7 +367,7 @@ const SEARCH_KEYWORDS = {
   'rydberg-calculator': 'Rydberg blockade C6 quantum defect lifetime Förster two-qubit gate radius alkali',
   'imaging-calculator': 'SNR fidelity photons EMCCD sCMOS histogram survival fluorescence single atom readout',
   'tof-calculator': 'time of flight thermometry temperature expansion PSD BEC Maxwell Boltzmann',
-  'mot-designer': 'MOT magnetic trap gradient spring damping capture detuning Zeeman evaporation Ioffe Pritchard Majorana',
+  'mot-designer': 'MOT magneto-optical trap gradient spring damping capture detuning Zeeman cooling cascade',
   'fidelity-budget': 'Rydberg gate error budget blockade Doppler phase SPAM lifetime intensity noise fidelity',
   'release-recapture': 'tweezer thermometry recapture release Monte Carlo trap depth temperature',
   'lab-calculators': 'beam waist dBm recoil Doppler Zeeman saturation cavity FSR finesse trap frequency Clebsch Gordan',

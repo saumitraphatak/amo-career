@@ -46,7 +46,7 @@ amo-career/
 └── pages/                  # All tool and content pages (27 files)
     ├── atom-library.html       # Atomic Species Selector
     ├── laser-planner.html      # Laser System Planner
-    ├── mot-designer.html       # MOT & Magnetic Trap Designer
+    ├── mot-designer.html       # MOT Designer
     ├── laser-locking.html      # Laser Locking Guide
     ├── lab-techniques.html     # AMO Lab Operations Handbook (8 techniques)
     ├── polarimetry.html        # Polarimetry Simulator
@@ -86,7 +86,7 @@ const NAV = {
   build: [                   // Designing/setting up an experiment
     { key: 'atom-library',   label: 'Atomic Species Selector',      kind: 'Reference',   icon: '⚛️', color: '#38bdf8', href: 'pages/atom-library.html'   },
     { key: 'laser-planner',  label: 'Laser System Planner',         kind: 'Design tool',  icon: '💡', color: '#f472b6', href: 'pages/laser-planner.html'  },
-    { key: 'mot-designer',   label: 'MOT & Magnetic Trap Designer', kind: 'Calculator',   icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html'   },
+    { key: 'mot-designer',   label: 'MOT Designer', kind: 'Calculator',   icon: '🧲', color: '#fb923c', href: 'pages/mot-designer.html'   },
     { key: 'laser-locking',  label: 'Laser Locking Guide',          kind: 'Guide',        icon: '🔐', color: '#f87171', href: 'pages/laser-locking.html'  },
     { key: 'lab-techniques', label: 'AMO Lab Operations Handbook',  kind: 'Guide',        icon: '🔬', color: '#34d399', href: 'pages/lab-techniques.html' },
     { key: 'polarimetry',    label: 'Polarimetry Simulator',        kind: 'Simulator',    icon: '🔭', color: '#e879f9', href: 'pages/polarimetry.html'    },
@@ -284,7 +284,7 @@ Always grep-verify after bumping: `grep -roh 'main\.js?v=[0-9]*' pages/*.html ho
 
 Notes on the current template (this evolved since the guide was first written):
 - The hero is `.page-hero-2col` — a text column (`.page-hero-text`) plus an optional animated SVG illustration column (`.page-hero-anim`). The old single-column `.page-hero-inner` / `.page-eyebrow` / two `.page-tag` spans / `.page-title` pattern is deprecated; do not copy it into new pages.
-- The eyebrow is now **one** pill (`.page-hero-eyebrow`) reading `"{icon} {Category} {NN} · {Tool Name}"` (e.g. `"🧲 Build 03 · MOT & Magnetic Trap Designer"`), where `{Category}` is the NAV category (Build/Measure/Cooling/Quantum/Career) and `{NN}` is that tool's position within the category.
+- The eyebrow is now **one** pill (`.page-hero-eyebrow`) reading `"{icon} {Category} {NN} · {Tool Name}"` (e.g. `"🧲 Build 03 · MOT Designer"`), where `{Category}` is the NAV category (Build/Measure/Cooling/Quantum/Career) and `{NN}` is that tool's position within the category.
 - The `<h1>` uses a `.grad-text` span for a two-color gradient highlight on part of the title, not a numbered `<span class="accent">01</span>` prefix — the numbered `.accent` prefix is used for **section titles inside** `.page-content`, not the page `<h1>` itself.
 - Title tag and all social meta now say **"— AMO Toolkit"**, not "— AMO Career" (site rebrand; the repo/folder name `amo-career` did not change, only on-site branding and the custom domain `amotoolkit.com`).
 
@@ -397,7 +397,7 @@ Principal quantum number n (30–120), atom species (Rb87, Cs133, Yb171, Sr88). 
 9 species (Rb85/87, Cs133, Li6/7, Na23, K39/40/41). Ballistic expansion law: σ²(t) = σ₀² + (k_BT/m)t². Temperature from linear regression of σ² vs t² data. Computes: de Broglie wavelength, peak density, phase-space density (BEC threshold at PSD ≥ 2.612), Doppler and recoil limits. Chart.js: σ(t) expansion curve + fit from data table.
 
 ### 6. MOT Designer (`mot-designer.html`)
-5 species (Rb87, Cs133, Na23, Li7, K39). Section 01 MOT: damping α, spring κ, ω_MOT, capture velocity, Doppler temperature vs detuning Δ and saturation s. Section 02 Ioffe-Pritchard trap: radial/axial frequencies ω_r, ω_z, trap depth U₀, evaporation parameter η = U₀/k_BT, Majorana loss warning for B₀ < 3G. Chart: trap potential U(r) with thermal energy reference line.
+5 species (Rb87, Cs133, Na23, Li7, K39). Section 01 MOT Calculator: damping α, spring κ, ω_MOT, capture velocity, Doppler temperature vs detuning Δ and saturation s. Section 02 Detuning Optimization (live chart). Section 03 Species at a Glance (comparison table). Section 04 the MOT-to-experiment cooling cascade (source → 3D MOT → cMOT → gray molasses/PGC → tweezer/lattice). No magnetic-trap (Ioffe-Pritchard) calculator despite the historical page title — renamed from "MOT & Magnetic Trap Designer" to "MOT Designer" since that content was never built.
 
 ### 7. Gate Fidelity Budget (`fidelity-budget.html`)
 4 species (Rb87, Cs133, Yb171, Sr88). 8 error sources for Rydberg two-qubit gates: spontaneous emission εₛₑ = Γ_Ryd·t_gate, Doppler dephasing ε_D = ½(k·v_rms·t_gate)², laser phase noise ε_φ = π·Δν·t_gate, blockade leakage ε_blk = 1/(U/Ω)², SPAM ε_sp, atom loss ε_loss = t_gate/τ_trap, B-field dephasing ε_B = ½(μ_B·ΔB·t_gate/ℏ)², Rabi inhomogeneity ε_Ω = ½(π·δΩ/Ω/2)². Fidelity F = 1 − Σεᵢ. Color-coded meter (≥99.9% green). SOTA comparison: Evered 2023 (99.5%), Muniz 2025 (99.72% post-selected / 99.40% raw), approximate FTQC thresholds.

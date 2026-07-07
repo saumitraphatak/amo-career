@@ -14,7 +14,7 @@ Organized by workflow — build the apparatus, measure what it does, cool and tr
 |---|---|
 | **Atomic Species Selector** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, recoil scale, US research groups |
 | **Laser System Planner** | Pick a species, get required laser beams, wavelengths, block diagram, nonlinear-optics needs |
-| **MOT & Magnetic Trap Designer** | MOT damping/spring constants + Ioffe-Pritchard trap frequencies, evaporation η, Majorana warning |
+| **MOT Designer** | MOT damping/spring constants, detuning optimization curve, 5-species comparison, MOT-to-experiment cooling cascade |
 | **Laser Locking Guide** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
 | **AMO Lab Operations Handbook** | 8 core experimental techniques with deep-dive accordions (MOT, tweezers, evaporation, imaging, lattices) |
 | **Polarimetry Simulator** | Stokes parameters, QWP rotation analysis, degree of polarization |
