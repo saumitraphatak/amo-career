@@ -660,6 +660,12 @@ function currentPageKey() {
   return file;
 }
 
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[ch]));
+}
+
 function hasCalculatorState() {
   const controls = getPageControls()
     .filter(el => !el.closest('.source-confidence-panel, .assumption-panel'));
@@ -907,6 +913,105 @@ function initExpertModeToggles() {
     if (btn) apply(btn.dataset.mode);
   });
   apply(mode);
+}
+
+/* ─────────────────────────────────────────────────────
+   Shared page-identity helper used by Cite This Page and
+   the error-report widget below.
+   ───────────────────────────────────────────────────── */
+function getPageMeta() {
+  const canonical = document.querySelector('link[rel="canonical"]');
+  const url = canonical ? canonical.href : location.href;
+  const rawTitle = document.title || currentPageKey();
+  const title = rawTitle.replace(/\s*[—,]\s*AMO Toolkit\s*$/, '').trim();
+  return { url, title };
+}
+
+/* ─────────────────────────────────────────────────────
+   CITE THIS PAGE — plain-text + BibTeX citation, on every
+   tool/guide page (anything using the .page-wrap template).
+   ───────────────────────────────────────────────────── */
+function initCiteThisPage() {
+  if (!document.querySelector('.page-wrap')) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.cite-panel')) return;
+
+  const { url, title } = getPageMeta();
+  const year = new Date().getFullYear();
+  const accessed = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const slug = currentPageKey().replace(/[^a-z0-9]/gi, '');
+
+  const plain = `Phatak, S. (${year}). ${title}. AMO Toolkit. Retrieved ${accessed}, from ${url}`;
+  const bibtex = `@misc{phatak${year}${slug},\n  author       = {Phatak, Saumitra},\n  title        = {${title}},\n  year         = {${year}},\n  howpublished = {\\url{${url}}},\n  note         = {AMO Toolkit}\n}`;
+
+  const panel = document.createElement('section');
+  panel.className = 'cite-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head compact">
+      <div>
+        <div class="eyebrow">Cite This Page</div>
+        <h2>Reference this tool or guide</h2>
+      </div>
+    </div>
+    <p style="margin-bottom:var(--sp-4)">If a formula, number, or figure from this page ended up in a thesis, paper, or lab notebook, here is a ready-made citation.</p>
+    <div class="cite-block">
+      <div class="cite-block-label">Plain text</div>
+      <pre class="cite-pre">${escapeHtml(plain)}</pre>
+      <button class="mini-action" type="button" data-copy-cite="plain">Copy citation</button>
+    </div>
+    <div class="cite-block" style="margin-top:var(--sp-4)">
+      <div class="cite-block-label">BibTeX</div>
+      <pre class="cite-pre">${escapeHtml(bibtex)}</pre>
+      <button class="mini-action" type="button" data-copy-cite="bibtex">Copy BibTeX</button>
+    </div>
+  `;
+  container.appendChild(panel);
+
+  panel.addEventListener('click', e => {
+    const btn = e.target.closest('[data-copy-cite]');
+    if (!btn || !navigator.clipboard) return;
+    const text = btn.dataset.copyCite === 'plain' ? plain : bibtex;
+    navigator.clipboard.writeText(text).then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      setTimeout(() => { btn.textContent = original; }, 1400);
+    }).catch(() => {});
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   REPORT AN ERROR — visible trust signal that this content
+   is maintained and correctable, not a one-shot static dump.
+   ───────────────────────────────────────────────────── */
+function initErrorReportWidget() {
+  if (!document.querySelector('.page-wrap')) return;
+  const container = getPageContainer();
+  if (!container || document.querySelector('.feedback-panel')) return;
+
+  const { url, title } = getPageMeta();
+  const issueTitle = encodeURIComponent(`[${title}] `);
+  const issueBody = encodeURIComponent(`Page: ${url}\n\nWhat's wrong or unclear?\n`);
+  const issueUrl = `https://github.com/saumitraphatak/amo-career/issues/new?title=${issueTitle}&body=${issueBody}`;
+  const mailSubject = encodeURIComponent(`AMO Toolkit — issue on "${title}"`);
+  const mailBody = encodeURIComponent(`Page: ${url}\n\nWhat's wrong or unclear?\n`);
+  const mailUrl = `mailto:saumitraphatak@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+
+  const panel = document.createElement('section');
+  panel.className = 'feedback-panel workflow-panel';
+  panel.innerHTML = `
+    <div class="workflow-panel-head compact">
+      <div>
+        <div class="eyebrow">Found a Problem?</div>
+        <h2>Report an error or suggest an improvement</h2>
+      </div>
+    </div>
+    <p style="margin-bottom:var(--sp-4)">This site is maintained by one person and cross-checked with a physics regression test suite — but if a formula, number, or explanation here is wrong, unclear, or out of date, flagging it directly is the fastest way to get it fixed.</p>
+    <div class="notebook-actions">
+      <a class="mini-action" href="${issueUrl}" target="_blank" rel="noopener">Open a GitHub issue</a>
+      <a class="mini-action" href="${mailUrl}">Email the author</a>
+    </div>
+  `;
+  container.appendChild(panel);
 }
 
 function initPaperToolBridge() {
@@ -1269,10 +1374,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initDerivationToggles();
   initRelatedToolsPanel();
   initShareableCalculatorParams();
-  initExpertModeToggles();
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
+  initCiteThisPage();
+  initErrorReportWidget();
   updateHeroStats();
 });
 

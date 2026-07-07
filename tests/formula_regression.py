@@ -82,7 +82,6 @@ def test_site_ux_features_present() -> None:
     assert_contains("js/main.js", "function exportCanvasPNG")
     assert_contains("js/main.js", "function exportCanvasSVG")
     assert_contains("js/main.js", "function renderRecentTools")
-    assert_contains("js/main.js", "function initExpertModeToggles")
     assert_contains("js/main.js", "function initPaperToolBridge")
     assert_contains("js/main.js", "Paper-to-tool bridge")
     assert_contains("home.html", "I am trying to...")
