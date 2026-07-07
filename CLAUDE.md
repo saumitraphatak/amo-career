@@ -2,6 +2,8 @@
 
 > Read this file first. It replaces the need to open any HTML file to understand the project.
 
+**Before restructuring navigation, route-panels, or section order on any page**, read `docs/site-philosophy.md` (the design reasoning behind page flow — when route-cards must be 1:1 with tabs vs. can be conceptual, the "no phantom features" rule, theory-before-tool ordering, etc.) and the matching file in `docs/page-notes/<slug>.md` if one exists (per-page purpose, flow, and the specific review decisions already made for it — including things deliberately left as-is, so they don't get re-litigated).
+
 **Live site:** https://amotoolkit.com/
 **Author:** Saumitra Phatak — Purdue Physics PhD, Hood Lab (ultracold atoms / optical tweezers)
 **Purpose:** Career toolkit for AMO physicists — interactive calculators, lab technique guides, quantum computing context, and an educational quantum fundamentals section.
