@@ -63,6 +63,16 @@ def test_beat_note_prefactor() -> None:
     assert_not_contains("pages/laser-locking.html", "½ · R² · P₁ · P₂")
 
 
+def test_saturation_intensity_constants_are_consistent() -> None:
+    assert_contains("pages/imaging-calculator.html", "Li6:   { label: '⁶Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 2.56")
+    assert_contains("pages/imaging-calculator.html", "Li7:   { label: '⁷Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 2.56")
+    assert_contains("pages/mot-designer.html", "Li7:   { label:'⁷Li',   mass_u:7.016,   Gamma_MHz:5.8724, lambda_nm:670.977, Isat:2.54")
+    assert_contains("pages/absorption-imaging.html", "Na23:  { name:'Na-23',  λ:589.00e-9, Γ:2*Math.PI*9.795e6, σ0:1.657e-13, Isat:62.6")
+    assert_not_contains("pages/imaging-calculator.html", "Isat_mWcm2: 7.590")
+    assert_not_contains("pages/mot-designer.html", "Isat:7.590")
+    assert_not_contains("pages/absorption-imaging.html", "Isat:93.9")
+
+
 def test_qc_claims_are_qualified() -> None:
     assert_contains("pages/qc-landscape.html", "96 Logical Qubits")
     assert_contains("pages/qc-landscape.html", "roadmap claims are not equivalent to demonstrated hardware")
@@ -87,7 +97,6 @@ def test_site_ux_features_present() -> None:
     assert_contains("home.html", "I am trying to...")
     assert_contains("home.html", 'id="recent-tools"')
     assert_contains("css/styles.css", ".source-tag.peer-reviewed")
-    assert_contains("css/styles.css", ".derivation-mode")
     assert_contains("pages/imaging-calculator.html", "Common mistake, SNR is not fidelity")
     assert_contains("pages/lab-calculators.html", "Common mistake, recoil factor-of-two")
 
@@ -109,6 +118,7 @@ def main() -> None:
         test_recoil_convention_values,
         test_imaging_fidelity_convention,
         test_beat_note_prefactor,
+        test_saturation_intensity_constants_are_consistent,
         test_qc_claims_are_qualified,
         test_release_recapture_is_thermometry_not_frequency_claim,
         test_site_ux_features_present,

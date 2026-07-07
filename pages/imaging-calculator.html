@@ -23,7 +23,7 @@
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator, scattering rate, photon collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/imaging-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=16">
+  <link rel="stylesheet" href="../css/styles.css?v=17">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -369,31 +369,6 @@
     dark-count and bright-count histograms after choosing a threshold, and it can be limited
     by atom loss, blinking, camera tails, or imperfect state preparation even when the raw SNR
     looks excellent.
-  </div>
-
-  <div class="derivation-mode anim-in delay-1">
-    <div class="derivation-tabs" aria-label="Derivation mode">
-      <button class="active" type="button" data-deriv-tab="beginner">Beginner</button>
-      <button type="button" data-deriv-tab="derivation">Full derivation</button>
-      <button type="button" data-deriv-tab="assumptions">Assumptions</button>
-    </div>
-    <div class="derivation-panel" data-deriv-panel="beginner">
-      <strong>Picture:</strong> collect enough fluorescence photons that the bright-atom
-      histogram is separated from the empty-trap histogram. The useful question is not
-      "how many photons did I collect?" but "how much do the two histograms overlap?"
-    </div>
-    <div class="derivation-panel" data-deriv-panel="derivation" hidden>
-      The resonant scattering rate is
-      \(R_{\rm sc}=\Gamma s/[2(1+s+4\Delta^2/\Gamma^2)]\). The mean detected signal is
-      \(N_{\rm det}=R_{\rm sc}t_{\rm img}\eta_{\rm coll}\eta_{\rm opt}\eta_{\rm QE}\).
-      For approximately Gaussian bright and dark distributions, the threshold error is the
-      sum of the two distribution tails on the wrong side of the threshold.
-    </div>
-    <div class="derivation-panel" data-deriv-panel="assumptions" hidden>
-      The calculator assumes independent photon shot noise, a camera noise model that is
-      well described by the entered read/background terms, and a two-level scattering-rate
-      estimate. Real experiments should validate the final fidelity from measured histograms.
-    </div>
   </div>
 
   <div class="intuition-grid anim-in delay-1">
@@ -863,7 +838,7 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           In practice, tweezer imaging uses repump + imaging beams in a gray molasses or
           Λ-enhanced dark SPOT configuration to scatter &gt;1000 photons without losing the atom.
-          This pushes fidelity above 99.5% (Bergamini 2004; Liu 2019).
+          This pushes fidelity above 99.5% in optimized tweezer experiments (Bergamini 2004; Blodgett et al. 2023; Manetsch et al. 2025).
         </p>
       </div>
     </div>
@@ -1312,12 +1287,12 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.93.163602" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Bergamini et al. (2004), Single-atom detection with EMCCD, Science
+        Bergamini et al. (2004), Holographic generation of microtrap arrays for single atoms, PRL
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
-      <a class="read-link" href="https://doi.org/10.1103/PhysRevX.9.021039" target="_blank" rel="noopener">
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.131.083001" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Liu &amp; Bhatt (2019), High-fidelity single-atom detection in optical tweezers
+        Blodgett, Peana, Phatak et al. (2023), High-fidelity imaging of lithium in optical tweezers with gray molasses
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.114.213002" target="_blank" rel="noopener">
@@ -1382,7 +1357,7 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=16"></script>
+<script src="../js/main.js?v=17"></script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 
@@ -1393,8 +1368,8 @@ renderNav({ active: 'imaging-calculator', root: '../' });
 const ATOMS = {
   Rb87:  { label: '⁸⁷Rb D2',  lambda_nm: 780.241, Gamma_MHz: 6.065,  Isat_mWcm2: 1.669  },
   Cs133: { label: '¹³³Cs D2', lambda_nm: 852.347, Gamma_MHz: 5.234,  Isat_mWcm2: 1.103  },
-  Li6:   { label: '⁶Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 7.590  },
-  Li7:   { label: '⁷Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 7.590  },
+  Li6:   { label: '⁶Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 2.56   },
+  Li7:   { label: '⁷Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.924,  Isat_mWcm2: 2.56   },
   Na23:  { label: '²³Na D2',  lambda_nm: 588.996, Gamma_MHz: 9.795,  Isat_mWcm2: 6.260  },
   K39:   { label: '³⁹K D2',   lambda_nm: 766.701, Gamma_MHz: 6.035,  Isat_mWcm2: 1.750  },
   K40:   { label: '⁴⁰K D2',   lambda_nm: 766.701, Gamma_MHz: 6.035,  Isat_mWcm2: 1.750  },

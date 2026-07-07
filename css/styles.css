@@ -925,6 +925,82 @@ code, .mono {
 }
 
 /* =====================================================
+   GUIDED PATHS CONCEPT MAP
+   ===================================================== */
+.concept-map {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-8);
+}
+.cmap-caption {
+  color: var(--text-secondary);
+  font-size: .88rem;
+  margin: 0 0 var(--sp-4);
+  text-align: center;
+}
+.cmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+}
+.cmap-legend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 1px solid color-mix(in srgb, var(--path-color) 35%, transparent);
+  background: color-mix(in srgb, var(--path-color) 8%, transparent);
+  color: var(--text-secondary);
+  border-radius: 100px;
+  padding: .4rem .85rem;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--t);
+}
+.cmap-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--path-color);
+  flex-shrink: 0;
+}
+.cmap-legend-btn:hover {
+  background: color-mix(in srgb, var(--path-color) 16%, transparent);
+  color: var(--text-primary);
+}
+.cmap-legend-btn.active {
+  background: color-mix(in srgb, var(--path-color) 24%, transparent);
+  border-color: var(--path-color);
+  color: var(--text-primary);
+}
+.cmap-svg {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  margin: 0 auto;
+}
+.cmap-node-link { cursor: pointer; }
+.cmap-node { transition: opacity var(--t); }
+.cmap-edge { transition: opacity var(--t), stroke-width var(--t); }
+.cmap-node-link:hover .cmap-node {
+  stroke: var(--c-atom, #38bdf8);
+  r: 9;
+}
+.cmap-node-link:hover text {
+  fill: var(--text-primary) !important;
+  font-weight: 700;
+}
+@media (max-width: 720px) {
+  .concept-map { padding: var(--sp-4); }
+  .cmap-svg { max-width: 100%; }
+}
+
+/* =====================================================
    LEARNING PATHS
    ===================================================== */
 .paths-grid {
@@ -2274,6 +2350,63 @@ body[data-depth-mode="beginner"] canvas {
   word-break: break-word;
   margin: 0 0 var(--sp-2);
 }
+
+/* ─── Quantum Quiz ───────────────────────────────── */
+.quiz-panel { scroll-margin-top: 96px; }
+.quiz-q {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--sp-4);
+  line-height: 1.5;
+}
+.quiz-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+.quiz-opt {
+  text-align: left;
+  border: 1px solid var(--border-med);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t);
+}
+.quiz-opt:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--c-qc, #a78bfa) 45%, transparent);
+  background: color-mix(in srgb, var(--c-qc, #a78bfa) 8%, transparent);
+  color: var(--text-primary);
+}
+.quiz-opt:disabled { cursor: default; }
+.quiz-opt.correct {
+  border-color: #4ade80;
+  background: color-mix(in srgb, #4ade80 14%, transparent);
+  color: var(--text-primary);
+}
+.quiz-opt.wrong {
+  border-color: #f87171;
+  background: color-mix(in srgb, #f87171 14%, transparent);
+  color: var(--text-primary);
+}
+.quiz-explain {
+  color: var(--text-secondary);
+  font-size: .9rem;
+  line-height: 1.6;
+  border-left: 3px solid color-mix(in srgb, var(--c-qc, #a78bfa) 55%, transparent);
+  padding-left: var(--sp-3);
+  margin: 0 0 var(--sp-4);
+}
+.quiz-review-link { display: inline-block; margin-left: var(--sp-2); white-space: nowrap; }
+@media (max-width: 560px) {
+  .quiz-options { grid-template-columns: 1fr; }
+}
+
 body[data-depth-mode="expert"] .assumption-panel,
 body[data-depth-mode="expert"] .source-confidence-panel {
   border-color: color-mix(in srgb, var(--ink-rust) 30%, transparent);

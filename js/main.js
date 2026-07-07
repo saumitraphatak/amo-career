@@ -1028,6 +1028,8 @@ function initPaperToolBridge() {
     { re: /kaufman|ni|molecule|molecular|polar molecule/i, links: [['Atom library', 'pages/atom-library.html'], ['AMO groups', 'pages/amo-groups.html']] },
     { re: /manetsch|logical|fault|neutral atom|quantum processor|quera|harvard/i, links: [['QC landscape', 'pages/qc-landscape.html'], ['Rb vs Yb', 'pages/rb87-vs-yb171.html']] },
     { re: /cavity|strong coupling|cooperativity/i, links: [['Cavity QED', 'pages/cavity-qed.html'], ['Lab techniques', 'pages/lab-techniques.html']] },
+    { re: /bose-einstein|condensation|feshbach|dilute atomic vapor/i, links: [['TOF thermometry (BEC threshold)', 'pages/tof-calculator.html'], ['Analog simulation', 'pages/learn-quantum.html#analog-sim']] },
+    { re: /optical lattice|quantum simulation|hubbard/i, links: [['Analog simulation', 'pages/learn-quantum.html#analog-sim'], ['QC landscape', 'pages/qc-landscape.html']] },
   ];
   cards.forEach(card => {
     const text = card.textContent;
@@ -1043,6 +1045,373 @@ function initPaperToolBridge() {
   });
 }
 
+/* ─────────────────────────────────────────────────────
+   GUIDED PATHS CONCEPT MAP — reads the existing .path-card
+   list on home.html (single source of truth) and renders it
+   as an interactive radial graph: nodes = tools, edges = the
+   step-to-step order within each guided path.
+   ───────────────────────────────────────────────────── */
+function initPathConceptMap() {
+  const root = document.getElementById('concept-map-root');
+  if (!root || root.dataset.built) return;
+
+  const cards = Array.from(document.querySelectorAll('.path-card'));
+  if (!cards.length) return;
+
+  const PATH_COLORS = ['#fb923c', '#f87171', '#34d399', '#60a5fa', '#a78bfa', '#fbbf24'];
+
+  const paths = cards.map((card, i) => ({
+    icon: card.querySelector('.path-icon')?.textContent.trim() || '•',
+    title: card.querySelector('.path-title')?.textContent.trim() || `Path ${i + 1}`,
+    color: PATH_COLORS[i % PATH_COLORS.length],
+    steps: Array.from(card.querySelectorAll('.path-step')).map(a => a.getAttribute('href')),
+  }));
+
+  // Category order matches the site's own workflow grouping (Build →
+  // Measure & Cool → Quantum → Career) so the radial layout reads the
+  // same way the tool grid and footer already do.
+  const categoryOrder = [
+    ...NAV.build, ...NAV.measure, ...NAV.cooling, ...NAV.quantum, ...NAV.career,
+  ];
+  const nodeHrefs = [...new Set(paths.flatMap(p => p.steps))];
+  nodeHrefs.sort((a, b) => {
+    const ia = categoryOrder.findIndex(t => t.href === a);
+    const ib = categoryOrder.findIndex(t => t.href === b);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+  });
+
+  const N = nodeHrefs.length;
+  const SIZE = 640, CX = 320, CY = 320, R = 248;
+  const nodes = nodeHrefs.map((href, i) => {
+    const tool = NAV.tools.find(t => t.href === href);
+    const angle = -Math.PI / 2 + (2 * Math.PI * i) / N;
+    return {
+      href,
+      label: tool ? tool.label : href,
+      color: tool ? tool.color : '#38bdf8',
+      x: CX + R * Math.cos(angle),
+      y: CY + R * Math.sin(angle),
+      angle,
+    };
+  });
+  const nodeByHref = new Map(nodes.map(n => [n.href, n]));
+
+  const edges = [];
+  paths.forEach((p, pi) => {
+    for (let i = 0; i < p.steps.length - 1; i++) {
+      const a = nodeByHref.get(p.steps[i]);
+      const b = nodeByHref.get(p.steps[i + 1]);
+      if (a && b) edges.push({ a, b, pathIndex: pi, color: p.color });
+    }
+  });
+
+  const edgeSvg = edges.map((e, i) => `
+    <line class="cmap-edge" data-path="${e.pathIndex}"
+      x1="${e.a.x.toFixed(1)}" y1="${e.a.y.toFixed(1)}"
+      x2="${e.b.x.toFixed(1)}" y2="${e.b.y.toFixed(1)}"
+      stroke="${e.color}" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+  `).join('');
+
+  const nodeSvg = nodes.map(n => {
+    const onRight = Math.cos(n.angle) >= 0;
+    const lx = CX + (R + 16) * Math.cos(n.angle);
+    const ly = CY + (R + 16) * Math.sin(n.angle);
+    return `
+    <a href="${escapeHtml(n.href)}" class="cmap-node-link" aria-label="Open ${escapeHtml(n.label)}">
+      <circle class="cmap-node" data-href="${escapeHtml(n.href)}" cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="7" fill="${n.color}" stroke="var(--bg-base)" stroke-width="2">
+        <title>${escapeHtml(n.label)}</title>
+      </circle>
+      <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${onRight ? 'start' : 'end'}"
+        dominant-baseline="middle" style="fill:var(--text-secondary);font-size:9.5px;font-family:var(--font-sans,sans-serif)">${escapeHtml(n.label)}</text>
+    </a>
+  `;
+  }).join('');
+
+  const legendSvg = paths.map((p, i) => `
+    <button type="button" class="cmap-legend-btn" data-path="${i}" style="--path-color:${p.color}">
+      <span class="cmap-legend-dot"></span>${p.icon} ${escapeHtml(p.title)}
+    </button>
+  `).join('');
+
+  root.innerHTML = `
+    <p class="cmap-caption">Click a path to trace it through the graph, or click any node to open that tool directly.</p>
+    <div class="cmap-legend">${legendSvg}</div>
+    <svg class="cmap-svg" viewBox="0 0 ${SIZE} ${SIZE}" role="group" aria-label="Guided paths concept map">
+      <g class="cmap-edges">${edgeSvg}</g>
+      <g class="cmap-nodes">${nodeSvg}</g>
+    </svg>
+  `;
+  root.dataset.built = 'true';
+
+  let active = null;
+  const svg = root.querySelector('.cmap-svg');
+  const setActive = idx => {
+    active = active === idx ? null : idx;
+    root.querySelectorAll('.cmap-legend-btn').forEach(btn => {
+      btn.classList.toggle('active', Number(btn.dataset.path) === active);
+    });
+    const activePathHrefs = active === null ? null : new Set(paths[active].steps);
+    svg.querySelectorAll('.cmap-edge').forEach(line => {
+      const onPath = active === null || Number(line.dataset.path) === active;
+      line.setAttribute('opacity', onPath ? '0.85' : '0.08');
+      line.setAttribute('stroke-width', onPath && active !== null ? '3' : '2');
+    });
+    svg.querySelectorAll('.cmap-node').forEach(circle => {
+      const onPath = !activePathHrefs || activePathHrefs.has(circle.dataset.href);
+      circle.setAttribute('opacity', onPath ? '1' : '0.25');
+    });
+  };
+  root.querySelectorAll('.cmap-legend-btn').forEach(btn => {
+    btn.addEventListener('click', () => setActive(Number(btn.dataset.path)));
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   QUANTUM QUIZ — spaced-repetition question bank for
+   learn-quantum.html, two questions per topic anchor.
+   Leitner-style: each question has a "box" (0-4) tracked in
+   localStorage; wrong answers reset to box 0, correct answers
+   advance the box; session sampling favors low-box questions.
+   ───────────────────────────────────────────────────── */
+const QUANTUM_QUIZ = [
+  { id: 'bloch-1', topic: 'Bloch Sphere', anchor: '#bloch',
+    q: 'For |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩, what is P(|1⟩)?',
+    options: ['sin²(θ/2)', 'cos²(θ/2)', 'sin²(θ)', 'e^{iφ}'], correct: 0,
+    explain: 'The Born rule applied to the Bloch-sphere parametrization gives P(|1⟩) = sin²(θ/2) and P(|0⟩) = cos²(θ/2).' },
+  { id: 'bloch-2', topic: 'Bloch Sphere', anchor: '#bloch',
+    q: 'In the Mach-Zehnder unitary U = H·R_z(φ)·H, what is the output P(|0⟩)?',
+    options: ['sin²(φ/2)', 'cos²(φ/2)', '1/2 always', 'cos²(φ)'], correct: 1,
+    explain: 'The interferometer phase φ maps directly onto qubit output probabilities: P(|0⟩) = cos²(φ/2).' },
+  { id: 'gates-1', topic: 'Quantum Gates', anchor: '#gates',
+    q: 'Which minimal gate set is universal for quantum computation?',
+    options: ['{X, Y, Z}', '{H, CNOT} alone', '{H, T, CNOT}', '{S, T} alone'], correct: 2,
+    explain: '{H, T, CNOT} — the "Clifford + T" set — is the standard universal gate set used across quantum hardware.' },
+  { id: 'gates-2', topic: 'Quantum Gates', anchor: '#gates',
+    q: 'How many CNOT gates does a SWAP gate decompose into?',
+    options: ['1', '2', '3', '4'], correct: 2,
+    explain: 'SWAP = 3 CNOTs with alternating control/target qubits.' },
+  { id: 'superposition-1', topic: 'Superposition', anchor: '#superposition',
+    q: 'For |ψ⟩ = α|0⟩ + β|1⟩, what must α and β satisfy?',
+    options: ['|α| + |β| = 1', '|α|² + |β|² = 1', 'α + β = 1', 'αβ = 1'], correct: 1,
+    explain: 'Normalization requires |α|² + |β|² = 1 so the Born-rule probabilities sum to 1.' },
+  { id: 'superposition-2', topic: 'Superposition', anchor: '#superposition',
+    q: 'What happens to a superposition upon measurement?',
+    options: ['It doubles in amplitude', 'It collapses irreversibly', 'Nothing changes', 'The phase reverses'], correct: 1,
+    explain: 'Measurement collapses the superposition onto one outcome; the process cannot be undone.' },
+  { id: 'measurement-1', topic: 'Measurement', anchor: '#measurement',
+    q: 'What does the no-cloning theorem forbid?',
+    options: ['Measuring a qubit twice', 'Copying an unknown quantum state exactly', 'Entangling two qubits', 'Applying two gates in sequence'], correct: 1,
+    explain: 'No-cloning: there is no operation that copies an arbitrary unknown quantum state exactly.' },
+  { id: 'measurement-2', topic: 'Measurement', anchor: '#measurement',
+    q: 'What is the quantum Zeno effect?',
+    options: ['Gates get faster at low temperature', 'Frequent measurement suppresses evolution', 'Decoherence increases with measurement', 'Photons freeze inside a cavity'], correct: 1,
+    explain: 'Repeated, rapid measurement can effectively "freeze" a quantum system in its current state.' },
+  { id: 'entanglement-1', topic: 'Entanglement', anchor: '#entanglement',
+    q: 'What is the classical (local hidden variable) bound on the CHSH inequality?',
+    options: ['1', '2', '2√2', '4'], correct: 1,
+    explain: 'Classical/local-realistic theories are bounded by |CHSH| ≤ 2; quantum mechanics can reach 2√2 ≈ 2.83.' },
+  { id: 'entanglement-2', topic: 'Entanglement', anchor: '#entanglement',
+    q: 'In quantum teleportation, what does Alice send Bob?',
+    options: ['The qubit itself, via a quantum channel', 'Two classical bits from her Bell measurement', 'Nothing at all', 'A perfect copy of |ψ⟩'], correct: 1,
+    explain: 'Alice measures her two qubits and sends 2 classical bits so Bob can apply the matching correction — no faster-than-light signaling occurs.' },
+  { id: 'rydberg-1', topic: 'Rydberg Atoms', anchor: '#rydberg',
+    q: 'How does the van der Waals coefficient C₆ scale with principal quantum number n?',
+    options: ['n³', 'n⁶', 'n¹¹', 'n²'], correct: 2,
+    explain: 'C₆ ∝ n¹¹ — this steep scaling is why blockade radii grow so quickly with n.' },
+  { id: 'rydberg-2', topic: 'Rydberg Atoms', anchor: '#rydberg',
+    q: 'Typical Rydberg blockade radii fall in which range?',
+    options: ['5–15 pm', '5–15 nm', '5–15 μm', '5–15 mm'], correct: 2,
+    explain: 'For typical Rydberg experiments R_b ~ 5–15 μm, depending on n and Rabi frequency.' },
+  { id: 'twoqubit-1', topic: 'Two-Qubit Gates', anchor: '#twoqubit',
+    q: 'In the Rydberg blockade CZ protocol, what happens to |11⟩?',
+    options: ["It's unaffected", 'It picks up a −1 phase', 'It becomes |00⟩', "It's measured immediately"], correct: 1,
+    explain: 'The π–2π–π blockade sequence leaves |11⟩ → −|11⟩, implementing the CZ phase.' },
+  { id: 'twoqubit-2', topic: 'Two-Qubit Gates', anchor: '#twoqubit',
+    q: 'What does the Mølmer-Sørensen gate use to entangle two trapped ions?',
+    options: ['A shared motional (phonon) mode', 'Direct dipole-dipole interaction', 'Photon exchange through a cavity', 'Magnetic field gradients'], correct: 0,
+    explain: 'MS gates couple qubits through a shared vibrational mode of the ion chain.' },
+  { id: 'rabi-1', topic: 'Rabi Oscillations', anchor: '#rabi',
+    q: 'On resonance (Δ=0), what is the excited-state population P_e(t)?',
+    options: ['sin²(Ωt/2)', 'cos²(Ωt)', 'a constant 1/2', 'e^{−Ωt}'], correct: 0,
+    explain: 'On resonance the generalized Rabi frequency Ω′ = Ω, giving full-contrast Rabi flopping P_e(t) = sin²(Ωt/2).' },
+  { id: 'rabi-2', topic: 'Rabi Oscillations', anchor: '#rabi',
+    q: 'Which pulse area drives a full |g⟩ → |e⟩ population transfer?',
+    options: ['π/2 pulse', 'π pulse', '2π pulse', '4π pulse'], correct: 1,
+    explain: 'A π pulse (t = π/Ω) fully transfers population; π/2 creates an equal superposition; 2π returns population to the start with a phase.' },
+  { id: 'decoherence-1', topic: 'Decoherence', anchor: '#decoherence',
+    q: 'What is the fundamental relationship between T₂ and T₁?',
+    options: ['T₂ = T₁', 'T₂ ≥ 2T₁', 'T₂ ≤ 2T₁', 'No relationship'], correct: 2,
+    explain: 'T₂ ≤ 2T₁ is a fundamental bound — dephasing cannot be slower than energy relaxation allows.' },
+  { id: 'decoherence-2', topic: 'Decoherence', anchor: '#decoherence',
+    q: 'Which technique recovers the true T₂ from the faster apparent T₂*?',
+    options: ['Increasing laser power', 'A Hahn spin echo', 'Cooling the atoms further', 'Raising the magnetic field'], correct: 1,
+    explain: 'A Hahn echo (π/2–τ–π–τ–π/2) refocuses static inhomogeneous dephasing, revealing the true T₂.' },
+  { id: 'hyperfine-1', topic: 'Hyperfine Qubits', anchor: '#hyperfine',
+    q: "What makes a pair like ⁸⁷Rb's |F=1,m_F=0⟩↔|F=2,m_F=0⟩ a good 'clock state' qubit?",
+    options: ['It has the highest transition frequency', 'First-order insensitivity to magnetic field', 'It optically pumps fastest', 'It has the largest recoil shift'], correct: 1,
+    explain: 'm_F=0 ↔ m_F=0 clock transitions are first-order field-insensitive, making them robust, long-coherence qubit choices.' },
+  { id: 'hyperfine-2', topic: 'Hyperfine Qubits', anchor: '#hyperfine',
+    q: "What is ⁸⁷Rb's ground-state hyperfine clock transition frequency?",
+    options: ['1.42 GHz', '6.834683 GHz', '9.192631770 GHz', '3.4 GHz'], correct: 1,
+    explain: "6.834683 GHz is ⁸⁷Rb's clock frequency; 9.192631770 GHz is ¹³³Cs's — the frequency that defines the SI second." },
+  { id: 'optical-pumping-1', topic: 'Optical Pumping', anchor: '#optical-pumping',
+    q: 'What Δm_F selection rule does σ⁺ light drive?',
+    options: ['Δm_F = 0', 'Δm_F = −1', 'Δm_F = +1', 'Δm_F = ±2'], correct: 2,
+    explain: 'σ⁺ light drives Δm_F = +1 transitions, pumping population toward higher m_F.' },
+  { id: 'optical-pumping-2', topic: 'Optical Pumping', anchor: '#optical-pumping',
+    q: 'After ~20 scattering events of σ⁺ light on an F=1 ground state, where does population end up?',
+    options: ['Evenly spread over all m_F', '>95% in the m_F=+1 dark state', 'Back in m_F=−1', 'Lost entirely to the excited state'], correct: 1,
+    explain: 'm_F=+1 is a dark state for σ⁺ light — it cannot absorb and decay further — so population accumulates there.' },
+  { id: 'qec-1', topic: 'Error Correction', anchor: '#qec',
+    q: 'How many physical qubits does the Shor code use per logical qubit?',
+    options: ['3', '5', '7', '9'], correct: 3,
+    explain: "Shor's 1995 code uses 9 physical qubits and corrects any single-qubit error (bit-flip, phase, or both)." },
+  { id: 'qec-2', topic: 'Error Correction', anchor: '#qec',
+    q: "Roughly what is the surface code's error-rate threshold?",
+    options: ['~50%', '~10%', '~1%', '~0.001%'], correct: 2,
+    explain: "The surface code's threshold is roughly 1% per gate for realistic noise — current hardware is approaching this." },
+  { id: 'algorithms-1', topic: 'Quantum Algorithms', anchor: '#algorithms',
+    q: "How many queries does Grover's algorithm need to find a marked item among N?",
+    options: ['O(N)', 'O(log N)', 'O(√N)', 'O(1)'], correct: 2,
+    explain: "Grover's algorithm gives a quadratic speedup: O(√N) queries versus O(N) classically." },
+  { id: 'algorithms-2', topic: 'Quantum Algorithms', anchor: '#algorithms',
+    q: "What is Shor's algorithm's complexity for factoring an N-bit integer?",
+    options: ['O((log N)³)', 'O(2^N)', 'O(N²)', 'O(N!)'], correct: 0,
+    explain: "Shor's algorithm factors in O((log N)³) via quantum period-finding — exponentially faster than known classical methods." },
+  { id: 'analog-sim-1', topic: 'Analog Simulation', anchor: '#analog-sim',
+    q: 'In the Bose-Hubbard model, what transition occurs at U/J ~ 5.8z?',
+    options: ['BEC-BCS crossover', 'Superfluid-to-Mott-insulator transition', 'Doppler-to-sub-Doppler transition', 'Blockade transition'], correct: 1,
+    explain: 'Greiner et al. (Nature, 2002) first demonstrated this quantum phase transition in an optical lattice.' },
+  { id: 'analog-sim-2', topic: 'Analog Simulation', anchor: '#analog-sim',
+    q: 'What platform has been used to simulate the transverse-field Ising model near J/h = 1?',
+    options: ['Trapped-ion crystals only', 'Rydberg atom arrays', 'Superconducting qubits exclusively', 'Photonic circuits'], correct: 1,
+    explain: 'Groups including QuEra and Harvard have used Rydberg atom arrays to realize this quantum phase transition.' },
+];
+
+function initQuantumQuiz() {
+  if (currentPageKey() !== 'learn-quantum') return;
+  const root = document.getElementById('quiz-root');
+  if (!root || root.dataset.built) return;
+  root.dataset.built = 'true';
+
+  const SRS_KEY = 'amo_quiz_srs_v1';
+  const SESSION_SIZE = 8;
+  const MASTERED_BOX = 3;
+  const readSRS = () => { try { return JSON.parse(localStorage.getItem(SRS_KEY) || '{}'); } catch (_) { return {}; } };
+  const writeSRS = srs => localStorage.setItem(SRS_KEY, JSON.stringify(srs));
+
+  const masteredCount = srs => QUANTUM_QUIZ.filter(q => (srs[q.id]?.box || 0) >= MASTERED_BOX).length;
+
+  const pickSession = srs => {
+    const pool = QUANTUM_QUIZ.map(q => ({ q, weight: Math.max(1, 5 - (srs[q.id]?.box || 0)) }));
+    const picked = [];
+    while (picked.length < Math.min(SESSION_SIZE, pool.length) && pool.length) {
+      const total = pool.reduce((s, p) => s + p.weight, 0);
+      let r = Math.random() * total, idx = 0;
+      for (; idx < pool.length - 1; idx++) { r -= pool[idx].weight; if (r <= 0) break; }
+      picked.push(pool.splice(idx, 1)[0].q);
+    }
+    return picked;
+  };
+
+  let session = [], sIndex = 0, sScore = 0;
+
+  function renderIntro() {
+    const srs = readSRS();
+    const mastered = masteredCount(srs);
+    root.innerHTML = `
+      <section class="quiz-panel workflow-panel">
+        <div class="workflow-panel-head compact">
+          <div>
+            <div class="eyebrow">Quantum Quiz</div>
+            <h2>Test your understanding</h2>
+          </div>
+          <div class="notebook-count">${mastered}/${QUANTUM_QUIZ.length} mastered</div>
+        </div>
+        <p style="margin-bottom:var(--sp-4)">${SESSION_SIZE} questions pulled from all 14 topics below, weighted toward whatever you've missed before. Progress is saved in this browser.</p>
+        <button class="mini-action" type="button" data-quiz-start>Start quiz (${SESSION_SIZE} questions)</button>
+      </section>
+    `;
+    root.querySelector('[data-quiz-start]').addEventListener('click', () => {
+      session = pickSession(readSRS());
+      sIndex = 0; sScore = 0;
+      renderQuestion();
+    });
+  }
+
+  function renderQuestion() {
+    const q = session[sIndex];
+    root.innerHTML = `
+      <section class="quiz-panel workflow-panel">
+        <div class="workflow-panel-head compact">
+          <div>
+            <div class="eyebrow">Quantum Quiz · ${escapeHtml(q.topic)}</div>
+            <h2>Question ${sIndex + 1} of ${session.length}</h2>
+          </div>
+        </div>
+        <p class="quiz-q">${escapeHtml(q.q)}</p>
+        <div class="quiz-options">
+          ${q.options.map((opt, i) => `<button class="quiz-opt" type="button" data-idx="${i}">${escapeHtml(opt)}</button>`).join('')}
+        </div>
+        <div class="quiz-feedback" hidden></div>
+      </section>
+    `;
+    root.querySelectorAll('.quiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => answer(Number(btn.dataset.idx)));
+    });
+  }
+
+  function answer(idx) {
+    const q = session[sIndex];
+    const correct = idx === q.correct;
+    if (correct) sScore++;
+
+    const srs = readSRS();
+    const s = srs[q.id] || { box: 0, seen: 0, correct: 0 };
+    s.seen++;
+    if (correct) { s.correct++; s.box = Math.min(4, s.box + 1); } else { s.box = 0; }
+    srs[q.id] = s;
+    writeSRS(srs);
+
+    root.querySelectorAll('.quiz-opt').forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === q.correct) btn.classList.add('correct');
+      else if (i === idx) btn.classList.add('wrong');
+    });
+    const fb = root.querySelector('.quiz-feedback');
+    fb.hidden = false;
+    fb.innerHTML = `
+      <p class="quiz-explain">${correct ? '✓ Correct.' : '✗ Not quite.'} ${escapeHtml(q.explain)}
+        <a href="${q.anchor}" class="quiz-review-link">Review this topic ↑</a></p>
+      <button class="mini-action" type="button" data-quiz-next>${sIndex + 1 < session.length ? 'Next question' : 'See results'}</button>
+    `;
+    fb.querySelector('[data-quiz-next]').addEventListener('click', () => {
+      sIndex++;
+      if (sIndex < session.length) renderQuestion(); else renderResults();
+    });
+  }
+
+  function renderResults() {
+    const srs = readSRS();
+    const mastered = masteredCount(srs);
+    root.innerHTML = `
+      <section class="quiz-panel workflow-panel">
+        <div class="workflow-panel-head compact">
+          <div>
+            <div class="eyebrow">Quantum Quiz — Results</div>
+            <h2>${sScore} / ${session.length} correct</h2>
+          </div>
+          <div class="notebook-count">${mastered}/${QUANTUM_QUIZ.length} mastered</div>
+        </div>
+        <p style="margin-bottom:var(--sp-4)">Missed questions come back sooner next round; questions you get right a few times in a row show up less often.</p>
+        <button class="mini-action" type="button" data-quiz-again>Practice again</button>
+      </section>
+    `;
+    root.querySelector('[data-quiz-again]').addEventListener('click', renderIntro);
+  }
+
+  renderIntro();
+}
 
 const PAGE_PLAYBOOKS = {
   'atom-library': ['Choose a species', 'Compare transition constants, recoil scales, and cooling limits before opening design tools.', 'Use data-sheet links when a number will enter an experiment.'],
@@ -1379,6 +1748,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyOnClick();
   initCiteThisPage();
   initErrorReportWidget();
+  initPathConceptMap();
+  initQuantumQuiz();
   updateHeroStats();
 });
 
