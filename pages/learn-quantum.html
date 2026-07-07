@@ -363,19 +363,19 @@
 <!-- ─── Sticky nav ────────────────────────────────────── -->
 <nav class="topic-nav" id="topicNav">
   <a href="#bloch">🔵 Bloch</a>
-  <a href="#gates">⚡ Gates</a>
   <a href="#superposition">〰️ Superposition</a>
+  <a href="#rabi">🌀 Rabi</a>
+  <a href="#gates">⚡ Gates</a>
   <a href="#measurement">📏 Measurement</a>
+  <a href="#optical-pumping">💡 Opt. Pumping</a>
+  <a href="#hyperfine">🔑 Hyperfine</a>
   <a href="#entanglement">🔗 Entanglement</a>
   <a href="#rydberg">⚛️ Rydberg</a>
   <a href="#twoqubit">🔀 Two-Qubit</a>
-  <a href="#rabi">🌀 Rabi</a>
-  <a href="#hyperfine">🔑 Hyperfine</a>
-  <a href="#optical-pumping">💡 Opt. Pumping</a>
   <a href="#decoherence">📉 Decoherence</a>
   <a href="#algorithms">⚙️ Algorithms</a>
-  <a href="#qec">🛡️ QEC</a>
   <a href="#analog-sim">🔬 Analog Sim</a>
+  <a href="#qec">🛡️ QEC</a>
   <a href="#resources">📚 Resources</a>
 </nav>
 
@@ -462,6 +462,130 @@ $$P(|0\rangle) = \cos^2(\theta/2) \qquad P(|1\rangle) = \sin^2(\theta/2)$$
 <hr class="section-divider">
 
 <!-- ══════════ 2. QUANTUM GATES ══════════ -->
+<section class="topic-section" id="superposition">
+  <div class="topic-header">
+    <span class="t-icon">〰️</span>
+    <h2>Superposition &amp; Interference</h2>
+    <span class="t-tag">Mach-Zehnder</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Why superposition enables interference</h4>
+    <p>
+      A single photon in state |ψ⟩ = α|0⟩ + β|1⟩ simultaneously "explores" both arms of the interferometer. At the second beamsplitter the two amplitudes combine — constructively or destructively depending on the relative phase φ. This is quantum interference: not two photons, but one photon's amplitude interfering with itself.
+    </p>
+    <p style="margin-top:.6rem;">
+      The MZI implements U<sub>MZI</sub> = H·R<sub>z</sub>(φ)·H. Sweeping φ continuously transfers the photon from one output port to the other — a full, reversible control of quantum probability.
+    </p>
+  </div>
+
+  <div class="formula-box">
+$$U_{MZI} = H \cdot R_z(\varphi) \cdot H$$
+$$P(|0\rangle) = \cos^2(\varphi/2) \qquad P(|1\rangle) = \sin^2(\varphi/2)$$
+Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive at $\varphi = \pi$ (all into $|1\rangle$)
+</div>
+
+  <!-- MZI animated canvas — full width -->
+  <canvas id="mziCanvas" class="mzi-canvas" width="640" height="210" style="width:100%;max-width:640px;height:auto;"></canvas>
+
+  <div class="ctrl-row" style="margin-top:1rem;">
+    <div class="ctrl-group">
+      <label>Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
+      <input type="range" id="mziPhi" min="0" max="360" value="0" step="1"
+        oninput="document.getElementById('mziPhiLbl').textContent=this.value+'°'; updateMZI()">
+    </div>
+  </div>
+  <div class="info-banner" id="mziBanner"></div>
+  <div class="info-banner" style="border-color:rgba(251,191,36,.25);background:var(--bg-card);color:#8d6c02;margin-top:.5rem;">
+    🔍 <strong>Which-path information destroys interference.</strong> If any measurement — however subtle — reveals which arm the photon took, the interference fringes vanish completely, even if you never read the result. Knowledge itself, not the act of looking, collapses the superposition. This is the quantum eraser principle.
+  </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: superposition &amp; interference</a>
+    <a class="read-link" href="https://en.wikipedia.org/wiki/Mach%E2%80%93Zehnder_interferometer" target="_blank" rel="noopener"><span class="rl-icon">🌐</span>Mach-Zehnder interferometer (Wikipedia)</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0101012" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Hardy 2001: Quantum theory from five axioms (arXiv)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 4. MEASUREMENT ══════════ -->
+<section class="topic-section" id="rabi">
+  <div class="topic-header">
+    <span class="t-icon">🌀</span>
+    <h2>Rabi Oscillations</h2>
+    <span class="t-tag">coherent drive</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Driven two-level system</h4>
+    <p>
+      A resonant laser drive with Rabi frequency Ω causes coherent oscillations between |0⟩ and |1⟩.
+      Off-resonance (detuning Δ), the generalised Rabi frequency is Ω' = √(Ω²+Δ²)
+      and the oscillation amplitude is reduced to (Ω/Ω')².
+    </p>
+  </div>
+
+  <div class="formula-box">
+$$P_1(t) = \left(\frac{\Omega}{\Omega'}\right)^2 \sin^2\!\left(\frac{\Omega' t}{2}\right) \quad \text{where} \quad \Omega' = \sqrt{\Omega^2 + \Delta^2}$$
+Resonance ($\Delta=0$): $P_1 = \sin^2(\Omega t/2)$, full population transfer<br>
+$\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ exactly$]$
+</div>
+
+  <div class="ctrl-row" style="margin-top:1rem;">
+    <div class="ctrl-group">
+      <label>Ω/2π (MHz): <span class="ctrl-val" id="rabiOmlbl">1.0</span></label>
+      <input type="range" id="rabiOm" min="0.1" max="5" value="1.0" step="0.1"
+        oninput="document.getElementById('rabiOmlbl').textContent=(+this.value).toFixed(1); updateRabi()">
+    </div>
+    <div class="ctrl-group">
+      <label>Δ/2π (MHz): <span class="ctrl-val" id="rabiDlbl">0.0</span></label>
+      <input type="range" id="rabiD" min="0" max="5" value="0" step="0.1"
+        oninput="document.getElementById('rabiDlbl').textContent=(+this.value).toFixed(1); updateRabi()">
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h5>P₁(t), population in |1⟩</h5>
+    <canvas id="rabiChart" height="230"></canvas>
+  </div>
+  <div style="font-family:var(--mono); font-size:.8rem; color:var(--text-muted); margin-top:.4rem;" id="rabiInfo"></div>
+
+  <!-- Live Rabi Bloch sphere -->
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;margin-top:1rem;">
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:var(--text-muted);margin-bottom:.4rem;text-align:center;">
+        Bloch vector precession
+      </div>
+      <canvas id="rabiBlochCanvas" width="220" height="240"
+        style="border-radius:8px;background:#faf5e9;display:block;"></canvas>
+      <div id="rabiBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;
+           color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
+    </div>
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                  color:var(--text-muted);margin-bottom:.4rem;">P₁(t) live</div>
+      <canvas id="rabiTraceCanvas" width="400" height="120"
+        style="width:100%;border-radius:8px;background:#faf5e9;display:block;"></canvas>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;line-height:1.7;">
+        The Bloch vector rotates around the <em>effective field</em>
+        <strong style="color:#7a4ff7;">n̂_eff = (Ω, 0, −Δ)/Ω'</strong> at angular frequency Ω'.
+        At resonance (Δ=0) the rotation axis is x̂ — the vector sweeps from |0⟩ to |1⟩ and back.
+        Off-resonance, the axis tilts toward ẑ and the cone shrinks.
+      </div>
+    </div>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D-line data (Ω reference)</a>
+    <a class="read-link" href="https://qutip.org/docs/4.7/guide/dynamics/dynamics-bloch-redfield.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: driven qubit dynamics</a>
+    <a class="read-link" href="http://atomoptics.uoregon.edu/~dsteck/teaching/quantum-optics/quantum-optics-notes.pdf" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Steck: Quantum Optics notes, two-level atoms (free PDF)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 12. HYPERFINE QUBITS ══════════ -->
 <section class="topic-section" id="gates">
   <div class="topic-header">
     <span class="t-icon">⚡</span>
@@ -530,53 +654,6 @@ $$P(|0\rangle) = \cos^2(\theta/2) \qquad P(|1\rangle) = \sin^2(\theta/2)$$
 <hr class="section-divider">
 
 <!-- ══════════ 3. SUPERPOSITION ══════════ -->
-<section class="topic-section" id="superposition">
-  <div class="topic-header">
-    <span class="t-icon">〰️</span>
-    <h2>Superposition &amp; Interference</h2>
-    <span class="t-tag">Mach-Zehnder</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Why superposition enables interference</h4>
-    <p>
-      A single photon in state |ψ⟩ = α|0⟩ + β|1⟩ simultaneously "explores" both arms of the interferometer. At the second beamsplitter the two amplitudes combine — constructively or destructively depending on the relative phase φ. This is quantum interference: not two photons, but one photon's amplitude interfering with itself.
-    </p>
-    <p style="margin-top:.6rem;">
-      The MZI implements U<sub>MZI</sub> = H·R<sub>z</sub>(φ)·H. Sweeping φ continuously transfers the photon from one output port to the other — a full, reversible control of quantum probability.
-    </p>
-  </div>
-
-  <div class="formula-box">
-$$U_{MZI} = H \cdot R_z(\varphi) \cdot H$$
-$$P(|0\rangle) = \cos^2(\varphi/2) \qquad P(|1\rangle) = \sin^2(\varphi/2)$$
-Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive at $\varphi = \pi$ (all into $|1\rangle$)
-</div>
-
-  <!-- MZI animated canvas — full width -->
-  <canvas id="mziCanvas" class="mzi-canvas" width="640" height="210" style="width:100%;max-width:640px;height:auto;"></canvas>
-
-  <div class="ctrl-row" style="margin-top:1rem;">
-    <div class="ctrl-group">
-      <label>Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
-      <input type="range" id="mziPhi" min="0" max="360" value="0" step="1"
-        oninput="document.getElementById('mziPhiLbl').textContent=this.value+'°'; updateMZI()">
-    </div>
-  </div>
-  <div class="info-banner" id="mziBanner"></div>
-  <div class="info-banner" style="border-color:rgba(251,191,36,.25);background:var(--bg-card);color:#8d6c02;margin-top:.5rem;">
-    🔍 <strong>Which-path information destroys interference.</strong> If any measurement — however subtle — reveals which arm the photon took, the interference fringes vanish completely, even if you never read the result. Knowledge itself, not the act of looking, collapses the superposition. This is the quantum eraser principle.
-  </div>
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: superposition &amp; interference</a>
-    <a class="read-link" href="https://en.wikipedia.org/wiki/Mach%E2%80%93Zehnder_interferometer" target="_blank" rel="noopener"><span class="rl-icon">🌐</span>Mach-Zehnder interferometer (Wikipedia)</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0101012" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Hardy 2001: Quantum theory from five axioms (arXiv)</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ 4. MEASUREMENT ══════════ -->
 <section class="topic-section" id="measurement">
   <div class="topic-header">
     <span class="t-icon">📏</span>
@@ -665,415 +742,6 @@ Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive a
 <hr class="section-divider">
 
 <!-- ══════════ 5. ENTANGLEMENT ══════════ -->
-<section class="topic-section" id="entanglement">
-  <div class="topic-header">
-    <span class="t-icon">🔗</span>
-    <h2>Entanglement &amp; Bell States</h2>
-    <span class="t-tag">non-separability</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Bell states, maximally entangled two-qubit states</h4>
-    <p>
-      A state is entangled if it cannot be written as |ψ_A⟩⊗|ψ_B⟩.
-      The four Bell states form an orthonormal basis for the two-qubit Hilbert space
-      and are maximally entangled: measuring one qubit instantly determines the other's outcome,
-      regardless of separation, "spooky action at a distance" (Einstein, 1935).
-    </p>
-  </div>
-
-  <div class="three-col" style="margin-bottom:1rem;">
-    <div class="bell-card selected" id="bell0" onclick="selectBell(0)">
-      <h5>|Φ⁺⟩</h5>
-      <p>(|00⟩ + |11⟩)/√2</p>
-    </div>
-    <div class="bell-card" id="bell1" onclick="selectBell(1)">
-      <h5>|Φ⁻⟩</h5>
-      <p>(|00⟩ − |11⟩)/√2</p>
-    </div>
-    <div class="bell-card" id="bell2" onclick="selectBell(2)">
-      <h5>|Ψ⁺⟩</h5>
-      <p>(|01⟩ + |10⟩)/√2</p>
-    </div>
-  </div>
-  <div class="three-col" style="margin-bottom:1rem;">
-    <div class="bell-card" id="bell3" onclick="selectBell(3)">
-      <h5>|Ψ⁻⟩</h5>
-      <p>(|01⟩ − |10⟩)/√2</p>
-    </div>
-    <div class="bell-card" id="bell4" onclick="selectBell(4)">
-      <h5>|00⟩ (separable)</h5>
-      <p>|0⟩⊗|0⟩, not entangled</p>
-    </div>
-    <div class="bell-card" id="bell5" onclick="selectBell(5)">
-      <h5>|++⟩ (separable)</h5>
-      <p>(|0⟩+|1⟩)/√2 ⊗ same</p>
-    </div>
-  </div>
-
-  <div id="bellInfo" class="two-col"></div>
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0504166" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al.: entanglement review</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9508009" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bell / CHSH inequality, original test</a>
-    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: entanglement</a>
-    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, build Bell states visually</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ 6. RYDBERG ══════════ -->
-<section class="topic-section" id="rydberg">
-  <div class="topic-header">
-    <span class="t-icon">⚛️</span>
-    <h2>Rydberg Atoms &amp; Blockade</h2>
-    <span class="t-tag">neutral-atom QC</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Rydberg blockade mechanism</h4>
-    <p>
-      Exciting two nearby atoms to Rydberg states shifts one atom's resonance by
-      V(R) = C₆/R⁶ due to van der Waals interactions. When V(R) ≫ ℏΩ_R,
-      the double excitation |rr⟩ is off-resonant; this is the <strong>Rydberg blockade</strong>.
-      Within the blockade radius R_b, only one atom can be excited at a time,
-      enabling two-qubit entangling gates.
-    </p>
-  </div>
-
-  <div class="formula-box">
-$$C_6 \propto n^{*11} \qquad (n^* = \text{effective principal quantum number})$$
-$$R_b = \left(\frac{C_6}{\hbar\Omega_R}\right)^{1/6} \quad \text{[blockade radius]}$$
-$$V(R) = \frac{C_6}{R^6} \quad \text{[van der Waals interaction]}$$
-Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{motion}\rangle$
-</div>
-
-  <div class="two-col" style="margin-top:1rem;">
-    <div>
-      <div class="ctrl-row" style="flex-direction:column; align-items:flex-start; gap:.6rem;">
-        <div class="ctrl-group">
-          <label>Principal quantum number n: <span class="ctrl-val" id="rydNlbl">70</span></label>
-          <input type="range" id="rydN" min="30" max="120" value="70" step="1"
-            oninput="document.getElementById('rydNlbl').textContent=this.value; updateRydberg()">
-        </div>
-        <div class="ctrl-group">
-          <label>Rabi frequency Ω_R/2π (MHz): <span class="ctrl-val" id="rydOmlbl">1.0</span></label>
-          <input type="range" id="rydOm" min="0.1" max="10" value="1.0" step="0.1"
-            oninput="document.getElementById('rydOmlbl').textContent=(+this.value).toFixed(1); updateRydberg()">
-        </div>
-        <div class="ctrl-group">
-          <label>Atom: <select class="ctrl-select" id="rydAtom" onchange="updateRydberg()" style="margin-top:.2rem; padding:.25rem .5rem;">
-            <option value="Cs">¹³³Cs</option>
-            <option value="Rb">⁸⁷Rb</option>
-          </select></label>
-        </div>
-      </div>
-      <div class="result-box" id="rydResult" style="margin-top:.75rem;"></div>
-      <div class="info-banner" style="margin-top:.6rem;" id="rydBanner"></div>
-    </div>
-
-    <div class="chart-card">
-      <h5>V(R) = C₆/R⁶ interaction potential</h5>
-      <canvas id="rydChart" height="230"></canvas>
-    </div>
-  </div>
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9907071" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Jaksch et al. 1999, original Rydberg gate proposal</a>
-    <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023, 99.5% CZ gate (Harvard)</a>
-    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
-    <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024, 48 logical qubits</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ 7. TWO-QUBIT GATES ══════════ -->
-<section class="topic-section" id="twoqubit">
-  <div class="topic-header">
-    <span class="t-icon">🔀</span>
-    <h2>Two-Qubit Gates</h2>
-    <span class="t-tag">entangling operations</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Entangling gates</h4>
-    <p>
-      Two-qubit gates act on the 4D Hilbert space spanned by |00⟩, |01⟩, |10⟩, |11⟩.
-      CNOT, CZ, and iSWAP can generate maximal entanglement from product states, they are
-      universal when combined with single-qubit gates.
-    </p>
-  </div>
-
-  <div class="ctrl-row">
-    <label style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
-    <select class="ctrl-select" id="tqSel" onchange="updateTwoQubit()">
-      <option value="CNOT">CNOT</option>
-      <option value="CZ">CZ</option>
-      <option value="iSWAP">iSWAP</option>
-      <option value="SWAP">SWAP</option>
-    </select>
-  </div>
-
-  <div class="two-col" style="margin-top:.5rem;">
-    <div>
-      <div id="tqMatrix"></div>
-      <div class="theory-box" style="margin-top:.75rem;" id="tqDesc"></div>
-    </div>
-    <div>
-      <div style="margin-bottom:.6rem; font-size:.83rem; font-weight:600; color:var(--text-muted);">Truth table</div>
-      <table class="truth-table" id="tqTruth"></table>
-    </div>
-  </div>
-  <!-- Bell state generation animation -->
-  <div style="margin-top:1rem;">
-    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">Bell state |Φ⁺⟩ generation: H ⊗ I → CNOT</div>
-    <canvas id="tqBellCanvas" width="480" height="140"
-      style="display:block;width:100%;max-width:480px;border-radius:8px;background:#faf5e9;"></canvas>
-  </div>
-
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, apply CNOT &amp; CZ visually</a>
-    <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/multiple-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0312225" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang et al.: perfect entanglers in SU(4)</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ 8. RABI ══════════ -->
-<section class="topic-section" id="rabi">
-  <div class="topic-header">
-    <span class="t-icon">🌀</span>
-    <h2>Rabi Oscillations</h2>
-    <span class="t-tag">coherent drive</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Driven two-level system</h4>
-    <p>
-      A resonant laser drive with Rabi frequency Ω causes coherent oscillations between |0⟩ and |1⟩.
-      Off-resonance (detuning Δ), the generalised Rabi frequency is Ω' = √(Ω²+Δ²)
-      and the oscillation amplitude is reduced to (Ω/Ω')².
-    </p>
-  </div>
-
-  <div class="formula-box">
-$$P_1(t) = \left(\frac{\Omega}{\Omega'}\right)^2 \sin^2\!\left(\frac{\Omega' t}{2}\right) \quad \text{where} \quad \Omega' = \sqrt{\Omega^2 + \Delta^2}$$
-Resonance ($\Delta=0$): $P_1 = \sin^2(\Omega t/2)$, full population transfer<br>
-$\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ exactly$]$
-</div>
-
-  <div class="ctrl-row" style="margin-top:1rem;">
-    <div class="ctrl-group">
-      <label>Ω/2π (MHz): <span class="ctrl-val" id="rabiOmlbl">1.0</span></label>
-      <input type="range" id="rabiOm" min="0.1" max="5" value="1.0" step="0.1"
-        oninput="document.getElementById('rabiOmlbl').textContent=(+this.value).toFixed(1); updateRabi()">
-    </div>
-    <div class="ctrl-group">
-      <label>Δ/2π (MHz): <span class="ctrl-val" id="rabiDlbl">0.0</span></label>
-      <input type="range" id="rabiD" min="0" max="5" value="0" step="0.1"
-        oninput="document.getElementById('rabiDlbl').textContent=(+this.value).toFixed(1); updateRabi()">
-    </div>
-  </div>
-
-  <div class="chart-card">
-    <h5>P₁(t), population in |1⟩</h5>
-    <canvas id="rabiChart" height="230"></canvas>
-  </div>
-  <div style="font-family:var(--mono); font-size:.8rem; color:var(--text-muted); margin-top:.4rem;" id="rabiInfo"></div>
-
-  <!-- Live Rabi Bloch sphere -->
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;margin-top:1rem;">
-    <div>
-      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
-                  color:var(--text-muted);margin-bottom:.4rem;text-align:center;">
-        Bloch vector precession
-      </div>
-      <canvas id="rabiBlochCanvas" width="220" height="240"
-        style="border-radius:8px;background:#faf5e9;display:block;"></canvas>
-      <div id="rabiBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;
-           color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
-    </div>
-    <div>
-      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
-                  color:var(--text-muted);margin-bottom:.4rem;">P₁(t) live</div>
-      <canvas id="rabiTraceCanvas" width="400" height="120"
-        style="width:100%;border-radius:8px;background:#faf5e9;display:block;"></canvas>
-      <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;line-height:1.7;">
-        The Bloch vector rotates around the <em>effective field</em>
-        <strong style="color:#7a4ff7;">n̂_eff = (Ω, 0, −Δ)/Ω'</strong> at angular frequency Ω'.
-        At resonance (Δ=0) the rotation axis is x̂ — the vector sweeps from |0⟩ to |1⟩ and back.
-        Off-resonance, the axis tilts toward ẑ and the cone shrinks.
-      </div>
-    </div>
-  </div>
-
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D-line data (Ω reference)</a>
-    <a class="read-link" href="https://qutip.org/docs/4.7/guide/dynamics/dynamics-bloch-redfield.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: driven qubit dynamics</a>
-    <a class="read-link" href="http://atomoptics.uoregon.edu/~dsteck/teaching/quantum-optics/quantum-optics-notes.pdf" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Steck: Quantum Optics notes, two-level atoms (free PDF)</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ 12. HYPERFINE QUBITS ══════════ -->
-<section class="topic-section" id="hyperfine">
-  <div class="topic-header">
-    <span class="t-icon">🔑</span>
-    <h2>Hyperfine Qubits &amp; Atomic Clock States</h2>
-    <span class="t-tag">AMO qubit encoding</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Why atoms are excellent qubits</h4>
-    <p>
-      Neutral alkali atoms encode qubits in their <strong>hyperfine ground states</strong>:
-      two long-lived magnetic sub-levels of the electronic ground state split by the
-      interaction between nuclear spin <em>I</em> and electron spin <em>J</em>.
-      The energy splitting is ΔE = A<sub>hf</sub> · <strong>I</strong>·<strong>J</strong>,
-      where A<sub>hf</sub> is the magnetic dipole hyperfine constant.
-      <strong>Clock states</strong> (|F, m<sub>F</sub> = 0⟩) are first-order insensitive to
-      magnetic field fluctuations, enabling T₂ &gt; 10 seconds, orders of magnitude longer
-      than superconducting qubits (~100 μs).
-    </p>
-  </div>
-
-  <div class="formula-box">
-$$\hat{H}_{hf} = A_{hf}\,\vec{I}\cdot\vec{J} + B_{hf}\left[3(\vec{I}\cdot\vec{J})^2 + \ldots\right] \quad \text{(quadrupole term, } I \geq 1\text{)}$$
-Qubit encoding (e.g. $^{133}$Cs): $|0\rangle = |F{=}3, m_F{=}0\rangle$, $|1\rangle = |F{=}4, m_F{=}0\rangle$<br>
-Splitting: $\Delta E/h = 9{,}192{,}631{,}770$ Hz (defines the SI second!)<br>
-2nd-order Zeeman shift (clock states):
-$$\Delta\nu(B) \approx +427\text{ Hz/G}^2 \text{ (Cs)}, \quad +575\text{ Hz/G}^2 \text{ (Rb-87)}$$
-Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\text{s}$ (Raman, $\Omega/2\pi \sim 100$ kHz)
-</div>
-
-  <div class="two-col" style="margin-top:1rem;">
-    <div>
-      <div class="theory-box">
-        <h4>Qubit encoding strategies</h4>
-        <p>
-          <strong>Clock qubit</strong> (m<sub>F</sub>=0 → m<sub>F</sub>'=0): best coherence,
-          first-order B-insensitive. Used in most neutral-atom QC experiments.<br><br>
-          <strong>Stretched-state qubit</strong> (m<sub>F</sub>=F → m<sub>F</sub>'=F'): strongest
-          coupling to MW field, but first-order B-sensitive, requires ≲1 mG stability.<br><br>
-          <strong>Optical qubit</strong> (ground ↔ metastable excited state, e.g. Sr, Yb):
-          very fast gates via optical fields; coherence limited by excited-state lifetime and
-          photon scattering.<br><br>
-          For Rydberg gate operation, either qubit state is coupled to a Rydberg level |r⟩
-          via a two-photon (IR + UV) or single-photon (UV ~318 nm for Cs) transition.
-          The blockade between two atoms in |rr⟩ enforces a conditional phase on |11⟩.
-        </p>
-      </div>
-
-      <!-- Energy level SVG -->
-      <div class="chart-card" style="margin-top:.75rem;">
-        <h5>¹³³Cs hyperfine ground structure (schematic)</h5>
-        <svg width="100%" viewBox="0 0 290 200" style="display:block;">
-          <!-- F=4 level -->
-          <line x1="30" y1="58" x2="250" y2="58" stroke="#7a4ff7" stroke-width="2"/>
-          <text x="140" y="50" fill="#7a4ff7" font-size="11" text-anchor="middle">F = 4  (9 sub-levels, m_F = −4…+4)</text>
-          <text x="256" y="62" fill="#7a4ff7" font-size="9">|1⟩</text>
-          <!-- F=3 level -->
-          <line x1="30" y1="128" x2="225" y2="128" stroke="#076be6" stroke-width="2"/>
-          <text x="127" y="120" fill="#076ce7" font-size="11" text-anchor="middle">F = 3  (7 sub-levels, m_F = −3…+3)</text>
-          <text x="231" y="132" fill="#076ce7" font-size="9">|0⟩</text>
-          <!-- MW arrow -->
-          <defs><marker id="mwarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 Z" fill="#926a03"/></marker></defs>
-          <line x1="140" y1="60" x2="140" y2="126" stroke="#926a03" stroke-width="1.5" marker-end="url(#mwarr)"/>
-          <text x="150" y="97" fill="#926a03" font-size="10">9.19 GHz</text>
-          <text x="150" y="110" fill="#926a03" font-size="9">(microwave / Raman)</text>
-          <!-- clock state dots -->
-          <circle cx="140" cy="58" r="4" fill="#7a4ff7"/>
-          <text x="140" y="74" fill="#7a4ff7" font-size="8" text-anchor="middle">m_F=0 clock</text>
-          <circle cx="140" cy="128" r="4" fill="#076ce7"/>
-          <text x="140" y="145" fill="#076ce7" font-size="8" text-anchor="middle">m_F=0 clock</text>
-          <!-- Rydberg arrow -->
-          <defs><marker id="rydarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 Z" fill="#d81179"/></marker></defs>
-          <line x1="205" y1="56" x2="205" y2="18" stroke="#d81179" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#rydarr)"/>
-          <text x="214" y="36" fill="#d81179" font-size="9">|r⟩</text>
-          <text x="214" y="48" fill="#d81179" font-size="9">UV / IR</text>
-        </svg>
-      </div>
-    </div>
-
-    <div>
-      <div style="font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:.55rem; text-transform:uppercase; letter-spacing:.05em;">Hyperfine qubit comparison</div>
-      <table class="hf-table">
-        <thead>
-          <tr>
-            <th>Atom</th>
-            <th>Hyperfine splitting</th>
-            <th>Clock states</th>
-            <th>T₂ (best)</th>
-            <th>Gate</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>⁸⁷Rb</strong></td>
-            <td class="mono">6.835 GHz</td>
-            <td class="mono">|1,0⟩ → |2,0⟩</td>
-            <td>~1 min</td>
-            <td>Rydberg CZ</td>
-          </tr>
-          <tr>
-            <td><strong>¹³³Cs</strong></td>
-            <td class="mono hi">9.193 GHz (SI clock!)</td>
-            <td class="mono">|3,0⟩ → |4,0⟩</td>
-            <td>~10 s</td>
-            <td>Rydberg CZ</td>
-          </tr>
-          <tr>
-            <td><strong>⁶Li</strong></td>
-            <td class="mono">228.2 MHz</td>
-            <td class="mono">|1/2,+1/2⟩ → |1/2,−1/2⟩</td>
-            <td>~100 ms</td>
-            <td>Rydberg / tweezer</td>
-          </tr>
-          <tr>
-            <td><strong>¹⁷¹Yb</strong></td>
-            <td class="mono hi">12.643 GHz</td>
-            <td class="mono">|F=0⟩ → |F=1, m_F=0⟩</td>
-            <td>&gt;10 s</td>
-            <td>Rydberg CZ</td>
-          </tr>
-          <tr>
-            <td><strong>⁸⁸Sr (optical)</strong></td>
-            <td class="mono">429.2 THz (clock line)</td>
-            <td class="mono">¹S₀ → ³P₀</td>
-            <td>&gt;1 min</td>
-            <td>Rydberg / optical</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="info-banner" style="margin-top:.75rem;">
-        💡 <strong>¹⁷¹Yb</strong> is emerging as a leading neutral-atom qubit: nuclear spin
-        I = 1/2 gives a clean two-level system, and the F=0 → F=1, m<sub>F</sub>=0 transition
-        is insensitive to magnetic fields at all orders near B=0, enabling exceptionally long coherence.
-      </div>
-
-      <div class="good-banner" style="margin-top:.6rem;">
-        🏆 <strong>Record T₂</strong>: Neutral atom clock qubits in optical tweezers have
-        demonstrated T₂ &gt; 40 seconds using dynamical decoupling on ⁸⁷Rb (Evered et al. 2023).
-        For comparison, superconducting transmon qubits: T₂ ~ 100–500 μs.
-      </div>
-    </div>
-  </div>
-
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D₂ data (hyperfine constants)</a>
-    <a class="read-link" href="https://steck.us/alkalidata/rubidium87numbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Rb-87 data</a>
-    <a class="read-link" href="https://arxiv.org/abs/2112.06799" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ma et al. 2022: ¹⁷¹Yb qubit array (Princeton)</a>
-    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
-    <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023, long T₂ + 99.5% gates</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ OPTICAL PUMPING ══════════ -->
 <section class="topic-section" id="optical-pumping">
   <div class="topic-header">
     <span class="t-icon">💡</span>
@@ -1280,6 +948,338 @@ Pumping time: $\tau_{pump} \approx 2F / (R_{scatter} \cdot \varepsilon_{branch})
 <hr class="section-divider">
 
 <!-- ══════════ 9. DECOHERENCE ══════════ -->
+<section class="topic-section" id="hyperfine">
+  <div class="topic-header">
+    <span class="t-icon">🔑</span>
+    <h2>Hyperfine Qubits &amp; Atomic Clock States</h2>
+    <span class="t-tag">AMO qubit encoding</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Why atoms are excellent qubits</h4>
+    <p>
+      Neutral alkali atoms encode qubits in their <strong>hyperfine ground states</strong>:
+      two long-lived magnetic sub-levels of the electronic ground state split by the
+      interaction between nuclear spin <em>I</em> and electron spin <em>J</em>.
+      The energy splitting is ΔE = A<sub>hf</sub> · <strong>I</strong>·<strong>J</strong>,
+      where A<sub>hf</sub> is the magnetic dipole hyperfine constant.
+      <strong>Clock states</strong> (|F, m<sub>F</sub> = 0⟩) are first-order insensitive to
+      magnetic field fluctuations, enabling T₂ &gt; 10 seconds, orders of magnitude longer
+      than superconducting qubits (~100 μs).
+    </p>
+  </div>
+
+  <div class="formula-box">
+$$\hat{H}_{hf} = A_{hf}\,\vec{I}\cdot\vec{J} + B_{hf}\left[3(\vec{I}\cdot\vec{J})^2 + \ldots\right] \quad \text{(quadrupole term, } I \geq 1\text{)}$$
+Qubit encoding (e.g. $^{133}$Cs): $|0\rangle = |F{=}3, m_F{=}0\rangle$, $|1\rangle = |F{=}4, m_F{=}0\rangle$<br>
+Splitting: $\Delta E/h = 9{,}192{,}631{,}770$ Hz (defines the SI second!)<br>
+2nd-order Zeeman shift (clock states):
+$$\Delta\nu(B) \approx +427\text{ Hz/G}^2 \text{ (Cs)}, \quad +575\text{ Hz/G}^2 \text{ (Rb-87)}$$
+Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\text{s}$ (Raman, $\Omega/2\pi \sim 100$ kHz)
+</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <div class="theory-box">
+        <h4>Qubit encoding strategies</h4>
+        <p>
+          <strong>Clock qubit</strong> (m<sub>F</sub>=0 → m<sub>F</sub>'=0): best coherence,
+          first-order B-insensitive. Used in most neutral-atom QC experiments.<br><br>
+          <strong>Stretched-state qubit</strong> (m<sub>F</sub>=F → m<sub>F</sub>'=F'): strongest
+          coupling to MW field, but first-order B-sensitive, requires ≲1 mG stability.<br><br>
+          <strong>Optical qubit</strong> (ground ↔ metastable excited state, e.g. Sr, Yb):
+          very fast gates via optical fields; coherence limited by excited-state lifetime and
+          photon scattering.<br><br>
+          For Rydberg gate operation, either qubit state is coupled to a Rydberg level |r⟩
+          via a two-photon (IR + UV) or single-photon (UV ~318 nm for Cs) transition.
+          The blockade between two atoms in |rr⟩ enforces a conditional phase on |11⟩.
+        </p>
+      </div>
+
+      <!-- Energy level SVG -->
+      <div class="chart-card" style="margin-top:.75rem;">
+        <h5>¹³³Cs hyperfine ground structure (schematic)</h5>
+        <svg width="100%" viewBox="0 0 290 200" style="display:block;">
+          <!-- F=4 level -->
+          <line x1="30" y1="58" x2="250" y2="58" stroke="#7a4ff7" stroke-width="2"/>
+          <text x="140" y="50" fill="#7a4ff7" font-size="11" text-anchor="middle">F = 4  (9 sub-levels, m_F = −4…+4)</text>
+          <text x="256" y="62" fill="#7a4ff7" font-size="9">|1⟩</text>
+          <!-- F=3 level -->
+          <line x1="30" y1="128" x2="225" y2="128" stroke="#076be6" stroke-width="2"/>
+          <text x="127" y="120" fill="#076ce7" font-size="11" text-anchor="middle">F = 3  (7 sub-levels, m_F = −3…+3)</text>
+          <text x="231" y="132" fill="#076ce7" font-size="9">|0⟩</text>
+          <!-- MW arrow -->
+          <defs><marker id="mwarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 Z" fill="#926a03"/></marker></defs>
+          <line x1="140" y1="60" x2="140" y2="126" stroke="#926a03" stroke-width="1.5" marker-end="url(#mwarr)"/>
+          <text x="150" y="97" fill="#926a03" font-size="10">9.19 GHz</text>
+          <text x="150" y="110" fill="#926a03" font-size="9">(microwave / Raman)</text>
+          <!-- clock state dots -->
+          <circle cx="140" cy="58" r="4" fill="#7a4ff7"/>
+          <text x="140" y="74" fill="#7a4ff7" font-size="8" text-anchor="middle">m_F=0 clock</text>
+          <circle cx="140" cy="128" r="4" fill="#076ce7"/>
+          <text x="140" y="145" fill="#076ce7" font-size="8" text-anchor="middle">m_F=0 clock</text>
+          <!-- Rydberg arrow -->
+          <defs><marker id="rydarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5 Z" fill="#d81179"/></marker></defs>
+          <line x1="205" y1="56" x2="205" y2="18" stroke="#d81179" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#rydarr)"/>
+          <text x="214" y="36" fill="#d81179" font-size="9">|r⟩</text>
+          <text x="214" y="48" fill="#d81179" font-size="9">UV / IR</text>
+        </svg>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:.55rem; text-transform:uppercase; letter-spacing:.05em;">Hyperfine qubit comparison</div>
+      <table class="hf-table">
+        <thead>
+          <tr>
+            <th>Atom</th>
+            <th>Hyperfine splitting</th>
+            <th>Clock states</th>
+            <th>T₂ (best)</th>
+            <th>Gate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>⁸⁷Rb</strong></td>
+            <td class="mono">6.835 GHz</td>
+            <td class="mono">|1,0⟩ → |2,0⟩</td>
+            <td>~1 min</td>
+            <td>Rydberg CZ</td>
+          </tr>
+          <tr>
+            <td><strong>¹³³Cs</strong></td>
+            <td class="mono hi">9.193 GHz (SI clock!)</td>
+            <td class="mono">|3,0⟩ → |4,0⟩</td>
+            <td>~10 s</td>
+            <td>Rydberg CZ</td>
+          </tr>
+          <tr>
+            <td><strong>⁶Li</strong></td>
+            <td class="mono">228.2 MHz</td>
+            <td class="mono">|1/2,+1/2⟩ → |1/2,−1/2⟩</td>
+            <td>~100 ms</td>
+            <td>Rydberg / tweezer</td>
+          </tr>
+          <tr>
+            <td><strong>¹⁷¹Yb</strong></td>
+            <td class="mono hi">12.643 GHz</td>
+            <td class="mono">|F=0⟩ → |F=1, m_F=0⟩</td>
+            <td>&gt;10 s</td>
+            <td>Rydberg CZ</td>
+          </tr>
+          <tr>
+            <td><strong>⁸⁸Sr (optical)</strong></td>
+            <td class="mono">429.2 THz (clock line)</td>
+            <td class="mono">¹S₀ → ³P₀</td>
+            <td>&gt;1 min</td>
+            <td>Rydberg / optical</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-banner" style="margin-top:.75rem;">
+        💡 <strong>¹⁷¹Yb</strong> is emerging as a leading neutral-atom qubit: nuclear spin
+        I = 1/2 gives a clean two-level system, and the F=0 → F=1, m<sub>F</sub>=0 transition
+        is insensitive to magnetic fields at all orders near B=0, enabling exceptionally long coherence.
+      </div>
+
+      <div class="good-banner" style="margin-top:.6rem;">
+        🏆 <strong>Record T₂</strong>: Neutral atom clock qubits in optical tweezers have
+        demonstrated T₂ &gt; 40 seconds using dynamical decoupling on ⁸⁷Rb (Evered et al. 2023).
+        For comparison, superconducting transmon qubits: T₂ ~ 100–500 μs.
+      </div>
+    </div>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D₂ data (hyperfine constants)</a>
+    <a class="read-link" href="https://steck.us/alkalidata/rubidium87numbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Rb-87 data</a>
+    <a class="read-link" href="https://arxiv.org/abs/2112.06799" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ma et al. 2022: ¹⁷¹Yb qubit array (Princeton)</a>
+    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
+    <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023, long T₂ + 99.5% gates</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ OPTICAL PUMPING ══════════ -->
+<section class="topic-section" id="entanglement">
+  <div class="topic-header">
+    <span class="t-icon">🔗</span>
+    <h2>Entanglement &amp; Bell States</h2>
+    <span class="t-tag">non-separability</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Bell states, maximally entangled two-qubit states</h4>
+    <p>
+      A state is entangled if it cannot be written as |ψ_A⟩⊗|ψ_B⟩.
+      The four Bell states form an orthonormal basis for the two-qubit Hilbert space
+      and are maximally entangled: measuring one qubit instantly determines the other's outcome,
+      regardless of separation, "spooky action at a distance" (Einstein, 1935).
+    </p>
+  </div>
+
+  <div class="three-col" style="margin-bottom:1rem;">
+    <div class="bell-card selected" id="bell0" onclick="selectBell(0)">
+      <h5>|Φ⁺⟩</h5>
+      <p>(|00⟩ + |11⟩)/√2</p>
+    </div>
+    <div class="bell-card" id="bell1" onclick="selectBell(1)">
+      <h5>|Φ⁻⟩</h5>
+      <p>(|00⟩ − |11⟩)/√2</p>
+    </div>
+    <div class="bell-card" id="bell2" onclick="selectBell(2)">
+      <h5>|Ψ⁺⟩</h5>
+      <p>(|01⟩ + |10⟩)/√2</p>
+    </div>
+  </div>
+  <div class="three-col" style="margin-bottom:1rem;">
+    <div class="bell-card" id="bell3" onclick="selectBell(3)">
+      <h5>|Ψ⁻⟩</h5>
+      <p>(|01⟩ − |10⟩)/√2</p>
+    </div>
+    <div class="bell-card" id="bell4" onclick="selectBell(4)">
+      <h5>|00⟩ (separable)</h5>
+      <p>|0⟩⊗|0⟩, not entangled</p>
+    </div>
+    <div class="bell-card" id="bell5" onclick="selectBell(5)">
+      <h5>|++⟩ (separable)</h5>
+      <p>(|0⟩+|1⟩)/√2 ⊗ same</p>
+    </div>
+  </div>
+
+  <div id="bellInfo" class="two-col"></div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0504166" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al.: entanglement review</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9508009" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bell / CHSH inequality, original test</a>
+    <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: entanglement</a>
+    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, build Bell states visually</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 6. RYDBERG ══════════ -->
+<section class="topic-section" id="rydberg">
+  <div class="topic-header">
+    <span class="t-icon">⚛️</span>
+    <h2>Rydberg Atoms &amp; Blockade</h2>
+    <span class="t-tag">neutral-atom QC</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Rydberg blockade mechanism</h4>
+    <p>
+      Exciting two nearby atoms to Rydberg states shifts one atom's resonance by
+      V(R) = C₆/R⁶ due to van der Waals interactions. When V(R) ≫ ℏΩ_R,
+      the double excitation |rr⟩ is off-resonant; this is the <strong>Rydberg blockade</strong>.
+      Within the blockade radius R_b, only one atom can be excited at a time,
+      enabling two-qubit entangling gates.
+    </p>
+  </div>
+
+  <div class="formula-box">
+$$C_6 \propto n^{*11} \qquad (n^* = \text{effective principal quantum number})$$
+$$R_b = \left(\frac{C_6}{\hbar\Omega_R}\right)^{1/6} \quad \text{[blockade radius]}$$
+$$V(R) = \frac{C_6}{R^6} \quad \text{[van der Waals interaction]}$$
+Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{motion}\rangle$
+</div>
+
+  <div class="two-col" style="margin-top:1rem;">
+    <div>
+      <div class="ctrl-row" style="flex-direction:column; align-items:flex-start; gap:.6rem;">
+        <div class="ctrl-group">
+          <label>Principal quantum number n: <span class="ctrl-val" id="rydNlbl">70</span></label>
+          <input type="range" id="rydN" min="30" max="120" value="70" step="1"
+            oninput="document.getElementById('rydNlbl').textContent=this.value; updateRydberg()">
+        </div>
+        <div class="ctrl-group">
+          <label>Rabi frequency Ω_R/2π (MHz): <span class="ctrl-val" id="rydOmlbl">1.0</span></label>
+          <input type="range" id="rydOm" min="0.1" max="10" value="1.0" step="0.1"
+            oninput="document.getElementById('rydOmlbl').textContent=(+this.value).toFixed(1); updateRydberg()">
+        </div>
+        <div class="ctrl-group">
+          <label>Atom: <select class="ctrl-select" id="rydAtom" onchange="updateRydberg()" style="margin-top:.2rem; padding:.25rem .5rem;">
+            <option value="Cs">¹³³Cs</option>
+            <option value="Rb">⁸⁷Rb</option>
+          </select></label>
+        </div>
+      </div>
+      <div class="result-box" id="rydResult" style="margin-top:.75rem;"></div>
+      <div class="info-banner" style="margin-top:.6rem;" id="rydBanner"></div>
+    </div>
+
+    <div class="chart-card">
+      <h5>V(R) = C₆/R⁶ interaction potential</h5>
+      <canvas id="rydChart" height="230"></canvas>
+    </div>
+  </div>
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9907071" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Jaksch et al. 1999, original Rydberg gate proposal</a>
+    <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023, 99.5% CZ gate (Harvard)</a>
+    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
+    <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024, 48 logical qubits</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 7. TWO-QUBIT GATES ══════════ -->
+<section class="topic-section" id="twoqubit">
+  <div class="topic-header">
+    <span class="t-icon">🔀</span>
+    <h2>Two-Qubit Gates</h2>
+    <span class="t-tag">entangling operations</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Entangling gates</h4>
+    <p>
+      Two-qubit gates act on the 4D Hilbert space spanned by |00⟩, |01⟩, |10⟩, |11⟩.
+      CNOT, CZ, and iSWAP can generate maximal entanglement from product states, they are
+      universal when combined with single-qubit gates.
+    </p>
+  </div>
+
+  <div class="ctrl-row">
+    <label style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
+    <select class="ctrl-select" id="tqSel" onchange="updateTwoQubit()">
+      <option value="CNOT">CNOT</option>
+      <option value="CZ">CZ</option>
+      <option value="iSWAP">iSWAP</option>
+      <option value="SWAP">SWAP</option>
+    </select>
+  </div>
+
+  <div class="two-col" style="margin-top:.5rem;">
+    <div>
+      <div id="tqMatrix"></div>
+      <div class="theory-box" style="margin-top:.75rem;" id="tqDesc"></div>
+    </div>
+    <div>
+      <div style="margin-bottom:.6rem; font-size:.83rem; font-weight:600; color:var(--text-muted);">Truth table</div>
+      <table class="truth-table" id="tqTruth"></table>
+    </div>
+  </div>
+  <!-- Bell state generation animation -->
+  <div style="margin-top:1rem;">
+    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">Bell state |Φ⁺⟩ generation: H ⊗ I → CNOT</div>
+    <canvas id="tqBellCanvas" width="480" height="140"
+      style="display:block;width:100%;max-width:480px;border-radius:8px;background:#faf5e9;"></canvas>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, apply CNOT &amp; CZ visually</a>
+    <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/multiple-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0312225" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang et al.: perfect entanglers in SU(4)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 8. RABI ══════════ -->
 <section class="topic-section" id="decoherence">
   <div class="topic-header">
     <span class="t-icon">📉</span>
@@ -1414,6 +1414,81 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
 <hr class="section-divider">
 
 <!-- ══════════ 13. QUANTUM ERROR CORRECTION ══════════ -->
+<section class="topic-section" id="analog-sim">
+  <div class="topic-header">
+    <span class="t-icon">🔬</span>
+    <h2>Analog Quantum Simulation</h2>
+    <span class="t-tag">Hubbard model, spin models, arrays</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Digital vs. Analog quantum computation</h4>
+    <p>
+      <strong>Digital QC</strong> decomposes any unitary into discrete gates, making it fully
+      programmable but requiring error correction for deep circuits.
+      <strong>Analog simulation</strong> engineers a physical Hamiltonian H_sim that
+      mimics a target model H_target, then lets the system evolve. No gate decomposition
+      is needed; the physics <em>is</em> the algorithm. AMO platforms excel here because
+      atom–atom interactions are highly controllable and the Hilbert space scales
+      exponentially with atom number, making classical simulation intractable beyond
+      ~50–60 qubits.
+    </p>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="theory-box">
+        <h4>Bose-Hubbard &amp; Fermi-Hubbard models</h4>
+        <p>
+          Cold atoms in optical lattices realise the Hubbard Hamiltonian:
+        </p>
+        <span class="eq">H = −t Σ(aᵢ†aⱼ + h.c.) + (U/2) Σ nᵢ(nᵢ−1) − μ Σ nᵢ</span>
+        <p>
+          where <em>t</em> is the tunnel coupling (laser intensity), <em>U</em> is the
+          on-site interaction (Feshbach resonance tunable), and <em>μ</em> is chemical
+          potential. At U/t ≫ 1: Mott insulator. At U/t ≪ 1: superfluid.
+          The Fermi-Hubbard model (fermionic atoms) is believed to describe
+          high-T_c superconductivity, directly accessible in the lab.
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <div class="theory-box">
+        <h4>Rydberg spin models &amp; quantum magnetism</h4>
+        <p>
+          Rydberg tweezer arrays naturally implement Ising and XY spin Hamiltonians:
+        </p>
+        <span class="eq">H = Σᵢ (Ω/2)σˣᵢ − Δ nᵢ + Σᵢ&lt;ⱼ V(rᵢⱼ) nᵢ nⱼ</span>
+        <p>
+          V(r) = C₆/r⁶ for van der Waals, C₃/r³ for dipolar (dressed states).
+          By choosing array geometry, any graph's adjacency can be encoded.
+          Experiments have demonstrated Z₂ symmetry breaking, topological spin liquids
+          (Semeghini et al. 2021), and frustrated magnetism in programmable arrays.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rydberg array phase transition animation -->
+  <div style="margin-top:1rem;">
+    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">
+      Rydberg array: Z₂ symmetry breaking as Ω/Δ is tuned — atoms (●) and blockade halos shown
+    </div>
+    <canvas id="rydbergArrayCanvas" width="520" height="155"
+      style="display:block;width:100%;max-width:520px;border-radius:8px;background:#faf5e9;"></canvas>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://arxiv.org/abs/2107.09341" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2021, quantum phases of matter in 256-atom Rydberg array (Harvard)</a>
+    <a class="read-link" href="https://arxiv.org/abs/2104.04986" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Semeghini et al. 2021, topological spin liquid in Rydberg array</a>
+    <a class="read-link" href="https://arxiv.org/abs/2111.11798" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Gross &amp; Bloch 2017, quantum simulations with ultracold atoms in optical lattices (review)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ RESOURCES ══════════ -->
 <section class="topic-section" id="qec">
   <div class="topic-header">
     <span class="t-icon">🛡️</span>
@@ -1519,81 +1594,6 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 <hr class="section-divider">
 
 <!-- ══════════ 11. ANALOG QUANTUM SIMULATION ══════════ -->
-<section class="topic-section" id="analog-sim">
-  <div class="topic-header">
-    <span class="t-icon">🔬</span>
-    <h2>Analog Quantum Simulation</h2>
-    <span class="t-tag">Hubbard model, spin models, arrays</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Digital vs. Analog quantum computation</h4>
-    <p>
-      <strong>Digital QC</strong> decomposes any unitary into discrete gates, making it fully
-      programmable but requiring error correction for deep circuits.
-      <strong>Analog simulation</strong> engineers a physical Hamiltonian H_sim that
-      mimics a target model H_target, then lets the system evolve. No gate decomposition
-      is needed; the physics <em>is</em> the algorithm. AMO platforms excel here because
-      atom–atom interactions are highly controllable and the Hilbert space scales
-      exponentially with atom number, making classical simulation intractable beyond
-      ~50–60 qubits.
-    </p>
-  </div>
-
-  <div class="two-col">
-    <div>
-      <div class="theory-box">
-        <h4>Bose-Hubbard &amp; Fermi-Hubbard models</h4>
-        <p>
-          Cold atoms in optical lattices realise the Hubbard Hamiltonian:
-        </p>
-        <span class="eq">H = −t Σ(aᵢ†aⱼ + h.c.) + (U/2) Σ nᵢ(nᵢ−1) − μ Σ nᵢ</span>
-        <p>
-          where <em>t</em> is the tunnel coupling (laser intensity), <em>U</em> is the
-          on-site interaction (Feshbach resonance tunable), and <em>μ</em> is chemical
-          potential. At U/t ≫ 1: Mott insulator. At U/t ≪ 1: superfluid.
-          The Fermi-Hubbard model (fermionic atoms) is believed to describe
-          high-T_c superconductivity, directly accessible in the lab.
-        </p>
-      </div>
-    </div>
-
-    <div>
-      <div class="theory-box">
-        <h4>Rydberg spin models &amp; quantum magnetism</h4>
-        <p>
-          Rydberg tweezer arrays naturally implement Ising and XY spin Hamiltonians:
-        </p>
-        <span class="eq">H = Σᵢ (Ω/2)σˣᵢ − Δ nᵢ + Σᵢ&lt;ⱼ V(rᵢⱼ) nᵢ nⱼ</span>
-        <p>
-          V(r) = C₆/r⁶ for van der Waals, C₃/r³ for dipolar (dressed states).
-          By choosing array geometry, any graph's adjacency can be encoded.
-          Experiments have demonstrated Z₂ symmetry breaking, topological spin liquids
-          (Semeghini et al. 2021), and frustrated magnetism in programmable arrays.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rydberg array phase transition animation -->
-  <div style="margin-top:1rem;">
-    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">
-      Rydberg array: Z₂ symmetry breaking as Ω/Δ is tuned — atoms (●) and blockade halos shown
-    </div>
-    <canvas id="rydbergArrayCanvas" width="520" height="155"
-      style="display:block;width:100%;max-width:520px;border-radius:8px;background:#faf5e9;"></canvas>
-  </div>
-
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/2107.09341" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2021, quantum phases of matter in 256-atom Rydberg array (Harvard)</a>
-    <a class="read-link" href="https://arxiv.org/abs/2104.04986" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Semeghini et al. 2021, topological spin liquid in Rydberg array</a>
-    <a class="read-link" href="https://arxiv.org/abs/2111.11798" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Gross &amp; Bloch 2017, quantum simulations with ultracold atoms in optical lattices (review)</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ RESOURCES ══════════ -->
 <section class="topic-section" id="resources" style="padding-bottom:3rem;">
   <div class="topic-header">
     <span class="t-icon">📚</span>
@@ -1742,7 +1742,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=19"></script>
+<script src="../js/main.js?v=20"></script>
 <script>
 renderNav({ active: 'learn-quantum', root: '../' });
 initScrollReveal();
