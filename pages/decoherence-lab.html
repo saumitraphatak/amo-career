@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decoherence Lab — AMO Toolkit</title>
+  <meta name="description" content="Dissipation, dephasing, and decoherence in a driven two-level atom: live Bloch-sphere and detector-signal simulations of T1, T2*, and T2, built on Steck's optical Bloch equations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/decoherence-lab.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Decoherence Lab — AMO Toolkit">
+  <meta property="og:description" content="Dissipation, dephasing, and decoherence in a driven two-level atom: live Bloch-sphere and detector-signal simulations of T1, T2*, and T2.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/decoherence-lab.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Decoherence Lab">
+  <meta name="twitter:description" content="Dissipation, dephasing, and decoherence in a driven two-level atom: live Bloch-sphere and detector-signal simulations of T1, T2*, and T2.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Decoherence Lab","description":"Dissipation, dephasing, and decoherence in a driven two-level atom: live Bloch-sphere and detector-signal simulations of T1, T2*, and T2.","url":"https://amotoolkit.com/pages/decoherence-lab.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum Computing","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Decoherence Lab","item":"https://amotoolkit.com/pages/decoherence-lab.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=18">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})"></script>
+  <style>
+    .page-wrap { --page-color:#a13c1c; --page-bg:rgba(161,60,28,0.08); --page-border:rgba(161,60,28,0.22); }
+
+    /* ── Sticky in-page nav ─────────────────────────────── */
+    .topic-nav {
+      position: sticky; top: 64px; z-index: 40;
+      background: color-mix(in srgb, var(--bg-base) 90%, transparent); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto; white-space: nowrap;
+      padding: .5rem 0;
+    }
+    .topic-nav-inner { display: flex; gap: .3rem; }
+    .topic-nav a {
+      display: inline-block; padding: .32rem .7rem; border-radius: var(--r-sm);
+      font-size: .74rem; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; transition: background .15s, color .15s;
+      font-family: var(--font-mono);
+    }
+    .topic-nav a:hover, .topic-nav a.active { background: var(--bg-card); color: var(--page-color); }
+
+    .section-title .accent { color: var(--page-color); font-family: var(--font-mono); margin-right: .4rem; }
+    .section-sub { color: var(--text-secondary); font-size: .94rem; margin: -.4rem 0 1.2rem; max-width: 72ch; line-height: 1.7; }
+
+    /* ── Live badge ──────────────────────────────────────── */
+    .live-badge { font-family: var(--font-mono); font-size: .68rem; color: var(--text-muted); border: 1px solid var(--border-med); padding: .25rem .6rem; border-radius: 999px; white-space: nowrap; }
+    .live-badge .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #3f5d3f; margin-right: .4rem; animation: dlab-blink 1.6s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .live-badge .dot { animation: none; } }
+    @keyframes dlab-blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+    /* ── Dual view: Bloch sphere + detector signal ──────── */
+    .dual-view { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-5); margin-bottom: var(--sp-4); }
+    .dual-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-4); flex-wrap: wrap; gap: .5rem; }
+    .dual-head b { font-size: .95rem; }
+    .dual-head .rate-chip { font-family: var(--font-mono); font-size: .72rem; color: var(--text-secondary); border: 1px solid var(--border-med); padding: .22rem .65rem; border-radius: 999px; }
+    .dual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+    @media (max-width: 760px) { .dual-grid { grid-template-columns: 1fr; } }
+    .dual-panel { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r); padding: var(--sp-3); }
+    .dual-panel-label { font-family: var(--font-mono); font-size: .66rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: var(--sp-2); }
+    .bloch-svg { width: 100%; height: auto; display: block; }
+    .scope-canvas { width: 100%; height: 170px; display: block; border-radius: 6px; background: color-mix(in srgb, var(--bg-base) 55%, transparent); }
+    .readout { font-family: var(--font-mono); font-size: .74rem; color: var(--text-secondary); margin-top: var(--sp-2); text-align: right; min-height: 1em; }
+
+    /* ── Callout (nuance box, distinct from theory-box) ──── */
+    .callout { background: color-mix(in srgb, var(--ink-blue) 6%, transparent); border: 1px solid color-mix(in srgb, var(--ink-blue) 22%, transparent); border-radius: var(--r); padding: var(--sp-5) var(--sp-6); margin: var(--sp-6) 0; }
+    .callout h4 { margin: 0 0 var(--sp-2); color: var(--ink-blue); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+    .callout p { margin: 0; color: var(--text-secondary); font-size: .9rem; line-height: 1.7; }
+    .callout p + p { margin-top: var(--sp-3); }
+
+    /* ── Tables ──────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg-card); margin: var(--sp-4) 0; }
+    table.dlab-tbl { width: 100%; border-collapse: collapse; font-size: .85rem; min-width: 640px; }
+    table.dlab-tbl th { text-align: left; color: var(--text-muted); font-weight: 600; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; padding: .65rem .9rem; border-bottom: 1px solid var(--border-med); white-space: nowrap; }
+    table.dlab-tbl td { padding: .7rem .9rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; line-height: 1.55; }
+    table.dlab-tbl tr:last-child td { border-bottom: none; }
+    table.dlab-tbl td b { color: var(--text-primary); }
+    .swatch { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: .4rem; }
+
+    /* ── Read links ──────────────────────────────────────── */
+    .read-links { display: flex; flex-direction: column; gap: .4rem; margin-top: var(--sp-4); }
+    .read-link { color: var(--text-secondary); font-size: .85rem; text-decoration: none; }
+    .read-link:hover { color: var(--text-primary); }
+
+    .footnote { color: var(--text-muted); font-size: .78rem; line-height: 1.65; margin-top: var(--sp-10); padding-top: var(--sp-4); border-top: 1px solid var(--border); }
+
+    /* ── Hero mini Bloch preview ─────────────────────────── */
+    .page-hero-anim svg { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+  <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161,60,28,0.08);--page-border:rgba(161,60,28,0.22);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="hero-top" style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem;">
+          <div class="page-hero-eyebrow" style="margin-bottom:0;">🌀 Quantum Computing 01 &middot; Decoherence Lab</div>
+          <span class="live-badge" id="motion-badge"><span class="dot"></span>live simulation</span>
+        </div>
+        <h1>Losing the state: <span class="grad-text" style="--ga:#f97316;--gb:#2dd4bf;">dissipation, dephasing &amp; decoherence</span></h1>
+        <p class="page-hero-desc">
+          A resonantly driven two-level atom, watched two ways at once — as a vector on the Bloch sphere, and as the population trace a detector would actually show.
+          Four regimes, one equation: Steck's optical Bloch equations, integrated live, not pre-baked.
+        </p>
+        <div class="tool-card-tags">
+          <span class="chip">T&#8321; energy relaxation</span>
+          <span class="chip">T&#8322;* / T<sub>&phi;</sub> dephasing</span>
+          <span class="chip">T&#8322; decoherence</span>
+          <span class="chip">Live Bloch + signal sim</span>
+        </div>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Small live Bloch sphere showing undamped Rabi precession">
+          <g id="hero-bloch-mount"></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <nav class="topic-nav" aria-label="Section links">
+    <div class="container topic-nav-inner">
+      <a href="#refresher">01 Bloch refresher</a>
+      <a href="#coherent">02 Coherent</a>
+      <a href="#dissipation">03 Dissipation</a>
+      <a href="#dephasing">04 Dephasing</a>
+      <a href="#decoherence-combined">05 Decoherence</a>
+      <a href="#measuring">06 Measuring</a>
+      <a href="#cheatsheet">07 Cheat sheet</a>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container">
+
+      <h2 class="section-title" id="refresher"><span class="accent">01</span> The Bloch sphere, refreshed</h2>
+      <div class="theory-box">
+        <h4>State, drive, and what the axes mean</h4>
+        <p>Two levels $|g\rangle,|e\rangle$, driven by a laser with Rabi frequency $\Omega$ and detuning $\Delta=\omega-\omega_0$. Package the state as a Bloch vector $\langle\boldsymbol\sigma\rangle=(\langle\sigma_x\rangle,\langle\sigma_y\rangle,\langle\sigma_z\rangle)$: <b>z</b> is the population inversion $\rho_{ee}-\rho_{gg}$ (&minus;1 = all $|g\rangle$, +1 = all $|e\rangle$); <b>x, y</b> are the two quadratures of the atomic dipole, only nonzero for a superposition. The whole vector precesses like a gyroscope, $\partial_t\langle\boldsymbol\sigma\rangle=\boldsymbol\wp\times\langle\boldsymbol\sigma\rangle$, $\boldsymbol\wp=\Omega\hat x-\Delta\hat z$ (Steck, <em>Quantum and Atom Optics</em>, §5.4).</p>
+      </div>
+      <div class="formula-box">
+        $$\partial_t\langle\sigma_x\rangle = \Delta\langle\sigma_y\rangle - \gamma_\perp\langle\sigma_x\rangle$$
+        $$\partial_t\langle\sigma_y\rangle = -\Delta\langle\sigma_x\rangle - \Omega\langle\sigma_z\rangle - \gamma_\perp\langle\sigma_y\rangle$$
+        $$\partial_t\langle\sigma_z\rangle = \Omega\langle\sigma_y\rangle - \Gamma(\langle\sigma_z\rangle+1)$$
+        <p style="text-align:left;color:var(--text-muted);font-size:.83rem;margin-top:.5rem">Steck §5.5, "the optical Bloch equations." Every dual-view panel below runs this exact system, integrated numerically (RK4) in real time with different $(\Gamma,\gamma_\perp,\Delta)$ — nothing is a pre-rendered animation. $\Gamma=1/T_1$ (longitudinal/energy decay), $\gamma_\perp=1/T_2$ (transverse/coherence decay), $\gamma_\perp=\Gamma/2+\gamma_c$ with $\gamma_c$ the "extra" dephasing.</p>
+      </div>
+
+      <h2 class="section-title" id="coherent"><span class="accent">02</span> Coherent driving — the baseline</h2>
+      <p class="section-sub">No environment at all: $\Gamma=0$, $\gamma_\perp=0$, on resonance. Left: the vector orbits a closed great circle forever. Right: the population inversion it produces — an undamped sine that never loses contrast.</p>
+      <div class="dual-view">
+        <div class="dual-head"><b>Rabi flopping</b><span class="rate-chip">&Gamma;=0, &gamma;<sub>&perp;</sub>=0, unitary</span></div>
+        <div class="dual-grid">
+          <div class="dual-panel"><div class="dual-panel-label">Bloch sphere</div><svg class="bloch-svg" id="bloch-a" viewBox="0 0 260 260" role="img" aria-label="Bloch vector orbiting a closed great circle, undamped."></svg></div>
+          <div class="dual-panel"><div class="dual-panel-label">Detector signal &sigma;<sub>z</sub>(t) — oscilloscope sweep</div><canvas class="scope-canvas" id="scope-a"></canvas><div class="readout" id="read-a"></div></div>
+        </div>
+      </div>
+      <div class="formula-box" style="--fb-accent:var(--ink-green);border-left:3px solid var(--ink-green)">
+        $$\sigma_z(t) = -\cos(\Omega t), \qquad P_e(t) = \sin^2\!\left(\frac{\Omega t}{2}\right)$$
+        <p style="text-align:left;color:var(--text-muted);font-size:.83rem;margin-top:.5rem">Steck §5.2. Full-contrast Rabi flopping, forever — the trajectory every regime below decays away from.</p>
+      </div>
+
+      <h2 class="section-title" id="dissipation"><span class="accent">03</span> Dissipation — T&#8321;</h2>
+      <p class="section-sub">Turn on spontaneous emission: $\Gamma>0$, and with no extra dephasing $\gamma_\perp=\Gamma/2$ exactly (natural/homogeneous broadening). Real energy now leaves into the vacuum field every time the atom sits in $|e\rangle$. Watch several full oscillations decay before the sweep resets.</p>
+      <div class="dual-view">
+        <div class="dual-head"><b>Damped Rabi oscillation</b><span class="rate-chip">1/T&#8321; = &Gamma;</span></div>
+        <div class="dual-grid">
+          <div class="dual-panel"><div class="dual-panel-label">Bloch sphere</div><svg class="bloch-svg" id="bloch-b" viewBox="0 0 260 260" role="img" aria-label="Bloch vector spiraling inward and downward toward the ground-state pole over several oscillations, then resetting."></svg></div>
+          <div class="dual-panel"><div class="dual-panel-label">Detector signal &sigma;<sub>z</sub>(t) — oscilloscope sweep</div><canvas class="scope-canvas" id="scope-b"></canvas><div class="readout" id="read-b"></div></div>
+        </div>
+      </div>
+      <div class="formula-box" style="--fb-accent:var(--ink-rust);border-left:3px solid var(--ink-rust)">
+        $$\sigma_z(t) = -1 + \frac{\Omega^2}{\Omega^2+\Gamma^2/2}\left[1-e^{-3\Gamma t/4}\left(\cos\Omega_\Gamma t + \frac{3\Gamma}{4\Omega_\Gamma}\sin\Omega_\Gamma t\right)\right], \qquad \Omega_\Gamma = \sqrt{\Omega^2-(\Gamma/4)^2}$$
+        <p style="text-align:left;color:var(--text-muted);font-size:.83rem;margin-top:.5rem">Torrey's exact resonance solution, Steck §5.5.2 (starting in $|g\rangle$). Same oscillation as §02, now spiraling into the ball and settling on the pole. $\Omega_\Gamma$ and the $e^{-3\Gamma t/4}$ envelope are exactly what you fit to Rabi-flop data to extract T&#8321;.</p>
+      </div>
+      <div class="theory-box">
+        <h4>What actually happens physically</h4>
+        <p>The atom couples to the continuum of vacuum electromagnetic modes. Each time it's in $|e\rangle$ it can emit a real photon into a mode you're not tracking — the energy genuinely leaves the two-level system. That's why <b>z moves</b>: population flows one way, $|e\rangle\to|g\rangle$, irreversibly.</p>
+      </div>
+
+      <h2 class="section-title" id="dephasing"><span class="accent">04</span> Dephasing — T&#8322;* / T<sub>&phi;</sub></h2>
+      <p class="section-sub">Set $\Gamma=0$ again — no energy loss anywhere — but now five atoms (or five repeated shots) each see a slightly different detuning $\Delta_i$: laser-linewidth jitter, a field gradient, spatial intensity variation across a tweezer array. Watch the five thin traces: <b>none of them decay</b>. What decays is only their average.</p>
+      <div class="dual-view">
+        <div class="dual-head"><b>Ensemble of 5, detuning spread &plusmn;0.4&Omega;</b><span class="rate-chip">&Gamma;=0, 1/T<sub>&phi;</sub></span></div>
+        <div class="dual-grid">
+          <div class="dual-panel"><div class="dual-panel-label">Bloch sphere — 5 members + live average</div><svg class="bloch-svg" id="bloch-c" viewBox="0 0 260 260" role="img" aria-label="Five thin Bloch vectors at the same latitude fanning apart while the bold average vector shrinks toward the axis."></svg></div>
+          <div class="dual-panel"><div class="dual-panel-label">Detector signal — 5 members + live average</div><canvas class="scope-canvas" id="scope-c"></canvas><div class="readout" id="read-c"></div></div>
+        </div>
+      </div>
+      <div class="callout">
+        <h4>The subtlety worth being precise about</h4>
+        <p>Free precession by itself — one atom rotating around $\hat z$ at its own detuning rate — is <b>not</b> decoherence. It's exactly reversible; a single trajectory's phase is perfectly well-defined the whole time (Steck §5.4: "free precession... about $\hat z$ at the detuning rate"). Dephasing only becomes a real decoherence mechanism once you average over a spread of rates you can't track shot-to-shot (Steck §5.4.2).</p>
+        <p>That's also why it's partly fixable: a &pi;-pulse (spin/photon echo) reverses each atom's phase and lets the faster ones catch up to the slower ones, rephasing at time $2T$. This works for the <i>static</i> spread shown here — it defines <b>T&#8322;*</b> — but not for dephasing that's genuinely random in time (collisions, laser phase noise), which defines the intrinsic <b>$\gamma_c$</b> folded into T&#8322;.</p>
+      </div>
+      <div class="formula-box" style="--fb-accent:var(--ink-blue);border-left:3px solid var(--ink-blue)">
+        $$\gamma_\perp = \frac{\Gamma}{2} + \gamma_c \quad (\gamma_c\text{: homogeneous/intrinsic — laser phase noise, collisions — not echo-recoverable})$$
+        $$T_2^* \le T_2 \quad \text{once a static ensemble/shot-to-shot spread is folded in (echo-recoverable back toward } T_2\text{)}$$
+        <p style="text-align:left;color:var(--text-muted);font-size:.83rem;margin-top:.5rem">Steck §5.5 (definitions), §5.4.2 (echo). Each member above: exact undamped generalized-Rabi solution $\tilde\Omega_i=\sqrt{\Omega^2+\Delta_i^2}$, Steck §5.2.2 — no approximation.</p>
+      </div>
+
+      <h2 class="section-title" id="decoherence-combined"><span class="accent">05</span> Decoherence — T&#8322;, both at once</h2>
+      <p class="section-sub">Real experiments have both: $\Gamma>0$ <i>and</i> a $\Delta_i$ spread. The same five atoms individually relax toward $|g\rangle$ while also drifting out of phase with each other — the ensemble average spirals inward and down at once, over several visible oscillations before settling.</p>
+      <div class="dual-view">
+        <div class="dual-head"><b>Both mechanisms, same ensemble</b><span class="rate-chip">1/T&#8322; (net)</span></div>
+        <div class="dual-grid">
+          <div class="dual-panel"><div class="dual-panel-label">Bloch sphere — combined</div><svg class="bloch-svg" id="bloch-d" viewBox="0 0 260 260" role="img" aria-label="Five vectors spiraling toward the pole while fanning apart, average vector shown with a color that blends from rust to blue."></svg></div>
+          <div class="dual-panel"><div class="dual-panel-label">Detector signal — combined</div><canvas class="scope-canvas" id="scope-d"></canvas><div class="readout" id="read-d"></div></div>
+        </div>
+      </div>
+      <div class="formula-box">
+        $$\frac{1}{T_2} = \frac{1}{2T_1} + \frac{1}{T_\phi}$$
+        <p style="text-align:left;color:var(--text-muted);font-size:.83rem;margin-top:.5rem">Decoherence isn't a third mechanism — it's the name for whatever combination of dissipation and dephasing is acting on $|\rho_{eg}|$. The trace color blends <span style="color:var(--ink-rust)">rust</span>&rarr;<span style="color:var(--ink-blue)">blue</span> as a visual reminder of that sum, not a claim about which one "wins" first.</p>
+      </div>
+
+      <h2 class="section-title" id="measuring"><span class="accent">06</span> How you'd actually measure each one</h2>
+      <div class="table-wrap">
+        <table class="dlab-tbl">
+          <tr><th>Protocol</th><th>Isolates</th><th>Signature</th></tr>
+          <tr><td><b>Rabi flopping</b>, drive left on</td><td>a mix of both</td><td>damped oscillation: $\Omega_\Gamma$ and $e^{-3\Gamma t/4}$ envelope (§03)</td></tr>
+          <tr><td><b>Population decay</b>, drive off</td><td>T&#8321; only</td><td>$\sigma_z(t)\to-1$ exponentially at rate &Gamma;</td></tr>
+          <tr><td><b>Ramsey</b> ($\pi/2$ &ndash; wait $T$ &ndash; $\pi/2$)</td><td>T&#8322;*</td><td>fringe contrast decays with $T$ (§5.4.1); the atomic-clock protocol</td></tr>
+          <tr><td><b>Hahn echo</b> ($\pi/2$ &ndash; $T$ &ndash; $\pi$ &ndash; $T$ &ndash; detect)</td><td>T&#8322; (removes the static T&#8322;* spread)</td><td>echo amplitude recovers signal lost to inhomogeneous dephasing; extended by CPMG / DD sequences on the <a href="dd-playground.html" style="color:var(--page-color)">Dynamical Decoupling playground</a></td></tr>
+        </table>
+      </div>
+
+      <h2 class="section-title" id="cheatsheet"><span class="accent">07</span> Cheat sheet</h2>
+      <div class="table-wrap">
+        <table class="dlab-tbl">
+          <tr><th>Mechanism</th><th>Moves z?</th><th>Bloch picture</th><th>Echo-recoverable?</th><th>Typical cause</th></tr>
+          <tr><td><span class="swatch" style="background:var(--ink-rust)"></span><b>Dissipation</b> (T&#8321;)</td><td>Yes</td><td>spiral to pole</td><td>No</td><td>spontaneous emission, off-resonant scattering</td></tr>
+          <tr><td><span class="swatch" style="background:var(--ink-blue)"></span><b>Dephasing, intrinsic</b> ($\gamma_c$)</td><td>No</td><td>shrink toward axis, fixed latitude</td><td>No</td><td>laser phase noise, collisions</td></tr>
+          <tr><td><span class="swatch" style="background:var(--ink-blue)"></span><b>Dephasing, inhomogeneous</b> (T&#8322;*)</td><td>No</td><td>fan-out, fixed latitude</td><td>Yes (spin echo)</td><td>detuning / light-shift spread across ensemble or shots</td></tr>
+          <tr><td><span class="swatch" style="background:var(--ink-green)"></span><b>Decoherence</b> (T&#8322;, net)</td><td>whatever T&#8321; does</td><td>combination</td><td>partially</td><td>whatever mix of the above is actually present</td></tr>
+        </table>
+      </div>
+
+      <div class="read-links">
+        <a class="read-link" href="learn-quantum.html#decoherence"><span class="rl-icon">🔵</span>Quantum Computing Learning Path — Decoherence: T&#8321; &amp; T&#8322; (the short-form version of this page)</a>
+        <a class="read-link" href="dd-playground.html"><span class="rl-icon">🛡️</span>Dynamical Decoupling — Hahn echo, CPMG, and filter functions for extending T&#8322;</a>
+        <a class="read-link" href="https://arxiv.org/abs/quant-ph/0301052" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zurek 2003 — decoherence, einselection, and the quantum origins of the classical</a>
+      </div>
+
+      <p class="footnote">All four panels integrate Steck's boxed optical Bloch equations (§01) numerically (RK4) in real time — the "combined" panel in §05 is not a separately-derived closed form, it's the same equations with both &Gamma;&gt;0 and &Delta;&ne;0 plugged in at once. Reduced-motion viewers see one representative frame per panel instead of the live sweep.</p>
+
+    </div>
+  </div>
+</main>
+
+<script src="../js/main.js?v=21"></script>
+<script>
+  renderNav({ active: 'decoherence-lab', root: '../' });
+
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const OMEGA = 2*Math.PI;
+  const REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function mk(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+  function makeSphere(R,CX,CY,TILT){
+    function proj(x,y,z){
+      const y2=y*Math.cos(TILT)-z*Math.sin(TILT);
+      const z2=y*Math.sin(TILT)+z*Math.cos(TILT);
+      return { sx:CX+R*x, sy:CY-R*z2 };
+    }
+    return proj;
+  }
+  function pts2str(a){ return a.map(p=>p.sx.toFixed(1)+','+p.sy.toFixed(1)).join(' '); }
+
+  function drawChrome(svg,R,CX,CY,TILT,proj){
+    const ryEq=R*Math.sin(TILT), ryMer=R*Math.cos(TILT);
+    svg.appendChild(mk('circle',{cx:CX,cy:CY,r:R,fill:'none',stroke:'var(--border-med)','stroke-width':1.3}));
+    svg.appendChild(mk('ellipse',{cx:CX,cy:CY,rx:R,ry:ryMer,fill:'none',stroke:'var(--border)','stroke-width':1,'stroke-dasharray':'3 4'}));
+    svg.appendChild(mk('ellipse',{cx:CX,cy:CY,rx:R,ry:ryEq,fill:'none',stroke:'var(--border-med)','stroke-width':1,'stroke-dasharray':'3 4'}));
+    const top=proj(0,0,1), bot=proj(0,0,-1);
+    svg.appendChild(mk('line',{x1:CX,y1:top.sy-12,x2:CX,y2:bot.sy+12,stroke:'var(--border)','stroke-width':1}));
+    svg.appendChild(mk('circle',{cx:top.sx,cy:top.sy,r:2,fill:'var(--text-muted)'}));
+    svg.appendChild(mk('circle',{cx:bot.sx,cy:bot.sy,r:2,fill:'var(--text-muted)'}));
+    const le=mk('text',{x:CX+8,y:top.sy-3,'font-family':'var(--font-mono)','font-size':10,fill:'var(--text-muted)'}); le.textContent='|e⟩';
+    const lg=mk('text',{x:CX+8,y:bot.sy+12,'font-family':'var(--font-mono)','font-size':10,fill:'var(--text-muted)'}); lg.textContent='|g⟩';
+    svg.appendChild(le); svg.appendChild(lg);
+  }
+  function makeLive(svg,CX,CY,maxTrail){
+    const trailEl=mk('polyline',{fill:'none','stroke-linecap':'round','stroke-width':1.5,'stroke-opacity':0.4});
+    const lineEl=mk('line',{'stroke-width':2.4});
+    const tipEl=mk('circle',{r:3.4});
+    svg.appendChild(trailEl); svg.appendChild(lineEl); svg.appendChild(tipEl);
+    let trail=[];
+    return function(p,color,reset){
+      if(reset) trail=[];
+      trail.push(p); if(trail.length>maxTrail) trail.shift();
+      trailEl.setAttribute('points',pts2str(trail)); trailEl.setAttribute('stroke',color);
+      lineEl.setAttribute('x1',CX); lineEl.setAttribute('y1',CY); lineEl.setAttribute('x2',p.sx); lineEl.setAttribute('y2',p.sy); lineEl.setAttribute('stroke',color);
+      tipEl.setAttribute('cx',p.sx); tipEl.setAttribute('cy',p.sy); tipEl.setAttribute('fill',color);
+    };
+  }
+  function makeThin(svg,n,color){
+    const lines=[];
+    for(let i=0;i<n;i++){ const l=mk('line',{'stroke-width':1,'stroke-opacity':0.3,stroke:color}); svg.appendChild(l); lines.push(l); }
+    return function(cx,cy,pts){ pts.forEach((p,i)=>{ lines[i].setAttribute('x1',cx); lines[i].setAttribute('y1',cy); lines[i].setAttribute('x2',p.sx); lines[i].setAttribute('y2',p.sy); }); };
+  }
+
+  function deriv(st,Delta,Gamma,gPerp){
+    const x=st[0],y=st[1],z=st[2];
+    return [ Delta*y - gPerp*x, -Delta*x - OMEGA*z - gPerp*y, OMEGA*y - Gamma*(z+1) ];
+  }
+  function rk4(st,Delta,Gamma,gPerp,h){
+    const k1=deriv(st,Delta,Gamma,gPerp);
+    const s2=[st[0]+h/2*k1[0], st[1]+h/2*k1[1], st[2]+h/2*k1[2]]; const k2=deriv(s2,Delta,Gamma,gPerp);
+    const s3=[st[0]+h/2*k2[0], st[1]+h/2*k2[1], st[2]+h/2*k2[2]]; const k3=deriv(s3,Delta,Gamma,gPerp);
+    const s4=[st[0]+h*k3[0], st[1]+h*k3[1], st[2]+h*k3[2]]; const k4=deriv(s4,Delta,Gamma,gPerp);
+    return [ st[0]+h/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]), st[1]+h/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]), st[2]+h/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2]) ];
+  }
+
+  function hexToRgb(hex){ hex=(hex||'').trim().replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join(''); const n=parseInt(hex,16)||0; return [(n>>16)&255,(n>>8)&255,n&255]; }
+  function blend(a,b,u){ const c=a.map((v,i)=>Math.round(v+(b[i]-v)*u)); return `rgb(${c[0]},${c[1]},${c[2]})`; }
+
+  let INK = { rust:'#a13c1c', blue:'#2c4a63', green:'#3f5d3f' };
+  let GRID = { line: 'rgba(120,110,90,0.4)', lineFaint: 'rgba(120,110,90,0.28)' };
+  function readInk(){
+    const cs=getComputedStyle(document.documentElement);
+    const rust=cs.getPropertyValue('--ink-rust').trim();
+    const blue=cs.getPropertyValue('--ink-blue').trim();
+    const green=cs.getPropertyValue('--ink-green').trim();
+    INK = { rust: rust||INK.rust, blue: blue||INK.blue, green: green||INK.green };
+    const muted=cs.getPropertyValue('--text-muted').trim();
+    if(muted){ GRID = { line: muted, lineFaint: muted }; }
+  }
+  readInk();
+  new MutationObserver(readInk).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+  function canvasSetup(id){
+    const canvas=document.getElementById(id);
+    if(!canvas) return null;
+    const rect=canvas.getBoundingClientRect();
+    const dpr=window.devicePixelRatio||1;
+    const cssW=rect.width||480, cssH=rect.height||170;
+    canvas.width=cssW*dpr; canvas.height=cssH*dpr;
+    const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+    ctx._cssW=cssW; ctx._cssH=cssH;
+    return ctx;
+  }
+  function drawPath(ctx,hist,Tloop,W,midY,ampY){
+    if(hist.length<2) return;
+    ctx.beginPath();
+    for(let i=0;i<hist.length;i++){
+      const x=(hist[i].t/Tloop)*W, y=midY-hist[i].z*ampY;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  function drawScope(ctx,Tloop,thinHist,avgHist,avgColor,thinColor){
+    if(!ctx) return;
+    const W=ctx._cssW, H=ctx._cssH;
+    ctx.clearRect(0,0,W,H);
+    const midY=H/2, ampY=H*0.42;
+    ctx.setLineDash([3,4]); ctx.strokeStyle=GRID.lineFaint; ctx.globalAlpha=0.5; ctx.lineWidth=1;
+    [1,-1].forEach(zv=>{ ctx.beginPath(); ctx.moveTo(0,midY-zv*ampY); ctx.lineTo(W,midY-zv*ampY); ctx.stroke(); });
+    ctx.globalAlpha=1;
+    ctx.setLineDash([]); ctx.strokeStyle=GRID.line; ctx.globalAlpha=0.6;
+    ctx.beginPath(); ctx.moveTo(0,midY); ctx.lineTo(W,midY); ctx.stroke();
+    ctx.globalAlpha=1;
+    if(thinHist.length>1){
+      ctx.strokeStyle=thinColor; ctx.lineWidth=1; ctx.globalAlpha=0.4;
+      thinHist.forEach(h=>drawPath(ctx,h,Tloop,W,midY,ampY));
+      ctx.globalAlpha=1;
+    }
+    ctx.strokeStyle=avgColor; ctx.lineWidth=2.1;
+    drawPath(ctx,avgHist,Tloop,W,midY,ampY);
+  }
+
+  function buildPanel(cfg){
+    const svg=document.getElementById(cfg.sphereId);
+    const proj=makeSphere(cfg.R||86,cfg.CX||130,cfg.CY||138,cfg.TILT||0.36);
+    if(svg) drawChrome(svg,cfg.R||86,cfg.CX||130,cfg.CY||138,cfg.TILT||0.36,proj);
+    const n=cfg.deltas.length;
+    const thinBloch = (svg && n>1) ? makeThin(svg,n,cfg.thinColor()) : null;
+    const live = svg ? makeLive(svg,cfg.CX||130,cfg.CY||138,26) : null;
+    const ctx = cfg.canvasId ? canvasSetup(cfg.canvasId) : null;
+    const readoutEl = cfg.readoutId ? document.getElementById(cfg.readoutId) : null;
+
+    let states = cfg.deltas.map(()=>[0,0,-1]);
+    let simTime = 0;
+    let thinHist = cfg.deltas.map(()=>[]);
+    let avgHist = [];
+
+    function reset(){ states=cfg.deltas.map(()=>[0,0,-1]); simTime=0; thinHist.forEach(h=>h.length=0); avgHist.length=0; }
+
+    return function update(dt){
+      let wrapped=false;
+      simTime += dt;
+      if (simTime > cfg.Tloop){ reset(); wrapped=true; }
+      const steps = Math.max(1, Math.ceil(dt/0.004));
+      const h = dt/steps;
+      for (let s=0;s<steps;s++){
+        states = states.map((st,i)=> rk4(st, cfg.deltas[i], cfg.Gamma, cfg.gammaPerp, h));
+      }
+      const projPts = states.map(st=>proj(st[0],st[1],st[2]));
+      if (thinBloch) thinBloch(cfg.CX||130, cfg.CY||138, projPts);
+      states.forEach((st,i)=>{ thinHist[i].push({t:simTime,z:st[2]}); });
+      const avg = [0,1,2].map(k=> states.reduce((s,st)=>s+st[k],0)/n);
+      avgHist.push({t:simTime,z:avg[2]});
+      const color = cfg.colorMode==='blend' ? blend(cfg.blendFrom(), cfg.blendTo(), Math.min(1,simTime/cfg.Tloop)) : cfg.color();
+      if (live) live(proj(avg[0],avg[1],avg[2]), color, wrapped);
+      drawScope(ctx, cfg.Tloop, thinHist, avgHist, color, cfg.thinColor());
+      if (readoutEl){
+        readoutEl.textContent = n>1
+          ? `⟨σ_z⟩ = ${avg[2].toFixed(2)}  (n=${n} ensemble)`
+          : `σ_z(t) = ${avg[2].toFixed(2)}`;
+      }
+    };
+  }
+
+  const configs = [
+    { sphereId:'bloch-a', canvasId:'scope-a', readoutId:'read-a', deltas:[0], Gamma:0, gammaPerp:0, Tloop:4.0,
+      colorMode:'fixed', color:()=>INK.green, thinColor:()=>INK.green },
+    { sphereId:'bloch-b', canvasId:'scope-b', readoutId:'read-b', deltas:[0], Gamma:0.75, gammaPerp:0.375, Tloop:6.0,
+      colorMode:'fixed', color:()=>INK.rust, thinColor:()=>INK.rust },
+    { sphereId:'bloch-c', canvasId:'scope-c', readoutId:'read-c', deltas:[-0.4*OMEGA,-0.2*OMEGA,0,0.2*OMEGA,0.4*OMEGA], Gamma:0, gammaPerp:0, Tloop:7.0,
+      colorMode:'fixed', color:()=>INK.blue, thinColor:()=>INK.blue },
+    { sphereId:'bloch-d', canvasId:'scope-d', readoutId:'read-d', deltas:[-0.4*OMEGA,-0.2*OMEGA,0,0.2*OMEGA,0.4*OMEGA], Gamma:0.75, gammaPerp:0.375, Tloop:6.5,
+      colorMode:'blend', blendFrom:()=>hexToRgb(INK.rust), blendTo:()=>hexToRgb(INK.blue), thinColor:()=>INK.rust },
+    { sphereId:'hero-bloch-mount', canvasId:null, readoutId:null, deltas:[0], Gamma:0, gammaPerp:0, Tloop:3.0, R:58, CX:150, CY:82, TILT:0.36,
+      colorMode:'fixed', color:()=>INK.green, thinColor:()=>INK.green },
+  ];
+
+  const updaters = configs.map(buildPanel);
+
+  if (REDUCE){
+    const badge=document.getElementById('motion-badge');
+    if(badge) badge.innerHTML = 'reduced motion: static frame';
+    updaters[0](4.0*0.5);
+    updaters[1](6.0*0.62);
+    updaters[2](7.0*0.55);
+    updaters[3](6.5*0.6);
+    updaters[4](3.0*0.4);
+  } else {
+    let last=null;
+    function frame(ts){
+      if(last===null) last=ts;
+      let dt=(ts-last)/1000; last=ts; dt=Math.min(dt,0.05);
+      updaters.forEach(u=>u(dt));
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
