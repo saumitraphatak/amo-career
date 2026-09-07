@@ -8,3 +8,7 @@
 
 ## Review outcome: approved, no changes
 Motivate → build concept → theory → hands-on calculator → extensions (interleaved, two-qubit) → practical caveats → real experimental results → references. Clean progression, no route-panel to check for mismatches.
+
+
+## Home integration (later pass)
+Added a `QC 05` tools-grid card on `home.html` (icon 📈, color `#c084fc`), matching the treatment `remote-entanglement.html` already had. Previously this page was reachable only via the nav dropdown, footer link, or an incidental guided-path route — noted as a discoverability gap in the September 2026 technical audit (`docs/technical-audit-2026-09.md`).

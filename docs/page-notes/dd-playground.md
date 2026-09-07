@@ -8,3 +8,7 @@
 
 ## Review outcome: approved, no changes (autonomous pass)
 Concept → increasingly sophisticated pulse sequences → unifying theory → interactive tools applying that theory → application → real experiments → sources. Already follows the theory-before-interactive-tool ordering established elsewhere (see `docs/site-philosophy.md` §4) without needing a fix — Filter Function Formalism sits directly before the Filter Function Viewer.
+
+
+## Home integration (later pass)
+Added a `QC 06` tools-grid card on `home.html` (icon 🛡️, color `#4ade80`), matching the treatment `remote-entanglement.html` already had. Same rationale as `rb-explorer.html` — see its page-note and `docs/technical-audit-2026-09.md`.
