@@ -188,7 +188,7 @@ To deploy your own fork:
 
 ## About the Author
 
-**Saumitra Phatak** — Physics PhD candidate at Purdue University, Hood Lab.
+**Saumitra Phatak** — Physics PhD, Purdue University (Hood Lab). Now a Quantum Engineer at Atom Computing. Built this toolkit during his graduate years.
 Research focus: ultracold atoms, optical tweezers, precision measurement.
 
 - GitHub: [@saumitraphatak](https://github.com/saumitraphatak)
