@@ -1,6 +1,6 @@
 # AMO Toolkit
 
-A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 20+ interactive research tools organized by workflow (Build, Measure, Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
+A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 28 interactive research tools and guides organized by workflow (Build, Measure, Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
 **Live site:** https://amotoolkit.com/
 
@@ -34,6 +34,7 @@ Organized by workflow — build the apparatus, measure what it does, cool and tr
 | **Randomized Benchmarking** | Gate-fidelity characterization — Clifford twirling, decay model, interleaved RB, SOTA results |
 | **Dynamical Decoupling** | π-pulse sequences as spectral filters extending qubit coherence (T₂, T₂*) |
 | **Remote Entanglement** | Photon-mediated entanglement between separate qubit/tweezer modules |
+| **Decoherence Lab** | Live Bloch-sphere + detector-signal simulations of T1, T2*, and T2 for a driven two-level atom, built on Steck's optical Bloch equations |
 | **AMO Group Finder** | Directory of 100+ AMO research groups, mapped and prioritized for grad/postdoc applications |
 | **AMO Paper Roadmap** | 53 papers organized by career stage, from undergrad entry to postdoc |
 | **Quantum Industry Map** | Company profiles, hardware platforms, job roles, career roadmaps |

@@ -64,6 +64,7 @@ amo-career/
     ├── laser-cooling.html      # Single-atom Cooling (laser cooling deep dive)
     ├── cooling-simulator.html  # Laser Cooling Simulator (Doppler / Sisyphus)
     ├── learn-quantum.html      # Quantum Computing Learning Path (14 topics, one page)
+    ├── decoherence-lab.html    # Decoherence Lab (T1/T2/T2* Bloch-sphere + signal sim)
     ├── rydberg-calculator.html # Rydberg Blockade Lab
     ├── fidelity-budget.html    # Rydberg Gate Error Budget
     ├── rb-explorer.html        # Randomized Benchmarking (NOT rubidium — RB as in gate-fidelity characterization)
@@ -75,7 +76,7 @@ amo-career/
     └── rb87-vs-yb171.html      # Rb vs Yb Qubit Comparison
 ```
 
-**Page count grew from 19 → 27** since this file was last verified. 10 new pages were added: laser-planner, cavity-qed, vacuum-systems, tweezer-designer, absorption-imaging, rb-explorer, dd-playground, remote-entanglement, amo-groups, paper-syllabus. Treat `llms.txt`/`llms-full.txt` as stale documentation (still describe a "13 tools" snapshot) rather than source of truth until someone refreshes them.
+**Page count is 28** as of this writing (was 19 when this file was first written, grew to 27 with 10 new pages — laser-planner, cavity-qed, vacuum-systems, tweezer-designer, absorption-imaging, rb-explorer, dd-playground, remote-entanglement, amo-groups, paper-syllabus — then to 28 with `decoherence-lab.html`). `llms.txt`/`llms-full.txt` were refreshed alongside this note and now list all 28 pages/tools; re-check both any time a page is added or removed so they don't drift stale again.
 
 ---
 
@@ -453,6 +454,9 @@ Career-mapping tool: a directory of 100+ AMO research groups (a "Featured Mapped
 ### 22. AMO Paper Roadmap (`paper-syllabus.html`)
 "53 Papers That Build an AMO Career" — a curated reading list/syllabus organized by career stage (undergrad entry, grad year 1, advanced grad, postdoc/career), meant to guide a physicist through the foundational and current literature of the field in order.
 
+### 23. Decoherence Lab (`decoherence-lab.html`)
+Deep-dive companion to `learn-quantum.html#decoherence`: paired live Bloch-sphere + detector-signal simulations of dissipation (T1), dephasing (T2*/Tφ), and combined decoherence (T2) for a driven two-level atom, all integrated in real time (RK4) from Steck's optical Bloch equations rather than pre-baked animations. First entry in `NAV.quantum`. No route-panel (linear scroll with a sticky topic-nav instead); has its own numbered "08 References" section (Steck, Fox, Zurek 2003).
+
 ### Formula Regression Tests
 Run `python3 tests/formula_regression.py` after formula edits. The tests check recoil conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, release-recapture wording, presence of key site UX features, and Rb/Yb comparison-panel fact boundaries (`test_rb_yb_panel_fact_boundaries`, added since this section was last verified).
 
@@ -513,8 +517,8 @@ Text in eq: \text{any text}  \rm{roman font}
 - **Button text color:** Global `button { color: inherit; }` is set — do not add browser-default buttons without explicit color.
 - **Formula boxes:** Never add `white-space: pre` or `font-family: var(--mono)` to `.formula-box` — breaks KaTeX rendering.
 - **Page-local formula-box styles:** Some pages have `<style>.formula-box { background:...; border:...; }</style>` for custom colors. Keep only `background`, `border`, `border-radius`, `padding` — never font or white-space overrides.
-- **Tool counts do NOT auto-update:** Unlike `NAV.learn.length` (used for the Learn Quantum dropdown count), the homepage hero stat ("N+ Interactive Tools") is a hand-typed number in `home.html` — it will silently go stale as tools are added/removed. Spot-check it whenever `NAV` changes. There is no `NAV.tools.length` string anywhere in the codebase to grep for; `NAV.tools` is a derived array (see NAV Object section above), not something referenced live in the DOM for counts.
+- **Tool counts DO auto-update (fixed):** The homepage hero stat used to be a hand-typed number and silently went stale — that's fixed now. `js/main.js`'s `updateHeroStats()` sets `#stat-tools-count` from `NAV.tools.length` and `#stat-concepts-count` from `NAV.learn.length` at runtime. The raw HTML in `home.html` still hard-codes a fallback number for no-JS/pre-hydration display — keep that fallback roughly in sync when `NAV` changes, but it's cosmetic only; the live page is always correct.
 - **Site branding vs repo name:** The live site and all page titles/meta say **"AMO Toolkit"** (custom domain `amotoolkit.com`, see `CNAME`) — the repo/folder is still named `amo-career` and this file's own title still says "AMO Career" for historical/identification reasons. Don't "fix" page titles back to "AMO Career" — that would be reverting an intentional rebrand.
-- **`llms.txt` / `llms-full.txt` drift:** These describe a "13 tools" snapshot from before 10 new pages were added. They are not automatically regenerated — treat them as documentation debt, not ground truth, until manually refreshed.
+- **`llms.txt` / `llms-full.txt` drift:** Not automatically regenerated — refreshed as of this writing to list all 28 pages/tools, but they will drift again the next time a page is added/removed unless someone remembers to update them by hand.
 - **home.html nav:** Uses `root: ''` (empty string, not `'../'`).
 - **index.html:** Only a redirect — never edit it.
