@@ -181,6 +181,25 @@ def test_currentness_and_wording_guardrails() -> None:
     assert_not_contains("pages/imaging-calculator.html", "bright peak is always wider")
 
 
+def test_decoherence_lab_t1_t2_relation() -> None:
+    # Steck's boxed relation (gamma_c: pure/homogeneous dephasing, not echo-recoverable).
+    assert_contains("pages/decoherence-lab.html", r"\gamma_\perp = \frac{\Gamma}{2} + \gamma_c")
+    # Fox's equivalent form (T_2' in Fox's notation == T_phi here) -- same equation, different letters.
+    assert_contains("pages/decoherence-lab.html", r"\frac{1}{T_2} = \frac{1}{2T_1} + \frac{1}{T_\phi}")
+    assert_contains("pages/decoherence-lab.html", "Torrey's exact resonance solution")
+    assert_contains("pages/decoherence-lab.html", "Steck")
+    assert_contains("pages/decoherence-lab.html", "Fox")
+    assert_contains("pages/decoherence-lab.html", "References &amp; Further Reading")
+
+    # Numeric self-consistency: gamma_perp = Gamma/2 + gamma_c must be algebraically
+    # identical to 1/T2 = 1/(2*T1) + 1/T_phi under T1=1/Gamma, T2=1/gamma_perp, T_phi=1/gamma_c.
+    # Catches a sign/factor slip if either form of the relation is ever edited independently.
+    Gamma, gamma_c = 3.7, 1.3  # arbitrary positive test values, consistent units
+    gamma_perp = Gamma / 2 + gamma_c
+    T1, T2, T_phi = 1 / Gamma, 1 / gamma_perp, 1 / gamma_c
+    assert math.isclose(1 / T2, 1 / (2 * T1) + 1 / T_phi, rel_tol=1e-12)
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -193,6 +212,7 @@ def main() -> None:
         test_rb_yb_panel_fact_boundaries,
         test_cavity_qed_conventions,
         test_currentness_and_wording_guardrails,
+        test_decoherence_lab_t1_t2_relation,
     ]
     for test in tests:
         test()
