@@ -6,12 +6,12 @@
 'use strict';
 
 /* ─────────────────────────────────────────────────────
-   THEME — light (default) / dark toggle, persisted
+   THEME — dark (default) / light toggle, persisted
    ───────────────────────────────────────────────────── */
 const THEME_KEY = 'amo-theme';
 
 function getStoredTheme() {
-  return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+  return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark';
 }
 
 function applyTheme(theme) {
