@@ -16,3 +16,6 @@
 Section 2 originally had 9 intent cards; 3 of them (Find AMO groups, Read the key papers, Prepare for AMO industry interviews) pitched the exact same pages as section 4's dedicated showcase with no new framing — pure redundancy. Removed those 3 cards, kept section 4 as the canonical "career" showcase. `.intent-grid` CSS changed from `repeat(5, 1fr)` to `repeat(3, 1fr)` for a clean 2×3 layout of the remaining 6 cards.
 
 Section 6 (Guided Paths) was *not* touched despite also referencing career pages — it presents them as an ordered sequence, a genuinely different job than a flat pitch (see site-philosophy.md §1).
+
+## Flow audit update (2026-09)
+The "Learn the underlying physics" teaser grid previewed 11 of learn-quantum.html's 14 sections, in a stale order (predating that page's own prior reorder), plus a "More coming" placeholder implying 3 built sections (Optical Pumping, Hyperfine Qubits, QEC) didn't exist. Rebuilt with all 14 cards in the real teaching order; placeholder removed. See docs/flow-audit-2026-09.md.

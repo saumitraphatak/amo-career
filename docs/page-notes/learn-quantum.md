@@ -20,3 +20,6 @@ The quiz's "Review this topic ↑" links use `href="#anchor-id"`, which are orde
 
 ## Design audit update (2026-09)
 `.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.
+
+## Flow audit update (2026-09)
+Found a real forward-reference: "Rydberg Atoms & Blockade" was taught before "Two-Qubit Gates" despite already using two-qubit-gate concepts in its own theory box. Swapped the two sections. This also surfaced that all 15 internal section-marker HTML comments (invisible to readers, but used to label sections for editors) were mismatched/stale, likely left behind by the earlier Rabi reorder — relabeled all 15 to match actual content and order. Also updated topic-nav link order, the "Many-qubit physics" route-card blurb, and the scrollspy JS array to match. See docs/flow-audit-2026-09.md.

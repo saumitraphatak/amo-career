@@ -370,8 +370,8 @@
   <a href="#optical-pumping">💡 Opt. Pumping</a>
   <a href="#hyperfine">🔑 Hyperfine</a>
   <a href="#entanglement">🔗 Entanglement</a>
-  <a href="#rydberg">⚛️ Rydberg</a>
   <a href="#twoqubit">🔀 Two-Qubit</a>
+  <a href="#rydberg">⚛️ Rydberg</a>
   <a href="#decoherence">📉 Decoherence</a>
   <a href="#algorithms">⚙️ Algorithms</a>
   <a href="#analog-sim">🔬 Analog Sim</a>
@@ -388,7 +388,7 @@
   <div class="route-grid">
     <div class="route-card"><span class="step">01</span><strong>Qubit language</strong><p>Bloch sphere, superposition, phase, and Rabi rotations.</p></div>
     <div class="route-card"><span class="step">02</span><strong>Operations</strong><p>Gates, measurement, optical pumping, and hyperfine-state control.</p></div>
-    <div class="route-card"><span class="step">03</span><strong>Many-qubit physics</strong><p>Entanglement, Rydberg blockade, two-qubit gates, and decoherence.</p></div>
+    <div class="route-card"><span class="step">03</span><strong>Many-qubit physics</strong><p>Entanglement, two-qubit gates, Rydberg blockade, and decoherence.</p></div>
     <div class="route-card"><span class="step">04</span><strong>Algorithms and QEC</strong><p>Algorithms, analog simulation, error correction, and what hardware must deliver.</p></div>
   </div>
 </section>
@@ -461,7 +461,7 @@ $$P(|0\rangle) = \cos^2(\theta/2) \qquad P(|1\rangle) = \sin^2(\theta/2)$$
 
 <hr class="section-divider">
 
-<!-- ══════════ 2. QUANTUM GATES ══════════ -->
+<!-- ══════════ 2. SUPERPOSITION ══════════ -->
 <section class="topic-section" id="superposition">
   <div class="topic-header">
     <span class="t-icon">〰️</span>
@@ -508,7 +508,7 @@ Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive a
 
 <hr class="section-divider">
 
-<!-- ══════════ 4. MEASUREMENT ══════════ -->
+<!-- ══════════ 3. RABI ══════════ -->
 <section class="topic-section" id="rabi">
   <div class="topic-header">
     <span class="t-icon">🌀</span>
@@ -585,7 +585,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
 
 <hr class="section-divider">
 
-<!-- ══════════ 12. HYPERFINE QUBITS ══════════ -->
+<!-- ══════════ 4. QUANTUM GATES ══════════ -->
 <section class="topic-section" id="gates">
   <div class="topic-header">
     <span class="t-icon">⚡</span>
@@ -653,7 +653,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
 
 <hr class="section-divider">
 
-<!-- ══════════ 3. SUPERPOSITION ══════════ -->
+<!-- ══════════ 5. MEASUREMENT ══════════ -->
 <section class="topic-section" id="measurement">
   <div class="topic-header">
     <span class="t-icon">📏</span>
@@ -741,7 +741,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
 
 <hr class="section-divider">
 
-<!-- ══════════ 5. ENTANGLEMENT ══════════ -->
+<!-- ══════════ 6. OPTICAL PUMPING ══════════ -->
 <section class="topic-section" id="optical-pumping">
   <div class="topic-header">
     <span class="t-icon">💡</span>
@@ -947,7 +947,7 @@ Pumping time: $\tau_{pump} \approx 2F / (R_{scatter} \cdot \varepsilon_{branch})
 
 <hr class="section-divider">
 
-<!-- ══════════ 9. DECOHERENCE ══════════ -->
+<!-- ══════════ 7. HYPERFINE QUBITS ══════════ -->
 <section class="topic-section" id="hyperfine">
   <div class="topic-header">
     <span class="t-icon">🔑</span>
@@ -1103,7 +1103,7 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
 
 <hr class="section-divider">
 
-<!-- ══════════ OPTICAL PUMPING ══════════ -->
+<!-- ══════════ 8. ENTANGLEMENT ══════════ -->
 <section class="topic-section" id="entanglement">
   <div class="topic-header">
     <span class="t-icon">🔗</span>
@@ -1161,7 +1161,60 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
 
 <hr class="section-divider">
 
-<!-- ══════════ 6. RYDBERG ══════════ -->
+<!-- ══════════ 9. TWO-QUBIT GATES ══════════ -->
+<section class="topic-section" id="twoqubit">
+  <div class="topic-header">
+    <span class="t-icon">🔀</span>
+    <h2>Two-Qubit Gates</h2>
+    <span class="t-tag">entangling operations</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>Entangling gates</h4>
+    <p>
+      Two-qubit gates act on the 4D Hilbert space spanned by |00⟩, |01⟩, |10⟩, |11⟩.
+      CNOT, CZ, and iSWAP can generate maximal entanglement from product states, they are
+      universal when combined with single-qubit gates.
+    </p>
+  </div>
+
+  <div class="ctrl-row">
+    <label style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
+    <select class="ctrl-select" id="tqSel" onchange="updateTwoQubit()">
+      <option value="CNOT">CNOT</option>
+      <option value="CZ">CZ</option>
+      <option value="iSWAP">iSWAP</option>
+      <option value="SWAP">SWAP</option>
+    </select>
+  </div>
+
+  <div class="two-col" style="margin-top:.5rem;">
+    <div>
+      <div id="tqMatrix"></div>
+      <div class="theory-box" style="margin-top:.75rem;" id="tqDesc"></div>
+    </div>
+    <div>
+      <div style="margin-bottom:.6rem; font-size:.83rem; font-weight:600; color:var(--text-muted);">Truth table</div>
+      <table class="truth-table" id="tqTruth"></table>
+    </div>
+  </div>
+  <!-- Bell state generation animation -->
+  <div style="margin-top:1rem;">
+    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">Bell state |Φ⁺⟩ generation: H ⊗ I → CNOT</div>
+    <canvas id="tqBellCanvas" width="480" height="140"
+      style="display:block;width:100%;max-width:480px;border-radius:8px;background:#faf5e9;"></canvas>
+  </div>
+
+  <div class="read-links" style="margin-top:.75rem;">
+    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, apply CNOT &amp; CZ visually</a>
+    <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/multiple-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
+    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0312225" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang et al.: perfect entanglers in SU(4)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ══════════ 10. RYDBERG ══════════ -->
 <section class="topic-section" id="rydberg">
   <div class="topic-header">
     <span class="t-icon">⚛️</span>
@@ -1226,60 +1279,7 @@ Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{mot
 
 <hr class="section-divider">
 
-<!-- ══════════ 7. TWO-QUBIT GATES ══════════ -->
-<section class="topic-section" id="twoqubit">
-  <div class="topic-header">
-    <span class="t-icon">🔀</span>
-    <h2>Two-Qubit Gates</h2>
-    <span class="t-tag">entangling operations</span>
-  </div>
-
-  <div class="theory-box">
-    <h4>Entangling gates</h4>
-    <p>
-      Two-qubit gates act on the 4D Hilbert space spanned by |00⟩, |01⟩, |10⟩, |11⟩.
-      CNOT, CZ, and iSWAP can generate maximal entanglement from product states, they are
-      universal when combined with single-qubit gates.
-    </p>
-  </div>
-
-  <div class="ctrl-row">
-    <label style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
-    <select class="ctrl-select" id="tqSel" onchange="updateTwoQubit()">
-      <option value="CNOT">CNOT</option>
-      <option value="CZ">CZ</option>
-      <option value="iSWAP">iSWAP</option>
-      <option value="SWAP">SWAP</option>
-    </select>
-  </div>
-
-  <div class="two-col" style="margin-top:.5rem;">
-    <div>
-      <div id="tqMatrix"></div>
-      <div class="theory-box" style="margin-top:.75rem;" id="tqDesc"></div>
-    </div>
-    <div>
-      <div style="margin-bottom:.6rem; font-size:.83rem; font-weight:600; color:var(--text-muted);">Truth table</div>
-      <table class="truth-table" id="tqTruth"></table>
-    </div>
-  </div>
-  <!-- Bell state generation animation -->
-  <div style="margin-top:1rem;">
-    <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">Bell state |Φ⁺⟩ generation: H ⊗ I → CNOT</div>
-    <canvas id="tqBellCanvas" width="480" height="140"
-      style="display:block;width:100%;max-width:480px;border-radius:8px;background:#faf5e9;"></canvas>
-  </div>
-
-  <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, apply CNOT &amp; CZ visually</a>
-    <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/multiple-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0312225" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang et al.: perfect entanglers in SU(4)</a>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- ══════════ 8. RABI ══════════ -->
+<!-- ══════════ 11. DECOHERENCE ══════════ -->
 <section class="topic-section" id="decoherence">
   <div class="topic-header">
     <span class="t-icon">📉</span>
@@ -1331,7 +1331,7 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
 
 <hr class="section-divider">
 
-<!-- ══════════ 10. QUANTUM ALGORITHMS ══════════ -->
+<!-- ══════════ 12. QUANTUM ALGORITHMS ══════════ -->
 <section class="topic-section" id="algorithms">
   <div class="topic-header">
     <span class="t-icon">⚙️</span>
@@ -1413,7 +1413,7 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
 
 <hr class="section-divider">
 
-<!-- ══════════ 13. QUANTUM ERROR CORRECTION ══════════ -->
+<!-- ══════════ 13. ANALOG QUANTUM SIMULATION ══════════ -->
 <section class="topic-section" id="analog-sim">
   <div class="topic-header">
     <span class="t-icon">🔬</span>
@@ -1488,7 +1488,7 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
 
 <hr class="section-divider">
 
-<!-- ══════════ RESOURCES ══════════ -->
+<!-- ══════════ 14. QUANTUM ERROR CORRECTION ══════════ -->
 <section class="topic-section" id="qec">
   <div class="topic-header">
     <span class="t-icon">🛡️</span>
@@ -1593,7 +1593,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 
 <hr class="section-divider">
 
-<!-- ══════════ 11. ANALOG QUANTUM SIMULATION ══════════ -->
+<!-- ══════════ RESOURCES ══════════ -->
 <section class="topic-section" id="resources" style="padding-bottom:3rem;">
   <div class="topic-header">
     <span class="t-icon">📚</span>
@@ -1750,9 +1750,9 @@ initScrollReveal();
 /* ═══════════════════════════════════════════════
    STICKY NAV HIGHLIGHT
    ═══════════════════════════════════════════════ */
-const sections = ['bloch','gates','superposition','measurement','entanglement',
-                  'rydberg','twoqubit','rabi','hyperfine','optical-pumping',
-                  'decoherence','algorithms','qec','analog-sim','resources'];
+const sections = ['bloch','superposition','rabi','gates','measurement',
+                  'optical-pumping','hyperfine','entanglement','twoqubit','rydberg',
+                  'decoherence','algorithms','analog-sim','qec','resources'];
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
