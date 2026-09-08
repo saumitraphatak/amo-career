@@ -1240,9 +1240,7 @@ let rbChart = null;
 let show2Q  = false;
 
 function rbDecay(m, rC, A, d) {
-  const p = 1 - (d-1)/d * (1/((d-1)/(d*(1-rC)) + 1/(d*(1-rC))));
-  // Simplified: p = 1 - rC * d/(d-1)
-  // For 1Q: p = 1 - 2*rC; for 2Q: p = 1 - (4/3)*rC
+  // p = 1 - rC * d/(d-1): for 1Q (d=2), p = 1 - 2*rC; for 2Q (d=4), p = 1 - (4/3)*rC
   const pVal = (d === 2) ? 1 - 2*rC : 1 - (4/3)*rC;
   const B    = 1/d;
   return A * Math.pow(pVal, m) + B;
