@@ -13,3 +13,6 @@ Route-card 03 said "Fit temperature — Use experimental survival points to infe
 Fixed by relabeling card 03 to describe Species Polarizability Data instead, and softened the intro paragraph's "measure survival, and fit temperature" to "...and compare against simulated curves to estimate temperature." Also found and fixed the same overclaim in `main.js`'s `PAGE_PLAYBOOKS` entry ("Fit temperature from survival" → "Estimate temperature from survival"). Second instance of the "no phantom features" pattern — see `docs/site-philosophy.md` §3. (First was mot-designer's magnetic-trap claims.)
 
 Note: `tof-calculator.html`'s "Fit Temperature from Data" section is **not** a phantom feature — that one genuinely does a linear-regression fit of σ² vs t² from a real data table. Don't confuse the two pages.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

@@ -9,3 +9,6 @@
 
 ## Review outcome: changed (largest mismatch found)
 Route panel had only 4 cards for 7 tabs — **2 entire tabs** (Beam & Imaging Optics, Angular Momentum) had zero card representation at all, and "Check an AOM/RF chain" ambiguously tried to cover both the RF Power tab and the separate Modulators tab. Expanded to 7 cards, one per tab, in exact tab-bar order: Design beam optics → Check an AOM/RF chain → Estimate atom scales → Design a tweezer → Couple angular momenta → Check modulator sidebands → Convert lab units fast.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

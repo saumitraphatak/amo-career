@@ -8,3 +8,6 @@
 
 ## Review outcome: assessed, left as-is
 The 4 route-cards describe a **conceptual reasoning process**, not a literal 1:1 section index — unlike lab-calculators' literal tabs, nothing here is a distinct navigable destination a visitor could miss. The blockade-vs-n chart and quantum-defects table are supporting detail nested inside the "interaction" and "state" reasoning steps respectively, not separate top-level workflow stages. Presented this distinction explicitly and the user agreed to leave it — don't force this into a 6-card structure for consistency's sake; the judgment call was intentional. Contrast with cavity-qed, which looked similar on the surface but got expanded because the user's call went the other way there.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

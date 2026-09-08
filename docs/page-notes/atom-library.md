@@ -19,3 +19,6 @@ The generated comparison text for Yb171 (`W(Yb,cYb)...`) cited Evered et al. 202
 
 ## Link audit update (2026-09)
 The potassium data-sheet reference (`tobiastiecke.nl/archive/PotassiumProperties.pdf`, linked twice) is confirmed dead (404) — and it's the same dead link Steck's own canonical alkali-data index points to, so no site-specific fix was obviously available. Searched for a trustworthy mirror and didn't find one; de-linked both references to plain text ("— source offline") rather than link to a low-quality mirror. See docs/link-audit-2026-09.md.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

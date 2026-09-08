@@ -10,3 +10,6 @@
 
 ## Review outcome: approved, no changes (autonomous pass)
 Important distinction from the lab-calculators/cavity-qed cases: the 4 route-cards are **not** a workflow index of the 4 tabs. They're a genuinely different, orthogonal organizing axis — "which track are you reading for" (topical focus) layered on top of the primary "which career stage" axis (the tabs). Two legitimate lenses on the same 53-paper corpus, same category as home.html's multiple deliberate entry points (site-philosophy.md §1) — not a case where §2's "cards must match tabs 1:1" rule applies, because the cards were never describing the tabs in the first place.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

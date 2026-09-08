@@ -11,3 +11,6 @@
 No route-panel means no card-count risk. Clean conceptual-to-practical progression ending in a checklist — the right shape for a reference guide rather than a calculator.
 
 (Also fixed here during the mot-designer rename pass: the "See also" cross-link text changed from "MOT & Magnetic Trap" to "MOT".)
+
+## Design audit update (2026-09)
+`--vac`/`--vac-bg`/`--vac-border` were leftover neon-cyan (#22d3ee) values from the pre-redesign 16-hue dark-theme palette, never remapped to the site's current three-ink accent system. Remapped to `--ink-blue` (#2c4a63) with matching bg/border tints, consistent with how other equipment/lab pages are inked. See docs/design-audit-2026-09.md.

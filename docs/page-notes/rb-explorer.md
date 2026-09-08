@@ -14,3 +14,6 @@ Motivate → build concept → theory → hands-on calculator → extensions (in
 Added a `QC 05` tools-grid card on `home.html` (icon 📈, color `#c084fc`), matching the treatment `remote-entanglement.html` already had. Previously this page was reachable only via the nav dropdown, footer link, or an incidental guided-path route — noted as a discoverability gap in the September 2026 technical audit (`docs/technical-audit-2026-09.md`).
 ## Interactive correctness audit update (2026-09)
 Removed a dead/unused intermediate expression in `rbDecay()` that was immediately overwritten by the correct, actually-used depolarizing-parameter formula. No behavior change — the live code was already correct. See docs/interactive-audit-2026-09.md.
+
+## Design audit update (2026-09)
+`--accent`/`--accent-dim`/`--accent-border` were leftover neon-purple (#c084fc, the old dark-theme's `--c-learn` value) never remapped during the redesign. Remapped to `--ink-blue` (#2c4a63) with matching bg/border tints, consistent with other QC/fidelity-adjacent pages. See docs/design-audit-2026-09.md.

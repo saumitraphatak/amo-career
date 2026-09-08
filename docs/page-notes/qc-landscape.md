@@ -15,3 +15,6 @@ Page was stamped "Data updated May 2026" and missing Atom Computing's June 2026 
 
 ## Link audit update (2026-09)
 Three company links pointed at pre-rebrand domains that still redirect but are stale: D-Wave (`dwavesys.com` → `www.dwavequantum.com`), IQM (`meetiqm.com` → `iqm.tech`), Silicon Quantum Computing (`sqc.com.au` → `sqc.com`). Updated all three to their current canonical domains. See docs/link-audit-2026-09.md.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

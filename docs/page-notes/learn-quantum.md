@@ -17,3 +17,6 @@ Reordered all 14 sections to: Bloch → Superposition → Rabi → Gates → Mea
 **Verification method** (see `docs/site-philosophy.md` §7): extracted each of the 14 section blocks by exact line range, asserted each started with its own unique `id=`, reassembled in the new order, then asserted the *sorted line-multiset* of the whole file was identical before vs after — i.e., mathematically guaranteed the reorder was pure reordering with zero content loss/duplication, independent of manual line-number bookkeeping. Ran the JS syntax check and full regression suite afterward.
 
 The quiz's "Review this topic ↑" links use `href="#anchor-id"`, which are order-independent, so the reorder didn't require any quiz-data changes.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

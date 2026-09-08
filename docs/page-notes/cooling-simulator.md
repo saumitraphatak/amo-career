@@ -8,3 +8,6 @@
 
 ## Review outcome: approved, no changes
 Cards 01-04 map cleanly to tabs ①-④. Tabs ⑤ and ⑥ are reference/supplementary material (external code links, citations), not workflow steps — same category the site consistently excludes from route-panels everywhere (see `docs/site-philosophy.md` §2). Checked the mapping explicitly before concluding this — it's a legitimate exclusion, not a gap like lab-calculators/lab-techniques had.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

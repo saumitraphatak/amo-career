@@ -10,3 +10,6 @@
 ## Review outcome: changed (significant, two issues)
 1. **Ordering bug:** originally, section 05 (the *live* histogram preview) appeared **before** section 07 (the *theory* explaining what a bimodal histogram, dark/bright peaks, and detection fidelity actually are). A first-time visitor hit the live simulation before the concept that makes it legible. Fixed by moving the theory section to sit right before the live preview: old 07 → new 05, old 05 → new 06, old 06 (Physics & Formulas) → new 07. Verified with an exact line-range extraction + assertion that each moved block started with its own expected heading, plus a post-write balance check (`<section>`/`</section>`, `<div>`/`</div>` counts) and a full regression-suite run — see `docs/site-philosophy.md` §4 and §7.
 2. **Route-panel mismatch:** 4 cards for 7 real sections; "06 Physics & Formulas" wasn't represented by any card at all. Expanded to 7 cards matching the new order exactly.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

@@ -13,3 +13,6 @@ Route panel originally had only 4 cards for 6 tabs — "Stabilize and optimize" 
 
 ## Interactive correctness audit update (2026-09)
 The loop-antenna radiation-resistance formula (`calcAntenna()` and its matching displayed KaTeX box) had a factor-of-4 error: used `20π²(2πA/λ²)²` instead of the standard Balanis small-loop result `20π²(4πA/λ²)²` (≡ `320π⁴(A/λ²)²`). Fixed in both the JS and the displayed formula, verified numerically (10cm loop @ 100MHz: 23.7mΩ correct vs 5.9mΩ old). See docs/interactive-audit-2026-09.md.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.

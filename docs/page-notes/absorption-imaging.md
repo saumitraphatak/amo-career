@@ -8,3 +8,6 @@
 
 ## Review outcome: changed
 Route panel had 4 cards; two of them (`#imaging-calculator` ×2) intentionally described different facets of the same section — that part was fine. But **Species Reference had no anchor ID and no card at all**. Added `id="species-reference"` to that section and a new 4th card ("Check species data") pointing to it, renumbering the failure-modes card to 05.
+
+## Design audit update (2026-09)
+`.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.
