@@ -8,3 +8,6 @@
 
 ## Review outcome: flagged, left as-is (user's call)
 The technique order interleaves free-space (pre-trap) and sideband (in-trap, Lamb-Dicke-regime) methods rather than grouping them in real cooling-cascade order — 3 sideband sections, then 3 free-space sections, then a 4th sideband section (Raman) stranded at the end. Proposed regrouping into two coherent blocks (free-space first, then all sideband techniques together) matching mot-designer's own cooling-cascade diagram. **User chose to leave the order as-is.** Don't re-raise this unless asked — it was a deliberate decision, not an oversight we missed.
+
+## Cross-page consistency audit update (2026-09)
+Hero eyebrow read "Trap, Image & Cool 05" — a duplicate of absorption-imaging.html's badge number, breaking the otherwise-clean 01-07 sequence across the category. Bumped to "06" (its correct position in `NAV.trapImageCool` order, right after absorption-imaging). See docs/cross-page-consistency-audit-2026-09.md.

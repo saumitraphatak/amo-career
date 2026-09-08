@@ -11,3 +11,6 @@ Cards 01-04 map cleanly to tabs ①-④. Tabs ⑤ and ⑥ are reference/suppleme
 
 ## Design audit update (2026-09)
 `.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.
+
+## Cross-page consistency audit update (2026-09)
+Hero eyebrow read "Trap, Image & Cool 06" — one off from its correct position once laser-cooling.html (the previous page in `NAV.trapImageCool` order) was corrected from a duplicate "05" to "06". Bumped to "07". See docs/cross-page-consistency-audit-2026-09.md.
