@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/styles.css?v=18">
+  <link rel="stylesheet" href="../css/styles.css?v=19">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -257,7 +257,7 @@
     /* ── metric stat row ────────────────────────────── */
     .stat-row {
       display: grid;
-      grid-template-columns: repeat(4,1fr);
+      grid-template-columns: repeat(5,1fr);
       gap: .9rem;
       margin: 1.2rem 0;
     }
@@ -274,6 +274,7 @@
     .stat-card-sm .stat-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
     .stat-card-sm.rb { border-color: rgba(251,146,60,0.25); }
     .stat-card-sm.yb { border-color: rgba(52,211,153,0.25); }
+    .stat-card-sm.preprint { border-color: rgba(6,182,212,0.35); }
 
     /* ── paper card ─────────────────────────────────── */
     .paper-card {
@@ -398,7 +399,7 @@
           <div class="hero-atom-name" style="color:#b75404;">⁸⁷Rb, Rubidium</div>
           <div class="hero-atom-sub">Alkali · Hyperfine qubit · 6.834 GHz clock transition</div>
           <div class="hero-atom-stats">
-            <span class="hero-stat-chip rb">2Q fidelity 99.5%</span>
+            <span class="hero-stat-chip rb">2Q fidelity 99.85% (2026, preprint)</span>
             <span class="hero-stat-chip rb">48 logical qubits</span>
             <span class="hero-stat-chip rb">280 physical atoms</span>
             <span class="hero-stat-chip rb">Harvard/QuEra/Pasqal</span>
@@ -520,6 +521,10 @@
       ¹⁷¹Yb has a different structural advantage: a J=0 ground state, nuclear-spin qubit, clock-state shelving, and alkaline-earth
       erasure-conversion protocols. Its best published gate number is 99.40(3)% raw and 99.72(3)% with post-selection.
       The 6100-atom, 12.6 s coherence result is a <strong>Cs-133</strong> benchmark, not an Rb-87 benchmark; it is included below only as adjacent alkali/tweezer scaling context.
+      <strong>2026 update:</strong> the same Harvard/QuEra collaboration reported a new Rb87 CZ-gate result in an April 2026 preprint
+      &mdash; 99.854(4)% raw, 99.941(3)% with loss post-selection, averaged over many gate sites in a 442-atom array and stable
+      across a 10-hour, ~2-million-run benchmark. That would exceed Yb171&rsquo;s best published number on both raw and post-selected
+      fidelity, but it has not yet been peer-reviewed or independently reproduced; see Section 06 for the full picture.
     </div>
 
     <div class="stat-row">
@@ -527,6 +532,7 @@
       <div class="stat-card-sm rb"><div class="stat-num" style="color:#b75404;">48</div><div class="stat-label">Rb87 logical qubits<br>(Bluvstein et al. 2024)</div></div>
       <div class="stat-card-sm yb"><div class="stat-num" style="color:#1c805b;">99.72%</div><div class="stat-label">Yb171 2Q fidelity<br>(Muniz et al. 2025, post-sel)</div></div>
       <div class="stat-card-sm yb"><div class="stat-num" style="color:#1c805b;">J = 0</div><div class="stat-label">Yb171 ground state<br>electronic protection</div></div>
+      <div class="stat-card-sm rb preprint"><div class="stat-num" style="color:#0e7490;">99.85%</div><div class="stat-label">Rb87 2Q fidelity (raw)<br>Evered et al. 2026 &mdash; preprint</div></div>
     </div>
 
     <div class="common-mistake" style="margin-top:1rem;">
@@ -944,7 +950,7 @@ Clock magic wavelength: $\Delta\alpha_{1S0-3P0}(\lambda_{\rm magic}\approx759\;\
     <div class="chart-box" style="margin-bottom:1.5rem;">
       <h3 style="font-size:.95rem;font-weight:600;color:var(--text-secondary);margin:0 0 .8rem 0;">Gate Fidelity Comparison (2019–2025)</h3>
       <canvas id="fidelityChart" height="300"></canvas>
-      <p class="chart-caption">Two-qubit gate fidelities, best published values. Rb87: Evered et al. (Nature 2023). Yb171: Muniz et al. (PRX Quantum 2025, post-selection and raw). A practical 99.9% target line is shown as a dashed guide.</p>
+      <p class="chart-caption">Two-qubit gate fidelities, best published values. Rb87: Evered et al. (Nature 2023, peer-reviewed) and Evered et al. (arXiv:2604.25987, 2026, preprint). Yb171: Muniz et al. (PRX Quantum 2025, post-selection and raw). A practical 99.9% target line is shown as a dashed guide.</p>
     </div>
 
     <div class="side-by-side">
@@ -959,12 +965,13 @@ Clock magic wavelength: $\Delta\alpha_{1S0-3P0}(\lambda_{\rm magic}\approx759\;\
           <li><strong>Key innovation:</strong> Optimal-control pulse shaping + atomic dark-state scattering suppression</li>
           <li><strong>Logical qubit demo:</strong> 48 logical qubits, fault-tolerant operations (Bluvstein 2024)</li>
           <li><strong>Array size for gate demos:</strong> Up to 280 physical qubits (Bluvstein 2024)</li>
+          <li><strong>2026 update:</strong> 99.854(4)% raw / 99.941(3)% with loss post-selection, global echo randomized benchmarking averaged over 17 gate sites in a 442-atom zoned array, stable across 10 hours and ~2 million RB runs (Evered et al., arXiv:2604.25987) <span class="source-tag preprint">preprint</span></li>
         </ul>
         <div class="formula-box">
 $$\mathcal{F}_{\rm CZ} = 1 - \varepsilon_{\rm Ryd} - \varepsilon_{\rm scatt} - \varepsilon_{\rm D} - \varepsilon_{\rm \Omega}$$
 $\varepsilon_{\rm Ryd} \sim (\Gamma_{\rm Ryd} \tau_g)$, Rydberg decay error<br>
 $\varepsilon_D = \tfrac{1}{2}(k\, v_{\rm rms}\, \tau_g)^2$, Doppler dephasing (mitigated by sideband cooling)<br>
-Best: 1 − 99.5% = 0.5% total error budget
+Best: 1 − 99.5% = 0.5% total error budget (Evered 2023, peer-reviewed)<br>2026 preprint: 1 − 99.854% ≈ 0.146% raw error (Evered et al., arXiv:2604.25987, not yet peer-reviewed)
         </div>
       </div>
 
@@ -989,11 +996,14 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
     </div>
 
     <div class="insight">
-      <strong>Gate fidelity status (2025):</strong> Both platforms now demonstrate or approach the surface-code
-      practical 99.9% two-qubit-gate target for scalable fault-tolerance. Rb87 leads in <em>parallel</em> gate demonstrations
-      (60 simultaneous pairs at 99.5%), while Yb171 shows slightly higher per-pair fidelity (99.72% with post-selection).
-      The error budget for Yb171 is expected to shrink further as the platform matures, given its structural
-      noise advantages. The race to consistent 99.9%+ without post-selection is the key 2025–2027 target for both.
+      <strong>Gate fidelity status (2025&ndash;2026):</strong> Through 2025, Yb171 held the highest published per-pair two-qubit
+      fidelity (99.72% with post-selection, Muniz et al., peer-reviewed), while Rb87 led on <em>parallel</em> gate demonstrations
+      (60 simultaneous pairs at 99.5%, Evered et al. 2023, peer-reviewed) and on logical-processor maturity. In April 2026 the same
+      Rb87 group reported a new record in a preprint &mdash; 99.854% raw, 99.941% with loss post-selection &mdash; which would exceed
+      Yb171&rsquo;s peer-reviewed number on both raw and post-selected fidelity. That result has not yet been peer-reviewed or
+      independently reproduced, so treat the ranking as provisional until it clears review; Yb171 retains its structural advantages
+      in erasure conversion and non-destructive readout regardless (Sections 07 and 09). The race to consistent 99.9%+ without
+      post-selection, confirmed by independent groups, is the key target for both platforms.
     </div>
   </section>
 
@@ -1055,6 +1065,7 @@ Magic wavelength: $\varepsilon_{\rm light\text{-}shift} \approx 0$, entire error
           <li><strong>2023:</strong> Evered et al., 60 qubits with 99.5% 2Q gates</li>
           <li><strong>2024:</strong> Bluvstein et al., 280 physical qubits, 48 logical qubits (color code)</li>
           <li><strong>2025 adjacent alkali:</strong> Manetsch et al. demonstrated 6100 coherent Cs-133 atoms, not Rb87; useful scaling context but not counted as an Rb milestone</li>
+          <li><strong>2026 (preprint):</strong> Evered et al. benchmarked the new CZ-gate record on a 442-atom zoned array (17 gate sites) &mdash; a fidelity/stability result, not a new array-size record</li>
           <li><strong>Rearrangement:</strong> AOD-based atom sorting achieves &gt;99% defect-free loading</li>
           <li><strong>Roadmap:</strong> 10,000+ qubit arrays, parallel Rydberg gates, photonic interconnects</li>
         </ul>
@@ -1132,6 +1143,25 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
         </ul>
       </div>
     </div>
+
+    <div class="yb-box">
+      <strong>2025&ndash;2026 update: erasure conversion demonstrated end to end.</strong> Zhang, Liu, Bornet, Horvath, Peng, Ma, Huang, Puri &amp; Thompson
+      (Princeton, the same group as Ma et al. 2023) published the first experimental chain showing erasure information helping
+      at every stage, from physical gate to logical teleportation (<em>Nature Physics</em>, 2026; arXiv:2506.13724, 2025):
+    </div>
+    <div class="formula-box" style="font-size:.87rem; line-height:1.9;">
+Anti-refocusing (AR) two-qubit gate: $\mathcal{F} = 98.4(1)\%$, vs. $98.9(1)\%$ for a conventional time-optimal gate<br>
+AR gate error scales as $(\Delta I/I_0)^4$ instead of $(\Delta I/I_0)^2$ (far less sensitive to laser-intensity noise); detects <strong>38(6)%</strong> of its own errors as erasures mid-circuit<br>
+Coherent transport: &lt;6&times;10&#8315;&#8308; dephasing+bit-flip probability per one-way trip (~2.5 ms); atom loss 1.1(4)%, about half caught as a detectable erasure<br>
+[[4,2,2]] logical state-prep fidelity: 87.4(4)% unconditional &rarr; 90.2(3)% using erasure info &rarr; 98.1(2)% with flag post-selection &rarr; <strong>99.5(1)%</strong> with flag <em>and</em> erasure post-selection (logical error rate falls 3.6(1)&times; faster with erasure information)<br>
+Logical-qubit teleportation fidelity: 77.1(9)% (random ancilla, syndrome post-selection) &rarr; 87(2)% (erasure post-selection) &rarr; 80.2(8)% (adaptive, erasure-informed ancilla selection)
+    </div>
+    <p style="color:var(--text-secondary);font-size:.85rem;line-height:1.7;margin:.75rem 0 1rem 0;">
+      This is the experimental version of the Wu et al. 2022 proposal above: not just a theoretical error-to-erasure conversion rate,
+      but a demonstrated pipeline where knowing <em>which</em> qubit failed measurably improves every downstream step &mdash; gate, transport,
+      logical encoding, and teleportation &mdash; using the same &sup3;P&#8320; metastable-state shelving trick that gives Yb171 its readout advantage
+      (Section 07).
+    </p>
 
     <div class="insight">
       <strong>Long-term significance:</strong> Erasure conversion may be the most important structural advantage Yb171
@@ -1225,17 +1255,23 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
           </tr>
 
           <tr>
-            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Gate Performance</td>
-            <td>Best 2Q fidelity</td>
+            <td rowspan="6" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Gate Performance</td>
+            <td>Best 2Q fidelity, peer-reviewed</td>
             <td class="rb-td">99.5% raw, parallel (Evered 2023)</td>
             <td class="yb-td win yb">99.72% with post-sel (Muniz 2025)</td>
             <td><span class="adv-yb">Yb</span> (slightly)</td>
           </tr>
           <tr>
+            <td>Best 2Q fidelity, incl. preprints <span class="source-tag preprint">preprint</span></td>
+            <td class="rb-td win rb">99.941% with post-sel, 99.854% raw (Evered 2026)</td>
+            <td class="yb-td">99.72% with post-sel (Muniz 2025, peer-reviewed)</td>
+            <td><span class="adv-rb">Rb</span> if the 2026 preprint holds up under review</td>
+          </tr>
+          <tr>
             <td>2Q fidelity raw</td>
-            <td class="rb-td win rb">99.5% (no post-selection, 60 pairs)</td>
+            <td class="rb-td win rb">99.5% (2023, peer-reviewed, 60 pairs); 99.854% (2026, preprint)</td>
             <td class="yb-td">99.40% (no post-selection)</td>
-            <td><span class="adv-rb">Rb</span> (current)</td>
+            <td><span class="adv-rb">Rb</span> (widening, pending peer review)</td>
           </tr>
           <tr>
             <td>Parallel gates</td>
@@ -1378,6 +1414,12 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
     <h3 style="color:#b75404;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">⁸⁷Rb, Landmark Papers</h3>
     <div class="paper-grid">
       <div class="paper-card">
+        <div class="paper-title">High-fidelity entangling gates and nonlocal circuits with neutral atoms <span class="source-tag preprint">preprint</span></div>
+        <div class="paper-meta">Evered, Xu, Li, Geim, Bonilla Ataides, Kalinowski, Bluvstein, Maskara, Kokail, Greiner, Vuleti&#263;, Lukin, arXiv:2604.25987 (2026)</div>
+        <p class="paper-desc">99.854(4)% raw / 99.941(3)% with loss post-selection CZ gate fidelity, global echo randomized benchmarking averaged over 17 gate sites in a 442-atom zoned array, stable across a 10-hour, ~2-million-run benchmark. Also demonstrates nonlocal circuits via coherent atom rearrangement. Not yet peer-reviewed; treat as provisional pending journal publication and independent reproduction.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2604.25987" target="_blank" rel="noopener">arXiv:2604.25987 &#8599;</a></p>
+      </div>
+      <div class="paper-card">
         <div class="paper-title">High-fidelity parallel entangling gates on a neutral-atom quantum computer</div>
         <div class="paper-meta">Evered, Bluvstein, Kalinowski et al., Nature 622, 268–272 (2023)</div>
         <p class="paper-desc">99.5% CZ gate fidelity on 60 qubit pairs simultaneously using Rydberg blockade with dark-state-assisted scattering reduction. Crossed the NISQ/fault-tolerance boundary for neutral atoms.</p>
@@ -1440,6 +1482,12 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
         <div class="paper-meta">Wu, Kolkowitz, Puri, Thompson, Nature Commun. 13, 4657 (2022)</div>
         <p class="paper-desc">Theoretical framework showing that 98% of gate errors in Yb171/Sr87 can be converted to detectable erasures using the ³P₀ metastable state. ~10× reduction in fault-tolerance overhead. Highly cited theory paper.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41467-022-32094-6" target="_blank" rel="noopener">Nature Commun. ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Logical qubits with erasure conversion using metastable neutral atoms</div>
+        <div class="paper-meta">Zhang, Liu, Bornet, Horvath, Peng, Ma, Huang, Puri, Thompson, Nature Physics (2026); arXiv:2506.13724 (2025)</div>
+        <p class="paper-desc">Experimental follow-up to Wu et al. 2022: an anti-refocusing two-qubit gate at 98.4(1)% fidelity detects 38(6)% of its own errors as erasures; coherent transport loses &lt;6&times;10&#8315;&#8308; per trip with about half of atom loss caught as erasure. A [[4,2,2]] logical code reaches 99.5(1)% state-prep fidelity with flag-and-erasure post-selection (87.4(4)% unconditional), and logical teleportation reaches 87(2)% fidelity with erasure post-selection. First demonstration that erasure information measurably helps end to end, from physical gate to logical teleportation.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41567-026-03309-0" target="_blank" rel="noopener">nature.com &#8599;</a> &middot; <a href="https://arxiv.org/abs/2506.13724" target="_blank" rel="noopener">arXiv:2506.13724 &#8599;</a></p>
       </div>
       <div class="paper-card">
         <div class="paper-title">Atom Computing Phoenix: 1225-site ¹⁷¹Yb nuclear spin array</div>
@@ -1695,6 +1743,8 @@ With 98% error-to-erasure conversion in the Wu et al. Yb/Sr proposal: simulated 
       { label: 'Rb87 logical\n(Bluvstein 2024)', rb: 99.5, yb: null, year: 2024 },
       { label: 'Yb171\n(Muniz 2025 raw)', rb: null, yb: 99.40, year: 2025 },
       { label: 'Yb171\n(Muniz 2025 post-sel)', rb: null, yb: 99.72, year: 2025 },
+      { label: 'Rb87\n(Evered 2026 raw, preprint)', rb: 99.854, yb: null, year: 2026 },
+      { label: 'Rb87\n(Evered 2026 post-sel, preprint)', rb: 99.941, yb: null, year: 2026 },
     ];
 
     new Chart(ctx, {

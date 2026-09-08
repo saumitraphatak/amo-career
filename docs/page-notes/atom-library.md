@@ -13,3 +13,6 @@
 
 ## Review outcome: approved, no changes
 Reads as a coherent narrowing funnel: compare-any-two → see-all-at-a-glance → drill into one → who's using it → further reading. Sections 3 and 4 both compare atoms on similar axes (temperature/linewidth) through different UI (interactive picker vs static chart) — judged complementary, not redundant.
+
+## Science audit update (2026-09, Finding 1)
+The generated comparison text for Yb171 (`W(Yb,cYb)...`) cited Evered et al. 2023's 99.50% Rb CZ-gate number as the best demonstrated result; added a note that a 2026 preprint (arXiv:2604.25987) reports 99.854% raw, not yet peer-reviewed. See docs/science-audit-2026-09.md.

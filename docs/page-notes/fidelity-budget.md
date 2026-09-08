@@ -8,3 +8,6 @@
 
 ## Review outcome: approved, no changes
 Clean linear flow: set up → see your budget → compare to real published results → understand the underlying formulas → references.
+
+## Science audit update (2026-09, Finding 1)
+Added a 4th SOTA card for Evered et al. 2026 (arXiv:2604.25987, preprint — 99.854% raw / 99.941% post-sel) alongside the existing peer-reviewed Evered 2023 card, plus the arXiv link in "05 Key References". See docs/science-audit-2026-09.md and docs/page-notes/rb87-vs-yb171.md for the full context.

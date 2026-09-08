@@ -6,7 +6,7 @@ Method: web search + primary-source fetch (arXiv, Nature, Nature Physics, PRX Qu
 
 ---
 
-## Finding 1 — New Rb-87 gate-fidelity record supersedes the site's "state of the art" (BIG, needs your call)
+## Finding 1 — New Rb-87 gate-fidelity record supersedes the site's "state of the art" — IMPLEMENTED (approved 2026-09-08)
 
 **What's on the site now:** Evered et al., *Nature* 622, 268 (2023) — 99.5% CZ gate fidelity, 60 atom pairs in parallel — is cited as the best published Rb-87 two-qubit gate result on `rb87-vs-yb171.html` (hero stat chip, a stat-card, an inline KaTeX formula, a chart caption, several bullet lists, the head-to-head table, and the "Current gap" summary paragraph) and on `fidelity-budget.html`'s SOTA comparison + references section. The current narrative on `rb87-vs-yb171.html` frames Yb-171 (Muniz et al. 2025, 99.72% with post-selection) as having the edge in raw per-pair fidelity, with Rb-87 leading only in logical-processor maturity and parallel-gate scale.
 
@@ -26,7 +26,7 @@ This is not an incremental update — **it beats the Yb-171 number the site curr
 
 ---
 
-## Finding 2 — Rich new numbers for the Erasure Conversion section (safe to add, adds real depth)
+## Finding 2 — Rich new numbers for the Erasure Conversion section — IMPLEMENTED
 
 **What's on the site now:** `rb87-vs-yb171.html` section "09 Erasure Conversion" describes the concept qualitatively (Yb-171's structural shelving advantage) and cites Ma et al. 2023 (98.0% metastable-qubit gate + mid-circuit erasure conversion, also on `fidelity-budget.html`'s SOTA grid).
 
@@ -52,7 +52,7 @@ I went in expecting to find something to update here and instead confirmed the p
 
 ---
 
-## Finding 4 — `qc-landscape.html` is stamped "Data updated May 2026" and is now ~4 months stale
+## Finding 4 — `qc-landscape.html` is stamped "Data updated May 2026" and is now ~4 months stale — IMPLEMENTED
 
 Given the page explicitly timestamps itself, a few things have moved since May:
 
@@ -85,3 +85,17 @@ Low priority, purely additive, no existing content to reconcile.
 2. I implement **Finding 2** (erasure-conversion numbers) — purely additive, ready to go whenever you say go.
 3. I implement **Finding 4** (Atom Computing funding card) — quick, purely additive.
 4. **Finding 5** (syllabus additions) — whenever, low priority.
+
+---
+
+## Implementation notes (2026-09-08)
+
+Findings 1, 2, and 4 are done — approved by Saumitra ("Yeah you can do that. Make it precise, thorough and nicely explained.").
+
+- **Finding 1**: `pages/rb87-vs-yb171.html` updated throughout (hero, overview, Section 06 gate performance incl. chart data, Section 08 scaling, Section 10 comparison table, Section 12 references) to add the Evered et al. 2026 preprint record (99.854% raw / 99.941% post-sel, arXiv:2604.25987) alongside — not replacing — the existing peer-reviewed 2023/2025 numbers, consistently flagged as preprint/not-yet-peer-reviewed via a new `.source-tag.preprint` CSS class. Also updated `pages/fidelity-budget.html` (new SOTA card + reference), `pages/atom-library.html` (inline note), `CLAUDE.md`, `llms.txt`, `llms-full.txt`.
+- **Finding 2**: added the Zhang et al. 2025/2026 erasure-conversion numbers (AR-gate fidelity, transport error, [[4,2,2]] logical state-prep ladder, logical teleportation fidelity) to `pages/rb87-vs-yb171.html` Section 09, plus a paper-card in Section 12.
+- **Finding 4**: added an Atom Computing investment card to `pages/qc-landscape.html` and bumped its data-updated stamp to September 2026.
+- Cache-busting: `css/styles.css` changed (new preprint tag), so `styles.css?v=18` → `?v=19` across all 30 pages. `main.js` untouched, stayed at `v=22`.
+- Verified: `tests/formula_regression.py` 11/11 passing, tag-balance checks clean on every edited file, chart JS data array is syntactically valid.
+- Finding 3 (dd-playground.html) required no changes, confirmed already correct.
+- Finding 5 (paper-syllabus.html additions) not yet done — still low priority/optional per the original writeup.

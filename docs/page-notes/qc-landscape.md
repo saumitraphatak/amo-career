@@ -9,3 +9,6 @@
 
 ## Review outcome: approved, no changes (autonomous pass)
 Same category as rydberg-calculator: the 4 route-cards describe a **conceptual reading strategy** across a large survey page, not a literal 1:1 index of ~15 sections plus 8 sub-tabs — that many cards would over-fragment a clean 4-step mental model (site-philosophy.md §2). Not treated as a mismatch requiring expansion.
+
+## Science audit update (2026-09, Finding 4)
+Page was stamped "Data updated May 2026" and missing Atom Computing's June 2026 $300M+ raise. Added an Atom Computing card to the Investment Landscape grid (switched `.invest-grid` to `auto-fit` so a 5th card wraps cleanly) and bumped the footer timestamp to September 2026. See docs/science-audit-2026-09.md.
