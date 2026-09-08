@@ -12,3 +12,6 @@ Same category as rydberg-calculator: the 4 route-cards describe a **conceptual r
 
 ## Science audit update (2026-09, Finding 4)
 Page was stamped "Data updated May 2026" and missing Atom Computing's June 2026 $300M+ raise. Added an Atom Computing card to the Investment Landscape grid (switched `.invest-grid` to `auto-fit` so a 5th card wraps cleanly) and bumped the footer timestamp to September 2026. See docs/science-audit-2026-09.md.
+
+## Link audit update (2026-09)
+Three company links pointed at pre-rebrand domains that still redirect but are stale: D-Wave (`dwavesys.com` → `www.dwavequantum.com`), IQM (`meetiqm.com` → `iqm.tech`), Silicon Quantum Computing (`sqc.com.au` → `sqc.com`). Updated all three to their current canonical domains. See docs/link-audit-2026-09.md.
