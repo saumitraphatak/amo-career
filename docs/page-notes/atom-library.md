@@ -22,3 +22,11 @@ The potassium data-sheet reference (`tobiastiecke.nl/archive/PotassiumProperties
 
 ## Design audit update (2026-09)
 `.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.
+
+
+## Accessibility audit update (2026-09)
+Converted the `.page-wrap` skip-link target to a real `<main>` landmark; converted 16 `<div class="accordion-header">`s (both the species accordions and the group-directory accordions) to real `<button>`s for keyboard access; made all 15 `.atom-tile` species-picker tiles keyboard-operable (`tabindex`, `role="button"`, `onkeydown` mirroring the existing `onclick`); added `scope="col"` to the 18 column headers in the atom comparison/data tables; added `aria-hidden="true"` to 16 decorative accordion-chevron icons. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. Added missing global-search keywords (also closed a Rb/rubidium search-synonym gap versus rb87-vs-yb171.html) — this page previously had none, relying on title-word matching only. See docs/navigation-audit-2026-09.md.

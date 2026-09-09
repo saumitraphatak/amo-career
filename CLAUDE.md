@@ -45,7 +45,7 @@ amo-career/
 ├── tests/
 │   └── formula_regression.py  # Physics/content regression checks
 ├── assets/cooling/         # GIFs (gray-molasses-cooling, resolved-sideband-cooling) used by tool pages
-└── pages/                  # All tool and content pages (27 files)
+└── pages/                  # All tool and content pages (28 files)
     ├── atom-library.html       # Atomic Species Selector
     ├── laser-planner.html      # Laser System Planner
     ├── mot-designer.html       # MOT Designer
@@ -358,7 +358,7 @@ Cards live in the `.tools-grid` inside `<section id="tools">` and are grouped/la
   <div class="tool-card-cta">Open Tool →</div>
 </a>
 ```
-`.tool-card-num` reads `"{CATEGORY} {NN}"` — must match the tool's position in its `NAV` category array. The `home.html` footer also has one `.footer-links` column per category (Build / Measure & Cool / Quantum / Career) — add a matching `.footer-link` entry there too.
+`.tool-card-num` reads `"{CATEGORY} {NN}"` — must match the tool's position in its `NAV` category array. The `home.html` footer has 3 `.footer-links` columns, not a 1:1 mirror of the 5 `NAV` categories: **Build** (all 10 `build` tools), **Measure & QC** (the 5 `measure` tools plus `absorption-imaging` and most of `quantum`: `fidelity-budget`, `decoherence-lab`, `rb-explorer`, `dd-playground`, `remote-entanglement`), and **Learn & Career** (the 2 `cooling` tools, the remaining 2 `quantum` tools — `rydberg-calculator`, `learn-quantum` — and all 4 `career` tools). When adding a tool, add its `.footer-link` to whichever of these 3 columns its siblings are already in (a navigation/IA audit — 2026-09 — confirmed every existing tool has exactly one footer link; check `docs/navigation-audit-2026-09.md` if this grouping seems to drift again).
 
 ### 7. Scroll Reveal Animation
 Add `class="anim-in delay-N"` (N = 1 to 9, in multiples of ~100ms delay) to any element that should animate in on scroll. Handled automatically by `main.js` IntersectionObserver.
@@ -373,7 +373,7 @@ Add `class="anim-in delay-N"` (N = 1 to 9, in multiples of ~100ms delay) to any 
    { key: 'new-tool', label: 'Tool Name', kind: 'Calculator', icon: '🔧', color: '#HEX', href: 'pages/new-tool.html' },
    ```
 3. **Add a tool card** to `home.html` in the `.tools-grid`, numbered consistently with its NAV category position (e.g. `BUILD 11`)
-4. **Add a footer link** to `home.html` in the matching category's `.footer-links` column
+4. **Add a footer link** to `home.html` in whichever of the 3 `.footer-links` columns its siblings live in (see the Home Page Tool Cards section above — the columns don't mirror the 5 `NAV` categories 1:1)
 5. **Update** the `.section-desc` under "Browse by workflow, not by alphabet" only if the workflow framing itself changes (rare)
 6. **Spot-check** the hero stat on `home.html` (currently a hand-typed "N+ Interactive Tools" — it does NOT auto-update from `NAV.tools.length`)
 7. **Bump cache version**: update `styles.css?v=N` and `main.js?v=N` consistently across **all** of `pages/*.html`, `home.html`, **and `404.html`** (404.html has drifted out of sync before — always grep-verify, see Cache Busting section above)

@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 
   <style>
@@ -283,7 +283,7 @@
 <body>
   <div id="nav-root"></div>
 
-  <div class="page-wrap" id="main-content">
+  <main class="page-wrap" id="main-content">
 
     <!-- ── Page Hero ── -->
     <div class="page-hero" style="
@@ -516,7 +516,7 @@
           <hr class="pol-divider">
           <div class="pol-h2">Common States Table</div>
           <table class="pol-table">
-            <thead><tr><th>State</th><th>S₀</th><th>S₁</th><th>S₂</th><th>S₃</th><th>Location</th></tr></thead>
+            <thead><tr><th scope="col">State</th><th scope="col">S₀</th><th scope="col">S₁</th><th scope="col">S₂</th><th scope="col">S₃</th><th scope="col">Location</th></tr></thead>
             <tbody>
               <tr><td>Horizontal (0°)</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m" style="color:var(--pol-cyan)">+1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>+S₁ equator</td></tr>
               <tr><td>Vertical (90°)</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m" style="color:var(--pol-cyan)">−1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>−S₁ equator</td></tr>
@@ -596,7 +596,7 @@
 
           <div class="pol-h2">Comparison</div>
           <table class="pol-table">
-            <thead><tr><th>Method</th><th class="tc">S₁</th><th class="tc">S₂</th><th class="tc">S₃</th><th>Notes</th></tr></thead>
+            <thead><tr><th scope="col">Method</th><th scope="col" class="tc">S₁</th><th scope="col" class="tc">S₂</th><th scope="col" class="tc">S₃</th><th scope="col">Notes</th></tr></thead>
             <tbody>
               <tr><td>Classical (6 shots)</td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td>6 separate alignments, drift-prone</td></tr>
               <tr><td>Rotating HWP + PBS</td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="cr">✗</span></td><td>Cannot detect S₃ (circular)</td></tr>
@@ -626,17 +626,17 @@
                 <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Or use sliders (ψ=orientation, χ=ellipticity):</p>
                 <div class="pol-srow">
                   <span class="pol-slbl">ψ (orient)</span>
-                  <input type="range" id="pol-sl-psi" class="pol-range" min="0" max="180" value="0" oninput="polOnSlider()">
+                  <input type="range" id="pol-sl-psi" class="pol-range" min="0" max="180" value="0" oninput="polOnSlider()" aria-label="Orientation angle psi">
                   <span class="pol-sval" id="pol-sv-psi">0°</span>
                 </div>
                 <div class="pol-srow">
                   <span class="pol-slbl">χ (ellip.)</span>
-                  <input type="range" id="pol-sl-chi" class="pol-range purple" min="-45" max="45" value="0" oninput="polOnSlider()">
+                  <input type="range" id="pol-sl-chi" class="pol-range purple" min="-45" max="45" value="0" oninput="polOnSlider()" aria-label="Ellipticity angle chi">
                   <span class="pol-sval" id="pol-sv-chi">0°</span>
                 </div>
                 <div class="pol-srow">
                   <span class="pol-slbl">DOP</span>
-                  <input type="range" id="pol-sl-dop" class="pol-range green" min="0" max="100" value="100" oninput="polOnSlider()">
+                  <input type="range" id="pol-sl-dop" class="pol-range green" min="0" max="100" value="100" oninput="polOnSlider()" aria-label="Degree of polarization">
                   <span class="pol-sval" id="pol-sv-dop">100%</span>
                 </div>
                 <div class="pol-sreadout">
@@ -666,7 +666,7 @@
                 </div>
                 <div class="pol-srow" id="pol-snr-row" style="display:none">
                   <span class="pol-slbl">SNR (dB)</span>
-                  <input type="range" id="pol-sl-snr" class="pol-range orange" min="5" max="40" value="20" oninput="polUpdateSim()">
+                  <input type="range" id="pol-sl-snr" class="pol-range orange" min="5" max="40" value="20" oninput="polUpdateSim()" aria-label="Measurement SNR in dB">
                   <span class="pol-sval" id="pol-sv-snr">20 dB</span>
                 </div>
                 <div class="pol-trow">
@@ -744,7 +744,7 @@
           <hr class="pol-divider">
           <div class="pol-h2">Key Formulas Cheatsheet</div>
           <table class="pol-table">
-            <thead><tr><th>Formula</th><th>What it gives</th></tr></thead>
+            <thead><tr><th scope="col">Formula</th><th scope="col">What it gives</th></tr></thead>
             <tbody>
               <tr><td><span class="m">I_QWP(θ) = ½[S₀+S₁cos²2θ+S₂sin2θcos2θ−S₃sin2θ]</span></td><td>Rotating QWP + LP intensity</td></tr>
               <tr><td><span class="m">I_HWP(θ) = ½[S₀+S₁cos4θ+S₂sin4θ]</span></td><td>Rotating HWP + PBS (no S₃ term!)</td></tr>
@@ -777,7 +777,7 @@
 
       </div><!-- /container -->
     </div><!-- /page-content -->
-  </div><!-- /page-wrap -->
+  </main><!-- /page-wrap -->
 
 <section class="see-also">
   <div class="container">
@@ -817,7 +817,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';

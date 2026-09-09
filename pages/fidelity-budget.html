@@ -23,7 +23,7 @@
   <meta name="description" content="Rydberg two-qubit gate fidelity budget: spontaneous emission, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, and Rabi inhomogeneity.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/fidelity-budget.html">
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -172,7 +172,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161, 60, 28,0.07);--page-border:rgba(161, 60, 28,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -246,7 +246,7 @@
         <h5>Rydberg Gate Parameters</h5>
 
         <div class="field-row">
-          <label>Atom species</label>
+          <label for="speciesSel">Atom species</label>
           <select id="speciesSel" onchange="onSpeciesChange()">
             <option value="Rb87">⁸⁷Rb, 780 nm, Γ/2π = 6.065 MHz</option>
             <option value="Cs133">¹³³Cs, 852 nm, Γ/2π = 5.234 MHz</option>
@@ -256,7 +256,7 @@
         </div>
 
         <div class="field-row">
-          <label>Rydberg n:
+          <label for="nSlide">Rydberg n:
             <span class="lbl-val" id="nLbl">60</span></label>
           <input type="range" id="nSlide" min="30" max="120" value="60" step="1"
             oninput="document.getElementById('nLbl').textContent=this.value; compute()">
@@ -266,7 +266,7 @@
         </div>
 
         <div class="field-row">
-          <label>Rabi frequency Ω/2π (MHz):
+          <label for="omegaSlide">Rabi frequency Ω/2π (MHz):
             <span class="lbl-val" id="omegaLbl">1.0</span> MHz</label>
           <input type="range" id="omegaSlide" min="-10" max="20" value="0" step="1"
             oninput="document.getElementById('omegaLbl').textContent=Math.pow(10,this.value/10).toFixed(3); compute()">
@@ -276,7 +276,7 @@
         </div>
 
         <div class="field-row">
-          <label>Gate time t_gate (μs):
+          <label for="tgateSlide">Gate time t_gate (μs):
             <span class="lbl-val" id="tgateLbl">2.0</span> μs
             <span style="font-size:.68rem;color:var(--text-muted)">(or set from Ω)</span></label>
           <input type="range" id="tgateSlide" min="-10" max="20" value="3" step="1"
@@ -287,14 +287,14 @@
         </div>
 
         <div class="field-row">
-          <label>Atom temperature T (μK):
+          <label for="tempSlide">Atom temperature T (μK):
             <span class="lbl-val" id="tempLbl">5</span> μK</label>
           <input type="range" id="tempSlide" min="1" max="100" value="5" step="1"
             oninput="document.getElementById('tempLbl').textContent=this.value; compute()">
         </div>
 
         <div class="field-row">
-          <label>BBR environment</label>
+          <label for="bbrSel">BBR environment</label>
           <select id="bbrSel" onchange="compute()">
             <option value="1">Room temperature (300 K), BBR shortens τ_Ryd by ~2×</option>
             <option value="0">Cryogenic (&lt;10 K), no BBR enhancement</option>
@@ -306,7 +306,7 @@
         <h5>Noise Sources</h5>
 
         <div class="field-row">
-          <label>Laser linewidth Δν (kHz):
+          <label for="linewidthSlide">Laser linewidth Δν (kHz):
             <span class="lbl-val" id="linewidthLbl">1.0</span> kHz</label>
           <input type="range" id="linewidthSlide" min="-10" max="30" value="0" step="1"
             oninput="document.getElementById('linewidthLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
@@ -316,7 +316,7 @@
         </div>
 
         <div class="field-row">
-          <label>Blockade ratio U/Ω:
+          <label for="blockadeSlide">Blockade ratio U/Ω:
             <span class="lbl-val" id="blockadeLbl">50</span>×</label>
           <input type="range" id="blockadeSlide" min="1" max="200" value="50" step="1"
             oninput="document.getElementById('blockadeLbl').textContent=this.value; compute()">
@@ -326,28 +326,28 @@
         </div>
 
         <div class="field-row">
-          <label>SPAM error (%):
+          <label for="spamSlide">SPAM error (%):
             <span class="lbl-val" id="spamLbl">0.5</span>%</label>
           <input type="range" id="spamSlide" min="1" max="50" value="5" step="1"
             oninput="document.getElementById('spamLbl').textContent=(this.value/10).toFixed(1); compute()">
         </div>
 
         <div class="field-row">
-          <label>Trap lifetime τ_trap (s):
+          <label for="trapSlide">Trap lifetime τ_trap (s):
             <span class="lbl-val" id="trapLbl">10</span> s</label>
           <input type="range" id="trapSlide" min="1" max="100" value="10" step="1"
             oninput="document.getElementById('trapLbl').textContent=this.value; compute()">
         </div>
 
         <div class="field-row">
-          <label>B-field noise ΔB (mG):
+          <label for="bfieldSlide">B-field noise ΔB (mG):
             <span class="lbl-val" id="bfieldLbl">1.0</span> mG</label>
           <input type="range" id="bfieldSlide" min="1" max="100" value="10" step="1"
             oninput="document.getElementById('bfieldLbl').textContent=(this.value/10).toFixed(1); compute()">
         </div>
 
         <div class="field-row">
-          <label>Rabi inhomogeneity δΩ/Ω (%):
+          <label for="rabiSlide">Rabi inhomogeneity δΩ/Ω (%):
             <span class="lbl-val" id="rabiLbl">1.0</span>%</label>
           <input type="range" id="rabiSlide" min="1" max="50" value="10" step="1"
             oninput="document.getElementById('rabiLbl').textContent=(this.value/10).toFixed(1); compute()">
@@ -405,10 +405,10 @@
       <table class="budget-table">
         <thead>
           <tr>
-            <th>Error source</th>
-            <th>εᵢ</th>
-            <th>Fraction</th>
-            <th style="width:30%">Contribution</th>
+            <th scope="col">Error source</th>
+            <th scope="col">εᵢ</th>
+            <th scope="col">Fraction</th>
+            <th scope="col" style="width:30%">Contribution</th>
           </tr>
         </thead>
         <tbody id="budgetBody">
@@ -490,7 +490,7 @@
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Spontaneous emission from Rydberg state
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -513,7 +513,7 @@ $$\varepsilon_{se} = \Gamma_{total} \times t_{gate} = t_{gate}/\tau_{Ryd}$$
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Doppler dephasing from thermal motion
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -536,7 +536,7 @@ Example: Rb, $T=5\,\mu$K, $\lambda=480$ nm, $t_{gate}=2\,\mu$s $\Rightarrow$ $v_
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Laser phase noise (linewidth)
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -558,7 +558,7 @@ State-of-the-art: $\Delta\nu &lt; 1$ Hz (ULE cavity) $\Rightarrow T_{coh} &gt; 3
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Finite Rydberg blockade (leakage error)
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -578,7 +578,7 @@ $C_6/h$ for alkali $nS$ states near $n\sim60$--$70$ is typically order $10^2$--$
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Magnetic field noise, Rabi inhomogeneity, SPAM &amp; atom loss
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="formula-box">
@@ -637,7 +637,7 @@ Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm t
     </div>
   </div>
 
-</div><!-- /page-wrap -->
+</main><!-- /page-wrap -->
 
 
 <section class="see-also">
@@ -678,7 +678,7 @@ Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm t
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
 renderNav({ active: 'fidelity-budget', root: '../' });
 

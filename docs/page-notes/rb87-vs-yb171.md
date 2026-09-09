@@ -27,3 +27,11 @@ Sensible build-up-then-synthesize structure: motivate the comparison, then work 
   Zhang et al., *Nature Physics* 2026 / arXiv:2506.13724 — the first end-to-end demonstration that erasure information helps
   at every stage (AR-gate fidelity, transport, [[4,2,2]] logical state-prep, logical teleportation), plus a matching
   paper-card in Section 12.
+
+
+## Accessibility audit update (2026-09)
+Converted the `.page-wrap` skip-link target to a real `<main>` landmark; added `scope="col"` to 5 table column headers. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. See docs/navigation-audit-2026-09.md.

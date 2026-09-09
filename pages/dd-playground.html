@@ -23,7 +23,7 @@
   <meta name="description" content="Interactive dynamical decoupling and T₂ playground, filter functions, CPMG, XY-16, noise spectroscopy, and neutral atom qubit coherence.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/dd-playground.html">
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
@@ -270,7 +270,7 @@
 
 <div id="nav-root"></div>
 
-<div class="page-wrap" style="padding-top:64px">
+<main class="page-wrap" id="main-content" style="padding-top:64px">
 
   <!-- ── Sticky topic nav ───────────────────────────── -->
   <nav class="topic-nav" id="topicNav">
@@ -289,7 +289,6 @@
   <div class="container">
 
     <!-- ── Hero ─────────────────────────────────────── -->
-    <div id="main-content"></div>
   <div class="page-hero page-hero-2col">
       <div class="page-hero-text">
         <div class="pill">&#x1f4a1; Quantum 05 · Qubit Coherence &amp; Decoupling</div>
@@ -875,11 +874,11 @@
         <table class="dd-table">
           <thead>
             <tr>
-              <th>Sequence</th>
-              <th>Pulses / cycle</th>
-              <th>Orders corrected</th>
-              <th>Filter function</th>
-              <th>Notes</th>
+              <th scope="col">Sequence</th>
+              <th scope="col">Pulses / cycle</th>
+              <th scope="col">Orders corrected</th>
+              <th scope="col">Filter function</th>
+              <th scope="col">Notes</th>
             </tr>
           </thead>
           <tbody>
@@ -1017,14 +1016,14 @@
 
         <div class="controls-row">
           <div class="ctrl-group">
-            <label>Total time T</label>
+            <label for="filterT">Total time T</label>
             <input type="range" id="filterT" min="0" max="100" step="1" value="50">
             <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem">
               <span class="ctrl-val" id="filterTVal">T = 0.10 s</span>
             </div>
           </div>
           <div class="ctrl-group">
-            <label>Noise exponent α (S(ω) ∝ ω^−α)</label>
+            <label for="filterAlpha">Noise exponent α (S(ω) ∝ ω^−α)</label>
             <input type="range" id="filterAlpha" min="0" max="2" step="0.1" value="1.0">
             <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem">
               <span class="ctrl-val" id="filterAlphaVal">α = 1.0 (1/f noise)</span>
@@ -1067,14 +1066,14 @@
 
         <div class="controls-row">
           <div class="ctrl-group">
-            <label>T₂* baseline</label>
+            <label for="t2starSlider">T₂* baseline</label>
             <input type="range" id="t2starSlider" min="0" max="100" step="1" value="50">
             <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem">
               <span class="ctrl-val" id="t2starVal">T₂* = 10.0 ms</span>
             </div>
           </div>
           <div class="ctrl-group">
-            <label>Noise exponent α (S(ω) ∝ ω^−α)</label>
+            <label for="t2Alpha">Noise exponent α (S(ω) ∝ ω^−α)</label>
             <input type="range" id="t2Alpha" min="0" max="2" step="0.1" value="1.0">
             <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem">
               <span class="ctrl-val" id="t2AlphaVal">α = 1.0</span>
@@ -1310,17 +1309,17 @@
     </div>
   </div>
 </section>
+  </div><!-- /container -->
+</main><!-- /page-wrap -->
+
 <footer class="dd-footer">
       AMO Toolkit &middot; Dynamical Decoupling Playground &middot; Saumitra Phatak, Purdue Physics PhD
     </footer>
 
-  </div><!-- /container -->
-</div><!-- /page-wrap -->
-
 <!-- ═══════════════════════════════════════════════════════
      JS: Nav + KaTeX + Charts + Physics engine
 ════════════════════════════════════════════════════════ -->
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
   if (typeof renderNav === 'function') {
     renderNav({ active: 'dd-playground', root: '../' });

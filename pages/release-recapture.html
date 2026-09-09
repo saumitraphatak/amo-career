@@ -38,7 +38,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Single-atom Temperature","description":"Interactive release-recapture thermometry simulator, estimate atom temperature from recapture probability in optical tweezers.","url":"https://amotoolkit.com/pages/release-recapture.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Measure & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Single-atom Temperature","item":"https://amotoolkit.com/pages/release-recapture.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -234,7 +234,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#3f5d3f;--page-bg:rgba(63, 93, 63,0.07);--page-border:rgba(63, 93, 63,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -425,7 +425,7 @@
 
       <div class="ctrl-grid">
         <div class="ctrl-field">
-          <label>Atom species</label>
+          <label for="speciesSel">Atom species</label>
           <select id="speciesSel">
             <option value="Cs">¹³³Cs</option>
             <option value="Rb">⁸⁷Rb</option>
@@ -434,23 +434,23 @@
           </select>
         </div>
         <div class="ctrl-field">
-          <label>Wavelength (nm)</label>
+          <label for="lambdaIn">Wavelength (nm)</label>
           <input type="number" id="lambdaIn" value="1064" min="500" max="1200" step="1">
         </div>
         <div class="ctrl-field">
-          <label>Power (mW)</label>
+          <label for="powerIn">Power (mW)</label>
           <input type="number" id="powerIn" value="1.5" min="0.01" max="100" step="0.1">
         </div>
         <div class="ctrl-field">
-          <label>Beam waist w₀ (μm)</label>
+          <label for="waistIn">Beam waist w₀ (μm)</label>
           <input type="number" id="waistIn" value="0.8" min="0.3" max="5" step="0.05">
         </div>
         <div class="ctrl-field">
-          <label>Strehl ratio S</label>
+          <label for="strehlIn">Strehl ratio S</label>
           <input type="number" id="strehlIn" value="0.9" min="0.1" max="1.0" step="0.05">
         </div>
         <div class="ctrl-field">
-          <label>MC samples N</label>
+          <label for="mcNSel">MC samples N</label>
           <select id="mcNSel">
             <option value="300">300 (fast)</option>
             <option value="600" selected>600 (default)</option>
@@ -458,11 +458,11 @@
           </select>
         </div>
         <div class="ctrl-field">
-          <label>Max release time (ms)</label>
+          <label for="dtMaxIn">Max release time (ms)</label>
           <input type="number" id="dtMaxIn" value="3" min="0.5" max="20" step="0.5">
         </div>
         <div class="ctrl-field">
-          <label>Time steps</label>
+          <label for="nStepsSel">Time steps</label>
           <select id="nStepsSel">
             <option value="30">30</option>
             <option value="50" selected>50</option>
@@ -499,7 +499,7 @@
           <h5>Atom Trajectory Snapshot</h5>
           <p style="font-size:.8rem;color:var(--text-muted);margin:.2rem 0 .6rem 0;">Drag the slider to change release time τ. Green = recaptured, red = escaped.</p>
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap;">
-            <label style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#b75404;">0.00 ms</strong></label>
+            <label for="trajSlider" style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#b75404;">0.00 ms</strong></label>
             <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#b75404;">
             <button class="run-btn" id="playTrajBtn" type="button" onclick="toggleTrajPlay()" style="padding:.45rem .75rem;font-size:.78rem;">▶ Play</button>
           </div>
@@ -521,10 +521,10 @@
             <table class="sum-table" id="sumTable">
               <thead>
                 <tr>
-                  <th>T (μK)</th>
-                  <th>P_cap(0)</th>
-                  <th>P_cap(t_max)</th>
-                  <th>½-life (ms)</th>
+                  <th scope="col">T (μK)</th>
+                  <th scope="col">P_cap(0)</th>
+                  <th scope="col">P_cap(t_max)</th>
+                  <th scope="col">½-life (ms)</th>
                 </tr>
               </thead>
               <tbody id="sumBody"></tbody>
@@ -544,13 +544,13 @@
       <table class="sum-table">
         <thead>
           <tr>
-            <th>Species</th>
-            <th>ΔE_D1 (Eₕ)</th>
-            <th>|d_D1| (ea₀)</th>
-            <th>ΔE_D2 (Eₕ)</th>
-            <th>|d_D2| (ea₀)</th>
-            <th>α_core (a.u.)</th>
-            <th>Mass (u)</th>
+            <th scope="col">Species</th>
+            <th scope="col">ΔE_D1 (Eₕ)</th>
+            <th scope="col">|d_D1| (ea₀)</th>
+            <th scope="col">ΔE_D2 (Eₕ)</th>
+            <th scope="col">|d_D2| (ea₀)</th>
+            <th scope="col">α_core (a.u.)</th>
+            <th scope="col">Mass (u)</th>
           </tr>
         </thead>
         <tbody>
@@ -607,7 +607,7 @@
     </div>
   </div>
 
-</div><!-- /page-wrap -->
+</main><!-- /page-wrap -->
 
 <section class="see-also">
   <div class="container">
@@ -647,7 +647,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
 renderNav({ active: 'release-recapture', root: '../' });
 initScrollReveal();

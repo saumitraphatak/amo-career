@@ -14,3 +14,11 @@ No route-panel means no card-count risk. Clean conceptual-to-practical progressi
 
 ## Design audit update (2026-09)
 `--vac`/`--vac-bg`/`--vac-border` were leftover neon-cyan (#22d3ee) values from the pre-redesign 16-hue dark-theme palette, never remapped to the site's current three-ink accent system. Remapped to `--ink-blue` (#2c4a63) with matching bg/border tints, consistent with how other equipment/lab pages are inked. See docs/design-audit-2026-09.md.
+
+
+## Accessibility audit update (2026-09)
+Converted the `.page-wrap` skip-link target to a real `<main>` landmark; made all 4 hand-rolled `.pump-card-head` accordion toggles keyboard-operable with a synced `aria-expanded` state (previously CSS-class-only); added `scope="col"` to 20 table column headers; added `aria-label` to the interactive pressure-explorer slider, which had no accessible name at all; added `aria-hidden="true"` to decorative chevron icons. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. Added missing global-search keywords — this page previously had none, relying on title-word matching only. See docs/navigation-audit-2026-09.md.

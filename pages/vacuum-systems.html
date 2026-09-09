@@ -38,7 +38,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Vacuum Systems Guide","description":"Complete guide to ultra-high vacuum systems for AMO physics experiments.","url":"https://amotoolkit.com/pages/vacuum-systems.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Vacuum Systems Guide","item":"https://amotoolkit.com/pages/vacuum-systems.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 
   <style>
@@ -261,7 +261,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<main class="page-wrap" id="main-content">
 
   <!-- ══════════════════ HERO ══════════════════ -->
   <div class="page-hero" style="--page-color:#3f5d3f;--page-bg:rgba(63, 93, 63,0.06);--page-border:rgba(63, 93, 63,0.2);">
@@ -478,7 +478,7 @@
         <div class="explorer-card">
           <h4>Interactive Pressure Explorer</h4>
           <div class="pressure-slider-wrap">
-            <input type="range" class="pressure-slider" id="pslider" min="-12" max="5" step="0.05" value="-10">
+            <input type="range" class="pressure-slider" id="pslider" min="-12" max="5" step="0.05" value="-10" aria-label="Interactive pressure explorer: log10 pressure in mbar">
             <div class="slider-labels">
               <span>XHV 10⁻¹²</span>
               <span>UHV 10⁻⁹</span>
@@ -516,11 +516,11 @@
         <table class="regime-table" style="margin-top:1.5rem">
           <thead>
             <tr>
-              <th>Regime</th>
-              <th>Pressure range (mbar)</th>
-              <th>n (cm⁻³)</th>
-              <th>Mean free path</th>
-              <th>Example applications</th>
+              <th scope="col">Regime</th>
+              <th scope="col">Pressure range (mbar)</th>
+              <th scope="col">n (cm⁻³)</th>
+              <th scope="col">Mean free path</th>
+              <th scope="col">Example applications</th>
             </tr>
           </thead>
           <tbody>
@@ -665,14 +665,14 @@
         <div style="margin-top:1.2rem">
 
           <div class="pump-card open">
-            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+            <div class="pump-card-head" role="button" tabindex="0" aria-expanded="true" onclick="this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'));}">
               <div class="pump-icon">🔩</div>
               <div class="pump-card-meta">
                 <strong>Stage 1 — Rough Pump (Scroll or Diaphragm)</strong>
                 <span>Brings the system from atmosphere to backing pressure</span>
               </div>
               <span class="pump-range-badge">10⁵ → 10⁻² mbar</span>
-              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
             </div>
             <div class="pump-card-body">
               <p>The rough pump is first in line. It operates by mechanical compression — gas is drawn in, physically compressed, and pushed out to atmosphere. Two designs dominate AMO labs:</p>
@@ -691,14 +691,14 @@
           </div>
 
           <div class="pump-card">
-            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+            <div class="pump-card-head" role="button" tabindex="0" aria-expanded="false" onclick="this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'));}">
               <div class="pump-icon">🌀</div>
               <div class="pump-card-meta">
                 <strong>Stage 2 — Turbomolecular Pump</strong>
                 <span>The workhorse of high and ultra-high vacuum</span>
               </div>
               <span class="pump-range-badge">10⁻² → 10⁻⁸ mbar</span>
-              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
             </div>
             <div class="pump-card-body">
               <p>A turbo pump is essentially a very precisely machined turbine. Blades spin at 30,000–90,000 RPM — fast enough that the blade speed ($\sim$300 m/s) is comparable to the mean thermal velocity of residual gas molecules. Molecules that hit the blades are imparted a directed momentum toward the backing port; molecules trying to re-enter from the backing side are physically swept away.</p>
@@ -718,14 +718,14 @@
           </div>
 
           <div class="pump-card">
-            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+            <div class="pump-card-head" role="button" tabindex="0" aria-expanded="false" onclick="this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'));}">
               <div class="pump-icon">⚡</div>
               <div class="pump-card-meta">
                 <strong>Stage 3 — Ion Pump</strong>
                 <span>Solid-state, no moving parts, no vibration — the UHV workhorse</span>
               </div>
               <span class="pump-range-badge">10⁻⁵ → 10⁻¹¹ mbar</span>
-              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
             </div>
             <div class="pump-card-body">
               <p>Ion pumps have no mechanical parts. They work by ionizing residual gas atoms and then burying the ions inside the pump material. A strong magnetic field ($\sim$0.1 T) traps electrons in long helical orbits, massively increasing their path length and ionization cross-section. The resulting ions are accelerated into titanium cathode plates where they are implanted and chemically bound (chemisorption).</p>
@@ -744,14 +744,14 @@
           </div>
 
           <div class="pump-card">
-            <div class="pump-card-head" onclick="this.parentElement.classList.toggle('open')">
+            <div class="pump-card-head" role="button" tabindex="0" aria-expanded="false" onclick="this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.parentElement.classList.toggle('open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('open'));}">
               <div class="pump-icon">🧲</div>
               <div class="pump-card-meta">
                 <strong>Stage 4 — NEG Pump &amp; Titanium Sublimation</strong>
                 <span>Chemical getters for H₂ — the dominant UHV residual gas</span>
               </div>
               <span class="pump-range-badge">XHV supplement</span>
-              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6l4 4 4-4"/></svg>
+              <svg class="pump-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
             </div>
             <div class="pump-card-body">
               <p>Ion pumps do pump H₂, but the effective speed and long-term behavior are strongly pump-design dependent. NEG (Non-Evaporable Getter) pumps and TSP (Titanium Sublimation Pumps) are often added because H₂ is usually the dominant residual gas at UHV and getter surfaces pump it efficiently by sorption into reactive material.</p>
@@ -878,7 +878,7 @@
             <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">CF vs KF flanges</h3>
             <table class="data-table">
               <thead>
-                <tr><th>Property</th><th>CF (ConFlat)</th><th>KF (ISO-KF)</th></tr>
+                <tr><th scope="col">Property</th><th scope="col">CF (ConFlat)</th><th scope="col">KF (ISO-KF)</th></tr>
               </thead>
               <tbody>
                 <tr><td>Seal type</td><td>Cu knife-edge gasket</td><td>Viton O-ring + centering ring</td></tr>
@@ -894,7 +894,7 @@
             <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Outgassing rate comparison</h3>
             <table class="data-table">
               <thead>
-                <tr><th>Material</th><th>Outgassing rate*</th><th>AMO suitability</th></tr>
+                <tr><th scope="col">Material</th><th scope="col">Outgassing rate*</th><th scope="col">AMO suitability</th></tr>
               </thead>
               <tbody>
                 <tr><td>304/316L SS (electropolished)</td><td><code>~10⁻¹² mbar·L/s·cm²</code></td><td style="color:#18813e">Excellent</td></tr>
@@ -945,7 +945,7 @@
         <h3 style="font-size:.9rem;font-weight:700;color:var(--text-primary);margin:0 0 .75rem 0;">Gauge types</h3>
         <table class="data-table">
           <thead>
-            <tr><th>Gauge</th><th>Pressure range</th><th>Principle</th><th>Notes</th></tr>
+            <tr><th scope="col">Gauge</th><th scope="col">Pressure range</th><th scope="col">Principle</th><th scope="col">Notes</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -1063,7 +1063,7 @@
         <!-- Quick reference table -->
         <table class="data-table" style="margin-top:1.5rem">
           <thead>
-            <tr><th>Stage</th><th>Start P (mbar)</th><th>Target P (mbar)</th><th>Time</th><th>Key action</th></tr>
+            <tr><th scope="col">Stage</th><th scope="col">Start P (mbar)</th><th scope="col">Target P (mbar)</th><th scope="col">Time</th><th scope="col">Key action</th></tr>
           </thead>
           <tbody>
             <tr><td>Rough pump only</td><td>1013</td><td>~10⁻²</td><td>10–30 min</td><td>Verify no gross leaks</td></tr>
@@ -1108,7 +1108,7 @@
 
     </div><!-- /.container -->
   </div><!-- /.page-content -->
-</div><!-- /.page-wrap -->
+</main><!-- /.page-wrap -->
 
 
 <section class="see-also">
@@ -1150,7 +1150,7 @@
 <!-- ──────── SCRIPTS ──────── -->
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
   renderNav({ active: 'vacuum-systems', root: '../' });
 

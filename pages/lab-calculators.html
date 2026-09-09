@@ -38,7 +38,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Lab Calculators","description":"Essential AMO lab calculators: photon recoil, trap depth, scattering rate, beam waist, and more.","url":"https://amotoolkit.com/pages/lab-calculators.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Measure & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Lab Calculators","item":"https://amotoolkit.com/pages/lab-calculators.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 
   <style>
@@ -135,6 +135,7 @@
     table.cgt td.pos  { color: #18813e; font-weight: 600; }
     table.cgt td.neg  { color: #e20b0b; font-weight: 600; }
     table.cgt td.row-label { color: var(--text-secondary); text-align: left; font-weight: 600; background: var(--bg-card); }
+    table.cgt th.row-label { color: var(--text-secondary); text-align: left; font-weight: 600; background: var(--bg-card); font-family: var(--font-mono); }
     .tbl-controls-cg { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; align-items: center; }
     .tbl-controls-cg label { font-size: .83rem; color: var(--text-muted); }
     .tbl-controls-cg input[type="number"], .tbl-controls-cg select {
@@ -219,7 +220,7 @@
 <body>
   <div id="nav-root"></div>
 
-  <div class="page-wrap" id="main-content">
+  <main class="page-wrap" id="main-content">
     <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44, 74, 99,0.07);--page-border:rgba(44, 74, 99,0.2);">
       <div class="container page-hero-2col">
         <div class="page-hero-text">
@@ -310,12 +311,12 @@
               <div class="formula-box">
 $$w_{\rm col} = \frac{f_1\,\lambda}{\pi\cdot{\rm MFR}} \qquad w_{\rm foc} = \frac{f_2\,\lambda}{\pi\,w_{\rm col}} \quad \text{[optional focus]}$$
 $$z_R = \frac{\pi\,w_{\rm foc}^2}{\lambda}$$</div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="fib_lam" value="852" min="400" max="2000" step="1" oninput="calcFiber()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>Fiber MFD (µm)</label><input type="number" id="fib_mfd" value="5.3" min="1" max="50" step="0.1" oninput="calcFiber()"><span class="unit">µm</span></div>
-              <div class="field-row"><label>Collimating lens f₁ (mm)</label><input type="number" id="fib_f1" value="11" min="1" max="200" step="0.5" oninput="calcFiber()"><span class="unit">mm</span></div>
+              <div class="field-row"><label for="fib_lam">Wavelength λ (nm)</label><input type="number" id="fib_lam" value="852" min="400" max="2000" step="1" oninput="calcFiber()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="fib_mfd">Fiber MFD (µm)</label><input type="number" id="fib_mfd" value="5.3" min="1" max="50" step="0.1" oninput="calcFiber()"><span class="unit">µm</span></div>
+              <div class="field-row"><label for="fib_f1">Collimating lens f₁ (mm)</label><input type="number" id="fib_f1" value="11" min="1" max="200" step="0.5" oninput="calcFiber()"><span class="unit">mm</span></div>
               <div id="fib_res1" class="result-row"></div>
               <hr class="divider" style="margin:.9rem 0 .6rem 0;">
-              <div class="field-row"><label style="font-weight:600; color:var(--text-secondary)">Optional: focusing lens f₂ (mm)</label><input type="number" id="fib_f2" value="200" min="1" max="1000" step="1" oninput="calcFiber()"><span class="unit">mm</span></div>
+              <div class="field-row"><label for="fib_f2" style="font-weight:600; color:var(--text-secondary)">Optional: focusing lens f₂ (mm)</label><input type="number" id="fib_f2" value="200" min="1" max="1000" step="1" oninput="calcFiber()"><span class="unit">mm</span></div>
               <div id="fib_res2" class="result-row"></div>
             </div>
           </div>
@@ -332,12 +333,12 @@ $$z_R = \frac{\pi\,w_{\rm foc}^2}{\lambda}$$</div>
               <div class="formula-box">
 $$w_0 = \frac{\lambda}{\pi\cdot{\rm NA}} \quad \text{[Gaussian]} \qquad d_{\rm Abbe} = \frac{\lambda}{2\cdot{\rm NA}} \quad \text{[Abbe resolution]}$$
 $${\rm NA} = \frac{\lambda}{\pi\,w_0}$$</div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="na_lam" value="852" min="400" max="2000" step="1" oninput="calcNA()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="na_lam">Wavelength λ (nm)</label><input type="number" id="na_lam" value="852" min="400" max="2000" step="1" oninput="calcNA()"><span class="unit">nm</span></div>
               <div id="na_spec_na">
-                <div class="field-row"><label>Numerical aperture (NA)</label><input type="number" id="na_val" value="0.5" min="0.01" max="1.0" step="0.01" oninput="calcNA()"></div>
+                <div class="field-row"><label for="na_val">Numerical aperture (NA)</label><input type="number" id="na_val" value="0.5" min="0.01" max="1.0" step="0.01" oninput="calcNA()"></div>
               </div>
               <div id="na_spec_w0" style="display:none;">
-                <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="na_w0" value="0.95" min="0.1" max="1000" step="0.05" oninput="calcNA()"><span class="unit">µm</span></div>
+                <div class="field-row"><label for="na_w0">Beam waist w₀ (µm)</label><input type="number" id="na_w0" value="0.95" min="0.1" max="1000" step="0.05" oninput="calcNA()"><span class="unit">µm</span></div>
               </div>
               <div id="na_res" class="result-row"></div>
             </div>
@@ -347,8 +348,8 @@ $${\rm NA} = \frac{\lambda}{\pi\,w_0}$$</div>
               <div class="sub">Gaussian beam propagation from waist w₀ and wavelength.</div>
               <div class="formula-box">
 $$z_R = \frac{\pi w_0^2}{\lambda} \qquad \theta_{\rm div} = \frac{\lambda}{\pi w_0} \quad \text{[far-field half-angle]}$$</div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rr_lam" value="1064" min="400" max="2000" step="1" oninput="calcRayleigh()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="rr_w0" value="950" min="0.1" max="5000" step="1" oninput="calcRayleigh()"><span class="unit">µm</span></div>
+              <div class="field-row"><label for="rr_lam">Wavelength λ (nm)</label><input type="number" id="rr_lam" value="1064" min="400" max="2000" step="1" oninput="calcRayleigh()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="rr_w0">Beam waist w₀ (µm)</label><input type="number" id="rr_w0" value="950" min="0.1" max="5000" step="1" oninput="calcRayleigh()"><span class="unit">µm</span></div>
               <div id="rr_res" class="result-row"></div>
             </div>
           </div>
@@ -363,9 +364,9 @@ $$z_R = \frac{\pi w_0^2}{\lambda} \qquad \theta_{\rm div} = \frac{\lambda}{\pi w
             <div class="sub">2-lens Galilean / Keplerian expander. Output beam waist and divergence.</div>
             <div class="formula-box">
 $$M = \frac{f_2}{f_1} \qquad w_{0,{\rm out}} = M\,w_{0,{\rm in}} \qquad \theta_{\rm out} = \frac{\theta_{\rm in}}{M}$$</div>
-            <div class="field-row"><label>Input lens f₁ (mm)</label><input type="number" id="tel_f1" value="25" min="1" max="1000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
-            <div class="field-row"><label>Output lens f₂ (mm)</label><input type="number" id="tel_f2" value="200" min="1" max="2000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
-            <div class="field-row"><label>Input beam waist w₀_in (mm)</label><input type="number" id="tel_w" value="0.5" min="0.01" max="50" step="0.01" oninput="calcTelescope()"><span class="unit">mm</span></div>
+            <div class="field-row"><label for="tel_f1">Input lens f₁ (mm)</label><input type="number" id="tel_f1" value="25" min="1" max="1000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
+            <div class="field-row"><label for="tel_f2">Output lens f₂ (mm)</label><input type="number" id="tel_f2" value="200" min="1" max="2000" step="1" oninput="calcTelescope()"><span class="unit">mm</span></div>
+            <div class="field-row"><label for="tel_w">Input beam waist w₀_in (mm)</label><input type="number" id="tel_w" value="0.5" min="0.01" max="50" step="0.01" oninput="calcTelescope()"><span class="unit">mm</span></div>
             <div id="tel_res" class="result-row"></div>
           </div>
 
@@ -375,9 +376,9 @@ $$M = \frac{f_2}{f_1} \qquad w_{0,{\rm out}} = M\,w_{0,{\rm in}} \qquad \theta_{
             <div class="sub">For a Gaussian beam: w₀ ≈ λf/(πw_in). For plane wave (overfilled): d_Airy = 2.44 λ (f/D).</div>
             <div class="formula-box">
 $$w_0 = \frac{\lambda f}{\pi w_{\rm in}} \quad \text{[Gaussian]} \qquad d_{\rm Airy} = 2.44\,\lambda\,(f/D) \quad \text{[overfilled]}$$</div>
-            <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="fn_lam" value="1064" min="400" max="2000" step="1" oninput="calcFnum()"><span class="unit">nm</span></div>
-            <div class="field-row"><label>Focal length f (mm)</label><input type="number" id="fn_f" value="100" min="1" max="1000" step="1" oninput="calcFnum()"><span class="unit">mm</span></div>
-            <div class="field-row"><label>Input beam 1/e² diameter (mm)</label><input type="number" id="fn_d" value="10" min="0.1" max="200" step="0.1" oninput="calcFnum()"><span class="unit">mm</span></div>
+            <div class="field-row"><label for="fn_lam">Wavelength λ (nm)</label><input type="number" id="fn_lam" value="1064" min="400" max="2000" step="1" oninput="calcFnum()"><span class="unit">nm</span></div>
+            <div class="field-row"><label for="fn_f">Focal length f (mm)</label><input type="number" id="fn_f" value="100" min="1" max="1000" step="1" oninput="calcFnum()"><span class="unit">mm</span></div>
+            <div class="field-row"><label for="fn_d">Input beam 1/e² diameter (mm)</label><input type="number" id="fn_d" value="10" min="0.1" max="200" step="0.1" oninput="calcFnum()"><span class="unit">mm</span></div>
             <div id="fn_res" class="result-row"></div>
           </div>
         </div>
@@ -412,10 +413,10 @@ $$P\,[\text{dBm}] = 10\cdot\log_{10}(P\,[\text{mW}]) \qquad P\,[\text{mW}] = 10^
                 <label><input type="radio" name="pw_dir" value="dbm" onchange="calcPower()"> dBm → mW</label>
               </div>
               <div id="pw_mw_field">
-                <div class="field-row"><label>Power (mW)</label><input type="number" id="pw_mw" value="1" min="0.0001" max="100000" step="0.1" oninput="calcPower()"><span class="unit">mW</span></div>
+                <div class="field-row"><label for="pw_mw">Power (mW)</label><input type="number" id="pw_mw" value="1" min="0.0001" max="100000" step="0.1" oninput="calcPower()"><span class="unit">mW</span></div>
               </div>
               <div id="pw_dbm_field" style="display:none;">
-                <div class="field-row"><label>Power (dBm)</label><input type="number" id="pw_dbm" value="0" min="-60" max="60" step="0.5" oninput="calcPower()"><span class="unit">dBm</span></div>
+                <div class="field-row"><label for="pw_dbm">Power (dBm)</label><input type="number" id="pw_dbm" value="0" min="-60" max="60" step="0.5" oninput="calcPower()"><span class="unit">dBm</span></div>
               </div>
               <div id="pw_res" class="result-row"></div>
             </div>
@@ -425,9 +426,9 @@ $$P\,[\text{dBm}] = 10\cdot\log_{10}(P\,[\text{mW}]) \qquad P\,[\text{mW}] = 10^
               <h4>dB Gain / Loss Chain</h4>
               <div class="sub">Enter input power and gains/losses in dB (negative = loss). E.g. AOM −10 dB, amplifier +30 dB.</div>
               <div class="formula-box">$$P_{\rm out}\,[\text{dBm}] = P_{\rm in}\,[\text{dBm}] + \sum \text{gains}\,[\text{dB}]$$</div>
-              <div class="field-row"><label>Input power (dBm)</label><input type="number" id="gain_in" value="-10" min="-60" max="60" step="1" oninput="calcGain()"><span class="unit">dBm</span></div>
+              <div class="field-row"><label for="gain_in">Input power (dBm)</label><input type="number" id="gain_in" value="-10" min="-60" max="60" step="1" oninput="calcGain()"><span class="unit">dBm</span></div>
               <div class="field-row" style="align-items:flex-start;">
-                <label style="padding-top:.3rem;">Gains/losses (dB), comma-sep</label>
+                <label for="gain_list" style="padding-top:.3rem;">Gains/losses (dB), comma-sep</label>
                 <input type="text" id="gain_list" value="-10, +30, -3, -6" oninput="calcGain()" style="width:180px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem; font-family:var(--font-mono);">
               </div>
               <div id="gain_res" class="result-row"></div>
@@ -442,10 +443,10 @@ $$P\,[\text{dBm}] = 10\cdot\log_{10}(P\,[\text{mW}]) \qquad P\,[\text{mW}] = 10^
               <div class="formula-box">
 $$\Lambda = \frac{v_s}{f_{\rm AOM}} \quad \text{[acoustic wavelength]}$$
 $$\theta_B = \frac{\lambda_{\rm opt}}{2\Lambda} \quad \text{[Bragg angle]} \qquad \theta_{\rm def} = \frac{n\,\lambda\,f_{\rm AOM}}{v_s} \quad \text{[}n\text{-th order]}$$</div>
-              <div class="field-row"><label>Optical wavelength λ (nm)</label><input type="number" id="aom_lam" value="852" min="400" max="2000" step="1" oninput="calcAOM()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>AOM drive frequency (MHz)</label><input type="number" id="aom_freq" value="80" min="1" max="3000" step="1" oninput="calcAOM()"><span class="unit">MHz</span></div>
+              <div class="field-row"><label for="aom_lam">Optical wavelength λ (nm)</label><input type="number" id="aom_lam" value="852" min="400" max="2000" step="1" oninput="calcAOM()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="aom_freq">AOM drive frequency (MHz)</label><input type="number" id="aom_freq" value="80" min="1" max="3000" step="1" oninput="calcAOM()"><span class="unit">MHz</span></div>
               <div class="field-row">
-                <label>Sound velocity v_s (m/s)</label>
+                <label for="aom_vs">Sound velocity v_s (m/s)</label>
                 <select id="aom_vs" onchange="calcAOM()" style="width:180px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.83rem;">
                   <option value="613">TeO₂ slow shear 613 m/s</option>
                   <option value="617">TeO₂ slow shear 617 m/s</option>
@@ -455,10 +456,10 @@ $$\theta_B = \frac{\lambda_{\rm opt}}{2\Lambda} \quad \text{[Bragg angle]} \qqua
                 </select>
               </div>
               <div id="aom_custom_row" style="display:none;" class="field-row">
-                <label>Custom v_s (m/s)</label><input type="number" id="aom_vs_custom" value="613" min="100" max="10000" step="1" oninput="calcAOM()"><span class="unit">m/s</span>
+                <label for="aom_vs_custom">Custom v_s (m/s)</label><input type="number" id="aom_vs_custom" value="613" min="100" max="10000" step="1" oninput="calcAOM()"><span class="unit">m/s</span>
               </div>
               <div class="field-row">
-                <label>Diffraction order n</label>
+                <label for="aom_ord">Diffraction order n</label>
                 <select id="aom_ord" onchange="calcAOM()" style="width:80px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.85rem;">
                   <option value="1" selected>+1</option>
                   <option value="-1">−1</option>
@@ -475,10 +476,10 @@ $$\theta_B = \frac{\lambda_{\rm opt}}{2\Lambda} \quad \text{[Bragg angle]} \qqua
               <div class="formula-box">
 $$I_{\rm dc} = \frac{\eta e P}{h\nu} \qquad i_{\rm shot} = \sqrt{2e\,I_{\rm dc}\,{\rm BW}} \quad [{\rm A}_{\rm rms}]$$
 $${\rm NEP} = \frac{i_{\rm shot}}{R} \quad [{\rm W}]$$</div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="sn_lam" value="852" min="400" max="2000" step="1" oninput="calcShot()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>Detected power P (µW)</label><input type="number" id="sn_P" value="10" min="0.001" max="100000" step="0.1" oninput="calcShot()"><span class="unit">µW</span></div>
-              <div class="field-row"><label>Quantum efficiency η</label><input type="number" id="sn_eta" value="0.85" min="0.01" max="1.0" step="0.01" oninput="calcShot()"></div>
-              <div class="field-row"><label>Detection bandwidth (Hz)</label><input type="number" id="sn_bw" value="1000000" min="1" max="1e9" step="10000" oninput="calcShot()"><span class="unit">Hz</span></div>
+              <div class="field-row"><label for="sn_lam">Wavelength λ (nm)</label><input type="number" id="sn_lam" value="852" min="400" max="2000" step="1" oninput="calcShot()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="sn_P">Detected power P (µW)</label><input type="number" id="sn_P" value="10" min="0.001" max="100000" step="0.1" oninput="calcShot()"><span class="unit">µW</span></div>
+              <div class="field-row"><label for="sn_eta">Quantum efficiency η</label><input type="number" id="sn_eta" value="0.85" min="0.01" max="1.0" step="0.01" oninput="calcShot()"></div>
+              <div class="field-row"><label for="sn_bw">Detection bandwidth (Hz)</label><input type="number" id="sn_bw" value="1000000" min="1" max="1e9" step="10000" oninput="calcShot()"><span class="unit">Hz</span></div>
               <div id="sn_res" class="result-row"></div>
             </div>
           </div>
@@ -509,8 +510,8 @@ $$E_{\rm rec}/h = \frac{\hbar k^2}{4\pi m} \quad [\text{kHz}]$$</div>
                 heating scale is often near \(2E_{\rm rec}\), but the emitted photon projection
                 depends on geometry and dimensional averaging.
               </div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="rec_lam" value="852" min="400" max="2000" step="1" oninput="calcRecoil()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="rec_A" value="133" min="1" max="250" step="1" oninput="calcRecoil()"><span class="unit">amu</span></div>
+              <div class="field-row"><label for="rec_lam">Wavelength λ (nm)</label><input type="number" id="rec_lam" value="852" min="400" max="2000" step="1" oninput="calcRecoil()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="rec_A">Atomic mass A (amu)</label><input type="number" id="rec_A" value="133" min="1" max="250" step="1" oninput="calcRecoil()"><span class="unit">amu</span></div>
               <div id="rec_res" class="result-row"></div>
             </div>
 
@@ -524,12 +525,12 @@ $$E_{\rm rec}/h = \frac{\hbar k^2}{4\pi m} \quad [\text{kHz}]$$</div>
               </div>
               <div class="formula-box">
 $$\Delta f = \frac{v}{\lambda} \quad \text{[counter-propagating]} \qquad v = \Delta f \cdot \lambda$$</div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="dop_lam" value="852" min="400" max="2000" step="1" oninput="calcDoppler()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="dop_lam">Wavelength λ (nm)</label><input type="number" id="dop_lam" value="852" min="400" max="2000" step="1" oninput="calcDoppler()"><span class="unit">nm</span></div>
               <div id="dop_v_field">
-                <div class="field-row"><label>Atom velocity v (m/s)</label><input type="number" id="dop_v" value="1.0" min="-1000" max="1000" step="0.1" oninput="calcDoppler()"><span class="unit">m/s</span></div>
+                <div class="field-row"><label for="dop_v">Atom velocity v (m/s)</label><input type="number" id="dop_v" value="1.0" min="-1000" max="1000" step="0.1" oninput="calcDoppler()"><span class="unit">m/s</span></div>
               </div>
               <div id="dop_df_field" style="display:none;">
-                <div class="field-row"><label>Laser detuning Δf (MHz)</label><input type="number" id="dop_df" value="10" min="-2000" max="2000" step="1" oninput="calcDoppler()"><span class="unit">MHz</span></div>
+                <div class="field-row"><label for="dop_df">Laser detuning Δf (MHz)</label><input type="number" id="dop_df" value="10" min="-2000" max="2000" step="1" oninput="calcDoppler()"><span class="unit">MHz</span></div>
               </div>
               <div id="dop_res" class="result-row"></div>
             </div>
@@ -539,8 +540,8 @@ $$\Delta f = \frac{v}{\lambda} \quad \text{[counter-propagating]} \qquad v = \De
               <h4>Thermal de Broglie Wavelength</h4>
               <div class="sub">λ_dB ≫ inter-particle spacing → quantum degeneracy. Also for matter-wave interferometry.</div>
               <div class="formula-box">$$\lambda_{\rm dB} = \frac{h}{\sqrt{2\pi m k_{\rm B} T}}$$</div>
-              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="ddb_A" value="133" min="1" max="250" step="1" oninput="calcDeBroglie()"><span class="unit">amu</span></div>
-              <div class="field-row"><label>Temperature T (µK)</label><input type="number" id="ddb_T" value="100" min="0.01" max="1e6" step="1" oninput="calcDeBroglie()"><span class="unit">µK</span></div>
+              <div class="field-row"><label for="ddb_A">Atomic mass A (amu)</label><input type="number" id="ddb_A" value="133" min="1" max="250" step="1" oninput="calcDeBroglie()"><span class="unit">amu</span></div>
+              <div class="field-row"><label for="ddb_T">Temperature T (µK)</label><input type="number" id="ddb_T" value="100" min="0.01" max="1e6" step="1" oninput="calcDeBroglie()"><span class="unit">µK</span></div>
               <div id="ddb_res" class="result-row"></div>
             </div>
           </div>
@@ -552,9 +553,9 @@ $$\Delta f = \frac{v}{\lambda} \quad \text{[counter-propagating]} \qquad v = \De
               <div class="sub">Valid for |B| where Zeeman energy ≪ HF splitting (typically B ≪ few hundred Gauss for alkalis).</div>
               <div class="formula-box">
 $$\Delta E = g_F\,m_F\,\mu_B\,B \qquad \Delta f = \frac{\Delta E}{h} \quad [\text{MHz}]$$</div>
-              <div class="field-row"><label>Landé g_F factor</label><input type="number" id="zee_gF" value="0.25" min="-5" max="5" step="0.01" oninput="calcZeeman()"><span class="unit">(Cs F=4: +1/4)</span></div>
-              <div class="field-row"><label>Magnetic sublevel m_F</label><input type="number" id="zee_mF" value="4" min="-10" max="10" step="1" oninput="calcZeeman()"></div>
-              <div class="field-row"><label>Magnetic field B (Gauss)</label><input type="number" id="zee_B" value="10" min="0" max="10000" step="0.1" oninput="calcZeeman()"><span class="unit">G</span></div>
+              <div class="field-row"><label for="zee_gF">Landé g_F factor</label><input type="number" id="zee_gF" value="0.25" min="-5" max="5" step="0.01" oninput="calcZeeman()"><span class="unit">(Cs F=4: +1/4)</span></div>
+              <div class="field-row"><label for="zee_mF">Magnetic sublevel m_F</label><input type="number" id="zee_mF" value="4" min="-10" max="10" step="1" oninput="calcZeeman()"></div>
+              <div class="field-row"><label for="zee_B">Magnetic field B (Gauss)</label><input type="number" id="zee_B" value="10" min="0" max="10000" step="0.1" oninput="calcZeeman()"><span class="unit">G</span></div>
               <div id="zee_res" class="result-row"></div>
             </div>
 
@@ -565,7 +566,7 @@ $$\Delta E = g_F\,m_F\,\mu_B\,B \qquad \Delta f = \frac{\Delta E}{h} \quad [\tex
               <div class="formula-box">
 $$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transition]} \qquad \tau = \frac{1}{\Gamma/2\pi}$$</div>
               <div class="field-row">
-                <label>Preset transition</label>
+                <label for="sat_preset">Preset transition</label>
                 <select id="sat_preset" onchange="applySatPreset()" style="width:220px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.82rem;">
                   <option value="852,5.23">¹³³Cs D2 852 nm (Γ/2π=5.23 MHz)</option>
                   <option value="780,6.07">⁸⁷Rb D2 780 nm (Γ/2π=6.07 MHz)</option>
@@ -574,8 +575,8 @@ $$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transitio
                   <option value="custom">Custom</option>
                 </select>
               </div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="sat_lam" value="852" min="400" max="2000" step="1" oninput="calcSat()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>Linewidth Γ/2π (MHz)</label><input type="number" id="sat_G" value="5.23" min="0.001" max="100" step="0.01" oninput="calcSat()"><span class="unit">MHz</span></div>
+              <div class="field-row"><label for="sat_lam">Wavelength λ (nm)</label><input type="number" id="sat_lam" value="852" min="400" max="2000" step="1" oninput="calcSat()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="sat_G">Linewidth Γ/2π (MHz)</label><input type="number" id="sat_G" value="5.23" min="0.001" max="100" step="0.01" oninput="calcSat()"><span class="unit">MHz</span></div>
               <div id="sat_res" class="result-row"></div>
             </div>
 
@@ -586,8 +587,8 @@ $$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transitio
               <div class="formula-box">
 $$v_{\rm rms} = \sqrt{\frac{3k_{\rm B}T}{m}} \qquad v_{\rm prob} = \sqrt{\frac{2k_{\rm B}T}{m}} \quad \text{[most probable]}$$
 $$v_{\rm mean} = \sqrt{\frac{8k_{\rm B}T}{\pi m}} \quad \text{[mean speed]}$$</div>
-              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="thv_A" value="133" min="1" max="250" step="1" oninput="calcThermVel()"><span class="unit">amu</span></div>
-              <div class="field-row"><label>Temperature T (µK)</label><input type="number" id="thv_T" value="100" min="0.01" max="1e9" step="1" oninput="calcThermVel()"><span class="unit">µK</span></div>
+              <div class="field-row"><label for="thv_A">Atomic mass A (amu)</label><input type="number" id="thv_A" value="133" min="1" max="250" step="1" oninput="calcThermVel()"><span class="unit">amu</span></div>
+              <div class="field-row"><label for="thv_T">Temperature T (µK)</label><input type="number" id="thv_T" value="100" min="0.01" max="1e9" step="1" oninput="calcThermVel()"><span class="unit">µK</span></div>
               <div id="thv_res" class="result-row"></div>
             </div>
           </div>
@@ -610,10 +611,10 @@ $$v_{\rm mean} = \sqrt{\frac{8k_{\rm B}T}{\pi m}} \quad \text{[mean speed]}$$</d
               <div class="formula-box">
 $$\omega_r = \sqrt{\frac{4U_0}{m w_0^2}} \quad \text{[radial]} \qquad \omega_z = \sqrt{\frac{2U_0}{m z_R^2}} \quad \text{[axial]}$$
 $$z_R = \frac{\pi w_0^2}{\lambda}$$</div>
-              <div class="field-row"><label>Trap depth U₀ (mK)</label><input type="number" id="tf_U0" value="0.5" min="0.001" max="100" step="0.001" oninput="calcTrap()"><span class="unit">mK</span></div>
-              <div class="field-row"><label>Beam waist w₀ (µm)</label><input type="number" id="tf_w0" value="0.95" min="0.1" max="50" step="0.01" oninput="calcTrap()"><span class="unit">µm</span></div>
-              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="tf_A" value="133" min="1" max="250" step="1" oninput="calcTrap()"><span class="unit">amu</span></div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="tf_lam" value="1064" min="400" max="2000" step="1" oninput="calcTrap()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="tf_U0">Trap depth U₀ (mK)</label><input type="number" id="tf_U0" value="0.5" min="0.001" max="100" step="0.001" oninput="calcTrap()"><span class="unit">mK</span></div>
+              <div class="field-row"><label for="tf_w0">Beam waist w₀ (µm)</label><input type="number" id="tf_w0" value="0.95" min="0.1" max="50" step="0.01" oninput="calcTrap()"><span class="unit">µm</span></div>
+              <div class="field-row"><label for="tf_A">Atomic mass A (amu)</label><input type="number" id="tf_A" value="133" min="1" max="250" step="1" oninput="calcTrap()"><span class="unit">amu</span></div>
+              <div class="field-row"><label for="tf_lam">Wavelength λ (nm)</label><input type="number" id="tf_lam" value="1064" min="400" max="2000" step="1" oninput="calcTrap()"><span class="unit">nm</span></div>
               <div id="tf_res" class="result-row"></div>
             </div>
 
@@ -624,10 +625,10 @@ $$z_R = \frac{\pi w_0^2}{\lambda}$$</div>
               <div class="formula-box">
 $$x_{\rm zpf} = \sqrt{\frac{\hbar}{2m\omega_{\rm trap}}} \qquad \eta = k\cos\theta\cdot x_{\rm zpf}$$
 $$\langle n\rangle_{\rm min} \approx \left(\frac{\Gamma}{2\omega}\right)^2 \quad \text{[RSB cooling limit]}$$</div>
-              <div class="field-row"><label>Probe wavelength λ (nm)</label><input type="number" id="ld_lam" value="852" min="400" max="2000" step="1" oninput="calcLD()"><span class="unit">nm</span></div>
-              <div class="field-row"><label>Atomic mass A (amu)</label><input type="number" id="ld_A" value="133" min="1" max="250" step="1" oninput="calcLD()"><span class="unit">amu</span></div>
-              <div class="field-row"><label>Trap frequency f_trap (kHz)</label><input type="number" id="ld_f" value="100" min="0.01" max="5000" step="1" oninput="calcLD()"><span class="unit">kHz</span></div>
-              <div class="field-row"><label>Beam angle to trap axis θ (°)</label><input type="number" id="ld_th" value="45" min="0" max="90" step="1" oninput="calcLD()"><span class="unit">°</span></div>
+              <div class="field-row"><label for="ld_lam">Probe wavelength λ (nm)</label><input type="number" id="ld_lam" value="852" min="400" max="2000" step="1" oninput="calcLD()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="ld_A">Atomic mass A (amu)</label><input type="number" id="ld_A" value="133" min="1" max="250" step="1" oninput="calcLD()"><span class="unit">amu</span></div>
+              <div class="field-row"><label for="ld_f">Trap frequency f_trap (kHz)</label><input type="number" id="ld_f" value="100" min="0.01" max="5000" step="1" oninput="calcLD()"><span class="unit">kHz</span></div>
+              <div class="field-row"><label for="ld_th">Beam angle to trap axis θ (°)</label><input type="number" id="ld_th" value="45" min="0" max="90" step="1" oninput="calcLD()"><span class="unit">°</span></div>
               <div id="ld_res" class="result-row"></div>
             </div>
           </div>
@@ -640,9 +641,9 @@ $$\langle n\rangle_{\rm min} \approx \left(\frac{\Gamma}{2\omega}\right)^2 \quad
               <div class="formula-box">
 $${\rm FSR} = \frac{c}{2nL} \qquad \mathcal{F} = \frac{\pi\sqrt{R}}{1-R}$$
 $$\delta\nu = \frac{{\rm FSR}}{\mathcal{F}} \quad \text{[linewidth FWHM]}$$</div>
-              <div class="field-row"><label>Cavity length L (mm)</label><input type="number" id="cav_L" value="100" min="0.1" max="1e6" step="0.1" oninput="calcCavity()"><span class="unit">mm</span></div>
-              <div class="field-row"><label>Mirror reflectivity R</label><input type="number" id="cav_R" value="0.9999" min="0.001" max="0.99999" step="0.0001" oninput="calcCavity()"></div>
-              <div class="field-row"><label>Refractive index n</label><input type="number" id="cav_n" value="1.0" min="1.0" max="5.0" step="0.01" oninput="calcCavity()"></div>
+              <div class="field-row"><label for="cav_L">Cavity length L (mm)</label><input type="number" id="cav_L" value="100" min="0.1" max="1e6" step="0.1" oninput="calcCavity()"><span class="unit">mm</span></div>
+              <div class="field-row"><label for="cav_R">Mirror reflectivity R</label><input type="number" id="cav_R" value="0.9999" min="0.001" max="0.99999" step="0.0001" oninput="calcCavity()"></div>
+              <div class="field-row"><label for="cav_n">Refractive index n</label><input type="number" id="cav_n" value="1.0" min="1.0" max="5.0" step="0.01" oninput="calcCavity()"></div>
               <div id="cav_res" class="result-row"></div>
             </div>
 
@@ -653,10 +654,10 @@ $$\delta\nu = \frac{{\rm FSR}}{\mathcal{F}} \quad \text{[linewidth FWHM]}$$</div
               <div class="formula-box">
 $$\eta = \left(\frac{2w_1 w_2}{w_1^2+w_2^2}\right)^2 \quad [\Delta z=0]$$
 Reduced by wavefront curvature for $\Delta z \neq 0$</div>
-              <div class="field-row"><label>Mode 1 waist w₁ (µm)</label><input type="number" id="mm_w1" value="5.0" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
-              <div class="field-row"><label>Mode 2 waist w₂ (µm)</label><input type="number" id="mm_w2" value="4.8" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
-              <div class="field-row"><label>Waist separation Δz (µm)</label><input type="number" id="mm_dz" value="0" min="0" max="10000" step="1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
-              <div class="field-row"><label>Wavelength λ (nm)</label><input type="number" id="mm_lam" value="852" min="400" max="2000" step="1" oninput="calcModeMatch()"><span class="unit">nm</span></div>
+              <div class="field-row"><label for="mm_w1">Mode 1 waist w₁ (µm)</label><input type="number" id="mm_w1" value="5.0" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
+              <div class="field-row"><label for="mm_w2">Mode 2 waist w₂ (µm)</label><input type="number" id="mm_w2" value="4.8" min="0.01" max="1000" step="0.1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
+              <div class="field-row"><label for="mm_dz">Waist separation Δz (µm)</label><input type="number" id="mm_dz" value="0" min="0" max="10000" step="1" oninput="calcModeMatch()"><span class="unit">µm</span></div>
+              <div class="field-row"><label for="mm_lam">Wavelength λ (nm)</label><input type="number" id="mm_lam" value="852" min="400" max="2000" step="1" oninput="calcModeMatch()"><span class="unit">nm</span></div>
               <div id="mm_res" class="result-row"></div>
             </div>
           </div>
@@ -684,7 +685,7 @@ Reduced by wavefront curvature for $\Delta z \neq 0$</div>
 
         <!-- Background accordion -->
         <div class="accordion" style="margin-bottom:1.5rem;">
-          <div class="accordion-header">📖 Background &amp; Selection Rules</div>
+          <button type="button" class="accordion-header" aria-expanded="false">📖 Background &amp; Selection Rules</button>
           <div class="accordion-body">
             <div class="formula-box">$$|J,M\rangle = \sum_{m_1,m_2} \langle j_1 m_1;\, j_2 m_2 \mid J M\rangle\; |j_1,m_1\rangle|j_2,m_2\rangle$$</div>
             <h4 style="color:var(--text-secondary); margin:1rem 0 .4rem 0;">Selection rules, coefficient is zero unless:</h4>
@@ -715,17 +716,17 @@ Time-rev: $\langle j_1 m_1;j_2 m_2|JM\rangle = (-1)^{j_1+j_2-J}\langle j_1{-}m_1
             <div class="input-grid-cg">
               <div class="inp-card">
                 <h4>First angular momentum</h4>
-                <div class="field-row"><label>j₁</label><input type="number" id="s_j1" value="1" min="0" max="10" step="0.5" oninput="onJ1Change()"></div>
-                <div class="field-row"><label>m₁</label><select id="s_m1" onchange="computeSingle()"></select></div>
+                <div class="field-row"><label for="s_j1">j₁</label><input type="number" id="s_j1" value="1" min="0" max="10" step="0.5" oninput="onJ1Change()"></div>
+                <div class="field-row"><label for="s_m1">m₁</label><select id="s_m1" onchange="computeSingle()"></select></div>
               </div>
               <div class="inp-card">
                 <h4>Second angular momentum</h4>
-                <div class="field-row"><label>j₂</label><input type="number" id="s_j2" value="0.5" min="0" max="10" step="0.5" oninput="onJ2Change()"></div>
-                <div class="field-row"><label>m₂</label><select id="s_m2" onchange="computeSingle()"></select></div>
+                <div class="field-row"><label for="s_j2">j₂</label><input type="number" id="s_j2" value="0.5" min="0" max="10" step="0.5" oninput="onJ2Change()"></div>
+                <div class="field-row"><label for="s_m2">m₂</label><select id="s_m2" onchange="computeSingle()"></select></div>
               </div>
               <div class="inp-card">
                 <h4>Total angular momentum</h4>
-                <div class="field-row"><label>J</label><select id="s_J" onchange="computeSingle()"></select></div>
+                <div class="field-row"><label for="s_J">J</label><select id="s_J" onchange="computeSingle()"></select></div>
                 <div class="computed-M" id="s_M_display">M = —</div>
               </div>
             </div>
@@ -741,9 +742,9 @@ Time-rev: $\langle j_1 m_1;j_2 m_2|JM\rangle = (-1)^{j_1+j_2-J}\langle j_1{-}m_1
             <h3 style="color:var(--text-secondary); font-size:1.05rem; margin:1rem 0 .3rem 0;">CG Table for fixed j₁, j₂, J</h3>
             <p style="color:var(--text-muted); font-size:.85rem; margin-bottom:.75rem;">Rows = m₁, columns = m₂. Cell: ⟨j₁m₁; j₂m₂ | J, m₁+m₂⟩. Keep j ≤ 4 for fast computation.</p>
             <div class="tbl-controls-cg">
-              <span><label>j₁ </label><input type="number" id="t_j1" value="1" min="0" max="6" step="0.5" oninput="onTJ1Change()"></span>
-              <span><label>j₂ </label><input type="number" id="t_j2" value="0.5" min="0" max="6" step="0.5" oninput="onTJ2Change()"></span>
-              <span><label>J </label><select id="t_J" onchange="buildTable()" style="width:70px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.28rem .55rem; font-size:.85rem; font-family:var(--font-mono);"></select></span>
+              <span><label for="t_j1">j₁ </label><input type="number" id="t_j1" value="1" min="0" max="6" step="0.5" oninput="onTJ1Change()"></span>
+              <span><label for="t_j2">j₂ </label><input type="number" id="t_j2" value="0.5" min="0" max="6" step="0.5" oninput="onTJ2Change()"></span>
+              <span><label for="t_J">J </label><select id="t_J" onchange="buildTable()" style="width:70px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.28rem .55rem; font-size:.85rem; font-family:var(--font-mono);"></select></span>
             </div>
             <div class="cg-table-wrap"><div id="cg_table_container" style="padding:.25rem;"></div></div>
             <div id="cg_decomp" class="formula-box" style="margin-top:1rem; white-space:pre-wrap;"></div>
@@ -791,18 +792,18 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <div class="formula-box">$$P_n / P_0 = J_n(\beta)^2 \qquad \sum_{n=-\infty}^{\infty} J_n(\beta)^2 = 1$$</div>
 
               <div class="field-row">
-                <label><span class="tip" data-tip="Modulation depth (peak phase deviation for PM). β = π V_RF / V_π for a resonant EOM">Modulation index <em>β</em></span></label>
+                <label for="eom_beta"><span class="tip" data-tip="Modulation depth (peak phase deviation for PM). β = π V_RF / V_π for a resonant EOM">Modulation index <em>β</em></span></label>
                 <input type="number" id="eom_beta" value="1.08" min="0" max="10" step="0.05" oninput="calcEOM()">
               </div>
               <div class="field-row">
-                <label>Modulation type</label>
+                <label for="eom_type">Modulation type</label>
                 <select id="eom_type" onchange="calcEOM()">
                   <option value="pm">Phase / frequency modulation (PM/FM)</option>
                   <option value="am">Amplitude modulation (AM)</option>
                 </select>
               </div>
               <div class="field-row">
-                <label><span class="tip" data-tip="Modulation frequency (sideband separation from carrier). Typical EOM: 10 MHz–3 GHz">Modulation freq. Ω/2π (MHz)</span></label>
+                <label for="eom_freq"><span class="tip" data-tip="Modulation frequency (sideband separation from carrier). Typical EOM: 10 MHz–3 GHz">Modulation freq. Ω/2π (MHz)</span></label>
                 <input type="number" id="eom_freq" value="20" min="0.1" max="10000" step="1" oninput="calcEOM()">
               </div>
               <div id="eom_res" class="result-row" style="flex-direction:column;gap:.3rem;align-items:flex-start"></div>
@@ -818,10 +819,10 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <div class="sub">Special modulation depths used in common lab applications.</div>
               <table style="width:100%;border-collapse:collapse;font-size:.83rem;margin-top:.5rem">
                 <tr style="border-bottom:1px solid #1e293b">
-                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">β</th>
-                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₀(β)²</th>
-                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₁(β)²</th>
-                  <th style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">Use</th>
+                  <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">β</th>
+                  <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₀(β)²</th>
+                  <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₁(β)²</th>
+                  <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">Use</th>
                 </tr>
                 <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#18813e">1.08</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.319</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.339</td><td style="padding:4px 8px;color:var(--text-secondary)">PDH: max error signal ∝ J₀J₁</td></tr>
                 <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#926a03">2.405</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.269</td><td style="padding:4px 8px;color:var(--text-secondary)">Carrier suppression (STIRAP, EIT)</td></tr>
@@ -844,15 +845,15 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
                 $$\Delta f_{\rm single} = \pm f_{\rm AOM} \qquad \Delta f_{\rm double} = 2 f_{\rm AOM} \qquad \eta_{\rm DP} = \eta_{\rm SP}^2$$
               </div>
               <div class="field-row">
-                <label><span class="tip" data-tip="Acoustic drive frequency of the AOM. Common: 80 MHz (Isomet 1205), 200 MHz (IntraAction)">AOM drive frequency (MHz)</span></label>
+                <label for="aom_f"><span class="tip" data-tip="Acoustic drive frequency of the AOM. Common: 80 MHz (Isomet 1205), 200 MHz (IntraAction)">AOM drive frequency (MHz)</span></label>
                 <input type="number" id="aom_f" value="80" min="10" max="3000" step="1" oninput="calcAOM2()">
               </div>
               <div class="field-row">
-                <label><span class="tip" data-tip="First-order diffraction efficiency of a single pass through the AOM. Typically 60–85%">Single-pass efficiency η_SP (%)</span></label>
+                <label for="aom_eta"><span class="tip" data-tip="First-order diffraction efficiency of a single pass through the AOM. Typically 60–85%">Single-pass efficiency η_SP (%)</span></label>
                 <input type="number" id="aom_eta" value="75" min="0" max="100" step="1" oninput="calcAOM2()">
               </div>
               <div class="field-row">
-                <label>Diffraction order</label>
+                <label for="aom_order">Diffraction order</label>
                 <select id="aom_order" onchange="calcAOM2()">
                   <option value="1">+1 order (blue shift)</option>
                   <option value="-1">−1 order (red shift)</option>
@@ -872,15 +873,15 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <div class="sub">Converts RF power to modulation index β = π V_RF / V_π. Useful for comparing specs across EOMs.</div>
               <div class="formula-box">$$\beta = \frac{\pi V_{\rm RF}}{V_\pi} = \pi\sqrt{\frac{2 R P_{\rm RF}}{1}}\cdot\frac{1}{V_\pi}$$</div>
               <div class="field-row">
-                <label><span class="tip" data-tip="Half-wave voltage of the EOM crystal. Typical: 100–400 V for bulk crystal at 1 GHz; 1–5 V for resonant waveguide EOMs">V_π of EOM (V)</span></label>
+                <label for="eomv_Vpi"><span class="tip" data-tip="Half-wave voltage of the EOM crystal. Typical: 100–400 V for bulk crystal at 1 GHz; 1–5 V for resonant waveguide EOMs">V_π of EOM (V)</span></label>
                 <input type="number" id="eomv_Vpi" value="200" min="0.1" max="1000" step="1" oninput="calcEOMvpi()">
               </div>
               <div class="field-row">
-                <label>RF power into EOM (dBm)</label>
+                <label for="eomv_P">RF power into EOM (dBm)</label>
                 <input type="number" id="eomv_P" value="20" min="-20" max="50" step="0.5" oninput="calcEOMvpi()">
               </div>
               <div class="field-row">
-                <label>Impedance R (Ω)</label>
+                <label for="eomv_R">Impedance R (Ω)</label>
                 <input type="number" id="eomv_R" value="50" min="1" max="300" step="1" oninput="calcEOMvpi()">
               </div>
               <div id="eomvpi_res" class="result-row"></div>
@@ -913,28 +914,28 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
             <div class="calc-card">
               <h4>Frequency / Energy</h4>
               <div class="sub">Hz ↔ kHz ↔ MHz ↔ GHz ↔ cm⁻¹ ↔ nm ↔ THz</div>
-              <div class="field-row"><label>Frequency (Hz)</label>     <input type="number" id="uf_hz"   oninput="convFreq('hz')"   placeholder="e.g. 3.84e14"></div>
-              <div class="field-row"><label>Frequency (MHz)</label>    <input type="number" id="uf_mhz"  oninput="convFreq('mhz')"  placeholder="e.g. 384e6"></div>
-              <div class="field-row"><label>Frequency (GHz)</label>    <input type="number" id="uf_ghz"  oninput="convFreq('ghz')"  placeholder="e.g. 384000"></div>
-              <div class="field-row"><label>Wavenumber (cm⁻¹)</label>  <input type="number" id="uf_cm"   oninput="convFreq('cm')"   placeholder="e.g. 12820"></div>
-              <div class="field-row"><label>Wavelength (nm)</label>    <input type="number" id="uf_nm"   oninput="convFreq('nm')"   placeholder="e.g. 780"></div>
-              <div class="field-row"><label>Period (ps)</label>         <input type="number" id="uf_ps"   oninput="convFreq('ps')"   placeholder=""></div>
+              <div class="field-row"><label for="uf_hz">Frequency (Hz)</label>     <input type="number" id="uf_hz"   oninput="convFreq('hz')"   placeholder="e.g. 3.84e14"></div>
+              <div class="field-row"><label for="uf_mhz">Frequency (MHz)</label>    <input type="number" id="uf_mhz"  oninput="convFreq('mhz')"  placeholder="e.g. 384e6"></div>
+              <div class="field-row"><label for="uf_ghz">Frequency (GHz)</label>    <input type="number" id="uf_ghz"  oninput="convFreq('ghz')"  placeholder="e.g. 384000"></div>
+              <div class="field-row"><label for="uf_cm">Wavenumber (cm⁻¹)</label>  <input type="number" id="uf_cm"   oninput="convFreq('cm')"   placeholder="e.g. 12820"></div>
+              <div class="field-row"><label for="uf_nm">Wavelength (nm)</label>    <input type="number" id="uf_nm"   oninput="convFreq('nm')"   placeholder="e.g. 780"></div>
+              <div class="field-row"><label for="uf_ps">Period (ps)</label>         <input type="number" id="uf_ps"   oninput="convFreq('ps')"   placeholder=""></div>
             </div>
 
             <div class="calc-card" style="margin-top:.75rem">
               <h4>Power — mW ↔ dBm</h4>
               <div class="sub">P[dBm] = 10 log₁₀(P[mW])</div>
-              <div class="field-row"><label>Power (mW)</label>  <input type="number" id="up_mw"  oninput="convPow('mw')"  placeholder="e.g. 10"></div>
-              <div class="field-row"><label>Power (dBm)</label> <input type="number" id="up_dbm" oninput="convPow('dbm')" placeholder="e.g. 10"></div>
-              <div class="field-row"><label>Power (μW)</label>  <input type="number" id="up_uw"  oninput="convPow('uw')"  placeholder="e.g. 1000"></div>
+              <div class="field-row"><label for="up_mw">Power (mW)</label>  <input type="number" id="up_mw"  oninput="convPow('mw')"  placeholder="e.g. 10"></div>
+              <div class="field-row"><label for="up_dbm">Power (dBm)</label> <input type="number" id="up_dbm" oninput="convPow('dbm')" placeholder="e.g. 10"></div>
+              <div class="field-row"><label for="up_uw">Power (μW)</label>  <input type="number" id="up_uw"  oninput="convPow('uw')"  placeholder="e.g. 1000"></div>
             </div>
 
             <div class="calc-card" style="margin-top:.75rem">
               <h4>Magnetic Field</h4>
               <div class="sub">Gauss ↔ Tesla ↔ mT</div>
-              <div class="field-row"><label>Field (Gauss)</label>  <input type="number" id="ub_G"  oninput="convB('G')"  placeholder="e.g. 1"></div>
-              <div class="field-row"><label>Field (Tesla)</label>  <input type="number" id="ub_T"  oninput="convB('T')"  placeholder="e.g. 1e-4"></div>
-              <div class="field-row"><label>Field (mT)</label>     <input type="number" id="ub_mT" oninput="convB('mT')" placeholder="e.g. 0.1"></div>
+              <div class="field-row"><label for="ub_G">Field (Gauss)</label>  <input type="number" id="ub_G"  oninput="convB('G')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label for="ub_T">Field (Tesla)</label>  <input type="number" id="ub_T"  oninput="convB('T')"  placeholder="e.g. 1e-4"></div>
+              <div class="field-row"><label for="ub_mT">Field (mT)</label>     <input type="number" id="ub_mT" oninput="convB('mT')" placeholder="e.g. 0.1"></div>
               <div id="ub_zeeman" class="result-row" style="margin-top:.4rem"></div>
             </div>
           </div>
@@ -945,7 +946,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <h4>Temperature — Cooling Scales</h4>
               <div class="sub">Kelvin ↔ mK ↔ μK ↔ nK ↔ μeV ↔ recoil units</div>
               <div class="field-row">
-                <label>Atom (for recoil scale)</label>
+                <label for="ut_atom">Atom (for recoil scale)</label>
                 <select id="ut_atom" onchange="convTemp('K')">
                   <option value="87">Rb-87 (87 amu, 780 nm)</option>
                   <option value="133">Cs-133 (133 amu, 852 nm)</option>
@@ -955,21 +956,21 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
                   <option value="171">Yb-171 (171 amu, 399 nm)</option>
                 </select>
               </div>
-              <div class="field-row"><label>Temperature (K)</label>   <input type="number" id="ut_K"    oninput="convTemp('K')"   placeholder="e.g. 1e-6"></div>
-              <div class="field-row"><label>Temperature (mK)</label>  <input type="number" id="ut_mK"   oninput="convTemp('mK')"  placeholder="e.g. 1"></div>
-              <div class="field-row"><label>Temperature (μK)</label>  <input type="number" id="ut_uK"   oninput="convTemp('uK')"  placeholder="e.g. 1"></div>
-              <div class="field-row"><label>Temperature (nK)</label>  <input type="number" id="ut_nK"   oninput="convTemp('nK')"  placeholder="e.g. 1000"></div>
-              <div class="field-row"><label>Energy (μeV)</label>      <input type="number" id="ut_ueV"  oninput="convTemp('ueV')" placeholder=""></div>
-              <div class="field-row"><label>Energy (kHz, h·f)</label> <input type="number" id="ut_kHz"  oninput="convTemp('kHz')" placeholder=""></div>
+              <div class="field-row"><label for="ut_K">Temperature (K)</label>   <input type="number" id="ut_K"    oninput="convTemp('K')"   placeholder="e.g. 1e-6"></div>
+              <div class="field-row"><label for="ut_mK">Temperature (mK)</label>  <input type="number" id="ut_mK"   oninput="convTemp('mK')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label for="ut_uK">Temperature (μK)</label>  <input type="number" id="ut_uK"   oninput="convTemp('uK')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label for="ut_nK">Temperature (nK)</label>  <input type="number" id="ut_nK"   oninput="convTemp('nK')"  placeholder="e.g. 1000"></div>
+              <div class="field-row"><label for="ut_ueV">Energy (μeV)</label>      <input type="number" id="ut_ueV"  oninput="convTemp('ueV')" placeholder=""></div>
+              <div class="field-row"><label for="ut_kHz">Energy (kHz, h·f)</label> <input type="number" id="ut_kHz"  oninput="convTemp('kHz')" placeholder=""></div>
               <div id="ut_recoil" class="result-row" style="flex-direction:column;align-items:flex-start;gap:.2rem;margin-top:.4rem"></div>
             </div>
 
             <div class="calc-card" style="margin-top:.75rem">
               <h4>Angle / Solid Angle</h4>
               <div class="sub">degrees ↔ mrad ↔ μrad</div>
-              <div class="field-row"><label>Angle (degrees)</label> <input type="number" id="ua_deg"  oninput="convAngle('deg')"  placeholder="e.g. 1"></div>
-              <div class="field-row"><label>Angle (mrad)</label>    <input type="number" id="ua_mrad" oninput="convAngle('mrad')" placeholder="e.g. 17.5"></div>
-              <div class="field-row"><label>Angle (μrad)</label>    <input type="number" id="ua_urad" oninput="convAngle('urad')" placeholder="e.g. 17453"></div>
+              <div class="field-row"><label for="ua_deg">Angle (degrees)</label> <input type="number" id="ua_deg"  oninput="convAngle('deg')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label for="ua_mrad">Angle (mrad)</label>    <input type="number" id="ua_mrad" oninput="convAngle('mrad')" placeholder="e.g. 17.5"></div>
+              <div class="field-row"><label for="ua_urad">Angle (μrad)</label>    <input type="number" id="ua_urad" oninput="convAngle('urad')" placeholder="e.g. 17453"></div>
               <div id="ua_NA" class="result-row" style="margin-top:.4rem"></div>
             </div>
 
@@ -977,17 +978,17 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <h4>Trap Depth — μK ↔ mK ↔ E_r</h4>
               <div class="sub">Tweezer / optical lattice trap depth in practical units.</div>
               <div class="field-row">
-                <label>Atom (for recoil reference)</label>
+                <label for="utd_atom">Atom (for recoil reference)</label>
                 <select id="utd_atom" onchange="convTrapDepth('uK')">
                   <option value="87_780">Rb-87, 780 nm</option>
                   <option value="133_852">Cs-133, 852 nm</option>
                   <option value="7_671">Li-7, 671 nm</option>
                 </select>
               </div>
-              <div class="field-row"><label>Trap depth (μK)</label>   <input type="number" id="utd_uK"  oninput="convTrapDepth('uK')"  placeholder="e.g. 1000"></div>
-              <div class="field-row"><label>Trap depth (mK)</label>   <input type="number" id="utd_mK"  oninput="convTrapDepth('mK')"  placeholder="e.g. 1"></div>
-              <div class="field-row"><label>Depth / E_rec</label>     <input type="number" id="utd_Er"  oninput="convTrapDepth('Er')"  placeholder="e.g. 300"></div>
-              <div class="field-row"><label>Depth (kHz, h·f)</label>  <input type="number" id="utd_kHz" oninput="convTrapDepth('kHz')" placeholder="e.g. 20"></div>
+              <div class="field-row"><label for="utd_uK">Trap depth (μK)</label>   <input type="number" id="utd_uK"  oninput="convTrapDepth('uK')"  placeholder="e.g. 1000"></div>
+              <div class="field-row"><label for="utd_mK">Trap depth (mK)</label>   <input type="number" id="utd_mK"  oninput="convTrapDepth('mK')"  placeholder="e.g. 1"></div>
+              <div class="field-row"><label for="utd_Er">Depth / E_rec</label>     <input type="number" id="utd_Er"  oninput="convTrapDepth('Er')"  placeholder="e.g. 300"></div>
+              <div class="field-row"><label for="utd_kHz">Depth (kHz, h·f)</label>  <input type="number" id="utd_kHz" oninput="convTrapDepth('kHz')" placeholder="e.g. 20"></div>
             </div>
           </div>
         </div>
@@ -997,7 +998,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       </div>
     </div>
 
-  </div><!-- /page-wrap -->
+  </main><!-- /page-wrap -->
 
   
 <section class="see-also">
@@ -1034,7 +1035,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
   <script>
     renderNav({ active: 'lab-calculators', root: '../' });
 
@@ -1698,11 +1699,11 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const j2 = parseFloat(document.getElementById('t_j2').value)||0;
       const J  = parseFloat(document.getElementById('t_J').value);
       const m1s = mRange(j1); const m2s = mRange(j2);
-      let html = '<table class="cgt"><thead><tr><th>m₁ \\ m₂</th>';
-      for (const m2 of m2s) html += `<th>${fmtJ(m2)}</th>`;
+      let html = '<table class="cgt"><thead><tr><th scope="col">m₁ \\ m₂</th>';
+      for (const m2 of m2s) html += `<th scope="col">${fmtJ(m2)}</th>`;
       html += '</tr></thead><tbody>';
       for (const m1 of m1s) {
-        html += `<tr><td class="row-label">${fmtJ(m1)}</td>`;
+        html += `<tr><th scope="row" class="row-label">${fmtJ(m1)}</th>`;
         for (const m2 of m2s) {
           const M = Math.round((m1+m2)*2)/2;
           const {exact} = cg(j1, m1, j2, m2, J, M);

@@ -37,7 +37,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tweezer Array Design Lab","description":"Design optical tweezer arrays: site spacing, array geometry, filling fraction, and addressing requirements for neutral-atom quantum computing.","url":"https://amotoolkit.com/pages/tweezer-designer.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Tweezer Array Design Lab","item":"https://amotoolkit.com/pages/tweezer-designer.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
   <style>
@@ -302,7 +302,7 @@
         <div class="calc-panel">
           <div class="calc-panel-head">Trap Inputs</div>
 
-          <label class="sl-lbl" style="margin-bottom:4px"><span>Atom species</span></label>
+          <label for="sp-sel" class="sl-lbl" style="margin-bottom:4px"><span>Atom species</span></label>
           <select class="sp-sel" id="sp-sel">
             <option value="Rb87">Rb-87</option>
             <option value="Cs133">Cs-133</option>
@@ -316,19 +316,19 @@
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Trap wavelength</span><span class="sl-val"><span id="wl-v">850</span> nm</span></div>
-            <input type="range" id="wl-s" min="600" max="1200" step="5" value="850">
+            <input type="range" id="wl-s" min="600" max="1200" step="5" value="850" aria-label="Trap wavelength">
             <div class="sl-hint"><span>600 nm</span><span id="res-mk" style="color:#e20b0b;font-size:.68rem"></span><span>1200 nm</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Numerical aperture</span><span class="sl-val"><span id="na-v">0.55</span></span></div>
-            <input type="range" id="na-s" min="20" max="95" step="1" value="55">
+            <input type="range" id="na-s" min="20" max="95" step="1" value="55" aria-label="Numerical aperture">
             <div class="sl-hint"><span>0.20</span><span>0.95</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Trap beam power</span><span class="sl-val"><span id="pw-v">30</span> mW</span></div>
-            <input type="range" id="pw-s" min="1" max="200" step="1" value="30">
+            <input type="range" id="pw-s" min="1" max="200" step="1" value="30" aria-label="Trap beam power">
             <div class="sl-hint"><span>1 mW</span><span>200 mW</span></div>
           </div>
 
@@ -408,15 +408,15 @@
         <div class="arr-ctrl">
           <div class="sl-row">
             <div class="sl-lbl"><span>Sites Nx</span><span class="sl-val"><span id="nx-v">5</span></span></div>
-            <input type="range" id="nx-s" min="1" max="12" step="1" value="5">
+            <input type="range" id="nx-s" min="1" max="12" step="1" value="5" aria-label="Sites Nx">
           </div>
           <div class="sl-row">
             <div class="sl-lbl"><span>Sites Ny</span><span class="sl-val"><span id="ny-v">5</span></span></div>
-            <input type="range" id="ny-s" min="1" max="12" step="1" value="5">
+            <input type="range" id="ny-s" min="1" max="12" step="1" value="5" aria-label="Sites Ny">
           </div>
           <div class="sl-row">
             <div class="sl-lbl"><span>Site spacing d</span><span class="sl-val"><span id="sp-v">5.0</span> μm</span></div>
-            <input type="range" id="sp-s" min="10" max="100" step="5" value="50">
+            <input type="range" id="sp-s" min="10" max="100" step="5" value="50" aria-label="Site spacing d">
           </div>
         </div>
         <div class="arr-info">
@@ -440,8 +440,8 @@
         <table class="ref-tbl">
           <thead>
             <tr>
-              <th>Species</th><th>Resonance</th><th>Typical λ_trap</th>
-              <th>Depth (mK)</th><th>ωᵣ/2π (kHz)</th><th>η</th><th>Notes</th>
+              <th scope="col">Species</th><th scope="col">Resonance</th><th scope="col">Typical λ_trap</th>
+              <th scope="col">Depth (mK)</th><th scope="col">ωᵣ/2π (kHz)</th><th scope="col">η</th><th scope="col">Notes</th>
             </tr>
           </thead>
           <tbody>
@@ -460,7 +460,7 @@
       <div class="topic-card" style="margin-top:var(--sp-5);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.04)">
         <div class="topic-header">
           <span>Magic wavelength traps for AEL atoms (Yb, Sr)</span>
-          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="topic-body">
           <p>
@@ -485,7 +485,7 @@
       <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.04)">
         <div class="topic-header">
           <span>SLM vs AOD array generation</span>
-          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="topic-body">
           <p>
@@ -513,7 +513,7 @@
       <div class="topic-card" style="border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.04)">
         <div class="topic-header">
           <span>Foundational theory & review articles</span>
-          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="topic-body">
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -555,7 +555,7 @@
       <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.04)">
         <div class="topic-header">
           <span>Key experimental papers — single atoms &amp; arrays</span>
-          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="topic-body">
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -605,7 +605,7 @@
       <div class="topic-card" style="margin-top:var(--sp-4);border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.04)">
         <div class="topic-header">
           <span>Online resources &amp; atomic data</span>
-          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="topic-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="topic-body">
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -669,7 +669,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
   renderNav({ active:'tweezer-designer', root:'../' });
 

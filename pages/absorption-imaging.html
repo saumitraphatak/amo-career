@@ -37,7 +37,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Absorption Imaging Lab","description":"Absorption imaging calculator for cold-atom ensembles: optical depth, column density, atom number, saturation correction, photon shot noise, and practical imaging limits.","url":"https://amotoolkit.com/pages/absorption-imaging.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Measure & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Absorption Imaging Lab","item":"https://amotoolkit.com/pages/absorption-imaging.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
   <style>
@@ -365,7 +365,7 @@
         <div class="calc-panel">
           <div class="calc-panel-head">Imaging Parameters</div>
 
-          <label class="sl-lbl" style="margin-bottom:4px"><span>Atom species</span></label>
+          <label for="sp-sel" class="sl-lbl" style="margin-bottom:4px"><span>Atom species</span></label>
           <select class="sp-sel" id="sp-sel">
             <option value="Rb87">Rb-87</option>
             <option value="Cs133">Cs-133</option>
@@ -378,43 +378,43 @@
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Probe detuning Δ/Γ</span><span class="sl-val"><span id="dg-v">0.0</span></span></div>
-            <input type="range" id="dg-s" min="0" max="50" step="1" value="0">
+            <input type="range" id="dg-s" min="0" max="50" step="1" value="0" aria-label="Probe detuning Δ/Γ">
             <div class="sl-hint"><span>0 (resonant)</span><span>5 Γ</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Saturation I/I_sat</span><span class="sl-val"><span id="sat-v">0.10</span></span></div>
-            <input type="range" id="sat-s" min="1" max="100" step="1" value="10">
+            <input type="range" id="sat-s" min="1" max="100" step="1" value="10" aria-label="Saturation I/I_sat">
             <div class="sl-hint"><span>0.01</span><span>1.00</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Exposure time</span><span class="sl-val"><span id="texp-v">20</span> μs</span></div>
-            <input type="range" id="texp-s" min="1" max="200" step="1" value="20">
+            <input type="range" id="texp-s" min="1" max="200" step="1" value="20" aria-label="Exposure time">
             <div class="sl-hint"><span>1 μs</span><span>200 μs</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Camera pixel size</span><span class="sl-val"><span id="pix-v">6.5</span> μm</span></div>
-            <input type="range" id="pix-s" min="10" max="200" step="5" value="65">
+            <input type="range" id="pix-s" min="10" max="200" step="5" value="65" aria-label="Camera pixel size">
             <div class="sl-hint"><span>1 μm</span><span>20 μm</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Magnification</span><span class="sl-val"><span id="mag-v">5.0</span>×</span></div>
-            <input type="range" id="mag-s" min="5" max="200" step="5" value="50">
+            <input type="range" id="mag-s" min="5" max="200" step="5" value="50" aria-label="Magnification">
             <div class="sl-hint"><span>0.5×</span><span>20×</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Camera QE</span><span class="sl-val"><span id="qe-v">0.80</span></span></div>
-            <input type="range" id="qe-s" min="50" max="100" step="5" value="80">
+            <input type="range" id="qe-s" min="50" max="100" step="5" value="80" aria-label="Camera QE">
             <div class="sl-hint"><span>0.50</span><span>1.00</span></div>
           </div>
 
           <div class="sl-row">
             <div class="sl-lbl"><span>Read noise σ_e</span><span class="sl-val"><span id="rn-v">5</span> e⁻</span></div>
-            <input type="range" id="rn-s" min="1" max="50" step="1" value="5">
+            <input type="range" id="rn-s" min="1" max="50" step="1" value="5" aria-label="Read noise σ_e">
             <div class="sl-hint"><span>1 e⁻</span><span>50 e⁻</span></div>
           </div>
         </div>
@@ -484,8 +484,8 @@
         <table class="ref-tbl">
           <thead>
             <tr>
-              <th>Species</th><th>λ (nm)</th><th>σ₀ (×10⁻¹³ m²)</th>
-              <th>I_sat (mW/cm²)</th><th>OD / 1000 atoms</th><th>Imaging transition</th>
+              <th scope="col">Species</th><th scope="col">λ (nm)</th><th scope="col">σ₀ (×10⁻¹³ m²)</th>
+              <th scope="col">I_sat (mW/cm²)</th><th scope="col">OD / 1000 atoms</th><th scope="col">Imaging transition</th>
             </tr>
           </thead>
           <tbody>
@@ -508,7 +508,7 @@
       <div class="accordion" style="border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
         <button class="accordion-header" aria-expanded="false">
           <span class="accordion-title">Saturation correction — when and how to apply it</span>
-          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div class="accordion-body">
           <p>
@@ -536,7 +536,7 @@
       <div class="accordion" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
         <button class="accordion-header" aria-expanded="false">
           <span class="accordion-title">Fringe noise — the real limit at high atom numbers</span>
-          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div class="accordion-body">
           <p>
@@ -563,7 +563,7 @@
       <div class="accordion" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
         <button class="accordion-header" aria-expanded="false">
           <span class="accordion-title">Single-atom vs ensemble imaging — key differences</span>
-          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div class="accordion-body">
           <p>
@@ -592,7 +592,7 @@
       <div class="accordion" style="border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
         <button class="accordion-header" aria-expanded="false">
           <span class="accordion-title">Core technique papers</span>
-          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div class="accordion-body">
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -638,7 +638,7 @@
       <div class="accordion" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
         <button class="accordion-header" aria-expanded="false">
           <span class="accordion-title">Atomic data: cross sections &amp; I_sat</span>
-          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div class="accordion-body">
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -669,7 +669,7 @@
       <div class="accordion" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
         <button class="accordion-header" aria-expanded="false">
           <span class="accordion-title">Textbooks &amp; lecture notes</span>
-          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
         </button>
         <div class="accordion-body">
           <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -739,7 +739,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
   renderNav({ active:'absorption-imaging', root:'../' });
 

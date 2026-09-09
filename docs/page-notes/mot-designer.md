@@ -16,3 +16,11 @@ Page was titled **"MOT & Magnetic Trap Designer"** but had zero magnetic-trap co
 **Decision: rename, don't build.** Matches the site's tweezer-centric lab focus (author's own lab uses tweezers, not magnetic traps for BEC). Renamed to **"MOT Designer"** everywhere: page `<title>`/og/twitter/JSON-LD/h1/footer credit, home.html tool-card name + description + tags, `NAV` label in `main.js`, the global-search keyword string (dropped "Ioffe Pritchard Majorana evaporation", kept genuinely relevant terms), `llms.txt` entry, `llms-full.txt`'s "TOOL 6" section (replaced the fabricated Ioffe-Pritchard formulas with the real section list), `README.md` table row, and `CLAUDE.md` (3 spots + physics summary).
 
 This is the canonical "no phantom features" example — see `docs/site-philosophy.md` §3.
+
+
+## Accessibility audit update (2026-09)
+Converted the `.page-wrap` skip-link target to a real `<main>` landmark (this page's wrapper div was missing its usual `<!-- /page-wrap -->` closing comment — traced the real nesting depth to confirm it was actually balanced and closing at the correct point before retagging, rather than a genuinely unclosed tag). Added `scope="col"` to 7 table column headers; wired `for=`/`id` on 5 label/input pairs; added `aria-hidden="true"` to 4 decorative accordion-chevron icons. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. See docs/navigation-audit-2026-09.md.

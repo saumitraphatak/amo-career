@@ -38,7 +38,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Quantum Computing Learning Path","description":"Curated quantum computing learning path from an AMO physics perspective, qubits, gates, error correction, and neutral-atom hardware.","url":"https://amotoolkit.com/pages/learn-quantum.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Quantum Computing Learning Path","item":"https://amotoolkit.com/pages/learn-quantum.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -308,7 +308,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<div class="page-wrap">
 
 <!-- ─── Hero ─────────────────────────────────────────── -->
 <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44, 74, 99,0.07);--page-border:rgba(44, 74, 99,0.2);">
@@ -379,7 +379,7 @@
   <a href="#resources">📚 Resources</a>
 </nav>
 
-<main class="container">
+<main class="container" id="main-content">
 
 <section class="route-panel anim-in" style="--route-color:var(--c-qc);--route-border:rgba(167,139,250,.24)">
   <div class="route-kicker">Course map</div>
@@ -417,12 +417,12 @@
     <div>
       <div class="ctrl-row" style="flex-direction:column; align-items:flex-start;">
         <div class="ctrl-group">
-          <label>θ (polar): <span class="ctrl-val" id="thetaLbl">90°</span></label>
+          <label for="thetaSlide">θ (polar): <span class="ctrl-val" id="thetaLbl">90°</span></label>
           <input type="range" id="thetaSlide" min="0" max="180" value="90" step="1"
             oninput="document.getElementById('thetaLbl').textContent=this.value+'°'; drawBloch('blochCanvas',+this.value*Math.PI/180, +document.getElementById('phiSlide').value*Math.PI/180)">
         </div>
         <div class="ctrl-group" style="margin-top:.6rem;">
-          <label>φ (azimuthal): <span class="ctrl-val" id="phiLbl">0°</span></label>
+          <label for="phiSlide">φ (azimuthal): <span class="ctrl-val" id="phiLbl">0°</span></label>
           <input type="range" id="phiSlide" min="0" max="360" value="0" step="1"
             oninput="document.getElementById('phiLbl').textContent=this.value+'°'; drawBloch('blochCanvas',+document.getElementById('thetaSlide').value*Math.PI/180, +this.value*Math.PI/180)">
         </div>
@@ -490,7 +490,7 @@ Constructive interference at $\varphi = 0$ (all into $|0\rangle$); destructive a
 
   <div class="ctrl-row" style="margin-top:1rem;">
     <div class="ctrl-group">
-      <label>Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
+      <label for="mziPhi">Phase φ: <span class="ctrl-val" id="mziPhiLbl">0°</span></label>
       <input type="range" id="mziPhi" min="0" max="360" value="0" step="1"
         oninput="document.getElementById('mziPhiLbl').textContent=this.value+'°'; updateMZI()">
     </div>
@@ -533,12 +533,12 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
 
   <div class="ctrl-row" style="margin-top:1rem;">
     <div class="ctrl-group">
-      <label>Ω/2π (MHz): <span class="ctrl-val" id="rabiOmlbl">1.0</span></label>
+      <label for="rabiOm">Ω/2π (MHz): <span class="ctrl-val" id="rabiOmlbl">1.0</span></label>
       <input type="range" id="rabiOm" min="0.1" max="5" value="1.0" step="0.1"
         oninput="document.getElementById('rabiOmlbl').textContent=(+this.value).toFixed(1); updateRabi()">
     </div>
     <div class="ctrl-group">
-      <label>Δ/2π (MHz): <span class="ctrl-val" id="rabiDlbl">0.0</span></label>
+      <label for="rabiD">Δ/2π (MHz): <span class="ctrl-val" id="rabiDlbl">0.0</span></label>
       <input type="range" id="rabiD" min="0" max="5" value="0" step="0.1"
         oninput="document.getElementById('rabiDlbl').textContent=(+this.value).toFixed(1); updateRabi()">
     </div>
@@ -609,12 +609,12 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
       </div>
       <div class="ctrl-row">
         <div class="ctrl-group">
-          <label>θ: <span class="ctrl-val" id="gThLbl">90°</span></label>
+          <label for="gThSlide">θ: <span class="ctrl-val" id="gThLbl">90°</span></label>
           <input type="range" id="gThSlide" min="0" max="180" value="90" step="1"
             oninput="document.getElementById('gThLbl').textContent=this.value+'°'; setGateState()">
         </div>
         <div class="ctrl-group">
-          <label>φ: <span class="ctrl-val" id="gPhLbl">0°</span></label>
+          <label for="gPhSlide">φ: <span class="ctrl-val" id="gPhLbl">0°</span></label>
           <input type="range" id="gPhSlide" min="0" max="360" value="0" step="1"
             oninput="document.getElementById('gPhLbl').textContent=this.value+'°'; setGateState()">
         </div>
@@ -671,11 +671,11 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
   <!-- Sliders + basis selector -->
   <div class="ctrl-row" style="flex-wrap:wrap; gap:1rem; margin-bottom:.7rem;">
     <div class="ctrl-group">
-      <label>θ (polar): <span class="ctrl-val" id="measThLbl">90°</span></label>
+      <label for="measTh">θ (polar): <span class="ctrl-val" id="measThLbl">90°</span></label>
       <input type="range" id="measTh" min="0" max="180" value="90" step="1" oninput="updateMeas()">
     </div>
     <div class="ctrl-group">
-      <label>φ (azimuthal): <span class="ctrl-val" id="measPhiLbl">0°</span></label>
+      <label for="measPhi">φ (azimuthal): <span class="ctrl-val" id="measPhiLbl">0°</span></label>
       <input type="range" id="measPhi" min="0" max="360" value="0" step="1" oninput="updateMeas()">
     </div>
     <div class="ctrl-group">
@@ -704,7 +704,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
       </div>
       <!-- Shot controls -->
       <div class="ctrl-group" style="margin-bottom:.6rem;">
-        <label>Number of shots</label>
+        <label for="measShots">Number of shots</label>
         <select class="ctrl-select" id="measShots">
           <option>100</option><option>500</option>
           <option selected>1000</option><option>5000</option><option>10000</option>
@@ -1032,11 +1032,11 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
       <table class="hf-table">
         <thead>
           <tr>
-            <th>Atom</th>
-            <th>Hyperfine splitting</th>
-            <th>Clock states</th>
-            <th>T₂ (best)</th>
-            <th>Gate</th>
+            <th scope="col">Atom</th>
+            <th scope="col">Hyperfine splitting</th>
+            <th scope="col">Clock states</th>
+            <th scope="col">T₂ (best)</th>
+            <th scope="col">Gate</th>
           </tr>
         </thead>
         <tbody>
@@ -1122,29 +1122,29 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
   </div>
 
   <div class="three-col" style="margin-bottom:1rem;">
-    <div class="bell-card selected" id="bell0" onclick="selectBell(0)">
+    <div class="bell-card selected" id="bell0" onclick="selectBell(0)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectBell(0);}">
       <h5>|Φ⁺⟩</h5>
       <p>(|00⟩ + |11⟩)/√2</p>
     </div>
-    <div class="bell-card" id="bell1" onclick="selectBell(1)">
+    <div class="bell-card" id="bell1" onclick="selectBell(1)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectBell(1);}">
       <h5>|Φ⁻⟩</h5>
       <p>(|00⟩ − |11⟩)/√2</p>
     </div>
-    <div class="bell-card" id="bell2" onclick="selectBell(2)">
+    <div class="bell-card" id="bell2" onclick="selectBell(2)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectBell(2);}">
       <h5>|Ψ⁺⟩</h5>
       <p>(|01⟩ + |10⟩)/√2</p>
     </div>
   </div>
   <div class="three-col" style="margin-bottom:1rem;">
-    <div class="bell-card" id="bell3" onclick="selectBell(3)">
+    <div class="bell-card" id="bell3" onclick="selectBell(3)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectBell(3);}">
       <h5>|Ψ⁻⟩</h5>
       <p>(|01⟩ − |10⟩)/√2</p>
     </div>
-    <div class="bell-card" id="bell4" onclick="selectBell(4)">
+    <div class="bell-card" id="bell4" onclick="selectBell(4)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectBell(4);}">
       <h5>|00⟩ (separable)</h5>
       <p>|0⟩⊗|0⟩, not entangled</p>
     </div>
-    <div class="bell-card" id="bell5" onclick="selectBell(5)">
+    <div class="bell-card" id="bell5" onclick="selectBell(5)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectBell(5);}">
       <h5>|++⟩ (separable)</h5>
       <p>(|0⟩+|1⟩)/√2 ⊗ same</p>
     </div>
@@ -1179,7 +1179,7 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
   </div>
 
   <div class="ctrl-row">
-    <label style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
+    <label for="tqSel" style="color:var(--text-muted); font-size:.83rem;">Gate:</label>
     <select class="ctrl-select" id="tqSel" onchange="updateTwoQubit()">
       <option value="CNOT">CNOT</option>
       <option value="CZ">CZ</option>
@@ -1244,12 +1244,12 @@ Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{mot
     <div>
       <div class="ctrl-row" style="flex-direction:column; align-items:flex-start; gap:.6rem;">
         <div class="ctrl-group">
-          <label>Principal quantum number n: <span class="ctrl-val" id="rydNlbl">70</span></label>
+          <label for="rydN">Principal quantum number n: <span class="ctrl-val" id="rydNlbl">70</span></label>
           <input type="range" id="rydN" min="30" max="120" value="70" step="1"
             oninput="document.getElementById('rydNlbl').textContent=this.value; updateRydberg()">
         </div>
         <div class="ctrl-group">
-          <label>Rabi frequency Ω_R/2π (MHz): <span class="ctrl-val" id="rydOmlbl">1.0</span></label>
+          <label for="rydOm">Rabi frequency Ω_R/2π (MHz): <span class="ctrl-val" id="rydOmlbl">1.0</span></label>
           <input type="range" id="rydOm" min="0.1" max="10" value="1.0" step="0.1"
             oninput="document.getElementById('rydOmlbl').textContent=(+this.value).toFixed(1); updateRydberg()">
         </div>
@@ -1306,12 +1306,12 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
 
   <div class="ctrl-row" style="margin-top:1rem;">
     <div class="ctrl-group">
-      <label>T₁ (ms): <span class="ctrl-val" id="T1lbl">10</span></label>
+      <label for="T1slide">T₁ (ms): <span class="ctrl-val" id="T1lbl">10</span></label>
       <input type="range" id="T1slide" min="1" max="50" value="10" step="0.5"
         oninput="document.getElementById('T1lbl').textContent=(+this.value).toFixed(1); updateDecohere()">
     </div>
     <div class="ctrl-group">
-      <label>T₂ (ms): <span class="ctrl-val" id="T2lbl">3</span></label>
+      <label for="T2slide">T₂ (ms): <span class="ctrl-val" id="T2lbl">3</span></label>
       <input type="range" id="T2slide" min="0.5" max="20" value="3" step="0.5"
         oninput="document.getElementById('T2lbl').textContent=(+this.value).toFixed(1); updateDecohere()">
     </div>
@@ -1568,7 +1568,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
     <div style="font-size:.8rem; font-weight:600; color:var(--text-muted); margin-bottom:.6rem; text-transform:uppercase; letter-spacing:.05em;">Physical qubit overhead for one logical qubit</div>
     <table class="hf-table">
       <thead>
-        <tr><th>Code</th><th>Physical / logical qubit</th><th>Threshold p_th</th><th>Status (2025)</th></tr>
+        <tr><th scope="col">Code</th><th scope="col">Physical / logical qubit</th><th scope="col">Threshold p_th</th><th scope="col">Status (2025)</th></tr>
       </thead>
       <tbody>
         <tr><td>3-qubit bit-flip</td><td class="mono">3</td><td class="mono">~50%</td><td>Corrects X errors only, not universal</td></tr>
@@ -1742,7 +1742,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
 renderNav({ active: 'learn-quantum', root: '../' });
 initScrollReveal();
@@ -2500,7 +2500,7 @@ function updateTwoQubit() {
   const rows = g.truth.map(([inp,,out]) =>
     `<tr><td>${inp}</td><td>→</td><td class="hilite">${out}</td></tr>`).join('');
   document.getElementById('tqTruth').innerHTML =
-    `<thead><tr><th>Input</th><th></th><th>Output</th></tr></thead><tbody>${rows}</tbody>`;
+    `<thead><tr><th scope="col">Input</th><th scope="col"></th><th scope="col">Output</th></tr></thead><tbody>${rows}</tbody>`;
   document.getElementById('tqDesc').innerHTML = g.desc;
 }
 updateTwoQubit();

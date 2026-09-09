@@ -12,3 +12,10 @@ Concept → increasingly sophisticated pulse sequences → unifying theory → i
 
 ## Home integration (later pass)
 Added a `QC 06` tools-grid card on `home.html` (icon 🛡️, color `#4ade80`), matching the treatment `remote-entanglement.html` already had. Same rationale as `rb-explorer.html` — see its page-note and `docs/technical-audit-2026-09.md`.
+
+## Accessibility audit update (2026-09)
+Fixed a genuine skip-link bug: `id="main-content"` was on an empty placeholder `<div>` sitting above the real content instead of on the actual page wrapper. Moved the id onto the wrapper (now a real `<main>`) and removed the empty div; also moved the wrapper's closing tag to before `<footer>` (it was previously nested inside, which would have stripped the footer's landmark role once the wrapper became `<main>`). Added `scope="col"` to 5 table column headers; wired `for=`/`id` on 4 label/input pairs. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. See docs/navigation-audit-2026-09.md.

@@ -23,7 +23,7 @@
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator: scattering rate, collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/imaging-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -291,7 +291,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44, 74, 99,0.07);--page-border:rgba(44, 74, 99,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -407,7 +407,7 @@
         <h5>Atom &amp; Imaging Transition</h5>
 
         <div class="field-row">
-          <label>Atom species</label>
+          <label for="speciesSel">Atom species</label>
           <select id="speciesSel" onchange="onSpeciesChange()">
             <option value="Rb87">⁸⁷Rb, D2 (780 nm)</option>
             <option value="Cs133">¹³³Cs, D2 (852 nm)</option>
@@ -420,14 +420,14 @@
         </div>
 
         <div class="field-row">
-          <label>Detuning Δ/2π (MHz), negative = red-detuned
+          <label for="detSlide">Detuning Δ/2π (MHz), negative = red-detuned
             <span class="lbl-val" id="detLbl">0</span> MHz</label>
           <input type="range" id="detSlide" min="-200" max="200" value="0" step="1"
             oninput="document.getElementById('detLbl').textContent=this.value; compute()">
         </div>
 
         <div class="field-row">
-          <label>Saturation parameter s = I/I<sub>sat</sub>:
+          <label for="satSlide">Saturation parameter s = I/I<sub>sat</sub>:
             <span class="lbl-val" id="satLbl">1.0</span></label>
           <input type="range" id="satSlide" min="-20" max="20" value="0" step="1"
             oninput="document.getElementById('satLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
@@ -496,7 +496,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         <h5>Objective &amp; Optics</h5>
 
         <div class="field-row">
-          <label>Numerical Aperture (NA):
+          <label for="naSlide">Numerical Aperture (NA):
             <span class="lbl-val" id="naLbl">0.50</span></label>
           <input type="range" id="naSlide" min="10" max="95" value="50" step="1"
             oninput="document.getElementById('naLbl').textContent=(this.value/100).toFixed(2); compute()">
@@ -506,21 +506,21 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         </div>
 
         <div class="field-row">
-          <label>Camera quantum efficiency (%):
+          <label for="qeSlide">Camera quantum efficiency (%):
             <span class="lbl-val" id="qeLbl">80</span>%</label>
           <input type="range" id="qeSlide" min="5" max="99" value="80" step="1"
             oninput="document.getElementById('qeLbl').textContent=this.value; compute()">
         </div>
 
         <div class="field-row">
-          <label>Optical transmission T (%):
+          <label for="tOptSlide">Optical transmission T (%):
             <span class="lbl-val" id="tOptLbl">70</span>%</label>
           <input type="range" id="tOptSlide" min="10" max="99" value="70" step="1"
             oninput="document.getElementById('tOptLbl').textContent=this.value; compute()">
         </div>
 
         <div class="field-row">
-          <label>Exposure time (ms):
+          <label for="tExpSlide">Exposure time (ms):
             <span class="lbl-val" id="tExpLbl">5.0</span> ms</label>
           <input type="range" id="tExpSlide" min="-10" max="20" value="7" step="1"
             oninput="document.getElementById('tExpLbl').textContent=Math.pow(10,this.value/10).toFixed(2); compute()">
@@ -534,7 +534,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         <h5>Camera Noise Model</h5>
 
         <div class="field-row">
-          <label>Camera type</label>
+          <label for="camType">Camera type</label>
           <select id="camType" onchange="onCamChange()">
             <option value="emccd">EMCCD (e.g. Andor iXon)</option>
             <option value="scmos">sCMOS (e.g. Andor Sona, Hamamatsu Orca)</option>
@@ -543,7 +543,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         </div>
 
         <div class="field-row" id="emGainRow">
-          <label>EM gain (EMCCD only):
+          <label for="emGainSlide">EM gain (EMCCD only):
             <span class="lbl-val" id="emGainLbl">300</span>×</label>
           <input type="range" id="emGainSlide" min="0" max="240" value="150" step="1"
             oninput="document.getElementById('emGainLbl').textContent=Math.round(Math.pow(10,this.value/100)); compute()">
@@ -553,7 +553,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         </div>
 
         <div class="field-row">
-          <label>Read noise σ<sub>read</sub> (e⁻ RMS):
+          <label for="rnSlide">Read noise σ<sub>read</sub> (e⁻ RMS):
             <span class="lbl-val" id="rnLbl">60</span> e⁻</label>
           <input type="range" id="rnSlide" min="0" max="60" value="30" step="1"
             oninput="document.getElementById('rnLbl').textContent=this.value; compute()">
@@ -563,14 +563,14 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         </div>
 
         <div class="field-row">
-          <label>Dark count rate (e⁻/px/s):
+          <label for="darkSlide">Dark count rate (e⁻/px/s):
             <span class="lbl-val" id="darkLbl">0.001</span></label>
           <input type="range" id="darkSlide" min="-30" max="20" value="-30" step="1"
             oninput="document.getElementById('darkLbl').textContent=Math.pow(10,this.value/10).toFixed(4); compute()">
         </div>
 
         <div class="field-row">
-          <label>Background photon rate (photons/s collected):
+          <label for="bgSlide">Background photon rate (photons/s collected):
             <span class="lbl-val" id="bgLbl">100</span></label>
           <input type="range" id="bgSlide" min="0" max="50" value="20" step="1"
             oninput="document.getElementById('bgLbl').textContent=Math.round(Math.pow(10,this.value/10)); compute()">
@@ -651,10 +651,10 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
       <table class="noise-table">
         <thead>
           <tr>
-            <th>Source</th>
-            <th>σ² (photons²)</th>
-            <th>Fraction</th>
-            <th class="noise-bar-cell">Contribution</th>
+            <th scope="col">Source</th>
+            <th scope="col">σ² (photons²)</th>
+            <th scope="col">Fraction</th>
+            <th scope="col" class="noise-bar-cell">Contribution</th>
           </tr>
         </thead>
         <tbody id="noiseTbody">
@@ -882,31 +882,31 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
         <!-- Sliders -->
         <div>
           <div class="field-row">
-            <label>μ_bright (mean signal, atom present):
+            <label for="histMuBrightSlider">μ_bright (mean signal, atom present):
               <span class="lbl-val" id="histMuBrightVal">800</span> e⁻</label>
             <input type="range" id="histMuBrightSlider" min="50" max="3000" value="800" step="10"
               oninput="document.getElementById('histMuBrightVal').textContent=this.value; onHistSliderChange()">
           </div>
           <div class="field-row">
-            <label>σ_bright (bright peak width):
+            <label for="histSigBrightSlider">σ_bright (bright peak width):
               <span class="lbl-val" id="histSigBrightVal">42</span> e⁻</label>
             <input type="range" id="histSigBrightSlider" min="5" max="200" value="42" step="1"
               oninput="document.getElementById('histSigBrightVal').textContent=this.value; onHistSliderChange()">
           </div>
           <div class="field-row">
-            <label>μ_dark (mean signal, no atom):
+            <label for="histMuDarkSlider">μ_dark (mean signal, no atom):
               <span class="lbl-val" id="histMuDarkVal">55</span> e⁻</label>
             <input type="range" id="histMuDarkSlider" min="0" max="500" value="55" step="5"
               oninput="document.getElementById('histMuDarkVal').textContent=this.value; onHistSliderChange()">
           </div>
           <div class="field-row">
-            <label>σ_dark (dark peak width):
+            <label for="histSigDarkSlider">σ_dark (dark peak width):
               <span class="lbl-val" id="histSigDarkVal">14</span> e⁻</label>
             <input type="range" id="histSigDarkSlider" min="2" max="100" value="14" step="1"
               oninput="document.getElementById('histSigDarkVal').textContent=this.value; onHistSliderChange()">
           </div>
           <div class="field-row">
-            <label>Threshold θ:
+            <label for="histThrSlider">Threshold θ:
               <span class="lbl-val" id="histThrVal">—</span> e⁻
               <button onclick="autoOptThreshold()"
                 style="margin-left:.6rem;background:rgba(52,211,153,0.12);border:1px solid rgba(28,128,91,0.3);
@@ -966,7 +966,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Alkali vs alkaline-earth imaging histograms, key differences
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="two-col">
@@ -1008,7 +1008,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Fitting histograms in practice, extracting fidelity from real data
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -1055,7 +1055,7 @@ Quality check: is $A_0/A_1 \approx$ expected loading fraction? Is $\sigma_{\rm b
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         SPAM fidelity vs imaging fidelity, what the community reports
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -1180,7 +1180,7 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Collection geometry, solid angle
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -1202,7 +1202,7 @@ Example: NA $= 0.6 \Rightarrow \eta_{\rm geo} = 10\%$; NA $= 0.8 \Rightarrow \et
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Camera noise model, EMCCD vs sCMOS
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -1229,7 +1229,7 @@ where $G$ = EM gain, $\sigma_{\rm read}$ = read noise (e$^-$ RMS)</div>
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Detection fidelity, Poisson statistics
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -1257,7 +1257,7 @@ then $\mathcal{F}\approx\Phi({\rm SNR}/2)$. The calculator below uses the bright
     <div class="accordion">
       <button class="accordion-header" aria-expanded="false">
         Recoil heating &amp; imaging limits
-        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
       </button>
       <div class="accordion-body">
         <div class="theory-box">
@@ -1320,7 +1320,7 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
     </div>
   </div>
 
-</div><!-- /page-wrap -->
+</main><!-- /page-wrap -->
 
 
 <section class="see-also">
@@ -1361,7 +1361,7 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 

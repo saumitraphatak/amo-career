@@ -152,7 +152,10 @@ function renderNav({ active = '', root = '' } = {}) {
   const mobileItemHTML = t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
       <span class="nav-drop-dot" style="background:${t.color || '#38bdf8'};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
-      ${t.label}
+      <span style="display:flex;flex-direction:column;gap:.05rem;min-width:0">
+        <span>${t.label}</span>
+        ${t.kind ? `<small style="color:var(--text-muted);font-size:.68rem;letter-spacing:.02em">${t.kind}</small>` : ''}
+      </span>
     </a>
   `;
   const dropdown = (label, group, section, minWidth = 520) => `
@@ -246,7 +249,8 @@ function renderNav({ active = '', root = '' } = {}) {
           <button class="global-search-close" type="button" data-search-close aria-label="Close search">×</button>
         </div>
         <input id="global-search-input" class="global-search-input" type="search"
-          placeholder="Try: Cs, recoil, MOT, Rydberg, QuEra, polarimetry..." autocomplete="off">
+          placeholder="Try: Cs, recoil, MOT, Rydberg, QuEra, polarimetry..." autocomplete="off"
+          aria-label="Search AMO Toolkit">
         <div class="global-search-results" id="global-search-results" role="listbox"></div>
       </div>
     </div>
@@ -322,16 +326,30 @@ function initAccordions() {
 function initTabs() {
   document.querySelectorAll('.tab-bar').forEach(bar => {
     const group = bar.dataset.group;
+    bar.setAttribute('role', 'tablist');
+
+    // Accessible-name the panels this bar controls (only filter by group when declared)
+    const wrap = bar.closest('[data-tabs-wrap]') || document;
+    const panelsForBar = Array.from(wrap.querySelectorAll('.tab-panel[data-tab]'))
+      .filter(p => !(p.dataset.group && group && p.dataset.group !== group));
+    panelsForBar.forEach(p => p.setAttribute('role', 'tabpanel'));
+
     bar.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+
       btn.addEventListener('click', () => {
         const target = btn.dataset.tab;
 
         // Update buttons
-        bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        bar.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
         btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
 
         // Update panels — only filter by group when the panel declares one
-        const wrap = bar.closest('[data-tabs-wrap]') || document;
         wrap.querySelectorAll(`.tab-panel[data-tab]`).forEach(p => {
           if (p.dataset.group && group && p.dataset.group !== group) return;
           p.classList.toggle('active', p.dataset.tab === target);
@@ -362,7 +380,7 @@ function initSmoothScroll() {
 const RECENT_TOOLS_KEY = 'amo_recent_tools_v1';
 
 const SEARCH_KEYWORDS = {
-  'atom-library': 'species isotope constants Rb Cs Li Sr Yb Dy Er K Na Ca Ba Doppler linewidth recoil hyperfine Steck NIST D1 D2',
+  'atom-library': 'species isotope constants rubidium cesium lithium strontium ytterbium Rb Cs Li Sr Yb Dy Er K Na Ca Ba Doppler linewidth recoil hyperfine Steck NIST D1 D2',
   'lab-techniques': 'optics fibers AOM polarimetry optical pumping laser systems RF antenna Gaussian process lab workflow alignment vacuum',
   'laser-planner': 'laser system planner wavelength source diode SHG SFG AOM fiber species beam path power',
   'rydberg-calculator': 'Rydberg blockade C6 quantum defect lifetime Förster two-qubit gate radius alkali',
@@ -384,6 +402,26 @@ const SEARCH_KEYWORDS = {
   'cooling-simulator': 'Doppler cooling molasses scattering temperature force simulator',
   'laser-cooling': 'Lamb-Dicke sideband gray molasses EIT Raman RSB polarization gradient cooling',
   'learn-quantum': 'Bloch sphere gates superposition measurement entanglement algorithms qubit basics',
+  'cavity-qed': 'cavity QED coupling rate Purcell finesse strong weak bad-cavity coupling atom-photon Jaynes-Cummings',
+  'vacuum-systems': 'UHV XHV ultra-high vacuum bakeout ion pump turbo pump roughing conflat flange leak check gauge',
+  'tweezer-designer': 'optical tweezer array SLM AOD hologram trap depth waist spacing single atom loading',
+  'absorption-imaging': 'absorption imaging Beer-Lambert optical density column density atom number resonant off-resonant saturation',
+  'decoherence-lab': 'T1 T2 T2 star dephasing dissipation Bloch sphere Ramsey echo optical Bloch equations relaxation',
+  'remote-entanglement': 'remote entanglement photon collection heralded Bell state fiber link loss budget entanglement swapping',
+  'bloch-sphere': 'Bloch sphere qubit state vector superposition rotation',
+  'quantum-gates': 'quantum gates Hadamard Pauli X Y Z CNOT T-gate circuit',
+  'superposition': 'superposition Born rule probability amplitude measurement collapse',
+  'measurement': 'projective measurement expectation value no-cloning theorem',
+  'entanglement': 'entanglement Bell states EPR CHSH quantum teleportation',
+  'rydberg-atoms': 'Rydberg atoms n-scaling C6 blockade radius dipole-dipole interaction',
+  'two-qubit-gates': 'two-qubit gates CZ CNOT controlled-phase Rydberg blockade gate',
+  'rabi-oscillations': 'Rabi oscillations Rabi frequency dressed states Bloch vector precession rotating frame',
+  'decoherence': 'decoherence T1 T2 T2 star inhomogeneous echo sequences',
+  'hyperfine-qubits': 'hyperfine qubits clock states Zeeman shift Rb87 Cs133 qubit transitions',
+  'optical-pumping': 'optical pumping selection rules population transfer three-level system',
+  'qec': 'quantum error correction bit-flip Shor code surface code threshold theorem',
+  'quantum-algorithms': 'quantum algorithms Deutsch-Jozsa Grover Shor VQE',
+  'analog-sim': 'analog simulation Hubbard model Ising Hamiltonian BEC-BCS crossover',
 };
 
 function getSearchEntries(root = '') {
@@ -1577,7 +1615,7 @@ function initRelatedToolsPanel() {
   const key = currentPageKey();
   const related = RELATED_TOOLS[key];
   const container = getPageContainer();
-  if (!related?.length || !container || document.querySelector('.auto-related-tools')) return;
+  if (!related?.length || !container || document.querySelector('.see-also')) return;
   const root = location.pathname.includes('/pages/') ? '' : 'pages/';
   const cards = related.map(k => navItemByKey(k)).filter(Boolean).map(item => `
     <a class="see-also-card" href="${root}${item.href.replace(/^pages\//, '')}">

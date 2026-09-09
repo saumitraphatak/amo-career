@@ -18,3 +18,11 @@ Three company links pointed at pre-rebrand domains that still redirect but are s
 
 ## Design audit update (2026-09)
 `.route-card`'s `border-radius: var(--r-md)` referenced an undefined CSS variable (silently rendering square corners). Fixed to `var(--r)`, the correct/intended token. See docs/design-audit-2026-09.md.
+
+
+## Accessibility audit update (2026-09)
+Converted the `.page-wrap` skip-link target to a real `<main>` landmark; added `scope="col"` to 7 table column headers. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. See docs/navigation-audit-2026-09.md.

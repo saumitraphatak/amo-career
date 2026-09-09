@@ -38,7 +38,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser Locking","description":"Laser frequency stabilisation guide for AMO physics: Doppler-free spectroscopy, PDH locking, offset locking, and transfer cavity.","url":"https://amotoolkit.com/pages/laser-locking.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Laser Locking","item":"https://amotoolkit.com/pages/laser-locking.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -178,7 +178,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161, 60, 28,0.07);--page-border:rgba(161, 60, 28,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -482,7 +482,7 @@ Probe seen by same atom at $v^*$: $\nu_{\rm probe} = \nu_{\rm laser} + \nu_a v^*
         <div style="overflow-x:auto; margin:.5rem 0 1.25rem 0;">
           <table class="sum-table">
             <thead>
-              <tr><th>Method</th><th>Baseline</th><th>Typical SNR</th><th>Setup complexity</th></tr>
+              <tr><th scope="col">Method</th><th scope="col">Baseline</th><th scope="col">Typical SNR</th><th scope="col">Setup complexity</th></tr>
             </thead>
             <tbody>
               <tr>
@@ -513,8 +513,8 @@ Probe seen by same atom at $v^*$: $\nu_{\rm probe} = \nu_{\rm laser} + \nu_a v^*
           <table class="sum-table">
             <thead>
               <tr>
-                <th>Species</th><th>Wavelength</th><th>Γ/2π</th>
-                <th>Iₛₐₜ</th><th>Cell temp.</th><th>Key notes</th>
+                <th scope="col">Species</th><th scope="col">Wavelength</th><th scope="col">Γ/2π</th>
+                <th scope="col">Iₛₐₜ</th><th scope="col">Cell temp.</th><th scope="col">Key notes</th>
               </tr>
             </thead>
             <tbody>
@@ -567,7 +567,7 @@ Probe seen by same atom at $v^*$: $\nu_{\rm probe} = \nu_{\rm laser} + \nu_a v^*
           <div class="calc-card">
             <h5>Parameters</h5>
             <div class="field-row">
-              <label>Species</label>
+              <label for="sasSpecies">Species</label>
               <select id="sasSpecies" onchange="updateSAS()">
                 <option value="Cs">Cs D₂ (852 nm)</option>
                 <option value="Rb">Rb D₂ (780 nm)</option>
@@ -577,22 +577,22 @@ Probe seen by same atom at $v^*$: $\nu_{\rm probe} = \nu_{\rm laser} + \nu_a v^*
               </select>
             </div>
             <div class="field-row">
-              <label>Vapour cell temperature (K): <span id="sasTlbl">300</span></label>
+              <label for="sasT">Vapour cell temperature (K): <span id="sasTlbl">300</span></label>
               <input type="range" id="sasT" min="20" max="700" value="300" step="10"
                 oninput="document.getElementById('sasTlbl').textContent=this.value; updateSAS()">
             </div>
             <div class="field-row">
-              <label>Saturation I/Iₛₐₜ: <span id="sasSatlbl">1.0</span></label>
+              <label for="sasSat">Saturation I/Iₛₐₜ: <span id="sasSatlbl">1.0</span></label>
               <input type="range" id="sasSat" min="0.0" max="20.0" value="1.0" step="0.1"
                 oninput="document.getElementById('sasSatlbl').textContent=(+this.value).toFixed(1); updateSAS()">
             </div>
             <div class="field-row">
-              <label>FM mod. freq. (MHz): <span id="sasModlbl">5.0</span></label>
+              <label for="sasMod">FM mod. freq. (MHz): <span id="sasModlbl">5.0</span></label>
               <input type="range" id="sasMod" min="0.1" max="50" value="5.0" step="0.1"
                 oninput="document.getElementById('sasModlbl').textContent=(+this.value).toFixed(1); updateSAS()">
             </div>
             <div class="field-row">
-              <label>Pump beam diameter (mm): <span id="sasBDlbl">1.0</span></label>
+              <label for="sasBD">Pump beam diameter (mm): <span id="sasBDlbl">1.0</span></label>
               <input type="range" id="sasBD" min="0.1" max="5.0" value="1.0" step="0.1"
                 oninput="document.getElementById('sasBDlbl').textContent=(+this.value).toFixed(1); updateSAS()">
             </div>
@@ -719,7 +719,7 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
             <div style="overflow-x:auto;">
               <table class="sum-table">
                 <thead>
-                  <tr><th>Beat freq.</th><th>Req. PD BW</th><th>Detector type</th><th>Example</th></tr>
+                  <tr><th scope="col">Beat freq.</th><th scope="col">Req. PD BW</th><th scope="col">Detector type</th><th scope="col">Example</th></tr>
                 </thead>
                 <tbody>
                   <tr><td>1–100 MHz</td><td>≥ 300 MHz</td><td>Si PIN</td><td>Thorlabs FDS010</td></tr>
@@ -806,27 +806,27 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
           <div class="calc-card">
             <h5>Parameters</h5>
             <div class="field-row">
-              <label>Master laser wavelength (nm)</label>
+              <label for="bnMaster">Master laser wavelength (nm)</label>
               <input type="number" id="bnMaster" value="670.977" step="0.001" min="400" max="1200"
                 oninput="updateBeat()">
             </div>
             <div class="field-row">
-              <label>Desired offset (MHz) [slave − master]</label>
+              <label for="bnOffset">Desired offset (MHz) [slave − master]</label>
               <input type="number" id="bnOffset" value="228.2" step="0.1" min="-5000" max="5000"
                 oninput="updateBeat()">
             </div>
             <div class="field-row">
-              <label>Optical power on PD: P₁ (mW)</label>
+              <label for="bnP1">Optical power on PD: P₁ (mW)</label>
               <input type="number" id="bnP1" value="0.5" step="0.1" min="0.01" max="10"
                 oninput="updateBeat()">
             </div>
             <div class="field-row">
-              <label>Optical power on PD: P₂ (mW)</label>
+              <label for="bnP2">Optical power on PD: P₂ (mW)</label>
               <input type="number" id="bnP2" value="0.5" step="0.1" min="0.01" max="10"
                 oninput="updateBeat()">
             </div>
             <div class="field-row">
-              <label>PD responsivity R (A/W)</label>
+              <label for="bnR">PD responsivity R (A/W)</label>
               <input type="number" id="bnR" value="0.5" step="0.05" min="0.1" max="1.0"
                 oninput="updateBeat()">
             </div>
@@ -885,7 +885,7 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
         <div style="overflow-x:auto; margin:.5rem 0 1rem 0;">
           <table class="sum-table">
             <thead>
-              <tr><th>Application</th><th>Species</th><th>Offset</th><th>Lock type</th><th>Notes</th></tr>
+              <tr><th scope="col">Application</th><th scope="col">Species</th><th scope="col">Offset</th><th scope="col">Lock type</th><th scope="col">Notes</th></tr>
             </thead>
             <tbody>
               <tr>
@@ -992,27 +992,27 @@ Discriminator slope: $K \propto \sqrt{P_{\rm carrier}\cdot P_{\rm sideband}}\cdo
           <div class="calc-card">
             <h5>Cavity Parameters Calculator</h5>
             <div class="field-row">
-              <label>Cavity length L (mm)</label>
+              <label for="pdhL">Cavity length L (mm)</label>
               <input type="number" id="pdhL" value="77.5" step="0.5" min="1" max="500" oninput="updatePDH()">
             </div>
             <div class="field-row">
-              <label>Finesse 𝒻</label>
+              <label for="pdhF">Finesse 𝒻</label>
               <input type="number" id="pdhF" value="15000" step="100" min="100" max="1000000" oninput="updatePDH()">
             </div>
             <div class="field-row">
-              <label>Laser wavelength (nm)</label>
+              <label for="pdhLam">Laser wavelength (nm)</label>
               <input type="number" id="pdhLam" value="685.0" step="0.1" min="400" max="1200" oninput="updatePDH()">
             </div>
             <div class="field-row">
-              <label>EOM modulation Ω (MHz)</label>
+              <label for="pdhOmega">EOM modulation Ω (MHz)</label>
               <input type="number" id="pdhOmega" value="27" step="1" min="1" max="500" oninput="updatePDH()">
             </div>
             <div class="field-row">
-              <label>Target linewidth (Hz)</label>
+              <label for="pdhTarget">Target linewidth (Hz)</label>
               <input type="number" id="pdhTarget" value="1000" step="100" min="100" max="1000000" oninput="updatePDH()">
             </div>
             <div class="field-row">
-              <label>Spacer material</label>
+              <label for="pdhMat">Spacer material</label>
               <select id="pdhMat" onchange="updatePDH()">
                 <option value="5e-9">ULE glass (near zero-crossing), 5 ppb/K</option>
                 <option value="2e-8">ULE glass (room temp), 20 ppb/K</option>
@@ -1072,12 +1072,12 @@ Error signal: fast path → laser current (high BW, small range)<br>
           <table class="sum-table">
             <thead>
               <tr>
-                <th>Technique</th>
-                <th>Absolute?</th>
-                <th>Typical linewidth</th>
-                <th>Tunable offset?</th>
-                <th>Best for</th>
-                <th>Limitation</th>
+                <th scope="col">Technique</th>
+                <th scope="col">Absolute?</th>
+                <th scope="col">Typical linewidth</th>
+                <th scope="col">Tunable offset?</th>
+                <th scope="col">Best for</th>
+                <th scope="col">Limitation</th>
               </tr>
             </thead>
             <tbody>
@@ -1129,7 +1129,7 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
         <div class="section-title" style="font-size:1.1rem; margin-top:1.5rem; margin-bottom:.5rem;">Error signal slopes compared</div>
         <table class="slope-table">
           <thead>
-            <tr><th>Technique</th><th>Slope K (typical)</th><th>Notes</th></tr>
+            <tr><th scope="col">Technique</th><th scope="col">Slope K (typical)</th><th scope="col">Notes</th></tr>
           </thead>
           <tbody>
             <tr><td>SAS (direct lock-in)</td><td>~0.1–1 mV/MHz</td><td>Limited by Doppler background contrast</td></tr>
@@ -1172,7 +1172,7 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
     </div>
   </div>
 
-</div><!-- /page-wrap -->
+</main><!-- /page-wrap -->
 
 
 <section class="see-also">
@@ -1213,7 +1213,7 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
 renderNav({ active: 'laser-locking', root: '../' });
 initScrollReveal();

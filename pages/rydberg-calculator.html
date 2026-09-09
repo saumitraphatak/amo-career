@@ -23,7 +23,7 @@
   <meta name="description" content="Rydberg atom properties calculator, quantum defect theory, blockade radius, C6 coefficients, and Rydberg gate design for neutral-atom quantum computing.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/rydberg-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=19">
+  <link rel="stylesheet" href="../css/styles.css?v=20">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
@@ -269,7 +269,7 @@
 <body>
 <div id="nav-root"></div>
 
-<div class="page-wrap" id="main-content">
+<main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#3f5d3f;--page-bg:rgba(63, 93, 63,0.07);--page-border:rgba(63, 93, 63,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
@@ -356,7 +356,7 @@
         <h5>Rydberg State Selector</h5>
 
         <div class="field-row">
-          <label>Atom species</label>
+          <label for="speciesSel">Atom species</label>
           <select id="speciesSel" onchange="onSpeciesChange()">
             <option value="Rb">⁸⁷Rb, Rubidium</option>
             <option value="Cs">¹³³Cs, Cesium</option>
@@ -367,7 +367,7 @@
         </div>
 
         <div class="field-row">
-          <label>Rydberg series</label>
+          <label for="orbitalSel">Rydberg series</label>
           <select id="orbitalSel" onchange="compute()">
             <option value="nS">nS₁/₂</option>
             <option value="nP1">nP₁/₂</option>
@@ -378,7 +378,7 @@
         </div>
 
         <div class="field-row">
-          <label>Principal quantum number n: <span class="lbl-val" id="nVal">50</span></label>
+          <label for="nSlide">Principal quantum number n: <span class="lbl-val" id="nVal">50</span></label>
           <input type="range" id="nSlide" min="15" max="100" value="50"
             oninput="document.getElementById('nVal').textContent=this.value; compute()">
         </div>
@@ -453,7 +453,7 @@
         <h5>Blockade Parameters</h5>
 
         <div class="field-row">
-          <label>Rydberg Rabi frequency Ω/2π: <span class="lbl-val" id="OmegaVal">1.0</span> MHz</label>
+          <label for="OmegaSlide">Rydberg Rabi frequency Ω/2π: <span class="lbl-val" id="OmegaVal">1.0</span> MHz</label>
           <input type="range" id="OmegaSlide" min="-2" max="2" step="0.05" value="0"
             oninput="document.getElementById('OmegaVal').textContent=(Math.pow(10,+this.value)).toFixed(2==+this.value?0:2); compute()">
         </div>
@@ -462,7 +462,7 @@
         </div>
 
         <div class="field-row">
-          <label>Atom separation r: <span class="lbl-val" id="sepVal">5.0</span> μm</label>
+          <label for="sepSlide">Atom separation r: <span class="lbl-val" id="sepVal">5.0</span> μm</label>
           <input type="range" id="sepSlide" min="1" max="30" step="0.5" value="5"
             oninput="document.getElementById('sepVal').textContent=(+this.value).toFixed(1); compute()">
         </div>
@@ -557,11 +557,11 @@
       <table style="width:100%; border-collapse:collapse; font-size:.82rem; margin-top:.5rem;">
         <thead>
           <tr style="border-bottom:1px solid #1e293b;">
-            <th style="padding:.55rem .8rem; text-align:left; color:var(--text-muted); font-weight:600;">Species</th>
-            <th style="padding:.55rem .8rem; text-align:left; color:var(--text-muted); font-weight:600;">Series</th>
-            <th style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">δ₀</th>
-            <th style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">δ₂</th>
-            <th style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">n*(n=50)</th>
+            <th scope="col" style="padding:.55rem .8rem; text-align:left; color:var(--text-muted); font-weight:600;">Species</th>
+            <th scope="col" style="padding:.55rem .8rem; text-align:left; color:var(--text-muted); font-weight:600;">Series</th>
+            <th scope="col" style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">δ₀</th>
+            <th scope="col" style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">δ₂</th>
+            <th scope="col" style="padding:.55rem .8rem; text-align:center; color:var(--text-muted); font-weight:600;">n*(n=50)</th>
           </tr>
         </thead>
         <tbody id="qd-table-body">
@@ -724,7 +724,7 @@ $r = 5\,\mu$m, $R_b = 10\,\mu$m $\Rightarrow \varepsilon_{\rm blk} \sim 10^{-4}$
     </div>
   </div>
 
-</div><!-- /page-wrap -->
+</main><!-- /page-wrap -->
 
 
 <section class="see-also">
@@ -765,7 +765,7 @@ $r = 5\,\mu$m, $R_b = 10\,\mu$m $\Rightarrow \varepsilon_{\rm blk} \sim 10^{-4}$
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=22"></script>
+<script src="../js/main.js?v=24"></script>
 <script>
 renderNav({ active: 'rydberg-calculator', root: '../' });
 

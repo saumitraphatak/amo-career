@@ -110,7 +110,7 @@ amo-career/
 │   └── main.js             # renderNav(), global search, canvas animation, scroll reveal, accordions, tabs
 ├── tests/
 │   └── formula_regression.py
-└── pages/                  # 27 tool and content pages, grouped by NAV workflow category
+└── pages/                  # 28 tool and content pages, grouped by NAV workflow category
     ├── atom-library.html, laser-planner.html, mot-designer.html, laser-locking.html,
     │   lab-techniques.html, polarimetry.html, zernike.html, cavity-qed.html,
     │   vacuum-systems.html, tweezer-designer.html          # Build

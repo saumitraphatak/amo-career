@@ -23,3 +23,11 @@
 
 ## Cross-page consistency audit update (2026-09)
 The page's `BreadcrumbList` JSON-LD named its category "Quantum Computing" while every sibling Quantum-category page's breadcrumb says "Quantum" — a leftover from the same insertion that produced the (already-fixed) "Quantum Computing 01" hero-eyebrow wording the technical audit caught. Corrected the breadcrumb name to "Quantum" to match. See docs/cross-page-consistency-audit-2026-09.md.
+
+
+## Accessibility audit update (2026-09)
+Added `scope="col"` to the 8 column headers of its two comparison tables (protocol/isolation table and mechanism/signature table), which used bare `<tr><th>` markup with no `<thead>` at all. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+Added missing global-search keywords — this page previously had none, relying on title-word matching only. See docs/navigation-audit-2026-09.md.

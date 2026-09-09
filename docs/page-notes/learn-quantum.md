@@ -23,3 +23,14 @@ The quiz's "Review this topic ↑" links use `href="#anchor-id"`, which are orde
 
 ## Flow audit update (2026-09)
 Found a real forward-reference: "Rydberg Atoms & Blockade" was taught before "Two-Qubit Gates" despite already using two-qubit-gate concepts in its own theory box. Swapped the two sections. This also surfaced that all 15 internal section-marker HTML comments (invisible to readers, but used to label sections for editors) were mismatched/stale, likely left behind by the earlier Rabi reorder — relabeled all 15 to match actual content and order. Also updated topic-nav link order, the "Many-qubit physics" route-card blurb, and the scrollspy JS array to match. See docs/flow-audit-2026-09.md.
+
+
+## Accessibility audit update (2026-09)
+Fixed a skip-link targeting bug: the page already had a real `<main class="container">` landmark, but `id="main-content"` was on the *outer* wrapping div (which also contains the sticky topic-nav) instead of on the `<main>` itself — moved the id so "skip to content" now actually skips past the topic-nav. Made all 6 `.bell-card` Bell-state selector tiles keyboard-operable; added `scope="col"` to 12 table column headers; wired `for=`/`id` on 15 label/input pairs. See docs/accessibility-audit-2026-09.md.
+
+
+## Navigation/IA audit update (2026-09)
+A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. See docs/navigation-audit-2026-09.md.
+
+## Navigation/IA audit update (2026-09), continued
+Also added global-search keywords for all 14 `NAV.learn` sub-topic anchors on this page (Bloch Sphere, Quantum Gates, Rabi Oscillations, etc.) — previously none of them had any keywords at all, so searching e.g. "CNOT" or "T2 star" wouldn't surface the matching in-page section. See docs/navigation-audit-2026-09.md.
