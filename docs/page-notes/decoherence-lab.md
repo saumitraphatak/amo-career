@@ -31,3 +31,7 @@ Added `scope="col"` to the 8 column headers of its two comparison tables (protoc
 
 ## Navigation/IA audit update (2026-09)
 Added missing global-search keywords — this page previously had none, relying on title-word matching only. See docs/navigation-audit-2026-09.md.
+
+
+## Performance audit update (2026-09)
+Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.

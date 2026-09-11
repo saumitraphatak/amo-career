@@ -25,3 +25,7 @@ The "Learn the underlying physics" teaser grid previewed 11 of learn-quantum.htm
 
 ## Navigation/IA audit update (2026-09)
 Mobile nav links (`mobileItemHTML` in `js/main.js`) were missing the `kind` subtitle ("Calculator"/"Guide"/"Simulator"/etc.) that desktop dropdown links already show — added it, matching desktop. Also added 2 missing `.footer-link` entries (Zernike Wavefront Lab, Cavity QED Coupling Lab — both were in NAV and the nav dropdown but absent from the Build footer column) and fixed a JS bug where every page except decoherence-lab.html was silently rendering two contradictory "related tools" panels back-to-back (see docs/navigation-audit-2026-09.md for the full site-wide list — most of these fixes live in js/main.js and affect every page, not just this one).
+
+
+## Performance audit update (2026-09)
+Same jsdelivr preconnect fix as the tool pages (home.html also loads from jsdelivr). Also: this run's audit flagged (not fixed) that Chart.js/main.js render-blocking on 19 tool pages needs page-by-page verification before it can safely get `defer`, and that 6 functions in js/main.js appear to be unused dead code (~12.5% of the file) — worth confirming with you before removal. See docs/performance-audit-2026-09.md.

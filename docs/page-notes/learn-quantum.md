@@ -34,3 +34,7 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Navigation/IA audit update (2026-09), continued
 Also added global-search keywords for all 14 `NAV.learn` sub-topic anchors on this page (Bloch Sphere, Quantum Gates, Rabi Oscillations, etc.) — previously none of them had any keywords at all, so searching e.g. "CNOT" or "T2 star" wouldn't surface the matching in-page section. See docs/navigation-audit-2026-09.md.
+
+
+## Performance audit update (2026-09)
+Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
