@@ -34,3 +34,7 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Link audit update (2026-09-16)
+The Ketterle Lab group-card link (`cua.mit.edu/groups/ketterle-group/`) 404s. Repointed to `cua.mit.edu/people/wolfgang-ketterle`, his current CUA profile page. See docs/link-audit-2026-09-16.md.

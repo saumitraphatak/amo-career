@@ -38,3 +38,7 @@ Also added global-search keywords for all 14 `NAV.learn` sub-topic anchors on th
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Science-content refresh (2026-09-15)
+The "2024–25 State of the Art" box (Bell-inequality/QEC section) cited Quantinuum H2's 2024 99.9% two-qubit fidelity as the trapped-ion reference point. Extended the box (retitled "2024–26") with one added sentence noting Quantinuum's Helios system (98 qubits, all-to-all) pushed this to a peer-reviewed 99.92% two-qubit fidelity and 48 fully error-corrected logical qubits in 2026 — see the qc-landscape.html note above for the full verification. Left the original Willow/Bluvstein/H2 sentences untouched; this was a single additive sentence, not a rewrite.

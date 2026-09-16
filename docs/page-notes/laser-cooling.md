@@ -23,3 +23,7 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Link audit update (2026-09-16)
+The Ye Lab (JILA) resource-card link (`jila.colorado.edu/yelabs/research/laser-cooling-and-trapping`) now 302-redirects to a generic top-level JILA page, losing the specific gray-molasses/EIT-cooling research context the card promises. Repointed to `colorado.edu/jila/ye-group-research`, the current Ye-group research landing page. See docs/link-audit-2026-09-16.md.

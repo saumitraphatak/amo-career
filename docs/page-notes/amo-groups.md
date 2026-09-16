@@ -17,3 +17,7 @@ Sensible narrowing funnel: filter/search → curated directory → broader watch
 
 ## Navigation/IA audit update (2026-09)
 A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own `.auto-related-tools` class instead of any existing `.see-also` section) was auto-injecting a second, often-contradictory "Related tools" panel right before this page's hand-written "See Also" section on every load. Fixed the guard so the auto-panel only fires when no related-tools section exists yet — this page's own hand-curated See Also block is unaffected and is now the only one shown. See docs/navigation-audit-2026-09.md.
+
+
+## Link audit update (2026-09-16)
+`GROUP_WEBSITES["Ketterle Lab"]` pointed at `cua.mit.edu/groups/ketterle-group/`, which now 404s (the sibling Vuletic/Zwierlein group URLs still work fine, so this was slug-specific, not a site-wide restructuring). Repointed to his current CUA profile, `cua.mit.edu/people/wolfgang-ketterle`. See docs/link-audit-2026-09-16.md.

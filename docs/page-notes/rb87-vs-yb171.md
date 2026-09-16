@@ -39,3 +39,7 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Science-content refresh (2026-09-15)
+Follow-up freshness pass. Confirmed the April 2026 Evered et al. Rb87 preprint (arXiv:2604.25987) is still unpublished (v1 only, no journal-ref, as of this check) and still the best published neutral-atom 2Q fidelity — no changes needed to Finding 1's existing "preprint, not yet peer-reviewed" framing. Added one new item: Senoo et al. (JILA/Kaufman group — the same group behind Jenkins et al. 2022, the first Yb171 tweezer-qubit paper cited on this page), companion paper to the Zhang et al. erasure-conversion work in the same June 2026 *Nature Physics* issue, reporting 99.78(4)% **error-detected** 2Q gate fidelity using metastable/erasure-encoded Yb171 qubits. Deliberately framed this as a complementary result on a *different qubit encoding*, not a replacement for the page's ground-state-hyperfine Yb171 headline number (Muniz et al., 99.72%) — added a new paper-card in Section 12, a companion-result paragraph in Section 09 right after the Zhang et al. block, and a one-sentence addition to the Kaufman-group company-card. No existing numbers or conclusions were changed.
