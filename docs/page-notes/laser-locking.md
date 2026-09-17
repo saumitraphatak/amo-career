@@ -22,3 +22,11 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Technical audit update (2026-09-16)
+`og:title`, `twitter:title`, and the JSON-LD `headline` still said the page's old name, "Laser Locking" -- stale from whenever this page was renamed to "Laser Locking Guide" in `<title>`, the on-page content, and `main.js`'s `NAV` entry/home-page card. Synced all three meta fields to the current name, plus the matching reference in `llms.txt`/`llms-full.txt` and `CLAUDE.md`'s per-page section header. See docs/technical-audit-2026-09-16.md.
+
+
+## Design/visual-consistency audit update (2026-09-17)
+This page's `<style>` block used `var(--mono)` for 4 monospace-styled rules — `--mono` was never defined anywhere in the codebase (only `--font-mono` exists in `css/styles.css`), so with no fallback these elements silently inherited the page's body font instead of rendering in the mono typeface. Replaced all 4 with `var(--font-mono)`. See docs/design-audit-2026-09-17.md.

@@ -42,3 +42,6 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Science-content refresh (2026-09-15)
 The "2024–25 State of the Art" box (Bell-inequality/QEC section) cited Quantinuum H2's 2024 99.9% two-qubit fidelity as the trapped-ion reference point. Extended the box (retitled "2024–26") with one added sentence noting Quantinuum's Helios system (98 qubits, all-to-all) pushed this to a peer-reviewed 99.92% two-qubit fidelity and 48 fully error-corrected logical qubits in 2026 — see the qc-landscape.html note above for the full verification. Left the original Willow/Bluvstein/H2 sentences untouched; this was a single additive sentence, not a rewrite.
+
+## Design/visual-consistency audit update (2026-09-17)
+This page's `<style>` block used `var(--mono)` for 23 monospace-styled rules — `--mono` was never defined anywhere in the codebase (only `--font-mono` exists in `css/styles.css`), so with no fallback these elements silently inherited the page's body font instead of rendering in the mono typeface. Replaced all 23 with `var(--font-mono)`. See docs/design-audit-2026-09-17.md.

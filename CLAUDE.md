@@ -387,10 +387,10 @@ Add `class="anim-in delay-N"` (N = 1 to 9, in multiples of ~100ms delay) to any 
 ### 1. Atom Library (`atom-library.html`)
 15 laser-coolable atoms in 4 family tabs (alkali, alkaline-earth, rare-earth, other). Table: mass, D1/D2 wavelengths, natural linewidth Γ, I_sat, recoil scale, Doppler temperature. US research groups per atom. Interactive family switching.
 
-### 2. Lab Techniques (`lab-techniques.html`)
+### 2. AMO Lab Operations Handbook (`lab-techniques.html`)
 8 experimental techniques with deep-dive accordion sections (from thesis Ch. 6): laser cooling, MOT loading, evaporative cooling, optical tweezers, fluorescence imaging, absorption imaging, RF/microwave spectroscopy, optical lattices.
 
-### 3. Rydberg Calculator (`rydberg-calculator.html`)
+### 3. Rydberg Blockade Lab (`rydberg-calculator.html`)
 Principal quantum number n (30–120), atom species (Rb87, Cs133, Yb171, Sr88). Computes: Rydberg state lifetime τ ~ n³ (with BBR correction), C₆ coefficient (van der Waals, ∝ n¹¹), blockade radius R_b = (C₆/ℏΩ)^(1/6), gate fidelity estimate. Chart.js: τ and R_b vs n curves.
 
 ### 4. Imaging SNR Calculator (`imaging-calculator.html`)
@@ -402,13 +402,13 @@ Principal quantum number n (30–120), atom species (Rb87, Cs133, Yb171, Sr88). 
 ### 6. MOT Designer (`mot-designer.html`)
 5 species (Rb87, Cs133, Na23, Li7, K39). Section 01 MOT Calculator: damping α, spring κ, ω_MOT, capture velocity, Doppler temperature vs detuning Δ and saturation s. Section 02 Detuning Optimization (live chart). Section 03 Species at a Glance (comparison table). Section 04 the MOT-to-experiment cooling cascade (source → 3D MOT → cMOT → gray molasses/PGC → tweezer/lattice). No magnetic-trap (Ioffe-Pritchard) calculator despite the historical page title — renamed from "MOT & Magnetic Trap Designer" to "MOT Designer" since that content was never built.
 
-### 7. Gate Fidelity Budget (`fidelity-budget.html`)
+### 7. Rydberg Gate Error Budget (`fidelity-budget.html`)
 4 species (Rb87, Cs133, Yb171, Sr88). 8 error sources for Rydberg two-qubit gates: spontaneous emission εₛₑ = Γ_Ryd·t_gate, Doppler dephasing ε_D = ½(k·v_rms·t_gate)², laser phase noise ε_φ = π·Δν·t_gate, blockade leakage ε_blk = 1/(U/Ω)², SPAM ε_sp, atom loss ε_loss = t_gate/τ_trap, B-field dephasing ε_B = ½(μ_B·ΔB·t_gate/ℏ)², Rabi inhomogeneity ε_Ω = ½(π·δΩ/Ω/2)². Fidelity F = 1 − Σεᵢ. Color-coded meter (≥99.9% green). SOTA comparison: Evered 2023 (99.5%, peer-reviewed), Muniz 2025 (99.72% post-selected / 99.40% raw), Evered 2026 preprint (99.854% raw / 99.941% post-selected, arXiv:2604.25987, not yet peer-reviewed), approximate FTQC thresholds.
 
 ### 8. Release-Recapture (`release-recapture.html`)
 Interactive simulator for single-atom tweezer thermometry. Atom released from trap, evolves under gravity + thermal velocity, then is recaptured if its energy is below the Gaussian trap depth. Chart: recapture probability vs release time. Assumes known waist/depth; not a direct trap-frequency measurement.
 
-### 9. Lab Calculators (`lab-calculators.html`)
+### 9. Quick Lab Console (`lab-calculators.html`)
 Large multi-section calculator suite organized in tabs:
 - **Optics**: beam waist, Rayleigh range, NA, fiber coupling, telescope magnification, dBm↔mW, AOM shift, shot noise
 - **Atomic physics**: photon recoil, Doppler temperature, single-recoil and scatter-heating scales, de Broglie wavelength, Zeeman shift, I_sat
@@ -421,7 +421,7 @@ Guide + interactive tool for saturated absorption spectroscopy (SAS), PDH lockin
 ### 11. Zernike Polynomials (`zernike.html`)
 Interactive wavefront aberration analyzer. OSA/ANSI Zernike polynomial Z_n^m(ρ,θ) = R_n^|m|(ρ)·Θ_m(θ). Coefficients slider for tip, tilt, defocus, astigmatism, coma, trefoil, spherical, etc. Canvas wavefront display. Strehl ratio computation. Application to SLM phase patterns for LG modes.
 
-### 12. Polarimetry Explorer (`polarimetry.html`)
+### 12. Polarimetry Simulator (`polarimetry.html`)
 Stokes parameter visualization for polarization state characterization. Quarter-wave plate rotation analysis, degree of polarization, Poincaré sphere visualization. Applications to optical pumping setup.
 
 ### 13. Laser System Planner (`laser-planner.html`)

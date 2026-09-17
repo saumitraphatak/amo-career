@@ -29,3 +29,7 @@ Mobile nav links (`mobileItemHTML` in `js/main.js`) were missing the `kind` subt
 
 ## Performance audit update (2026-09)
 Same jsdelivr preconnect fix as the tool pages (home.html also loads from jsdelivr). Also: this run's audit flagged (not fixed) that Chart.js/main.js render-blocking on 19 tool pages needs page-by-page verification before it can safely get `defer`, and that 6 functions in js/main.js appear to be unused dead code (~12.5% of the file) — worth confirming with you before removal. See docs/performance-audit-2026-09.md.
+
+
+## Technical audit update (2026-09-16)
+`og:title` was truncated to "AMO Toolkit for AMO Physics", dropping "& Quantum Science" that both `<title>` and `twitter:title` already carry -- a social-media share of the homepage was showing an incomplete title. Fixed to match. See docs/technical-audit-2026-09-16.md.

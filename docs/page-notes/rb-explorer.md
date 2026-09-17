@@ -29,3 +29,10 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Technical audit update (2026-09-16)
+`og:title`, `twitter:title`, and the JSON-LD `headline` still said the page's old name, "Randomized Benchmarking Explorer" -- stale from whenever this page was renamed to "Randomized Benchmarking" in `<title>`, the on-page content, and `main.js`'s `NAV` entry/home-page card. Synced all three meta fields to the current name, plus the matching reference in `llms.txt`/`llms-full.txt` and `CLAUDE.md`'s per-page section header. See docs/technical-audit-2026-09-16.md.
+
+## Design/visual-consistency audit update (2026-09-17)
+Two undefined-CSS-variable bugs, both silently falling back to the wrong font: (1) `var(--mono)` used in 7 rules — `--mono` doesn't exist site-wide, only `--font-mono` does; replaced all 7. (2) the Clifford-group table's first column used `font-family: var(--font-body, Inter, sans-serif)` — `--font-body` also doesn't exist, so with its own inline fallback this cell was permanently stuck in Inter/sans-serif regardless of theme, unlike the rest of the page's text which correctly switches serif/sans-serif with the light/dark toggle via `var(--font-sans)`. Replaced with `var(--font-sans)`. This page's Chart.js decay-curve colors (`#c084fc` purple, `#60a5fa`/`#34d399` for the paired series) were also checked as part of this pass — these are deliberate per-series data-differentiation colors, not leftover unmapped page-identity accent (the page's own `--accent` chrome variable was already correctly remapped to ink-blue in the prior design audit), so left untouched; recoloring the purple series to match the page's blue chrome would have made the two-series RB decay charts harder to read. See docs/design-audit-2026-09-17.md.

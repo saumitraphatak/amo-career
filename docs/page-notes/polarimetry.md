@@ -21,3 +21,7 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Technical audit update (2026-09-16)
+`og:title`, `twitter:title`, and the JSON-LD `headline` still said the page's old name, "Polarimetry Explorer" -- stale from whenever this page was renamed to "Polarimetry Simulator" in `<title>`, the on-page content, and `main.js`'s `NAV` entry/home-page card. Synced all three meta fields to the current name, plus the matching reference in `llms.txt`/`llms-full.txt` and `CLAUDE.md`'s per-page section header. See docs/technical-audit-2026-09-16.md.
