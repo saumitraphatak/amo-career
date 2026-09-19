@@ -38,3 +38,7 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Link audit update (2026-09-16)
 The Ketterle Lab group-card link (`cua.mit.edu/groups/ketterle-group/`) 404s. Repointed to `cua.mit.edu/people/wolfgang-ketterle`, his current CUA profile page. See docs/link-audit-2026-09-16.md.
+
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its page-footer signature line used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.

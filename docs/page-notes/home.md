@@ -33,3 +33,9 @@ Same jsdelivr preconnect fix as the tool pages (home.html also loads from jsdeli
 
 ## Technical audit update (2026-09-16)
 `og:title` was truncated to "AMO Toolkit for AMO Physics", dropping "& Quantum Science" that both `<title>` and `twitter:title` already carry -- a social-media share of the homepage was showing an incomplete title. Fixed to match. See docs/technical-audit-2026-09-16.md.
+
+## Cross-page consistency re-audit (2026-09-18)
+Tools-grid `tool-card-num` badges for 4 pages had drifted out of sync with those pages' own hero-eyebrow numbers, left behind by the original cross-page audit's 2026-09-08 renumbering (which fixed eyebrows/breadcrumbs but not this third copy of the same sequence number): `remote-entanglement.html` "QC 04"→"QC 06", `rb-explorer.html` "QC 05"→"QC 04", `dd-playground.html` "QC 06"→"QC 05", `cooling-simulator.html` "TRAP 06"→"TRAP 07". Also added missing `og:image`/`twitter:*` tags to `index.html` (the root redirect stub) to match `home.html`'s. See docs/cross-page-consistency-audit-2026-09-18.md.
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Two teaser cards had gone stale relative to the pages they link to. (1) The "AMO Paper Roadmap" career-showcase card said "53 foundational papers" / a "53 papers" chip; `paper-syllabus.html` has carried 55 papers since the 2026-09-15 science audit added two. Updated both to 55. (2) The "Rydberg Gate Error Budget" tool-card's description cited only "Evered 2023: 99.5%" as the state-of-the-art comparison; `fidelity-budget.html`'s own SOTA section was updated by that same 2026-09-15 pass to add a newer Evered et al. 2026 preprint result (99.854%) alongside the 2023 figure, so the home teaser was undeselling the page's actual content. Updated the parenthetical to cite both. See docs/flow-audit-2026-09-19.md.

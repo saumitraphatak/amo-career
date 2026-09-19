@@ -23,3 +23,12 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+## Cross-page consistency re-audit (2026-09-18)
+Home page's tools-grid badge for this page said "QC 04", disagreeing with this page's own hero eyebrow ("Quantum 06") — left behind by the original audit's 2026-09-08 renumbering, which updated the eyebrow but not the home-card badge. Fixed the home badge to "QC 06" to match. See docs/cross-page-consistency-audit-2026-09-18.md.
+
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`.
+
+Also fixed: the References & Further Reading section — which comes after this page's own sequentially-numbered sections 01–09 — was itself labeled "07," a leftover from before the page grew to 9 sections. Following the convention used elsewhere on the site (absorption-imaging.html's References is "05" after 4 content sections; decoherence-lab.html's is "08" after 7), renumbered to "10." See docs/flow-audit-2026-09-19.md.

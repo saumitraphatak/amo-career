@@ -25,3 +25,7 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Technical audit update (2026-09-16)
 `og:title`, `twitter:title`, and the JSON-LD `headline` still said the page's old name, "Polarimetry Explorer" -- stale from whenever this page was renamed to "Polarimetry Simulator" in `<title>`, the on-page content, and `main.js`'s `NAV` entry/home-page card. Synced all three meta fields to the current name, plus the matching reference in `llms.txt`/`llms-full.txt` and `CLAUDE.md`'s per-page section header. See docs/technical-audit-2026-09-16.md.
+
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Cross-reference naming drift: this page's own outgoing "See Also" card label(s), its page-footer signature line, and its BreadcrumbList JSON-LD leaf name used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.

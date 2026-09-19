@@ -37,3 +37,9 @@ Follow-up freshness pass (rotating back through the science-content audit per th
 
 ## Technical audit update (2026-09-16)
 `og:title`, `twitter:title`, and the JSON-LD `headline` still said the page's old name, "Quantum Computing Landscape" -- stale from whenever this page was renamed to "Quantum Industry Map" in `<title>`, the on-page content, and `main.js`'s `NAV` entry/home-page card. Synced all three meta fields to the current name, plus the matching reference in `llms.txt`/`llms-full.txt` and `CLAUDE.md`'s per-page section header. See docs/technical-audit-2026-09-16.md.
+
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its BreadcrumbList JSON-LD leaf name used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`.
+
+Also fixed: (1) the Fault-Tolerance Roadmap timeline's 2025 Neutral Atoms entry said "6,100 coherent Rb qubits," contradicting both this page's own later, correct statement ("6,100 highly coherent ¹³³Cs atoms") and the site-wide guarded fact that the 6,100-atom/12.6s record is Cs-133, not Rb-87 (enforced by tests/formula_regression.py on rb87-vs-yb171.html) — corrected to Cs. (2) The hero paragraph said "Updated to May 2026" while the footer already said "Data updated September 2026" (from the 2026-09-15 science pass) — the hero timestamp was never bumped to match. Updated hero to September 2026. See docs/flow-audit-2026-09-19.md.

@@ -26,3 +26,7 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Design/visual-consistency audit update (2026-09-17)
 This page's `<style>` block used `var(--mono)` for 12 monospace-styled rules — `--mono` was never defined anywhere in the codebase (only `--font-mono` exists in `css/styles.css`), so with no fallback these elements silently inherited the page's body font instead of rendering in the mono typeface. Replaced all 12 with `var(--font-mono)`. See docs/design-audit-2026-09-17.md.
+
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.

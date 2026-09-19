@@ -45,3 +45,9 @@ The "2024–25 State of the Art" box (Bell-inequality/QEC section) cited Quantin
 
 ## Design/visual-consistency audit update (2026-09-17)
 This page's `<style>` block used `var(--mono)` for 23 monospace-styled rules — `--mono` was never defined anywhere in the codebase (only `--font-mono` exists in `css/styles.css`), so with no fallback these elements silently inherited the page's body font instead of rendering in the mono typeface. Replaced all 23 with `var(--font-mono)`. See docs/design-audit-2026-09-17.md.
+
+
+## Content-flow & pedagogy audit update (2026-09-19)
+Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its page-footer signature line used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`.
+
+Also fixed: the "2024–26 State of the Art" theory box states Bluvstein/Harvard reached "48 logical qubits" and, two sentences later, that Quantinuum's Helios also reached "48 fully error-corrected logical qubits" — a coincidental identical headline number for two unrelated platforms stated back-to-back with nothing signaling it's a coincidence. Added "separately" before the second mention for clarity. See docs/flow-audit-2026-09-19.md.
