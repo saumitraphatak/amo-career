@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google vs IBM — Superconducting Quantum Computing Comparison — AMO Toolkit</title>
+  <meta name="description" content="In-depth, heavily-referenced comparison of Google Quantum AI and IBM Quantum, the two leading superconducting-qubit quantum computing programs: architecture, error correction, quantum advantage claims, roadmaps, and business.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://amotoolkit.com/pages/google-vs-ibm.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=21">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+
+  <style>
+    /* ── page theme ─────────────────────────────────── */
+    :root {
+      --goog: #4285f4;   /* Google blue */
+      --ibm:  #6929c4;   /* IBM purple (Carbon design system) */
+      --page: #b45309;   /* page accent amber */
+    }
+
+    .page-wrap { padding-top: 64px; }
+
+    .topic-nav {
+      position: sticky; top: 64px; z-index: 50;
+      background: color-mix(in srgb, var(--bg-surface) 95%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(180,83,9,0.18);
+      padding: .45rem 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+    }
+    .topic-nav::-webkit-scrollbar { display: none; }
+    .topic-nav-inner { display: inline-flex; gap: .3rem; padding: 0 1.5rem; }
+    .tnav-btn {
+      background: transparent; border: 1px solid transparent; border-radius: 20px;
+      padding: .28rem .85rem; font-size: .8rem; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; transition: all .18s; white-space: nowrap;
+    }
+    .tnav-btn:hover   { color: var(--text-primary); border-color: rgba(180,83,9,0.35); }
+    .tnav-btn.active  { color: #b45309; background: rgba(180,83,9,0.1); border-color: rgba(180,83,9,0.4); }
+
+    .page-hero {
+      background: linear-gradient(135deg, rgba(66,133,244,0.06) 0%, rgba(105,41,196,0.06) 100%);
+      border-bottom: 1px solid rgba(180,83,9,0.15);
+      padding: 3rem 0 2.5rem;
+    }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.75rem; }
+    @media(max-width:680px) { .hero-split { grid-template-columns: 1fr; } }
+
+    .hero-atom-card { border-radius: 14px; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: .5rem; }
+    .hero-atom-card.goog { background: rgba(66,133,244,0.08); border: 1px solid rgba(66,133,244,0.25); }
+    .hero-atom-card.ibm  { background: rgba(105,41,196,0.08); border: 1px solid rgba(105,41,196,0.25); }
+
+    .hero-atom-name { font-size: 1.6rem; font-weight: 800; }
+    .hero-atom-sub  { font-size: .85rem; color: var(--text-muted); margin: 0; }
+    .hero-atom-stats { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
+    .hero-stat-chip { border-radius: 6px; padding: .15rem .55rem; font-size: .76rem; font-weight: 600; }
+    .hero-stat-chip.goog { background: rgba(66,133,244,0.15); color: #1a56db; border: 1px solid rgba(26,86,219,0.3); }
+    .hero-stat-chip.ibm  { background: rgba(105,41,196,0.15); color: #491d8b; border: 1px solid rgba(73,29,139,0.3); }
+
+    .page-content .container { padding-top: 2.5rem; padding-bottom: 4rem; }
+    .section-block { margin-bottom: 3.5rem; scroll-margin-top: 120px; }
+    .section-title {
+      font-size: 1.35rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .2rem 0; border-left: 3px solid var(--page); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.2rem .85rem; }
+
+    .side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:768px) { .side-by-side { grid-template-columns: 1fr; } }
+
+    .atom-col { border-radius: 12px; padding: 1.2rem 1.35rem; }
+    .atom-col.goog { background: rgba(66,133,244,0.06); border: 1px solid rgba(66,133,244,0.2); }
+    .atom-col.ibm  { background: rgba(105,41,196,0.06); border: 1px solid rgba(105,41,196,0.2); }
+
+    .atom-col-header { display: flex; align-items: center; gap: .55rem; margin-bottom: .85rem; padding-bottom: .6rem; border-bottom: 1px solid; }
+    .atom-col.goog .atom-col-header { border-color: rgba(66,133,244,0.25); }
+    .atom-col.ibm  .atom-col-header { border-color: rgba(105,41,196,0.25); }
+
+    .atom-col-title { font-size: 1.05rem; font-weight: 700; }
+    .atom-col.goog .atom-col-title { color: #1a56db; }
+    .atom-col.ibm  .atom-col-title { color: #491d8b; }
+
+    .atom-col ul { padding-left: 1.1rem; margin: 0; }
+    .atom-col li { font-size: .86rem; color: var(--text-muted); margin-bottom: .42rem; line-height: 1.55; }
+    .atom-col p  { font-size: .87rem; color: var(--text-muted); margin: 0 0 .6rem 0; line-height: 1.6; }
+
+    .formula-box {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 10px;
+      padding: 1rem 1.25rem; margin: .9rem 0; font-size: .88rem; line-height: 1.9; color: var(--text-secondary);
+    }
+
+    .info-box {
+      background: rgba(180,83,9,0.07); border: 1px solid rgba(180,83,9,0.22); border-radius: 10px;
+      padding: 1rem 1.2rem; margin: .8rem 0; font-size: .87rem; color: var(--text-secondary); line-height: 1.65;
+    }
+    .info-box strong { color: #b45309; }
+
+    .goog-box {
+      background: rgba(66,133,244,0.07); border: 1px solid rgba(66,133,244,0.22); border-radius: 10px;
+      padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .goog-box strong { color: #1a56db; }
+
+    .ibm-box {
+      background: rgba(105,41,196,0.07); border: 1px solid rgba(105,41,196,0.22); border-radius: 10px;
+      padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .ibm-box strong { color: #491d8b; }
+
+    .chart-box { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .chart-caption { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0 0; font-style: italic; }
+
+    .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #1e293b; }
+    .cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid #1e293b; white-space: nowrap; font-size: .8rem; }
+    .cmp th.goog-h { background: rgba(66,133,244,0.12); color: #1a56db; }
+    .cmp th.ibm-h  { background: rgba(105,41,196,0.12); color: #491d8b; }
+    .cmp th.cat-h  { background: var(--bg-card); color: var(--text-muted); }
+    .cmp td { color: var(--text-secondary); padding: .55rem .9rem; border-bottom: 1px solid #0d1827; vertical-align: top; line-height: 1.55; }
+    .cmp td.goog-td { background: rgba(66,133,244,0.04); }
+    .cmp td.ibm-td  { background: rgba(105,41,196,0.04); }
+    .cmp tr:hover td { filter: brightness(1.1); }
+    .cmp .win { font-weight: 700; }
+    .cmp .win.goog { color: #1a56db; }
+    .cmp .win.ibm  { color: #491d8b; }
+    .cmp .win.tie  { color: #4f72a4; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: .9rem; margin: 1.2rem 0; }
+    @media(max-width:700px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+    .stat-card-sm { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: .9rem 1rem; text-align: center; }
+    .stat-card-sm .stat-num { font-size: 1.3rem; font-weight: 800; }
+    .stat-card-sm .stat-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+    .stat-card-sm.goog { border-color: rgba(66,133,244,0.25); }
+    .stat-card-sm.ibm  { border-color: rgba(105,41,196,0.25); }
+    .stat-card-sm.preprint { border-color: rgba(6,182,212,0.35); }
+
+    .paper-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: .9rem 1.1rem; margin-bottom: .6rem; transition: border-color .18s;
+    }
+    .paper-card:hover { border-color: rgba(180,83,9,0.35); }
+    .paper-card .paper-title { font-size: .9rem; font-weight: 600; color: var(--text-primary); margin-bottom: .3rem; }
+    .paper-card .paper-meta  { font-size: .78rem; color: #b45309; margin-bottom: .35rem; }
+    .paper-card .paper-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+    .paper-card a { color: #046de1; text-decoration: none; }
+    .paper-card a:hover { text-decoration: underline; }
+
+    .paper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    @media(max-width:768px) { .paper-grid { grid-template-columns: 1fr; } }
+
+    .company-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: 1rem 1.2rem; margin-bottom: .65rem; transition: border-color .18s;
+    }
+    .company-card:hover { border-color: rgba(180,83,9,0.35); }
+    .company-card h4 { font-size: .93rem; margin: 0 0 .3rem 0; }
+    .company-card h4 a { color: #046de1; text-decoration: none; }
+    .company-card h4 a:hover { text-decoration: underline; }
+    .company-card p { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+    .adv-badge { display: inline-block; border-radius: 4px; padding: .1rem .45rem; font-size: .72rem; font-weight: 700; vertical-align: middle; margin-left: .3rem; }
+    .adv-goog { background: rgba(66,133,244,0.18); color: #1a56db; border: 1px solid rgba(26,86,219,0.35); }
+    .adv-ibm  { background: rgba(105,41,196,0.18); color: #491d8b; border: 1px solid rgba(73,29,139,0.35); }
+    .adv-tie  { background: rgba(148,163,184,0.15); color: #4f72a4; border: 1px solid rgba(148,163,184,0.25); }
+
+    .insight {
+      background: rgba(180,83,9,0.07); border-left: 3px solid #b45309; border-radius: 0 8px 8px 0;
+      padding: .7rem 1rem; font-size: .84rem; color: var(--text-secondary); margin: .8rem 0; line-height: 1.6;
+    }
+
+    .vs-divider { display: flex; align-items: center; gap: .75rem; margin: 1rem 0; }
+    .vs-line { flex: 1; height: 1px; background: var(--bg-card); }
+    .vs-label {
+      font-size: .9rem; font-weight: 800; color: #b45309; background: rgba(180,83,9,0.1);
+      border: 1px solid rgba(180,83,9,0.25); border-radius: 20px; padding: .2rem .75rem;
+    }
+
+    .timeline { position: relative; padding-left: 1.6rem; margin: 1rem 0; }
+    .timeline::before { content:''; position:absolute; left:.42rem; top:.3rem; bottom:.3rem; width:2px; background: rgba(180,83,9,0.25); }
+    .tl-item { position: relative; margin-bottom: 1rem; padding-left: .6rem; }
+    .tl-item::before { content:''; position:absolute; left:-1.28rem; top:.3rem; width:.6rem; height:.6rem; border-radius:50%; background: var(--dot,#b45309); }
+    .tl-item .tl-year { font-size: .76rem; font-weight: 700; color: var(--dot,#b45309); }
+    .tl-item .tl-body { font-size: .85rem; color: var(--text-secondary); line-height: 1.55; }
+  </style>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Google vs IBM — Superconducting Quantum Computing Comparison — AMO Toolkit">
+  <meta property="og:description" content="In-depth, heavily-referenced comparison of Google Quantum AI and IBM Quantum: transmon architecture, error correction, quantum advantage claims, roadmaps, and business.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/google-vs-ibm.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Google vs IBM — Superconducting Quantum Computing Comparison — AMO Toolkit">
+  <meta name="twitter:description" content="In-depth, heavily-referenced comparison of Google Quantum AI and IBM Quantum: architecture, error correction, quantum advantage claims, roadmaps, and business.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Google vs IBM — Superconducting Quantum Computing Comparison","description":"In-depth, heavily-referenced comparison of Google Quantum AI and IBM Quantum: architecture, error correction, quantum advantage claims, roadmaps, and business.","url":"https://amotoolkit.com/pages/google-vs-ibm.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Career","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Google vs IBM","item":"https://amotoolkit.com/pages/google-vs-ibm.html"}]}</script>
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+      <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.85rem;">
+        <span style="background:rgba(180,83,9,0.1);border:1px solid rgba(180,83,9,0.25);color:#b45309;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">🔗 Career 06 · Google vs IBM</span>
+        <span style="background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.25);color:#1a56db;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">Google · Willow, 105 qubits</span>
+        <span style="background:rgba(105,41,196,0.1);border:1px solid rgba(105,41,196,0.25);color:#491d8b;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">IBM · Nighthawk, 120 qubits</span>
+      </div>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.6rem); font-weight:800; margin:0 0 .75rem 0;">
+        <span style="color:#1a56db;">Google</span>
+        <span style="color:#b45309; margin:0 .5rem;">vs</span>
+        <span style="color:#491d8b;">IBM</span>
+        , Superconducting Qubit Showdown
+      </h1>
+      <p style="color:var(--text-muted);font-size:.95rem;max-width:780px;margin:0 0 1.5rem 0;line-height:1.7;">
+        The two longest-running, most heavily scrutinized superconducting-qubit quantum computing programs, and two
+        very different philosophies about what counts as progress: Google's headline "quantum advantage" benchmarks
+        against classical supercomputers, versus IBM's "utility" claims and an explicit, dated roadmap to
+        large-scale fault tolerance. A thorough, source-checked comparison across architecture, error correction,
+        advantage claims, and business.
+      </p>
+
+      <div class="hero-split">
+        <div class="hero-atom-card goog">
+          <div class="hero-atom-name" style="color:#1a56db;">Google Quantum AI</div>
+          <div class="hero-atom-sub">Alphabet subsidiary · transmon superconducting · not separately public</div>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip goog">Below-threshold QEC (Nature 2024)</span>
+            <span class="hero-stat-chip goog">105 qubits (Willow)</span>
+            <span class="hero-stat-chip goog">Verifiable advantage claim (2025)</span>
+            <span class="hero-stat-chip goog">Part of Alphabet (NASDAQ: GOOGL)</span>
+          </div>
+        </div>
+        <div class="hero-atom-card ibm">
+          <div class="hero-atom-name" style="color:#491d8b;">IBM Quantum</div>
+          <div class="hero-atom-sub">IBM Corp division · transmon superconducting · NYSE: IBM</div>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip ibm">"Utility" claim (Nature 2023)</span>
+            <span class="hero-stat-chip ibm">120 qubits (Nighthawk)</span>
+            <span class="hero-stat-chip ibm">Starling FTQC target: 2029</span>
+            <span class="hero-stat-chip ibm">qLDPC bivariate-bicycle codes</span>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes gi-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.gi-node{animation:gi-pulse 1.8s ease-in-out infinite;}
+</style>
+<line x1="150" y1="20" x2="150" y2="150" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<text x="150" y="88" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.25)" font-family="monospace" font-weight="700">vs</text>
+<!-- Google: heavy-hex-ish lattice -->
+<text x="70" y="22" text-anchor="middle" font-size="10" fill="#1a56db" font-weight="800" font-family="monospace">Google</text>
+<g stroke="#1a56db" stroke-width="0.8" opacity=".4">
+<line x1="45" y1="60" x2="70" y2="48"/><line x1="70" y1="48" x2="95" y2="60"/>
+<line x1="45" y1="60" x2="45" y2="88"/><line x1="95" y1="60" x2="95" y2="88"/>
+<line x1="45" y1="88" x2="70" y2="100"/><line x1="70" y1="100" x2="95" y2="88"/>
+<line x1="70" y1="100" x2="70" y2="120"/>
+</g>
+<circle cx="45" cy="60" r="3" fill="#1a56db" class="gi-node" style="animation-delay:-.1s" opacity=".9"/>
+<circle cx="70" cy="48" r="3" fill="#1a56db" class="gi-node" style="animation-delay:-.4s" opacity=".9"/>
+<circle cx="95" cy="60" r="3" fill="#1a56db" class="gi-node" style="animation-delay:-.7s" opacity=".9"/>
+<circle cx="45" cy="88" r="4.2" fill="#7baaf7" class="gi-node" style="animation-delay:-1.0s" filter="url(#gif1)"/>
+<circle cx="95" cy="88" r="3" fill="#1a56db" class="gi-node" style="animation-delay:-1.3s" opacity=".9"/>
+<circle cx="70" cy="100" r="3" fill="#1a56db" class="gi-node" style="animation-delay:-.2s" opacity=".9"/>
+<circle cx="70" cy="120" r="3" fill="#1a56db" class="gi-node" style="animation-delay:-.6s" opacity=".9"/>
+<text x="70" y="140" text-anchor="middle" font-size="7" fill="#1a56db" opacity=".7" font-family="monospace">square lattice, transmon</text>
+<!-- IBM: heavy-hex lattice -->
+<text x="220" y="22" text-anchor="middle" font-size="10" fill="#491d8b" font-weight="800" font-family="monospace">IBM</text>
+<g stroke="#491d8b" stroke-width="0.8" opacity=".4">
+<line x1="196" y1="55" x2="220" y2="45"/><line x1="220" y1="45" x2="244" y2="55"/>
+<line x1="196" y1="55" x2="196" y2="80"/><line x1="244" y1="55" x2="244" y2="80"/>
+<line x1="196" y1="80" x2="208" y2="95"/><line x1="244" y1="80" x2="232" y2="95"/>
+<line x1="208" y1="95" x2="232" y2="95"/><line x1="220" y1="95" x2="220" y2="118"/>
+</g>
+<circle cx="196" cy="55" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-.15s" opacity=".9"/>
+<circle cx="220" cy="45" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-.45s" opacity=".9"/>
+<circle cx="244" cy="55" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-.75s" opacity=".9"/>
+<circle cx="196" cy="80" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-1.05s" opacity=".9"/>
+<circle cx="244" cy="80" r="4.2" fill="#9163d4" class="gi-node" style="animation-delay:-1.35s" filter="url(#gif2)"/>
+<circle cx="208" cy="95" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-.25s" opacity=".9"/>
+<circle cx="232" cy="95" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-.55s" opacity=".9"/>
+<circle cx="220" cy="118" r="3" fill="#491d8b" class="gi-node" style="animation-delay:-.85s" opacity=".9"/>
+<text x="220" y="140" text-anchor="middle" font-size="7" fill="#491d8b" opacity=".7" font-family="monospace">heavy-hex, tunable couplers</text>
+<defs>
+  <filter id="gif1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gif2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+</svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STICKY TOPIC NAV ──────────────────────────────────────────── -->
+  <nav class="topic-nav" id="topicNav" aria-label="Page sections">
+    <div class="topic-nav-inner">
+      <button class="tnav-btn active" data-target="overview">Overview</button>
+      <button class="tnav-btn" data-target="architecture">Architecture</button>
+      <button class="tnav-btn" data-target="generations">Hardware Generations</button>
+      <button class="tnav-btn" data-target="fidelity">Gate Fidelity</button>
+      <button class="tnav-btn" data-target="fault-tolerance">Fault Tolerance</button>
+      <button class="tnav-btn" data-target="advantage">Advantage Claims</button>
+      <button class="tnav-btn" data-target="comparison">Full Comparison</button>
+      <button class="tnav-btn" data-target="business">Business &amp; Roadmaps</button>
+      <button class="tnav-btn" data-target="companies">Ecosystem</button>
+      <button class="tnav-btn" data-target="papers">Papers</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container">
+
+  <!-- ── 1. OVERVIEW ──────────────────────────────────────────────── -->
+  <section class="section-block anim-in" id="overview">
+    <h2 class="section-title"><span class="accent">01</span> Why These Two Companies?</h2>
+    <p class="section-sub">The two research programs that between them have made both of the biggest public claims in superconducting quantum computing: "quantum advantage" and "quantum utility."</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      Superconducting transmon qubits are tiny LC circuits made from aluminum films on silicon or sapphire, cooled
+      to millikelvin temperatures in a dilution refrigerator, and manipulated with microwave pulses. It is the
+      oldest continuously-funded qubit modality at industrial scale, and it is dominated by two very differently
+      structured organizations: <strong style="color:#1a56db;">Google Quantum AI</strong> (a research division
+      inside Alphabet/Google, not separately publicly traded, that treats each generation of hardware as a
+      physics-demonstration vehicle) and <strong style="color:#491d8b;">IBM Quantum</strong> (a business unit of a
+      NYSE-listed 114-year-old technology company, that has published detailed multi-year commercial roadmaps and
+      committed more than $10B to quantum computing as of June 2026). Both are chasing the same underlying physics —
+      the surface code, or a related error-correcting code, layered on top of a scalable transmon lattice — but from
+      opposite institutional starting points.
+    </p>
+
+    <div class="info-box">
+      <strong>The core trade-off:</strong>
+      Google has made the two headline-grabbing physics claims in the field: the original (and long-disputed) 2019
+      "quantum supremacy" result on the 53-qubit Sycamore chip, and a 2025 "verifiable quantum advantage" claim using
+      the Quantum Echoes algorithm on the newer 105-qubit Willow chip, peer-reviewed and published in <em>Nature</em>.
+      IBM, by contrast, has focused on a narrower, more conservative "utility" claim — that a 127-qubit device
+      (Eagle) could produce numerically useful results on certain physics simulations <em>before</em> full error
+      correction — a claim that was itself subsequently challenged by classical tensor-network simulations. IBM has
+      also published by far the most detailed public fault-tolerance roadmap in the industry, naming every
+      intermediate chip through 2029. <strong>The tension this page is built around:</strong> Google currently holds
+      the stronger, more recent, peer-reviewed advantage claim; IBM has the more transparent, more skeptically
+      stress-tested roadmap and a hardware philosophy (bivariate-bicycle qLDPC codes) that promises roughly 10× less
+      physical-qubit overhead than the surface code Google has used to date. Neither company has yet demonstrated a
+      fault-tolerant, commercially useful quantum computer.
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card-sm goog"><div class="stat-num" style="color:#1a56db;">13,000×</div><div class="stat-label">Google Quantum Echoes speedup<br>vs. best classical algorithm (Nature 2025)</div></div>
+      <div class="stat-card-sm goog"><div class="stat-num" style="color:#1a56db;">105</div><div class="stat-label">Willow qubits<br>(two chip variants, Dec 2024)</div></div>
+      <div class="stat-card-sm ibm"><div class="stat-num" style="color:#491d8b;">120</div><div class="stat-label">IBM Nighthawk qubits<br>(square lattice, Nov 2025)</div></div>
+      <div class="stat-card-sm ibm"><div class="stat-num" style="color:#491d8b;">2029</div><div class="stat-label">IBM's public target date<br>for Starling, its first FTQC system</div></div>
+      <div class="stat-card-sm ibm"><div class="stat-num" style="color:#491d8b;">$10B+</div><div class="stat-label">IBM's cumulative quantum<br>investment commitment (Jun 2026)</div></div>
+    </div>
+
+    <div class="common-mistake" style="margin-top:1rem;">
+      <strong>Source-confidence rule for this page:</strong>
+      <span class="source-tag peer-reviewed">peer-reviewed</span> numbers come directly from journal papers;
+      <span class="source-tag preprint">preprint</span> numbers are posted but not yet peer-reviewed;
+      <span class="source-tag company-roadmap">company roadmap</span> numbers are product specs, press releases, or
+      future targets. Both companies' most famous advantage/utility claims were later challenged by independent
+      classical-simulation papers — those challenges are presented alongside the original claims throughout this
+      page rather than omitted, because that back-and-forth is itself the most instructive part of the story.
+    </div>
+  </section>
+
+  <!-- ── 2. ARCHITECTURE ─────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-1" id="architecture">
+    <h2 class="section-title"><span class="accent">02</span> Architecture &amp; Qubit Control</h2>
+    <p class="section-sub">Both use transmon superconducting qubits and microwave control — the difference is in lattice topology and how couplers are wired.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col goog">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🔵</span>
+          <span class="atom-col-title">Google: Fixed-Frequency, Square/Diagonal Lattice</span>
+        </div>
+        <p>Google's transmons are arranged on a lattice with roughly grid-like nearest-neighbor connectivity
+        (Willow's spec sheet reports an average connectivity of 3.47 — close to, but not exactly, a uniform 4-way
+        square grid, since edge and corner qubits have fewer neighbors). Two-qubit gates use tunable couplers
+        between fixed-frequency qubits, a design first introduced on Sycamore and refined through Willow.</p>
+        <ul>
+          <li><strong>Fixed-frequency transmons + tunable couplers:</strong> reduces frequency-crowding-related errors relative to fully tunable-qubit designs, at the cost of needing careful frequency allocation across the chip during fabrication <span class="source-tag textbook">established technique</span></li>
+          <li><strong>Two chip variants at the Willow generation:</strong> Google fabricates and tunes separate chips optimized for different demonstrations — one tuned for quantum error correction (better two-qubit fidelity, shorter T1), one tuned for random-circuit-sampling/advantage demonstrations (longer T1, even better two-qubit fidelity) — rather than a single chip serving both roles equally well <span class="source-tag company-roadmap">company spec sheet</span></li>
+          <li>Packaging: flip-chip bump-bonded architecture with through-silicon vias for wiring, allowing control and readout lines to be routed from beneath the qubit plane rather than crowding the chip edges — a packaging approach Google has used since Sycamore and refined for Willow's denser lattice</li>
+          <li>Google Quantum AI is a research division inside Alphabet, not a separately reported business unit — there is no public product line comparable to IBM's cloud-accessible System One/System Two hardware tiers</li>
+        </ul>
+      </div>
+
+      <div class="atom-col ibm">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🟣</span>
+          <span class="atom-col-title">IBM: Heavy-Hex, Now Pivoting to Square</span>
+        </div>
+        <p>From Eagle (2021) through Heron R2 (2024), every mainline IBM chip used a <strong>heavy-hexagonal
+        lattice</strong> — a topology chosen specifically because it is compatible with the surface code while
+        minimizing frequency collisions between neighboring qubits, at the cost of below-4 average connectivity.
+        With Nighthawk (Nov 2025), IBM switched to a denser <strong>square lattice</strong> with tunable couplers.</p>
+        <ul>
+          <li><strong>Heavy-hex generations (2021–2024):</strong> Eagle (127q), Osprey (433q), Condor (1,121q), Heron/Heron R2 (133q/156q) — connectivity capped at 3 for most qubits, chosen to suppress two-qubit crosstalk and frequency collisions <span class="source-tag company-roadmap">company</span></li>
+          <li><strong>Nighthawk (2025–):</strong> 120 qubits, square lattice, tunable couplers, each qubit connecting to up to 4 neighbors via 218 coupler pairs — IBM reports this is a 20% increase in inter-qubit connections over Heron, letting circuits use ~30% more two-qubit gate layers at comparable fidelity by cutting the number of SWAP gates needed to route non-adjacent qubits together</li>
+          <li>Two-qubit gate fidelity above 99.9% is reported for over half of tested qubit pairs on Nighthawk-class hardware, with circuit-layer-operations-per-second (CLOPS) reaching 330,000, a 65% improvement over IBM's 2024 hardware <span class="source-tag company-roadmap">company spec</span></li>
+          <li>IBM explicitly frames the heavy-hex → square-lattice shift as a deliberate strategic pivot: the earlier 1,121-qubit Condor chip proved raw qubit count could scale, but IBM subsequently prioritized fidelity and connectivity per qubit (the Heron/Nighthawk lineage) over further count-scaling before returning to larger systems</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Why this is the real story of this comparison:</strong> both companies converged on transmon qubits
+      with tunable couplers, but they made opposite bets on lattice density at different points in time — Google
+      has favored denser near-square connectivity since Sycamore, while IBM spent 2021–2024 deliberately using a
+      <em>lower</em>-connectivity heavy-hex lattice to buy fidelity headroom, only pivoting to a denser square
+      lattice once its two-qubit fidelities were reliably above 99.9%. Nighthawk is, in a real sense, IBM catching up
+      to a topology choice Google made years earlier — but arriving there with a more mature qLDPC error-correction
+      strategy already public (Section 05).
+    </div>
+  </section>
+
+  <!-- ── 3. HARDWARE GENERATIONS ─────────────────────────────────────── -->
+  <section class="section-block anim-in delay-2" id="generations">
+    <h2 class="section-title"><span class="accent">03</span> Hardware Generations, Side by Side</h2>
+    <p class="section-sub">Very different scaling philosophies: Google iterates slowly with big physics claims; IBM iterates fast with named chips on a public cadence.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#1a56db;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Google Quantum AI Chips</h3>
+        <div class="timeline" style="--dot:#4285f4;">
+          <div class="tl-item"><div class="tl-year">2017–2018 · Foxtail / Bristlecone</div><div class="tl-body">20-qubit and 72-qubit prototypes establishing the fixed-frequency, tunable-coupler transmon architecture Google has used ever since.</div></div>
+          <div class="tl-item"><div class="tl-year">2019 · Sycamore</div><div class="tl-body">53 usable qubits (54 fabricated, 1 non-functional). Basis of the original "quantum supremacy" claim (Section 06) — later disputed by classical-simulation papers.</div></div>
+          <div class="tl-item"><div class="tl-year">Feb 2024 · Below-threshold QEC</div><div class="tl-body">Published in <em>Nature</em>: first experimental demonstration that increasing surface-code distance (from 3 to 5 to 7) <em>decreases</em> logical error rate, the long-sought "below threshold" regime for quantum error correction.</div></div>
+          <div class="tl-item"><div class="tl-year">Dec 2024 · Willow</div><div class="tl-body">105 qubits, average connectivity 3.47, fabricated as two tuned variants (QEC-optimized and RCS/advantage-optimized — see Section 04 for the differing specs). Random circuit sampling benchmark completed in under 5 minutes, a task Google estimated would take a leading classical supercomputer roughly 10²⁵ years.</div></div>
+          <div class="tl-item"><div class="tl-year">Oct 2025 · Quantum Echoes</div><div class="tl-body">Peer-reviewed in <em>Nature</em>: a verifiable out-of-time-order-correlator (OTOC) algorithm run on Willow, reported 13,000× faster than the best known classical algorithm on a leading supercomputer, cross-validated against real nuclear magnetic resonance (NMR) measurements on two molecules with UC Berkeley.</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#491d8b;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IBM Quantum Chips</h3>
+        <div class="timeline" style="--dot:#6929c4;">
+          <div class="tl-item"><div class="tl-year">2021 · Eagle</div><div class="tl-body">127 qubits, first IBM chip to break the 100-qubit barrier and the first to use the heavy-hex lattice at scale.</div></div>
+          <div class="tl-item"><div class="tl-year">2022 · Osprey</div><div class="tl-body">433 qubits, heavy-hex, primarily a packaging/scaling demonstration rather than a fidelity milestone.</div></div>
+          <div class="tl-item"><div class="tl-year">Jun 2023 · "Utility" claim (Eagle)</div><div class="tl-body">127-qubit Eagle ran a 60-gate-layer kicked-Ising-model simulation with error mitigation, published on the cover of <em>Nature</em> — later challenged by classical tensor-network papers (Section 06).</div></div>
+          <div class="tl-item"><div class="tl-year">Dec 2023 · Condor &amp; Heron</div><div class="tl-body">Condor: 1,121 qubits, heavy-hex — IBM's largest qubit-count chip to date and, so far, its last "more qubits" flagship. Heron (133 qubits): first chip to drop the fixed-coupler design in favor of tunable couplers, prioritizing fidelity over count.</div></div>
+          <div class="tl-item"><div class="tl-year">2024 · Heron R2</div><div class="tl-body">156 qubits, refined tunable-coupler heavy-hex design; became IBM's primary cloud-accessible production chip through 2025.</div></div>
+          <div class="tl-item"><div class="tl-year">Nov 2025 · Nighthawk &amp; Loon</div><div class="tl-body">Nighthawk: 120-qubit square-lattice production chip (Section 02). Loon: a separate, non-production chip introducing long-range "c-couplers" needed for qLDPC codes — first rung of IBM's fault-tolerance roadmap (Section 05).</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box" style="margin-top:1.5rem;">
+      <canvas id="scaleChart" height="240"></canvas>
+      <p class="chart-caption">Qubit count by named generation for each company (log scale). Note IBM's Condor (1,121 qubits, 2023) was a scale-only demonstration; IBM's subsequent chips (Heron, Nighthawk) deliberately used far fewer, higher-fidelity, better-connected qubits instead of continuing to scale count.</p>
+    </div>
+  </section>
+
+  <!-- ── 4. GATE FIDELITY ─────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-3" id="fidelity">
+    <h2 class="section-title"><span class="accent">04</span> Gate Fidelity Deep Dive</h2>
+    <p class="section-sub">Willow shipped as two different chips with two different fidelity profiles — a nuance worth getting right before comparing to IBM.</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      Google's own Willow spec sheet (published alongside the December 2024 announcement) reports different
+      calibration numbers for "Chip 1," tuned for the below-threshold quantum error correction demonstration, and
+      "Chip 2," tuned for random circuit sampling / advantage demonstrations. Conflating the two — quoting Chip 2's
+      better two-qubit fidelity as if it were the QEC chip's number, or vice versa — is a common but avoidable
+      mistake, so both are reported separately below.
+    </p>
+
+    <div class="formula-box">
+$$\varepsilon_{2Q}^{\rm Willow\,Chip1\,(QEC)} = 0.33\%\pm0.18\% \;\Rightarrow\; \mathcal{F}_{2Q} \approx 99.67\%,\qquad T_1 = 68\,\mu s\pm13\,\mu s$$
+$$\varepsilon_{2Q}^{\rm Willow\,Chip2\,(RCS)} = 0.14\%\pm0.052\% \;\Rightarrow\; \mathcal{F}_{2Q} \approx 99.86\%,\qquad T_1 = 98\,\mu s\pm32\,\mu s$$
+Both figures are randomized-benchmarking averages across the full 105-qubit device. Google's spec sheet attributes the T1/fidelity split between the two chips to "a tradeoff between optimizing qubit geometry for electromagnetic shielding and maximizing coherence" — i.e. the two chips are deliberately different devices, not the same hardware measured twice.</div>
+
+    <div class="chart-box">
+      <canvas id="fidelityChart" height="300"></canvas>
+      <p class="chart-caption">Two-qubit gate fidelity by system. Dashed line marks ~99.9%, a commonly cited practical threshold for useful near-term circuits. IBM's "&gt;99.9% for over half of tested pairs" is a distribution claim, not a single average — shown here as its reported representative figure.</p>
+    </div>
+
+    <div class="side-by-side">
+      <div class="goog-box">
+        <strong>Google, fidelity record</strong>
+        <ul style="margin:.5rem 0 0 1.1rem;padding:0;">
+          <li>Sycamore (2019): ~99.4% average 2Q fidelity on the RCS benchmark circuits used for the original supremacy claim <span class="source-tag peer-reviewed">peer-reviewed, Nature 574 (2019)</span></li>
+          <li>Willow Chip 1 (QEC-tuned, 2024): 99.965% 1Q / 99.67% 2Q / 99.23% readout, averaged across the device <span class="source-tag company-roadmap">company spec sheet</span></li>
+          <li>Willow Chip 2 (RCS-tuned, 2024): 99.964% 1Q / 99.86% 2Q / 99.33% readout <span class="source-tag company-roadmap">company spec sheet</span></li>
+        </ul>
+      </div>
+      <div class="ibm-box">
+        <strong>IBM, fidelity record</strong>
+        <ul style="margin:.5rem 0 0 1.1rem;padding:0;">
+          <li>Eagle (2021–2023): fidelities in the low-to-mid 99% range for 2Q gates, sufficient for the error-mitigated (not error-corrected) 2023 utility experiment, but not separately publicized as a headline spec <span class="source-tag company-roadmap">company</span></li>
+          <li>Heron / Heron R2 (2023–2024): tunable couplers pushed typical 2Q fidelity into the "Heron-class" baseline IBM continues to cite, roughly 99.9% on well-behaved pairs <span class="source-tag company-roadmap">company spec</span></li>
+          <li>Nighthawk (2025): &gt;99.9% 2Q fidelity reported for over 50% of tested qubit pairs on the new square lattice, alongside a 65% CLOPS improvement — IBM reports this as a distribution across pairs rather than a single device-wide average <span class="source-tag company-roadmap">company spec</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Reading the fidelity race honestly:</strong> Google's RCS-tuned Willow chip (99.86% 2Q, company spec)
+      and IBM's Nighthawk (&gt;99.9% for a majority of pairs, company spec) are in the same performance class, and
+      neither company has published a directly comparable, identically-measured, full-device average that would
+      let this page declare a clean winner. What differs more than raw fidelity is what each company chose to
+      <em>build</em> on top of that fidelity: Google used its QEC-tuned chip to cross the below-threshold error
+      correction milestone (Section 05), while IBM used its fidelity headroom to justify committing to a specific,
+      named fault-tolerance roadmap (Section 05) years in advance.
+    </div>
+  </section>
+
+  <!-- ── 5. FAULT TOLERANCE ──────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-4" id="fault-tolerance">
+    <h2 class="section-title"><span class="accent">05</span> Fault Tolerance &amp; Error Correction</h2>
+    <p class="section-sub">Google has demonstrated the below-threshold milestone; IBM has published the more detailed public roadmap and a fundamentally different, lower-overhead code family.</p>
+
+    <div class="formula-box">
+$$p_L(d) \approx A\left(\frac{p}{p_{\rm th}}\right)^{\lfloor (d+1)/2\rfloor}, \qquad \Lambda \equiv \frac{p_L(d)}{p_L(d+2)} \approx 2.14\pm0.02\ \text{(Google, Willow, 2024)}$$
+Google's Feb 2024 result measured the error-suppression factor $\Lambda$ directly: each increase in surface-code distance by 2 (from $d=3$ to $d=5$ to $d=7$) reduced the logical error rate by a consistent factor of about 2.14 — the first time this exponential suppression had been shown to continue below the code's error threshold, rather than saturating or reversing due to correlated/leakage errors as in earlier smaller-distance experiments.</div>
+
+    <div class="side-by-side">
+      <div class="atom-col goog">
+        <div class="atom-col-header"><span class="atom-col-title">Google: Below-Threshold Surface Code</span></div>
+        <ul>
+          <li><strong>Feb 2024 (Nature):</strong> distance-3, -5, and -7 surface codes on Willow's QEC-tuned chip; logical error rate roughly halved with each larger distance, and the best logical qubit outperformed the best constituent physical qubit's lifetime for the first time <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li>Uses the standard rotated surface code — well-understood theoretically but with a relatively high physical-to-logical qubit overhead (order 100+ physical qubits per logical qubit at useful error rates), compared with qLDPC alternatives</li>
+          <li>No public Google roadmap names specific future chips or years the way IBM's does; Google's public messaging emphasizes physics milestones (below-threshold, verifiable advantage) over named hardware-generation dates</li>
+        </ul>
+      </div>
+      <div class="atom-col ibm">
+        <div class="atom-col-header"><span class="atom-col-title">IBM: qLDPC Bivariate-Bicycle Codes</span></div>
+        <ul>
+          <li><strong>Bivariate-bicycle "gross code":</strong> $[[144,12,12]]$ — 144 physical data qubits plus 144 syndrome qubits (288 total) encode 12 logical qubits; IBM reports roughly 10× fewer physical qubits than a surface code would need for comparable logical error rates, because the code's long-range checks pack more logical information per physical qubit <span class="source-tag company-roadmap">company research</span></li>
+          <li><strong>Loon (2025):</strong> first chip with the long-range "c-couplers" needed to physically realize qLDPC check operators — a proof-of-concept for the wiring, not yet a full logical-qubit demonstration</li>
+          <li><strong>Kookaburra (2026, target):</strong> first module combining qLDPC memory with an attached logical processing unit (LPU) <span class="source-tag company-roadmap">roadmap</span></li>
+          <li><strong>Cockatoo (2027, target):</strong> entanglement between separate qLDPC modules via a "universal adapter" — the modular-scaling step IBM's whole roadmap depends on <span class="source-tag company-roadmap">roadmap</span></li>
+          <li><strong>Starling (2028–2029, target):</strong> 2028 — magic-state injection across multiple modules; 2029 — full system target of 100 million quantum gates across 200 logical qubits, IBM's first claimed fault-tolerant machine <span class="source-tag company-roadmap">roadmap</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Demonstrated result vs. named roadmap:</strong> Google's below-threshold result is a completed,
+      peer-reviewed physics demonstration on real hardware today. IBM's qLDPC/bivariate-bicycle overhead advantage
+      is real and independently credible as <em>theory</em> (the code's distance and rate properties are published
+      and reviewed), but the full modular architecture needed to use it at scale — Loon through Starling — is still
+      almost entirely a forward-looking roadmap as of this writing, with only the first rung (Loon's c-couplers)
+      built. Neither company has yet run a real, useful algorithm on a fault-tolerant logical processor.
+    </div>
+  </section>
+
+  <!-- ── 6. ADVANTAGE CLAIMS ─────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-4" id="advantage">
+    <h2 class="section-title"><span class="accent">06</span> Advantage &amp; Utility Claims — and Their Rebuttals</h2>
+    <p class="section-sub">Both companies' most famous headline results were later contested by classical-computing researchers. That back-and-forth is the most important context for reading either claim.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col goog">
+        <div class="atom-col-header"><span class="atom-col-title">Google's Claims</span></div>
+        <ul>
+          <li><strong>2019 "Quantum Supremacy" (Sycamore):</strong> a random-circuit-sampling task Google estimated would take the Summit supercomputer ~10,000 years, completed in 200 seconds. Published in <em>Nature</em> <span class="source-tag peer-reviewed">peer-reviewed</span>, but the classical-runtime estimate was disputed almost immediately — IBM itself published a rebuttal estimating 2.5 days with better classical algorithm/storage use, and subsequent papers (including a 2022 result using a large GPU cluster) narrowed or reversed the gap further for that specific circuit size.</li>
+          <li><strong>2025 "Verifiable Quantum Advantage" (Quantum Echoes, Willow):</strong> an out-of-time-order-correlator (OTOC) algorithm reported as 13,000× faster than the best known classical algorithm on a leading supercomputer, published in <em>Nature</em> <span class="source-tag peer-reviewed">peer-reviewed</span>. Google emphasizes this is the first <em>verifiable</em> advantage claim — the same algorithm was cross-validated on a second, independent Willow-class device and against real NMR spectroscopy measurements on two molecules (15 and 28 atoms) with UC Berkeley, rather than only checked against a classical simulation that becomes intractable at scale.</li>
+          <li>As of this writing, no classical-simulation rebuttal of the October 2025 Quantum Echoes claim has been published — a meaningfully different situation from 2019, though the field's track record (below) suggests such attempts are likely and worth watching for.</li>
+        </ul>
+      </div>
+      <div class="atom-col ibm">
+        <div class="atom-col-header"><span class="atom-col-title">IBM's Claim</span></div>
+        <ul>
+          <li><strong>2023 "Utility" (Eagle, kicked Ising model):</strong> a 60-gate-layer, 127-qubit circuit, run with zero-noise-extrapolation error mitigation, reported as producing results "more accurate than leading classical approximation methods," published on the cover of <em>Nature</em> <span class="source-tag peer-reviewed">peer-reviewed</span>. IBM was explicit at the time that this was <em>not</em> a claim of outright classical-impossibility — only that the quantum device beat the classical approximation methods tested at that point.</li>
+          <li><strong>Rebuttal:</strong> within months, multiple independent groups showed classical tensor-network methods could match or beat the quantum device's accuracy on the same circuit. The most cited, Tindall, Fishman et al. (arXiv:2306.14887, later published in <em>PRX Quantum</em> 5, 010308, 2024), used belief-propagation tensor networks exploiting the heavy-hex lattice's tree-like correlation structure to produce results the authors report as "significantly more accurate and precise" than IBM's noise-mitigated quantum output — and argued their method scales to simulate the same physics in the thermodynamic (infinite-qubit) limit classically.</li>
+          <li>IBM's own framing anticipated this: the paper stated the team "fully expect[ed] that the classical computing community will develop methods that verify the results" — which is exactly what happened. The net effect: the 2023 "utility" claim is best read as a genuine, peer-reviewed milestone in useful near-term computation, not as a surviving claim of classical intractability.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="common-mistake" style="margin-top:1rem;">
+      <strong>How to read both claims fairly:</strong> "peer-reviewed" is not the same as "unchallenged" — both of
+      these headline results passed peer review and were subsequently contested by other peer-reviewed or
+      arXiv-posted classical-simulation work, which is normal, healthy scientific practice rather than evidence of
+      fraud on either side. Google's 2025 claim differs from both companies' earlier ones mainly in that it was
+      independently cross-checked against a real physical measurement (NMR) rather than solely against classical
+      simulation — a stronger form of verification, though not immune in principle to a future, more efficient
+      classical algorithm for the same task.
+    </div>
+  </section>
+
+  <!-- ── 7. FULL COMPARISON TABLE ─────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="comparison">
+    <h2 class="section-title"><span class="accent">07</span> Full Head-to-Head Comparison</h2>
+    <p class="section-sub">Every major dimension, side by side. Advantage marked in bold color where the evidence supports a clear edge.</p>
+
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th scope="col" class="cat-h">Category</th>
+            <th scope="col" class="cat-h">Metric</th>
+            <th scope="col" class="goog-h">Google Quantum AI</th>
+            <th scope="col" class="ibm-h">IBM Quantum</th>
+            <th scope="col" class="cat-h">Edge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Organization</td>
+            <td>Structure</td>
+            <td class="goog-td">Research division within Alphabet/Google; no separate stock or public financials</td>
+            <td class="ibm-td">Business unit of NYSE-listed IBM Corp (ticker: IBM)</td>
+            <td class="win ibm">IBM<span class="adv-badge adv-ibm">transparency</span></td>
+          </tr>
+          <tr>
+            <td>Public roadmap detail</td>
+            <td class="goog-td">Physics-milestone driven; no named future chips or dated commercial targets published</td>
+            <td class="ibm-td">Detailed, named-chip roadmap (Loon→Kookaburra→Cockatoo→Starling) through 2029</td>
+            <td class="win ibm">IBM<span class="adv-badge adv-ibm">roadmap clarity</span></td>
+          </tr>
+          <tr>
+            <td>Investment disclosed</td>
+            <td class="goog-td">Not separately disclosed (folded into Alphabet's broader R&amp;D)</td>
+            <td class="ibm-td">$10B+ cumulative commitment announced June 2026</td>
+            <td class="win ibm">IBM<span class="adv-badge adv-ibm">disclosed</span></td>
+          </tr>
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Hardware</td>
+            <td>Flagship chip / qubit count</td>
+            <td class="goog-td">Willow, 105 qubits (two tuned variants)</td>
+            <td class="ibm-td">Nighthawk, 120 qubits</td>
+            <td class="win ibm">IBM<span class="adv-badge adv-ibm">qubit count</span></td>
+          </tr>
+          <tr>
+            <td>Lattice topology</td>
+            <td class="goog-td">Near-square, avg. connectivity 3.47, used consistently since Sycamore</td>
+            <td class="ibm-td">Heavy-hex 2021–2024, pivoted to square lattice with Nighthawk (2025)</td>
+            <td class="win tie">Tie<span class="adv-badge adv-tie">converged</span></td>
+          </tr>
+          <tr>
+            <td>Best reported 2Q fidelity</td>
+            <td class="goog-td">99.86% (Willow Chip 2, RCS-tuned, company spec)</td>
+            <td class="ibm-td">&gt;99.9% for &gt;50% of pairs (Nighthawk, company spec)</td>
+            <td class="win tie">Too close to call<span class="adv-badge adv-tie">not directly comparable</span></td>
+          </tr>
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Headline Claims</td>
+            <td>Marquee physics result</td>
+            <td class="goog-td">Below-threshold QEC (2024) + verifiable quantum advantage (2025), both <em>Nature</em>, both currently unrebutted</td>
+            <td class="ibm-td">"Utility" claim (2023), <em>Nature</em>, subsequently matched/beaten by classical tensor-network simulation</td>
+            <td class="win goog">Google<span class="adv-badge adv-goog">currently standing</span></td>
+          </tr>
+          <tr>
+            <td>Independent verification method</td>
+            <td class="goog-td">Cross-checked against real NMR spectroscopy data, not just classical simulation</td>
+            <td class="ibm-td">Checked only against classical simulation, which subsequently caught up</td>
+            <td class="win goog">Google<span class="adv-badge adv-goog">stronger verification</span></td>
+          </tr>
+          <tr>
+            <td>Error-correction code family</td>
+            <td class="goog-td">Standard surface code (higher physical-qubit overhead, mature theory)</td>
+            <td class="ibm-td">Bivariate-bicycle qLDPC (≈10× lower overhead, theory published, hardware unproven at scale)</td>
+            <td class="win ibm">IBM<span class="adv-badge adv-ibm">overhead theory</span></td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Fault Tolerance</td>
+            <td>Demonstrated milestone</td>
+            <td class="goog-td">Below-threshold logical error suppression, distance 3→5→7, achieved and peer-reviewed</td>
+            <td class="ibm-td">Long-range c-couplers for qLDPC demonstrated (Loon); full logical-qubit system not yet shown</td>
+            <td class="win goog">Google<span class="adv-badge adv-goog">ahead, demonstrated</span></td>
+          </tr>
+          <tr>
+            <td>Target date, full FTQC system</td>
+            <td class="goog-td">No public date committed</td>
+            <td class="ibm-td">Starling, 2029 (100M gates, 200 logical qubits) — company target</td>
+            <td class="win ibm">IBM<span class="adv-badge adv-ibm">only company with a date</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 8. BUSINESS & ROADMAPS ──────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="business">
+    <h2 class="section-title"><span class="accent">08</span> Business, Investment &amp; Roadmaps</h2>
+    <p class="section-sub">One company reports quantum results inside a trillion-dollar conglomerate's research budget; the other reports them to public shareholders.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col goog">
+        <div class="atom-col-header"><span class="atom-col-title">Google / Alphabet</span></div>
+        <ul>
+          <li>Google Quantum AI is organized as a research division within Alphabet (parent of Google), alongside Google Research and DeepMind — it has never been reported as, or spun out into, a separately-traded entity or disclosed business segment <span class="source-tag company-roadmap">company structure</span></li>
+          <li>Alphabet does not break out Quantum AI revenue or spending in its quarterly SEC filings; quantum computing costs are absorbed within Alphabet's overall "Other Bets"/core-research R&amp;D spending, which is not itemized by project</li>
+          <li>No public target date for commercial quantum revenue has been stated by Google, in contrast to IBM's explicit 2028–2029 guidance (below) — consistent with Google's general public messaging emphasis on scientific milestones over commercialization timelines</li>
+          <li>Alphabet's overall scale (quarterly revenue in the tens of billions of dollars) means Quantum AI's budget, whatever its size, is a research-and-development line item rather than a business the company is under investor pressure to monetize on any fixed near-term schedule <span class="source-tag company-roadmap">inferred from public filings structure</span></li>
+        </ul>
+      </div>
+      <div class="atom-col ibm">
+        <div class="atom-col-header"><span class="atom-col-title">IBM</span></div>
+        <ul>
+          <li>IBM Quantum is a unit within IBM's broader Technology segment; as with Google, quantum-specific revenue is not yet broken out as its own reported line in IBM's quarterly filings <span class="source-tag company-roadmap">company filings</span></li>
+          <li>June 2026: IBM announced a cumulative commitment of more than $10B to quantum computing, funding its roadmap from current commercial systems through the targeted first fault-tolerant machines <span class="source-tag company-roadmap">company press release</span></li>
+          <li>IBM's CEO stated in a July 2026 earnings call that the company expects quantum computing to have a "measurable impact" on IBM's earnings by 2028–2029, tied to the Starling launch target, and separately projected a trillion-dollar addressable market for quantum computing by the late 2030s — both are forward-looking company statements, not realized revenue <span class="source-tag company-roadmap">company guidance</span></li>
+          <li>IBM offers cloud-accessible commercial hardware today (IBM Quantum Network, System Two) with a large existing enterprise/government customer base built over a decade, a more mature commercialization posture than Google currently discloses publicly</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Reading the business picture honestly:</strong> this is not a fair apples-to-apples financial
+      comparison the way the Quantinuum-vs-IonQ page can offer, because neither Google nor IBM discloses standalone
+      quantum-computing financials — Alphabet doesn't break out Quantum AI at all, and IBM's quantum unit sits inside
+      a much larger technology segment. What can be compared is public communication style: IBM has chosen to
+      publish detailed, dated, named-chip commercial commitments (and a specific revenue-impact year), while Google
+      has chosen to publish detailed, dated <em>physics</em> milestones and left commercialization timing unstated.
+      Both are legitimate strategies for a research program embedded inside a much larger company; neither is
+      inherently more credible than the other on business grounds alone.
+    </div>
+  </section>
+
+  <!-- ── 9. ECOSYSTEM ─────────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="companies">
+    <h2 class="section-title"><span class="accent">09</span> Companies &amp; Ecosystem</h2>
+    <p class="section-sub">Academic roots, partners, and how each program maps onto the AMO/condensed-matter physics job market.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#1a56db;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Google Quantum AI Ecosystem</h3>
+        <div class="company-card">
+          <h4><a href="https://abc.xyz" target="_blank" rel="noopener">Alphabet Inc. ↗</a></h4>
+          <p>Parent company (NASDAQ: GOOGL). Quantum AI is funded as part of Alphabet's broader research investment, alongside DeepMind and Google Research, without a separately reported budget.</p>
+        </div>
+        <div class="company-card">
+          <h4>UC Berkeley (Pines Magnetic Resonance Center)</h4>
+          <p>Academic partner on the 2025 Quantum Echoes verification work, providing the independent nuclear magnetic resonance measurements used to cross-check the algorithm's output on real molecules.</p>
+        </div>
+        <div class="company-card">
+          <h4>UC Santa Barbara heritage</h4>
+          <p>Google's Santa Barbara quantum hardware lab (built substantially from the UCSB group led by John Martinis, who ran the original Sycamore effort) remains a central hub for fabrication and device physics.</p>
+        </div>
+        <div class="company-card">
+          <h4>Google Cloud</h4>
+          <p>Provides limited external/API access to Google's quantum processors for select research partners; far less broadly commercialized than IBM's decade-old public cloud-access model.</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#491d8b;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IBM Quantum Ecosystem</h3>
+        <div class="company-card">
+          <h4><a href="https://www.ibm.com/quantum" target="_blank" rel="noopener">IBM Quantum Network ↗</a></h4>
+          <p>A large, long-running (since 2016) consortium of enterprise, government, and academic partners with cloud access to IBM hardware — one of the broadest and oldest quantum-cloud-access programs in the industry.</p>
+        </div>
+        <div class="company-card">
+          <h4>US national labs &amp; universities</h4>
+          <p>IBM has published joint physics results with numerous academic and national-lab partners across its Eagle/Heron/Nighthawk generations, and its qLDPC code work builds on published academic error-correction theory (bivariate-bicycle codes).</p>
+        </div>
+        <div class="company-card">
+          <h4>Enterprise customers</h4>
+          <p>IBM markets quantum access bundled with its broader enterprise software/consulting relationships (finance, materials science, logistics use cases), reflecting its business-unit structure versus Google's research-first posture.</p>
+        </div>
+        <div class="company-card">
+          <h4>Open-source: Qiskit</h4>
+          <p>IBM's Qiskit SDK is one of the most widely used open-source quantum programming frameworks, a significant non-hardware contribution to the broader field's tooling and pedagogy.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Career angle:</strong> superconducting-qubit hardware roles draw heavily from condensed-matter and AMO
+      physics, cryogenic engineering, and microwave/RF electronics — dilution-refrigerator experience and
+      Josephson-junction fabrication are directly transferable skills at either company. Google's research-division
+      structure tends to favor more academic-style hiring (PhD-heavy, publication-oriented); IBM's larger,
+      longer-running commercial program offers a wider range of roles spanning hardware, software (Qiskit), and
+      customer-facing quantum consulting. See the <a href="qc-landscape.html">Quantum Industry Map</a> for how
+      superconducting roles compare to trapped-ion, neutral-atom, and photonic quantum computing careers, and
+      <a href="quantinuum-vs-ionq.html">Quantinuum vs IonQ</a> for the equivalent comparison in the trapped-ion
+      sector.
+    </div>
+  </section>
+
+  <!-- ── 10. KEY PAPERS & REFERENCES ─────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="papers">
+    <h2 class="section-title"><span class="accent">10</span> Key Papers &amp; References</h2>
+    <p class="section-sub">Primary sources for every claim above: peer-reviewed papers, preprints, and company/press material, clearly separated.</p>
+
+    <h3 style="color:#1a56db;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">Google, Landmark Papers &amp; Releases</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Quantum supremacy using a programmable superconducting processor</div>
+        <div class="paper-meta">Arute, Arya, Babbush et al., Nature 574, 505–510 (2019)</div>
+        <p class="paper-desc">The original Sycamore "quantum supremacy" claim: 53-qubit random circuit sampling completed in ~200 seconds, estimated at ~10,000 years on a classical supercomputer. Subsequently disputed by IBM and later classical-simulation papers (Section 06).</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-019-1666-5" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Quantum error correction below the surface code threshold</div>
+        <div class="paper-meta">Google Quantum AI &amp; Collaborators, Nature 638, 920–926 (2024)</div>
+        <p class="paper-desc">The below-threshold demonstration on Willow's QEC-tuned chip: distance-3/5/7 surface codes, consistent ~2.14× logical error suppression per distance increase.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-024-08449-y" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Meet Willow, our state-of-the-art quantum chip</div>
+        <div class="paper-meta">Google Quantum AI, company blog (Dec 9, 2024)</div>
+        <p class="paper-desc">Launch announcement and accompanying spec sheet distinguishing Willow's two tuned chip variants (QEC vs RCS), the primary source for the fidelity figures used in Section 04.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://blog.google/technology/research/google-willow-quantum-chip/" target="_blank" rel="noopener">blog.google ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Our Quantum Echoes algorithm is a big step toward real-world applications for quantum computing</div>
+        <div class="paper-meta">Google Quantum AI, company blog, with Nature publication (Oct 22, 2025)</div>
+        <p class="paper-desc">The 2025 verifiable quantum advantage claim: 13,000× speedup on an OTOC algorithm, cross-validated against real NMR spectroscopy data with UC Berkeley on two molecules (15 and 28 atoms).</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://blog.google/innovation-and-ai/technology/research/quantum-echoes-willow-verifiable-quantum-advantage/" target="_blank" rel="noopener">blog.google ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:#491d8b;font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">IBM, Landmark Papers &amp; Releases</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Evidence for the utility of quantum computing before fault tolerance</div>
+        <div class="paper-meta">Kim, Eddins, Anand et al., Nature 618, 500–505 (2023)</div>
+        <p class="paper-desc">IBM's 2023 "utility" claim: a 127-qubit, 60-gate-layer kicked-Ising-model simulation on Eagle with error mitigation, reported cover story of the June 15, 2023 issue.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-023-06096-3" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Efficient tensor network simulation of IBM's Eagle kicked Ising experiment</div>
+        <div class="paper-meta">Tindall, Fishman, White, Stoudenmire, PRX Quantum 5, 010308 (2024); arXiv:2306.14887 (2023)</div>
+        <p class="paper-desc">The primary rebuttal: belief-propagation tensor networks classically reproduce IBM's kicked-Ising results with higher accuracy, and the authors argue the method scales to the thermodynamic limit — directly challenging the classical-intractability implication of the 2023 utility claim.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2306.14887" target="_blank" rel="noopener">arXiv:2306.14887 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IBM Unveils Nighthawk and Loon: milestones toward quantum advantage and fault tolerance</div>
+        <div class="paper-meta">IBM, company press release / blog (Nov 12, 2025)</div>
+        <p class="paper-desc">Launch of the 120-qubit square-lattice Nighthawk processor and the Loon c-coupler proof-of-concept chip; source for the connectivity and CLOPS figures in Sections 02–04.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://newsroom.ibm.com/2025-11-12-ibm-delivers-new-quantum-processors,-software,-and-algorithm-breakthroughs-on-path-to-advantage-and-fault-tolerance" target="_blank" rel="noopener">newsroom.ibm.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IBM lays out clear path to fault-tolerant quantum computing</div>
+        <div class="paper-meta">IBM Quantum Computing Blog (Jun 10, 2025)</div>
+        <p class="paper-desc">The full named-chip roadmap (Loon → Kookaburra → Cockatoo → Starling) and bivariate-bicycle qLDPC code details (the $[[144,12,12]]$ gross code) used throughout Section 05.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.ibm.com/quantum/blog/large-scale-ftqc" target="_blank" rel="noopener">ibm.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IBM Commits More Than $10 Billion to Quantum Computing</div>
+        <div class="paper-meta">IBM Newsroom (Jun 2, 2026)</div>
+        <p class="paper-desc">The investment commitment and framing used in Section 08, funding IBM's roadmap from current commercial systems through the targeted Starling fault-tolerant system.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://newsroom.ibm.com/2026-06-02-ibm-commits-more-than-10-billion-to-quantum-computing,-funding-its-roadmap-from-todays-leading-systems-to-the-worlds-first-fault-tolerant-quantum-computers" target="_blank" rel="noopener">newsroom.ibm.com ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:var(--text-secondary);font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Independent Surveys &amp; Reviews</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Questions and Concerns About Google's Quantum Supremacy Claim</div>
+        <div class="paper-meta">Various authors, arXiv:2305.01064</div>
+        <p class="paper-desc">A survey of the technical objections raised against the 2019 Sycamore supremacy claim, useful independent context alongside Google's own paper.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/pdf/2305.01064" target="_blank" rel="noopener">arxiv.org ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IBM CEO Expects Quantum Computing to Drive Revenue by 2020s, Trillion-Dollar Value by End of 2030s</div>
+        <div class="paper-meta">The Quantum Insider (Jul 31, 2026)</div>
+        <p class="paper-desc">Independent reporting on IBM's 2028–2029 revenue-impact guidance and long-term market-size projection, cross-referenced against IBM's own statements in Section 08.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://thequantuminsider.com/2026/07/31/ibm-ceo-expects-quantum-computing-to-drive-revenue-by-2020s-trillion-dollar-value-by-end-of-2030s/" target="_blank" rel="noopener">thequantuminsider.com ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+    </div><!-- /container -->
+  </div><!-- /page-content -->
+</main><!-- /page-wrap -->
+
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="qc-landscape.html">
+        <span class="see-also-icon">💻</span>
+        <div>
+          <div class="see-also-name">Quantum Industry Map</div>
+          <div class="see-also-desc">Industry map and career guide for AMO physicists</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="quantinuum-vs-ionq.html">
+        <span class="see-also-icon">⚛️</span>
+        <div>
+          <div class="see-also-name">Quantinuum vs IonQ</div>
+          <div class="see-also-desc">The same comparison, for trapped-ion hardware</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="rb87-vs-yb171.html">
+        <span class="see-also-icon">⚖️</span>
+        <div>
+          <div class="see-also-name">Rb vs Yb Qubit Comparison</div>
+          <div class="see-also-desc">The neutral-atom equivalent of this page</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.82rem;border-top:1px solid #1a2236;margin-top:1rem;">
+  AMO Toolkit · Google vs IBM Comparison · Data ≈ September 2026 · Saumitra Phatak, Purdue Physics PhD
+</footer>
+
+<!-- KaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+
+<script src="../js/main.js?v=26"></script>
+<script>
+  renderNav({ active: 'google-vs-ibm', root: '../' });
+
+  // ── Sticky topic nav highlight ─────────────────────────────────────
+  (function() {
+    const btns = document.querySelectorAll('.tnav-btn');
+    const sections = Array.from(btns).map(b => document.getElementById(b.dataset.target)).filter(Boolean);
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const el = document.getElementById(btn.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          btns.forEach(b => b.classList.remove('active'));
+          const active = document.querySelector(`.tnav-btn[data-target="${e.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-64px 0px -55% 0px', threshold: 0 });
+
+    sections.forEach(s => obs.observe(s));
+  })();
+
+  // ── Chart helpers ─────────────────────────────────────────────────
+  function hexToRgba(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  Chart.defaults.color = '#5c503c';
+  Chart.defaults.font.family = "'Source Serif 4', serif";
+
+  // ── Qubit Count Scale Chart ──────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('scaleChart').getContext('2d');
+    const milestones = [
+      { label: 'Google Sycamore\n(2019)', qubits: 53, platform: 'goog' },
+      { label: 'IBM Eagle\n(2021)', qubits: 127, platform: 'ibm' },
+      { label: 'IBM Osprey\n(2022)', qubits: 433, platform: 'ibm' },
+      { label: 'IBM Heron\n(2023)', qubits: 133, platform: 'ibm' },
+      { label: 'IBM Condor\n(2023)', qubits: 1121, platform: 'ibm' },
+      { label: 'Google Willow\n(2024)', qubits: 105, platform: 'goog' },
+      { label: 'IBM Heron R2\n(2024)', qubits: 156, platform: 'ibm' },
+      { label: 'IBM Nighthawk\n(2025)', qubits: 120, platform: 'ibm' },
+    ];
+    milestones.sort((a,b) => a.qubits - b.qubits);
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: milestones.map(m => m.label),
+        datasets: [{
+          data: milestones.map(m => m.qubits),
+          backgroundColor: milestones.map(m => hexToRgba(m.platform === 'goog' ? '#4285f4' : '#6929c4', 0.75)),
+          borderColor: milestones.map(m => m.platform === 'goog' ? '#4285f4' : '#6929c4'),
+          borderWidth: 1.5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const m = milestones[ctx.dataIndex];
+                return ` ${m.qubits} qubits, ${m.platform === 'goog' ? 'Google' : 'IBM'}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'Qubits (log)', color: '#5c503c' },
+            grid: { color: '#1e293b' },
+            ticks: { callback: (v) => [50, 100, 300, 1000].includes(v) ? v : null }
+          }
+        }
+      }
+    });
+  })();
+
+  // ── Gate Fidelity Chart ───────────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('fidelityChart').getContext('2d');
+    const data = [
+      { label: 'Google Sycamore\n(2019, peer-rev.)', goog: 99.4, ibm: null },
+      { label: 'Google Willow Chip1\n(2024, QEC-tuned)', goog: 99.67, ibm: null },
+      { label: 'Google Willow Chip2\n(2024, RCS-tuned)', goog: 99.86, ibm: null },
+      { label: 'IBM Heron\n(2023-24, company)', goog: null, ibm: 99.9 },
+      { label: 'IBM Nighthawk\n(2025, company, >50% pairs)', goog: null, ibm: 99.9 },
+    ];
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [
+          { type: 'bar', label: 'Google 2Q Fidelity', data: data.map(d => d.goog), backgroundColor: hexToRgba('#4285f4', 0.75), borderColor: '#4285f4', borderWidth: 1.5 },
+          { type: 'bar', label: 'IBM 2Q Fidelity', data: data.map(d => d.ibm), backgroundColor: hexToRgba('#6929c4', 0.75), borderColor: '#6929c4', borderWidth: 1.5 },
+          { type: 'line', label: 'Practical target ~99.9%', data: data.map(() => 99.9), borderColor: '#ef4444', borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#22190f', font: { size: 11 } }, position: 'bottom' },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: { label: (ctx) => ctx.raw === null ? null : ` ${ctx.dataset.label}: ${ctx.raw}%` }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: { min: 99, max: 100.05, title: { display: true, text: '2-Qubit Gate Fidelity (%)', color: '#5c503c' }, grid: { color: '#1e293b' } }
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>

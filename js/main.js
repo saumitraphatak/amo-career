@@ -103,6 +103,8 @@ const NAV = {
     { key: 'qc-landscape',   label: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#2c4a63', href: 'pages/qc-landscape.html' },
     { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#a13c1c', href: 'pages/rb87-vs-yb171.html' },
     { key: 'quantinuum-vs-ionq', label: 'Quantinuum vs IonQ', kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/quantinuum-vs-ionq.html' },
+    { key: 'google-vs-ibm', label: 'Google vs IBM', kind: 'Deep dive', icon: '🖥️', color: '#a13c1c', href: 'pages/google-vs-ibm.html' },
+    { key: 'psiquantum-vs-xanadu', label: 'PsiQuantum vs Xanadu', kind: 'Deep dive', icon: '💡', color: '#3f5d3f', href: 'pages/psiquantum-vs-xanadu.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -397,6 +399,8 @@ const SEARCH_KEYWORDS = {
   'qc-landscape': 'company roadmap IBM Google Quantinuum QuEra Atom Computing Microsoft IonQ Pasqal PsiQuantum interviews',
   'rb87-vs-yb171': 'qubit species comparison rubidium ytterbium neutral atom hyperfine nuclear spin clock',
   'quantinuum-vs-ionq': 'trapped ion quantum computing company comparison QCCD electronic qubit control EQC barium ytterbium Helios Tempo Superion fault tolerance logical qubits',
+  'google-vs-ibm': 'superconducting qubit quantum computing company comparison transmon Willow Nighthawk quantum advantage utility claim qLDPC surface code fault tolerance',
+  'psiquantum-vs-xanadu': 'photonic quantum computing company comparison fusion based loss tolerance silicon photonics Omega Aurora Borealis squeezed light Gaussian boson sampling',
   'rb-explorer': 'randomized benchmarking Clifford SPAM gate fidelity decay interleaved RB',
   'dd-playground': 'coherence Ramsey echo XY16 CPMG dynamical decoupling dephasing noise',
   'amo-groups': 'AMO research groups professors labs universities postdoc graduate school Rydberg clocks BEC molecules cavity QED',
@@ -788,6 +792,14 @@ const SOURCE_PROFILES = {
     ['peer-reviewed', 'Full-system gate fidelities should trace to journal papers, not press releases.'],
     ['preprint', 'IonQ\'s headline EQC fidelity and qLDPC logical-qubit results are arXiv preprints, not yet peer-reviewed.'],
     ['company roadmap', 'Multi-year qubit-count and fault-tolerance targets are projections, not demonstrated results.'],
+  ],
+  'google-vs-ibm': [
+    ['peer-reviewed', 'Advantage/utility claims and fidelity figures should trace to Nature or arXiv papers, including rebuttal papers.'],
+    ['company roadmap', 'Named future chips (Kookaburra, Cockatoo, Starling) and revenue targets are projections, not demonstrated results.'],
+  ],
+  'psiquantum-vs-xanadu': [
+    ['peer-reviewed', 'Component and system-level fidelities should trace to journal papers.'],
+    ['company roadmap', 'Million-qubit and 2029 fault-tolerance targets are company projections, not demonstrated results.'],
   ],
   'paper-syllabus': [
     ['peer-reviewed', 'Primary source for each card is the linked paper or review.'],
@@ -1489,6 +1501,8 @@ const PAGE_PLAYBOOKS = {
   'qc-landscape': ['Translate AMO skills to industry', 'Compare hardware platforms, company claims, job roles, and roadmap maturity.', 'Separate demonstrated hardware from roadmap language.'],
   'rb87-vs-yb171': ['Compare qubit species', 'Use side-by-side evidence for Rb and Yb choices across cooling, gates, imaging, clocks, and scaling.', 'Check whether a benchmark is Rb, Yb, Cs, or architecture-level before reusing it.'],
   'quantinuum-vs-ionq': ['Compare trapped-ion companies', 'Use side-by-side evidence for Quantinuum and IonQ across architecture, fidelity, logical qubits, and roadmaps.', 'Separate peer-reviewed, full-system numbers from preprint, component-level, or company-roadmap claims.'],
+  'google-vs-ibm': ['Compare superconducting-qubit companies', 'Use side-by-side evidence for Google and IBM across architecture, fidelity, advantage claims, and fault-tolerance roadmaps.', 'Both companies\' headline advantage/utility claims were later challenged by classical-simulation papers; read both sides.'],
+  'psiquantum-vs-xanadu': ['Compare photonic quantum computing companies', 'Use side-by-side evidence for PsiQuantum and Xanadu across architecture, component fidelity, demonstrated systems, and business.', 'PsiQuantum\'s public results are component-level; Xanadu has run and published full, peer-reviewed systems.'],
 };
 
 const RELATED_TOOLS = {
@@ -1521,6 +1535,8 @@ const RELATED_TOOLS = {
   'qc-landscape': ['amo-groups', 'fidelity-budget', 'rb87-vs-yb171'],
   'rb87-vs-yb171': ['atom-library', 'rydberg-calculator', 'qc-landscape'],
   'quantinuum-vs-ionq': ['qc-landscape', 'rb87-vs-yb171', 'fidelity-budget'],
+  'google-vs-ibm': ['qc-landscape', 'quantinuum-vs-ionq', 'fidelity-budget'],
+  'psiquantum-vs-xanadu': ['qc-landscape', 'google-vs-ibm', 'quantinuum-vs-ionq'],
 };
 
 const REFERENCE_TRAILS = {
@@ -1555,6 +1571,14 @@ const REFERENCE_TRAILS = {
   'quantinuum-vs-ionq': [
     ['peer-reviewed', 'Fidelity and error-correction claims should trace to journal papers where available.'],
     ['scope note', 'Component-level demos (single ion pair) are marked separately from full-system results.'],
+  ],
+  'google-vs-ibm': [
+    ['peer-reviewed', 'Advantage and utility claims should trace to Nature papers, alongside their published rebuttals.'],
+    ['scope note', 'Willow ships as two differently-tuned chips; figures are marked QEC-tuned or RCS-tuned throughout.'],
+  ],
+  'psiquantum-vs-xanadu': [
+    ['peer-reviewed', 'Fidelity and quantum-advantage claims should trace to journal papers where available.'],
+    ['scope note', 'PsiQuantum figures are component-level and conditional on photon detection unless marked otherwise.'],
   ],
   defaultTool: [
     ['textbook', 'Core equations use standard AMO, optics, and quantum-optics conventions.'],

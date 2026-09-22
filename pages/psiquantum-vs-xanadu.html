@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PsiQuantum vs Xanadu — Photonic Quantum Computing Comparison — AMO Toolkit</title>
+  <meta name="description" content="In-depth, heavily-referenced comparison of PsiQuantum and Xanadu, the two leading photonic quantum computing companies: component vs system-level demonstrations, fault tolerance architecture, and business.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://amotoolkit.com/pages/psiquantum-vs-xanadu.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=21">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+
+  <style>
+    /* ── page theme ─────────────────────────────────── */
+    :root {
+      --psi: #7c3aed;   /* PsiQuantum violet */
+      --xan: #0d9488;   /* Xanadu teal */
+      --page: #be185d;  /* page accent rose */
+    }
+
+    .page-wrap { padding-top: 64px; }
+
+    .topic-nav {
+      position: sticky; top: 64px; z-index: 50;
+      background: color-mix(in srgb, var(--bg-surface) 95%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(190,24,93,0.18);
+      padding: .45rem 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+    }
+    .topic-nav::-webkit-scrollbar { display: none; }
+    .topic-nav-inner { display: inline-flex; gap: .3rem; padding: 0 1.5rem; }
+    .tnav-btn {
+      background: transparent; border: 1px solid transparent; border-radius: 20px;
+      padding: .28rem .85rem; font-size: .8rem; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; transition: all .18s; white-space: nowrap;
+    }
+    .tnav-btn:hover   { color: var(--text-primary); border-color: rgba(190,24,93,0.35); }
+    .tnav-btn.active  { color: #be185d; background: rgba(190,24,93,0.1); border-color: rgba(190,24,93,0.4); }
+
+    .page-hero {
+      background: linear-gradient(135deg, rgba(124,58,237,0.06) 0%, rgba(13,148,136,0.06) 100%);
+      border-bottom: 1px solid rgba(190,24,93,0.15);
+      padding: 3rem 0 2.5rem;
+    }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.75rem; }
+    @media(max-width:680px) { .hero-split { grid-template-columns: 1fr; } }
+
+    .hero-atom-card { border-radius: 14px; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: .5rem; }
+    .hero-atom-card.psi { background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.25); }
+    .hero-atom-card.xan { background: rgba(13,148,136,0.08); border: 1px solid rgba(13,148,136,0.25); }
+
+    .hero-atom-name { font-size: 1.6rem; font-weight: 800; }
+    .hero-atom-sub  { font-size: .85rem; color: var(--text-muted); margin: 0; }
+    .hero-atom-stats { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
+    .hero-stat-chip { border-radius: 6px; padding: .15rem .55rem; font-size: .76rem; font-weight: 600; }
+    .hero-stat-chip.psi { background: rgba(124,58,237,0.15); color: #5b21b6; border: 1px solid rgba(91,33,182,0.3); }
+    .hero-stat-chip.xan { background: rgba(13,148,136,0.15); color: #065f46; border: 1px solid rgba(6,95,70,0.3); }
+
+    .page-content .container { padding-top: 2.5rem; padding-bottom: 4rem; }
+    .section-block { margin-bottom: 3.5rem; scroll-margin-top: 120px; }
+    .section-title {
+      font-size: 1.35rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .2rem 0; border-left: 3px solid var(--page); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.2rem .85rem; }
+
+    .side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:768px) { .side-by-side { grid-template-columns: 1fr; } }
+
+    .atom-col { border-radius: 12px; padding: 1.2rem 1.35rem; }
+    .atom-col.psi { background: rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.2); }
+    .atom-col.xan { background: rgba(13,148,136,0.06); border: 1px solid rgba(13,148,136,0.2); }
+
+    .atom-col-header { display: flex; align-items: center; gap: .55rem; margin-bottom: .85rem; padding-bottom: .6rem; border-bottom: 1px solid; }
+    .atom-col.psi .atom-col-header { border-color: rgba(124,58,237,0.25); }
+    .atom-col.xan .atom-col-header { border-color: rgba(13,148,136,0.25); }
+
+    .atom-col-title { font-size: 1.05rem; font-weight: 700; }
+    .atom-col.psi .atom-col-title { color: #5b21b6; }
+    .atom-col.xan .atom-col-title { color: #065f46; }
+
+    .atom-col ul { padding-left: 1.1rem; margin: 0; }
+    .atom-col li { font-size: .86rem; color: var(--text-muted); margin-bottom: .42rem; line-height: 1.55; }
+    .atom-col p  { font-size: .87rem; color: var(--text-muted); margin: 0 0 .6rem 0; line-height: 1.6; }
+
+    .formula-box {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 10px;
+      padding: 1rem 1.25rem; margin: .9rem 0; font-size: .88rem; line-height: 1.9; color: var(--text-secondary);
+    }
+
+    .info-box {
+      background: rgba(190,24,93,0.07); border: 1px solid rgba(190,24,93,0.22); border-radius: 10px;
+      padding: 1rem 1.2rem; margin: .8rem 0; font-size: .87rem; color: var(--text-secondary); line-height: 1.65;
+    }
+    .info-box strong { color: #be185d; }
+
+    .psi-box {
+      background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.22); border-radius: 10px;
+      padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .psi-box strong { color: #5b21b6; }
+
+    .xan-box {
+      background: rgba(13,148,136,0.07); border: 1px solid rgba(13,148,136,0.22); border-radius: 10px;
+      padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .xan-box strong { color: #065f46; }
+
+    .chart-box { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .chart-caption { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0 0; font-style: italic; }
+
+    .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #1e293b; }
+    .cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid #1e293b; white-space: nowrap; font-size: .8rem; }
+    .cmp th.psi-h { background: rgba(124,58,237,0.12); color: #5b21b6; }
+    .cmp th.xan-h { background: rgba(13,148,136,0.12); color: #065f46; }
+    .cmp th.cat-h { background: var(--bg-card); color: var(--text-muted); }
+    .cmp td { color: var(--text-secondary); padding: .55rem .9rem; border-bottom: 1px solid #0d1827; vertical-align: top; line-height: 1.55; }
+    .cmp td.psi-td { background: rgba(124,58,237,0.04); }
+    .cmp td.xan-td { background: rgba(13,148,136,0.04); }
+    .cmp tr:hover td { filter: brightness(1.1); }
+    .cmp .win { font-weight: 700; }
+    .cmp .win.psi { color: #5b21b6; }
+    .cmp .win.xan { color: #065f46; }
+    .cmp .win.tie { color: #4f72a4; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: .9rem; margin: 1.2rem 0; }
+    @media(max-width:700px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+    .stat-card-sm { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: .9rem 1rem; text-align: center; }
+    .stat-card-sm .stat-num { font-size: 1.3rem; font-weight: 800; }
+    .stat-card-sm .stat-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+    .stat-card-sm.psi { border-color: rgba(124,58,237,0.25); }
+    .stat-card-sm.xan { border-color: rgba(13,148,136,0.25); }
+    .stat-card-sm.preprint { border-color: rgba(6,182,212,0.35); }
+
+    .paper-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: .9rem 1.1rem; margin-bottom: .6rem; transition: border-color .18s;
+    }
+    .paper-card:hover { border-color: rgba(190,24,93,0.35); }
+    .paper-card .paper-title { font-size: .9rem; font-weight: 600; color: var(--text-primary); margin-bottom: .3rem; }
+    .paper-card .paper-meta  { font-size: .78rem; color: #be185d; margin-bottom: .35rem; }
+    .paper-card .paper-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+    .paper-card a { color: #046de1; text-decoration: none; }
+    .paper-card a:hover { text-decoration: underline; }
+
+    .paper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    @media(max-width:768px) { .paper-grid { grid-template-columns: 1fr; } }
+
+    .company-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: 1rem 1.2rem; margin-bottom: .65rem; transition: border-color .18s;
+    }
+    .company-card:hover { border-color: rgba(190,24,93,0.35); }
+    .company-card h4 { font-size: .93rem; margin: 0 0 .3rem 0; }
+    .company-card h4 a { color: #046de1; text-decoration: none; }
+    .company-card h4 a:hover { text-decoration: underline; }
+    .company-card p { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+    .adv-badge { display: inline-block; border-radius: 4px; padding: .1rem .45rem; font-size: .72rem; font-weight: 700; vertical-align: middle; margin-left: .3rem; }
+    .adv-psi { background: rgba(124,58,237,0.18); color: #5b21b6; border: 1px solid rgba(91,33,182,0.35); }
+    .adv-xan { background: rgba(13,148,136,0.18); color: #065f46; border: 1px solid rgba(6,95,70,0.35); }
+    .adv-tie { background: rgba(148,163,184,0.15); color: #4f72a4; border: 1px solid rgba(148,163,184,0.25); }
+
+    .insight {
+      background: rgba(190,24,93,0.07); border-left: 3px solid #be185d; border-radius: 0 8px 8px 0;
+      padding: .7rem 1rem; font-size: .84rem; color: var(--text-secondary); margin: .8rem 0; line-height: 1.6;
+    }
+
+    .vs-divider { display: flex; align-items: center; gap: .75rem; margin: 1rem 0; }
+    .vs-line { flex: 1; height: 1px; background: var(--bg-card); }
+    .vs-label {
+      font-size: .9rem; font-weight: 800; color: #be185d; background: rgba(190,24,93,0.1);
+      border: 1px solid rgba(190,24,93,0.25); border-radius: 20px; padding: .2rem .75rem;
+    }
+
+    .timeline { position: relative; padding-left: 1.6rem; margin: 1rem 0; }
+    .timeline::before { content:''; position:absolute; left:.42rem; top:.3rem; bottom:.3rem; width:2px; background: rgba(190,24,93,0.25); }
+    .tl-item { position: relative; margin-bottom: 1rem; padding-left: .6rem; }
+    .tl-item::before { content:''; position:absolute; left:-1.28rem; top:.3rem; width:.6rem; height:.6rem; border-radius:50%; background: var(--dot,#be185d); }
+    .tl-item .tl-year { font-size: .76rem; font-weight: 700; color: var(--dot,#be185d); }
+    .tl-item .tl-body { font-size: .85rem; color: var(--text-secondary); line-height: 1.55; }
+  </style>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="PsiQuantum vs Xanadu — Photonic Quantum Computing Comparison — AMO Toolkit">
+  <meta property="og:description" content="In-depth, heavily-referenced comparison of PsiQuantum and Xanadu: component-level vs full-system photonic quantum computing, fault-tolerance architecture, and business.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/psiquantum-vs-xanadu.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PsiQuantum vs Xanadu — Photonic Quantum Computing Comparison — AMO Toolkit">
+  <meta name="twitter:description" content="In-depth, heavily-referenced comparison of PsiQuantum and Xanadu: component-level vs full-system photonic quantum computing, fault-tolerance architecture, and business.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"PsiQuantum vs Xanadu — Photonic Quantum Computing Comparison","description":"In-depth, heavily-referenced comparison of PsiQuantum and Xanadu: component-level vs full-system photonic quantum computing, fault-tolerance architecture, and business.","url":"https://amotoolkit.com/pages/psiquantum-vs-xanadu.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Career","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"PsiQuantum vs Xanadu","item":"https://amotoolkit.com/pages/psiquantum-vs-xanadu.html"}]}</script>
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+      <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.85rem;">
+        <span style="background:rgba(190,24,93,0.1);border:1px solid rgba(190,24,93,0.25);color:#be185d;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">🔗 Career 07 · PsiQuantum vs Xanadu</span>
+        <span style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);color:#5b21b6;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">PsiQuantum · component-level, $10.5B valuation</span>
+        <span style="background:rgba(13,148,136,0.1);border:1px solid rgba(13,148,136,0.25);color:#065f46;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">Xanadu · Aurora, full system, Nasdaq: XNDU</span>
+      </div>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.6rem); font-weight:800; margin:0 0 .75rem 0;">
+        <span style="color:#5b21b6;">PsiQuantum</span>
+        <span style="color:#be185d; margin:0 .5rem;">vs</span>
+        <span style="color:#065f46;">Xanadu</span>
+        , Photonic Quantum Computing
+      </h1>
+      <p style="font-size:1rem; color:var(--text-secondary); max-width:62ch; margin:0 0 1.2rem 0; line-height:1.65;">
+        Two very different photonic quantum computing bets: PsiQuantum has raised more money and published
+        record-setting component fidelities, but has not yet demonstrated a working full quantum computer publicly.
+        Xanadu has built and operated smaller, complete, photonic systems — publicly, on the cloud, with peer-reviewed
+        results — and is now the first pure-play photonic quantum computing company on a public stock exchange.
+        This page keeps that asymmetry explicit throughout, rather than comparing the two as if they were reporting
+        the same kind of result.
+      </p>
+      <div class="hero-split">
+        <div class="hero-atom-card psi">
+          <div class="hero-atom-name" style="color:#5b21b6;">PsiQuantum</div>
+          <p class="hero-atom-sub">Private, Palo Alto · silicon-photonic, fusion-based · $10.5B valuation (May 2026)</p>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip psi">99.5% two-photon interference (Nature 2025)</span>
+            <span class="hero-stat-chip psi">Component-level only, no public full system</span>
+            <span class="hero-stat-chip psi">1,000,000-qubit target (Chicago/Brisbane)</span>
+            <span class="hero-stat-chip psi">$10.5B valuation, private</span>
+          </div>
+        </div>
+        <div class="hero-atom-card xan">
+          <div class="hero-atom-name" style="color:#065f46;">Xanadu</div>
+          <p class="hero-atom-sub">Public (Nasdaq &amp; TSX: XNDU, since Mar 2026) · squeezed-light CV + fusion, room-temp photonics</p>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip xan">Borealis: peer-reviewed quantum advantage (2022)</span>
+            <span class="hero-stat-chip xan">Aurora: universal, gate-based, 12 qubits (2025)</span>
+            <span class="hero-stat-chip xan">First public pure-play photonic QC company</span>
+            <span class="hero-stat-chip xan">Fault-tolerant target: 2029, ~100K physical qubits</span>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="page-hero-visual">
+<svg viewBox="0 0 300 165" style="width:100%;max-width:420px;">
+  <style>
+    .px-node { animation: px-pulse 2.6s ease-in-out infinite; }
+    @keyframes px-pulse { 0%,100% { opacity:.55; } 50% { opacity:1; } }
+  </style>
+  <line x1="40" y1="45" x2="90" y2="70" stroke="#7c3aed" stroke-width="1" opacity=".35"/>
+  <line x1="90" y1="70" x2="55" y2="105" stroke="#7c3aed" stroke-width="1" opacity=".35"/>
+  <line x1="55" y1="105" x2="40" y2="45" stroke="#7c3aed" stroke-width="1" opacity=".35"/>
+  <circle cx="40" cy="45" r="4" fill="#7c3aed" filter="url(#pxf1)"/>
+  <circle cx="90" cy="70" r="3" fill="#7c3aed" class="px-node" style="animation-delay:-.2s"/>
+  <circle cx="55" cy="105" r="3" fill="#7c3aed" class="px-node" style="animation-delay:-.5s"/>
+  <text x="60" y="135" text-anchor="middle" font-size="9" fill="#7c3aed" font-family="monospace" font-weight="700">PsiQuantum</text>
+  <text x="60" y="148" text-anchor="middle" font-size="7" fill="#7c3aed" opacity=".7" font-family="monospace">chip-level fusion nodes</text>
+
+  <line x1="215" y1="50" x2="260" y2="55" stroke="#0d9488" stroke-width="1" opacity=".35"/>
+  <line x1="260" y1="55" x2="245" y2="95" stroke="#0d9488" stroke-width="1" opacity=".35"/>
+  <line x1="245" y1="95" x2="205" y2="90" stroke="#0d9488" stroke-width="1" opacity=".35"/>
+  <line x1="205" y1="90" x2="215" y2="50" stroke="#0d9488" stroke-width="1" opacity=".35"/>
+  <circle cx="215" cy="50" r="3" fill="#0d9488" class="px-node" style="animation-delay:-.1s"/>
+  <circle cx="260" cy="55" r="4" fill="#0d9488" filter="url(#pxf2)"/>
+  <circle cx="245" cy="95" r="3" fill="#0d9488" class="px-node" style="animation-delay:-.4s"/>
+  <circle cx="205" cy="90" r="3" fill="#0d9488" class="px-node" style="animation-delay:-.7s"/>
+  <text x="232" y="130" text-anchor="middle" font-size="9" fill="#0d9488" font-family="monospace" font-weight="700">Xanadu</text>
+  <text x="232" y="143" text-anchor="middle" font-size="7" fill="#0d9488" opacity=".7" font-family="monospace">networked racks, Aurora</text>
+  <defs>
+    <filter id="pxf1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="pxf2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STICKY TOPIC NAV ──────────────────────────────────────────── -->
+  <nav class="topic-nav" id="topicNav" aria-label="Page sections">
+    <div class="topic-nav-inner">
+      <button class="tnav-btn active" data-target="overview">Overview</button>
+      <button class="tnav-btn" data-target="architecture">Architecture</button>
+      <button class="tnav-btn" data-target="milestones">Milestones</button>
+      <button class="tnav-btn" data-target="fidelity">Component Fidelity</button>
+      <button class="tnav-btn" data-target="fault-tolerance">Fault Tolerance</button>
+      <button class="tnav-btn" data-target="comparison">Full Comparison</button>
+      <button class="tnav-btn" data-target="business">Business &amp; Funding</button>
+      <button class="tnav-btn" data-target="companies">Ecosystem</button>
+      <button class="tnav-btn" data-target="papers">Papers</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container">
+
+  <!-- ── 1. OVERVIEW ──────────────────────────────────────────────── -->
+  <section class="section-block anim-in" id="overview">
+    <h2 class="section-title"><span class="accent">01</span> Why These Two Companies?</h2>
+    <p class="section-sub">The two best-funded photonic quantum computing companies — and a genuinely different kind of comparison than this site's other head-to-heads.</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      Photonic quantum computing encodes information in single particles of light, which can travel through
+      ordinary optical fiber and (unlike trapped ions or superconducting circuits) largely dodge the need for
+      extreme cryogenic cooling of the qubits themselves. In exchange, photons are hard to store, hard to make
+      interact with each other for two-qubit gates, and are lost from the system at a much higher rate than other
+      modalities' error rates — loss, not just gate infidelity, is the central engineering problem. Two companies
+      dominate the well-funded end of this approach: <strong style="color:#5b21b6;">PsiQuantum</strong> (founded
+      2015, Palo Alto, still private, pursuing a fusion-based architecture built entirely on silicon-photonic chips
+      fabricated at GlobalFoundries) and <strong style="color:#065f46;">Xanadu</strong> (founded 2016, Toronto,
+      publicly traded on Nasdaq and the TSX under <strong>XNDU</strong> since March 2026, pursuing continuous-variable
+      squeezed-light and, more recently, fusion-based gate-model architectures).
+    </p>
+
+    <div class="info-box">
+      <strong>The core asymmetry — and why this page is structured differently:</strong>
+      PsiQuantum's public results are explicitly component- and subsystem-level: a February 2025 <em>Nature</em>
+      paper reported record photonic-component fidelities (99.98% state preparation/measurement, 99.5% two-photon
+      interference visibility) measured "conditional on photon detection" — i.e. only counting trials where the
+      photons were not lost, which is standard practice for characterizing components but is not the same as
+      demonstrating a working computer that tolerates loss end-to-end. PsiQuantum has not publicly operated a
+      complete, multi-qubit quantum computer. Xanadu, by contrast, has operated and published peer-reviewed,
+      full-system results twice: Borealis (2022, Gaussian boson sampling quantum computational advantage) and Aurora
+      (2025, a smaller but "universal," gate-based photonic system). <strong>Because of this asymmetry, this page
+      does not try to force a symmetric fidelity-vs-fidelity comparison</strong> the way the Quantinuum-vs-IonQ and
+      Google-vs-IBM pages do — instead it keeps "what has each company actually run, end-to-end, and shown to the
+      public" as the central organizing question throughout.
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card-sm psi"><div class="stat-num" style="color:#5b21b6;">99.5%</div><div class="stat-label">PsiQuantum 2-photon interference<br>(Nature 2025, component-level)</div></div>
+      <div class="stat-card-sm psi"><div class="stat-num" style="color:#5b21b6;">$10.5B</div><div class="stat-label">PsiQuantum valuation<br>(May 2026, private)</div></div>
+      <div class="stat-card-sm xan"><div class="stat-num" style="color:#065f46;">216</div><div class="stat-label">Xanadu Borealis squeezed modes<br>(Nature 2022, peer-reviewed advantage)</div></div>
+      <div class="stat-card-sm xan"><div class="stat-num" style="color:#065f46;">12</div><div class="stat-label">Xanadu Aurora qubits<br>(2025, full universal system)</div></div>
+      <div class="stat-card-sm xan"><div class="stat-num" style="color:#065f46;">XNDU</div><div class="stat-label">Nasdaq &amp; TSX ticker<br>(public since Mar 27, 2026)</div></div>
+    </div>
+
+    <div class="common-mistake" style="margin-top:1rem;">
+      <strong>Source-confidence rule for this page:</strong>
+      <span class="source-tag peer-reviewed">peer-reviewed</span> numbers come directly from journal papers;
+      <span class="source-tag company-roadmap">company roadmap</span> numbers are product specs, press releases, or
+      future targets. Every PsiQuantum fidelity number on this page is explicitly flagged as
+      <strong>component-level, conditional on photon detection</strong> where that is the case — this is the single
+      most important distinction to preserve when reading photonic quantum computing claims, since a beautiful
+      component fidelity says little on its own about a full system's usable error rate once real-world photon loss
+      is included.
+    </div>
+  </section>
+
+  <!-- ── 2. ARCHITECTURE ─────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-1" id="architecture">
+    <h2 class="section-title"><span class="accent">02</span> Architecture: Two Different Bets on Light</h2>
+    <p class="section-sub">Both now use "fusion-based" measurement patterns to build entanglement, but they generate and route photons very differently.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col psi">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🟣</span>
+          <span class="atom-col-title">PsiQuantum: Silicon-Photonic Fusion</span>
+        </div>
+        <p>PsiQuantum's architecture (Fusion-Based Quantum Computing, FBQC) builds large entangled cluster states out
+        of small, pre-generated "resource states" of a few photons each, stitched together by "fusion" measurements
+        — a strategy specifically designed to tolerate photon loss by using redundancy across many small resource
+        states rather than requiring any single long-lived photon to survive the whole computation.</p>
+        <ul>
+          <li><strong>Omega chipset (Feb 2025):</strong> silicon-photonic chips manufactured at GlobalFoundries' commercial fab in New York, incorporating a superconducting-nanowire single-photon detector layer and a barium-titanate electro-optic modulator layer (made by PsiQuantum in San Jose) bonded onto the silicon photonics <span class="source-tag company-roadmap">company</span></li>
+          <li>Photon sources: heralded single-photon sources via spontaneous four-wave mixing, integrated on-chip alongside Mach-Zehnder interferometers and ring resonators for routing and spectral filtering</li>
+          <li>Chip-to-chip interconnect demonstrated over standard telecom fiber at distances up to 250 meters, with 99.72% interconnect fidelity — a key requirement since a million-qubit system will necessarily span many physically separate chips and racks</li>
+          <li>Manufacturing claim: PsiQuantum reports characterizing millions of devices across thousands of wafers, roughly half a million measurements per month, framing the approach explicitly around semiconductor-style volume manufacturing rather than one-off lab assembly <span class="source-tag company-roadmap">company</span></li>
+        </ul>
+      </div>
+
+      <div class="atom-col xan">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🟢</span>
+          <span class="atom-col-title">Xanadu: Squeezed Light → Fusion-Based Gates</span>
+        </div>
+        <p>Xanadu's earlier systems (X8, Borealis) used continuous-variable (CV) squeezed-light states and Gaussian
+        boson sampling — a specialized, non-universal sampling task, not general-purpose computation. Aurora (2025)
+        marks a shift toward a discrete-variable, gate-based, fusion-network architecture broadly similar in spirit
+        to PsiQuantum's, built from networked, room-temperature photonic racks.</p>
+        <ul>
+          <li><strong>Borealis (2022):</strong> 216 squeezed light modes with three-dimensional (loop-based time-multiplexed) connectivity, generated by a pulsed optical parametric oscillator at 1,550 nm; performs Gaussian boson sampling, a fixed sampling task rather than universal computation <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li><strong>Aurora (2025):</strong> 4 independent, interconnected server racks built from 35 photonic chips and roughly 13 km of fiber optics, operating at room temperature; described by Xanadu as its first "universal" photonic quantum computer, supporting gate operations, real-time error correction, and decoding rather than a single fixed sampling task — but with only 12 qubits deployed at launch, far fewer than Borealis's 216 modes <span class="source-tag peer-reviewed">Nature 641 (methods paper)</span></li>
+          <li>Photonic chips for Aurora use commercially available fabrication techniques (details of the exact photon-source technology are less granularly public than PsiQuantum's Omega disclosures)</li>
+          <li>Modular philosophy: Aurora's four-rack design is explicitly meant to scale by adding more networked racks — Xanadu states the same architecture could in principle extend to "thousands" of racks <span class="source-tag company-roadmap">company</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Why this is the real story of this comparison:</strong> both companies have converged on
+      fusion-based, loss-tolerant architectures — a sign the field has broadly settled on this as photonic quantum
+      computing's best path to fault tolerance. The difference is scope of demonstration: PsiQuantum has shown
+      excellent physics at the component and few-chip level but has not yet wired those components into a
+      multi-qubit computer it has shown working end-to-end in public; Xanadu has repeatedly built and run smaller
+      but genuinely complete systems, accepting a much lower qubit count in exchange for a real, working,
+      peer-reviewed machine at each step.
+    </div>
+  </section>
+
+  <!-- ── 3. MILESTONES ───────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-2" id="milestones">
+    <h2 class="section-title"><span class="accent">03</span> Milestones, Side by Side</h2>
+    <p class="section-sub">PsiQuantum's timeline is dominated by funding and infrastructure; Xanadu's by working systems.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#5b21b6;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">PsiQuantum</h3>
+        <div class="timeline" style="--dot:#7c3aed;">
+          <div class="tl-item"><div class="tl-year">2015 · Founded</div><div class="tl-body">Founded in Palo Alto by Jeremy O'Brien, Terry Rudolph, and others from the UK photonic-quantum-computing academic community.</div></div>
+          <div class="tl-item"><div class="tl-year">Feb 2025 · Omega chipset + Nature paper</div><div class="tl-body">"A manufacturable platform for photonic quantum computing," Nature 641, 876–883: record component fidelities (99.98% SPAM, 99.5% two-photon interference, 99.22% two-qubit fusion, 99.72% chip-to-chip interconnect), all conditional on photon detection; component/subsystem-level only.</div></div>
+          <div class="tl-item"><div class="tl-year">Sep 2025 · $1B raise, $7B valuation</div><div class="tl-body">Funding round led by BlackRock, Temasek, and Baillie Gifford.</div></div>
+          <div class="tl-item"><div class="tl-year">Sep 2025 · Chicago groundbreaking</div><div class="tl-body">Broke ground on the Illinois Quantum and Microelectronics Park site, targeting a million-qubit, fault-tolerant system; phased plan begins with an intermediate-scale test system for DARPA's Quantum Benchmarking Initiative.</div></div>
+          <div class="tl-item"><div class="tl-year">May 2026 · $1.5B raise, $10.5B valuation</div><div class="tl-body">Latest disclosed funding round; total raised to date roughly $2B+ across PsiQuantum's history, with investors including Microsoft and Nvidia's venture arm alongside the 2025 round's backers.</div></div>
+          <div class="tl-item"><div class="tl-year">— · No public full-system demo <span class="source-tag company-roadmap">as of this writing</span></div><div class="tl-body">PsiQuantum has not published a peer-reviewed or company demonstration of a complete, multi-qubit photonic quantum computer running an algorithm — its public record remains component/subsystem-level.</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#065f46;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Xanadu</h3>
+        <div class="timeline" style="--dot:#0d9488;">
+          <div class="tl-item"><div class="tl-year">2016 · Founded</div><div class="tl-body">Founded in Toronto by Christian Weedbrook and collaborators, initially focused on continuous-variable photonic quantum computing and the open-source PennyLane software framework.</div></div>
+          <div class="tl-item"><div class="tl-year">Jun 2022 · Borealis quantum advantage</div><div class="tl-body">"Quantum computational advantage with a programmable photonic processor," Nature 606, 75–81: 216-mode Gaussian boson sampling; one sample in 36 microseconds versus an estimated ~9,000 years on the Fugaku supercomputer for classical simulation. Made available for public cloud access after publication.</div></div>
+          <div class="tl-item"><div class="tl-year">Jan 2025 · Aurora launch</div><div class="tl-body">First "universal" (gate-based) photonic quantum computer: 4 networked server racks, 35 photonic chips, ~13 km of fiber, 12 qubits, room-temperature operation; accompanying Nature methods paper on scaling and networking modular photonic systems.</div></div>
+          <div class="tl-item"><div class="tl-year">Nov 2025 · SPAC deal announced</div><div class="tl-body">Agreed to go public via merger with Crane Harbor Acquisition Corp., a special-purpose acquisition company, at a $3B pre-money valuation, targeting roughly $500M in gross proceeds for expansion.</div></div>
+          <div class="tl-item"><div class="tl-year">Mar 27, 2026 · Public listing</div><div class="tl-body">SPAC merger closed; began trading as XNDU on Nasdaq and the Toronto Stock Exchange, becoming the world's first publicly traded pure-play photonic quantum computing company.</div></div>
+          <div class="tl-item"><div class="tl-year">2029 (target) <span class="source-tag company-roadmap">roadmap</span></div><div class="tl-body">Company target: fault-tolerant photonic quantum computer with roughly 100,000 physical qubits encoding on the order of 1,000 logical qubits via error-correcting codes.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box" style="margin-top:1.5rem;">
+      <canvas id="scaleChart" height="240"></canvas>
+      <p class="chart-caption">Photonic modes/qubits in each company's largest publicly demonstrated system (log scale). PsiQuantum's largest disclosed numbers are chip-count and wafer-throughput figures, not a qubit count for a working computer — shown here as "not applicable" to avoid implying a false comparison.</p>
+    </div>
+  </section>
+
+  <!-- ── 4. COMPONENT FIDELITY ─────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-3" id="fidelity">
+    <h2 class="section-title"><span class="accent">04</span> Component Fidelity Deep Dive</h2>
+    <p class="section-sub">PsiQuantum's headline numbers are genuinely excellent — but they describe components, not a working computer's end-to-end error rate.</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      "Conditional on photon detection" is the load-bearing phrase in PsiQuantum's 2025 Nature paper: every fidelity
+      number below was computed only from trials where the relevant photons were successfully detected, which
+      excludes the dominant photonic error source — photon loss — from the reported figure. This is standard,
+      legitimate practice for characterizing a component in isolation, but it means these numbers cannot be directly
+      compared to a full-system fidelity the way Willow's or Nighthawk's two-qubit gate fidelities (which do include
+      loss/error in their reported averages) can be on the Google-vs-IBM page.
+    </p>
+
+    <div class="formula-box">
+$$\mathcal{F}_{\rm SPAM}^{\rm PsiQuantum} = 99.98\%\pm0.01\%,\quad V_{2\gamma}^{\rm PsiQuantum} = 99.50\%\pm0.25\%,\quad \mathcal{F}_{\rm fusion}^{\rm PsiQuantum} = 99.22\%\pm0.12\%\ \text{(all conditional on detection)}$$
+$$\eta_{\rm detect}^{\rm PsiQuantum} = 88.9\%\pm3.5\%\ \text{(on-chip photon-detection efficiency)} \;\Rightarrow\; \text{roughly 1 in 9 photons is lost before detection, unconditionally}$$
+The detection efficiency $\eta_{\rm detect}$ is the number that actually captures loss, and it is the more informative figure for judging how close the platform is to a usable, unconditional error rate — an 88.9% detection efficiency implies a substantial fraction of photons are lost even in this component-level test, which the "conditional" fidelities above do not reflect.</div>
+
+    <div class="side-by-side">
+      <div class="psi-box">
+        <strong>PsiQuantum, component record</strong>
+        <ul style="margin:.5rem 0 0 1.1rem;padding:0;">
+          <li>State preparation/measurement fidelity: 99.98% ± 0.01% <span class="source-tag peer-reviewed">peer-reviewed, conditional</span></li>
+          <li>Two-photon interference visibility: 99.50% ± 0.25% <span class="source-tag peer-reviewed">peer-reviewed, conditional</span></li>
+          <li>Two-qubit fusion fidelity: 99.22% ± 0.12% <span class="source-tag peer-reviewed">peer-reviewed, conditional</span></li>
+          <li>Chip-to-chip interconnect fidelity: 99.72% ± 0.04%, over up to 250 m of telecom fiber <span class="source-tag peer-reviewed">peer-reviewed, conditional</span></li>
+          <li>On-chip detection efficiency: 88.9% ± 3.5% — the loss-inclusive figure <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+        </ul>
+      </div>
+      <div class="xan-box">
+        <strong>Xanadu, system-level record</strong>
+        <ul style="margin:.5rem 0 0 1.1rem;padding:0;">
+          <li>Borealis: squeezing parameters and loss values sufficient to demonstrate a task classically intractable at the ~9,000-supercomputer-year scale — an end-to-end system result, inherently loss-inclusive, since the advantage claim depends on the full chain of squeezing, routing loss, and detection <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li>Aurora: individual component fidelities are less granularly publicized than PsiQuantum's Omega disclosures; Xanadu's public claim is architectural (universal gate-based operation, real-time decoding) rather than a headline fidelity number <span class="source-tag company-roadmap">company + Nature methods paper</span></li>
+          <li>Because Xanadu's systems are operated as complete machines, their reported results are unconditional in the sense that matters most for usability — they reflect what the system actually delivers at its output, loss and all</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Reading the fidelity picture honestly:</strong> PsiQuantum's conditional component fidelities are
+      excellent by any standard and represent real, peer-reviewed progress in silicon-photonic manufacturing. But
+      "conditional on detection" component numbers and "unconditional, full-system" numbers are not interchangeable,
+      and this page treats them as answering different questions rather than ranking them on the same scale. The
+      fairer framing: PsiQuantum has shown its parts can be excellent; Xanadu has shown a complete, if much smaller,
+      machine can work end-to-end. Both are necessary; neither alone is sufficient for a fault-tolerant photonic
+      quantum computer.
+    </div>
+  </section>
+
+  <!-- ── 5. FAULT TOLERANCE ──────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-4" id="fault-tolerance">
+    <h2 class="section-title"><span class="accent">05</span> Fault Tolerance &amp; Loss-Tolerant Codes</h2>
+    <p class="section-sub">Photonic fault tolerance is primarily a loss-tolerance problem — different in character from the gate-fidelity-driven codes used by matter-qubit platforms.</p>
+
+    <div class="formula-box">
+$$p_{\rm loss}^{\rm eff} = 1-\eta_{\rm total} = 1-\prod_i \eta_i\ \text{(source, routing, coupling, detection losses compound multiplicatively)}$$
+Because photon loss compounds across every optical component a photon passes through, fusion-based architectures are built to tolerate a nonzero, fixed loss rate per photon by using redundant resource states — the code "gives up" on any individual lost photon and reroutes around it, rather than requiring every photon to survive. This is a fundamentally different error model from the gate-infidelity-dominated codes used in trapped-ion or superconducting systems (Sections 05 of the other comparison pages on this site), which is why direct code-overhead comparisons across modalities should be treated cautiously.</div>
+
+    <div class="side-by-side">
+      <div class="atom-col psi">
+        <div class="atom-col-header"><span class="atom-col-title">PsiQuantum: Fusion-Based QC Theory</span></div>
+        <ul>
+          <li>PsiQuantum's FBQC architecture was developed specifically around loss tolerance from small resource states, described in earlier PsiQuantum-affiliated theoretical papers predating the 2025 hardware results</li>
+          <li>A June 2025 PsiQuantum-affiliated study specifically mapped theoretical paths to greater loss tolerance in photonic fault tolerance, refining the resource-state and fusion-network design further <span class="source-tag preprint">company research announcement</span></li>
+          <li>The stated end goal — a million physical qubits at the Chicago and Brisbane sites — is explicitly a fault-tolerant target, but no public logical-qubit count, logical error rate, or intermediate fault-tolerance milestone has been demonstrated and published as of this writing <span class="source-tag company-roadmap">roadmap</span></li>
+          <li>DARPA's Quantum Benchmarking Initiative is cited as an external validation step for PsiQuantum's intermediate-scale test system ahead of the full million-qubit build — a third-party checkpoint worth watching for independently verified results</li>
+        </ul>
+      </div>
+      <div class="atom-col xan">
+        <div class="atom-col-header"><span class="atom-col-title">Xanadu: Modular, Networked Fault Tolerance</span></div>
+        <ul>
+          <li>Aurora's four-rack, fiber-networked design is explicitly built to demonstrate the modularity a fault-tolerant photonic computer will need — real-time error correction and decoding are cited as already integrated into Aurora's operation, though at a small (12-qubit) scale</li>
+          <li>Xanadu's 2029 target (~100,000 physical qubits, ~1,000 logical qubits) implies an assumed physical-to-logical overhead around 100:1 — broadly consistent with, though not more favorable than, surface-code-class overheads reported by matter-qubit platforms <span class="source-tag company-roadmap">roadmap</span></li>
+          <li>As a newly public company, Xanadu's fault-tolerance roadmap is now subject to the same public-market scrutiny and quarterly reporting cadence as IBM's, a level of external accountability PsiQuantum (still private) does not yet face</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Demonstrated result vs. roadmap, again:</strong> neither company has published a photonic logical-qubit
+      demonstration comparable to Quantinuum's, IonQ's, or Google's below-threshold result. PsiQuantum's advantage
+      here is a more mature, purpose-built loss-tolerant code theory and a much larger capital base to build toward
+      its million-qubit target; Xanadu's advantage is that its modular, networked architecture is not purely
+      theoretical — Aurora is a working instance of the same networking idea at small scale, running today.
+    </div>
+  </section>
+
+  <!-- ── 6. FULL COMPARISON TABLE ─────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="comparison">
+    <h2 class="section-title"><span class="accent">06</span> Full Head-to-Head Comparison</h2>
+    <p class="section-sub">Every major dimension, side by side. Several rows are intentionally marked "not comparable" rather than forced to a false tie.</p>
+
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th scope="col" class="cat-h">Category</th>
+            <th scope="col" class="cat-h">Metric</th>
+            <th scope="col" class="psi-h">PsiQuantum</th>
+            <th scope="col" class="xan-h">Xanadu</th>
+            <th scope="col" class="cat-h">Edge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Company</td>
+            <td>Founded / origin</td>
+            <td class="psi-td">2015, Palo Alto; founders from the UK photonic-QC academic community</td>
+            <td class="xan-td">2016, Toronto; founders from Canadian/academic photonic-QC and open-source software backgrounds</td>
+            <td class="win tie">Tie<span class="adv-badge adv-tie">similar vintage</span></td>
+          </tr>
+          <tr>
+            <td>Public market status</td>
+            <td class="psi-td">Private; no public shares or standalone financial disclosure</td>
+            <td class="xan-td">Public since Mar 27, 2026 (Nasdaq &amp; TSX: XNDU), first pure-play photonic QC public company</td>
+            <td class="win xan">Xanadu<span class="adv-badge adv-xan">public, first mover</span></td>
+          </tr>
+          <tr>
+            <td>Most recent valuation</td>
+            <td class="psi-td">$10.5B (May 2026 private round)</td>
+            <td class="xan-td">$3B pre-money at SPAC announcement (Nov 2025); public market cap floats with XNDU share price thereafter</td>
+            <td class="win psi">PsiQuantum<span class="adv-badge adv-psi">higher valuation</span></td>
+          </tr>
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Demonstrated Hardware</td>
+            <td>Largest working full system shown publicly</td>
+            <td class="psi-td">None publicly demonstrated — component/subsystem-level only</td>
+            <td class="xan-td">Aurora: 12 qubits, universal/gate-based, 4 networked racks (2025)</td>
+            <td class="win xan">Xanadu<span class="adv-badge adv-xan">has a working system</span></td>
+          </tr>
+          <tr>
+            <td>Peer-reviewed system-level advantage claim</td>
+            <td class="psi-td">None published</td>
+            <td class="xan-td">Borealis, Nature 606 (2022): 216-mode Gaussian boson sampling quantum computational advantage</td>
+            <td class="win xan">Xanadu<span class="adv-badge adv-xan">only one with a system claim</span></td>
+          </tr>
+          <tr>
+            <td>Best reported component fidelity</td>
+            <td class="psi-td">99.98% SPAM, 99.5% two-photon interference (conditional, Nature 2025)</td>
+            <td class="xan-td">Not separately publicized to the same granularity — system-level results emphasized instead</td>
+            <td class="win psi">PsiQuantum<span class="adv-badge adv-psi">component records</span></td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Manufacturing</td>
+            <td>Fabrication approach</td>
+            <td class="psi-td">GlobalFoundries commercial semiconductor fab (New York); millions of devices characterized across thousands of wafers</td>
+            <td class="xan-td">Commercially available photonic-chip fabrication techniques; less granular public detail on fab partners/volume</td>
+            <td class="win psi">PsiQuantum<span class="adv-badge adv-psi">disclosed manufacturing scale</span></td>
+          </tr>
+          <tr>
+            <td>Physical infrastructure commitment</td>
+            <td class="psi-td">Two Quantum Compute Centers under construction (Brisbane, Australia; Chicago, USA), targeting 1,000,000 physical qubits</td>
+            <td class="xan-td">Modular rack-based systems (Aurora), targeting ~100,000 physical qubits / ~1,000 logical qubits by 2029</td>
+            <td class="win psi">PsiQuantum<span class="adv-badge adv-psi">larger stated target</span></td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Fault Tolerance</td>
+            <td>Architecture family</td>
+            <td class="psi-td">Fusion-based quantum computing (FBQC), silicon-photonic, purpose-built for loss tolerance</td>
+            <td class="xan-td">Networked, modular fusion/gate-based (Aurora), evolved from earlier CV/Gaussian boson sampling systems</td>
+            <td class="win tie">Tie<span class="adv-badge adv-tie">converged approach</span></td>
+          </tr>
+          <tr>
+            <td>Public target date, full FTQC system</td>
+            <td class="psi-td">No single dated target published; phased Chicago/Brisbane build with DARPA-linked intermediate milestone</td>
+            <td class="xan-td">2029 (~100,000 physical / ~1,000 logical qubits) — company target</td>
+            <td class="win xan">Xanadu<span class="adv-badge adv-xan">has a dated target</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 7. BUSINESS & FUNDING ───────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="business">
+    <h2 class="section-title"><span class="accent">07</span> Business, Funding &amp; Public Markets</h2>
+    <p class="section-sub">One company has raised more private capital than almost any startup in the sector; the other just became the industry's first pure-play public stock.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col psi">
+        <div class="atom-col-header"><span class="atom-col-title">PsiQuantum</span></div>
+        <ul>
+          <li>Remains privately held as of this writing; latest disclosed round: $1.5B in May 2026 at a $10.5B valuation, following a $1B round in September 2025 (led by BlackRock, Temasek, and Baillie Gifford) that valued the company at $7B <span class="source-tag company-roadmap">company filings/press</span></li>
+          <li>Investors reported across funding history include Microsoft and Nvidia's venture arm, alongside the 2025–2026 round's institutional backers</li>
+          <li>Major capital commitments: Australian federal and Queensland state government support tied to the Brisbane Quantum Compute Center (reported in the ~$1B range for that site specifically); a Series E raise exceeding $1B tied to the Chicago site groundbreaking (Sep 2025)</li>
+          <li>No public revenue figures have been disclosed — consistent with a private, pre-commercial-product company whose near-term "product" is the physical construction of its compute centers rather than sold hardware or cloud access <span class="source-tag company-roadmap">inferred from absence of disclosure</span></li>
+        </ul>
+      </div>
+      <div class="atom-col xan">
+        <div class="atom-col-header"><span class="atom-col-title">Xanadu</span></div>
+        <ul>
+          <li>Went public via SPAC merger with Crane Harbor Acquisition Corp.; deal announced November 3, 2025 at a $3B pre-money valuation, targeting roughly $500M in gross proceeds; merger closed and XNDU began trading on Nasdaq and the TSX on March 27, 2026 <span class="source-tag company-roadmap">company/SEC filings</span></li>
+          <li>As a newly public foreign private issuer, Xanadu now files periodic reports (e.g., Form 6-K) disclosing quarterly results, including a widening reported net loss alongside growing quantum-sector funding activity broadly, per its FY2025 year-end filing <span class="source-tag company-roadmap">SEC filing</span></li>
+          <li>Public listing gives Xanadu a transparency requirement PsiQuantum does not share — quarterly financials, material-event disclosures, and analyst coverage all now apply, similar to IonQ's and Quantinuum's positions among trapped-ion companies</li>
+          <li>Xanadu's PennyLane open-source software framework, widely used in academic and industry quantum-machine-learning research, is a significant non-hardware asset and community touchpoint distinct from anything PsiQuantum has published publicly</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Reading the business picture honestly:</strong> PsiQuantum has raised more total private capital and
+      carries a higher valuation than Xanadu's public-market starting point, reflecting investor confidence in its
+      component results and its aggressive Chicago/Brisbane infrastructure build-out. But private valuation is not
+      the same kind of signal as a public listing — Xanadu is now subject to ongoing public disclosure and market
+      pricing that will make its progress (and setbacks) far more visible, in something closer to real time, than
+      PsiQuantum's periodic funding-round announcements allow.
+    </div>
+  </section>
+
+  <!-- ── 8. ECOSYSTEM ─────────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="companies">
+    <h2 class="section-title"><span class="accent">08</span> Companies &amp; Ecosystem</h2>
+    <p class="section-sub">Government infrastructure partnerships loom unusually large for both companies, more so than in trapped-ion or superconducting QC.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#5b21b6;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">PsiQuantum Ecosystem</h3>
+        <div class="company-card">
+          <h4>GlobalFoundries</h4>
+          <p>Commercial semiconductor foundry (New York) manufacturing PsiQuantum's Omega silicon-photonic chipset — a rare example of a quantum computing hardware company relying on an established, high-volume commercial fab rather than its own custom cleanroom.</p>
+        </div>
+        <div class="company-card">
+          <h4>Government of Australia / Queensland</h4>
+          <p>Public co-investment in the Brisbane Quantum Compute Center, part of a roughly $1B state/federal commitment — one of the largest government-backed quantum computing infrastructure deals globally.</p>
+        </div>
+        <div class="company-card">
+          <h4>Illinois Quantum and Microelectronics Park / State of Illinois</h4>
+          <p>Host site and public partner for the Chicago Quantum Compute Center, described by PsiQuantum as America's largest quantum computing infrastructure project.</p>
+        </div>
+        <div class="company-card">
+          <h4>DARPA</h4>
+          <p>Quantum Benchmarking Initiative provides an independent evaluation pathway for PsiQuantum's intermediate-scale test system ahead of full-scale construction.</p>
+        </div>
+        <div class="company-card">
+          <h4>Microsoft, Nvidia (venture arm)</h4>
+          <p>Named investors across PsiQuantum's funding history, reflecting continued strategic technology-sector interest in the company's silicon-photonic approach.</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#065f46;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Xanadu Ecosystem</h3>
+        <div class="company-card">
+          <h4>Crane Harbor Acquisition Corp.</h4>
+          <p>The SPAC vehicle Xanadu merged with to go public (closed March 2026), now dissolved into the combined public entity trading as XNDU.</p>
+        </div>
+        <div class="company-card">
+          <h4>PennyLane (open source)</h4>
+          <p>Xanadu's widely-adopted open-source quantum machine learning and differentiable-programming framework, used well beyond Xanadu's own hardware and a major source of academic mindshare and hiring pipeline.</p>
+        </div>
+        <div class="company-card">
+          <h4>Cloud access partners</h4>
+          <p>Borealis was made available for public cloud access following its 2022 publication, an unusually open posture for a quantum-advantage-class result and one PsiQuantum has not matched with any comparable public system access.</p>
+        </div>
+        <div class="company-card">
+          <h4>Academic roots</h4>
+          <p>Xanadu's continuous-variable photonics approach traces to a broader Canadian and international academic community in linear/Gaussian quantum optics, informing both its hardware and its PennyLane software philosophy.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Career angle:</strong> photonic quantum computing draws heavily on integrated photonics, nonlinear and
+      quantum optics, and (increasingly, at PsiQuantum in particular) semiconductor fabrication and packaging
+      engineering — skills that overlap only partially with the laser-cooling/trapping AMO toolkit central to
+      trapped-ion and neutral-atom platforms. Xanadu's open-source PennyLane project is also a notable route into
+      the field for software- and algorithms-focused physicists. See the
+      <a href="qc-landscape.html">Quantum Industry Map</a> for how photonic roles compare to trapped-ion,
+      neutral-atom, and superconducting quantum computing careers, and
+      <a href="quantinuum-vs-ionq.html">Quantinuum vs IonQ</a> or <a href="google-vs-ibm.html">Google vs IBM</a> for
+      the equivalent comparisons in those sectors.
+    </div>
+  </section>
+
+  <!-- ── 9. KEY PAPERS & REFERENCES ─────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="papers">
+    <h2 class="section-title"><span class="accent">09</span> Key Papers &amp; References</h2>
+    <p class="section-sub">Primary sources for every claim above: peer-reviewed papers, preprints, and company/press material, clearly separated.</p>
+
+    <h3 style="color:#5b21b6;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">PsiQuantum, Landmark Papers &amp; Releases</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">A manufacturable platform for photonic quantum computing</div>
+        <div class="paper-meta">PsiQuantum Team, Nature 641, 876–883 (2025)</div>
+        <p class="paper-desc">The component-level results underlying Sections 02 and 04: SPAM, two-photon interference, fusion, and chip-to-chip interconnect fidelities, all conditional on photon detection; 88.9% on-chip detection efficiency.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-025-08820-7" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">PsiQuantum Announces Omega, a Manufacturable Chipset for Photonic Quantum Computing</div>
+        <div class="paper-meta">PsiQuantum, company press release (Feb 26, 2025)</div>
+        <p class="paper-desc">Omega chipset details: GlobalFoundries fabrication, superconducting-nanowire detectors, barium-titanate modulators, and the 250-meter chip-to-chip interconnect demonstration.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.psiquantum.com/news-import/omega" target="_blank" rel="noopener">psiquantum.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">PsiQuantum Breaks Ground on America's Largest Quantum Computing Project in Chicago</div>
+        <div class="paper-meta">PsiQuantum, company press release (Sep 30, 2025)</div>
+        <p class="paper-desc">Chicago Quantum Compute Center groundbreaking, million-qubit target, phased build plan, and DARPA Quantum Benchmarking Initiative link, cited in Sections 03 and 05.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.psiquantum.com/news-import/psiquantum-breaks-ground-chicago" target="_blank" rel="noopener">psiquantum.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">PsiQuantum company &amp; funding profile</div>
+        <div class="paper-meta">Sacra, company research profile (accessed Sep 2026)</div>
+        <p class="paper-desc">Funding-round history and valuations used in Sections 03 and 07: $7B (Sep 2025) and $10.5B (May 2026) rounds, investor list, and total capital raised.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://sacra.com/c/psiquantum/" target="_blank" rel="noopener">sacra.com ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:#065f46;font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Xanadu, Landmark Papers &amp; Releases</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Quantum computational advantage with a programmable photonic processor</div>
+        <div class="paper-meta">Madsen, Laudenbach, Askarani et al., Nature 606, 75–81 (2022)</div>
+        <p class="paper-desc">The Borealis result: 216-mode Gaussian boson sampling, 36-microsecond sampling time versus an estimated ~9,000 classical-supercomputer-years, subsequently opened to public cloud access.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-022-04725-x" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Scaling and networking a modular photonic quantum computer</div>
+        <div class="paper-meta">Xanadu Team, Nature (2025)</div>
+        <p class="paper-desc">The technical methods paper underlying Aurora's networked, modular rack architecture and loss-tolerance approach, cited throughout Sections 02–05.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-024-08406-9" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Xanadu Introduces Aurora: World's First Scalable, Networked and Modular Quantum Computer</div>
+        <div class="paper-meta">Xanadu, company press release (Jan 22, 2025)</div>
+        <p class="paper-desc">Launch announcement for Aurora: 4 racks, 35 chips, 13 km fiber, 12 qubits, room-temperature operation, and the "universal" framing distinguishing it from Borealis.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.xanadu.ai/press/xanadu-introduces-aurora-worlds-first-scalable-networked-and-modular-quantum-computer" target="_blank" rel="noopener">xanadu.ai ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Xanadu Quantum SPAC Deal Approved, Targets $302 Million Raise</div>
+        <div class="paper-meta">The Quantum Insider (Mar 19, 2026)</div>
+        <p class="paper-desc">Coverage of the Crane Harbor SPAC merger's shareholder approval ahead of the March 27, 2026 public listing, cited in Section 07.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://thequantuminsider.com/2026/03/19/xanadu-quantum-spac-deal-approved-targets-302-million-raise/" target="_blank" rel="noopener">thequantuminsider.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Xanadu Announces Fourth Quarter and Full Year 2025 Results</div>
+        <div class="paper-meta">Xanadu Investor Relations (Apr 9, 2026)</div>
+        <p class="paper-desc">First public financial disclosures following the SPAC close, referenced in Section 07's business discussion.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://investors.xanadu.ai/news-releases/news-release-details/xanadu-announces-fourth-quarter-and-full-year-2025-results" target="_blank" rel="noopener">investors.xanadu.ai ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:var(--text-secondary);font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Independent Surveys &amp; Reviews</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Global Photonic Quantum Computing Market Report 2026–2036</div>
+        <div class="paper-meta">GlobeNewswire / industry market report (Aug 17, 2026)</div>
+        <p class="paper-desc">Independent market survey evaluating linear-optics and continuous-variable strategies across PsiQuantum, Xanadu, Quandela, and ORCA — useful cross-check against both companies' own framing of their competitive position.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.globenewswire.com/news-release/2026/08/17/3346245/0/en/global-photonic-quantum-computing-market-report-2026-2036-evaluating-linear-optics-continuous-variables-and-strategies-of-psiquantum-xanadu-quandela-and-orca.html" target="_blank" rel="noopener">globenewswire.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">PsiQuantum</div>
+        <div class="paper-meta">Wikipedia (accessed Sep 2026)</div>
+        <p class="paper-desc">General-purpose independent overview cross-referenced for founding details, funding timeline, and site locations.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://en.wikipedia.org/wiki/PsiQuantum" target="_blank" rel="noopener">en.wikipedia.org ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+    </div><!-- /container -->
+  </div><!-- /page-content -->
+</main><!-- /page-wrap -->
+
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="qc-landscape.html">
+        <span class="see-also-icon">💻</span>
+        <div>
+          <div class="see-also-name">Quantum Industry Map</div>
+          <div class="see-also-desc">Industry map and career guide for AMO physicists</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="google-vs-ibm.html">
+        <span class="see-also-icon">🖥️</span>
+        <div>
+          <div class="see-also-name">Google vs IBM</div>
+          <div class="see-also-desc">The same comparison, for superconducting hardware</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="quantinuum-vs-ionq.html">
+        <span class="see-also-icon">⚛️</span>
+        <div>
+          <div class="see-also-name">Quantinuum vs IonQ</div>
+          <div class="see-also-desc">The same comparison, for trapped-ion hardware</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.82rem;border-top:1px solid #1a2236;margin-top:1rem;">
+  AMO Toolkit · PsiQuantum vs Xanadu Comparison · Data ≈ September 2026 · Saumitra Phatak, Purdue Physics PhD
+</footer>
+
+<!-- KaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+
+<script src="../js/main.js?v=26"></script>
+<script>
+  renderNav({ active: 'psiquantum-vs-xanadu', root: '../' });
+
+  // ── Sticky topic nav highlight ─────────────────────────────────────
+  (function() {
+    const btns = document.querySelectorAll('.tnav-btn');
+    const sections = Array.from(btns).map(b => document.getElementById(b.dataset.target)).filter(Boolean);
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const el = document.getElementById(btn.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          btns.forEach(b => b.classList.remove('active'));
+          const active = document.querySelector(`.tnav-btn[data-target="${e.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-64px 0px -55% 0px', threshold: 0 });
+
+    sections.forEach(s => obs.observe(s));
+  })();
+
+  // ── Chart helpers ─────────────────────────────────────────────────
+  function hexToRgba(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  Chart.defaults.color = '#5c503c';
+  Chart.defaults.font.family = "'Source Serif 4', serif";
+
+  // ── Photonic Mode/Qubit Scale Chart ─────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('scaleChart').getContext('2d');
+    const milestones = [
+      { label: 'Xanadu Aurora\n(2025, qubits)', qubits: 12, platform: 'xan' },
+      { label: 'Xanadu Borealis\n(2022, modes)', qubits: 216, platform: 'xan' },
+      { label: 'Xanadu 2029 target\n(physical, roadmap)', qubits: 100000, platform: 'xan' },
+      { label: 'PsiQuantum 2029ish target\n(physical, roadmap)', qubits: 1000000, platform: 'psi' },
+    ];
+    milestones.sort((a,b) => a.qubits - b.qubits);
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: milestones.map(m => m.label),
+        datasets: [{
+          data: milestones.map(m => m.qubits),
+          backgroundColor: milestones.map(m => hexToRgba(m.platform === 'psi' ? '#7c3aed' : '#0d9488', 0.75)),
+          borderColor: milestones.map(m => m.platform === 'psi' ? '#7c3aed' : '#0d9488'),
+          borderWidth: 1.5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const m = milestones[ctx.dataIndex];
+                return ` ${m.qubits.toLocaleString()}, ${m.platform === 'psi' ? 'PsiQuantum' : 'Xanadu'}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'Modes / Qubits (log)', color: '#5c503c' },
+            grid: { color: '#1e293b' },
+            ticks: { callback: (v) => [10, 100, 1000, 10000, 100000, 1000000].includes(v) ? v : null }
+          }
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>
