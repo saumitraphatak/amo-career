@@ -400,7 +400,7 @@
         </div>
 
         <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem;">
-          A tightly trapped atom behaves like a quantum harmonic oscillator with discrete energy levels $|n\rangle$ separated by $\hbar\nu$, where $\nu$ is the trap frequency. The spatial extent of the ground state wavefunction is the zero-point motion $x_0$. The Lamb-Dicke parameter $\eta$ compares this motion to the photon wavelength, it is the single most important parameter in laser cooling.
+          A tightly trapped atom behaves like a quantum harmonic oscillator with discrete energy levels $|n\rangle$ separated by $\hbar\omega$ ($\omega=2\pi\nu$), where $\nu$ is the trap frequency. The spatial extent of the ground state wavefunction is the zero-point motion $x_0$. The Lamb-Dicke parameter $\eta$ compares this motion to the photon wavelength, it is the single most important parameter in laser cooling.
         </p>
 
         <div class="two-col">
@@ -411,15 +411,15 @@
             </div>
             <div class="formula-box">
               <div class="formula-label">Trap Hamiltonian</div>
-              $$H_\text{trap} = \hbar\nu\!\left(a^\dagger a + \tfrac{1}{2}\right)$$
+              $$H_\text{trap} = \hbar\omega\!\left(a^\dagger a + \tfrac{1}{2}\right), \quad \omega = 2\pi\nu$$
             </div>
             <div class="formula-box">
               <div class="formula-label">Zero-point motion</div>
-              $$x_0 = \sqrt{\frac{\hbar}{2m\nu}}$$
+              $$x_0 = \sqrt{\frac{\hbar}{2m\omega}} = \sqrt{\frac{\hbar}{4\pi m\nu}}$$
             </div>
             <div class="formula-box">
               <div class="formula-label">Lamb-Dicke parameter</div>
-              $$\eta = k\,x_0 = k\sqrt{\frac{\hbar}{2m\nu}}$$
+              $$\eta = k\,x_0 = k\sqrt{\frac{\hbar}{2m\omega}} = k\sqrt{\frac{\hbar}{4\pi m\nu}}$$
             </div>
             <div class="formula-box">
               <div class="formula-label">LD expansion of light-matter coupling</div>
@@ -1539,7 +1539,7 @@
 </footer>
 <!-- /page-wrap -->
 
-<script src="../js/main.js?v=24"></script>
+<script src="../js/main.js?v=25"></script>
 <script>renderNav({ active: 'laser-cooling', root: '../' });</script>
 <script>
 'use strict';
@@ -1575,11 +1575,12 @@ function calcLD() {
   const lam = parseFloat(document.getElementById('ld-lambda').value) * 1e-9; // m
   if (!m || !nu || !lam) return;
 
+  const omega = 2 * Math.PI * nu;   // angular trap frequency (nu is the ordinary/measured frequency)
   const k = 2 * Math.PI / lam;
-  const x0 = Math.sqrt(HBAR / (2 * m * nu));
+  const x0 = Math.sqrt(HBAR / (2 * m * omega));
   const eta = k * x0;
   const Er = HBAR * HBAR * k * k / (2 * m);  // recoil energy
-  const recoilRatio = Er / (HBAR * nu);
+  const recoilRatio = Er / (2 * Math.PI * HBAR * nu);  // E_r / (h*nu)
 
   document.getElementById('ld-x0').textContent = (x0 * 1e9).toFixed(2) + ' nm';
   document.getElementById('ld-eta').textContent = eta.toFixed(4);

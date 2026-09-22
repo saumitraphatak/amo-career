@@ -30,3 +30,7 @@ This page's `<style>` block used `var(--mono)` for 12 monospace-styled rules —
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+
+## Accessibility re-audit update (2026-09-20)
+The dynamically-generated "Wavefront Builder" mode rows (`renderWFModes()`'s template string: an n-select, m-select, coefficient input, and remove button per row) had zero accessible names on any control — no `<label>` anywhere in the template and no static header row above the container either. Added `aria-label`s built from the same `${idx}` the template already uses ("Radial index n for term N", "Azimuthal index m for term N", "Coefficient for term N", "Remove term N"). See docs/accessibility-audit-2026-09-20.md.

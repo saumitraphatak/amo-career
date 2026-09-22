@@ -846,7 +846,7 @@ GS convergence criterion: RMSE = $\sqrt{\frac{1}{P}\sum_i \left(|E_i|^2 - T_i\ri
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=24"></script>
+<script src="../js/main.js?v=25"></script>
 <script>
 renderNav({ active: 'zernike', root: '../' });
 initScrollReveal();
@@ -1174,11 +1174,11 @@ function renderWFRows() {
     let mOpts = ms.map(mm =>
       `<option value="${mm}" ${mm===mode.m?'selected':''}>${mm>=0?'+':''}${mm} ${modeName(mode.n,mm)}</option>`).join('');
     row.innerHTML = `
-      <select onchange="wfSetN(${idx}, this.value)">${nOpts}</select>
-      <select id="wfm${idx}" onchange="wfSetM(${idx}, this.value); wfAutoCompute()">${mOpts}</select>
-      <input type="number" value="${mode.c}" step="0.05" style="font-size:.8rem"
+      <select aria-label="Radial index n for term ${idx+1}" onchange="wfSetN(${idx}, this.value)">${nOpts}</select>
+      <select id="wfm${idx}" aria-label="Azimuthal index m for term ${idx+1}" onchange="wfSetM(${idx}, this.value); wfAutoCompute()">${mOpts}</select>
+      <input type="number" aria-label="Coefficient for term ${idx+1}" value="${mode.c}" step="0.05" style="font-size:.8rem"
         oninput="wfModes[${idx}].c=parseFloat(this.value); wfAutoCompute()">
-      <button onclick="removeWFMode(${idx})">×</button>`;
+      <button aria-label="Remove term ${idx+1}" onclick="removeWFMode(${idx})">×</button>`;
     wrap.appendChild(row);
   });
 }

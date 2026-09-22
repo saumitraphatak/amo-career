@@ -102,6 +102,7 @@ const NAV = {
     { key: 'paper-syllabus', label: 'AMO Paper Roadmap',           kind: 'Syllabus', icon: '📚', color: '#3f5d3f', href: 'pages/paper-syllabus.html' },
     { key: 'qc-landscape',   label: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#2c4a63', href: 'pages/qc-landscape.html' },
     { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#a13c1c', href: 'pages/rb87-vs-yb171.html' },
+    { key: 'quantinuum-vs-ionq', label: 'Quantinuum vs IonQ', kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/quantinuum-vs-ionq.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -395,6 +396,7 @@ const SEARCH_KEYWORDS = {
   'polarimetry': 'Stokes Poincare QWP HWP PBS RCP LCP sigma polarization ellipticity',
   'qc-landscape': 'company roadmap IBM Google Quantinuum QuEra Atom Computing Microsoft IonQ Pasqal PsiQuantum interviews',
   'rb87-vs-yb171': 'qubit species comparison rubidium ytterbium neutral atom hyperfine nuclear spin clock',
+  'quantinuum-vs-ionq': 'trapped ion quantum computing company comparison QCCD electronic qubit control EQC barium ytterbium Helios Tempo Superion fault tolerance logical qubits',
   'rb-explorer': 'randomized benchmarking Clifford SPAM gate fidelity decay interleaved RB',
   'dd-playground': 'coherence Ramsey echo XY16 CPMG dynamical decoupling dephasing noise',
   'amo-groups': 'AMO research groups professors labs universities postdoc graduate school Rydberg clocks BEC molecules cavity QED',
@@ -781,6 +783,11 @@ const SOURCE_PROFILES = {
   'rb87-vs-yb171': [
     ['peer-reviewed', 'Atomic constants, gate demonstrations, and clock/tweezer results should trace to papers or data tables.'],
     ['rough estimate', 'Architecture-level comparisons depend strongly on assumptions about cooling, loading, and error correction.'],
+  ],
+  'quantinuum-vs-ionq': [
+    ['peer-reviewed', 'Full-system gate fidelities should trace to journal papers, not press releases.'],
+    ['preprint', 'IonQ\'s headline EQC fidelity and qLDPC logical-qubit results are arXiv preprints, not yet peer-reviewed.'],
+    ['company roadmap', 'Multi-year qubit-count and fault-tolerance targets are projections, not demonstrated results.'],
   ],
   'paper-syllabus': [
     ['peer-reviewed', 'Primary source for each card is the linked paper or review.'],
@@ -1481,6 +1488,7 @@ const PAGE_PLAYBOOKS = {
   'paper-syllabus': ['Read with purpose', 'Follow staged paper lists and use paper-to-tool bridges to connect literature to calculators.', 'Prefer primary papers for claims and reviews for orientation.'],
   'qc-landscape': ['Translate AMO skills to industry', 'Compare hardware platforms, company claims, job roles, and roadmap maturity.', 'Separate demonstrated hardware from roadmap language.'],
   'rb87-vs-yb171': ['Compare qubit species', 'Use side-by-side evidence for Rb and Yb choices across cooling, gates, imaging, clocks, and scaling.', 'Check whether a benchmark is Rb, Yb, Cs, or architecture-level before reusing it.'],
+  'quantinuum-vs-ionq': ['Compare trapped-ion companies', 'Use side-by-side evidence for Quantinuum and IonQ across architecture, fidelity, logical qubits, and roadmaps.', 'Separate peer-reviewed, full-system numbers from preprint, component-level, or company-roadmap claims.'],
 };
 
 const RELATED_TOOLS = {
@@ -1512,6 +1520,7 @@ const RELATED_TOOLS = {
   'paper-syllabus': ['amo-groups', 'learn-quantum', 'laser-cooling'],
   'qc-landscape': ['amo-groups', 'fidelity-budget', 'rb87-vs-yb171'],
   'rb87-vs-yb171': ['atom-library', 'rydberg-calculator', 'qc-landscape'],
+  'quantinuum-vs-ionq': ['qc-landscape', 'rb87-vs-yb171', 'fidelity-budget'],
 };
 
 const REFERENCE_TRAILS = {
@@ -1542,6 +1551,10 @@ const REFERENCE_TRAILS = {
   'rb87-vs-yb171': [
     ['peer-reviewed', 'Species comparisons rely on cited clock, tweezer, gate, and imaging benchmarks.'],
     ['scope note', 'Some array-scale benchmarks are Cs or architecture-level context, not Rb/Yb measurements.'],
+  ],
+  'quantinuum-vs-ionq': [
+    ['peer-reviewed', 'Fidelity and error-correction claims should trace to journal papers where available.'],
+    ['scope note', 'Component-level demos (single ion pair) are marked separately from full-system results.'],
   ],
   defaultTool: [
     ['textbook', 'Core equations use standard AMO, optics, and quantum-optics conventions.'],

@@ -35,3 +35,7 @@ Added missing global-search keywords — this page previously had none, relying 
 
 ## Performance audit update (2026-09)
 Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hint next to the existing font preconnects — this page loads KaTeX and/or Chart.js from jsdelivr with no early connection hint before this fix. See docs/performance-audit-2026-09.md.
+
+
+## Accessibility re-audit update (2026-09-20)
+This page had no `<footer>` element at all — went straight from `</main>` to its `<script>` tags, unlike every other page on the site. Added the standard sitewide footer block (`Decoherence Lab · AMO Toolkit · Saumitra Phatak · Purdue University`). See docs/accessibility-audit-2026-09-20.md.

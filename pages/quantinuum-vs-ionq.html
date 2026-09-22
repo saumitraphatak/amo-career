@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantinuum vs IonQ — Trapped-Ion Quantum Computing Comparison — AMO Toolkit</title>
+  <meta name="description" content="In-depth, heavily-referenced comparison of Quantinuum and IonQ, the two leading trapped-ion quantum computing companies: architecture, ion species, gate fidelity, logical qubits, roadmaps, and business.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://amotoolkit.com/pages/quantinuum-vs-ionq.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=21">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+
+  <style>
+    /* ── page theme ─────────────────────────────────── */
+    :root {
+      --qtm:  #8b5cf6;   /* Quantinuum violet */
+      --ionq: #3b82f6;   /* IonQ blue */
+      --page: #0e7490;   /* page accent teal */
+    }
+
+    .page-wrap { padding-top: 64px; }
+
+    /* ── sticky topic-nav ──────────────────────────── */
+    .topic-nav {
+      position: sticky;
+      top: 64px;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg-surface) 95%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(14,116,144,0.18);
+      padding: .45rem 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .topic-nav::-webkit-scrollbar { display: none; }
+    .topic-nav-inner { display: inline-flex; gap: .3rem; padding: 0 1.5rem; }
+    .tnav-btn {
+      background: transparent; border: 1px solid transparent; border-radius: 20px;
+      padding: .28rem .85rem; font-size: .8rem; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; transition: all .18s; white-space: nowrap;
+    }
+    .tnav-btn:hover   { color: var(--text-primary); border-color: rgba(14,116,144,0.35); }
+    .tnav-btn.active  { color: #0e7490; background: rgba(14,116,144,0.1); border-color: rgba(14,116,144,0.4); }
+
+    /* ── hero ──────────────────────────────────────── */
+    .page-hero {
+      background: linear-gradient(135deg, rgba(139,92,246,0.06) 0%, rgba(59,130,246,0.06) 100%);
+      border-bottom: 1px solid rgba(14,116,144,0.15);
+      padding: 3rem 0 2.5rem;
+    }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.75rem; }
+    @media(max-width:680px) { .hero-split { grid-template-columns: 1fr; } }
+
+    .hero-atom-card { border-radius: 14px; padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: .5rem; }
+    .hero-atom-card.qtm  { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.25); }
+    .hero-atom-card.ionq { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); }
+
+    .hero-atom-name { font-size: 1.6rem; font-weight: 800; }
+    .hero-atom-sub  { font-size: .85rem; color: var(--text-muted); margin: 0; }
+    .hero-atom-stats { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
+    .hero-stat-chip { border-radius: 6px; padding: .15rem .55rem; font-size: .76rem; font-weight: 600; }
+    .hero-stat-chip.qtm  { background: rgba(139,92,246,0.15); color: #6425c9; border: 1px solid rgba(100,37,201,0.3); }
+    .hero-stat-chip.ionq { background: rgba(59,130,246,0.15); color: #1447b8; border: 1px solid rgba(20,71,184,0.3); }
+
+    /* ── section layout ────────────────────────────── */
+    .page-content .container { padding-top: 2.5rem; padding-bottom: 4rem; }
+    .section-block { margin-bottom: 3.5rem; scroll-margin-top: 120px; }
+    .section-title {
+      font-size: 1.35rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .2rem 0; border-left: 3px solid var(--page); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.2rem .85rem; }
+
+    /* ── side-by-side columns ──────────────────────── */
+    .side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:768px) { .side-by-side { grid-template-columns: 1fr; } }
+
+    .atom-col { border-radius: 12px; padding: 1.2rem 1.35rem; }
+    .atom-col.qtm  { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.2); }
+    .atom-col.ionq { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); }
+
+    .atom-col-header { display: flex; align-items: center; gap: .55rem; margin-bottom: .85rem; padding-bottom: .6rem; border-bottom: 1px solid; }
+    .atom-col.qtm  .atom-col-header { border-color: rgba(139,92,246,0.25); }
+    .atom-col.ionq .atom-col-header { border-color: rgba(59,130,246,0.25); }
+
+    .atom-col-title { font-size: 1.05rem; font-weight: 700; }
+    .atom-col.qtm  .atom-col-title { color: #6425c9; }
+    .atom-col.ionq .atom-col-title { color: #1447b8; }
+
+    .atom-col ul { padding-left: 1.1rem; margin: 0; }
+    .atom-col li { font-size: .86rem; color: var(--text-muted); margin-bottom: .42rem; line-height: 1.55; }
+    .atom-col p  { font-size: .87rem; color: var(--text-muted); margin: 0 0 .6rem 0; line-height: 1.6; }
+
+    /* ── formula box ────────────────────────────────── */
+    .formula-box {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 10px;
+      padding: 1rem 1.25rem; margin: .9rem 0; font-size: .88rem; line-height: 1.9; color: var(--text-secondary);
+    }
+
+    /* ── info box ───────────────────────────────────── */
+    .info-box {
+      background: rgba(14,116,144,0.07); border: 1px solid rgba(14,116,144,0.22); border-radius: 10px;
+      padding: 1rem 1.2rem; margin: .8rem 0; font-size: .87rem; color: var(--text-secondary); line-height: 1.65;
+    }
+    .info-box strong { color: #0e7490; }
+
+    .qtm-box {
+      background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.22); border-radius: 10px;
+      padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .qtm-box strong { color: #6425c9; }
+
+    .ionq-box {
+      background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.22); border-radius: 10px;
+      padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .ionq-box strong { color: #1447b8; }
+
+    /* ── chart box ──────────────────────────────────── */
+    .chart-box { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .chart-caption { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0 0; font-style: italic; }
+
+    /* ── comparison table ───────────────────────────── */
+    .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #1e293b; }
+    .cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid #1e293b; white-space: nowrap; font-size: .8rem; }
+    .cmp th.qtm-h  { background: rgba(139,92,246,0.12); color: #6425c9; }
+    .cmp th.ionq-h { background: rgba(59,130,246,0.12); color: #1447b8; }
+    .cmp th.cat-h  { background: var(--bg-card); color: var(--text-muted); }
+    .cmp td { color: var(--text-secondary); padding: .55rem .9rem; border-bottom: 1px solid #0d1827; vertical-align: top; line-height: 1.55; }
+    .cmp td.qtm-td  { background: rgba(139,92,246,0.04); }
+    .cmp td.ionq-td { background: rgba(59,130,246,0.04); }
+    .cmp tr:hover td { filter: brightness(1.1); }
+    .cmp .win { font-weight: 700; }
+    .cmp .win.qtm  { color: #6425c9; }
+    .cmp .win.ionq { color: #1447b8; }
+
+    /* ── metric stat row ────────────────────────────── */
+    .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: .9rem; margin: 1.2rem 0; }
+    @media(max-width:700px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+    .stat-card-sm { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: .9rem 1rem; text-align: center; }
+    .stat-card-sm .stat-num { font-size: 1.3rem; font-weight: 800; }
+    .stat-card-sm .stat-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+    .stat-card-sm.qtm  { border-color: rgba(139,92,246,0.25); }
+    .stat-card-sm.ionq { border-color: rgba(59,130,246,0.25); }
+    .stat-card-sm.preprint { border-color: rgba(6,182,212,0.35); }
+
+    /* ── paper card ─────────────────────────────────── */
+    .paper-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: .9rem 1.1rem; margin-bottom: .6rem; transition: border-color .18s;
+    }
+    .paper-card:hover { border-color: rgba(14,116,144,0.35); }
+    .paper-card .paper-title { font-size: .9rem; font-weight: 600; color: var(--text-primary); margin-bottom: .3rem; }
+    .paper-card .paper-meta  { font-size: .78rem; color: #0e7490; margin-bottom: .35rem; }
+    .paper-card .paper-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
+    .paper-card a { color: #046de1; text-decoration: none; }
+    .paper-card a:hover { text-decoration: underline; }
+
+    .paper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    @media(max-width:768px) { .paper-grid { grid-template-columns: 1fr; } }
+
+    /* ── company card ───────────────────────────────── */
+    .company-card {
+      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      padding: 1rem 1.2rem; margin-bottom: .65rem; transition: border-color .18s;
+    }
+    .company-card:hover { border-color: rgba(14,116,144,0.35); }
+    .company-card h4 { font-size: .93rem; margin: 0 0 .3rem 0; }
+    .company-card h4 a { color: #046de1; text-decoration: none; }
+    .company-card h4 a:hover { text-decoration: underline; }
+    .company-card p { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+    /* ── advantage badge ────────────────────────────── */
+    .adv-badge { display: inline-block; border-radius: 4px; padding: .1rem .45rem; font-size: .72rem; font-weight: 700; vertical-align: middle; margin-left: .3rem; }
+    .adv-qtm  { background: rgba(139,92,246,0.18); color: #6425c9; border: 1px solid rgba(100,37,201,0.35); }
+    .adv-ionq { background: rgba(59,130,246,0.18); color: #1447b8; border: 1px solid rgba(20,71,184,0.35); }
+    .adv-tie  { background: rgba(148,163,184,0.15); color: #4f72a4; border: 1px solid rgba(148,163,184,0.25); }
+
+    /* ── insight box ────────────────────────────────── */
+    .insight {
+      background: rgba(14,116,144,0.07); border-left: 3px solid #0e7490; border-radius: 0 8px 8px 0;
+      padding: .7rem 1rem; font-size: .84rem; color: var(--text-secondary); margin: .8rem 0; line-height: 1.6;
+    }
+
+    /* ── vs divider ─────────────────────────────────── */
+    .vs-divider { display: flex; align-items: center; gap: .75rem; margin: 1rem 0; }
+    .vs-line { flex: 1; height: 1px; background: var(--bg-card); }
+    .vs-label {
+      font-size: .9rem; font-weight: 800; color: #0e7490; background: rgba(14,116,144,0.1);
+      border: 1px solid rgba(14,116,144,0.25); border-radius: 20px; padding: .2rem .75rem;
+    }
+
+    /* ── timeline ───────────────────────────────────── */
+    .timeline { position: relative; padding-left: 1.6rem; margin: 1rem 0; }
+    .timeline::before { content:''; position:absolute; left:.42rem; top:.3rem; bottom:.3rem; width:2px; background: rgba(14,116,144,0.25); }
+    .tl-item { position: relative; margin-bottom: 1rem; padding-left: .6rem; }
+    .tl-item::before { content:''; position:absolute; left:-1.28rem; top:.3rem; width:.6rem; height:.6rem; border-radius:50%; background: var(--dot,#0e7490); }
+    .tl-item .tl-year { font-size: .76rem; font-weight: 700; color: var(--dot,#0e7490); }
+    .tl-item .tl-body { font-size: .85rem; color: var(--text-secondary); line-height: 1.55; }
+  </style>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Quantinuum vs IonQ — Trapped-Ion Quantum Computing Comparison — AMO Toolkit">
+  <meta property="og:description" content="In-depth, heavily-referenced comparison of Quantinuum and IonQ: QCCD architecture, ion species, laser vs electronic qubit control, gate fidelity, logical qubits, roadmaps, and business.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/quantinuum-vs-ionq.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Quantinuum vs IonQ — Trapped-Ion Quantum Computing Comparison — AMO Toolkit">
+  <meta name="twitter:description" content="In-depth, heavily-referenced comparison of Quantinuum and IonQ: architecture, ion species, gate fidelity, logical qubits, roadmaps, and business.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Quantinuum vs IonQ — Trapped-Ion Quantum Computing Comparison","description":"In-depth, heavily-referenced comparison of Quantinuum and IonQ: architecture, ion species, gate fidelity, logical qubits, roadmaps, and business.","url":"https://amotoolkit.com/pages/quantinuum-vs-ionq.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Career","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Quantinuum vs IonQ","item":"https://amotoolkit.com/pages/quantinuum-vs-ionq.html"}]}</script>
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <div class="page-hero">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+      <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.85rem;">
+        <span style="background:rgba(14,116,144,0.1);border:1px solid rgba(14,116,144,0.25);color:#0e7490;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">🔗 Career 05 · Quantinuum vs IonQ</span>
+        <span style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);color:#6425c9;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">Quantinuum · Helios, 98 qubits</span>
+        <span style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);color:#1447b8;border-radius:20px;padding:.25rem .85rem;font-size:.8rem;font-weight:600;">IonQ · Superion 256, 256 qubits</span>
+      </div>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.6rem); font-weight:800; margin:0 0 .75rem 0;">
+        <span style="color:#6425c9;">Quantinuum</span>
+        <span style="color:#0e7490; margin:0 .5rem;">vs</span>
+        <span style="color:#1447b8;">IonQ</span>
+        , Trapped-Ion Showdown
+      </h1>
+      <p style="color:var(--text-muted);font-size:.95rem;max-width:780px;margin:0 0 1.5rem 0;line-height:1.7;">
+        The two publicly-traded trapped-ion quantum computing companies, and the two very different bets they are
+        making on how to scale: Quantinuum's laser-driven QCCD racetrack architecture versus IonQ's pivot to
+        chip-integrated Electronic Qubit Control (EQC). A thorough, source-checked comparison across architecture,
+        gate fidelity, logical qubits, roadmaps, and business fundamentals.
+      </p>
+
+      <div class="hero-split">
+        <div class="hero-atom-card qtm">
+          <div class="hero-atom-name" style="color:#6425c9;">Quantinuum</div>
+          <div class="hero-atom-sub">Honeywell/Cambridge Quantum · QCCD trapped-ion · Nasdaq: QNT</div>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip qtm">2Q fidelity 99.921% (Helios, peer-rev.)</span>
+            <span class="hero-stat-chip qtm">98 physical qubits</span>
+            <span class="hero-stat-chip qtm">48 fully error-corrected logical qubits</span>
+            <span class="hero-stat-chip qtm">~$14.3B IPO valuation (2026)</span>
+          </div>
+        </div>
+        <div class="hero-atom-card ionq">
+          <div class="hero-atom-name" style="color:#1447b8;">IonQ</div>
+          <div class="hero-atom-sub">Duke/UMD spin-out · EQC trapped-ion · NYSE: IONQ</div>
+          <div class="hero-atom-stats">
+            <span class="hero-stat-chip ionq">2Q fidelity 99.99% (component demo, preprint)</span>
+            <span class="hero-stat-chip ionq">256 physical qubits (Superion 256)</span>
+            <span class="hero-stat-chip ionq">qLDPC logical break-even (preprint)</span>
+            <span class="hero-stat-chip ionq">~$14.7B market cap (Sep 2026)</span>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes qi-shuttle{0%{offset-distance:0%}100%{offset-distance:100%}}
+@keyframes qi-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.qi-ion{offset-path:path('M 46,82 A 34,20 0 1 1 46,81.9');animation:qi-shuttle 3.2s linear infinite;}
+.qi-node{animation:qi-pulse 1.8s ease-in-out infinite;}
+</style>
+<line x1="150" y1="20" x2="150" y2="150" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<text x="150" y="88" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.25)" font-family="monospace" font-weight="700">vs</text>
+<!-- Quantinuum: QCCD racetrack loop with a shuttling ion -->
+<text x="46" y="22" text-anchor="middle" font-size="10" fill="#6425c9" font-weight="800" font-family="monospace">Quantinuum</text>
+<ellipse cx="46" cy="82" rx="34" ry="20" fill="none" stroke="#6425c9" stroke-width="1.4" opacity=".55"/>
+<circle cx="46" cy="62" r="3" fill="#6425c9" opacity=".85"/>
+<circle cx="66" cy="72" r="3" fill="#6425c9" opacity=".85"/>
+<circle cx="66" cy="92" r="3" fill="#6425c9" opacity=".85"/>
+<circle cx="46" cy="102" r="3" fill="#6425c9" opacity=".85"/>
+<circle cx="26" cy="92" r="3" fill="#6425c9" opacity=".85"/>
+<circle cx="26" cy="72" r="3" fill="#6425c9" opacity=".85"/>
+<circle r="4.2" fill="#a78bfa" class="qi-ion qi-node" filter="url(#qif1)"/>
+<text x="46" y="140" text-anchor="middle" font-size="7" fill="#6425c9" opacity=".7" font-family="monospace">QCCD racetrack · laser gates</text>
+<!-- IonQ: EQC chip grid, static addressed array -->
+<text x="220" y="22" text-anchor="middle" font-size="10" fill="#1447b8" font-weight="800" font-family="monospace">IonQ</text>
+<g stroke="#1447b8" stroke-width="0.8" opacity=".35">
+<line x1="196" y1="62" x2="244" y2="62"/><line x1="196" y1="82" x2="244" y2="82"/><line x1="196" y1="102" x2="244" y2="102"/>
+<line x1="196" y1="62" x2="196" y2="102"/><line x1="220" y1="62" x2="220" y2="102"/><line x1="244" y1="62" x2="244" y2="102"/>
+</g>
+<circle cx="196" cy="62" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-.1s" opacity=".9"/>
+<circle cx="220" cy="62" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-.4s" opacity=".9"/>
+<circle cx="244" cy="62" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-.7s" opacity=".9"/>
+<circle cx="196" cy="82" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-1.0s" opacity=".9"/>
+<circle cx="220" cy="82" r="4.2" fill="#60a5fa" class="qi-node" style="animation-delay:-1.3s" filter="url(#qif2)"/>
+<circle cx="244" cy="82" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-1.6s" opacity=".9"/>
+<circle cx="196" cy="102" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-.2s" opacity=".9"/>
+<circle cx="220" cy="102" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-.5s" opacity=".9"/>
+<circle cx="244" cy="102" r="3" fill="#1447b8" class="qi-node" style="animation-delay:-.8s" opacity=".9"/>
+<text x="220" y="140" text-anchor="middle" font-size="7" fill="#1447b8" opacity=".7" font-family="monospace">Chip array · electronic (EQC) gates</text>
+<defs>
+  <filter id="qif1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="qif2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+</svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STICKY TOPIC NAV ──────────────────────────────────────────── -->
+  <nav class="topic-nav" id="topicNav" aria-label="Page sections">
+    <div class="topic-nav-inner">
+      <button class="tnav-btn active" data-target="overview">Overview</button>
+      <button class="tnav-btn" data-target="architecture">Architecture &amp; Control</button>
+      <button class="tnav-btn" data-target="generations">Hardware Generations</button>
+      <button class="tnav-btn" data-target="fidelity">Gate Fidelity</button>
+      <button class="tnav-btn" data-target="fault-tolerance">Fault Tolerance</button>
+      <button class="tnav-btn" data-target="comparison">Full Comparison</button>
+      <button class="tnav-btn" data-target="business">Business &amp; Markets</button>
+      <button class="tnav-btn" data-target="roadmaps">Roadmaps</button>
+      <button class="tnav-btn" data-target="companies">Ecosystem</button>
+      <button class="tnav-btn" data-target="papers">Papers</button>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container">
+
+  <!-- ── 1. OVERVIEW ──────────────────────────────────────────────── -->
+  <section class="section-block anim-in" id="overview">
+    <h2 class="section-title"><span class="accent">01</span> Why These Two Companies?</h2>
+    <p class="section-sub">The two dominant, publicly-traded trapped-ion quantum computing companies, and why they are worth comparing directly.</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      Trapped-ion qubits are individually charged atoms confined by electromagnetic fields and manipulated with
+      laser or microwave/RF pulses. The approach has long held the industry's best gate fidelities and full
+      qubit-to-qubit connectivity, at the cost of gate speed and, historically, a very complex laser system for
+      every additional qubit. Two companies dominate the commercial trapped-ion field:
+      <strong style="color:#6425c9;">Quantinuum</strong> (formed in 2021 from the merger of Honeywell Quantum
+      Solutions and Cambridge Quantum, majority-owned by Honeywell, IPO'd on Nasdaq in June 2026 under ticker
+      <strong>QNT</strong>) and <strong style="color:#1447b8;">IonQ</strong> (spun out of Duke University and the
+      University of Maryland in 2015, publicly traded on the NYSE since a 2021 SPAC merger under ticker
+      <strong>IONQ</strong>). Both are racing toward fault-tolerant quantum computing this decade, but via
+      structurally different bets on how ion-trap hardware should scale.
+    </p>
+
+    <div class="info-box">
+      <strong>The core trade-off:</strong>
+      Quantinuum has, so far, consistently held the best <em>peer-reviewed</em> trapped-ion gate fidelities:
+      its Helios system reported 99.921% two-qubit gate fidelity and 99.9975% single-qubit fidelity in a June 2026
+      <em>Nature</em> paper with over 200 co-authors including Sandia National Laboratories, on a 98-qubit,
+      all-to-all-connected QCCD ("quantum charge-coupled device") processor that still uses laser-driven gates and
+      physical ion shuttling. IonQ, meanwhile, is betting on a fundamentally different manufacturing path: replacing
+      laser-array beam steering with <strong>Electronic Qubit Control (EQC)</strong> — control electronics
+      integrated directly onto the ion-trap chip using standard semiconductor fabrication — acquired via its 2025
+      purchase of Oxford Ionics and now built at its own SkyWater Technology fab. A component-level EQC demonstration
+      reported &gt;99.99% two-qubit fidelity on a single ion pair in an October 2025 preprint, and in September 2026
+      IonQ launched Superion 256, a 256-qubit EQC-based system designed to be manufactured "by the hundreds" rather
+      than built one at a time in a lab. <strong>The tension this page is built around:</strong> Quantinuum currently
+      leads on demonstrated, peer-reviewed, full-system fidelity; IonQ is betting that chip-based manufacturing will
+      win the race to scale, even if its highest fidelity numbers so far are component-level or roadmap claims
+      rather than full-system, peer-reviewed results.
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card-sm qtm"><div class="stat-num" style="color:#6425c9;">99.921%</div><div class="stat-label">Quantinuum Helios 2Q fidelity<br>(Nature 2026, peer-reviewed)</div></div>
+      <div class="stat-card-sm qtm"><div class="stat-num" style="color:#6425c9;">48</div><div class="stat-label">Fully error-corrected<br>logical qubits (Helios, 2:1 ratio)</div></div>
+      <div class="stat-card-sm ionq"><div class="stat-num" style="color:#1447b8;">99.9%</div><div class="stat-label">IonQ Tempo 2Q fidelity<br>(company spec, full system)</div></div>
+      <div class="stat-card-sm ionq"><div class="stat-num" style="color:#1447b8;">256</div><div class="stat-label">IonQ Superion 256<br>physical qubits (Sep 2026)</div></div>
+      <div class="stat-card-sm ionq preprint"><div class="stat-num" style="color:#0e7490;">99.99%</div><div class="stat-label">IonQ EQC 2Q fidelity (pair)<br>arXiv:2510.17286 — preprint</div></div>
+    </div>
+
+    <div class="common-mistake" style="margin-top:1rem;">
+      <strong>Source-confidence rule for this page:</strong>
+      <span class="source-tag peer-reviewed">peer-reviewed</span> numbers come directly from journal papers;
+      <span class="source-tag preprint">preprint</span> numbers are posted but not yet peer-reviewed;
+      <span class="source-tag company-roadmap">company roadmap</span> numbers are product specs, press releases, or
+      future targets, not independent physics results. IonQ's headline 99.99% fidelity is a
+      <em>two-ion, component-level</em> preprint result, not a full multi-qubit system number — that distinction is
+      kept explicit everywhere it appears on this page.
+    </div>
+  </section>
+
+  <!-- ── 2. ARCHITECTURE & CONTROL ───────────────────────────────────── -->
+  <section class="section-block anim-in delay-1" id="architecture">
+    <h2 class="section-title"><span class="accent">02</span> Architecture &amp; Qubit Control</h2>
+    <p class="section-sub">Both companies trap ions in a QCCD architecture — but they address and gate those ions in very different ways.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col qtm">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🟣</span>
+          <span class="atom-col-title">Quantinuum: Laser-Driven QCCD</span>
+        </div>
+        <p>Quantinuum's H-series uses a <strong>quantum charge-coupled device (QCCD)</strong> architecture: ions are
+        held in a linear or racetrack-shaped trap with distinct zones for storage, gates, and readout, and are
+        physically <em>shuttled</em> between zones using time-varying electric fields. Two-qubit gates are driven
+        optically, with tightly focused, individually-steered laser beams addressing pairs of ions once they are
+        transported into a gate zone.</p>
+        <ul>
+          <li><strong>H1/H2 generation:</strong> ¹⁷¹Yb⁺ hyperfine qubits, linear/racetrack QCCD trap <span class="source-tag company-roadmap">company</span></li>
+          <li><strong>Helios generation (2025–):</strong> switched the qubit species to ¹³⁷Ba⁺ hyperfine qubits, with co-trapped ¹⁷¹Yb⁺ ions used purely as a sympathetic-cooling species <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li><strong>Helios trap geometry:</strong> a rotatable ion-storage ring connected to two gate/operation regions by a four-way junction, giving full all-to-all connectivity without a linear-chain qubit-count penalty</li>
+          <li>Gate control hardware: acousto-optic and electro-optic beam-steering systems must scale roughly with qubit count and gate-zone count — the laser system is the dominant engineering bottleneck as qubit number grows</li>
+          <li>Advantage: laser gates are extremely well-characterized after 15+ years of AMO ion-trap physics; very high fidelities are routine <span class="source-tag textbook">established technique</span></li>
+        </ul>
+      </div>
+
+      <div class="atom-col ionq">
+        <div class="atom-col-header">
+          <span style="font-size:1.4rem;">🔵</span>
+          <span class="atom-col-title">IonQ: Electronic Qubit Control (EQC)</span>
+        </div>
+        <p>IonQ's first four hardware generations (Harmony, Aria, Forte, Tempo) also used QCCD-style trapping with
+        laser gates, steered by acousto-optic deflectors (AODs), on ¹⁷¹Yb⁺ ions with all-to-all or many-to-many
+        connectivity. Starting with its sixth-generation <strong>Superion</strong> platform, IonQ replaced laser
+        beam-steering with control electronics fabricated directly onto the trap chip.</p>
+        <ul>
+          <li><strong>Forte / Forte Enterprise / Tempo (2023–2026):</strong> ¹⁷¹Yb⁺ qubits, AOD laser gate control, all-to-all (Forte) or many-to-many (Tempo) connectivity <span class="source-tag company-roadmap">company spec</span></li>
+          <li><strong>Electronic Qubit Control (EQC):</strong> semiconductor-fabricated electrodes drive individual-ion gates directly, eliminating most of the free-space laser-steering optics that otherwise must grow with qubit count; acquired via the ~$1.075B purchase of Oxford Ionics, closed September 2025</li>
+          <li><strong>Manufacturing:</strong> EQC chips are fabricated at SkyWater Technology, a Minnesota semiconductor foundry IonQ agreed to acquire for ~$1.8B in January 2026 (shareholder-approved May 2026); IonQ reports design-cycle time fell from 9 months to 2 months and wafer-lot output rose 12× over six months after the acquisition <span class="source-tag company-roadmap">company</span></li>
+          <li><strong>Superion 256 (Sept 2026):</strong> first EQC-based commercial system, 256 qubits, a standard server-rack footprint, and power draw below a typical GPU rack — explicitly designed to be "built by the hundreds," i.e. as a manufacturable product rather than a one-off lab machine</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Why this is the real story of this comparison:</strong> lasers scale linearly-to-superlinearly in
+      complexity with qubit count — more ions and more parallel gate zones require more individually-steered beams,
+      more optical power, and more alignment stability. Electronic control scales more like a semiconductor chip:
+      once a design is proven, it can in principle be stamped out on a wafer. Quantinuum is still the fidelity
+      leader with the mature, laser-based approach; IonQ is explicitly betting that trading a small early fidelity
+      gap for chip-style manufacturability is the faster path to the 10,000+ qubit systems fault tolerance requires.
+      Neither bet is resolved yet — this page tries to keep the demonstrated present and the roadmap future clearly separated.
+    </div>
+  </section>
+
+  <!-- ── 3. HARDWARE GENERATIONS ─────────────────────────────────────── -->
+  <section class="section-block anim-in delay-2" id="generations">
+    <h2 class="section-title"><span class="accent">03</span> Hardware Generations, Side by Side</h2>
+    <p class="section-sub">Both companies iterate fast. Here is the generation-by-generation timeline, with what's demonstrated versus roadmap clearly marked.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#6425c9;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Quantinuum H-Series</h3>
+        <div class="timeline" style="--dot:#8b5cf6;">
+          <div class="tl-item"><div class="tl-year">2020–2022 · H1</div><div class="tl-body">First commercial H-series systems (H1-1, H1-2); up to 20 qubits, linear QCCD trap, ¹⁷¹Yb⁺ qubits.</div></div>
+          <div class="tl-item"><div class="tl-year">2023–2024 · H2</div><div class="tl-body">56 fully-connected qubits (racetrack QCCD), &gt;99.99% single-qubit and &gt;99.9% two-qubit gate fidelity (company-quoted, consistent with arXiv:2305.03828); quantum volume 2²⁵ = 33,554,432 reported September 2025.</div></div>
+          <div class="tl-item"><div class="tl-year">Nov 2025 · Helios</div><div class="tl-body">Commercial launch: 98 qubits, ¹³⁷Ba⁺ qubits with ¹⁷¹Yb⁺ sympathetic cooling, rotatable-ring QCCD with a four-way junction. Company claimed 94 entangled logical qubits at break-even and 48 fully error-corrected logical qubits at a 2:1 physical:logical ratio.</div></div>
+          <div class="tl-item"><div class="tl-year">Jun 2026 · Peer review</div><div class="tl-body">Helios physical-layer results (Ransford, Bohnet et al., 200+ co-authors incl. Sandia) published in <em>Nature</em>: 99.9975% 1Q / 99.921% 2Q / 99.967% SPAM fidelity.</div></div>
+          <div class="tl-item"><div class="tl-year">2027 (target) · Sol <span class="source-tag company-roadmap">roadmap</span></div><div class="tl-body">Next-generation system on the path to fault tolerance; physical qubit counts expected to keep scaling incrementally from Helios.</div></div>
+          <div class="tl-item"><div class="tl-year">2029 (target) · Apollo <span class="source-tag company-roadmap">roadmap</span></div><div class="tl-body">Target: thousands of physical qubits, hundreds of logical qubits, universal fault-tolerant operation. Quantinuum's own messaging shifted this target from "by 2030" (2025 accelerated-roadmap release) to "by 2029" (later 2025 blog post) — both are company projections, not demonstrated results.</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#1447b8;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IonQ Product Line</h3>
+        <div class="timeline" style="--dot:#3b82f6;">
+          <div class="tl-item"><div class="tl-year">2021 · Harmony</div><div class="tl-body">IonQ's first-generation cloud-accessible system; publicly traded on NYSE (IONQ) the same year via SPAC merger.</div></div>
+          <div class="tl-item"><div class="tl-year">2023–2024 · Forte / Forte Enterprise</div><div class="tl-body">36 physical / algorithmic qubits (#AQ 36, 2024), 99.6% 2Q / 99.98% 1Q fidelity, AOD laser control, all-to-all connectivity. Enterprise variant built for on-premise/data-center deployment.</div></div>
+          <div class="tl-item"><div class="tl-year">2025 · Tempo</div><div class="tl-body">100 physical qubits, many-to-many connectivity, 99.9% 2Q / 99.99% 1Q fidelity (company spec). IonQ reported an #AQ 64 benchmark result on Tempo in 2025, ahead of the system's broader commercial-availability target of late 2026 — worth separating "benchmark achieved" from "generally available."</div></div>
+          <div class="tl-item"><div class="tl-year">Sep 2025 · Oxford Ionics acquired</div><div class="tl-body">~$1.075B deal closes, bringing Electronic Qubit Control (EQC) chip technology in-house.</div></div>
+          <div class="tl-item"><div class="tl-year">Oct 2025 · EQC record (preprint)</div><div class="tl-body">&gt;99.99% two-qubit gate fidelity on a single ion pair without ground-state cooling — arXiv:2510.17286, not yet peer-reviewed, component-level not full-system.</div></div>
+          <div class="tl-item"><div class="tl-year">Jan/May 2026 · SkyWater acquired</div><div class="tl-body">~$1.8B deal to acquire SkyWater Technology (semiconductor foundry) agreed January 2026, shareholder-approved May 2026, vertically integrating EQC chip manufacturing.</div></div>
+          <div class="tl-item"><div class="tl-year">Sep 2026 · Superion 256</div><div class="tl-body">First EQC-based commercial platform launches: 256 qubits, server-rack footprint, sub-GPU-rack power draw. Orders open; customer deliveries targeted for 2027. Superion 10K (CMOS-integrated, aimed at IonQ's "Walking Cat" fault-tolerant architecture) is next in development <span class="source-tag company-roadmap">roadmap</span>.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-box" style="margin-top:1.5rem;">
+      <canvas id="scaleChart" height="240"></canvas>
+      <p class="chart-caption">Demonstrated physical qubit counts for current, purchasable systems only (log scale). Roadmap targets (Sol, Apollo, Superion 10K) are shown separately in Section 08.</p>
+    </div>
+  </section>
+
+  <!-- ── 4. GATE FIDELITY ─────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-3" id="fidelity">
+    <h2 class="section-title"><span class="accent">04</span> Gate Fidelity Deep Dive</h2>
+    <p class="section-sub">The single most important number in trapped-ion QC: how much error does one two-qubit gate introduce?</p>
+
+    <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin:0 0 1rem 0;">
+      Two-qubit gate infidelity is the dominant error source in most trapped-ion circuits, and it sets the overhead
+      needed for quantum error correction. Both companies report their numbers as average infidelity across many
+      randomly-selected Clifford circuits (randomized benchmarking), which is the standard, defensible way to
+      characterize a real device — but "average" and "worst-case" can differ, and a full-system number (averaged
+      over many qubit pairs, over hours of drift) is a stronger claim than a single best-pair, best-moment number.
+    </p>
+
+    <div class="formula-box">
+$$\mathcal{F}_{2Q} = 1 - \varepsilon_{2Q}, \qquad \varepsilon_{2Q}^{\rm Helios} = 7.9(2)\times10^{-4} \;\Rightarrow\; \mathcal{F}_{2Q}^{\rm Helios} = 99.921\%$$
+$$\varepsilon_{2Q}^{\rm IonQ\,EQC\,(pair)} < 1\times10^{-4} \;\Rightarrow\; \mathcal{F}_{2Q}^{\rm IonQ\,EQC} > 99.99\%\;\text{(single ion pair, preprint)}$$
+Number of sequential two-qubit gates a circuit can run before the accumulated error reaches order unity scales roughly as $N_{\rm gates} \sim 1/\varepsilon_{2Q}$: about 1,270 gates at Helios's peer-reviewed rate, versus &gt;10,000 gates at IonQ's preprint component-level rate — <em>if</em> that pair-level number holds up across a full multi-qubit system.</div>
+
+    <div class="chart-box">
+      <canvas id="fidelityChart" height="300"></canvas>
+      <p class="chart-caption">Two-qubit gate fidelity by system and publication status. Dashed line marks the ~99.9% fidelity generally considered a practical threshold for useful near-term circuits.</p>
+    </div>
+
+    <div class="side-by-side">
+      <div class="qtm-box">
+        <strong>Quantinuum, fidelity record</strong>
+        <ul style="margin:.5rem 0 0 1.1rem;padding:0;">
+          <li>H2 (2023–2024): &gt;99.99% 1Q, &gt;99.9% 2Q, all qubit pairs, company-quoted and consistent with peer-reviewed arXiv:2305.03828 <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li>Helios (2026): 99.9975% 1Q, 99.921% 2Q, 99.967% SPAM — all averaged across the full 98-qubit device, <em>Nature</em> 655, 81–86 <span class="source-tag peer-reviewed">peer-reviewed</span></li>
+          <li>Note: Quantinuum's own Helios launch blog rounds SPAM fidelity to "99.99%"; the peer-reviewed paper's SPAM infidelity of 3.3(5)×10⁻⁴ corresponds to 99.967% — a good example of why this page prefers the peer-reviewed number when the two differ <span class="source-tag company-roadmap">marketing rounding</span></li>
+        </ul>
+      </div>
+      <div class="ionq-box">
+        <strong>IonQ, fidelity record</strong>
+        <ul style="margin:.5rem 0 0 1.1rem;padding:0;">
+          <li>Forte / Forte Enterprise: 99.98% 1Q, 99.6% 2Q, full system, all-to-all <span class="source-tag company-roadmap">company spec</span></li>
+          <li>Tempo: 99.99% 1Q, 99.9% 2Q, full system, many-to-many <span class="source-tag company-roadmap">company spec</span></li>
+          <li>EQC record (Oct 2025): &gt;99.99% 2Q fidelity on a single ion pair, without ground-state cooling, arXiv:2510.17286 <span class="source-tag preprint">preprint, component-level</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Reading the fidelity race honestly:</strong> on <em>full, currently-purchasable systems</em>,
+      Quantinuum's peer-reviewed 99.921% (Helios) modestly beats IonQ's company-quoted 99.9% (Tempo). On the
+      <em>single best demonstrated number anywhere</em>, IonQ's preprint 99.99% two-ion EQC result is higher than
+      anything Quantinuum has published — but it has not been shown across a multi-qubit processor, has not been
+      peer-reviewed, and used a specific "no ground-state cooling" protocol whose behavior at scale is not yet public.
+      Both statements are true at once; neither company has a peer-reviewed, full-system number above ~99.93%.
+    </div>
+  </section>
+
+  <!-- ── 5. FAULT TOLERANCE & LOGICAL QUBITS ─────────────────────────── -->
+  <section class="section-block anim-in delay-4" id="fault-tolerance">
+    <h2 class="section-title"><span class="accent">05</span> Logical Qubits &amp; Fault Tolerance</h2>
+    <p class="section-sub">Physical fidelity only matters because it sets how many physical qubits are needed per logical, error-corrected qubit.</p>
+
+    <div class="formula-box">
+$$p_L \sim A\left(\frac{p}{p_{\rm th}}\right)^{\lfloor (d+1)/2 \rfloor}$$
+Logical error rate $p_L$ falls roughly exponentially with code distance $d$, provided the physical error rate $p$ is below
+the code's threshold $p_{\rm th}$ (surface-code threshold is roughly 0.5–1%, well below both companies' physical 2Q error
+rates of order $10^{-3}$–$10^{-4}$). This is why both companies are already in the "sub-threshold" regime and are now
+racing on <em>qubit overhead</em> — how many physical qubits it takes to reach a useful logical error rate — rather than
+racing to merely cross the threshold at all.</div>
+
+    <div class="side-by-side">
+      <div class="atom-col qtm">
+        <div class="atom-col-header"><span class="atom-col-title">Quantinuum + Microsoft</span></div>
+        <ul>
+          <li><strong>Apr 2024:</strong> 4 logical qubits on H2 (99.8% physical 2Q fidelity at the time), &gt;14,000 circuits run without a single logical error reported by Microsoft; described as the largest reported gap between physical and logical error rates to date <span class="source-tag company-roadmap">company blog</span></li>
+          <li><strong>Sep 2024:</strong> 12 logical qubits; circuit error rate 0.0011 (about 22× better than the 0.024 physical baseline); used two of the logical qubits for a real hybrid workflow estimating the ground-state energy of a catalytic P–N–N–P iron intermediate, combined with classical HPC (AutoCAS/AutoRXN) <span class="source-tag company-roadmap">company blog, arXiv preprint referenced</span></li>
+          <li><strong>Nov 2025 (Helios launch):</strong> company claims 94 fully-entangled logical qubits at break-even fidelity, 50 error-detected logical qubits above break-even, and 48 fully error-corrected logical qubits at a 2:1 physical-to-logical qubit ratio — the underlying physical-layer numbers are peer-reviewed (Section 04); the logical-qubit-count claims themselves are company-reported, not yet in a peer-reviewed logical-qubit paper <span class="source-tag company-roadmap">company</span></li>
+        </ul>
+      </div>
+      <div class="atom-col ionq">
+        <div class="atom-col-header"><span class="atom-col-title">IonQ qLDPC Break-Even</span></div>
+        <ul>
+          <li><strong>Jun 2026:</strong> arXiv:2606.06455 reports a trapped-ion demonstration of logical-qubit <em>break-even</em> (logical memory lifetime exceeding the underlying physical qubit lifetime) using a bivariate-bicycle quantum low-density parity-check (qLDPC) code</li>
+          <li>Configuration: 40 physical ion qubits encoding 4 logical qubits via the "BB5" code (a weight-5 generalized qLDPC matrix, "4 logical qubits in 18 physical containers"); logical memory lifetime 3.95 s vs 1.1 s for the physical qubits</li>
+          <li>Reports logical error rates roughly 4× (Z-basis) and 9× (X-basis) lower than a comparable superconducting surface-code result reported elsewhere in the literature — <em>not</em> a direct comparison against Quantinuum's own logical-qubit numbers above</li>
+          <li>Two independent secondary sources describing this preprint both report the physical qubits used were ¹³³Ba⁺ ions, not IonQ's commercial-product ¹⁷¹Yb⁺/EQC line — worth flagging as likely a separate research demonstration rather than a Superion-family result <span class="source-tag preprint">preprint, unusual ion species, verify before reuse</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>qLDPC vs surface codes:</strong> qLDPC codes promise a much better logical-qubit-per-physical-qubit
+      ratio than the surface code Google and others have used (potentially 10× or better at large scale), at the
+      cost of requiring longer-range qubit connectivity to implement the code's check operators — a requirement that
+      trapped-ion QCCD architectures, with their native all-to-all or many-to-many connectivity, are unusually
+      well-suited to satisfy compared with fixed nearest-neighbor architectures. Both Quantinuum and IonQ are
+      pursuing this connectivity advantage, though via different codes and different overhead claims; treat exact
+      "N× better than superconducting" comparisons cautiously since code choice, decoder, and hardware error models
+      all differ between the compared systems.
+    </div>
+  </section>
+
+  <!-- ── 6. FULL COMPARISON TABLE ─────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="comparison">
+    <h2 class="section-title"><span class="accent">06</span> Full Head-to-Head Comparison</h2>
+    <p class="section-sub">Every major dimension, side by side. Advantage marked in bold color where the evidence supports a clear edge.</p>
+
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th scope="col" class="cat-h">Category</th>
+            <th scope="col" class="cat-h">Metric</th>
+            <th scope="col" class="qtm-h">Quantinuum</th>
+            <th scope="col" class="ionq-h">IonQ</th>
+            <th scope="col" class="cat-h">Edge</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Company</td>
+            <td>Founded / origin</td>
+            <td class="qtm-td">2021 merger of Honeywell Quantum Solutions + Cambridge Quantum</td>
+            <td class="ionq-td">2015 spin-out of Duke University / University of Maryland</td>
+            <td><span class="adv-tie">Different histories</span></td>
+          </tr>
+          <tr>
+            <td>Public listing</td>
+            <td class="qtm-td">Nasdaq: QNT, IPO June 2026</td>
+            <td class="ionq-td">NYSE: IONQ, public since 2021 (SPAC)</td>
+            <td><span class="adv-ionq">IonQ</span> longer public track record</td>
+          </tr>
+          <tr>
+            <td>Majority owner</td>
+            <td class="qtm-td">Honeywell (~49% voting power post-IPO)</td>
+            <td class="ionq-td">No single majority owner; widely held</td>
+            <td><span class="adv-tie">Different structures</span></td>
+          </tr>
+          <tr>
+            <td>Headquarters</td>
+            <td class="qtm-td">Broomfield, Colorado / Cambridge, UK (dual HQ)</td>
+            <td class="ionq-td">College Park, Maryland</td>
+            <td><span class="adv-tie">Tie</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Architecture</td>
+            <td>Trap type</td>
+            <td class="qtm-td">QCCD racetrack, rotatable storage ring + 4-way junction (Helios)</td>
+            <td class="ionq-td">QCCD-style, chip-integrated electrodes (Superion)</td>
+            <td><span class="adv-tie">Both QCCD family</span></td>
+          </tr>
+          <tr>
+            <td>Gate control</td>
+            <td class="qtm-td win qtm">Laser-driven (AOD/EOM beam steering)</td>
+            <td class="ionq-td">Electronic Qubit Control (EQC), chip-integrated, from Superion onward</td>
+            <td><span class="adv-ionq">IonQ</span> for manufacturability; <span class="adv-qtm">Quantinuum</span> for maturity</td>
+          </tr>
+          <tr>
+            <td>Current qubit species</td>
+            <td class="qtm-td">¹³⁷Ba⁺ (Helios), was ¹⁷¹Yb⁺ (H1/H2)</td>
+            <td class="ionq-td">¹⁷¹Yb⁺ (Forte/Tempo/Superion)</td>
+            <td><span class="adv-tie">Different choices</span></td>
+          </tr>
+          <tr>
+            <td>Connectivity</td>
+            <td class="qtm-td win qtm">Full all-to-all, 98 qubits (Helios)</td>
+            <td class="ionq-td">All-to-all (Forte) / many-to-many (Tempo)</td>
+            <td><span class="adv-qtm">Quantinuum</span> slightly stronger claim at larger qubit count</td>
+          </tr>
+
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Fidelity</td>
+            <td>2Q fidelity, full system, peer-reviewed</td>
+            <td class="qtm-td win qtm">99.921% (Helios, <em>Nature</em> 2026)</td>
+            <td class="ionq-td">99.9% (Tempo, company spec only — not independently peer-reviewed)</td>
+            <td><span class="adv-qtm">Quantinuum</span></td>
+          </tr>
+          <tr>
+            <td>2Q fidelity, best demonstrated anywhere</td>
+            <td class="qtm-td">99.921% (full 98-qubit system)</td>
+            <td class="ionq-td win ionq">&gt;99.99% (single ion pair, preprint)</td>
+            <td><span class="adv-ionq">IonQ</span> if the pair-level result scales</td>
+          </tr>
+          <tr>
+            <td>1Q gate fidelity</td>
+            <td class="qtm-td win qtm">99.9975% (Helios, peer-reviewed)</td>
+            <td class="ionq-td">99.99% (Tempo, company spec)</td>
+            <td><span class="adv-qtm">Quantinuum</span> (narrowly)</td>
+          </tr>
+          <tr>
+            <td>SPAM fidelity</td>
+            <td class="qtm-td">99.967% (Helios, peer-reviewed; company blog rounds to 99.99%)</td>
+            <td class="ionq-td">Not independently published for Tempo/Superion</td>
+            <td><span class="adv-qtm">Quantinuum</span> (only side with a peer-reviewed number)</td>
+          </tr>
+
+          <tr>
+            <td rowspan="3" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Scale</td>
+            <td>Current physical qubits</td>
+            <td class="qtm-td">98 (Helios)</td>
+            <td class="ionq-td win ionq">256 (Superion 256)</td>
+            <td><span class="adv-ionq">IonQ</span> on raw count</td>
+          </tr>
+          <tr>
+            <td>Manufacturing model</td>
+            <td class="qtm-td">Lab-built, laser-aligned systems</td>
+            <td class="ionq-td win ionq">Semiconductor-fab-built chips, targeting hundreds of units/year</td>
+            <td><span class="adv-ionq">IonQ</span> (if realized)</td>
+          </tr>
+          <tr>
+            <td>2030 roadmap physical qubit target</td>
+            <td class="qtm-td">"Thousands" (Apollo, imprecise) <span class="source-tag company-roadmap">roadmap</span></td>
+            <td class="ionq-td">2,000,000 <span class="source-tag company-roadmap">roadmap</span></td>
+            <td><span class="adv-tie">Both unverified projections</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Error Correction</td>
+            <td>Logical qubits demonstrated</td>
+            <td class="qtm-td win qtm">48 fully error-corrected (2:1 ratio, company-reported)</td>
+            <td class="ionq-td">4 logical qubits, qLDPC break-even (preprint)</td>
+            <td><span class="adv-qtm">Quantinuum</span> on count and maturity</td>
+          </tr>
+          <tr>
+            <td>Code approach</td>
+            <td class="qtm-td">Color codes / QEC with Microsoft (details vary by demo)</td>
+            <td class="ionq-td">Bivariate-bicycle qLDPC (BB5)</td>
+            <td><span class="adv-tie">Different code families</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Business</td>
+            <td>Market cap / valuation</td>
+            <td class="qtm-td">~$14.3B IPO valuation (Jun 2026)</td>
+            <td class="ionq-td">~$14.7B market cap (Sep 2026)</td>
+            <td><span class="adv-tie">Roughly comparable</span></td>
+          </tr>
+          <tr>
+            <td>Q2 2026 revenue</td>
+            <td class="qtm-td">$8M (+279% YoY)</td>
+            <td class="ionq-td win ionq">$80.1M (+287% YoY)</td>
+            <td><span class="adv-ionq">IonQ</span>, roughly 10× larger</td>
+          </tr>
+          <tr>
+            <td>FY2026 revenue guidance</td>
+            <td class="qtm-td">$28–32M</td>
+            <td class="ionq-td win ionq">$290M</td>
+            <td><span class="adv-ionq">IonQ</span></td>
+          </tr>
+          <tr>
+            <td>Recent capital raised</td>
+            <td class="qtm-td">$1.7B (June 2026 IPO)</td>
+            <td class="ionq-td">~$2.9B combined for Oxford Ionics + SkyWater acquisitions <span class="source-tag rough-estimate">approximate</span></td>
+            <td><span class="adv-tie">Both well-capitalized</span></td>
+          </tr>
+
+          <tr>
+            <td rowspan="2" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Cloud &amp; Access</td>
+            <td>Cloud platforms</td>
+            <td class="qtm-td">Microsoft Azure Quantum, Quantinuum's own Nexus platform, Oracle OCI (Helios)</td>
+            <td class="ionq-td win ionq">AWS Braket, Microsoft Azure Quantum, Google Cloud Marketplace</td>
+            <td><span class="adv-ionq">IonQ</span> broader multi-cloud reach</td>
+          </tr>
+          <tr>
+            <td>Software stack</td>
+            <td class="qtm-td">TKET compiler/SDK, Guppy, Quantinuum Nexus</td>
+            <td class="ionq-td">Qiskit, Cirq, and native SDK support via cloud partners</td>
+            <td><span class="adv-tie">Both broadly compatible</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 7. BUSINESS & MARKETS ────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="business">
+    <h2 class="section-title"><span class="accent">07</span> Business, Funding &amp; Public Markets</h2>
+    <p class="section-sub">Both companies are now public, giving an unusually transparent window into the economics of trapped-ion QC.</p>
+
+    <div class="side-by-side">
+      <div class="atom-col qtm">
+        <div class="atom-col-header"><span class="atom-col-title">Quantinuum</span></div>
+        <ul>
+          <li>IPO priced early June 2026 on the Nasdaq Global Market, ticker <strong>QNT</strong>, upsized to 26.5M shares at $53–55/share, implying a valuation of roughly $14.3B (up from an initial ~$12.7B target)</li>
+          <li>Honeywell retains ~49.1% of voting power post-IPO; Cambridge Quantum-linked entities hold ~32.5%; founder Ilyas Khan is the largest individual shareholder, with a stake reported above $2B</li>
+          <li>Q2 2026 (first earnings report since IPO, Aug 12 2026): revenue $8M, up 279% YoY from $2M; full-year 2026 guidance $28–32M</li>
+          <li>GAAP net loss $597M in Q2 2026 (vs $57M in Q2 2025) — a jump that most likely reflects non-cash, IPO-related stock-compensation and transaction charges rather than a sudden change in operating cash burn; adjusted EBITDA loss was $68M, widened from $43M a year earlier</li>
+          <li>Ended Q2 2026 with $2.1B in cash and short-term investments after the $1.7B June IPO raise <span class="source-tag company-roadmap">company filings</span></li>
+        </ul>
+      </div>
+      <div class="atom-col ionq">
+        <div class="atom-col-header"><span class="atom-col-title">IonQ</span></div>
+        <ul>
+          <li>Public since October 2021 via SPAC merger with dMY Technology Group III, trading on the NYSE as <strong>IONQ</strong></li>
+          <li>Market capitalization ~$14.72B as of September 15, 2026 — down 7.4% from ~$15.90B at end of 2025, illustrating typical volatility for the sector rather than a steady climb</li>
+          <li>Q2 2026 revenue: record $80.1M, up 287% year-over-year; full-year 2026 guidance raised to $290M</li>
+          <li>Two major 2025–2026 acquisitions reshaped the balance sheet: Oxford Ionics (~$1.075B, closed Sept 2025) and SkyWater Technology (~$1.8B, agreed Jan 2026, approved May 2026) — both aimed at vertically integrating EQC chip design and fabrication rather than at near-term revenue</li>
+          <li>Other recent acquisitions (quantum networking): ID Quantique and Qubitekk, expanding into quantum-safe networking and entanglement distribution alongside the core computing business <span class="source-tag company-roadmap">company filings</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Reading the financials:</strong> IonQ's reported revenue is currently roughly 10× Quantinuum's on a
+      quarterly basis, and its FY2026 guidance is about 10× larger too — but both companies remain deeply
+      loss-making, and quantum-computing revenue recognition (hardware access credits, government contracts,
+      long-term deals) varies enough between companies that quarter-to-quarter revenue comparisons should be read as
+      directional, not as apples-to-apples SaaS-style metrics. Market capitalization for both currently sits in the
+      same $14–15B range, despite very different revenue bases — a sign that public markets are pricing both largely
+      on roadmap execution risk rather than current financials.
+    </div>
+  </section>
+
+  <!-- ── 8. ROADMAPS TO FAULT TOLERANCE ──────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="roadmaps">
+    <h2 class="section-title"><span class="accent">08</span> Roadmaps to Fault-Tolerant Quantum Computing</h2>
+    <p class="section-sub">Both companies publish detailed, aggressive multi-year roadmaps. None of the future years below are demonstrated results.</p>
+
+    <div class="chart-box">
+      <canvas id="roadmapChart" height="260"></canvas>
+      <p class="chart-caption">Company-published logical-qubit roadmap targets by year, log scale. IonQ publishes year-by-year figures through 2030; Quantinuum's Apollo target is a single 2029 milestone reported only as an order-of-magnitude ("hundreds" of logical qubits). Every point on this chart is a company projection, not a measurement.</p>
+    </div>
+
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead>
+          <tr><th scope="col" class="cat-h">Year</th><th scope="col" class="ionq-h">IonQ roadmap (published targets)</th><th scope="col" class="qtm-h">Quantinuum roadmap</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2025</td><td class="ionq-td">64–100+ physical qubits, 99.9% fidelity</td><td class="qtm-td">Helios launch (98 qubits) — achieved, not projected</td></tr>
+          <tr><td>2026</td><td class="ionq-td">100–256+ physical, 99.99% fidelity, 12 logical qubits, logical error &lt;10⁻⁷</td><td class="qtm-td">Sol development continues; Helios peer-reviewed (achieved)</td></tr>
+          <tr><td>2027</td><td class="ionq-td">10,000 physical qubits, 800 logical qubits</td><td class="qtm-td">Sol target system</td></tr>
+          <tr><td>2028</td><td class="ionq-td">20,000 physical qubits, 1,600 logical qubits</td><td class="qtm-td">Scaling toward Apollo</td></tr>
+          <tr><td>2029</td><td class="ionq-td">200,000 physical qubits, 8,000 logical, error &lt;10⁻¹², photonic interconnect introduced</td><td class="qtm-td win qtm">Apollo target: thousands of physical qubits, hundreds of logical qubits, universal fault tolerance</td></tr>
+          <tr><td>2030</td><td class="ionq-td">2,000,000 physical qubits, 80,000 logical qubits</td><td class="qtm-td">No public target beyond Apollo as of this writing</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="common-mistake" style="margin-top:1rem;">
+      <strong>How to read this table:</strong> IonQ's published curve implies roughly 10× qubit-count growth every
+      one to two years sustained for half a decade — a pace with no historical precedent in any qubit modality, and
+      the company itself frames it as "the fastest path to fault tolerance" rather than a guaranteed outcome. All
+      entries in both columns for years after the current date are <span class="source-tag company-roadmap">company roadmap</span>
+      claims; only the entries explicitly marked "achieved" reflect delivered hardware.
+    </div>
+  </section>
+
+  <!-- ── 9. ECOSYSTEM ─────────────────────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="companies">
+    <h2 class="section-title"><span class="accent">09</span> Companies &amp; Ecosystem</h2>
+    <p class="section-sub">Partners, customers, academic roots, and how each platform maps onto the broader quantum-computing job market.</p>
+
+    <div class="side-by-side">
+      <div>
+        <h3 style="color:#6425c9;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Quantinuum Ecosystem</h3>
+        <div class="company-card">
+          <h4><a href="https://www.honeywell.com" target="_blank" rel="noopener">Honeywell ↗</a></h4>
+          <p>Majority owner and original parent (Honeywell Quantum Solutions). Retains ~49% of voting power post-IPO. Long history in precision control systems and aerospace, which fed directly into Honeywell's original ion-trap control electronics.</p>
+        </div>
+        <div class="company-card">
+          <h4><a href="https://www.microsoft.com/en-us/quantum" target="_blank" rel="noopener">Microsoft / Azure Quantum ↗</a></h4>
+          <p>Deep logical-qubit collaboration: the April 2024 (4 logical qubits, 800× error reduction) and September 2024 (12 logical qubits, chemistry simulation) demonstrations were joint Microsoft–Quantinuum work. Azure Quantum also offers Quantinuum hardware access to cloud customers.</p>
+        </div>
+        <div class="company-card">
+          <h4>Sandia National Laboratories</h4>
+          <p>Co-authors on the peer-reviewed Helios <em>Nature</em> paper (2026); a recurring government/national-lab collaborator across Quantinuum's fidelity benchmarking work.</p>
+        </div>
+        <div class="company-card">
+          <h4>JPMorgan Chase, Amgen, Mitsui &amp; Co., NVIDIA</h4>
+          <p>Named commercial and technology partners across financial random-number generation, drug discovery, and hybrid quantum-classical (CUDA-Q) workflows — illustrative of Quantinuum's enterprise-first go-to-market, distinct from IonQ's broader multi-cloud self-serve access model.</p>
+        </div>
+        <div class="company-card">
+          <h4>Cambridge Quantum heritage</h4>
+          <p>The 2021 merger partner contributed the TKET compiler and quantum chemistry/NLP software lines that remain part of Quantinuum's software stack today.</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color:#1447b8;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IonQ Ecosystem</h3>
+        <div class="company-card">
+          <h4>Duke University / University of Maryland</h4>
+          <p>IonQ's founding academic roots: co-founders Christopher Monroe (Duke) and Jungsang Kim (Duke) built on decades of trapped-ion AMO physics. Strong ongoing recruiting pipeline from both universities' AMO and quantum-information groups.</p>
+        </div>
+        <div class="company-card">
+          <h4><a href="https://www.oxionics.com" target="_blank" rel="noopener">Oxford Ionics ↗</a></h4>
+          <p>UK spin-out from Oxford University's ion-trap group, acquired by IonQ in September 2025 (~$1.075B). Originated the Electronic Qubit Control (EQC) technology now central to the Superion product line.</p>
+        </div>
+        <div class="company-card">
+          <h4>SkyWater Technology</h4>
+          <p>US (Minnesota) semiconductor foundry, agreed acquisition ~$1.8B (Jan 2026, shareholder-approved May 2026). Now fabricates IonQ's EQC ion-trap chips, cutting design-cycle time from nine months to two.</p>
+        </div>
+        <div class="company-card">
+          <h4>AWS, Microsoft Azure, Google Cloud</h4>
+          <p>IonQ hardware is available through all three major cloud marketplaces — a broader multi-cloud footprint than Quantinuum's more enterprise-direct + Azure-centric model, and a real differentiator for researchers wanting quick, no-contract access.</p>
+        </div>
+        <div class="company-card">
+          <h4>ID Quantique &amp; Qubitekk</h4>
+          <p>Quantum-networking and entanglement-distribution acquisitions, positioning IonQ beyond standalone computing hardware into the broader "quantum internet" and quantum-safe communications space.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <strong>Career angle:</strong> both companies heavily recruit from AMO physics PhD programs — laser cooling,
+      vacuum systems, precision spectroscopy, and microwave/RF control are directly transferable skills. Quantinuum's
+      Helios generation shift to barium ions and IonQ's shift to chip-integrated electronic control both signal that
+      semiconductor and photonics-integration experience is becoming as valuable as classic tabletop AMO experience
+      for future hires at either company. See the <a href="qc-landscape.html">Quantum Industry Map</a> for a broader
+      view of how trapped-ion roles compare to neutral-atom, superconducting, and photonic quantum computing careers.
+    </div>
+  </section>
+
+  <!-- ── 10. KEY PAPERS & REFERENCES ─────────────────────────────────── -->
+  <section class="section-block anim-in delay-5" id="papers">
+    <h2 class="section-title"><span class="accent">10</span> Key Papers &amp; References</h2>
+    <p class="section-sub">Primary sources for every claim above: peer-reviewed papers, preprints, and company/press material, clearly separated.</p>
+
+    <h3 style="color:#6425c9;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">Quantinuum, Landmark Papers &amp; Releases</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">A 98-qubit trapped-ion quantum computer with all-to-all connectivity</div>
+        <div class="paper-meta">Ransford, Bohnet et al. (200+ co-authors incl. Sandia National Laboratories), Nature 655, 81–86 (2026)</div>
+        <p class="paper-desc">The Helios physical-layer paper: 98 ¹³⁷Ba⁺ qubits with ¹⁷¹Yb⁺ sympathetic cooling, QCCD architecture with a rotatable ion-storage ring and four-way junction. Single-qubit infidelity 2.5(1)×10⁻⁵, two-qubit infidelity 7.9(2)×10⁻⁴, SPAM infidelity 3.3(5)×10⁻⁴.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.nature.com/articles/s41586-026-10676-4" target="_blank" rel="noopener">nature.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Demonstration of the trapped-ion quantum CCD computer architecture</div>
+        <div class="paper-meta">Quantinuum/Honeywell team, arXiv:2305.03828 (2023)</div>
+        <p class="paper-desc">Peer-reviewed-adjacent technical description underlying the H2 56-qubit, all-to-all connected system and its 99.9%-class two-qubit gate fidelity claims.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2305.03828" target="_blank" rel="noopener">arXiv:2305.03828 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Advancing science: Microsoft and Quantinuum demonstrate the most reliable logical qubits on record</div>
+        <div class="paper-meta">Microsoft &amp; Quantinuum, Official Microsoft Blog (Apr 3, 2024)</div>
+        <p class="paper-desc">4 logical qubits, error rate reported as 800× better than physical qubits, &gt;14,000 circuits without a logical error, on H2-generation hardware at 99.8% physical 2Q fidelity.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://blogs.microsoft.com/blog/2024/04/03/advancing-science-microsoft-and-quantinuum-demonstrate-the-most-reliable-logical-qubits-on-record-with-an-error-rate-800x-better-than-physical-qubits/" target="_blank" rel="noopener">blogs.microsoft.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Microsoft and Quantinuum create 12 logical qubits and demonstrate a hybrid, end-to-end chemistry simulation</div>
+        <div class="paper-meta">Microsoft Azure Quantum Blog (Sep 10, 2024)</div>
+        <p class="paper-desc">12 logical qubits, circuit error rate 0.0011 (~22× improvement over physical baseline); two logical qubits used to estimate the ground-state energy of a catalytic iron intermediate in a hybrid quantum + classical HPC workflow.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://azure.microsoft.com/en-us/blog/quantum/2024/09/10/microsoft-and-quantinuum-create-12-logical-qubits-and-demonstrate-a-hybrid-end-to-end-chemistry-simulation/" target="_blank" rel="noopener">azure.microsoft.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Introducing Helios: commercial launch announcement</div>
+        <div class="paper-meta">Quantinuum, company blog &amp; press release (Nov 5, 2025)</div>
+        <p class="paper-desc">Commercial launch claims for Helios, including the 94 entangled / 50 error-detected / 48 fully error-corrected logical qubit figures, ahead of the June 2026 peer-reviewed physical-layer paper above.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.quantinuum.com/blog/introducing-helios-the-most-accurate-quantum-computer-in-the-world" target="_blank" rel="noopener">quantinuum.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Quantinuum Expands IPO as Valuation Climbs Above $14 Billion</div>
+        <div class="paper-meta">The Quantum Insider (Jun 2, 2026)</div>
+        <p class="paper-desc">IPO pricing, share count, Honeywell/Cambridge Quantum voting-power breakdown, and comparison to IonQ's market value at the time.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://thequantuminsider.com/2026/06/02/quantinuum-expands-ipo-as-valuation-climbs-above-14-billion/" target="_blank" rel="noopener">thequantuminsider.com ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:#1447b8;font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">IonQ, Landmark Papers &amp; Releases</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Trapped-ion two-qubit gates with &gt;99.99% fidelity without ground-state cooling</div>
+        <div class="paper-meta">Oxford Ionics / IonQ collaboration, arXiv:2510.17286 (2025)</div>
+        <p class="paper-desc">The headline EQC fidelity record: two-qubit gate fidelity exceeding 99.99% on a single ion pair, achieved without ground-state cooling. Component-level result; full-system reproduction not yet public. Not yet peer-reviewed.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2510.17286" target="_blank" rel="noopener">arXiv:2510.17286 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Experimental demonstration of breakeven qLDPC and block codes on a trapped-ion architecture</div>
+        <div class="paper-meta">IonQ, arXiv:2606.06455 (2026)</div>
+        <p class="paper-desc">4 logical qubits from 40 physical ion qubits via a bivariate-bicycle "BB5" qLDPC code; logical memory lifetime 3.95 s vs 1.1 s physical (break-even). Secondary reporting describes the ions used as ¹³³Ba⁺, distinct from IonQ's commercial ¹⁷¹Yb⁺ product line — flagged here as worth independent verification. Preprint, not peer-reviewed.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://arxiv.org/abs/2606.06455" target="_blank" rel="noopener">arXiv:2606.06455 ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IonQ Debuts Superion 256 Quantum Computing Platform</div>
+        <div class="paper-meta">IonQ, company press release (Sep 8, 2026)</div>
+        <p class="paper-desc">Launch details for the first EQC-based commercial platform: 256 qubits, server-rack footprint, SkyWater fabrication, 2027 customer deliveries, &gt;300× projected cost-per-qubit reduction across the Superion roadmap.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.ionq.com/news/ionq-launches-superion-product-line-industry-leading-upgradeable-platform-designed-to-scale-manufacturable-fault-tolerant-quantum-computing" target="_blank" rel="noopener">ionq.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IonQ Quantum Systems — Compare Systems</div>
+        <div class="paper-meta">IonQ, product specification page (accessed Sep 2026)</div>
+        <p class="paper-desc">Official specification sheet for Forte, Forte Enterprise, and Tempo: qubit counts, connectivity, and 1Q/2Q fidelity figures used throughout this page's comparison table.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.ionq.com/quantum-systems/compare" target="_blank" rel="noopener">ionq.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IonQ Roadmap</div>
+        <div class="paper-meta">IonQ, company roadmap page (accessed Sep 2026)</div>
+        <p class="paper-desc">Year-by-year physical/logical qubit and fidelity targets through 2030, cited in Section 08. Entirely forward-looking; treat every figure as a company projection.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.ionq.com/roadmap" target="_blank" rel="noopener">ionq.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">IonQ Reports Record Second Quarter 2026 Financial Results</div>
+        <div class="paper-meta">IonQ Investor Relations (Aug 2026)</div>
+        <p class="paper-desc">Q2 2026 revenue $80.1M (+287% YoY), FY2026 guidance raised to $290M, and detail on the SkyWater and Oxford Ionics integration.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://investors.ionq.com/news/news-details/2026/IonQ-Announces-Record-Second-Quarter-2026-Revenues-Growing-287-YoY/default.aspx" target="_blank" rel="noopener">investors.ionq.com ↗</a></p>
+      </div>
+    </div>
+
+    <h3 style="color:var(--text-secondary);font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Independent Surveys &amp; Reviews</h3>
+    <div class="paper-grid">
+      <div class="paper-card">
+        <div class="paper-title">Top Trapped-Ion Quantum Computing Companies in 2026</div>
+        <div class="paper-meta">The Quantum Insider (Jun 12, 2026)</div>
+        <p class="paper-desc">Independent survey comparing Quantinuum, IonQ, AQT, eleQtron, Universal Quantum, and QUDORA. Cross-checked against primary sources throughout this page rather than taken at face value.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://thequantuminsider.com/2026/06/12/trapped-ion-quantum-computing-companies-technology-and-where-it-stands-in-2026/" target="_blank" rel="noopener">thequantuminsider.com ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">A new ion-based quantum computer makes error correction simpler</div>
+        <div class="paper-meta">MIT Technology Review (Nov 5, 2025)</div>
+        <p class="paper-desc">Independent technology-press analysis of the Helios launch and its error-correction claims, useful context alongside Quantinuum's own launch materials.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.technologyreview.com/2025/11/05/1127659/a-new-ion-based-quantum-computer-makes-error-correction-simpler/" target="_blank" rel="noopener">technologyreview.com ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+    </div><!-- /container -->
+  </div><!-- /page-content -->
+</main><!-- /page-wrap -->
+
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="qc-landscape.html">
+        <span class="see-also-icon">💻</span>
+        <div>
+          <div class="see-also-name">Quantum Industry Map</div>
+          <div class="see-also-desc">Industry map and career guide for AMO physicists</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="rb87-vs-yb171.html">
+        <span class="see-also-icon">⚖️</span>
+        <div>
+          <div class="see-also-name">Rb vs Yb Qubit Comparison</div>
+          <div class="see-also-desc">The neutral-atom equivalent of this page</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="fidelity-budget.html">
+        <span class="see-also-icon">📊</span>
+        <div>
+          <div class="see-also-name">Rydberg Gate Error Budget</div>
+          <div class="see-also-desc">What limits two-qubit gate fidelity, quantitatively</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.82rem;border-top:1px solid #1a2236;margin-top:1rem;">
+  AMO Toolkit · Quantinuum vs IonQ Comparison · Data ≈ September 2026 · Saumitra Phatak, Purdue Physics PhD
+</footer>
+
+<!-- KaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+
+<script src="../js/main.js?v=25"></script>
+<script>
+  renderNav({ active: 'quantinuum-vs-ionq', root: '../' });
+
+  // ── Sticky topic nav highlight ─────────────────────────────────────
+  (function() {
+    const btns = document.querySelectorAll('.tnav-btn');
+    const sections = Array.from(btns).map(b => document.getElementById(b.dataset.target)).filter(Boolean);
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const el = document.getElementById(btn.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          btns.forEach(b => b.classList.remove('active'));
+          const active = document.querySelector(`.tnav-btn[data-target="${e.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-64px 0px -55% 0px', threshold: 0 });
+
+    sections.forEach(s => obs.observe(s));
+  })();
+
+  // ── Chart helpers ─────────────────────────────────────────────────
+  function hexToRgba(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  Chart.defaults.color = '#5c503c';
+  Chart.defaults.font.family = "'Source Serif 4', serif";
+
+  // ── Physical Qubit Scale Chart (demonstrated systems only) ─────────
+  (function() {
+    const ctx = document.getElementById('scaleChart').getContext('2d');
+    const milestones = [
+      { label: 'IonQ Forte\n(2024)', qubits: 36, platform: 'ionq' },
+      { label: 'Quantinuum H2\n(2024)', qubits: 56, platform: 'qtm' },
+      { label: 'IonQ Tempo\n(2025)', qubits: 100, platform: 'ionq' },
+      { label: 'Quantinuum Helios\n(2025-26)', qubits: 98, platform: 'qtm' },
+      { label: 'IonQ Superion 256\n(2026)', qubits: 256, platform: 'ionq' },
+    ];
+    milestones.sort((a,b) => a.qubits - b.qubits);
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: milestones.map(m => m.label),
+        datasets: [{
+          data: milestones.map(m => m.qubits),
+          backgroundColor: milestones.map(m => hexToRgba(m.platform === 'qtm' ? '#8b5cf6' : '#3b82f6', 0.75)),
+          borderColor: milestones.map(m => m.platform === 'qtm' ? '#8b5cf6' : '#3b82f6'),
+          borderWidth: 1.5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const m = milestones[ctx.dataIndex];
+                return ` ${m.qubits} physical qubits, ${m.platform === 'qtm' ? 'Quantinuum' : 'IonQ'}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'Physical Qubits (log)', color: '#5c503c' },
+            grid: { color: '#1e293b' },
+            ticks: { callback: (v) => [30, 50, 100, 300].includes(v) ? v : null }
+          }
+        }
+      }
+    });
+  })();
+
+  // ── Gate Fidelity Chart ───────────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('fidelityChart').getContext('2d');
+    const data = [
+      { label: 'Quantinuum H2\n(2023-24, company)', qtm: 99.9, ionq: null },
+      { label: 'IonQ Forte\n(2024, company)', qtm: null, ionq: 99.6 },
+      { label: 'Quantinuum Helios\n(2026, peer-rev.)', qtm: 99.921, ionq: null },
+      { label: 'IonQ Tempo\n(2025-26, company)', qtm: null, ionq: 99.9 },
+      { label: 'IonQ EQC pair\n(2025, preprint)', qtm: null, ionq: 99.99 },
+    ];
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [
+          { type: 'bar', label: 'Quantinuum 2Q Fidelity', data: data.map(d => d.qtm), backgroundColor: hexToRgba('#8b5cf6', 0.75), borderColor: '#8b5cf6', borderWidth: 1.5 },
+          { type: 'bar', label: 'IonQ 2Q Fidelity', data: data.map(d => d.ionq), backgroundColor: hexToRgba('#3b82f6', 0.75), borderColor: '#3b82f6', borderWidth: 1.5 },
+          { type: 'line', label: 'Practical target ~99.9%', data: data.map(() => 99.9), borderColor: '#ef4444', borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#22190f', font: { size: 11 } }, position: 'bottom' },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: { label: (ctx) => ctx.raw === null ? null : ` ${ctx.dataset.label}: ${ctx.raw}%` }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: { min: 99.3, max: 100.05, title: { display: true, text: '2-Qubit Gate Fidelity (%)', color: '#5c503c' }, grid: { color: '#1e293b' } }
+        }
+      }
+    });
+  })();
+
+  // ── Roadmap Logical-Qubit Chart ─────────────────────────────────────
+  (function() {
+    const ctx = document.getElementById('roadmapChart').getContext('2d');
+    const years = [2026, 2027, 2028, 2029, 2030];
+    const ionq  = [12, 800, 1600, 8000, 80000];
+    const qtm   = [null, null, null, 300, null]; // Apollo: "hundreds" of logical qubits, order-of-magnitude only
+
+    new Chart(ctx, {
+      data: {
+        labels: years,
+        datasets: [
+          { type: 'line', label: 'IonQ roadmap (logical qubits)', data: ionq, borderColor: '#3b82f6', backgroundColor: hexToRgba('#3b82f6',0.15), borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#3b82f6', tension: .15 },
+          { type: 'scatter', label: 'Quantinuum Apollo target (order-of-magnitude)', data: qtm, borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', pointRadius: 7, pointStyle: 'star' },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#22190f', font: { size: 11 } }, position: 'bottom' },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: { label: (ctx) => ctx.raw === null ? null : ` ${ctx.dataset.label}: ~${ctx.raw} logical qubits (${ctx.label})` }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, title: { display: true, text: 'Year (company roadmap targets)', color: '#5c503c' } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'Logical Qubits (log, roadmap projection)', color: '#5c503c' },
+            grid: { color: '#1e293b' },
+            ticks: { callback: (v) => [10, 100, 1000, 10000, 100000].includes(v) ? v : null }
+          }
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>
+
