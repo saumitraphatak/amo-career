@@ -269,8 +269,8 @@
         </div>
       </div>
       </div>
-      <div class="page-hero-visual">
-<svg viewBox="0 0 300 165" style="width:100%;max-width:420px;">
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
   <style>
     .px-node { animation: px-pulse 2.6s ease-in-out infinite; }
     @keyframes px-pulse { 0%,100% { opacity:.55; } 50% { opacity:1; } }
@@ -452,6 +452,7 @@
           <div class="tl-item"><div class="tl-year">Jan 2025 · Aurora launch</div><div class="tl-body">First "universal" (gate-based) photonic quantum computer: 4 networked server racks, 35 photonic chips, ~13 km of fiber, 12 qubits, room-temperature operation; accompanying Nature methods paper on scaling and networking modular photonic systems.</div></div>
           <div class="tl-item"><div class="tl-year">Nov 2025 · SPAC deal announced</div><div class="tl-body">Agreed to go public via merger with Crane Harbor Acquisition Corp., a special-purpose acquisition company, at a $3B pre-money valuation, targeting roughly $500M in gross proceeds for expansion.</div></div>
           <div class="tl-item"><div class="tl-year">Mar 27, 2026 · Public listing</div><div class="tl-body">SPAC merger closed; began trading as XNDU on Nasdaq and the Toronto Stock Exchange, becoming the world's first publicly traded pure-play photonic quantum computing company.</div></div>
+          <div class="tl-item"><div class="tl-year">Aug 28, 2026 · CAD $195M Canadian government investment</div><div class="tl-body">"Project OPTIMISM": federal funding for advanced domestic photonic-chip manufacturing facilities (integration, packaging, wafer-level testing, module assembly), part of up to CAD $390M in potential federal support announced earlier in March 2026.</div></div>
           <div class="tl-item"><div class="tl-year">2029 (target) <span class="source-tag company-roadmap">roadmap</span></div><div class="tl-body">Company target: fault-tolerant photonic quantum computer with roughly 100,000 physical qubits encoding on the order of 1,000 logical qubits via error-correcting codes.</div></div>
         </div>
       </div>
@@ -481,6 +482,11 @@
 $$\mathcal{F}_{\rm SPAM}^{\rm PsiQuantum} = 99.98\%\pm0.01\%,\quad V_{2\gamma}^{\rm PsiQuantum} = 99.50\%\pm0.25\%,\quad \mathcal{F}_{\rm fusion}^{\rm PsiQuantum} = 99.22\%\pm0.12\%\ \text{(all conditional on detection)}$$
 $$\eta_{\rm detect}^{\rm PsiQuantum} = 88.9\%\pm3.5\%\ \text{(on-chip photon-detection efficiency)} \;\Rightarrow\; \text{roughly 1 in 9 photons is lost before detection, unconditionally}$$
 The detection efficiency $\eta_{\rm detect}$ is the number that actually captures loss, and it is the more informative figure for judging how close the platform is to a usable, unconditional error rate — an 88.9% detection efficiency implies a substantial fraction of photons are lost even in this component-level test, which the "conditional" fidelities above do not reflect.</div>
+
+    <div class="chart-box">
+      <canvas id="fidelityChart" height="280"></canvas>
+      <p class="chart-caption">PsiQuantum's four headline component fidelities (all conditional on photon detection) alongside its own loss-inclusive detection efficiency, for contrast. Xanadu has no directly equivalent component-fidelity figures published to this granularity — its results are reported as full-system outcomes instead, which is why no Xanadu bars appear here.</p>
+    </div>
 
     <div class="side-by-side">
       <div class="psi-box">
@@ -633,6 +639,31 @@ Because photon loss compounds across every optical component a photon passes thr
             <td class="xan-td">2029 (~100,000 physical / ~1,000 logical qubits) — company target</td>
             <td class="win xan">Xanadu<span class="adv-badge adv-xan">has a dated target</span></td>
           </tr>
+          <tr>
+            <td rowspan="4" style="font-weight:600;color:var(--text-secondary);vertical-align:middle;">Government &amp; Software</td>
+            <td>Sovereign / government investment</td>
+            <td class="psi-td">~$1B+ combined across Queensland/Australian federal co-investment (Brisbane site) and Illinois state partnership (Chicago site)</td>
+            <td class="xan-td">CAD $195M from the Government of Canada (Aug 2026, "Project OPTIMISM"), part of up to CAD $390M in potential federal funding for advanced photonic manufacturing facilities</td>
+            <td class="win tie">Tie<span class="adv-badge adv-tie">both sovereign-backed</span></td>
+          </tr>
+          <tr>
+            <td>Open-source software</td>
+            <td class="psi-td">No public SDK or open-source framework released</td>
+            <td class="xan-td">PennyLane — widely used open-source quantum machine learning / differentiable programming framework</td>
+            <td class="win xan">Xanadu<span class="adv-badge adv-xan">only one with public software</span></td>
+          </tr>
+          <tr>
+            <td>Public cloud hardware access</td>
+            <td class="psi-td">None offered to date</td>
+            <td class="xan-td">Borealis was opened to public cloud access following its 2022 publication</td>
+            <td class="win xan">Xanadu<span class="adv-badge adv-xan">only one with public access</span></td>
+          </tr>
+          <tr>
+            <td>Primary manufacturing/facility partner</td>
+            <td class="psi-td">GlobalFoundries (New York, commercial semiconductor fab) for chips; company-built Quantum Compute Centers for full systems</td>
+            <td class="xan-td">New Canada-funded advanced photonic manufacturing facilities (chip integration, packaging, wafer testing) to be built domestically</td>
+            <td class="win tie">Tie<span class="adv-badge adv-tie">different manufacturing strategies</span></td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -660,8 +691,14 @@ Because photon loss compounds across every optical component a photon passes thr
           <li>As a newly public foreign private issuer, Xanadu now files periodic reports (e.g., Form 6-K) disclosing quarterly results, including a widening reported net loss alongside growing quantum-sector funding activity broadly, per its FY2025 year-end filing <span class="source-tag company-roadmap">SEC filing</span></li>
           <li>Public listing gives Xanadu a transparency requirement PsiQuantum does not share — quarterly financials, material-event disclosures, and analyst coverage all now apply, similar to IonQ's and Quantinuum's positions among trapped-ion companies</li>
           <li>Xanadu's PennyLane open-source software framework, widely used in academic and industry quantum-machine-learning research, is a significant non-hardware asset and community touchpoint distinct from anything PsiQuantum has published publicly</li>
+          <li>August 28, 2026: the Government of Canada announced a CAD $195M investment in Xanadu under "Project OPTIMISM," funding advanced domestic manufacturing facilities for fault-tolerant photonic quantum computers (photonic-chip integration, packaging, wafer-level testing, and quantum module assembly) — part of up to CAD $390M in potential federal funding announced in March 2026 <span class="source-tag company-roadmap">government/company press release</span></li>
         </ul>
       </div>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="fundingChart" height="260"></canvas>
+      <p class="chart-caption">Disclosed private-capital and government-backed funding milestones by announcement date (log scale, USD-equivalent at time of announcement; CAD figures converted at an approximate 0.73 USD/CAD rate for comparability only — treat as order-of-magnitude, not a precise conversion). Valuations and investment amounts are point-in-time announcements, not cumulative totals.</p>
     </div>
 
     <div class="insight">
@@ -709,6 +746,10 @@ Because photon loss compounds across every optical component a photon passes thr
         <div class="company-card">
           <h4>Crane Harbor Acquisition Corp.</h4>
           <p>The SPAC vehicle Xanadu merged with to go public (closed March 2026), now dissolved into the combined public entity trading as XNDU.</p>
+        </div>
+        <div class="company-card">
+          <h4>Government of Canada</h4>
+          <p>CAD $195M investment announced August 2026 ("Project OPTIMISM"), part of up to CAD $390M in potential federal funding, for advanced domestic photonic quantum-computing manufacturing facilities — a sovereign-backing parallel to PsiQuantum's Australian and Illinois state partnerships.</p>
         </div>
         <div class="company-card">
           <h4>PennyLane (open source)</h4>
@@ -802,6 +843,12 @@ Because photon loss compounds across every optical component a photon passes thr
         <div class="paper-meta">Xanadu Investor Relations (Apr 9, 2026)</div>
         <p class="paper-desc">First public financial disclosures following the SPAC close, referenced in Section 07's business discussion.</p>
         <p class="paper-desc" style="margin-top:.35rem;"><a href="https://investors.xanadu.ai/news-releases/news-release-details/xanadu-announces-fourth-quarter-and-full-year-2025-results" target="_blank" rel="noopener">investors.xanadu.ai ↗</a></p>
+      </div>
+      <div class="paper-card">
+        <div class="paper-title">Government of Canada Invests CAD $195 Million in Xanadu to Build the Quantum Supply Chain</div>
+        <div class="paper-meta">Xanadu / Government of Canada, joint press release (Aug 28, 2026)</div>
+        <p class="paper-desc">The "Project OPTIMISM" federal investment for advanced domestic photonic manufacturing facilities, cited in Sections 03, 07, and the comparison table's "Government &amp; Software" row.</p>
+        <p class="paper-desc" style="margin-top:.35rem;"><a href="https://www.xanadu.ai/press/government-of-canada-invests-cad-195-million-in-xanadu-to-build-the-quantum-supply-chain" target="_blank" rel="noopener">xanadu.ai ↗</a></p>
       </div>
     </div>
 
@@ -942,6 +989,93 @@ Because photon loss compounds across every optical component a photon passes thr
             title: { display: true, text: 'Modes / Qubits (log)', color: '#5c503c' },
             grid: { color: '#1e293b' },
             ticks: { callback: (v) => [10, 100, 1000, 10000, 100000, 1000000].includes(v) ? v : null }
+          }
+        }
+      }
+    });
+  })();
+
+  // -- Component Fidelity Chart (PsiQuantum only, conditional-on-detection figures) --
+  (function() {
+    const ctx = document.getElementById('fidelityChart').getContext('2d');
+    const data = [
+      { label: 'SPAM fidelity', value: 99.98 },
+      { label: '2-photon interference', value: 99.50 },
+      { label: 'Fusion fidelity', value: 99.22 },
+      { label: 'Chip-to-chip interconnect', value: 99.72 },
+      { label: 'On-chip detection efficiency (unconditional)', value: 88.9 },
+    ];
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [
+          { label: 'PsiQuantum (Nature 2025)', data: data.map(d => d.value), backgroundColor: data.map((d,i) => hexToRgba('#7c3aed', i === 4 ? 0.45 : 0.75)), borderColor: '#7c3aed', borderWidth: 1.5 },
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const isDetection = ctx.dataIndex === 4;
+                return ` ${ctx.raw}%${isDetection ? ' (loss-inclusive, unconditional)' : ' (conditional on photon detection)'}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 } } },
+          y: { min: 85, max: 100.5, title: { display: true, text: 'Fidelity / Efficiency (%)', color: '#5c503c' }, grid: { color: '#1e293b' } }
+        }
+      }
+    });
+  })();
+
+  // -- Funding & Government Investment Timeline Chart --
+  (function() {
+    const ctx = document.getElementById('fundingChart').getContext('2d');
+    const events = [
+      { label: 'PsiQuantum round (Sep 2025)', usd: 7, platform: 'psi', kind: 'valuation' },
+      { label: 'PsiQuantum round (May 2026)', usd: 10.5, platform: 'psi', kind: 'valuation' },
+      { label: 'Xanadu SPAC (Nov 2025)', usd: 3, platform: 'xan', kind: 'pre-money valuation' },
+      { label: 'Xanadu Canada investment (Aug 2026)', usd: 0.142, platform: 'xan', kind: 'government investment, CAD converted' },
+    ];
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: events.map(e => e.label),
+        datasets: [{
+          data: events.map(e => e.usd),
+          backgroundColor: events.map(e => hexToRgba(e.platform === 'psi' ? '#7c3aed' : '#0d9488', 0.75)),
+          borderColor: events.map(e => e.platform === 'psi' ? '#7c3aed' : '#0d9488'),
+          borderWidth: 1.5,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+            callbacks: {
+              label: (ctx) => {
+                const e = events[ctx.dataIndex];
+                return ` ~$${e.usd}B USD-equivalent (${e.kind})`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#1e293b' }, ticks: { font: { size: 9 }, maxRotation: 0 } },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: 'USD-equivalent, billions (log)', color: '#5c503c' },
+            grid: { color: '#1e293b' },
+            ticks: { callback: (v) => [0.1, 1, 10].includes(v) ? v : null }
           }
         }
       }
