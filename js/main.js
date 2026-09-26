@@ -197,7 +197,7 @@ function renderNav({ active = '', root = '' } = {}) {
         </a>
 
         <div class="nav-links" role="menubar">
-          <a class="nav-btn" href="${root}home.html#intent-paths">Start Here</a>
+          <a class="nav-btn" href="${root}pages/start-here.html">Start Here</a>
           ${dropdown('Build', NAV.build, 'Design and assemble an AMO experiment', 560)}
           ${dropdown('Trap, Image & Cool', NAV.trapImageCool, 'Trap atoms, measure signals, and model cooling', 620)}
           ${dropdown('Quantum Computing', NAV.quantum, 'Neutral-atom QC concepts, gates, and platforms', 560)}
@@ -223,8 +223,9 @@ function renderNav({ active = '', root = '' } = {}) {
     <div class="nav-mobile-overlay" id="nav-mobile" role="dialog" aria-label="Mobile navigation">
       <div class="nav-mobile-section">
         <div class="nav-mobile-section-title">Start Here</div>
+        <a class="nav-mobile-link" href="${root}pages/start-here.html"><span>🗺️</span> Site Map &amp; Start Here</a>
         <a class="nav-mobile-link" href="${root}home.html#intent-paths"><span>🧭</span> I am trying to...</a>
-        <a class="nav-mobile-link" href="${root}home.html#paths"><span>🗺️</span> Guided Paths</a>
+        <a class="nav-mobile-link" href="${root}home.html#paths"><span>🧩</span> Guided Paths (home)</a>
       </div>
       ${mobileSection('Build', NAV.build)}
       ${mobileSection('Trap, Image & Cool', NAV.trapImageCool)}
@@ -428,6 +429,7 @@ const SEARCH_KEYWORDS = {
   'qec': 'quantum error correction bit-flip Shor code surface code threshold theorem',
   'quantum-algorithms': 'quantum algorithms Deutsch-Jozsa Grover Shor VQE',
   'analog-sim': 'analog simulation Hubbard model Ising Hamiltonian BEC-BCS crossover',
+  'start-here': 'site map directory start here where to begin guided paths recommended order navigation overview',
 };
 
 function getSearchEntries(root = '') {
@@ -463,6 +465,15 @@ function getSearchEntries(root = '') {
     href: `${root}pages/laser-cooling.html`,
     color: '#a13c1c',
     keywords: SEARCH_KEYWORDS['laser-cooling'].toLowerCase(),
+  });
+
+  byHref.set('start-here:overview', {
+    key: 'start-here',
+    title: 'Site Map & Start Here',
+    icon: '🗺️',
+    href: `${root}pages/start-here.html`,
+    color: '#38bdf8',
+    keywords: SEARCH_KEYWORDS['start-here'].toLowerCase(),
   });
 
   return Array.from(byHref.values());
@@ -1819,6 +1830,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initRecentTracking();
   renderRecentTools();
   initDerivationToggles();
+  initPagePlaybookPanel();
   initRelatedToolsPanel();
   initShareableCalculatorParams();
   initPaperToolBridge();
