@@ -384,7 +384,7 @@ const RECENT_TOOLS_KEY = 'amo_recent_tools_v1';
 
 const SEARCH_KEYWORDS = {
   'atom-library': 'species isotope constants rubidium cesium lithium strontium ytterbium Rb Cs Li Sr Yb Dy Er K Na Ca Ba Doppler linewidth recoil hyperfine Steck NIST D1 D2',
-  'lab-techniques': 'optics fibers AOM polarimetry optical pumping laser systems RF antenna Gaussian process lab workflow alignment vacuum',
+  'lab-techniques': 'optics fibers AOM polarimetry optical pumping laser systems RF antenna Gaussian process lab workflow alignment vacuum eddy current Feshbach coil bucking coil fast field switching Kell magnetic field control',
   'laser-planner': 'laser system planner wavelength source diode SHG SFG AOM fiber species beam path power',
   'rydberg-calculator': 'Rydberg blockade C6 quantum defect lifetime Förster two-qubit gate radius alkali',
   'imaging-calculator': 'SNR fidelity photons EMCCD sCMOS histogram survival fluorescence single atom readout',
