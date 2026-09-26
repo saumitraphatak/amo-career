@@ -25,3 +25,7 @@ A JS bug (`initRelatedToolsPanel()`'s "already exists" guard checked for its own
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+
+## Performance audit re-check (2026-09-26)
+This page was missing the site's entire Google Fonts loading block (`preconnect` to `fonts.googleapis.com`/`fonts.gstatic.com` + the `Source Serif 4`/`JetBrains Mono` stylesheet link) — present on every other page. It doesn't use jsdelivr (no Chart.js/KaTeX), so this wasn't caught by the jsdelivr-preconnect fix in the original 2026-09 performance audit, which flagged the omission but wasn't sure if it was a bug or a deliberate choice. Confirmed it's a bug: the page's own inline `<style>` already references `var(--font-mono)`, so without the font link it was silently falling back to the CSS variable's fallback stack (`'Fira Code', 'Courier New', monospace`) instead of the site's actual brand font, a visible inconsistency with every sibling page. Added the standard font-loading block, copied verbatim from another page. See docs/performance-audit-2026-09-26.md.

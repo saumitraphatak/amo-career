@@ -26,3 +26,7 @@ The original science audit (2026-09-08) flagged the Advanced-Grad/Thesis tier's 
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`.
 
 Also fixed: the Stage 3 ("Advanced Grad / Thesis") tab's intro paragraph still said "These 15 papers represent the state of the art" after the 2026-09-15 science audit added papers #34-35 and bumped the tab to 17 papers everywhere else (counter-pill, paper numbering) — the one prose sentence was missed. Corrected to "17 papers." See docs/flow-audit-2026-09-19.md.
+
+
+## Performance audit re-check (2026-09-26)
+Same issue as `amo-groups.html`: missing the site's Google Fonts loading block entirely (no jsdelivr usage here either, so it wasn't touched by the earlier jsdelivr-preconnect fix). The page's inline styles already reference `var(--font-mono)` in several places, so without the font link it was rendering in the CSS fallback stack instead of the site's actual `JetBrains Mono`/`Source Serif 4`. Added the standard font-loading block, copied verbatim from another page. See docs/performance-audit-2026-09-26.md.
