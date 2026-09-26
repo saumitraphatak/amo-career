@@ -1133,7 +1133,9 @@ function initPathConceptMap() {
     icon: card.querySelector('.path-icon')?.textContent.trim() || '•',
     title: card.querySelector('.path-title')?.textContent.trim() || `Path ${i + 1}`,
     color: PATH_COLORS[i % PATH_COLORS.length],
-    steps: Array.from(card.querySelectorAll('.path-step')).map(a => a.getAttribute('href')),
+    steps: card.dataset.steps
+      ? card.dataset.steps.split(',').map(s => s.trim()).filter(Boolean)
+      : Array.from(card.querySelectorAll('.path-step[href]')).map(a => a.getAttribute('href')),
   }));
 
   // Category order matches the site's own workflow grouping (Build →
