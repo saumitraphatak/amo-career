@@ -377,6 +377,7 @@
           <button class="pol-tab-btn" onclick="polTab('methods',this)">3. Measurement Methods</button>
           <button class="pol-tab-btn" onclick="polTab('simulator',this)">4. Interactive Simulator</button>
           <button class="pol-tab-btn" onclick="polTab('matrices',this)">5. Reference & Matrices</button>
+          <button class="pol-tab-btn" onclick="polTab('tomography',this)">6. Qubit Tomography</button>
         </nav>
 
         <!-- ════════════ TAB 1: BASICS ════════════ -->
@@ -767,12 +768,99 @@
           </div>
         </div>
 
+        <div id="pol-tomography" class="pol-section">
+          <div class="pol-intro" style="margin-bottom:0">
+            📖 New: everything on this page for measuring a classical polarization state is, unchanged, the
+            recipe for measuring a single-photon <strong>polarization qubit</strong>. Based on James, Kwiat,
+            Munro &amp; White, <em>Phys. Rev. A</em> 64, 052312 (2001).
+          </div>
+
+          <div class="pol-h2" style="margin-top:18px">A Stokes vector is a Bloch vector</div>
+          <p class="pol-p">
+            Write a single photon's polarization state as a qubit, $|\psi\rangle = \alpha|H\rangle+\beta|V\rangle$.
+            Its density matrix $\hat\rho = |\psi\rangle\langle\psi|$ (or a mixed state for partially polarized
+            light) is a $2\times2$ Hermitian, unit-trace matrix, exactly the object the Poincaré sphere in the
+            Stokes Parameters tab already visualizes. Expand it in the Pauli basis $\hat\sigma_0=\hat I,\hat\sigma_1,
+            \hat\sigma_2,\hat\sigma_3$ and the Stokes parameters fall out as the expansion coefficients:
+          </p>
+          <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\hat\rho = \frac{1}{2}\sum_{i=0}^{3}\frac{S_i}{S_0}\,\hat\sigma_i$$</div>
+          <p class="pol-p">
+            The normalized Stokes vector $(S_1/S_0,S_2/S_0,S_3/S_0)$ <em>is</em> the Bloch vector. Degree of
+            polarization is Bloch-vector length; a fully mixed (unpolarized) beam sits at the Poincaré sphere's
+            center, exactly like the maximally mixed qubit state $\hat\rho = \hat I/2$.
+          </p>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">The minimal measurement set for one qubit</div>
+          <p class="pol-p">
+            The continuous rotating-QWP method above is built for a classical beam with a power meter, plenty
+            of photons to average over every angle. A single photon gives one click per shot, so photonic
+            qubit tomography instead uses four fixed projective measurements:
+          </p>
+          <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\hat\mu_0=|H\rangle\langle H|+|V\rangle\langle V|,\quad
+          \hat\mu_1=|H\rangle\langle H|,\quad
+          \hat\mu_2=|D\rangle\langle D|,\quad
+          \hat\mu_3=|R\rangle\langle R|$$</div>
+          <p class="pol-p">
+            $\mu_0$ (both PBS outputs summed) fixes the total count for normalization; $\mu_1,\mu_2,\mu_3$ are
+            projections onto H, +45° diagonal, and right-circular, the same three axes this page already calls
+            the H/V, D/A, and R/L bases. Count $n_i$ photons in each setting, then:
+          </p>
+          <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_0=2n_0,\quad S_1=2(n_1-n_0),\quad S_2=2(n_2-n_0),\quad S_3=2(n_3-n_0)$$</div>
+          <p class="pol-p">
+            Feed these into $\hat\rho = \tfrac{1}{2}\sum_i (S_i/S_0)\hat\sigma_i$ above and you have a full
+            single-qubit tomographic reconstruction, four measurement settings, no rotation stage required.
+          </p>
+
+          <hr class="pol-divider">
+          <div class="pol-grid2">
+            <div>
+              <div class="pol-h3" style="margin-top:0">Why the raw estimate can be unphysical</div>
+              <p class="pol-p">
+                With finite photon counts, statistical noise on $n_0..n_3$ can push the linear-inversion
+                $\hat\rho$ above to a matrix with a <em>negative</em> eigenvalue, not a valid quantum state.
+                James et al.'s fix, now the field standard, is <strong>maximum-likelihood estimation</strong>:
+                parametrize $\hat\rho = \hat T^\dagger\hat T/\mathrm{Tr}(\hat T^\dagger\hat T)$ for a
+                lower-triangular $\hat T$ (this form is positive semidefinite by construction for
+                <em>any</em> $\hat T$) and numerically maximize the likelihood of the observed counts over
+                $\hat T$'s free parameters. The result is always a physical density matrix.
+              </p>
+            </div>
+            <div>
+              <div class="pol-h3" style="margin-top:0">The same recipe, on an atomic qubit</div>
+              <p class="pol-p">
+                If you've built the rotating-QWP polarimeter above, you already understand atomic-qubit state
+                tomography. Swap $\mu_1$ (H projection) for a bare population measurement in
+                $\{|0\rangle,|1\rangle\}$; swap $\mu_2,\mu_3$ (D and R projections) for a population measurement
+                preceded by a resonant $\pi/2$ pulse at phase $0$ and phase $\pi/2$, rotating the X- or
+                Y-axis of the atomic Bloch sphere onto the measurement axis. Same four measurement settings,
+                same $\hat\rho = \tfrac12\sum_i (S_i/S_0)\hat\sigma_i$ reconstruction, same maximum-likelihood
+                fix for shot-noise-induced unphysical estimates.
+              </p>
+            </div>
+          </div>
+
+          <div class="pol-card pol-card-purple" style="margin-top:14px">
+            <div class="pol-h4">Worked check</div>
+            <p class="pol-p">
+              The <strong>+45°</strong> preset in the Interactive Simulator tab has Stokes vector
+              $(S_1,S_2,S_3)/S_0=(0,1,0)$. Its density matrix is
+              $\hat\rho=\tfrac12\!\begin{pmatrix}1&1\\1&1\end{pmatrix}$, a pure state, $\mathrm{Tr}(\hat\rho^2)=1$,
+              eigenvalues $\{1,0\}$. Try the <strong>Elliptical</strong> preset,
+              $(S_1,S_2,S_3)/S_0=(0.5,0.5,0.707)$: since $S_1^2+S_2^2+S_3^2 \approx S_0^2$, it is still (to
+              rounding) a pure state sitting on the Poincaré sphere's surface, not a partially mixed one inside it.
+            </p>
+          </div>
+        </div>
+
         <section class="section-block anim-in delay-4">
           <h2 class="section-title" style="font-size:1.1rem;margin-bottom:.75rem;">Sources</h2>
           <div class="read-links">
             <a class="read-link" href="https://doi.org/10.1119/1.2386162" target="_blank" rel="noopener">Schaefer et al. (2007), measuring Stokes parameters with a rotating quarter-wave plate <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span></a>
             <a class="read-link" href="https://doi.org/10.1017/CBO9780511813956" target="_blank" rel="noopener">Collett, Field Guide / Polarized Light foundations <span class="source-confidence"><span class="source-tag textbook">textbook</span></span></a>
             <a class="read-link" href="https://doi.org/10.1017/CBO9781107340559" target="_blank" rel="noopener">Goldstein, Polarized Light, Stokes and Mueller calculus <span class="source-confidence"><span class="source-tag textbook">textbook</span></span></a>
+            <a class="read-link" href="https://doi.org/10.1103/PhysRevA.64.052312" target="_blank" rel="noopener">James, Kwiat, Munro &amp; White (2001), measurement of qubits — the Stokes/Poincaré formalism on this page is single-qubit tomography; source for the Qubit Tomography tab <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span></a>
+            <a class="read-link" href="https://arxiv.org/abs/quant-ph/0103121" target="_blank" rel="noopener">James, Kwiat, Munro &amp; White, arXiv:quant-ph/0103121 — free preprint of the above</a>
           </div>
         </section>
 
@@ -818,7 +906,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=27"></script>
+<script src="../js/main.js?v=28"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';

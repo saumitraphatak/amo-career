@@ -395,7 +395,7 @@ const SEARCH_KEYWORDS = {
   'lab-calculators': 'beam waist dBm recoil Doppler Zeeman saturation cavity FSR finesse trap frequency Clebsch Gordan',
   'laser-locking': 'SAS PDH beat note offset lock PLL cavity servo linewidth frequency stabilization ultrastable cavity ULE glass finesse ring-down mode matching thermal Brownian noise vibration insensitive mounting zero-crossing temperature ion pump Boyd Lahaye',
   'zernike': 'wavefront aberration SLM hologram Gerchberg Saxton Zernike tweezer correction',
-  'polarimetry': 'Stokes Poincare QWP HWP PBS RCP LCP sigma polarization ellipticity',
+  'polarimetry': 'Stokes Poincare QWP HWP PBS RCP LCP sigma polarization ellipticity qubit tomography density matrix Pauli Bloch sphere maximum likelihood James Kwiat',
   'qc-landscape': 'company roadmap IBM Google Quantinuum QuEra Atom Computing Microsoft IonQ Pasqal PsiQuantum interviews',
   'rb87-vs-yb171': 'qubit species comparison rubidium ytterbium neutral atom hyperfine nuclear spin clock',
   'quantinuum-vs-ionq': 'trapped ion quantum computing company comparison QCCD electronic qubit control EQC barium ytterbium Helios Tempo Superion fault tolerance logical qubits',
