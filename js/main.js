@@ -393,7 +393,7 @@ const SEARCH_KEYWORDS = {
   'fidelity-budget': 'Rydberg gate error budget blockade Doppler phase SPAM lifetime intensity noise fidelity',
   'release-recapture': 'tweezer thermometry recapture release Monte Carlo trap depth temperature',
   'lab-calculators': 'beam waist dBm recoil Doppler Zeeman saturation cavity FSR finesse trap frequency Clebsch Gordan',
-  'laser-locking': 'SAS PDH beat note offset lock PLL cavity servo linewidth frequency stabilization',
+  'laser-locking': 'SAS PDH beat note offset lock PLL cavity servo linewidth frequency stabilization ultrastable cavity ULE glass finesse ring-down mode matching thermal Brownian noise vibration insensitive mounting zero-crossing temperature ion pump Boyd Lahaye',
   'zernike': 'wavefront aberration SLM hologram Gerchberg Saxton Zernike tweezer correction',
   'polarimetry': 'Stokes Poincare QWP HWP PBS RCP LCP sigma polarization ellipticity',
   'qc-landscape': 'company roadmap IBM Google Quantinuum QuEra Atom Computing Microsoft IonQ Pasqal PsiQuantum interviews',

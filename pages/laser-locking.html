@@ -190,7 +190,8 @@
         <p class="page-hero-desc">
           Free-running diode lasers drift by MHz on minute timescales, comparable to atomic linewidths.
           Three complementary techniques solve this: SAS for absolute references, beat-note for precise
-          offsets, and PDH for sub-kHz linewidths.
+          offsets, and PDH for sub-kHz linewidths, plus the vacuum, thermal, and vibration engineering that
+          makes the reference cavity itself stable enough to lock to.
         </p>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
@@ -231,7 +232,7 @@
     <div class="container">
 
   <div class="concept-box anim-in" style="border-left-color:var(--page-color,#0678ab);">
-    Laser frequency stability is foundational to every AMO experiment, a coherence time of 100 μs requires laser linewidth below ~10 kHz, and Rydberg transitions need sub-MHz stability. Saturated absorption spectroscopy (SAS) provides Doppler-free atomic references with ~1 MHz width; Pound-Drever-Hall (PDH) locking to an optical cavity achieves sub-Hz linewidths by using phase-modulated sidebands to generate a dispersive error signal. This guide explains the physics of both techniques and gives you tools for exploring SAS spectra, PDH error signals, and offset locking, the three pillars of practical laser stabilization.
+    Laser frequency stability is foundational to every AMO experiment, a coherence time of 100 μs requires laser linewidth below ~10 kHz, and Rydberg transitions need sub-MHz stability. Saturated absorption spectroscopy (SAS) provides Doppler-free atomic references with ~1 MHz width; Pound-Drever-Hall (PDH) locking to an optical cavity achieves sub-Hz linewidths by using phase-modulated sidebands to generate a dispersive error signal. This guide explains the physics of both techniques and gives you tools for exploring SAS spectra, PDH error signals, and offset locking, the three pillars of practical laser stabilization. A fourth tab, <strong>Ultrastable Cavities</strong>, goes one level deeper: PDH only works as well as the cavity you lock to, and that cavity's finesse, vacuum, thermal, and vibration engineering deserve their own treatment.
   </div>
 
   <div class="info-banner anim-in" style="margin-bottom: 2rem;">
@@ -345,6 +346,7 @@
         <button class="tab-btn active" data-tab="sas">📡 SAS Lock</button>
         <button class="tab-btn" data-tab="beat">🎵 Beat-Note Lock</button>
         <button class="tab-btn" data-tab="pdh">🏛️ PDH Cavity Lock</button>
+        <button class="tab-btn" data-tab="cavity">🔧 Ultrastable Cavities</button>
         <button class="tab-btn" data-tab="summary">🗺️ Summary</button>
       </div>
 
@@ -1058,7 +1060,210 @@ Error signal: fast path → laser current (high BW, small range)<br>
         </div>
       </div>
 
-      <!-- ══════════════ TAB 4: SUMMARY ══════════════ -->
+      <!-- ══════════════ TAB 4: ULTRASTABLE CAVITY ENGINEERING ══════════════ -->
+      <div class="tab-panel" data-tab="cavity">
+
+        <div class="info-banner" style="margin-bottom:1.2rem;">
+          📖 New: a dedicated deep-dive on <strong>building</strong> the ultrastable reference cavity that a
+          PDH lock stabilizes to, the vacuum, thermal, and vibration engineering that the servo electronics
+          alone don't address. Based on Jamie A. Boyd &amp; Thierry Lahaye,
+          <a href="https://doi.org/10.1119/5.0161369" target="_blank" rel="noopener"
+             style="color:#e20b0b;font-weight:700;text-decoration:underline;">
+            <em>Am. J. Phys.</em> 92, 50 (2024) →
+          </a>
+        </div>
+
+        <div class="theory-box">
+          <h4>Why the Cavity Itself Is the Hard Part</h4>
+          <p>
+            The PDH tab shows how to derive a dispersive error signal from a Fabry–Pérot cavity, but the
+            quality of the reference you lock to is set entirely by the mechanical, thermal, and vacuum design
+            of the cavity spacer, not by the servo electronics. A useful organizing constraint: to hold the
+            laser's fractional frequency stability below a target value, the cavity's fractional
+            refractive-index and length fluctuations must satisfy
+          </p>
+          <div class="formula-box">
+$$\frac{\delta\nu}{\nu} \;\le\; \frac{\delta n}{n} + \frac{\delta L}{L} \;\lesssim\; 10^{-9} \quad \text{[target for sub-MHz stability at optical frequency]}$$</div>
+          <p>
+            Every design choice below, vacuum level, spacer material and temperature, and support geometry,
+            exists to drive one of the two terms on the right toward zero.
+          </p>
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.2rem 0 .5rem 0;">Finesse, free spectral range, and mode structure</div>
+        <div class="formula-box">
+$$\nu_{\rm FSR} = \frac{c}{2nL} \quad \text{[free spectral range]}$$
+$$\mathcal{F} = \frac{\pi\sqrt{r_1r_2}}{1-r_1r_2} = \frac{\nu_{\rm FSR}}{\delta\nu_{\rm cav}} = 2\pi\,\tau\,\nu_{\rm FSR} \quad [\tau = 1/e\text{ ring-down time}]$$</div>
+
+        <div class="info-banner">
+          Build intuition first: $|r|=98.4\%\Rightarrow\mathcal{F}\approx100\Rightarrow\delta\nu_{\rm cav}\approx15$ MHz;
+          push the mirrors to $|r|=99.992\%\Rightarrow\mathcal{F}\approx20{,}000\Rightarrow\delta\nu_{\rm cav}\approx75$ kHz.
+          A real ultrastable cavity in the paper (10 cm long, 780 nm) reaches $\mathcal{F}=25{,}200$,
+          FSR $\approx1.5$ GHz, linewidth $\approx60$ kHz, and a measured ring-down time
+          $\tau\approx2.6$–$2.7\ \mu$s, matching the manufacturer's spec.
+        </div>
+
+        <div class="step-box">
+          <strong>Geometry matters as much as reflectivity.</strong> Higher-order transverse modes (HOMs) pick
+          up an extra Gouy phase per round trip and resonate at
+          $$\frac{\nu_{mnp}}{\nu_{\rm FSR}} = p + \frac{m+n+1}{\pi}\arccos\!\left[\sqrt{\Big(1-\tfrac{L}{R_1}\Big)\Big(1-\tfrac{L}{R_2}\Big)}\right]$$
+          A <strong>confocal</strong> cavity ($L=R_1=R_2$) is a bad choice, its HOMs land exactly at FSR/2,
+          degenerate with the neighboring TEM₀₀ resonance. The standard practical choice is
+          <strong>planoconvex</strong> (one flat mirror, one curved), with $L/R$ tuned so HOMs sit roughly
+          100 MHz from the TEM₀₀ peak, far enough to avoid mode-overlap-induced lock errors.
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">Controlling δn/n: the vacuum requirement</div>
+        <div class="theory-box">
+          <p>
+            Air has $n-1\approx3\times10^{-4}$ at STP, and atmospheric pressure alone drifts by roughly 10%
+            day to day, so an unevacuated cavity sees $\delta n/n\sim10^{-5}$: four orders of magnitude too
+            large for the $10^{-9}$ budget above. Pumping to below $10^{-3}$ mbar already fixes this; in
+            practice, ion pumps (no moving or spinning parts, so they inject no vibration) routinely hold
+            $\sim10^{-7}$ mbar with no bakeout, pushing $\delta n/n\sim10^{-14}$, fully negligible.
+          </p>
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">Controlling δL/L: the ULE zero-crossing</div>
+        <div class="theory-box">
+          <p>
+            $\delta L/L=\alpha(T)\,\delta T$, so the spacer's thermal-expansion coefficient matters as much as
+            the temperature control itself. ULE (ultra-low-expansion) glass is a SiO₂/TiO₂ mix engineered so
+            that $\alpha(T)$ crosses zero at a specific <strong>zero-crossing temperature</strong> $T_{\rm ZC}$,
+            chosen a few degrees above room temperature purely so a resistive heater, not a cooler, can hold
+            the setpoint (the paper's own cavity: $T_{\rm ZC}=34.49\,^\circ$C, held with a Wavelength
+            Electronics LFI-3751 heater controller). At $T_{\rm ZC}\pm10$ mK: $\delta L/L\sim10^{-14}$ for a
+            10 cm spacer. Even 0.5 °C off the zero crossing it's still only $\sim10^{-11}$, which is exactly
+            why a simple heater-plus-PID loop suffices instead of a full cryostat.
+          </p>
+        </div>
+
+        <div class="good-banner" style="margin-top:1rem;">
+          <strong>The single most non-obvious idea in cavity design: where you hold it matters more than what
+          you hold it with.</strong> Under vertical acceleration $a$, a cavity spacer of length $L$ supported
+          at its <em>bottom</em> is compressed, $\Delta L=a\rho L^2/2E$ ($\rho$ = density, $E$ = Young's
+          modulus), while one suspended from the <em>top</em> stretches by the same amount. Support it instead
+          at the horizontal plane through its <strong>midpoint</strong> and the two effects cancel to first
+          order, $\Delta L\approx0$. This is why real ultrastable cavities are mounted horizontally on
+          specific nodal support points, often Viton (fluoroelastomer) balls or pads for damping and thermal
+          isolation, rather than wherever is mechanically convenient.
+        </div>
+
+        <svg viewBox="0 0 300 140" width="100%" height="150" xmlns="http://www.w3.org/2000/svg" style="margin:.75rem 0;">
+          <text x="45" y="14" font-size="9" text-anchor="middle" fill="#8a8578" font-family="monospace">bottom-supported</text>
+          <text x="150" y="14" font-size="9" text-anchor="middle" fill="#8a8578" font-family="monospace">top-suspended</text>
+          <text x="255" y="14" font-size="9" text-anchor="middle" fill="#8a8578" font-family="monospace">midpoint-supported</text>
+
+          <rect x="35" y="30" width="20" height="80" rx="3" fill="none" stroke="#e20b0b" stroke-width="1.5"/>
+          <line x1="25" y1="112" x2="65" y2="112" stroke="#7a4ff7" stroke-width="3"/>
+          <path d="M45,42 L40,52 M45,42 L50,52" stroke="#e20b0b" stroke-width="1.2" fill="none"/>
+          <path d="M45,98 L40,88 M45,98 L50,88" stroke="#e20b0b" stroke-width="1.2" fill="none"/>
+          <text x="45" y="128" font-size="8" text-anchor="middle" fill="#e20b0b" font-family="monospace">compressed</text>
+
+          <rect x="140" y="30" width="20" height="80" rx="3" fill="none" stroke="#076be6" stroke-width="1.5"/>
+          <line x1="130" y1="28" x2="170" y2="28" stroke="#7a4ff7" stroke-width="3"/>
+          <path d="M150,45 L145,35 M150,45 L155,35" stroke="#076be6" stroke-width="1.2" fill="none"/>
+          <path d="M150,95 L145,105 M150,95 L155,105" stroke="#076be6" stroke-width="1.2" fill="none"/>
+          <text x="150" y="128" font-size="8" text-anchor="middle" fill="#076be6" font-family="monospace">stretched</text>
+
+          <rect x="245" y="30" width="20" height="80" rx="3" fill="none" stroke="#11823a" stroke-width="1.5"/>
+          <line x1="235" y1="70" x2="275" y2="70" stroke="#7a4ff7" stroke-width="3"/>
+          <text x="255" y="128" font-size="8" text-anchor="middle" fill="#11823a" font-family="monospace">ΔL ≈ 0</text>
+        </svg>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">The fundamental floor: thermal (Brownian) noise</div>
+        <div class="warn-banner">
+          Vacuum, thermal control, and vibration isolation all fix <em>drift</em>, they don't touch the
+          fundamental floor. The spacer, substrates, and especially the dielectric mirror <em>coatings</em>
+          undergo genuine thermodynamic (Brownian) motion that scales as $\sqrt{T}$, this is noise, not drift,
+          and no amount of the engineering above removes it. State of the art gets around it by going
+          cryogenic: single-crystal silicon spacers operated at their own zero-crossing temperature (~16 K),
+          which both suppresses Brownian noise directly (lower $T$) and removes the amorphous-material aging
+          that limits room-temperature ULE cavities over the long term.
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">Mode matching and intracavity power</div>
+        <div class="formula-box">
+$$z_R = \sqrt{L(R_2-L)}, \qquad w_0 = \sqrt{\frac{z_R\lambda}{\pi}} \quad \text{[planoconvex cavity, flat mirror at } z=0\text{]}$$
+$$\frac{I_{\rm cav}}{I_{\rm inc}} = \frac{\mathcal{F}}{\pi} \quad \text{[on-resonance build-up factor]}$$</div>
+        <div class="info-banner">
+          Worked example from the paper: $L=100$ mm, $R_2=500$ mm $\Rightarrow z_R=200$ mm $\Rightarrow
+          w_0=223\ \mu$m at 780 nm. Their practical recipe: a fiber collimator (~100 μm waist) feeding a
+          single $f=150$ mm lens, placed 204 mm from the collimator and 421 mm from the cavity's flat mirror,
+          matches this eigenmode.
+        </div>
+        <div class="warn-banner">
+          <strong>Common mistake:</strong> for $\mathcal{F}=25{,}200$, the build-up factor is
+          $\mathcal{F}/\pi\approx8{,}000\times$, so as little as ~100 μW incident can already build up to
+          nearly 1 W circulating. Too much incident power into a high-finesse cavity can heat or damage the
+          mirror coating, always check the build-up factor before raising input power. Diagnose mode matching
+          with a transmission camera (look directly for HOM spatial patterns) and the reflected-signal dip
+          depth (aim for ≥80% of the fully-reflected level).
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">A concrete PDH lock, start to finish</div>
+        <div class="theory-box">
+          <h4>Example RF chain (Boyd &amp; Lahaye's setup)</h4>
+          <p>
+            20 MHz modulation via a fiber EOM, ~350 μW incident power, function-generator LO (Tektronix
+            AFG3022C), photodiode (Thorlabs PDA10-EC), RF amplifier (Mini-Circuits ZFL-500+), mixer
+            (Mini-Circuits ZAD-1H+), and servo (Vescent D2-125), the same servo family used on this page's
+            Beat-Note tab.
+          </p>
+        </div>
+        <div class="step-box"><strong>1.</strong> Sweep the cavity resonance and adjust the demodulation LO phase to minimize/optimize the reflected sideband beat.</div>
+        <div class="step-box"><strong>2.</strong> Add a 90° phase shift from that optimum, the phase that minimizes the in-phase sideband beat is 90° away from the phase that maximizes the actual PDH error-signal slope.</div>
+        <div class="step-box"><strong>3.</strong> Zero the DC offset of the error signal.</div>
+        <div class="step-box"><strong>4.</strong> Slowly shrink the scan amplitude while re-centering on the target resonance (usually the fundamental TEM₀₀ peak).</div>
+        <div class="step-box"><strong>5.</strong> Engage the lock and watch the transmitted-power photodiode, confirm it sits at the peak, not on a nearby HOM wing, and stays there.</div>
+        <div class="step-box"><strong>6.</strong> Tune the PID gains for stability without ringing (see the P/D sliders in the lock animator above for the same intuition).</div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">Measuring finesse independently: cavity ring-down</div>
+        <div class="formula-box">
+$$I(t) = I_0\,e^{-t/\tau}, \qquad \mathcal{F} = 2\pi\,\tau\,\nu_{\rm FSR}$$</div>
+        <div class="info-banner">
+          Abruptly extinguish or divert the input light (AOM or fast shutter) while locked and resonant, then
+          fit the transmitted intensity decay. Boyd &amp; Lahaye measured $\tau=2.6\ \mu$s with
+          FSR $=1.5$ GHz $\Rightarrow\mathcal{F}\approx25{,}000$, matching the mirror manufacturer's spec, a
+          nice independent, in-lab cross-check rather than trusting a spec sheet number alone.
+        </div>
+
+        <div class="section-title" style="font-size:1.1rem;margin:1.5rem 0 .5rem 0;">Typical design requirements at a glance</div>
+        <div style="overflow-x:auto; margin-bottom:1rem;">
+          <table class="sum-table">
+            <thead>
+              <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Requirement</th>
+                <th scope="col">Typical value (paper's cavity)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Mirror reflectivity</td><td>as high as practical</td><td>99.992% (𝒻 ≈ 25,200)</td></tr>
+              <tr><td>Vacuum pressure</td><td>&lt; 10⁻³ mbar minimum</td><td>~10⁻⁷ mbar (ion pump)</td></tr>
+              <tr><td>Temperature stability</td><td>hold near T<sub>ZC</sub></td><td>±10 mK</td></tr>
+              <tr><td>Spacer material</td><td>near-zero CTE</td><td>ULE glass (T<sub>ZC</sub> = 34.49 °C here)</td></tr>
+              <tr><td>Spacer length</td><td>typical</td><td>10 cm</td></tr>
+              <tr><td>Resulting linewidth</td><td>kHz-level or below</td><td>~60–75 kHz</td></tr>
+              <tr><td>Drift</td><td>slow, characterizable</td><td>~hundreds of kHz/day</td></tr>
+              <tr><td>Fundamental floor</td><td>thermal (Brownian) noise in coatings</td><td>overcome only cryogenically (~16 K, Si)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button class="prac-toggle" onclick="togglePrac(this)">📋 Practical notes ▾</button>
+        <div class="prac-body" id="cavityPractical">
+          <ul>
+            <li><strong>Cross-check the spec sheet:</strong> always measure finesse independently by ring-down rather than trusting the mirror coating vendor's number alone.</li>
+            <li><strong>Mount at the nodal points:</strong> Viton balls or pads at the calculated midpoint support locations damp vibration and thermally isolate the spacer at the same time.</li>
+            <li><strong>Budget the HOM spacing, not just the finesse:</strong> a planoconvex geometry with HOMs ~100 MHz from TEM₀₀ avoids mode-overlap lock errors that a purely high-finesse, badly-chosen-geometry cavity would suffer.</li>
+            <li><strong>Ion pumps over turbo/scroll pumps</strong> wherever possible: no moving parts means no vibrational or acoustic noise injected into the very cavity you're trying to keep still.</li>
+            <li><strong>This tab complements, not replaces, the PDH tab:</strong> the PDH tab covers the servo and error-signal electronics; this tab covers the mechanical, thermal, and vacuum design of what you're locking to. If you're looking for atom-cavity coupling (cavity QED) rather than laser frequency stabilization, see the <a href="cavity-qed.html">Cavity QED Coupling Lab</a> instead, a different physics problem that happens to share the word "cavity."</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ══════════════ TAB 5: SUMMARY ══════════════ -->
       <div class="tab-panel" data-tab="summary">
         <div class="theory-box">
           <h4>The Locking Hierarchy</h4>
@@ -1167,6 +1372,8 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
       <a class="read-link" href="https://doi.org/10.1016/0030-4018(80)90069-3" target="_blank" rel="noopener">Hänsch &amp; Couillaud (1980), <em>Opt. Comm. 35</em> 441 — polarization spectroscopy for cavity locking without RF modulation</a>
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.87.637" target="_blank" rel="noopener">Ludlow et al. (2015), <em>Rev. Mod. Phys. 87</em> 637 — optical atomic clocks; covers ultra-narrow laser stabilization at the frontier</a>
       <a class="read-link" href="https://doi.org/10.1364/JOSAB.5.001576" target="_blank" rel="noopener">Salomon et al. (1988), <em>JOSA B 5</em> 1576 — laser stabilization at the shot-noise limit; spectroscopy signal optimization</a>
+      <a class="read-link" href="https://doi.org/10.1119/5.0161369" target="_blank" rel="noopener">Boyd &amp; Lahaye (2024), <em>Am. J. Phys. 92</em> 50 — a basic introduction to ultrastable optical cavities for laser stabilization; source for this page's Ultrastable Cavities tab (peer-reviewed)</a>
+      <a class="read-link" href="https://arxiv.org/abs/2308.08015" target="_blank" rel="noopener">Boyd &amp; Lahaye, arXiv:2308.08015 — free preprint of the above</a>
     </div>
   </section>
 
@@ -1214,7 +1421,7 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=26"></script>
+<script src="../js/main.js?v=27"></script>
 <script>
 renderNav({ active: 'laser-locking', root: '../' });
 initScrollReveal();
