@@ -29,4 +29,4 @@ Also fixed: the Stage 3 ("Advanced Grad / Thesis") tab's intro paragraph still s
 
 
 ## Performance audit re-check (2026-09-26)
-Same issue as `amo-groups.html`: missing the site's Google Fonts loading block entirely (no jsdelivr usage here either, so it wasn't touched by the earlier jsdelivr-preconnect fix). The page's inline styles already reference `var(--font-mono)` in several places, so without the font link it was rendering in the CSS fallback stack instead of the site's actual `JetBrains Mono`/`Source Serif 4`. Added the standard font-loading block, copied verbatim from another page. See docs/performance-audit-2026-09-26.md.
+Same issue as `amo-groups.html` — re-checked the missing-Google-Fonts gap the original 2026-09-11 performance audit flagged but declined to fix. Already resolved: Saumitra added the standard font-loading block himself directly (commit 5460d65, 2026-09-25, before this run started). No page content changed by this run; noting the closure for the record. See docs/performance-audit-2026-09-26.md.
