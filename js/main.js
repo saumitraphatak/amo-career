@@ -411,7 +411,7 @@ const SEARCH_KEYWORDS = {
   'cavity-qed': 'cavity QED coupling rate Purcell finesse strong weak bad-cavity coupling atom-photon Jaynes-Cummings',
   'vacuum-systems': 'UHV XHV ultra-high vacuum bakeout ion pump turbo pump roughing conflat flange leak check gauge',
   'tweezer-designer': 'optical tweezer array SLM AOD hologram trap depth waist spacing single atom loading',
-  'absorption-imaging': 'absorption imaging Beer-Lambert optical density column density atom number resonant off-resonant saturation',
+  'absorption-imaging': 'absorption imaging Beer-Lambert optical density column density atom number resonant off-resonant saturation phase contrast dispersive imaging non-destructive Andrews dense cloud SLM phase mask',
   'decoherence-lab': 'T1 T2 T2 star dephasing dissipation Bloch sphere Ramsey echo optical Bloch equations relaxation',
   'remote-entanglement': 'remote entanglement photon collection heralded Bell state fiber link loss budget entanglement swapping',
   'bloch-sphere': 'Bloch sphere qubit state vector superposition rotation',

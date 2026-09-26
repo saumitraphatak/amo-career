@@ -581,6 +581,52 @@
           </p>
         </div>
       </div>
+
+      <div class="accordion" style="margin-top:var(--sp-4);border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.04)">
+        <button class="accordion-header" aria-expanded="false">
+          <span class="accordion-title">📖 New: beyond absorption — phase-contrast imaging for dense or non-destructive shots</span>
+          <svg class="accordion-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <div class="accordion-body">
+          <p>
+            Everything above destroys the sample: resonant photons that make the shadow also scatter the atoms
+            out of the trap, and the calculator's saturation correction only pushes the OD ceiling higher, it
+            doesn't remove it. <strong>Phase-contrast (dispersive) imaging</strong> sidesteps both limits by
+            probing far off resonance and detecting the atoms' effect on the light's <em>phase</em> rather than
+            its amplitude, so almost no photons scatter and the cloud survives the shot.
+          </p>
+          <div class="formula-box" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.2)">
+            $$\phi(x,y) \approx -\frac{\Gamma}{4\Delta}\,\text{OD}(x,y) \qquad [|\Delta| \gg \Gamma,\ \text{OD}]$$
+          </div>
+          <p style="margin-top:var(--sp-3)">
+            A phase plate (or, in modern setups, a spatial light modulator) at the imaging system's Fourier
+            plane converts this phase shift into an intensity signal a camera can record, the same trick used
+            in Zernike phase-contrast microscopy. Because $\phi$ scales as $1/\Delta$ while photon scattering
+            (and saturation) fall off much faster with detuning, there is a wide detuning window where the
+            phase signal is still easily measurable but the sample is essentially unperturbed.
+          </p>
+          <p style="margin-top:var(--sp-3)">
+            <strong>Andrews et al. (1996)</strong> introduced this to cold-atom physics to solve a problem
+            absorption imaging cannot: watching the <em>same</em> Bose-Einstein condensate evolve over time.
+            A single absorption shot destroys the cloud, so any dynamics study needed a fresh cloud per data
+            point; phase-contrast imaging let them take repeated, non-destructive snapshots of one condensate.
+          </p>
+          <p style="margin-top:var(--sp-3)">
+            <strong>Frometa Fernandez et al. (2025)</strong> push the technique to the opposite regime this
+            calculator's OD sweet-spot warns you about: very dense clouds. Using a circular SLM phase mask
+            (phase shift $\pi/3$, far detunings of −298 and −1010 MHz), they validated phase-contrast imaging
+            up to resonant optical depth OD ≈ 64, densities well above $\lambda^{-3}$, where absorption imaging's
+            two-level model (and this page's saturation correction) has already broken down from collective
+            and many-body effects.
+          </p>
+          <div class="stat-strip" style="--sc:#818cf8;margin-top:var(--sp-4)">
+            <div class="stat-item"><div class="stat-val">Non-destructive</div><div class="stat-label">Repeated shots, one cloud</div></div>
+            <div class="stat-item"><div class="stat-val">φ ∝ 1/Δ</div><div class="stat-label">Phase signal vs detuning</div></div>
+            <div class="stat-item"><div class="stat-val">OD ≈ 64</div><div class="stat-label">Validated dense-cloud limit (2025)</div></div>
+            <div class="stat-item"><div class="stat-val">SLM / phase plate</div><div class="stat-label">Added hardware vs absorption</div></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- 05 References -->
@@ -631,6 +677,21 @@
               arXiv:cond-mat/9904034. Sections 3–5 give a complete treatment of absorption imaging, cross sections,
               and cloud reconstruction for BEC experiments. The standard reference for BEC groups.
               <a href="https://arxiv.org/abs/cond-mat/9904034" target="_blank" rel="noopener" style="color:var(--page-color)">arXiv →</a>
+            </li>
+            <li>
+              <strong>Andrews et al. (1996)</strong> — "Direct, Nondestructive Observation of a Bose Condensate."
+              <em>Science</em> <strong>273</strong>, 84–87.
+              Introduces phase-contrast imaging to cold-atom physics: the far-detuned, non-destructive
+              alternative to everything above. Source for the new "Beyond Absorption" note in Practical
+              Considerations.
+              <a href="https://doi.org/10.1126/science.273.5271.84" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+            </li>
+            <li>
+              <strong>Frometa Fernandez et al. (2025)</strong> — "Phase-contrast imaging of a dense atomic cloud."
+              <em>Rev. Sci. Instrum.</em> <strong>96</strong>, 083203.
+              Validates phase-contrast imaging up to resonant OD ≈ 64 using an SLM phase mask, well past where
+              absorption imaging's two-level model breaks down. Free preprint below.
+              <a href="https://arxiv.org/abs/2501.03158" target="_blank" rel="noopener" style="color:var(--page-color)">arXiv →</a>
             </li>
           </ul>
         </div>
@@ -740,7 +801,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=28"></script>
+<script src="../js/main.js?v=29"></script>
 <script>
   renderNav({ active:'absorption-imaging', root:'../' });
 
