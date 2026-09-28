@@ -924,7 +924,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
         <button class="hist-preset-btn" data-key="Marginal"
           onclick="loadHistPreset('Marginal')"
           style="background:rgba(52,211,153,0.08);border:1px solid rgba(148,163,184,0.2);color:#4f72a4;border-radius:20px;padding:.22rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;">
-          Marginal (SNR≈4)
+          Marginal (SNR≈1.6)
         </button>
       </div>
       <div id="histNoteBox" style="font-size:.78rem;color:var(--text-muted);background:var(--bg-card);border:1px solid #166534;border-radius:6px;padding:.55rem .85rem;margin-bottom:.9rem;line-height:1.6;"></div>
@@ -1806,19 +1806,19 @@ function onCamChange() {
 const HIST_PRESETS = {
   Rb87: {
     muBright: 800, sigBright: 42, muDark: 55, sigDark: 14,
-    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright ≈ √(2·800 + 12²) ≈ 42 e⁻ (Poisson shot noise √800 ≈ 28, with its variance doubled by the EMCCD excess noise (factor √2 at high gain), plus read noise in quadrature) · σ_dark ≈ read noise 12 e⁻ + dark counts · Peak separation SNR~11 → F>99.98%'
+    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright ≈ √(2·800 + 12²) ≈ 42 e⁻ (Poisson shot noise √800 ≈ 28, with its variance doubled by the EMCCD excess noise (factor √2 at high gain), plus read noise in quadrature) · σ_dark ≈ read noise 12 e⁻ + dark counts · With these peaks the page’s SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) ≈ 16.8, so the two-Gaussian overlap error is far below 10⁻¹⁰ (the fidelity card reads 100.000%). At this separation real experiments are limited by what the two-Gaussian model leaves out: atom loss or heating during the exposure, and non-Gaussian tails (EMCCD multiplication noise, background fluctuations) · Illustrative parameters'
   },
   Yb171: {
     muBright: 1200, sigBright: 38, muDark: 40, sigDark: 11,
-    note: '¹⁷¹Yb fluorescence on 399 nm (¹S₀→¹P₁, Γ/2π ≈ 29 MHz) or 556 nm (¹S₀→³P₁ intercombination line, Γ/2π ≈ 182 kHz; the 578 nm clock line is far too narrow to image on) · sCMOS · Narrower dark peak due to lower background at 556 nm · Typical SNR~16 in Kaufman-group style tweezers · F>99.99% routinely achievable'
+    note: '¹⁷¹Yb fluorescence on 399 nm (¹S₀→¹P₁, Γ/2π ≈ 29 MHz) or 556 nm (¹S₀→³P₁ intercombination line, Γ/2π ≈ 182 kHz; the 578 nm clock line is far too narrow to image on) · sCMOS · Narrower dark peak due to lower background at 556 nm · Page’s SNR ≈ 29: peak overlap is negligible, so, as for ⁸⁷Rb, atom loss and non-Gaussian tails set the real limit · Illustrative parameters'
   },
   Sr88: {
     muBright: 950, sigBright: 52, muDark: 65, sigDark: 18,
-    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Still achieves F~99.95% · Illustrative parameters'
+    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Page’s SNR ≈ 16.1 (overlap error far below 10⁻¹⁰) · Illustrative parameters. Measured benchmark: Covey et al., PRL 122, 173201 (2019), ⁸⁸Sr imaged on the same 461 nm line in 813.4 nm magic-wavelength tweezers, with Sisyphus cooling on the intercombination line: imaging fidelity 0.99991(1) with survival 0.99932(8)'
   },
   Marginal: {
     muBright: 280, sigBright: 85, muDark: 120, sigDark: 55,
-    note: '⚠️ Marginal detection regime · Low signal (short exposure or low NA) · Peak overlap significant · This represents a challenging situation: F~97–98% · Fidelity can be improved by: longer exposure, higher NA objective, reducing background scatter, or using EMCCD instead of sCMOS · Typical of early-stage setups before optimization'
+    note: '⚠️ Marginal detection regime · Low signal (short exposure or low NA) · Peak overlap significant · This represents a challenging situation: page’s SNR ≈ 1.6 and F ≈ 88% at the optimal threshold (P_miss ≈ 16%, P_false ≈ 9%) · Fidelity can be improved by: longer exposure, higher NA objective, reducing background scatter, or using EMCCD instead of sCMOS · Typical of early-stage setups before optimization'
   },
 };
 

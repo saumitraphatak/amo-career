@@ -69,3 +69,18 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
   - Rb87 said "EMCCD" and then "sCMOS read noise". It now derives its own σ_bright: √(2·800 + 12²) ≈ 42 e⁻ (EMCCD excess noise doubles the shot-noise variance, plus the 12 e⁻ read noise), which matches the preset's 42.
   - Yb171 called 556 nm "the clock line" with a "higher scatter rate". 556 nm is the ¹S₀→³P₁ intercombination line (Γ/2π ≈ 182 kHz, vs ≈ 29 MHz at 399 nm); the clock line is 578 nm (Γ/2π ≈ 7.6 mHz). Source: "¹⁷¹Yb Reference Data", arXiv:2509.04416 (preprint), Tables 8–10. The unsupported "higher scatter rate" clause was removed.
   - Sr88 ended "Ericsson/Ye-group typical parameters", an attribution with no citation; it now says "Illustrative parameters".
+
+## 2026-09-28 (overnight run 3): histogram preset notes match the page's own numbers
+The four "Interactive Histogram Simulator" preset notes quoted SNR and fidelity figures that the page's own code does not produce for those presets. Recomputed each with the page's `computeHistMetrics` / `computeOptThreshold` / `normCDF` (and cross-checked with an exact erfc in Python):
+
+| Preset | Peaks (μ±σ, bright / dark) | Old note | Page computes |
+|---|---|---|---|
+| ⁸⁷Rb | 800±42 / 55±14 | SNR~11 → F>99.98% | SNR 16.83; overlap error ≪10⁻¹⁰ (card: 100.000%) |
+| ¹⁷¹Yb | 1200±38 / 40±11 | SNR~16, "F>99.99% routinely achievable" in "Kaufman-group style tweezers" | SNR 29.32; overlap negligible |
+| ⁸⁸Sr | 950±52 / 65±18 | F~99.95% | SNR 16.08; overlap ≪10⁻¹⁰ |
+| Marginal | 280±85 / 120±55 | button "SNR≈4", F~97–98% | SNR 1.58; F 87.75% at θ_opt = 195 (P_miss 15.9%, P_false 8.6%) |
+
+- The notes now quote the page's values, say that at these separations the two-Gaussian overlap is negligible and real experiments are limited by what the model leaves out (atom loss or heating during the exposure, non-Gaussian tails such as EMCCD multiplication noise), and are marked "Illustrative parameters". The Marginal button reads "Marginal (SNR≈1.6)". Preset numbers are unchanged, so the histograms look the same.
+- The unsourced "Kaufman-group style" attribution and "F>99.99% routinely achievable" were dropped. In their place the Sr88 note cites a measured benchmark on the same 461 nm line: Covey, Madjarov, Cooper & Endres, *2000-times repeated imaging of strontium atoms in clock-magic tweezer arrays*, PRL 122, 173201 (2019), arXiv:1811.06014 (⁸⁸Sr, 813.4 nm tweezers, Sisyphus cooling on the intercombination line): imaging fidelity 0.99991(1), survival 0.99932(8). Checked against https://arxiv.org/abs/1811.06014 and the PDF.
+- Not changed (new backlog item): when the peaks are well separated, P_miss/P_false fall below double precision (`normCDF` computes the lower tail as 1 − (1 − tail)), so the cards show 0.0000% and the "optimal" threshold search lands anywhere on a flat floor (519 for Sr88, where the true minimiser is ≈214).
+- Hood Lab callout (~600 photons) is still under "Needs Saumitra" in the backlog.
