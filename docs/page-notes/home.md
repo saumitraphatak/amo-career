@@ -42,3 +42,7 @@ Two teaser cards had gone stale relative to the pages they link to. (1) The "AMO
 
 ## Navigation/IA re-audit (2026-09-23)
 The 3 comparison pages added 2026-09-22 (`quantinuum-vs-ionq.html`, `google-vs-ibm.html`, `psiquantum-vs-xanadu.html`) had been wired into `NAV.career`, global search, and cross-page `.see-also` links, but never got a `.footer-link` entry — every one of the site's other 28 pages has exactly one, these 3 had zero. Added all 3 to the "Learn & Career" footer column (`#f472b6`/`#38bdf8`/`#2dd4bf` dots), bringing the footer back to a clean 1:1 with all 31 pages (verified: 31 links, 0 duplicates). `CLAUDE.md`'s footer-column doc (which still said "all 4 `career` tools") updated to "all 7" to match. See docs/navigation-audit-2026-09-23.md.
+
+
+## 3D visualization update (2026-09-28)
+Hero: added a **Pause animation / Play animation** button (real `<button>` with `aria-pressed`) to the live 3D tweezer-array caption — WCAG 2.2.2 requires a way to stop auto-playing motion that lasts over 5 s. A paused hero stays paused when scrolled away and back; the button is hidden under prefers-reduced-motion (already a still frame). `hero3d.js?v=2`.

@@ -558,8 +558,9 @@
     draw(clock);
     raf = requestAnimationFrame(frame);
   }
+  var paused = false;
   function start() {
-    if (reducedMotion || running || !visible || document.hidden) return;
+    if (reducedMotion || paused || running || !visible || document.hidden) return;
     running = true; last = 0; raf = requestAnimationFrame(frame);
   }
   function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
@@ -609,7 +610,19 @@
 
   canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); stop(); fallback('WebGL context lost'); });
 
+  // Pause / play (WCAG 2.2.2: auto-playing motion longer than 5 s needs a way to stop it).
+  var pauseBtn = stage.querySelector('[data-hero3d-pause]');
+  if (pauseBtn) {
+    if (reducedMotion) pauseBtn.hidden = true;           // already a still frame
+    pauseBtn.addEventListener('click', function () {
+      paused = !paused;
+      pauseBtn.setAttribute('aria-pressed', String(paused));
+      pauseBtn.textContent = paused ? '▶ Play animation' : '❚❚ Pause animation';
+      if (paused) stop(); else start();
+    });
+  }
+
   // Test hook (used by the local screenshot harness; harmless in production).
   window.__hero3d = { seek: function (t) { stop(); clock = t; draw(t); }, cycle: function () { return cyc; }, resume: start,
-    state: function () { return { running: running, clock: clock, reducedMotion: reducedMotion, phase: lastPhase, quality: quality, canvasPx: [canvas.width, canvas.height] }; } };
+    state: function () { return { paused: paused, running: running, clock: clock, reducedMotion: reducedMotion, phase: lastPhase, quality: quality, canvasPx: [canvas.width, canvas.height] }; } };
 })();
