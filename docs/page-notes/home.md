@@ -53,3 +53,10 @@ Big-picture IA review found the home page offering the same ~30 pages through se
 
 ## 3D hero (2026-09-28)
 The hero's right column is a live 3D Li + Cs tweezer-array scene (`js/hero3d.js`, commit `360db31`); the Li/Cs cards remain as the no-WebGL fallback. Full record: docs/3d-visualization-audit-2026-09-28.md.
+
+## 2026-09-28 (overnight run 3): stale-number sweep
+- AMO Group Finder card said "Interactive world map of 100+ leading AMO research groups" with a "100+ groups" chip; the map (globe) has **99** groups, plus a separate **141**-entry watchlist (which overlaps the mapped groups). Now "world map of 99 leading AMO research groups, plus a 141-entry watchlist" and a "99 mapped groups" chip. (The group page's own "100+ AMO Research Groups Worldwide" heading is still true counting the watchlist.)
+- Quantum Industry Map card chip said "7 platforms"; the page has 6 platform deep-dive tabs and its own pill says "6 Platforms". Now "6 platforms".
+- The hero's no-JS fallback tool count was 28; `NAV.tools` has 31 (the live number is set by `updateHeroStats()`). Fallback now 31.
+- Checked and already right: 15 atoms (atom-library has 15 species tiles), 55 papers / 4 career stages (paper-syllabus: 55 cards, stages 10 + 17 + 18 + 10), 8 atom species (laser-planner renders 8 buttons), 8 noise sources (fidelity-budget has 8 terms), 14 quantum concepts (`NAV.learn`).
+- New regression test `test_hand_typed_counts_match_content` recomputes these counts from the pages they describe and checks every hand-typed copy, so the next change to a page's content fails the test until the cards are updated.

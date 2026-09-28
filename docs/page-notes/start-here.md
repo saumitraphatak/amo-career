@@ -25,3 +25,6 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 - **Interaction.** Hover shows a card with the page name, description and which paths it's on. A mouse click opens the page. On touch, the first tap shows the card with an "Open page" link.
 - **Motion.** A slow turn with a Stop/Turn button; still under reduced motion; paused offscreen.
 - It is deliberately on Start Here and not on the home page: the 2026-09-26 IA review found the home page already offered too many overlapping ways in. The lists below remain the accessible version.
+
+## 2026-09-28 (overnight run 3): stale-number sweep
+- AMO Group Finder line said "100+ research groups on a world map"; the map has 99, plus a 141-entry watchlist. Now "99 groups on a world map, plus a 141-entry watchlist". "15 species" and "55 papers" checked and correct. Guarded by `test_hand_typed_counts_match_content`.

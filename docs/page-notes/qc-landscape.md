@@ -84,3 +84,6 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
   - >99.99% 2Q fidelity without ground-state cooling (error 8.4(7)×10⁻⁵ at Doppler temperature): [arXiv:2510.17286](https://arxiv.org/abs/2510.17286), tagged `preprint`.
 - The Series A and ⁴⁰Ca⁺ claims were dropped: no source was found this run.
 - The career-fit list now says "Quantinuum / IonQ (incl. Oxford Ionics)". The globe tooltip already said "part of IonQ since 2025"; quantinuum-vs-ionq.html already covered the acquisition, so it was not changed.
+
+## 2026-09-28 (overnight run 3): stale-number sweep
+- Hero pill "25+ Companies" → "27 Companies & Labs": the Platform Deep Dives have 27 company/lab cards (one ↗ link each: 6 superconducting, 5 trapped-ion, 4 neutral-atom, 4 silicon, 4 photonic, 4 defects/topological), which is also what the globe counts ("27 companies & labs"). "6 Platforms" matches the six deep-dive tabs. Guarded by `test_hand_typed_counts_match_content`.

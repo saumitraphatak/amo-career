@@ -265,6 +265,46 @@ def test_imaging_histogram_preview_uses_calculator_counts() -> None:
     assert_not_contains(page, "const eff_sig = _N_sig + _sigRead*_sigRead")
 
 
+def test_hand_typed_counts_match_content() -> None:
+    """Counts typed into cards/pills elsewhere must match the pages they describe."""
+    import re
+    groups = read("pages/amo-groups.html")
+    blk = groups[groups.index("const GROUPS = ["):groups.index("const WATCHLIST_SECTIONS")]
+    n_groups = len(re.findall(r"\{ name:'", blk))
+    wl = groups[groups.index("const WATCHLIST_SECTIONS"):]
+    wl = wl[:wl.index("\n];")]
+    n_watch = len(re.findall(r"^\s+'(?:[^'\\]|\\.)+',?$", wl, re.M))   # single-quoted, \' allowed
+    assert n_groups == 99 and n_watch == 141, (n_groups, n_watch)
+    assert_contains("home.html", f"world map of {n_groups} leading AMO research groups, plus a {n_watch}-entry watchlist")
+    assert_contains("home.html", f'<span class="chip">{n_groups} mapped groups</span>')
+    assert_contains("pages/start-here.html", f"{n_groups} groups on a world map, plus a {n_watch}-entry watchlist")
+    assert_contains("pages/amo-groups.html", f'<strong id="groups-globe-count">{n_groups} groups</strong>')
+    # Paper Roadmap: 55 paper cards
+    n_papers = read("pages/paper-syllabus.html").count('class="paper-card')
+    assert n_papers == 55
+    for rel in ("home.html", "pages/start-here.html", "pages/paper-syllabus.html"):
+        assert_contains(rel, f"{n_papers} papers")
+    # Quantum Industry Map: one ↗ link per company / lab card
+    qc = read("pages/qc-landscape.html")
+    n_co = qc.count(" ↗</a></h4>")
+    assert_contains("pages/qc-landscape.html", f"{n_co} Companies &amp; Labs")
+    assert_contains("pages/qc-landscape.html", f"{n_co} companies &amp; labs")
+    # platform families = the deep-dive tabs
+    n_plat = len(re.findall(r'<div class="tab-panel[^"]*" data-tab="\w+" data-group="platforms"', qc))
+    assert n_plat == 6, n_plat
+    assert_contains("pages/qc-landscape.html", f'<span class="company-pill">{n_plat} Platforms</span>')
+    assert_contains("home.html", f'<span class="chip">{n_plat} platforms</span>')
+    # home hero no-JS fallback = NAV.tools length (main.js updates it at runtime)
+    nav = read("js/main.js")
+    nav = nav[nav.index("const NAV = {"):nav.index("learn:", nav.index("const NAV = {"))]
+    n_tools = len(set(re.findall(r"key:\s*'([^']+)'", nav)))
+    assert_contains("home.html", f'<span id="stat-tools-count">{n_tools}</span>')
+    # Atomic Species Selector: 15 species tiles
+    n_atoms = read("pages/atom-library.html").count('class="atom-tile')
+    assert_contains("home.html", f'<span class="chip">{n_atoms} atoms</span>')
+    assert_contains("pages/start-here.html", f"Spectroscopic constants for {n_atoms} species")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -282,6 +322,7 @@ def main() -> None:
         test_mot_viz_matches_calculator_sigma,
         test_cooling_simulator_doppler_temperature,
         test_imaging_histogram_preview_uses_calculator_counts,
+        test_hand_typed_counts_match_content,
     ]
     for test in tests:
         test()
