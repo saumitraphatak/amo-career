@@ -510,6 +510,24 @@
       line-height: 1.6;
     }
 
+    /* ── 3D globe of the companies in the deep dives (js/globe3d.js) ── */
+    .qc-globe { position:relative; border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); padding:var(--sp-3) var(--sp-3) var(--sp-2); }
+    .qc-globe[hidden] { display:none; }
+    #qc-globe-cvs { display:block; width:100%; height:460px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media(max-width:620px){ #qc-globe-cvs { height:340px; } }
+    .qc-globe-filter { display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:var(--sp-2); }
+    .qc-globe-filter button { display:inline-flex; align-items:center; gap:.35rem; font:inherit; font-size:.74rem; color:var(--text-secondary);
+      background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:3px 10px; cursor:pointer; }
+    .qc-globe-filter button i { width:9px; height:9px; border-radius:50%; background:var(--k); }
+    .qc-globe-filter button[aria-pressed="true"] { color:var(--text-primary); border-color:var(--k, var(--c-qc)); background:color-mix(in srgb, var(--k, var(--c-qc)) 12%, transparent); }
+    .qc-globe-filter button:hover { color:var(--text-primary); }
+    .qc-globe-bar { display:flex; flex-wrap:wrap; gap:.4rem 1rem; align-items:center; justify-content:space-between; font-size:.74rem; color:var(--text-muted); padding:0 var(--sp-1); }
+    .qc-globe-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
+    .qc-globe-pause:hover { color:var(--text-primary); }
+    .qc-globe-pause[hidden] { display:none; }
+    .plat-card { transition: box-shadow .4s, outline-color .4s; }
+    .plat-card.is-highlighted { outline:2px solid var(--c-qc); outline-offset:2px; box-shadow:0 0 0 6px color-mix(in srgb, var(--c-qc) 18%, transparent); }
+
   </style>
 </head>
 <body>
@@ -841,8 +859,22 @@
       </div>
     </section>
 
+    <!-- ── 4b. Company globe (js/globe3d.js) ──────────────────────── -->
+    <section class="section-block anim-in delay-3" id="company-globe">
+      <h2 class="section-title">Where the Hardware Is Built</h2>
+      <p class="section-sub">Every company and lab in the Platform Deep Dives below, placed at its headquarters or main hardware site (city level). Colours are the platforms. Click a marker to open that company in the deep dives.</p>
+      <div class="qc-globe" id="qc-globe" hidden>
+        <div class="qc-globe-filter" id="qc-globe-filter" role="group" aria-label="Show one platform on the globe"></div>
+        <canvas id="qc-globe-cvs" data-export-ready="true" aria-label="Globe of the 27 companies and labs named in the Platform Deep Dives, at their headquarters or main hardware site, coloured by qubit platform. The same companies are described in the deep-dive tabs below."></canvas>
+        <div class="qc-globe-bar">
+          <span id="qc-globe-count">27 companies &amp; labs</span>
+          <button type="button" class="qc-globe-pause" id="qc-globe-pause" aria-pressed="false">❚❚ Stop spinning</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ── 5. Platform Deep Dives ──────────────────────────────── -->
-    <section class="section-block anim-in delay-3">
+    <section class="section-block anim-in delay-3" id="platform-deep-dives">
       <h2 class="section-title">Platform Deep Dives</h2>
       <p class="section-sub">How each technology works, key metrics, bottlenecks, leading companies, and key papers.</p>
 
@@ -1745,6 +1777,108 @@ Published benchmark: $\langle n\rangle &lt; 0.05$ via resolved-sideband cooling 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
   <script src="../js/main.js?v=31"></script>
+  <script src="../js/orbit3d.js?v=2"></script>
+  <script src="../js/globe3d.js?v=1"></script>
+  <script>
+  /* Company globe: one entry per company/lab card in the Platform Deep Dives.
+     Locations are city-level HQ or main hardware site, checked Sept 2026 (see docs/page-notes/qc-landscape.md). */
+  (function () {
+    var PLAT = {
+      sc:  { name: 'Superconducting', adj: 'superconducting',      color: '#3b82f6' },
+      ti:  { name: 'Trapped Ions',    adj: 'trapped-ion',          color: '#10b981' },
+      na:  { name: 'Neutral Atoms',   adj: 'neutral-atom',         color: '#8b5cf6' },
+      si:  { name: 'Silicon Spins',   adj: 'silicon-spin',         color: '#f59e0b' },
+      ph:  { name: 'Photonic',        adj: 'photonic',             color: '#ec4899' },
+      def: { name: 'Defects & Topo',  adj: 'defect & topological', color: '#14b8a6' }
+    };
+    var SITES = [
+      ['sc', 'IBM Quantum', 'IBM Quantum', 41.21, -73.80, 'Yorktown Heights, NY (IBM Research)'],
+      ['sc', 'Google Quantum AI', 'Google Quantum AI', 34.42, -119.70, 'Santa Barbara, CA'],
+      ['sc', 'Rigetti Computing', 'Rigetti Computing', 37.87, -122.29, 'Berkeley, CA'],
+      ['sc', 'IQM Quantum Computers', 'IQM Quantum Computers', 60.18, 24.83, 'Espoo, Finland'],
+      ['sc', 'Alice & Bob', 'Alice &', 48.85, 2.35, 'Paris, France'],
+      ['sc', 'D-Wave (annealing)', 'D-Wave', 49.25, -122.98, 'Burnaby, BC (hardware centre); HQ moving to Boca Raton, FL in 2026'],
+      ['ti', 'IonQ', 'IonQ', 38.99, -76.94, 'College Park, MD'],
+      ['ti', 'Quantinuum', 'Quantinuum', 39.92, -105.07, 'Broomfield, CO (also Cambridge, UK)'],
+      ['ti', 'Oxford Ionics', 'Oxford Ionics', 51.75, -1.26, 'Oxford, UK (part of IonQ since 2025)'],
+      ['ti', 'AQT', 'AQT', 47.26, 11.39, 'Innsbruck, Austria'],
+      ['ti', 'eleQtron', 'eleQtron', 50.87, 8.02, 'Siegen, Germany'],
+      ['na', 'QuEra Computing', 'QuEra Computing', 42.36, -71.06, 'Boston, MA'],
+      ['na', 'Pasqal', 'Pasqal', 48.71, 2.25, 'Palaiseau (Paris-Saclay), France'],
+      ['na', 'Atom Computing', 'Atom Computing', 37.87, -122.27, 'Berkeley, CA (operations in Boulder, CO)'],
+      ['na', 'Infleqtion', 'Infleqtion', 39.98, -105.13, 'Louisville, CO'],
+      ['si', 'Intel', 'Intel', 45.54, -122.96, 'Hillsboro, OR'],
+      ['si', 'Quantum Motion', 'Quantum Motion', 51.52, -0.13, 'London, UK'],
+      ['si', 'Silicon Quantum Computing', 'Silicon Quantum Computing', -33.92, 151.23, 'Sydney, Australia (UNSW)'],
+      ['si', 'Equal1', 'Equal1', 53.31, -6.22, 'Dublin, Ireland'],
+      ['ph', 'PsiQuantum', 'PsiQuantum', 37.43, -122.14, 'Palo Alto, CA'],
+      ['ph', 'Xanadu', 'Xanadu', 43.65, -79.39, 'Toronto, Canada'],
+      ['ph', 'QuiX Quantum', 'QuiX Quantum', 52.22, 6.89, 'Enschede, Netherlands'],
+      ['ph', 'Quandela', 'Quandela', 48.73, 2.28, 'Massy (Paris-Saclay), France'],
+      ['def', 'Microsoft Azure Quantum', 'Microsoft Azure Quantum', 47.64, -122.13, 'Redmond, WA'],
+      ['def', 'Quantum Brilliance', 'Quantum Brilliance', -33.87, 151.21, 'Sydney, Australia (also Stuttgart & Freiburg, DE)'],
+      ['def', 'Q-NEXT / Argonne', 'Q-NEXT', 41.71, -87.98, 'Lemont, IL (Argonne National Laboratory)'],
+      ['def', 'QuTech (TU Delft)', 'QuTech', 52.00, 4.37, 'Delft, Netherlands']
+    ].map(function (r) {
+      return { plat: r[0], title: r[1], card: r[2], lat: r[3], lon: r[4], place: r[5],
+        color: PLAT[r[0]].color, sub: PLAT[r[0]].name + ' · ' + r[5] };
+    });
+
+    var wrap = document.getElementById('qc-globe'), cvs = document.getElementById('qc-globe-cvs');
+    if (!wrap || !cvs || !window.AMO3D || !AMO3D.globe) return;
+    wrap.hidden = false;
+
+    function openCompany(p) {
+      var btn = document.querySelector('.tab-bar[data-group="platforms"] .tab-btn[data-tab="' + p.plat + '"]');
+      if (btn && !btn.classList.contains('active')) btn.click();
+      var panel = document.querySelector('.tab-panel[data-group="platforms"][data-tab="' + p.plat + '"]'), card = null;
+      if (panel) panel.querySelectorAll('.plat-card').forEach(function (c) {
+        var h = c.querySelector('h4'); if (!card && h && h.textContent.trim().indexOf(p.card) === 0) card = c;
+      });
+      var target = card || document.getElementById('platform-deep-dives');
+      var smooth = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      requestAnimationFrame(function () {
+        target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: card ? 'center' : 'start' });
+        if (card) {
+          card.classList.remove('is-highlighted'); void card.offsetWidth; card.classList.add('is-highlighted');
+          setTimeout(function () { card.classList.remove('is-highlighted'); }, 2600);
+          var a = card.querySelector('h4 a'); if (a) try { a.focus({ preventScroll: true }); } catch (e) {}
+        }
+      });
+    }
+
+    var globe = AMO3D.globe(cvs, {
+      points: SITES, center: { lat: 40, lon: -40 }, clusterDeg: 1.0,
+      pauseButton: document.getElementById('qc-globe-pause'),
+      label: 'Globe of quantum-computing companies',
+      clusterTitle: function (list) {
+        var places = [];
+        list.forEach(function (p) { var c = p.place.split(/[,(]/)[0].trim(); if (places.indexOf(c) < 0) places.push(c); });
+        return list.length > 1 ? list.length + ' here · ' + places.join(' / ') : places[0];
+      },
+      onPick: openCompany
+    });
+    if (!globe) { wrap.hidden = true; return; }
+
+    var bar = document.getElementById('qc-globe-filter'), count = document.getElementById('qc-globe-count');
+    var chips = [['', 'All platforms', 'var(--c-qc)', SITES.length]].concat(Object.keys(PLAT).map(function (k) {
+      return [k, PLAT[k].name, PLAT[k].color, SITES.filter(function (p) { return p.plat === k; }).length];
+    }));
+    bar.innerHTML = chips.map(function (c) {
+      return '<button type="button" data-plat="' + c[0] + '" aria-pressed="' + (c[0] === '' ? 'true' : 'false') + '" style="--k:' + c[2] + '">' +
+        (c[0] ? '<i></i>' : '') + c[1] + ' · ' + c[3] + '</button>';
+    }).join('');
+    bar.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        bar.querySelectorAll('button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+        var k = b.dataset.plat, list = k ? SITES.filter(function (p) { return p.plat === k; }) : SITES;
+        globe.setPoints(list, { focus: !!k });
+        count.textContent = list.length + (k ? ' ' + PLAT[k].adj + ' companies & labs' : ' companies & labs') + ' · HQ or main hardware site, city level';
+      });
+    });
+    count.textContent = SITES.length + ' companies & labs · HQ or main hardware site, city level';
+  })();
+  </script>
   <script>
     renderNav({ active: 'qc-landscape', root: '../' });
 

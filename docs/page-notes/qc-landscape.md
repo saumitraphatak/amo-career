@@ -48,3 +48,27 @@ Also fixed: (1) the Fault-Tolerance Roadmap timeline's 2025 Neutral Atoms entry 
 Rotation re-check (science-content audit last rechecked 2026-09-15; this was the most-overdue item in the rotation). Fixed two internal inconsistencies that had crept in since the 2026-09-15 pass: (1) the Companies deep-dive's Quantinuum profile card still said Helios uses "98 trapped ¹⁷¹Yb⁺ ions" — wrong; Helios uses ¹³⁷Ba⁺ qubits with ¹⁷¹Yb⁺ only as a sympathetic-cooling species (this page's own "qubit race" canvas already had the correct species from the 2026-09-22 `quantinuum-vs-ionq.html` work, but the prose Companies card was never updated to match) — corrected to ¹³⁷Ba⁺. (2) The IonQ Companies profile card and the platform-snapshot table's trapped-ion qubit-count range ("56–98") were stale — they didn't mention IonQ's Superion 256 (256-qubit EQC system, launched Sep 2026), even though the qubit-race canvas already had it. Added a Superion 256 sentence to the IonQ card and widened the table range to 56–256.
 
 Also added, purely additive, verified against primary/near-primary sources: two 2026 Quantinuum logical-qubit preprints not previously on the site — "Skinny Logic" iceberg codes (Feb 2026, arXiv:2602.22211: up to 94 error-detected / 48 error-corrected logical qubits on Helios) and the "Helix" compact code (Sep 2026, arXiv:2609.03194: 10 physical ions per logical qubit at distance 6, logical error rates below the physical baseline) — added to the Helios flash-card and the Status(2025–2026) summary paragraph, tagged preprint/not-yet-peer-reviewed. Microsoft's Majorana flash-card got a sentence on the Sep 2026 Majorana 2 chip (Al→Pb material stack) plus DARPA on-site testing access and the new Maryland Quantum Research Center. Pasqal's card got its Sep 17 2026 Nasdaq listing (PSQL). The Investment Landscape grid got a new card for Anderon (IBM's standalone quantum-foundry subsidiary), which finalized a $1B CHIPS Act award matched by $1B IBM investment (Sep 2026) for a 300mm quantum wafer foundry in Albany, NY. See docs/science-audit-2026-09-26.md.
+
+## Company globe (2026-09-28)
+New section **"Where the Hardware Is Built"** (`#company-globe`), placed directly before Platform Deep Dives, which now has `id="platform-deep-dives"`. The route panel is conceptual (see above), so no route card changes.
+
+**What it shows.** A rotatable globe (`js/globe3d.js?v=1` + `js/orbit3d.js?v=2`) with exactly the 27 companies and labs that have a card in the six deep-dive tabs' "Companies" lists, coloured by platform (the chart palette plus `#14b8a6` for Defects & Topo).
+
+**Mapping is 1:1 and was verified programmatically.** Every globe entry resolves to a `.plat-card` `h4` in its tab, and no deep-dive company card is left unmapped.
+
+**Interaction.**
+- Clicking a marker switches to that platform's tab, scrolls to the company card and flashes it (`.plat-card.is-highlighted`).
+- Nearby sites cluster within 1°, for example "3 here · Berkeley / Palo Alto" or "3 here · Paris / Palaiseau / Massy". Clicking a cluster lists its companies.
+- Platform chips filter the globe and re-centre it.
+
+**Locations.** City-level headquarters or main hardware site, checked September 2026. The caption says this.
+- D-Wave is placed at Burnaby, BC (hardware centre). Its HQ is moving from Palo Alto to Boca Raton, FL (announced 2026-01-27).
+- Infleqtion is placed at Louisville, CO (new global HQ, opened August 2026).
+- Atom Computing is placed at Berkeley (HQ). Its operations centre is in Boulder.
+- Pasqal is placed at Palaiseau (global HQ). Quandela is placed at Massy (factory). Quantum Brilliance is placed at Sydney; it also has sites in Stuttgart and Freiburg.
+- Oxford Ionics is placed at Oxford. It has been part of IonQ since September 2025.
+- Sources are listed in docs/3d-visualization-audit-2026-09-28.md.
+
+**Sync rule.** When a company card is added to or removed from a deep-dive tab, update the `SITES` array in the inline script at the bottom of the page. Also check that the card's `h4` still starts with the entry's `card` string.
+
+**Content note, not changed.** The deep-dive Oxford Ionics card doesn't mention the IonQ acquisition; only the globe tooltip does. Worth folding in at the next science pass.
