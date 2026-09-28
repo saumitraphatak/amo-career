@@ -25,7 +25,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=21">
+  <link rel="stylesheet" href="../css/styles.css?v=22">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 
   <style>
@@ -906,7 +908,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=31"></script>
+<script src="../js/main.js?v=32"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';
@@ -920,10 +922,18 @@
 
   /* ── Tab switching ── */
   function polTab(id, btn) {
-    document.querySelectorAll('.pol-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.pol-tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('pol-' + id).classList.add('active');
-    btn.classList.add('active');
+    const from = document.querySelector('.pol-section.active'), to = document.getElementById('pol-' + id);
+    if (from === to) return;
+    const btns = Array.from(document.querySelectorAll('.pol-tab-btn')), prev = document.querySelector('.pol-tab-btn.active');
+    const doSwap = () => {
+      document.querySelectorAll('.pol-section').forEach(s => s.classList.remove('active'));
+      btns.forEach(b => b.classList.remove('active'));
+      to.classList.add('active');
+      btn.classList.add('active');
+    };
+    if (window.AMOTransitions) AMOTransitions.swap(from, to, doSwap, Math.sign(btns.indexOf(btn) - btns.indexOf(prev))); else doSwap();
+    const nav = document.querySelector('.pol-tab-nav');
+    if (window.AMOTransitions && nav) { const ink = AMOTransitions.attachInk(nav, '.pol-tab-btn.active'); if (ink) ink.place(true); }
     if (id === 'stokes') polInitPoincareS2();
     if (id === 'simulator') polUpdateSim();
   }
@@ -1248,5 +1258,7 @@
   polStartEfield('efieldCanvas', 1, 0, 0, '#06b6d4');
   // polUpdateSim called on tab switch only (simulator tab starts hidden)
   </script>
+<div id="amo-nav-ready" hidden></div>
+<script>document.addEventListener('DOMContentLoaded', () => { const n = document.querySelector('.pol-tab-nav'); if (n && window.AMOTransitions) AMOTransitions.attachInk(n, '.pol-tab-btn.active'); });</script>
 </body>
 </html>

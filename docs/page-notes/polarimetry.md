@@ -33,3 +33,6 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s),
 
 ## 3D survey (2026-09-28)
 Reviewed during the sitewide 3D pass: the Poincaré spheres are already Plotly 3D plots (rotatable), so this page was deliberately left unchanged. See docs/3d-visualization-audit-2026-09-28.md.
+
+## Transitions (2026-09-28)
+The six section tabs (`polTab()`) now use the shared transitions: a sliding underline under `.pol-tab-nav`, and the new section eases in with a height morph (`AMOTransitions.swap` / `attachInk`). See docs/motion-and-transitions.md.

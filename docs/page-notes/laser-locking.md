@@ -34,3 +34,6 @@ This page's `<style>` block used `var(--mono)` for 4 monospace-styled rules — 
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its BreadcrumbList JSON-LD leaf name used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## Transitions (2026-09-28)
+The four "Practical notes" toggles (`togglePrac()`) now open and close with the shared height animation (`AMOTransitions.expand` / `collapse`). See docs/motion-and-transitions.md.

@@ -1,6 +1,6 @@
 /* =====================================================
    AMO Toolkit — Shared JS
-   Nav renderer · Canvas animation · Scroll reveal · Accordions · Tabs
+   Nav renderer · Transitions · Scroll reveal · Accordions · Tabs
    ===================================================== */
 
 'use strict';
@@ -51,12 +51,207 @@ window.amoInk = amoInk;
 // (and any [data-theme-toggle] buttons from renderNav) exist.
 applyTheme(getStoredTheme());
 
+/* ─────────────────────────────────────────────────────
+   TRANSITIONS — one motion language for the whole site
+   • page → page: cross-document View Transitions (CSS @view-transition);
+     the nav stays put while the page content cross-fades/rises
+   • links are prefetched on hover/touch so the next page is already here
+   • tabs: a sliding underline + the new panel eases in (height morphs)
+   • accordions, mobile menu, search: open and close with the same curve
+   • theme switch: circular reveal from the toggle
+   Everything collapses to instant under prefers-reduced-motion, and is
+   skipped (not broken) in browsers without the relevant API.
+   ───────────────────────────────────────────────────── */
+const AMO_EASE = 'cubic-bezier(.22,.8,.26,1)';   // fast out of the gate, soft landing
+const AMO_EASE_IN = 'cubic-bezier(.45,0,.9,.4)';  // for things leaving
+
+function motionOK() {
+  return !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) &&
+    typeof Element !== 'undefined' && !!Element.prototype.animate;
+}
+
+const AMOTransitions = (() => {
+  function stop(el) { if (el && el.getAnimations) el.getAnimations().forEach(a => a.cancel()); }
+  function clipDuring(el, anim) {
+    const prev = el.style.overflow;
+    el.style.overflow = 'clip';
+    const done = () => { el.style.overflow = prev; };
+    anim.addEventListener('finish', done); anim.addEventListener('cancel', done);
+  }
+
+  // Swap one panel for another. doSwap() performs the actual DOM/class change.
+  // dir: −1 / +1 = the new panel came from the left / right (tabs), 0 = no direction.
+  function swap(fromEl, getTo, doSwap, dir = 0) {
+    if (!motionOK()) { doSwap(); return; }
+    stop(fromEl);
+    const h0 = fromEl ? fromEl.getBoundingClientRect().height : 0;
+    doSwap();
+    const to = typeof getTo === 'function' ? getTo() : getTo;
+    if (!to || to === fromEl) return;
+    stop(to);
+    const h1 = to.getBoundingClientRect().height;
+    to.animate([
+      { opacity: 0, transform: dir ? `translateX(${dir * 16}px)` : 'translateY(8px)' },
+      { opacity: 1, transform: 'none' }
+    ], { duration: 300, easing: AMO_EASE });
+    if (h0 > 0 && h1 > 0 && Math.abs(h1 - h0) > 2) {
+      const a = to.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 360, easing: AMO_EASE });
+      clipDuring(to, a);
+    }
+  }
+
+  // Grow an element open from zero height (padding included), or shrink it shut.
+  function expand(el) {
+    if (!motionOK() || !el) return;
+    stop(el);
+    const cs = getComputedStyle(el), h = el.getBoundingClientRect().height;
+    if (!h) return;
+    const a = el.animate([
+      { height: '0px', paddingTop: '0px', paddingBottom: '0px', opacity: 0 },
+      { height: h + 'px', paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, opacity: 1 }
+    ], { duration: 340, easing: AMO_EASE });
+    clipDuring(el, a);
+  }
+  function collapse(el, done) {
+    if (!motionOK() || !el) { done(); return; }
+    stop(el);
+    const cs = getComputedStyle(el), h = el.getBoundingClientRect().height;
+    if (!h) { done(); return; }
+    const a = el.animate([
+      { height: h + 'px', paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, opacity: 1 },
+      { height: '0px', paddingTop: '0px', paddingBottom: '0px', opacity: 0 }
+    ], { duration: 260, easing: AMO_EASE_IN });
+    clipDuring(el, a);
+    a.addEventListener('finish', done);
+  }
+
+  // Overlays (mobile menu, search): fade + a small travel in, reverse on the way out.
+  function enter(el, from = 'translateY(-8px)') {
+    if (!motionOK() || !el) return;
+    stop(el);
+    el.animate([{ opacity: 0, transform: from }, { opacity: 1, transform: 'none' }], { duration: 280, easing: AMO_EASE });
+  }
+  function leave(el, done, to = 'translateY(-6px)') {
+    if (!motionOK() || !el) { done(); return; }
+    stop(el);
+    const a = el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: to }], { duration: 180, easing: AMO_EASE_IN });
+    a.addEventListener('finish', done);
+  }
+
+  // Sliding underline for a row of tab buttons. Only used where the active
+  // tab is drawn with a bottom border (so pill-style bars are left alone).
+  function attachInk(bar, activeSel) {
+    if (!bar || bar.__ink) return bar && bar.__ink;
+    const active = bar.querySelector(activeSel);
+    if (!active) return null;
+    const cs = getComputedStyle(active);
+    if (parseFloat(cs.borderBottomWidth) < 1.5 || cs.borderBottomColor === 'transparent' || /rgba\(.*,\s*0\)$/.test(cs.borderBottomColor)) return null;
+    const ink = document.createElement('span');
+    ink.className = 'tab-ink';
+    ink.setAttribute('aria-hidden', 'true');
+    bar.appendChild(ink);
+    bar.classList.add('has-ink');
+    function place(animate) {
+      const btn = bar.querySelector(activeSel);
+      if (!btn || !btn.offsetWidth) return;
+      if (!animate || !motionOK()) ink.style.transition = 'none';
+      ink.style.width = btn.offsetWidth + 'px';
+      ink.style.transform = `translate(${btn.offsetLeft}px, ${btn.offsetTop + btn.offsetHeight - 2}px)`;
+      ink.style.color = getComputedStyle(btn).color;
+      if (!animate || !motionOK()) { void ink.offsetWidth; ink.style.transition = ''; }
+      // keep the active tab in view on narrow screens
+      if (animate && bar.scrollWidth > bar.clientWidth) {
+        const l = btn.offsetLeft - 24, r = btn.offsetLeft + btn.offsetWidth + 24;
+        if (l < bar.scrollLeft || r > bar.scrollLeft + bar.clientWidth) bar.scrollTo({ left: Math.max(0, l), behavior: motionOK() ? 'smooth' : 'auto' });
+      }
+    }
+    bar.__ink = { place };
+    place(false);
+    if (window.ResizeObserver) new ResizeObserver(() => place(false)).observe(bar);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => place(false));
+    return bar.__ink;
+  }
+
+  return { swap, expand, collapse, enter, leave, attachInk, stop };
+})();
+window.AMOTransitions = AMOTransitions;
+
+/* Page → page: keep the nav fixed during cross-document view transitions,
+   and show above-the-fold content at once (the transition itself is the
+   entrance), instead of fading it in a second time. */
+(function initPageTransitions() {
+  const nav = () => document.querySelector('#nav-root .nav');
+  window.addEventListener('pageswap', e => {
+    if (e.viewTransition && nav()) nav().style.viewTransitionName = 'site-nav';
+  });
+  window.addEventListener('pagereveal', e => {
+    if (!e.viewTransition) return;
+    const n = nav();
+    if (n) n.style.viewTransitionName = 'site-nav';
+    document.querySelectorAll('.anim-in:not(.visible)').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) { el.style.transition = 'none'; el.classList.add('visible'); }
+    });
+    e.viewTransition.finished.finally(() => {
+      if (n) n.style.viewTransitionName = '';
+      document.querySelectorAll('.anim-in.visible').forEach(el => { if (el.style.transition === 'none') el.style.transition = ''; });
+    });
+  });
+  window.addEventListener('pageshow', () => { const n = nav(); if (n) n.style.viewTransitionName = ''; });
+})();
+
+/* Prefetch the next page on intent (hover ≥ ~200 ms, touch start, focus),
+   so navigation feels instant. Speculation Rules where supported; a plain
+   <link rel=prefetch> fallback elsewhere. Same-origin .html links only. */
+(function initPrefetch() {
+  if (window.__amoPrefetch) return; window.__amoPrefetch = true;
+  const conn = navigator.connection;
+  if (conn && (conn.saveData || /2g/.test(conn.effectiveType || ''))) return;
+  if (window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+    const s = document.createElement('script');
+    s.type = 'speculationrules';
+    s.textContent = JSON.stringify({
+      prefetch: [{
+        source: 'document',
+        where: { and: [{ href_matches: '/*' }, { not: { selector_matches: '[target=_blank], [download], [rel~=nofollow]' } }] },
+        eagerness: 'moderate'
+      }]
+    });
+    document.head.appendChild(s);
+    return;
+  }
+  const done = new Set();
+  function maybe(e) {
+    const a = e.target.closest && e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    let u; try { u = new URL(a.href, location.href); } catch (err) { return; }
+    if (u.origin !== location.origin || !/\.html$|\/$/.test(u.pathname) || u.pathname === location.pathname) return;
+    if (done.has(u.pathname)) return;
+    done.add(u.pathname);
+    const l = document.createElement('link'); l.rel = 'prefetch'; l.href = u.pathname; document.head.appendChild(l);
+  }
+  document.addEventListener('pointerover', maybe, { passive: true });
+  document.addEventListener('touchstart', maybe, { passive: true });
+  document.addEventListener('focusin', maybe);
+})();
+
 function initThemeToggle() {
   document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
     btn.addEventListener('click', () => {
       const next = getStoredTheme() === 'dark' ? 'light' : 'dark';
       localStorage.setItem(THEME_KEY, next);
-      applyTheme(next);
+      if (!document.startViewTransition || !motionOK()) { applyTheme(next); return; }
+      // Circular reveal of the new theme, growing out of the toggle itself.
+      const r = btn.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      const root = document.documentElement;
+      root.classList.add('amo-theme-vt');
+      const vt = document.startViewTransition(() => applyTheme(next));
+      vt.ready.then(() => {
+        root.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+          { duration: 560, easing: AMO_EASE, pseudoElement: '::view-transition-new(root)' });
+      }).catch(() => {});
+      vt.finished.finally(() => root.classList.remove('amo-theme-vt'));
     });
   });
 }
@@ -263,10 +458,20 @@ function renderNav({ active = '', root = '' } = {}) {
   const hamburger = document.getElementById('nav-hamburger');
   const mobileMenu = document.getElementById('nav-mobile');
   hamburger.addEventListener('click', () => {
-    const open = mobileMenu.classList.toggle('open');
+    const open = !mobileMenu.classList.contains('open') || mobileMenu.dataset.closing === '1';
     hamburger.classList.toggle('open', open);
     hamburger.setAttribute('aria-expanded', open);
     document.body.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      delete mobileMenu.dataset.closing;
+      mobileMenu.classList.add('open');
+      AMOTransitions.enter(mobileMenu, 'translateY(-10px)');
+    } else {
+      mobileMenu.dataset.closing = '1';
+      AMOTransitions.leave(mobileMenu, () => {
+        if (mobileMenu.dataset.closing === '1') { mobileMenu.classList.remove('open'); delete mobileMenu.dataset.closing; }
+      });
+    }
   });
 
   document.addEventListener('click', (e) => {
@@ -318,8 +523,21 @@ function initAccordions() {
   document.querySelectorAll('.accordion-header').forEach(header => {
     header.addEventListener('click', () => {
       const acc = header.closest('.accordion');
-      const isOpen = acc.classList.toggle('open');
-      header.setAttribute('aria-expanded', isOpen);
+      const body = acc.querySelector(':scope > .accordion-body') || acc.querySelector('.accordion-body');
+      const opening = !acc.classList.contains('open') || acc.dataset.closing === '1';
+      header.setAttribute('aria-expanded', opening);
+      if (opening) {
+        delete acc.dataset.closing;
+        acc.classList.add('open');
+        AMOTransitions.expand(body);
+      } else {
+        acc.dataset.closing = '1';
+        acc.classList.add('closing');
+        AMOTransitions.collapse(body, () => {
+          if (acc.dataset.closing === '1') acc.classList.remove('open');
+          acc.classList.remove('closing'); delete acc.dataset.closing;
+        });
+      }
     });
   });
 }
@@ -344,22 +562,30 @@ function initTabs() {
 
       btn.addEventListener('click', () => {
         const target = btn.dataset.tab;
+        const btns = Array.from(bar.querySelectorAll('.tab-btn'));
+        const prevBtn = bar.querySelector('.tab-btn.active');
+        if (prevBtn === btn) return;
+        const dir = prevBtn ? Math.sign(btns.indexOf(btn) - btns.indexOf(prevBtn)) : 0;
+        const mine = p => !(p.dataset.group && group && p.dataset.group !== group);
+        const panels = Array.from(wrap.querySelectorAll('.tab-panel[data-tab]')).filter(mine);
+        const fromPanel = panels.find(p => p.classList.contains('active'));
+        const toPanel = panels.find(p => p.dataset.tab === target);
 
-        // Update buttons
-        bar.querySelectorAll('.tab-btn').forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-
-        // Update panels — only filter by group when the panel declares one
-        wrap.querySelectorAll(`.tab-panel[data-tab]`).forEach(p => {
-          if (p.dataset.group && group && p.dataset.group !== group) return;
-          p.classList.toggle('active', p.dataset.tab === target);
-        });
+        AMOTransitions.swap(fromPanel, toPanel, () => {
+          // Update buttons
+          btns.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          // Update panels — only filter by group when the panel declares one
+          panels.forEach(p => p.classList.toggle('active', p.dataset.tab === target));
+        }, dir);
+        if (bar.__ink) bar.__ink.place(true);
       });
     });
+    AMOTransitions.attachInk(bar, '.tab-btn.active');
   });
 }
 
@@ -369,11 +595,17 @@ function initTabs() {
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', (e) => {
-      const target = document.querySelector(a.getAttribute('href'));
+      const hash = a.getAttribute('href');
+      if (hash === '#') return;
+      let target = null;
+      try { target = document.querySelector(hash); } catch (err) { return; }
       if (!target) return;
       e.preventDefault();
       const offset = 80; // nav height
-      window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+      // Document position (offsetTop is relative to the offsetParent, which is wrong inside positioned containers)
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: motionOK() ? 'smooth' : 'auto' });
+      if (history.pushState && location.hash !== hash) history.pushState(null, '', hash);
     });
   });
 }
@@ -571,16 +803,25 @@ function initGlobalSearch(root = '') {
     `).join('') || '<div class="search-no-results">No matches yet. Try a species, equation, or company name.</div>';
   }
 
+  const panel = modal.querySelector('.global-search-panel'), backdrop = modal.querySelector('.global-search-backdrop');
   function openSearch() {
+    delete modal.dataset.closing;
     modal.hidden = false;
     document.body.classList.add('search-open');
     render(input.value);
+    AMOTransitions.enter(panel, 'translateY(-10px) scale(.985)');
+    AMOTransitions.enter(backdrop, 'none');
     setTimeout(() => input.focus(), 20);
   }
 
   function closeSearch() {
-    modal.hidden = true;
+    if (modal.hidden || modal.dataset.closing) return;
+    modal.dataset.closing = '1';
     document.body.classList.remove('search-open');
+    AMOTransitions.leave(backdrop, () => {}, 'none');
+    AMOTransitions.leave(panel, () => {
+      if (modal.dataset.closing) { modal.hidden = true; delete modal.dataset.closing; }
+    }, 'translateY(-6px) scale(.99)');
   }
 
   openBtns.forEach(btn => btn.addEventListener('click', openSearch));
@@ -629,8 +870,13 @@ function initDerivationToggles() {
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.derivTab;
-        buttons.forEach(b => b.classList.toggle('active', b === btn));
-        panels.forEach(p => p.hidden = p.dataset.derivPanel !== target);
+        const from = Array.from(panels).find(p => !p.hidden);
+        const to = Array.from(panels).find(p => p.dataset.derivPanel === target);
+        if (from === to) return;
+        AMOTransitions.swap(from, to, () => {
+          buttons.forEach(b => b.classList.toggle('active', b === btn));
+          panels.forEach(p => p.hidden = p.dataset.derivPanel !== target);
+        });
       });
     });
   });

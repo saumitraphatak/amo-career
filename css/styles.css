@@ -88,6 +88,7 @@ ul, ol { list-style: none; }
 
   /* Transitions */
   --t: 0.22s ease;
+  --ease-out: cubic-bezier(.22,.8,.26,1);   /* shared motion curve (matches AMO_EASE in main.js) */
   --t-slow: 0.4s ease;
 }
 
@@ -411,8 +412,9 @@ code, .mono {
   min-width: 270px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-8px);
-  transition: opacity var(--t), visibility var(--t), transform var(--t);
+  transform: translateY(-6px) scale(.985);
+  transform-origin: top left;
+  transition: opacity .2s ease, visibility .2s, transform .28s var(--ease-out);
   box-shadow: var(--shadow-lg);
   z-index: 1000;
 }
@@ -1682,11 +1684,11 @@ code, .mono {
   width: 16px;
   height: 16px;
   color: var(--text-muted);
-  transition: transform var(--t);
+  transition: transform .34s var(--ease-out);
   flex-shrink: 0;
 }
 
-.accordion.open .accordion-chevron { transform: rotate(180deg); }
+.accordion.open:not(.closing) .accordion-chevron { transform: rotate(180deg); }
 
 .accordion-body {
   display: none;
@@ -1845,8 +1847,8 @@ code, .mono {
 
 .anim-in {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  transform: translateY(14px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
 }
 
 .anim-in.visible {
@@ -2915,4 +2917,70 @@ a.path-step:hover {
   .page-hero { background: none !important; }
 
   @page { margin: 1.5cm; }
+}
+
+
+/* =====================================================
+   TRANSITIONS — page → page, tabs, press feedback
+   (JS side: AMOTransitions in main.js)
+   ===================================================== */
+
+/* Page → page: cross-document view transitions (Chrome/Edge 126+, Safari 18.2+).
+   The nav is lifted out as its own group (named in JS only during the transition),
+   so it stays perfectly still while the page underneath dissolves into the next. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+/* Old page leaves quickly; the new one arrives a beat later, so the two never read as a double exposure. */
+::view-transition-old(root) { animation: amo-vt-out .16s cubic-bezier(.45,0,.9,.4) both; }
+::view-transition-new(root) { animation: amo-vt-in .34s var(--ease-out) .07s both; }
+::view-transition-group(site-nav) { animation-duration: .38s; animation-timing-function: var(--ease-out); }
+@keyframes amo-vt-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes amo-vt-in  { from { opacity: 0; transform: translateY(12px); } }
+
+/* Theme switch: circular reveal driven from JS; no cross-fade underneath. */
+html.amo-theme-vt::view-transition-old(root),
+html.amo-theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html.amo-theme-vt::view-transition-old(root) { z-index: 1; }
+html.amo-theme-vt::view-transition-new(root) { z-index: 2; }
+
+/* Tabs: a single underline that glides between tabs (added by JS). */
+.has-ink { position: relative; }
+.has-ink > .active { border-bottom-color: transparent !important; }
+.tab-ink {
+  position: absolute; left: 0; top: 0; height: 2px; width: 0;
+  background: currentColor; border-radius: 2px; pointer-events: none;
+  transition: transform .38s var(--ease-out), width .38s var(--ease-out), color .25s ease;
+  z-index: 1;
+}
+
+/* Anchor targets land below the fixed nav instead of under it. */
+[id] { scroll-margin-top: 84px; }
+
+/* Press feedback, the way native controls give a little. */
+.tab-btn, .nav-btn, .nav-cta, .run-btn, .btn, .amo-motion-btn, .nav-search-btn, .nav-theme-toggle {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+}
+.tab-btn:active, .nav-btn:active, .nav-cta:active, .run-btn:active, .btn:active,
+.amo-motion-btn:active, .nav-search-btn:active, .nav-theme-toggle:active { transform: scale(.97); }
+
+
+/* <details>: animate open/close where the browser can (::details-content, Chrome 131+). */
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(::details-content) {
+    details { interpolate-size: allow-keywords; }
+    details::details-content {
+      block-size: 0; overflow: clip;
+      transition: block-size .34s var(--ease-out), content-visibility .34s allow-discrete;
+    }
+    details[open]::details-content { block-size: auto; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  .tab-ink, .nav-drop, .accordion-chevron { transition: none !important; }
+  .tab-btn:active, .nav-btn:active, .nav-cta:active, .run-btn:active, .btn:active,
+  .amo-motion-btn:active, .nav-search-btn:active, .nav-theme-toggle:active { transform: none; }
 }
