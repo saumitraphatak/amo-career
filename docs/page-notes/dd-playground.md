@@ -42,3 +42,14 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s),
 
 ## 3D visualization update (2026-09-28)
 The FID and CPMG Bloch spheres are now rotatable in 3D via `js/orbit3d.js`, sharing one linked view (drag either, both rotate) so dephasing and refocusing are always compared from the same angle — the top-down view makes the equatorial spin fan-out much clearer than the old fixed side view. Default view equals the old fixed projection; equator back half drawn fainter as a depth cue.
+
+## Pause control for looping animations (2026-09-28)
+The FID / CPMG-4 spin-fan animation gets a "❚❚ Pause animation" button next to ↺ Restart.
+
+The loops now run through the shared `js/motion.js?v=1` (`AMOMotion.loop`), which does four things:
+- **Pause and play.** A pause button (WCAG 2.2.2).
+- **Offscreen.** The loop stops while its canvases are offscreen or the tab is hidden. They used to run forever.
+- **Time.** Frames get a timestamp that doesn't advance while paused or offscreen, so simulations resume where they stopped.
+- **Reduced motion.** Under `prefers-reduced-motion` the loop starts paused on a still frame, and the button can still play it.
+
+The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` lines moved into the helper. This closes open item 3 of docs/3d-visualization-audit-2026-09-28.md.

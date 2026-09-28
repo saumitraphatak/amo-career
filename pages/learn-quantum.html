@@ -1747,6 +1747,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=31"></script>
 <script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/motion.js?v=1"></script>
 <script>
 renderNav({ active: 'learn-quantum', root: '../' });
 initScrollReveal();
@@ -2210,10 +2211,9 @@ setGateState();
       if (P1 > 0.02) drawPhoton(lerp(BS2x, DETx, p), lerp(BS2y, DET1y, p), '#f87171', P1 * 0.9 + 0.1);
     }
 
-    requestAnimationFrame(frame);
   }
 
-  requestAnimationFrame(frame);
+  if (window.AMOMotion) AMOMotion.loop(cv, frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
 })();
 
 function updateMZI() {
@@ -2746,7 +2746,6 @@ function updateRabi() {
   }
 
   function animate() {
-    requestAnimationFrame(animate);
     const OmP = Math.sqrt(Om*Om+De*De) || 1e-6;
     phase += OmP * 0.012; // speed in rad/frame (~60fps)
 
@@ -2788,7 +2787,7 @@ function updateRabi() {
       tCvs.width = rect.width;
     }
   }
-  requestAnimationFrame(animate);
+  if (window.AMOMotion) AMOMotion.loop([document.getElementById('rabiBlochCanvas'), tCvs], animate, { anchors: [{ el: document.getElementById('rabiBlochLbl'), where: 'afterend' }] }); else requestAnimationFrame(function f(t){ animate(t); requestAnimationFrame(f); });
 })();
 
 /* ═══════════════════════════════════════════════
@@ -3064,9 +3063,8 @@ function opReset() {
       cx.fill();
     });
 
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  if (window.AMOMotion) AMOMotion.loop(document.getElementById('tqBellCanvas'), frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
 })();
 
 /* ═══════════════════════════════════════════════
@@ -3182,9 +3180,8 @@ function opReset() {
       cx.fillStyle = i===step?'#f87171':'#1e3a5f'; cx.fill();
     });
 
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  if (window.AMOMotion) AMOMotion.loop(document.getElementById('groverCanvas'), frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
 })();
 
 /* ═══════════════════════════════════════════════
@@ -3271,9 +3268,8 @@ function opReset() {
     cx.fillStyle = '#f97316'; cx.fillText('● excited |r⟩', W-105, H-8);
     cx.fillStyle = '#076ce7'; cx.fillText('● ground |g⟩', W-105, H-20);
 
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  if (window.AMOMotion) AMOMotion.loop(document.getElementById('rydbergArrayCanvas'), frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
 })();
 </script>
 </body>

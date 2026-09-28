@@ -287,6 +287,7 @@
 
 <script src="../js/main.js?v=31"></script>
 <script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/motion.js?v=1"></script>
 <script>
   renderNav({ active: 'decoherence-lab', root: '../' });
 
@@ -527,9 +528,16 @@
       if(last===null) last=ts;
       let dt=(ts-last)/1000; last=ts; dt=Math.min(dt,0.05);
       updaters.forEach(u=>u(dt));
-      requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    // Pause / play (WCAG 2.2.2): one button in the hero and one in each section header, all driving this loop.
+    if (window.AMOMotion) {
+      const targets = ['scope-a','scope-b','scope-c','scope-d','hero-bloch-mount'].map(id=>document.getElementById(id)).filter(Boolean);
+      const anchors = [{ el: document.getElementById('motion-badge'), where: 'afterend', inline: true }]
+        .concat(Array.from(document.querySelectorAll('.dual-head')).map(el=>({ el, where: 'beforeend', inline: true })));
+      AMOMotion.loop(targets, frame, { anchors });
+    } else {
+      (function f(ts){ frame(ts); requestAnimationFrame(f); })(performance.now());
+    }
   }
 })();
 </script>

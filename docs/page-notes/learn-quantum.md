@@ -55,3 +55,14 @@ Also fixed: the "2024–26 State of the Art" theory box states Bluvstein/Harvard
 
 ## 3D visualization update (2026-09-28)
 All four Bloch spheres (`blochCanvas`, `gatesBlochCanvas`, `measBlochCanvas`, and the Rabi section's `rabiBlochCanvas`) are now rotatable in 3D via the shared `js/orbit3d.js` (drag, arrow keys, double-click/Home reset). `bsProject()` now reads a per-canvas view (`BS_VIEWS`) whose default equals the old fixed 30°/36° projection, so the page looks identical until someone drags; `drawBloch()` remembers its last arguments (`BS_LAST`) so gate trails and measurement axes rotate with the sphere. Added depth cues only: far halves of the equator/meridians and a state vector pointing away from the viewer render fainter. No physics or state math changed.
+
+## Pause control for looping animations (2026-09-28)
+The five looping canvases (Mach–Zehnder photon `#mziCanvas`, Rabi sphere + P₁ trace, Bell-state `#tqBellCanvas`, Grover `#groverCanvas`, Rydberg array `#rydbergArrayCanvas`) each get a "❚❚ Pause animation" button under the figure.
+
+The loops now run through the shared `js/motion.js?v=1` (`AMOMotion.loop`), which does four things:
+- **Pause and play.** A pause button (WCAG 2.2.2).
+- **Offscreen.** The loop stops while its canvases are offscreen or the tab is hidden. They used to run forever.
+- **Time.** Frames get a timestamp that doesn't advance while paused or offscreen, so simulations resume where they stopped.
+- **Reduced motion.** Under `prefers-reduced-motion` the loop starts paused on a still frame, and the button can still play it.
+
+The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` lines moved into the helper. This closes open item 3 of docs/3d-visualization-audit-2026-09-28.md.

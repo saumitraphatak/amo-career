@@ -1322,6 +1322,7 @@
 ════════════════════════════════════════════════════════ -->
 <script src="../js/main.js?v=31"></script>
 <script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/motion.js?v=1"></script>
 <script>
   if (typeof renderNav === 'function') {
     renderNav({ active: 'dd-playground', root: '../' });
@@ -1837,7 +1838,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function animate(){
-    requestAnimationFrame(animate);
     t=(t+0.018)%T_CYCLE;
     const pulseTimes=[T_CYCLE/8,3*T_CYCLE/8,5*T_CYCLE/8,7*T_CYCLE/8];
     ['fid','cpmg'].forEach((id,i)=>{
@@ -1854,7 +1854,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   window.resetDDAnim=function(){t=0;};
-  requestAnimationFrame(animate);
+  if (window.AMOMotion) AMOMotion.loop([document.getElementById('fidCanvas'), document.getElementById('cpmgCanvas')], animate, { anchors: [{ el: document.querySelector('button[onclick="resetDDAnim()"]'), where: 'afterend', inline: true }] }); else requestAnimationFrame(function f(t){ animate(t); requestAnimationFrame(f); });
 })();
 </script>
 

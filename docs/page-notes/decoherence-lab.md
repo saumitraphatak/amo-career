@@ -43,3 +43,14 @@ This page had no `<footer>` element at all — went straight from `</main>` to i
 
 ## 3D visualization update (2026-09-28)
 The four section spheres (`bloch-a`…`bloch-d`) are now rotatable in 3D via `js/orbit3d.js`. The sphere chrome is re-projected from 3D on view change (it used to be precomputed ellipses for one tilt), and the ensemble-average trail now stores 3D Bloch vectors and re-projects them every frame, so rotating carries the trail with it. The RK4 optical-Bloch integrator and all Γ/γ⊥/Δ parameters are untouched; default view (az 0, el = TILT) reproduces the original exactly. The small hero sphere stays fixed on purpose (it sits inside an aria-hidden decoration, where a focusable control would be an accessibility violation). Existing SVG aria-labels are kept, with rotate instructions appended.
+
+## Pause control for looping animations (2026-09-28)
+The one RK4 loop that drives all four sections and the hero sphere gets a pause button in the hero (next to the live-simulation badge) and one in each section header; all of them control the same loop. The existing reduced-motion branch (fixed still frames) is unchanged.
+
+The loops now run through the shared `js/motion.js?v=1` (`AMOMotion.loop`), which does four things:
+- **Pause and play.** A pause button (WCAG 2.2.2).
+- **Offscreen.** The loop stops while its canvases are offscreen or the tab is hidden. They used to run forever.
+- **Time.** Frames get a timestamp that doesn't advance while paused or offscreen, so simulations resume where they stopped.
+- **Reduced motion.** Under `prefers-reduced-motion` the loop starts paused on a still frame, and the button can still play it.
+
+The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` lines moved into the helper. This closes open item 3 of docs/3d-visualization-audit-2026-09-28.md.
