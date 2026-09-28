@@ -495,6 +495,8 @@ Run `python3 tests/formula_regression.py` after formula edits. The tests check r
 
 All four Bloch spheres on this page (`blochCanvas`, `gatesBlochCanvas`, `measBlochCanvas`, `rabiBlochCanvas`) are rotatable in 3D via `js/orbit3d.js` (since 2026-09-28). `bsProject()` reads each canvas's view from `BS_VIEWS`; the default equals the old fixed 30°/36° projection.
 
+The animated canvases (MZI, live Rabi sphere + trace, Bell, Grover, Rydberg array) draw with light-theme inks; a page-local `LQ_INK` helper (above the MZI script) makes them follow the theme: `LQ_INK.wrap(ctx)` remaps those inks to dark counterparts as they're set, and `LQ_INK.track(frame)` / `LQ_INK.onTheme(fn)` repaint the current frame on a theme toggle. New canvas code on this page can keep writing light-theme colours and wrap its context; add any new dark-ink colour to the `HEX` table.
+
 14 topics on one long scrollable page with a sticky internal nav:
 
 | Anchor | Topic | Key content |

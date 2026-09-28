@@ -73,3 +73,16 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 4 labels rendered differently after the fix, e.g. "P₁(T), POPULATION IN |1⟩" → "P₁(t), POPULATION IN |1⟩"; "P₁(T) LIVE" → "P₁(t) LIVE". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight run 3): the six animation canvases follow the theme
+Backlog P0 "cream canvases in dark theme", learn-quantum part. The MZI (`mziCanvas`), live Rabi sphere and P₁ trace (`rabiBlochCanvas`, `rabiTraceCanvas`), Bell-state bars (`tqBellCanvas`), Grover bars (`groverCanvas`) and Rydberg Z₂ array (`rydbergArrayCanvas`) were cream `#faf5e9` blocks in the (default) dark theme, drawn with inks picked for cream paper.
+- **How.** A page-local `LQ_INK` helper (just above the MZI script). `LQ_INK.wrap(ctx)` maps each light-theme ink to a dark counterpart as it is set on the context (fillStyle / strokeStyle / shadowColor and gradient stops): paper `#faf5e9` → `#0c1526` (`--bg-card`), dark violet/amber/green/blue inks → the site's dark accents (`#a78bfa`, `#fbbf24`, `#34d399`, `#60a5fa`), slate lines and brown labels → slate greys. Colours not in the table (the bright accents) pass through. So no drawing code or physics changed, and the light theme looks the same apart from the fixes listed below. The three canvases that only `clearRect` now have CSS background `var(--bg-card)`.
+- **Theme toggle repaints** the current frame, also while paused or under reduced motion: `LQ_INK.track(frame)` remembers the last timestamp and re-calls the dt-based frame with dt = 0; the Rabi block has a `redraw()` of its stored state.
+- **Fixed on the way (both themes):**
+  - MZI phase-plate label "φ=0°" and the P₁ trace's "0"/"1" axis labels were drawn in the paper colour, so they were invisible; they now use the page's amber / label inks.
+  - The P₁ trace was blank under reduced motion: the canvas was resized (which clears it) after drawing the only frame. Resize now happens before drawing.
+  - Dragging the Rabi sphere while paused didn't redraw it; it now does (`rabiView.onChange(redraw)`).
+  - Rydberg array: 4 rows at 48 px spacing didn't fit the 155 px canvas (top row under the title, bottom row cut off, last column under the legend). Spacing is now 34 px; the schematic is otherwise unchanged (halo radius still 0.82 × spacing).
+  - At 390 px the live Rabi row (220 px sphere + trace side by side) left the trace ~70 px wide; the row (`.rabi-live`) now stacks below 600 px.
+- **Checks.** Rendered (Chart.js stubbed): corner pixels dark `#0c1526` / light `#faf5e9` for all six; theme toggle on a paused page repaints all six; screenshots dark 1280 (animating), light 1280 and dark 390 (reduced motion), dark/light 390 of the Rabi row, reviewed. No page errors; no horizontal overflow; `smoke.js` 0 new problems.
+- **Not changed.** The other four Bloch spheres draw on a transparent canvas over `--bg-surface` with the same light inks (`#1e3a5f` outline); readable but low-contrast in dark theme. Candidate for the same `LQ_INK.wrap`.

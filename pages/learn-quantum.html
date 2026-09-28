@@ -194,7 +194,12 @@
 
 
     /* MZI canvas */
-    .mzi-canvas { display: block; margin: 0 auto; border-radius: 8px; background: #faf5e9; }
+    .mzi-canvas { display: block; margin: 0 auto; border-radius: 8px; background: var(--bg-card); }
+    /* Live Rabi sphere + P₁ trace: stack on phones (the trace had ~70 px beside the 220 px sphere) */
+    @media (max-width: 600px) {
+      .rabi-live { grid-template-columns: minmax(0,1fr) !important; }
+      .rabi-live #rabiBlochCanvas { margin: 0 auto; }
+    }
 
     /* Measurement histogram */
     .shot-info { font-family: var(--font-mono); font-size: .82rem; color: var(--text-muted); margin-top: .4rem; }
@@ -554,14 +559,14 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
   <div style="font-family:var(--font-mono); font-size:.8rem; color:var(--text-muted); margin-top:.4rem;" id="rabiInfo"></div>
 
   <!-- Live Rabi Bloch sphere -->
-  <div style="display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;margin-top:1rem;">
+  <div class="rabi-live" style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:start;margin-top:1rem;">
     <div>
       <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
                   color:var(--text-muted);margin-bottom:.4rem;text-align:center;">
         Bloch vector precession
       </div>
       <canvas id="rabiBlochCanvas" width="220" height="240"
-        style="border-radius:8px;background:#faf5e9;display:block;"></canvas>
+        style="border-radius:8px;background:var(--bg-card);display:block;"></canvas>
       <div id="rabiBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;
            color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
     </div>
@@ -569,7 +574,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
       <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
                   color:var(--text-muted);margin-bottom:.4rem;">P₁(t) live</div>
       <canvas id="rabiTraceCanvas" width="400" height="120"
-        style="width:100%;border-radius:8px;background:#faf5e9;display:block;"></canvas>
+        style="width:100%;border-radius:8px;background:var(--bg-card);display:block;"></canvas>
       <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;line-height:1.7;">
         The Bloch vector rotates around the <em>effective field</em>
         <strong style="color:#7a4ff7;">n̂_eff = (Ω, 0, −Δ)/Ω'</strong> at angular frequency Ω'.
@@ -1209,7 +1214,7 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
   <div style="margin-top:1rem;">
     <div style="font-size:.83rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;">Bell state |Φ⁺⟩ generation: H ⊗ I → CNOT</div>
     <canvas id="tqBellCanvas" width="480" height="140"
-      style="display:block;width:100%;max-width:480px;border-radius:8px;background:#faf5e9;"></canvas>
+      style="display:block;width:100%;max-width:480px;border-radius:8px;background:var(--bg-card);"></canvas>
   </div>
 
   <div class="read-links" style="margin-top:.75rem;">
@@ -1408,7 +1413,7 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
       Grover's algorithm: amplitude amplification on N=8 states, target = state&nbsp;★
     </div>
     <canvas id="groverCanvas" width="500" height="150"
-      style="display:block;width:100%;max-width:500px;border-radius:8px;background:#faf5e9;"></canvas>
+      style="display:block;width:100%;max-width:500px;border-radius:8px;background:var(--bg-card);"></canvas>
   </div>
 
   <div class="read-links" style="margin-top:.75rem;">
@@ -1483,7 +1488,7 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
       Rydberg array: Z₂ symmetry breaking as Ω/Δ is tuned — atoms (●) and blockade halos shown
     </div>
     <canvas id="rydbergArrayCanvas" width="520" height="155"
-      style="display:block;width:100%;max-width:520px;border-radius:8px;background:#faf5e9;"></canvas>
+      style="display:block;width:100%;max-width:520px;border-radius:8px;background:var(--bg-card);"></canvas>
   </div>
 
   <div class="read-links" style="margin-top:.75rem;">
@@ -2038,13 +2043,78 @@ function redrawGateBloch() {
 setGateState();
 
 /* ═══════════════════════════════════════════════
+   Theme-aware canvas ink for the animated canvases below (MZI, Rabi, Bell,
+   Grover, Rydberg array). They were drawn with inks chosen for the cream
+   light theme. LQ_INK.wrap(ctx) maps each of those inks to its dark-theme
+   counterpart as it is set (fillStyle, strokeStyle, shadowColor, gradient
+   stops), so the drawing code and the physics stay unchanged.
+   LQ_INK.track(frame) remembers the last timestamp so a theme toggle can
+   repaint the current frame, also while paused or under reduced motion.
+   ═══════════════════════════════════════════════ */
+const LQ_INK = (function () {
+  const HEX = {
+    '#faf5e9': '#0c1526',                                  // paper → --bg-card (dark)
+    '#7a4ff7': '#a78bfa', '#7451fa': '#a78bfa',            // violet
+    '#926a03': '#fbbf24', '#1c805b': '#34d399', '#076ce7': '#60a5fa',
+    '#1e3a5f': 'rgba(148,163,184,0.7)', '#0f1e35': 'rgba(148,163,184,0.35)',
+    '#1e293b': '#475569', '#334155': '#64748b',
+    '#8c8066': '#94a3b8', '#5c503c': '#94a3b8',
+  };
+  const RGB = { '122,79,247': '167,139,250', '146,106,3': '251,191,36' };
+  let dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const repaints = [];
+  new MutationObserver(function () {
+    dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    repaints.forEach(function (fn) { try { fn(); } catch (e) {} });
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  function map(v) {
+    if (!dark || typeof v !== 'string') return v;
+    const h = HEX[v.toLowerCase()];
+    if (h) return h;
+    return v.replace(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/, function (m, r, g, b) {
+      const n = RGB[r + ',' + g + ',' + b];
+      return n ? m.slice(0, m.indexOf('(') + 1) + n : m;
+    });
+  }
+  function wrapGradient(g) {
+    const add = g.addColorStop.bind(g);
+    g.addColorStop = function (o, c) { add(o, map(c)); };
+    return g;
+  }
+  function wrap(ctx) {
+    const proto = Object.getPrototypeOf(ctx);
+    ['fillStyle', 'strokeStyle', 'shadowColor'].forEach(function (prop) {
+      const d = Object.getOwnPropertyDescriptor(proto, prop);
+      if (!d || !d.set) return;
+      Object.defineProperty(ctx, prop, {
+        configurable: true,
+        get: function () { return d.get.call(ctx); },
+        set: function (v) { d.set.call(ctx, map(v)); },
+      });
+    });
+    ['createLinearGradient', 'createRadialGradient'].forEach(function (fn) {
+      const orig = ctx[fn].bind(ctx);
+      ctx[fn] = function () { return wrapGradient(orig.apply(null, arguments)); };
+    });
+    return ctx;
+  }
+  function track(frame) {
+    let last = null;
+    repaints.push(function () { if (last !== null) frame(last); });
+    return function (ts) { last = ts; frame(ts); };
+  }
+  return { map: map, wrap: wrap, track: track, onTheme: function (fn) { repaints.push(fn); } };
+})();
+
+/* ═══════════════════════════════════════════════
    MZI — animated canvas (proper rectangular geometry)
    Upper and lower arms run horizontally; both converge at BS2.
    ═══════════════════════════════════════════════ */
 (function(){
   const cv = document.getElementById('mziCanvas');
   if (!cv) return;
-  const cx = cv.getContext('2d');
+  const cx = LQ_INK.wrap(cv.getContext('2d'));
   const W = 640, H = 210;
 
   // Geometry: horizontal arms between beamsplitters
@@ -2135,7 +2205,7 @@ setGateState();
     cx.fillStyle = g; cx.strokeStyle = '#926a03'; cx.lineWidth = 1.4;
     cx.shadowColor = '#926a03'; cx.shadowBlur = 8;
     cx.beginPath(); cx.roundRect(mx - 27, py - 14, 54, 28, 4); cx.fill(); cx.stroke();
-    cx.fillStyle = '#faf5e9'; cx.font = '10px JetBrains Mono,monospace'; cx.textAlign = 'center';
+    cx.fillStyle = '#926a03'; cx.font = '10px JetBrains Mono,monospace'; cx.textAlign = 'center';
     cx.fillText('φ=' + Math.round(phi * 180 / Math.PI) + '°', mx, py + 5);
     cx.restore();
   }
@@ -2221,7 +2291,8 @@ setGateState();
 
   }
 
-  if (window.AMOMotion) AMOMotion.loop(cv, frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
+  const tick = LQ_INK.track(frame);
+  if (window.AMOMotion) AMOMotion.loop(cv, tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
 })();
 
 function updateMZI() {
@@ -2593,8 +2664,8 @@ function updateRabi() {
   const bCvs = document.getElementById('rabiBlochCanvas');
   const tCvs = document.getElementById('rabiTraceCanvas');
   if (!bCvs || !tCvs) return;
-  const bCtx = bCvs.getContext('2d');
-  const tCtx = tCvs.getContext('2d');
+  const bCtx = LQ_INK.wrap(bCvs.getContext('2d'));
+  const tCtx = LQ_INK.wrap(tCvs.getContext('2d'));
 
   // Bloch sphere geometry (same projection as main BS)
   const R = 80, CX = 110, CY = 120;
@@ -2703,7 +2774,7 @@ function updateRabi() {
       tCtx.strokeStyle = v===0.5 ? '#1e3a5f' : '#0f1e35'; tCtx.stroke();
     });
     tCtx.setLineDash([]);
-    tCtx.fillStyle='#faf5e9'; tCtx.font='9px Inter,sans-serif';
+    tCtx.fillStyle='#8c8066'; tCtx.font='9px Inter,sans-serif';
     tCtx.fillText('1', 4, H-pad-1*(H-2*pad)+4);
     tCtx.fillText('0', 6, H-pad+4);
 
@@ -2753,6 +2824,12 @@ function updateRabi() {
     return trail.reverse();
   }
 
+  // Repaint the current state without advancing it (theme toggle while paused)
+  let lastBS = null;
+  function redraw() { if (lastBS) { drawBS(...lastBS); drawTrace(traceData); } }
+  LQ_INK.onTheme(redraw);
+  if (rabiView.onChange) rabiView.onChange(redraw);   // dragging the sphere while paused
+
   function animate() {
     const OmP = Math.sqrt(Om*Om+De*De) || 1e-6;
     phase += OmP * 0.012; // speed in rad/frame (~60fps)
@@ -2780,6 +2857,15 @@ function updateRabi() {
     if (traceData.length > TRACE_LEN) traceData.shift();
 
     const trail = getConeTrail(phase, Om, De);
+    lastBS = [bvx, bvy, bvz, trail];
+
+    // Resize trace canvas first: setting width clears it, which left the trace blank
+    // when only one frame is drawn (reduced motion / paused).
+    const rect = tCvs.parentElement.getBoundingClientRect();
+    if (rect.width > 10 && Math.abs(tCvs.width - rect.width) > 5) {
+      tCvs.width = rect.width;
+    }
+
     drawBS(bvx, bvy, bvz, trail);
     drawTrace(traceData);
 
@@ -2787,12 +2873,6 @@ function updateRabi() {
     if (lbl) {
       const OmPd = OmP.toFixed(2);
       lbl.textContent = `Ω'=${OmPd} MHz  P₁=${(P1cur*100).toFixed(0)}%`;
-    }
-
-    // Resize trace canvas
-    const rect = tCvs.parentElement.getBoundingClientRect();
-    if (rect.width > 10 && Math.abs(tCvs.width - rect.width) > 5) {
-      tCvs.width = rect.width;
     }
   }
   if (window.AMOMotion) AMOMotion.loop([document.getElementById('rabiBlochCanvas'), tCvs], animate, { anchors: [{ el: document.getElementById('rabiBlochLbl'), where: 'afterend' }] }); else requestAnimationFrame(function f(t){ animate(t); requestAnimationFrame(f); });
@@ -2974,7 +3054,7 @@ function opReset() {
 (function(){
   const cv = document.getElementById('tqBellCanvas');
   if (!cv) return;
-  const cx = cv.getContext('2d');
+  const cx = LQ_INK.wrap(cv.getContext('2d'));
   const W = 480, H = 140;
   const labels = ['|00⟩','|01⟩','|10⟩','|11⟩'];
   const colors  = ['#60a5fa','#a78bfa','#34d399','#fbbf24'];
@@ -3072,7 +3152,8 @@ function opReset() {
     });
 
   }
-  if (window.AMOMotion) AMOMotion.loop(document.getElementById('tqBellCanvas'), frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
+  const tick = LQ_INK.track(frame);
+  if (window.AMOMotion) AMOMotion.loop(document.getElementById('tqBellCanvas'), tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
 })();
 
 /* ═══════════════════════════════════════════════
@@ -3082,7 +3163,7 @@ function opReset() {
 (function(){
   const cv = document.getElementById('groverCanvas');
   if (!cv) return;
-  const cx = cv.getContext('2d');
+  const cx = LQ_INK.wrap(cv.getContext('2d'));
   const W = 500, H = 150;
   const N = 8, TARGET = 2;
   const k_opt = Math.round(Math.PI/4 * Math.sqrt(N)); // ≈2 iterations
@@ -3189,7 +3270,8 @@ function opReset() {
     });
 
   }
-  if (window.AMOMotion) AMOMotion.loop(document.getElementById('groverCanvas'), frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
+  const tick = LQ_INK.track(frame);
+  if (window.AMOMotion) AMOMotion.loop(document.getElementById('groverCanvas'), tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
 })();
 
 /* ═══════════════════════════════════════════════
@@ -3199,10 +3281,12 @@ function opReset() {
 (function(){
   const cv = document.getElementById('rydbergArrayCanvas');
   if (!cv) return;
-  const cx = cv.getContext('2d');
+  const cx = LQ_INK.wrap(cv.getContext('2d'));
   const W = 520, H = 155;
   const COLS = 8, ROWS = 4;
-  const R_ATOM = 9, SPACING = 48;
+  // 4 rows × 48 px didn't fit the 155 px canvas (top row under the title, bottom row cut off,
+  // last column under the legend); 34 px keeps the whole 8×4 array clear of both.
+  const R_ATOM = 9, SPACING = 34;
   const startX = (W - (COLS-1)*SPACING) / 2;
   const startY = (H - (ROWS-1)*SPACING) / 2 + 5;
 
@@ -3277,7 +3361,8 @@ function opReset() {
     cx.fillStyle = '#076ce7'; cx.fillText('● ground |g⟩', W-105, H-20);
 
   }
-  if (window.AMOMotion) AMOMotion.loop(document.getElementById('rydbergArrayCanvas'), frame); else requestAnimationFrame(function f(t){ frame(t); requestAnimationFrame(f); });
+  const tick = LQ_INK.track(frame);
+  if (window.AMOMotion) AMOMotion.loop(document.getElementById('rydbergArrayCanvas'), tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>
