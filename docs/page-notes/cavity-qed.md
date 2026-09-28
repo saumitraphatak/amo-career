@@ -46,3 +46,7 @@ Inside section 02 (Results), after the conventions paragraph, there is a new pan
 - **Tested.** Halfway to a node at r = w₀, g/g₀ = cos(π/4)·e⁻¹ = 0.260 and C = 9.42 × 0.0677 = 0.638, matching the readout.
 - Nothing animates, so there is no pause control.
 - **Pre-existing.** At 390 px, `.sys-table` overflows the page (409 px).
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- **Cause of the 409 px width was not `.sys-table`** (it already sits in `.data-table-wrap`). It was the hidden `.tip` tooltips on the right-hand metric cards: an `opacity:0` pseudo-element still counts toward page width. Fixed in styles.css: the tooltip is only laid out while hovered/focused, is anchored to the nearer edge near the screen sides (small `alignTip` handler in main.js), and no longer inherits the card's uppercase label style (it showed "κ = FSR/(2F)" as "K = FSR/(2F)").

@@ -24,7 +24,7 @@
   <meta name="description" content="Interactive dynamical decoupling and T₂ playground, filter functions, CPMG, XY-16, noise spectroscopy, and neutral atom qubit coherence.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/dd-playground.html">
-  <link rel="stylesheet" href="../css/styles.css?v=22">
+  <link rel="stylesheet" href="../css/styles.css?v=23">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -249,6 +249,16 @@
       text-align: center; padding: 2rem 0;
       font-size: .8rem; color: var(--text-muted);
       border-top: 1px solid #1e293b; margin-top: 3rem;
+    }
+    /* phone overflow fixes (overnight 2026-09-28) */
+    /* FID / CPMG spheres: scale the 190 px canvases down inside their half-width columns */
+    #fidCanvas, #cpmgCanvas { max-width: 100%; height: auto; }
+    .dd-anim-ctrls > button { flex-shrink: 0; }
+    @media(max-width:600px) {
+      .dd-anim-ctrls { flex-wrap: wrap; }
+      .dd-anim-ctrls > span { flex-basis: 100%; text-align: center; }
+      /* keep both sphere titles on the same baseline when one wraps */
+      div:has(> #fidCanvas) > div:first-child, div:has(> #cpmgCanvas) > div:first-child { min-height: 2.8em; line-height: 1.4; display: flex; align-items: flex-end; justify-content: center; }
     }
   </style>
 
@@ -566,7 +576,7 @@
           <div id="cpmgLbl" style="font-family:var(--font-mono);font-size:.68rem;color:var(--text-muted);margin-top:.3rem;"></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:center;gap:1rem;margin-top:.75rem;">
+      <div class="dd-anim-ctrls" style="display:flex;justify-content:center;gap:1rem;margin-top:.75rem;">
         <button onclick="resetDDAnim()" style="background:rgba(255,255,255,0.05);border:1px solid #334155;
           color:var(--text-secondary);padding:.35rem 1rem;border-radius:6px;font-size:.78rem;cursor:pointer;">↺ Restart</button>
         <span style="font-size:.73rem;color:var(--text-muted);align-self:center;">
@@ -1322,7 +1332,7 @@
 <!-- ═══════════════════════════════════════════════════════
      JS: Nav + KaTeX + Charts + Physics engine
 ════════════════════════════════════════════════════════ -->
-<script src="../js/main.js?v=32"></script>
+<script src="../js/main.js?v=33"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/motion.js?v=1"></script>
 <script>

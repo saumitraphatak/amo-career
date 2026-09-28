@@ -46,3 +46,7 @@ The "Live TOF expansion" strip is replaced by a rotatable 3D cloud (`#tofCloudCa
   3. Its "1 mm" scale label was drawn in the background colour, so it was invisible.
   4. It "contracted" the cloud back after expanding, which is unphysical.
 - **Tested.** After moving the temperature slider to 100 μK, the label reads σ = 2.93 mm at 30 ms, against 2.934 mm from the formula.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The fit table is wrapped in `.table-scroll`.

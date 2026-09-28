@@ -2102,6 +2102,23 @@ function updateHeroStats() {
 }
 
 /* ─────────────────────────────────────────────────────────
+   SYMBOL TOOLTIPS (.tip[data-tip]) — keep the bubble on screen.
+   It is centred over the symbol by default; near either edge of the
+   viewport it is anchored to that side instead (CSS in styles.css).
+   ───────────────────────────────────────────────────────── */
+function alignTip(e) {
+  const t = e.target && e.target.closest && e.target.closest('.tip');
+  if (!t) return;
+  const r = t.getBoundingClientRect(), half = Math.min(240, window.innerWidth * 0.72) / 2 + 8;
+  const c = r.left + r.width / 2;
+  if (c + half > document.documentElement.clientWidth) t.dataset.tipAlign = 'end';
+  else if (c - half < 0) t.dataset.tipAlign = 'start';
+  else delete t.dataset.tipAlign;
+}
+document.addEventListener('pointerover', alignTip);
+document.addEventListener('focusin', alignTip);
+
+/* ─────────────────────────────────────────────────────────
    KATEX AUTO-RENDER
    Runs after DOM + KaTeX scripts are loaded (defer order)
    ───────────────────────────────────────────────────────── */
@@ -2112,6 +2129,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { left: '$$', right: '$$', display: true  },
         { left: '$',  right: '$',  display: false },
       ],
+      // Prices like "$1B … $7B" must not pair up into inline math:
+      // .money wraps one amount; .no-math marks widgets built from page text.
+      ignoredClasses: ['no-math', 'money'],
       throwOnError: false,
     });
   }

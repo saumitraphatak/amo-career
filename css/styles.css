@@ -2984,3 +2984,23 @@ html.amo-theme-vt::view-transition-new(root) { z-index: 2; }
   .tab-btn:active, .nav-btn:active, .nav-cta:active, .run-btn:active, .btn:active,
   .amo-motion-btn:active, .nav-search-btn:active, .nav-theme-toggle:active { transform: none; }
 }
+
+/* ── Phone overflow guards (overnight run 2026-09-28) ──────────
+   Found by tests/browser/smoke.js: at 390 px several pages were wider
+   than the screen. Wide content now scrolls inside its own box instead
+   of dragging the whole page sideways. */
+/* Tables that had no scroll wrapper get <div class="table-scroll">. It only
+   scrolls below 900 px, so desktop spacing (margin collapsing) is unchanged. */
+@media (max-width: 900px) { .table-scroll { overflow-x: auto; } }
+.katex-display { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.two-col > *, .three-col > *, .side-by-side > * { min-width: 0; }
+/* A long unbroken token (URL, raw TeX if the KaTeX CDN fails) wraps
+   instead of overflowing; break-word leaves min-content sizing alone. */
+main p, main li { overflow-wrap: break-word; }
+/* The hover tooltip is only laid out while shown, so a hidden tooltip near
+   the right edge can't widen the page. It also no longer inherits an
+   uppercase label style (which turned κ into K). */
+.tip::after { display: none; max-width: min(240px, 72vw); text-transform: none; letter-spacing: normal; font-weight: 400; }
+.tip:hover::after, .tip:focus-visible::after { display: block; opacity: 1; }
+.tip[data-tip-align="end"]::after { left: auto; right: 0; transform: none; }
+.tip[data-tip-align="start"]::after { left: 0; transform: none; }

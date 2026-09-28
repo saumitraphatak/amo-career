@@ -53,3 +53,8 @@ The loops now run through the shared `js/motion.js?v=1` (`AMOMotion.loop`), whic
 - **Reduced motion.** Under `prefers-reduced-motion` the loop starts paused on a still frame, and the button can still play it.
 
 The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` lines moved into the helper. This closes open item 3 of docs/3d-visualization-audit-2026-09-28.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- `.two-col` now collapses properly: its children get `min-width:0` (styles.css), and display equations scroll inside `.katex-display` instead of widening the column.
+- The FID/CPMG Bloch canvases (190 px bitmaps) scale down with `max-width:100%; height:auto`; the two titles share a baseline when one wraps, and the Restart / Pause row wraps with the caption on its own line at ≤600 px (the Pause button used to be squeezed into a circle).

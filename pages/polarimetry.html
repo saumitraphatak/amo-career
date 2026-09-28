@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=22">
+  <link rel="stylesheet" href="../css/styles.css?v=23">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -262,6 +262,11 @@
       .pol-sim-layout { grid-template-columns: 1fr; }
       .pol-grid2, .pol-grid3 { grid-template-columns: 1fr 1fr; }
       .pol-sreadout { grid-template-columns: 1fr 1fr; }
+    }
+    /* phone overflow fixes (overnight 2026-09-28) */
+    @media (max-width: 600px) {
+      .pol-grid2, .pol-grid3 { grid-template-columns: minmax(0, 1fr); }
+      .pol-canvas-wrap canvas { max-width: 100%; height: auto; }
     }
   </style>
 
@@ -519,6 +524,7 @@
 
           <hr class="pol-divider">
           <div class="pol-h2">Common States Table</div>
+          <div class="table-scroll">
           <table class="pol-table">
             <thead><tr><th scope="col">State</th><th scope="col">S₀</th><th scope="col">S₁</th><th scope="col">S₂</th><th scope="col">S₃</th><th scope="col">Location</th></tr></thead>
             <tbody>
@@ -532,6 +538,7 @@
               <tr><td>Unpolarized</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>Center (inside)</td></tr>
             </tbody>
           </table>
+          </div>
 
           <hr class="pol-divider">
           <div class="pol-grid2">
@@ -599,6 +606,7 @@
           </div>
 
           <div class="pol-h2">Comparison</div>
+          <div class="table-scroll">
           <table class="pol-table">
             <thead><tr><th scope="col">Method</th><th scope="col" class="tc">S₁</th><th scope="col" class="tc">S₂</th><th scope="col" class="tc">S₃</th><th scope="col">Notes</th></tr></thead>
             <tbody>
@@ -607,6 +615,7 @@
               <tr><td><strong>Rotating QWP + LP ★</strong></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td class="tc"><span class="ck">✓</span></td><td>Single rotation, Fourier fit, all 4 params</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
 
         <!-- ════════════ TAB 4: SIMULATOR ════════════ -->
@@ -747,6 +756,7 @@
 
           <hr class="pol-divider">
           <div class="pol-h2">Key Formulas Cheatsheet</div>
+          <div class="table-scroll">
           <table class="pol-table">
             <thead><tr><th scope="col">Formula</th><th scope="col">What it gives</th></tr></thead>
             <tbody>
@@ -760,6 +770,7 @@
               <tr><td><span class="m">I_linear(θ)|_HWP = ½[1+cos(4θ−2α)]</span></td><td>HWP scan for linear pol. at angle α</td></tr>
             </tbody>
           </table>
+          </div>
 
           <hr class="pol-divider">
           <div class="pol-h2">Step-by-Step: Rotating QWP Method</div>
@@ -908,7 +919,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=32"></script>
+<script src="../js/main.js?v=33"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';

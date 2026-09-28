@@ -36,3 +36,7 @@ Reviewed during the sitewide 3D pass: the Poincaré spheres are already Plotly 3
 
 ## Transitions (2026-09-28)
 The six section tabs (`polTab()`) now use the shared transitions: a sliding underline under `.pol-tab-nav`, and the new section eases in with a height morph (`AMOTransitions.swap` / `attachInk`). See docs/motion-and-transitions.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- `.pol-grid2`/`.pol-grid3` drop to one column at ≤600 px (they stayed two columns down to any width, which put the 270 px E-field canvas and the cards side by side at 685 px total); canvases in `.pol-canvas-wrap` scale down. The three Jones/Mueller tables are wrapped in `.table-scroll`.

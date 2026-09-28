@@ -32,3 +32,7 @@ Home page's tools-grid badge for this page said "QC 04", disagreeing with this p
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`.
 
 Also fixed: the References & Further Reading section — which comes after this page's own sequentially-numbered sections 01–09 — was itself labeled "07," a leftover from before the page grew to 9 sections. Following the convention used elsewhere on the site (absorption-imaging.html's References is "05" after 4 content sections; decoherence-lab.html's is "08" after 7), renumbered to "10." See docs/flow-audit-2026-09-19.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The HOM visibility slider row no longer overflows at 360 px (`.hom-slider-row input { min-width:0 }`).

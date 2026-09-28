@@ -68,7 +68,7 @@
     var cats = []; rows.forEach(function (r) { if (cats.indexOf(r.cat) < 0) cats.push(r.cat); });
     var on = {}; cats.forEach(function (c) { on[c] = true; });
 
-    var box = el('div', 'vs-tug');
+    var box = el('div', 'vs-tug no-math');
     box.innerHTML =
       '<div class="vs-tug-head"><h3>' + esc(opts.title || 'Tug of war') + '</h3>' +
       '<p>' + (opts.intro || 'Every row of the table below ends with an <em>Edge</em> call. Pick the categories you care about and watch the rope move.') + '</p></div>' +
@@ -173,7 +173,7 @@
     var t0 = Math.floor(Math.min.apply(null, ts)), t1 = Math.ceil(Math.max.apply(null, ts) + 0.2);
     var nowT = opts.now || 2026.75;
 
-    var box = el('div', 'vs-race');
+    var box = el('div', 'vs-race no-math');
     box.innerHTML =
       '<div class="vs-race-top"><div><h3>' + esc(opts.title || 'Race replay') + '</h3><p>' + (opts.intro || 'Both timelines below on one clock. Drag the playhead or press play; hollow markers are company roadmap targets, not results.') + '</p></div>' +
       '<button type="button" class="vs-play">▶ Replay</button></div>' +

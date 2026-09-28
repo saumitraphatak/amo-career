@@ -65,3 +65,7 @@ Two additions. There is no dual timeline on this page, so no Race replay.
   - The no-flag case is deliberately not labelled "Rb87", since the section says there is no single published Rb87 erasure fraction.
   - "Beyond the guarantee" is worded as *may* fail.
 - Pre-existing, not changed: at 390 px the page scrolls horizontally to 432 px (the sticky topic nav).
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The Rb/Yb dephasing sphere canvases (200 px bitmaps) scale down in their half-width columns; `.side-by-side` children get `min-width:0`.

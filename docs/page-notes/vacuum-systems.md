@@ -40,3 +40,7 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s) 
 
 ## Technical/SEO/consistency audit update (2026-09-28)
 `twitter:title` read "Vacuum Systems" — missing "Guide" — while `<title>`, `og:title`, and the JSON-LD `headline` all correctly say "Vacuum Systems Guide". Fixed the one outlier to match. See docs/technical-audit-2026-09-28.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The regime table and the four data tables are wrapped in `.table-scroll`; the display equation in the background-gas box scrolls inside `.katex-display`.

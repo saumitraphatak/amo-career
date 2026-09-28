@@ -53,3 +53,8 @@ A new "Where the photons go" panel (`#coll3d`, from `js/collection3d.js?v=1` plu
 - **Not changed (ambiguous, flagged).**
   - The Hood Lab tooltip says "NA 0.6 → η ≈ 8%", and the alkali card says "NA=0.5, η≈5%". These look like totals including T·QE rather than η_geo (which would be 10% and 6.7%). Worth rewording to say which η they mean.
 - **Pre-existing, not caused by this change.** At 390 px the page scrolls horizontally to 501 px because of `.fidelity-badge` and `.noise-table`.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The two inline three-card grids (η / scattered / detected, and fidelity / t_min) are now `.trio-row`: three columns on desktop, and on phones the first card spans the width with two below. The noise-budget table is wrapped in `.table-scroll`.
+- Noticed but not changed here: the uppercase `.prop-card-label` turns "η" into "Η" and "θ_opt" into "Θ_OPT" (sitewide Greek-in-uppercase issue, now a backlog item).

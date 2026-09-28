@@ -24,7 +24,7 @@
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator: scattering rate, collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/imaging-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=22">
+  <link rel="stylesheet" href="../css/styles.css?v=23">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -292,6 +292,14 @@
     .coll3d-pause[hidden] { display:none; }
     .coll3d-note { font-size:.74rem !important; color:var(--text-muted) !important; margin-top:.7rem !important; }
 
+    /* phone overflow fixes (overnight 2026-09-28) */
+    /* three cards in a row; on phones the first spans the width and two sit below */
+    .trio-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-bottom: .9rem; }
+    @media(max-width:600px) {
+      .trio-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .trio-row > :first-child { grid-column: 1 / -1; }
+      .trio-row .fidelity-num { font-size: 1.6rem; }
+    }
   </style>
 
   <!-- Open Graph -->
@@ -648,7 +656,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     </div>
 
     <!-- Key metrics grid -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.9rem;">
+    <div class="trio-row">
       <div class="prop-card">
         <div class="prop-card-label">Collection efficiency η</div>
         <div class="prop-card-val" id="etaDisplay">—</div>
@@ -668,7 +676,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     </div>
 
     <!-- Fidelity + min exposure -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.9rem;">
+    <div class="trio-row">
       <div class="fidelity-badge">
         <div class="fidelity-num" id="fidelityDisplay">—</div>
         <div class="fidelity-label">Detection fidelity</div>
@@ -689,6 +697,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     <!-- Noise budget table -->
     <div class="chart-card">
       <h5>Noise Budget</h5>
+      <div class="table-scroll">
       <table class="noise-table">
         <thead>
           <tr>
@@ -704,6 +713,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
           </td></tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <!-- Warn if heating-limited -->
@@ -1402,7 +1412,7 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=32"></script>
+<script src="../js/main.js?v=33"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/collection3d.js?v=1"></script>
 <script>

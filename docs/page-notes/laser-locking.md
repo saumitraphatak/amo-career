@@ -37,3 +37,7 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s) 
 
 ## Transitions (2026-09-28)
 The four "Practical notes" toggles (`togglePrac()`) now open and close with the shared height animation (`AMOTransitions.expand` / `collapse`). See docs/motion-and-transitions.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The slope table is wrapped in `.table-scroll`.

@@ -44,3 +44,7 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s),
 
 ## Link audit update (2026-09-27)
 Rotation re-check turned up three more stale vendor links in the same vendor cards this earlier 09-16 pass touched. Gooch & Housego's AOM page (de-linked to plain text on 09-16 after the old `goochandhousego.com` path 404'd and no replacement could be verified) is now re-linked: the company rebranded to "G&H" on a new domain, `gandh.com` — verified live with matching AOM product content at `gandh.com/products/acousto-optics/modulators`. Mini-Circuits' `WebStore/RF-Amplifiers.html` now 404s (confirmed: empty response, unlike sibling Mini-Circuits pages) — replaced with their current `WebStore/Amplifiers.html` (verified, 600+ amplifier models). Kepco's BOP bipolar-supply link pointed at `kepco.com`, which fails with a TLS handshake error — turns out that's simply the wrong domain: the real manufacturer (Kepco, Inc., Flushing NY) operates at `kepcopower.com`; replaced with their verified-live `kepcopower.com/ecom.htm`, which explicitly lists the BOP/BOP-MG/BOP-GL bipolar line the card cites. See docs/link-audit-2026-09-27.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- All five tables without a scroll wrapper (lens, 2× AOM, 2× Stokes/interferometer) are wrapped in `.table-scroll`.

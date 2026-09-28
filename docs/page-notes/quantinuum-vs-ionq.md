@@ -80,3 +80,7 @@ Three additions, all built from the page's own content (nothing new is asserted)
   - Right: an ion chain above a chip, with the electrodes underneath lighting up to drive the gate. This follows the EQC description.
   - Labelled "schematic, not to scale; ion counts illustrative". The ring is drawn static (the "rotatable" ring is not animated) to avoid implying a mechanism.
   - Has a pause button, a still frame under reduced motion, and stacks vertically on phones.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- **Dollar amounts were being typeset as maths.** KaTeX auto-render pairs any two `$` in one text node, so "$1B raise, … $7B" became italic maths with the words run together (the unbreakable run made the page 445–467 px wide on phones). Every amount is now wrapped in `<span class="money">`, and main.js's auto-render call ignores `.money` and `.no-math`. The Tug-of-war and Race-replay widgets built by `js/versus.js` (v=2) carry `no-math`, since they copy the page's text (including prices) before KaTeX runs. Keep writing prices as `<span class="money">$1.5B</span>` on these pages.

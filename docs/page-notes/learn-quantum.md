@@ -66,3 +66,7 @@ The loops now run through the shared `js/motion.js?v=1` (`AMOMotion.loop`), whic
 - **Reduced motion.** Under `prefers-reduced-motion` the loop starts paused on a still frame, and the button can still play it.
 
 The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` lines moved into the helper. This closes open item 3 of docs/3d-visualization-audit-2026-09-28.md.
+
+## 2026-09-28 (overnight): phone overflow fix
+Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
+- The two hyperfine tables and the truth table are wrapped in `.table-scroll`.
