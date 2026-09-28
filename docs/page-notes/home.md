@@ -46,3 +46,10 @@ The 3 comparison pages added 2026-09-22 (`quantinuum-vs-ionq.html`, `google-vs-i
 
 ## 3D visualization update (2026-09-28)
 Hero: added a **Pause animation / Play animation** button (real `<button>` with `aria-pressed`) to the live 3D tweezer-array caption — WCAG 2.2.2 requires a way to stop auto-playing motion that lasts over 5 s. A paused hero stays paused when scrolled away and back; the button is hidden under prefers-reduced-motion (already a still frame). `hero3d.js?v=2`.
+
+
+## Site restructure (2026-09-26) — recorded 2026-09-28
+Big-picture IA review found the home page offering the same ~30 pages through seven overlapping lists (96 internal links), a tools grid whose badges were in order but whose cards were interleaved, a missing TRAP 06 card (`laser-cooling.html`), and a footer taxonomy that matched neither the nav nor the grid. Changes (commit `35387f6`): grid reordered to BUILD 01→10 / TRAP 01→07 / QC 01→06 and TRAP 06 added; Guided Paths condensed from 24 step-links to 6 cards with one-line summaries + "See full path →" to `pages/start-here.html`; footer middle columns renamed/regrouped to "Trap, Image & Cool" and "Quantum Computing & Career" plus a Site Map link. Each Guided Paths card carries `data-steps` (the concept map reads it — removing the step links without it produced a single "null" node, fixed in `e9fd8c3`); keep `data-steps` in sync with the full lists in `start-here.html`. Full record: docs/navigation-audit-2026-09-26.md.
+
+## 3D hero (2026-09-28)
+The hero's right column is a live 3D Li + Cs tweezer-array scene (`js/hero3d.js`, commit `360db31`); the Li/Cs cards remain as the no-WebGL fallback. Full record: docs/3d-visualization-audit-2026-09-28.md.

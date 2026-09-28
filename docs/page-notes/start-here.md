@@ -12,3 +12,7 @@ audit: (1) `og:title` had a literal unescaped `&` (`Site Map & Start Here — AM
 used `&amp;` — made both consistent with `&amp;`; (2) meta description was 169 characters (9 over the 160-char
 limit) — trimmed "plus the full recommended-order paths" to "plus recommended-order paths" to land exactly at 160.
 See docs/technical-audit-2026-09-28.md.
+
+
+## Origin (2026-09-26) — recorded 2026-09-28
+Created by the 2026-09-26 IA restructure (commit `35387f6`) as the single canonical directory: every page once, in the nav's four categories and true order, plus the full four-step lists for the six guided paths (anchors `#path-mot`, `#path-lasers`, `#path-imaging`, `#path-cooling`, `#path-qc`, `#path-career`) that the home page's condensed Guided Paths cards link to. The global nav's "Start Here" (desktop and mobile) points here. When a page is added, add its line here; when a guided path changes, change it here **and** in the home card's `data-steps`. See docs/navigation-audit-2026-09-26.md.
