@@ -39,3 +39,15 @@ This page's `<style>` block used `var(--mono)` for 8 monospace-styled rules — 
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its page-footer signature line used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## Trajectory snapshot is now 3D (2026-09-28)
+The "Atom Trajectory Snapshot" canvas (`#trajCanvas`) now draws through `js/cloud3d.js?v=1` (plus `js/orbit3d.js?v=2`). It is a rotatable, true-to-scale 3D view of the same 120 sampled atoms, driven by the same τ slider and Play button.
+
+- **What's drawn.** The tweezer's 1/e² envelope w(z) = w₀√(1 + z²/z_R²), with the waist and ±z_R rings, the gravity direction, and a scale bar.
+- **Scope.** The view is ±8 w₀ around the trap. The caption shows τ and P_cap.
+- **Two bugs fixed in the old 2D drawing.**
+  1. The y coordinate was never propagated (it used `y0` instead of `y0 + vy·τ`), so the snapshot's recapture test didn't match `runMC()`.
+  2. The vertical axis was flipped, so released atoms fell *upward* on screen.
+- **New shared check.** Both are fixed by a single `trajAtomAt(a, τ, tp)` helper that uses the same recapture test as `runMC()`. Tested: over 120 atoms, the snapshot's recaptured fraction matches a 20,000-atom `runMC()` at the same τ within sampling noise (e.g. 0.10 vs 0.071 at 0.45 ms; σ ≈ 0.024).
+- The old canvas also had a hard-coded cream background in dark mode. The new view is theme-aware.
+- **Pre-existing.** After a run, at 390 px, `.sum-table` / `.chart-card` overflow the page to 393 px.

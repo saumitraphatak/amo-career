@@ -31,3 +31,18 @@ This page's `<style>` block used `var(--mono)` for 6 monospace-styled rules — 
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## TOF expansion is now 3D (2026-09-28)
+The "Live TOF expansion" strip is replaced by a rotatable 3D cloud (`#tofCloudCanvas`, from `js/cloud3d.js?v=1` plus `js/orbit3d.js?v=2`).
+
+- **The sample.** 500 atoms, with positions drawn from N(0, σ₀²) and velocities from N(0, k_BT/m) per axis, so σ(t)² = σ₀² + (k_BT/m)t². Colour is speed (blue slow → orange fast), which shows why the edge of the cloud is the hot tail.
+- **Controls.**
+  - Frame toggle: "Falling with the cloud" (default) or "Lab frame", which shows gravity, the release point and the distance fallen, ½gt².
+  - The expansion plays 0 → t_max in 3 s, holds, and repeats.
+  - There is a Pause button (WCAG 2.2.2). Under reduced motion it shows a still frame at t_max. It is paused offscreen.
+- **Bugs fixed with the old animation.**
+  1. Its hook read `window.ATOMS`, but `ATOMS` is a top-level `const` and not a window property. The hook therefore returned early every time, and the animation never followed the sliders (it was always Rb, 1 μK, 10 μm, 20 ms). The new code reads `ATOMS` directly.
+  2. It ran forever with no pause, even offscreen.
+  3. Its "1 mm" scale label was drawn in the background colour, so it was invisible.
+  4. It "contracted" the cloud back after expanding, which is unphysical.
+- **Tested.** After moving the temperature slider to 100 μK, the label reads σ = 2.93 mm at 30 ms, against 2.934 mm from the formula.

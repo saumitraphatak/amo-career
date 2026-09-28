@@ -498,13 +498,13 @@
       <div id="trajDiv" style="display:none;margin-bottom:1rem;">
         <div class="chart-card">
           <h5>Atom Trajectory Snapshot</h5>
-          <p style="font-size:.8rem;color:var(--text-muted);margin:.2rem 0 .6rem 0;">Drag the slider to change release time τ. Green = recaptured, red = escaped.</p>
+          <p style="font-size:.8rem;color:var(--text-muted);margin:.2rem 0 .6rem 0;">Drag the slider to change release time τ. Green = recaptured, red = escaped. The view is true to scale in 3D (tweezer axis vertical, along gravity, as in the Monte Carlo); drag the figure to turn it.</p>
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap;">
             <label for="trajSlider" style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#b75404;">0.00 ms</strong></label>
             <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#b75404;">
             <button class="run-btn" id="playTrajBtn" type="button" onclick="toggleTrajPlay()" style="padding:.45rem .75rem;font-size:.78rem;">▶ Play</button>
           </div>
-          <canvas id="trajCanvas" width="560" height="220" style="width:100%;border-radius:6px;background:#faf5e9;"></canvas>
+          <canvas id="trajCanvas" data-export-ready="true" style="display:block;width:100%;height:340px;max-height:none !important;border-radius:6px;" aria-label="Rotatable 3D view of 120 sampled atoms released from the tweezer: green atoms would be recaptured, red ones escape. The recaptured fraction is given below the figure."></canvas>
           <div id="trajInfo" style="font-family:var(--font-mono);font-size:.78rem;color:var(--text-muted);margin-top:.35rem;text-align:center;"></div>
         </div>
       </div>
@@ -649,6 +649,8 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/cloud3d.js?v=1"></script>
 <script>
 renderNav({ active: 'release-recapture', root: '../' });
 initScrollReveal();
@@ -958,51 +960,34 @@ function toggleTrajPlay() {
   _trajAnim = requestAnimationFrame(step);
 }
 
+// One atom at release time dt: ballistic flight with gravity along −z (the tweezer axis, as in runMC),
+// recaptured if its kinetic energy is below the trap potential at its final position.
+function trajAtomAt(a, dt, tp) {
+  const xf = a.x0 + a.vx*dt, yf = a.y0 + a.vy*dt, zf = a.z0 + a.vz*dt - 0.5*g*dt*dt, vzf = a.vz - g*dt;
+  const KE = 0.5*tp.m*(a.vx*a.vx + a.vy*a.vy + vzf*vzf);
+  const wz2 = tp.w0*tp.w0*(1 + (zf/tp.zR)**2);
+  const U_f = tp.U0*(tp.w0*tp.w0/wz2)*Math.exp(-2*(xf*xf + yf*yf)/wz2);
+  return { x: xf, y: yf, z: zf, ok: KE < U_f };
+}
+
+let _traj3d = null;
 function drawTrajCanvas() {
   const cv = document.getElementById('trajCanvas');
   const slider = document.getElementById('trajSlider');
   if (!cv || !_trajTp) return;
-  const W = cv.clientWidth || 560, H = 220;
-  cv.width = W; cv.height = H;
-  const ctx = cv.getContext('2d');
-  ctx.fillStyle = '#faf5e9'; ctx.fillRect(0,0,W,H);
   const tp = _trajTp;
   const dt = (parseInt(slider.value)/100) * _trajTmax;
   document.getElementById('trajTauLabel').textContent = (dt*1e3).toFixed(3) + ' ms';
-  const pxPerM_r = (W*0.45)/(6*tp.w0);
-  const pxPerM_z = (H*0.45)/(10*tp.w0);
-  const cx = W/2, cy = H/2;
-  // Beam column
-  const bw = tp.w0*pxPerM_r;
-  const g = ctx.createLinearGradient(cx-bw*3,0,cx+bw*3,0);
-  g.addColorStop(0,'transparent'); g.addColorStop(0.5,'rgba(34,211,238,0.07)'); g.addColorStop(1,'transparent');
-  ctx.fillStyle=g; ctx.fillRect(cx-bw*3,0,bw*6,H);
-  ctx.beginPath(); ctx.arc(cx,cy,bw*0.9,0,2*Math.PI);
-  ctx.fillStyle='rgba(34,211,238,0.12)'; ctx.fill();
-  ctx.strokeStyle='rgba(11,124,142,0.35)'; ctx.lineWidth=1; ctx.stroke();
-  ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='center';
-  ctx.fillStyle='rgba(11,124,141,0.5)'; ctx.fillText('tweezer',cx,cy-bw-5);
-  // Atoms
-  let nRecap=0;
-  for (const a of _trajAtoms) {
-    const xf=a.x0+a.vx*dt, zf=a.z0+a.vz*dt-4.905*dt*dt, vzf=a.vz-9.81*dt;
-    const KE=0.5*tp.m*(a.vx*a.vx+a.vy*a.vy+vzf*vzf);
-    const wz2=tp.w0*tp.w0*(1+(zf/tp.zR)**2);
-    const r2=xf*xf+a.y0*a.y0;
-    const U_f=tp.U0*(tp.w0*tp.w0/wz2)*Math.exp(-2*r2/wz2);
-    const ok=KE<U_f; if(ok) nRecap++;
-    const px=cx+xf*pxPerM_r, py=cy+zf*pxPerM_z;
-    if(px<-5||px>W+5||py<-5||py>H+5) continue;
-    ctx.beginPath(); ctx.arc(px,py,2.5,0,2*Math.PI);
-    ctx.fillStyle=ok?'rgba(74,222,128,0.85)':'rgba(248,113,113,0.7)'; ctx.fill();
-  }
-  const pRecap=(nRecap/_trajAtoms.length*100).toFixed(1);
-  ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='left';
-  ctx.fillStyle='rgba(24,130,62,0.85)'; ctx.fillText('● recaptured',10,16);
-  ctx.fillStyle='rgba(226,11,11,0.85)'; ctx.fillText('● escaped',10,30);
-  ctx.fillStyle='#5c503c'; ctx.fillText('τ = '+(dt*1e3).toFixed(3)+' ms  |  P_cap ≈ '+pRecap+'%',10,H-8);
+  if (!_traj3d && window.AMO3D && AMO3D.atomCloud) _traj3d = AMO3D.atomCloud(cv, { el: 0.18 });
+  let nRecap = 0;
+  const pts = _trajAtoms.map(a => { const s = trajAtomAt(a, dt, tp); if (s.ok) nRecap++; return { x: s.x, y: s.y, z: s.z, k: s.ok ? 'in' : 'out' }; });
+  const pRecap = (nRecap/_trajAtoms.length*100).toFixed(1);
+  if (_traj3d) _traj3d.render({
+    points: pts, center: [0, 0, 0], halfSpan: 8*tp.w0, beam: { w0: tp.w0, zR: tp.zR }, gravity: true,
+    caption: 'τ = ' + (dt*1e3).toFixed(3) + ' ms\nP_cap ≈ ' + pRecap + '%  (' + nRecap + ' of ' + _trajAtoms.length + ')'
+  });
   document.getElementById('trajInfo').textContent =
-    'w₀='+( tp.w0*1e6).toFixed(2)+'μm · U₀='+(tp.U0/kB*1e6).toFixed(0)+'μK · ωᵣ/2π='+(tp.wr/(2*Math.PI)/1e3).toFixed(1)+'kHz';
+    'w₀='+( tp.w0*1e6).toFixed(2)+'μm · U₀='+(tp.U0/kB*1e6).toFixed(0)+'μK · ωᵣ/2π='+(tp.wr/(2*Math.PI)/1e3).toFixed(1)+'kHz · P_cap ≈ '+pRecap+'%';
 }
 </script>
 </body>
