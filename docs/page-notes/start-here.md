@@ -16,3 +16,12 @@ See docs/technical-audit-2026-09-28.md.
 
 ## Origin (2026-09-26) — recorded 2026-09-28
 Created by the 2026-09-26 IA restructure (commit `35387f6`) as the single canonical directory: every page once, in the nav's four categories and true order, plus the full four-step lists for the six guided paths (anchors `#path-mot`, `#path-lasers`, `#path-imaging`, `#path-cooling`, `#path-qc`, `#path-career`) that the home page's condensed Guided Paths cards link to. The global nav's "Start Here" (desktop and mobile) points here. When a page is added, add its line here; when a guided path changes, change it here **and** in the home card's `data-steps`. See docs/navigation-audit-2026-09-26.md.
+
+## 3D constellation (2026-09-28)
+A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.js?v=1` plus `js/orbit3d.js?v=2`) sits between the section links and "Recommended sequences".
+
+- **Built from this page's own markup at load.** Stars are every `.see-also-card` in the four category sections (31 pages; this page itself isn't listed). Guided paths come from each `.path-card`'s `.path-step` links (6 paths × 4 steps). So the constellation can't drift from the lists: edit the lists and it follows.
+- **Layout.** One cluster per category on a ring. Inside each cluster the pages run in reading order, joined by a thread. The guided paths are coloured arcs. Choosing a path chip lights up its steps with numbered labels and arrowheads.
+- **Interaction.** Hover shows a card with the page name, description and which paths it's on. A mouse click opens the page. On touch, the first tap shows the card with an "Open page" link.
+- **Motion.** A slow turn with a Stop/Turn button; still under reduced motion; paused offscreen.
+- It is deliberately on Start Here and not on the home page: the 2026-09-26 IA review found the home page already offered too many overlapping ways in. The lists below remain the accessible version.

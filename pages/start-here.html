@@ -54,6 +54,22 @@
     }
     .sm-toc a:hover { border-color: var(--border-med); color: var(--text-primary); }
     .sm-num { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; color: var(--page-color); margin-right: .4rem; }
+    /* ── 3D constellation of the site (js/sitemap3d.js) ── */
+    .const3d { border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); padding:var(--sp-4); margin:0 0 var(--sp-10); }
+    .const3d[hidden] { display:none; }
+    .const3d-top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.5rem 1rem; align-items:baseline; }
+    .const3d-top h2 { font-size:1.15rem; margin:0; }
+    .const3d-top p { margin:.2rem 0 0; font-size:.86rem; color:var(--text-secondary); max-width:62ch; }
+    .const3d-fig { position:relative; }
+    #const3d-cvs { display:block; width:100%; height:520px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media(max-width:620px){ #const3d-cvs { height:320px; } }
+    .const3d-chips { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.7rem; }
+    .const3d-chips button { display:inline-flex; align-items:center; gap:.35rem; font:inherit; font-size:.74rem; color:var(--text-secondary);
+      background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:3px 10px; cursor:pointer; }
+    .const3d-chips button i { width:14px; height:3px; border-radius:2px; background:var(--k); }
+    .const3d-chips button[aria-pressed="true"] { color:var(--text-primary); border-color:var(--k, var(--page-color)); background:color-mix(in srgb, var(--k, var(--page-color)) 12%, transparent); }
+    .const3d-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
+    .const3d-pause[hidden] { display:none; }
   </style>
 </head>
 <body>
@@ -89,6 +105,22 @@
         <a href="#quantum-computing">Quantum Computing</a>
         <a href="#career">Career &amp; Literature</a>
       </div>
+
+
+      <!-- 3D constellation (js/sitemap3d.js) — built from the lists on this page -->
+      <section class="const3d" id="constellation" hidden aria-labelledby="const3d-title">
+        <div class="const3d-top">
+          <div>
+            <h2 id="const3d-title">The whole site at a glance</h2>
+            <p>Every page below as a star, grouped by category and threaded in reading order. Pick a path to light up its steps. Drag to turn it; click a page to open it.</p>
+          </div>
+          <button type="button" class="const3d-pause" id="const3d-pause" aria-pressed="false">❚❚ Stop turning</button>
+        </div>
+        <div class="const3d-fig">
+          <canvas id="const3d-cvs" data-export-ready="true" aria-label="Constellation of every page on the site, grouped by the four categories, with the six guided paths drawn as coloured arcs. The same pages and paths are listed below."></canvas>
+        </div>
+        <div class="const3d-chips" id="const3d-chips" role="group" aria-label="Highlight a guided path"></div>
+      </section>
 
       <!-- ══════════════════════════════════════════
            RECOMMENDED SEQUENCES (full detail)
@@ -261,5 +293,26 @@
 
 <script src="../js/main.js?v=31"></script>
 <script>renderNav({ active: 'start-here', root: '../' });</script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/sitemap3d.js?v=1"></script>
+<script>
+(function () {
+  var wrap = document.getElementById('constellation'), cvs = document.getElementById('const3d-cvs');
+  if (!wrap || !cvs || !window.AMO3D || !AMO3D.siteConstellation) return;
+  wrap.hidden = false;
+  var c = AMO3D.siteConstellation(cvs, { pauseButton: document.getElementById('const3d-pause') });
+  if (!c) { wrap.hidden = true; return; }
+  var chips = document.getElementById('const3d-chips');
+  chips.innerHTML = '<button type="button" data-path="" aria-pressed="true">All paths</button>' + c.data.paths.map(function (p) {
+    return '<button type="button" data-path="' + p.id + '" aria-pressed="false" style="--k:' + p.color + '"><i></i>' + p.title + '</button>';
+  }).join('');
+  chips.querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      chips.querySelectorAll('button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      c.setPath(b.dataset.path);
+    });
+  });
+})();
+</script>
 </body>
 </html>
