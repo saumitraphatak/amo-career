@@ -61,3 +61,9 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 2 labels rendered differently after the fix, e.g. "CS-133 T₂*" → "Cs-133 T₂*"; "T₁ (CS-133)" → "T₁ (Cs-133)". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight): FID/CPMG spheres follow the theme
+- The two Bloch-sphere canvases (`#fidCanvas`, `#cpmgCanvas`) painted a cream `#faf5e9` background, navy sphere lines and brown labels in both themes, so in dark theme they were two bright cream boxes.
+- A small palette in the animation IIFE (`PAL.light` = the old colours, unchanged; `PAL.dark` = `#0c1526` paper, slate lines and labels, amber π-pulse flash) is picked each frame. The canvas CSS background is now `var(--bg-card)`.
+- The frame is repainted on a theme toggle (MutationObserver on `data-theme`), so it also updates while paused or under reduced motion. "Reset" now repaints too.
+- Physics and spin colours untouched. Checked: dark/light 1280, dark 390 with reduced motion, and toggling the theme on a paused frame (corner pixel switches 12,21,38 ↔ 250,245,233).
