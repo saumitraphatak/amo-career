@@ -49,6 +49,17 @@ pages/start-here.html
 
 ---
 
+## INTERACTIVE FIGURES AND ACCESSIBILITY (as of 2026-09-28)
+
+All figures below are computed from the page's own formulas and inputs; schematic geometry is labelled as schematic.
+- **Rotatable 3D figures** (drag, arrow keys, Home/double-click to reset): Bloch spheres on learn-quantum and decoherence-lab (decoherence-lab integrates Steck's optical Bloch equations live), the dephasing spheres on dd-playground, the 3D MOT on mot-designer (six beams, anti-Helmholtz coils, quadrupole field B = G(−x/2, −y/2, z), cloud compressed along the coil axis, σ_z = σ_r/√2; its label reports the calculator's σ = √(k_B T_MOT/κ)), a true-to-scale tweezer array on tweezer-designer (Gaussian envelopes over ±3 z_R from w₀ = 0.52λ/NA), the emission pattern and NA collection cone on imaging-calculator (Monte Carlo photon stream converging on η for isotropic and dipole patterns), the TEM₀₀ standing wave on cavity-qed, the released-atom cloud on release-recapture and tof-calculator, a dotted-Earth globe of the 99 mapped groups (amo-groups) and of the 27 companies and labs in the industry deep dives (qc-landscape), the paper-syllabus "time tower", and a constellation site map on start-here.
+- **Comparison pages** (rb87-vs-yb171, quantinuum-vs-ionq, google-vs-ibm, psiquantum-vs-xanadu): a "tug of war" tallied from each page's head-to-head table and a "race replay" of its timeline, plus one signature interactive each: throw errors at a code (erasure vs Pauli errors, e + 2t ≤ d − 1), a 3D laser-QCCD vs electronic-control ion scene, a square vs heavy-hex lattice lab counting SWAPs, and a photon loss-budget chain.
+- **Detection statistics:** imaging-calculator's histogram simulator reports each preset's SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) and optimal-threshold fidelity with exact Gaussian tails (e.g. SNR 16.8 → overlap error ≈ 10⁻⁴⁰, far below the loss- and tail-limited fidelities of real experiments; measured benchmark quoted: Covey et al., PRL 122, 173201 (2019), imaging fidelity 0.99991(1), survival 0.99932(8)). Its section-06 preview simulates shots from the calculator's own N_sig, N_bg, N_dark and camera model (EMCCD gain register as n → Gamma(n, 1), Basden, Haniff & Mackay, MNRAS 345, 985 (2003)) and reports F = 1 − P_miss − P_false (the calculator above quotes 1 − (P_miss + P_false)/2).
+- **Live cooling:** cooling-simulator's velocity histogram relaxes to the Doppler temperature T = T_D(1 + s + (2δ/Γ)²)/(4|δ|/Γ), minimum T_D = ℏΓ/2k_B at δ = −Γ/2.
+- **Accessibility:** every looping animation has a Pause button and honours prefers-reduced-motion (the 2D canvas loops start paused on a still frame); canvases follow the dark (default) and light themes; pages fit 360–390 px phone widths; symbols keep their case inside uppercase labels (γ/2π is not shown as Γ/2Π).
+
+---
+
 ## TOOL 1: ATOM LIBRARY
 **URL:** https://amotoolkit.com/pages/atom-library.html
 **Accent color:** #38bdf8 (sky blue)
@@ -337,7 +348,7 @@ F = ℏk·(Γ/2)·s / (1 + s + (2(Δ−kv)/Γ)²) − ℏk·(Γ/2)·s / (1 + s +
 ω_MOT = √(κ/m)
 
 **Capture velocity:**
-v_cap ≈ w_beam × |α|/(2m)                 [beam radius w_beam]
+v_cap ≈ |Δ|/k                              [Doppler shift equal to the detuning]
 
 **Doppler temperature (theoretical minimum):**
 T_D = ℏΓ/(2k_B)                           [Rb: 145 μK, Cs: 125 μK]
@@ -729,7 +740,7 @@ $$F(v) \approx -\alpha v, \qquad \alpha = \hbar k^2 \cdot \frac{4|\delta|\,s_0\,
 $$T_D = \frac{\hbar\Gamma}{2k_{\rm B}}$$
 
 **Sisyphus (sub-Doppler) temperature scaling:**
-$$T_{\rm Sisyphus} \propto \frac{U_0^2}{E_r} \propto \frac{I^2}{\delta^2\,E_r}$$
+$$k_{\rm B}T_{\rm Sisyphus} \sim U_0 \propto \frac{I}{|\delta|}\quad(|\delta|\gg\Gamma)$$  (linear in the light-shift depth U₀, down to a floor of tens of E_r; Cohen-Tannoudji, Rev. Mod. Phys. 70, 707 (1998))
 
 **Gray-molasses dark state:**
 $$|\mathrm{dark}\rangle = \cos\theta\,|F\!=\!1/2\rangle - \sin\theta\,|F\!=\!3/2\rangle$$
@@ -764,11 +775,11 @@ $$\frac{1}{T_2} = \frac{1}{2T_1} + \frac{1}{T_2'}, \qquad \gamma_\perp = \frac{\
 
 ### AMO Group Finder (`pages/amo-groups.html`)
 **Accent color:** #4ade80 (green)
-Career-mapping tool: a directory of 100+ AMO research groups. Sections: 02 Featured Directory (most relevant groups, deeply profiled), 03 Global Watchlist (broader list), 04 Highest-Priority Shortlists (narrowing down where to apply for grad school/postdoc positions by subfield — ultracold atoms, Rydberg, cavity QED, precision measurement, etc.).
+Career-mapping tool: 99 mapped AMO research groups (Featured Directory, also shown on a rotatable 3D globe that follows every filter) plus a 141-entry Global Watchlist. Sections: 02 Featured Directory (most relevant groups, deeply profiled), 03 Global Watchlist (broader list), 04 Highest-Priority Shortlists (narrowing down where to apply for grad school/postdoc positions by subfield — ultracold atoms, Rydberg, cavity QED, precision measurement, etc.).
 
 ### AMO Paper Roadmap (`pages/paper-syllabus.html`)
 **Accent color:** #818cf8 (indigo)
-"53 Papers That Build an AMO Career" — a curated reading list organized by career stage, presented as 4 tabs: 🎓 Undergrad Entry, 🔬 Grad Year 1, ⚛️ Advanced Grad, 🚀 Postdoc/Career. Guides a physicist through foundational and current AMO/QC literature in order, with explicit guidance not to read all 53 papers the same way.
+"55 Papers That Build an AMO Career" — a curated reading list organized by career stage, presented as 4 tabs: 🎓 Undergrad Entry, 🔬 Grad Year 1, ⚛️ Advanced Grad, 🚀 Postdoc/Career. Guides a physicist through foundational and current AMO/QC literature in order, with explicit guidance not to read all 55 papers the same way (stages: 10 + 17 + 18 + 10 papers). A rotatable 3D "time tower" above the tabs plots every paper by year (height) and stage (face).
 
 ### Rb87 vs Yb171 Qubit Comparison (`pages/rb87-vs-yb171.html`)
 **Accent color:** #f59e0b (amber)
@@ -1060,5 +1071,5 @@ Inter — body text; JetBrains Mono (--font-mono) — equations and code display
 
 ---
 
-*This file was generated for LLM/RAG ingestion. It represents content as of 2026-07-07.*
+*This file was generated for LLM/RAG ingestion. It represents content as of 2026-09-28.*
 *For the canonical, up-to-date content see the live site or source repository.*

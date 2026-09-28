@@ -29,7 +29,7 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
     - [x] fidelity-budget `waterfallCanvas`, imaging-calculator `fluorHistCanvas`, vacuum-systems `#mol-canvas` (2026-09-28 run 3; the imaging preview also had its physics fixed: it showed F = 0% at the defaults, see its page note).
     - Chart.js tooltips with `backgroundColor:'#faf5e9'` (atom-library, cavity-qed, dd-playground, fidelity-budget, imaging-calculator, lab-techniques, mot-designer, rb-explorer, tof-calculator) belong to the P1 Chart.js dark-theme audit.
 - [x] **Stale-number sweep.** Done 2026-09-28 run 3: 99 mapped groups (was 100+ on the map), 27 companies & labs (was 25+), 6 platforms on home (was 7), home fallback 31 tools (was 28); a regression test now recomputes these counts from the pages. Hero chips and stat pills that hard-code counts ("25+ Companies", "100+ groups", "55 Papers", "15 species") should match the page content. Fix, or derive from the DOM where cheap.
-- [ ] **llms.txt / llms-full.txt** should mention the 2026-09-28 additions (globes, time tower, constellation, comparison-page interactives). Keep them factual.
+- [x] **llms.txt / llms-full.txt** Done 2026-09-28 run 3: interactive-figures sections in both, counts (99 + 141 groups, 55 papers, 27 companies), MOT capture velocity formula (was w·α/2m, page uses |Δ|/k), Sisyphus scaling, date. Originally: should mention the 2026-09-28 additions (globes, time tower, constellation, comparison-page interactives). Keep them factual.
 
 ## P1: polish that makes it feel finished
 

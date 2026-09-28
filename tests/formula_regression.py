@@ -252,6 +252,9 @@ def test_cooling_simulator_doppler_temperature() -> None:
     # Cs D2: T_D = hbar*Gamma/(2 kB) with Gamma/2pi = 5.234 MHz is about 125.6 uK
     hbar, kB = 1.054_571_817e-34, 1.380_649e-23
     assert abs(hbar * 2 * math.pi * 5.234e6 / (2 * kB) * 1e6 - 125.6) < 0.1
+    # Sisyphus: k_B T ~ U0 ∝ I/|δ| (Cohen-Tannoudji, RMP 70, 707), not U0²/E_r
+    assert_not_contains("pages/cooling-simulator.html", r"\frac{U_0^2}{E_r}")
+    assert_contains("pages/cooling-simulator.html", r"k_{\rm B}T_{\rm Sisyphus} \sim U_0 \propto \frac{I}{|\delta|}")
 
 
 def test_imaging_histogram_preview_uses_calculator_counts() -> None:
