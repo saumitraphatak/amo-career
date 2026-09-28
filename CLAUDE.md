@@ -561,6 +561,10 @@ Text in eq: \text{any text}  \rm{roman font}
   - Shared helpers are on `window.AMOTransitions`: `swap(fromEl, toEl, doSwap, dir)` (panel change with height morph), `expand(el)` / `collapse(el, done)`, `enter(el)` / `leave(el, done)`, and `attachInk(bar, activeSelector)` (sliding tab underline). `initTabs`, `initAccordions`, derivation toggles, the mobile menu and search use them. So do polarimetry's `polTab()` and laser-locking's `togglePrac()`. **Any new page-local tab or toggle code should call these rather than flip `display` directly.**
   - All of it becomes instant under `prefers-reduced-motion` and is skipped in browsers without the APIs (Firefox has no cross-document view transitions; pages there just navigate normally).
   - Anchor links now use the document position rather than `offsetTop` (which was wrong inside positioned containers), update the URL hash, and `[id]` has `scroll-margin-top: 84px`, so targets land below the fixed nav.
+- **Overnight build runs (since 2026-09-28).** A scheduled task fires hourly overnight (Mountain time) and follows `docs/overnight-runbook.md`: it picks the next item from `docs/overnight-backlog.md`, verifies it, commits it and appends to `docs/overnight-log.md`.
+  - Its lock and test tarballs live inside `.git/` (`overnight-lock`, `overnight-*.tar`), so they are never committed.
+  - It cannot push (the Mac VM's proxy blocks github.com), so Saumitra pushes the morning's commits.
+  - Rendered-page smoke test for anyone: `node tests/browser/smoke.js <siteRoot> [--baseline <oldRoot>]` (needs Playwright; checks every page in both themes plus 390 px for errors and horizontal overflow).
 - **Comparison pages read their own content (`js/versus.js`).**
   - Tug of war tallies the Full Head-to-Head table's Edge column, using the `win <side>` classes or Edge text that starts with a side name.
   - Race replay parses the Section-03 `.tl-item` year text.
