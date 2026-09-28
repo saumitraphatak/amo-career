@@ -270,6 +270,26 @@
       line-height: 1.6;
     }
 
+    /* ── 3D photon-collection figure (js/collection3d.js) ── */
+    .coll3d { margin-top:var(--sp-5); border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); padding:var(--sp-4); display:grid; gap:var(--sp-4); }
+    .coll3d[hidden] { display:none; }
+    @media(min-width:880px){ .coll3d { grid-template-columns: 1fr minmax(260px, 330px); align-items:center; } }
+    .coll3d-fig { position:relative; min-width:0; }
+    #coll3d-cvs { display:block; width:100%; height:400px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media(max-width:620px){ #coll3d-cvs { height:330px; } }
+    .coll3d-side h5 { margin:0 0 .4rem; }
+    .coll3d-side p { font-size:.82rem; color:var(--text-secondary); line-height:1.6; margin:0 0 .7rem; }
+    .coll3d-pat { display:flex; flex-direction:column; gap:.3rem; margin-bottom:.7rem; }
+    .coll3d-pat button { display:flex; justify-content:space-between; gap:.6rem; text-align:left; font:inherit; font-size:.8rem; color:var(--text-secondary);
+      background:transparent; border:1px solid var(--border-med); border-radius:8px; padding:.4rem .6rem; cursor:pointer; }
+    .coll3d-pat button b { font-family:var(--font-mono); color:var(--text-primary); white-space:nowrap; }
+    .coll3d-pat button small { display:block; font-size:.7rem; color:var(--text-muted); }
+    .coll3d-pat button[aria-pressed="true"] { border-color:var(--c-img); background:color-mix(in srgb, var(--c-img) 12%, transparent); color:var(--text-primary); }
+    .coll3d-tally { font-family:var(--font-mono); font-size:.76rem; color:var(--text-secondary); margin-bottom:.6rem; }
+    .coll3d-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
+    .coll3d-pause[hidden] { display:none; }
+    .coll3d-note { font-size:.74rem !important; color:var(--text-muted) !important; margin-top:.7rem !important; }
+
   </style>
 
   <!-- Open Graph -->
@@ -583,6 +603,24 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
       </div>
 
     </div>
+    <div class="coll3d" id="coll3d" hidden>
+      <div class="coll3d-fig">
+        <canvas id="coll3d-cvs" data-export-ready="true" aria-label="3D view of an atom's fluorescence and the objective's collection cone. The bright cap of the sphere is the solid angle the objective collects; its size follows the NA slider. The same numbers are listed next to the figure."></canvas>
+      </div>
+      <div class="coll3d-side">
+        <h5>Where the photons go</h5>
+        <p>The atom scatters in every direction; the objective only catches the bright cap, θ &lt; θ<sub>max</sub> = arcsin NA. Follows the NA slider above. Drag to turn it.</p>
+        <div class="coll3d-pat" role="group" aria-label="Emission pattern">
+          <button type="button" data-pattern="iso" aria-pressed="true"><span>Isotropic<small>what the calculator uses</small></span><b id="coll3d-eta-iso">—</b></button>
+          <button type="button" data-pattern="perp" aria-pressed="false"><span>Dipole ⊥ optical axis<small>same η as σ± light with the quantization axis along the objective</small></span><b id="coll3d-eta-perp">—</b></button>
+          <button type="button" data-pattern="para" aria-pressed="false"><span>Dipole ∥ optical axis<small>π light radiated straight at the lens: its null points there</small></span><b id="coll3d-eta-para">—</b></button>
+        </div>
+        <div class="coll3d-tally" id="coll3d-tally">Photons caught: —</div>
+        <button type="button" class="coll3d-pause" id="coll3d-pause" aria-pressed="false">❚❚ Pause photons</button>
+        <p class="coll3d-note">η here is the geometric fraction only (n = 1, no losses); the calculator then multiplies by transmission T and QE. The photon stream is a Monte Carlo sample of the chosen pattern, so the running tally settles on η.</p>
+      </div>
+    </div>
+
   </section>
 
   <hr class="section-divider">
@@ -1194,7 +1232,7 @@ $$\eta_{\rm geo} = \frac{1 - \sqrt{1 - {\rm NA}^2}}{2} \quad \text{[exact, for }
 $$\approx \frac{{\rm NA}^2}{4} \quad \text{[paraxial, NA} \ll 1\text{]}$$
 Example: NA $= 0.6 \Rightarrow \eta_{\rm geo} = 10\%$; NA $= 0.8 \Rightarrow \eta_{\rm geo} = 20\%$</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          Note that isotropic emission into 4π steradians means even NA=0.95 captures only ~26%
+          Note that isotropic emission into 4π steradians means even NA=0.95 captures only ~34%
           of photons geometrically. High-NA objectives (0.5–0.85) are typical for tweezer experiments.
         </p>
       </div>
@@ -1363,6 +1401,37 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/collection3d.js?v=1"></script>
+<script>
+/* 3D collection figure (js/collection3d.js) — follows the NA slider */
+(function () {
+  var wrap = document.getElementById('coll3d'), cvs = document.getElementById('coll3d-cvs'), slide = document.getElementById('naSlide');
+  if (!wrap || !cvs || !slide || !window.AMO3D || !AMO3D.collectionCone) return;
+  wrap.hidden = false;
+  var tally = document.getElementById('coll3d-tally');
+  function NA() { return parseFloat(slide.value) / 100; }
+  var fig = AMO3D.collectionCone(cvs, {
+    NA: NA(), pauseButton: document.getElementById('coll3d-pause'),
+    onTally: function (n, k) { tally.textContent = n ? 'Photons caught: ' + k + ' of ' + n + ' (' + (100 * k / n).toFixed(1) + '%)' : 'Photons caught: —'; }
+  });
+  if (!fig) { wrap.hidden = true; return; }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) tally.hidden = true;
+  function etas() {
+    ['iso', 'perp', 'para'].forEach(function (k) {
+      document.getElementById('coll3d-eta-' + k).textContent = 'η = ' + (100 * AMO3D.collectionEta(k, NA())).toFixed(1) + '%';
+    });
+  }
+  slide.addEventListener('input', function () { fig.set({ NA: NA() }); etas(); });
+  wrap.querySelectorAll('.coll3d-pat button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      wrap.querySelectorAll('.coll3d-pat button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      fig.set({ pattern: b.dataset.pattern });
+    });
+  });
+  etas();
+})();
+</script>
 <script>
 renderNav({ active: 'imaging-calculator', root: '../' });
 

@@ -36,3 +36,20 @@ This page's `<style>` block used `var(--mono)` for 8 monospace-styled rules — 
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## 3D photon-collection figure (2026-09-28)
+A new "Where the photons go" panel (`#coll3d`, from `js/collection3d.js?v=1` plus `js/orbit3d.js?v=2`) sits at the end of section 02, "Collection & Camera", and follows the NA slider.
+
+- **What the figure shows.** The atom sits at the centre with its emission pattern drawn as a wireframe. The collected cap θ < θ_max = arcsin NA (n = 1) is bright on a reference sphere, with the objective drawn beyond it. A Monte Carlo photon stream is sampled from the chosen pattern, and its running tally converges on η.
+- **Three emission patterns and their η.**
+  - Isotropic: η = (1 − c)/2. This is exactly the page's `collectionGeo()` and is what the calculator uses.
+  - Dipole ⊥ optical axis: η = (3/8)[(1 − c) + (1 − c³)/3]. σ± light with the quantization axis along the objective gives the same φ-averaged pattern, (1 + cos²θ)/2, so the same η.
+  - Dipole ∥ axis: η = (3/4)[(1 − c) − (1 − c³)/3].
+  - In all three, c = √(1 − NA²).
+  - All three formulas were checked against a 10⁶-sample Monte Carlo at NA 0.3, 0.5, 0.7 and 0.95; they agree to within 0.1%.
+- **Scope.** The calculator itself is unchanged and still uses the isotropic value. The panel says so, and says that η here is geometric only (the calculator then applies T and QE).
+- **Motion.** There is a "Pause photons" button (WCAG 2.2.2). Under reduced motion there is no photon stream; the static geometry remains. The animation also pauses offscreen.
+- **Fact fix.** The "Collection geometry" accordion said isotropic emission at NA = 0.95 captures "~26%". The page's own exact formula gives 34.4%, so it now says ~34%.
+- **Not changed (ambiguous, flagged).**
+  - The Hood Lab tooltip says "NA 0.6 → η ≈ 8%", and the alkali card says "NA=0.5, η≈5%". These look like totals including T·QE rather than η_geo (which would be 10% and 6.7%). Worth rewording to say which η they mean.
+- **Pre-existing, not caused by this change.** At 390 px the page scrolls horizontally to 501 px because of `.fidelity-badge` and `.noise-table`.
