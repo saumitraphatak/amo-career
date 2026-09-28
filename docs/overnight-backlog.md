@@ -24,7 +24,7 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
     - [x] learn-quantum `mziCanvas`, `rabiBlochCanvas`, `rabiTraceCanvas`, `tqBellCanvas`, `groverCanvas`, `rydbergArrayCanvas` (2026-09-28 run 3; pattern: page-local `LQ_INK.wrap(ctx)` maps light inks to dark ones as they're set, `LQ_INK.track(frame)` repaints on theme toggle; also fixed invisible labels, a blank trace under reduced motion and the Rydberg array layout);
     - [x] (2026-09-28 run 3) learn-quantum's other Bloch spheres (`blochCanvas`, `gatesBlochCanvas`, `measBlochCanvas`) are transparent, not cream, but use light inks (`#1e3a5f` outline) that are low-contrast in dark theme: wrap their contexts with `LQ_INK.wrap` too;
     - [x] rb87-vs-yb171 `rbBlochCanvas`, `ybBlochCanvas` (2026-09-28 run 2; also got a pause control via `AMOMotion.loop`, it had none);
-    - [ ] mot-designer `motCanvas`;
+    - [x] mot-designer `motCanvas` (2026-09-28 run 3; PAL light/dark per frame, now `AMOMotion.loop` with a pause button, it had a forever rAF loop; the cloud label now reports the calculator's σ);
     - [ ] cooling-simulator `mbCanvas`; fidelity-budget `waterfallCanvas`; imaging-calculator `fluorHistCanvas`; laser-locking `lockCanvas`; rb-explorer `rbAnimCanvas`; vacuum-systems `.mol-canvas`; zernike `gsFlowCanvas`.
     - Chart.js tooltips with `backgroundColor:'#faf5e9'` (atom-library, cavity-qed, dd-playground, fidelity-budget, imaging-calculator, lab-techniques, mot-designer, rb-explorer, tof-calculator) belong to the P1 Chart.js dark-theme audit.
 - [ ] **Stale-number sweep.** Hero chips and stat pills that hard-code counts ("25+ Companies", "100+ groups", "55 Papers", "15 species") should match the page content. Fix, or derive from the DOM where cheap.

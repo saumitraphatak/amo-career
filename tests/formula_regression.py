@@ -232,6 +232,15 @@ def test_imaging_histogram_presets_match_notes() -> None:
     assert "Marginal (SNR≈1.6)" in text
 
 
+def test_mot_viz_matches_calculator_sigma() -> None:
+    """The 3D MOT's cloud label must report the calculator's σ = √(k_B T_MOT/κ), not a clamped
+    drawing size or the Doppler-limit temperature."""
+    assert_contains("pages/mot-designer.html", "const sigma_m = kappa > 0 ? Math.sqrt(kB * T_MOT / kappa) : 0;")
+    assert_contains("pages/mot-designer.html", "updateMOTViz(kappa, alpha, T_MOT)")
+    assert_contains("pages/mot-designer.html", "√(k_BT_MOT/κ)")
+    assert_not_contains("pages/mot-designer.html", "(curSigma*10).toFixed(0)} μm")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -246,6 +255,7 @@ def main() -> None:
         test_currentness_and_wording_guardrails,
         test_decoherence_lab_t1_t2_relation,
         test_imaging_histogram_presets_match_notes,
+        test_mot_viz_matches_calculator_sigma,
     ]
     for test in tests:
         test()

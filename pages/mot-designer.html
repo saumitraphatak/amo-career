@@ -31,6 +31,13 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
 
   <style>
+    /* 3D MOT key + cloud label: same inks as the canvas in each theme */
+    .mot3d-key .mk { font-weight: 700; }
+    .mk-coil { color: #b45309; } .mk-b { color: #2563eb; } .mk-ax { color: #7c3aed; } .mk-rad { color: #0f766e; }
+    #motCloudLbl { color: rgba(183,84,4,0.7); }
+    [data-theme="dark"] .mk-coil { color: #f59e0b; } [data-theme="dark"] .mk-b { color: #60a5fa; }
+    [data-theme="dark"] .mk-ax { color: #a78bfa; } [data-theme="dark"] .mk-rad { color: #2dd4bf; }
+    [data-theme="dark"] #motCloudLbl { color: rgba(251,146,60,0.85); }
     :root { --page-color: var(--c-rr); }
 
     .prop-card {
@@ -367,7 +374,7 @@
             <div class="prop-card-label">Cloud radius σ</div>
             <div class="prop-card-val" id="sigmaVal">—</div>
             <div class="prop-card-unit">μm (1/e)</div>
-            <div class="prop-card-sub">√(k_BT_D/κ)</div>
+            <div class="prop-card-sub">√(k_BT_MOT/κ)</div>
           </div>
         </div>
 
@@ -393,15 +400,15 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
         Live MOT Visualization &nbsp;·&nbsp; 3D (drag to rotate)
       </div>
       <div style="position:relative;">
-        <canvas id="motCanvas" style="width:100%;border-radius:10px;background:#faf5e9;display:block;"></canvas>
-        <div id="motCloudLbl" style="position:absolute;bottom:8px;right:12px;font-family:var(--font-mono);font-size:.72rem;color:rgba(183,84,4,0.55);"></div>
+        <canvas id="motCanvas" style="width:100%;border-radius:10px;background:var(--bg-card);display:block;"></canvas>
+        <div id="motCloudLbl" style="position:absolute;bottom:8px;right:12px;font-family:var(--font-mono);font-size:.72rem;"></div>
       </div>
       <p class="mot3d-key" style="font-size:.74rem;color:var(--text-muted);margin:.45rem 0 0;line-height:1.55">
-        <span style="color:#b45309;font-weight:700">Coils</span> are anti-Helmholtz (opposite currents), giving
-        <span style="color:#2563eb;font-weight:700">B</span> = <i>G</i>(−x/2, −y/2, z): the gradient along the coil axis is twice the radial one,
+        <span class="mk mk-coil">Coils</span> are anti-Helmholtz (opposite currents), giving
+        <span class="mk mk-b">B</span> = <i>G</i>(−x/2, −y/2, z): the gradient along the coil axis is twice the radial one,
         so the cloud is squeezed along z (σ<sub>z</sub> = σ<sub>r</sub>/√2). Rings show each beam's circular polarization about its own direction:
-        the <span style="color:#7c3aed;font-weight:700">axial pair</span> has the opposite handedness to the four
-        <span style="color:#0f766e;font-weight:700">radial beams</span>. Geometry is schematic; the cloud size follows the calculator.
+        the <span class="mk mk-ax">axial pair</span> has the opposite handedness to the four
+        <span class="mk mk-rad">radial beams</span>. Geometry is schematic; the cloud size follows the calculator.
       </p>
     </div>
 
@@ -780,6 +787,7 @@ Dark-SPOT MOT: shadow mask blocks repumper at center; density $\sim 10^{12}$ cm$
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=34"></script>
 <script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/motion.js?v=1"></script>
 <script>
 renderNav({ active: 'mot-designer', root: '../' });
 
@@ -869,7 +877,7 @@ function compute() {
   document.getElementById('tauVal').textContent    = (tau_damp * 1e3).toFixed(1);
   document.getElementById('sigmaVal').textContent  = kappa > 0 ? (sigma_m * 1e6).toFixed(0) : '—';
 
-  if (window.updateMOTViz) updateMOTViz(kappa, alpha, T_Dopp);
+  if (window.updateMOTViz) updateMOTViz(kappa, alpha, T_MOT);   // same T as the σ card
 
   updateDetuneChart(s, detRatio);
   buildSpeciesTable(s, detRatio, dBdz_Gcm);
@@ -971,7 +979,16 @@ function onSpeciesChange() {
   const cvs = document.getElementById('motCanvas');
   if (!cvs) return;
   const ctx = cvs.getContext('2d');
-  let targetSigma = 35, curSigma = 35, dampRate = 0.015;   // σ in px (1 px ↔ 10 μm), as before
+  // Theme palette (light = the original cream-paper inks). Picked per frame.
+  const PAL = {
+    light: { bg: '#faf5e9', coil: '#b45309', beamArrow: 'rgba(183,84,4,0.65)', field: 'rgba(37,99,235,0.42)',
+             fieldLbl: 'rgba(37,99,235,0.6)', axial: '#7c3aed', radial: '#0f766e', atom: '214,120,20', lbl: 'rgba(92,80,60,0.75)' },
+    dark:  { bg: '#0c1526', coil: '#f59e0b', beamArrow: 'rgba(251,146,60,0.75)', field: 'rgba(96,165,250,0.55)',
+             fieldLbl: 'rgba(96,165,250,0.85)', axial: '#a78bfa', radial: '#2dd4bf', atom: '251,160,60', lbl: 'rgba(148,163,184,0.85)' },
+  };
+  let C = PAL.light;
+  let targetSigma = 35, curSigma = 35, dampRate = 0.015;
+  let sigUm = 0, sigClamped = false;   // calculator's σ (μm) for the label   // σ in px (1 px ↔ 10 μm), as before
   let W = 580, H = 300, S = 60, CX = 290, CY = 150;
 
   const view = window.AMO3D
@@ -988,7 +1005,7 @@ function onSpeciesChange() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     S = Math.min(H / 4.7, W / 5.4); CX = W / 2; CY = H / 2;
   }
-  window.addEventListener('resize', () => { resize(); });
+  window.addEventListener('resize', () => { resize(); redraw(); });
 
   // → [screenX, screenY, depth toward viewer]
   function P(x, y, z) {
@@ -1049,16 +1066,18 @@ function onSpeciesChange() {
   }
 
   let _ready = false;
-  function draw() {
-    requestAnimationFrame(draw);
+  // render(true) advances the cloud one step; render(false) repaints the current state
+  // (theme toggle, drag or resize while paused / under reduced motion).
+  function render(step) {
     if (!_ready) { resize(); spawnAtoms(); _ready = true; }
     if (!W || !H) return;
-    curSigma += (targetSigma - curSigma) * 0.035;
-    ctx.fillStyle = '#faf5e9'; ctx.fillRect(0, 0, W, H);
+    C = document.documentElement.getAttribute('data-theme') === 'dark' ? PAL.dark : PAL.light;
+    if (step) curSigma += (targetSigma - curSigma) * 0.035;
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
     const G = parseFloat((document.getElementById('gradSlide') || {}).value) || 15;   // G/cm
 
     // coils — far halves first
-    const coil = z => ring([0,0,z], [0,0,1], RC, '#b45309', 3, false);
+    const coil = z => ring([0,0,z], [0,0,1], RC, C.coil, 3, false);
     coil(HC); coil(-HC);
 
     // beams (translucent strips, brighter toward the centre) + propagation arrows
@@ -1069,7 +1088,7 @@ function onSpeciesChange() {
       ctx.strokeStyle = g; ctx.lineWidth = 2*RB*S; ctx.lineCap = 'butt';
       ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(O[0], O[1]); ctx.stroke();
       const p0 = b.src.map((x, i) => x + b.k[i]*0.15), p1 = b.src.map((x, i) => x + b.k[i]*0.55);
-      arrow(p0, p1, 'rgba(183,84,4,0.65)', 1.4, 6);
+      arrow(p0, p1, C.beamArrow, 1.4, 6);
     });
 
     // quadrupole field B = G(−x/2, −y/2, z): axial gradient 2× radial, opposite sign
@@ -1080,15 +1099,15 @@ function onSpeciesChange() {
     [[0.8,0,0.6],[-0.8,0,0.6],[0.8,0,-0.6],[-0.8,0,-0.6],[0,0.8,0.6],[0,-0.8,-0.6]].forEach(p => pts.push(p));
     pts.forEach(p => {
       const B = [-p[0]/2, -p[1]/2, p[2]], m = Math.hypot(...B), sc = len * Math.min(1.6, m) / m;
-      arrow(p, [p[0]+B[0]*sc, p[1]+B[1]*sc, p[2]+B[2]*sc], 'rgba(37,99,235,0.42)', 1.2, 5);
+      arrow(p, [p[0]+B[0]*sc, p[1]+B[1]*sc, p[2]+B[2]*sc], C.field, 1.2, 5);
     });
     const bl = P(1.35 + 0.3, 0, 0);
-    ctx.fillStyle = 'rgba(37,99,235,0.6)'; ctx.font = '11px Inter,sans-serif'; ctx.fillText('B', bl[0] + 4, bl[1] - 4);
+    ctx.fillStyle = C.fieldLbl; ctx.font = '11px Inter,sans-serif'; ctx.fillText('B', bl[0] + 4, bl[1] - 4);
 
     // polarization handedness about each beam's own k: axial opposite to radial
     BEAMS.forEach(b => {
       const c = b.src.map((x, i) => x + b.k[i]*0.95);
-      handedRing(c, b.k, b.axial ? 1 : -1, b.axial ? '#7c3aed' : '#0f766e');
+      handedRing(c, b.k, b.axial ? 1 : -1, b.axial ? C.axial : C.radial);
     });
 
     // cloud glow: projected ellipsoid with σ_r = √2 σ_z
@@ -1105,37 +1124,52 @@ function onSpeciesChange() {
     const sk = 0.015, kz = 2*sk, srW = sr / S;
     const amp = srW * Math.sqrt(24 * dampRate * sk);
     atoms.forEach(a => {
-      a.vx = a.vx*(1-dampRate) - sk*a.x + (Math.random()-.5)*amp;
-      a.vy = a.vy*(1-dampRate) - sk*a.y + (Math.random()-.5)*amp;
-      a.vz = a.vz*(1-dampRate) - kz*a.z + (Math.random()-.5)*amp;
-      a.x += a.vx; a.y += a.vy; a.z += a.vz;
+      if (step) {
+        a.vx = a.vx*(1-dampRate) - sk*a.x + (Math.random()-.5)*amp;
+        a.vy = a.vy*(1-dampRate) - sk*a.y + (Math.random()-.5)*amp;
+        a.vz = a.vz*(1-dampRate) - kz*a.z + (Math.random()-.5)*amp;
+        a.x += a.vx; a.y += a.vy; a.z += a.vz;
+      }
       const q = P(a.x, a.y, a.z), r = Math.hypot(a.x, a.y, a.z*Math.SQRT2) / (srW*2.8);
       const al = Math.max(0, 1 - r) * (q[2] >= 0 ? 0.95 : 0.6);
       ctx.beginPath(); ctx.arc(q[0], q[1], 1.9, 0, 2*Math.PI);
-      ctx.fillStyle = `rgba(214,120,20,${al.toFixed(2)})`; ctx.fill();
+      ctx.fillStyle = `rgba(${C.atom},${al.toFixed(2)})`; ctx.fill();
     });
 
     // coils — near halves on top, with current arrows (top CCW seen from +z, bottom CW)
-    ring([0,0,HC], [0,0,1], RC, '#b45309', 3, true); ring([0,0,-HC], [0,0,1], RC, '#b45309', 3, true);
-    const cur = (z, sense) => { const t = -Math.PI/2 + 0.35, p = t2 => [RC*Math.cos(t2), RC*Math.sin(t2), z]; arrow(p(t - 0.3*sense), p(t), '#b45309', 2, 7); };
+    ring([0,0,HC], [0,0,1], RC, C.coil, 3, true); ring([0,0,-HC], [0,0,1], RC, C.coil, 3, true);
+    const cur = (z, sense) => { const t = -Math.PI/2 + 0.35, p = t2 => [RC*Math.cos(t2), RC*Math.sin(t2), z]; arrow(p(t - 0.3*sense), p(t), C.coil, 2, 7); };
     cur(HC, 1); cur(-HC, -1);
     if (Math.abs(Math.sin(view.el)) < 0.85) {          // skip when looking down the axis (label would sit on the cloud)
       const zt = P(0, 0, L + 0.15);
-      ctx.fillStyle = 'rgba(92,80,60,0.75)'; ctx.font = '10px Inter,sans-serif'; ctx.fillText('coil axis z', zt[0] + 6, zt[1] + 4);
+      ctx.fillStyle = C.lbl; ctx.font = '10px Inter,sans-serif'; ctx.fillText('coil axis z', zt[0] + 6, zt[1] + 4);
     }
 
     const lbl = document.getElementById('motCloudLbl');
-    if (lbl) lbl.textContent = `σ_z ≈ ${(curSigma*10).toFixed(0)} μm · σ_r ≈ ${(curSigma*10*Math.SQRT2).toFixed(0)} μm`;
+    // numbers are the calculator's σ (the drawn cloud is clamped to a visible size range)
+    if (lbl) lbl.textContent = sigUm
+      ? `σ_z ≈ ${sigUm.toFixed(0)} μm · σ_r ≈ ${(sigUm*Math.SQRT2).toFixed(0)} μm` + (sigClamped ? ' · drawn at display limit' : '')
+      : '';
   }
 
   window.updateMOTViz = function(kappa_SI, alpha_SI, T_K) {
     const SCALE = 1e5;
     const r_th  = kappa_SI > 0 ? Math.sqrt(kB * T_K / kappa_SI) : 350e-6;
     targetSigma = Math.max(10, Math.min(68, r_th * SCALE));
+    sigUm = kappa_SI > 0 ? r_th * 1e6 : 0;
+    sigClamped = Math.abs(targetSigma - r_th * SCALE) > 0.05;
     dampRate    = 0.008 + Math.min(1, alpha_SI / 5e-20) * 0.027;
+    // paused (button or reduced motion): show the new cloud size at once
+    if (ctl && !ctl.isRunning() && _ready) { curSigma = targetSigma; spawnAtoms(); render(false); }
   };
 
-  requestAnimationFrame(draw);
+  function redraw() { if (_ready) render(false); }
+  if (typeof view.onChange === 'function') view.onChange(redraw);
+  new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  // Pause control, offscreen stop and reduced-motion still frame (js/motion.js, WCAG 2.2.2)
+  const ctl = window.AMOMotion
+    ? AMOMotion.loop(cvs, () => render(true), { anchors: [{ el: cvs.parentElement, where: 'afterend' }] })
+    : (requestAnimationFrame(function f() { render(true); requestAnimationFrame(f); }), null);
 })();
 
 compute();
