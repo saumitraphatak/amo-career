@@ -41,6 +41,10 @@
     .lbl-val          { color: var(--c-img); font-family: var(--font-mono); }
     .approx-tag       { background: rgba(52,211,153,.12); color: var(--c-img); border-color: rgba(52,211,153,.25); }
 
+    /* ─── Histogram: tiny probabilities in scientific notation ─── */
+    .prop-card-val.hist-sci { font-size: 1.05rem; line-height: 1.35; overflow-wrap: anywhere; }
+    .prop-card-val.hist-sci sup { font-size: .7em; }
+
     /* ─── Histogram preset buttons ──────────────── */
     .hist-preset-btn.active {
       background: rgba(52,211,153,0.18) !important;
@@ -972,7 +976,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
 
         <!-- Result chips -->
         <div style="display:flex;flex-direction:column;gap:.6rem;justify-content:center;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.55rem;">
             <div class="prop-card">
               <div class="prop-card-label">SNR</div>
               <div class="prop-card-val" id="histSNR">—</div>
@@ -1545,6 +1549,27 @@ function normCDF(x) {
   return x >= 0 ? p : 1 - p;
 }
 
+// Upper Gaussian tail Q(x) = P(Z > x) = erfc(x/√2)/2, computed directly, so a tiny
+// tail (well-separated histogram peaks) doesn't vanish into 1 − (1 − ε).
+// erfc: Numerical Recipes Chebyshev fit ("erfcc"), fractional error < 1.2e-7 for all x.
+function erfcNR(x) {
+  const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+  const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +
+            t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 +
+            t * (-0.82215223 + t * 0.17087277)))))))));
+  return x >= 0 ? r : 2 - r;
+}
+function normTail(x) { return 0.5 * erfcNR(x / Math.SQRT2); }
+
+// "3.1×10<sup>−17</sup>" (HTML) for very small numbers (histogram cards)
+function sciSup(v) {
+  if (!(v > 0)) return '0';
+  let e = Math.floor(Math.log10(v));
+  let m = v / Math.pow(10, e);
+  if (m >= 9.95) { m /= 10; e += 1; }
+  return m.toFixed(1) + '×10<sup>' + String(e).replace('-', '−') + '</sup>';
+}
+
 /* ═══════════════════════════════════════════════════════════════
    CORE PHYSICS
 ═══════════════════════════════════════════════════════════════ */
@@ -1806,15 +1831,15 @@ function onCamChange() {
 const HIST_PRESETS = {
   Rb87: {
     muBright: 800, sigBright: 42, muDark: 55, sigDark: 14,
-    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright ≈ √(2·800 + 12²) ≈ 42 e⁻ (Poisson shot noise √800 ≈ 28, with its variance doubled by the EMCCD excess noise (factor √2 at high gain), plus read noise in quadrature) · σ_dark ≈ read noise 12 e⁻ + dark counts · With these peaks the page’s SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) ≈ 16.8, so the two-Gaussian overlap error is far below 10⁻¹⁰ (the fidelity card reads 100.000%). At this separation real experiments are limited by what the two-Gaussian model leaves out: atom loss or heating during the exposure, and non-Gaussian tails (EMCCD multiplication noise, background fluctuations) · Illustrative parameters'
+    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright ≈ √(2·800 + 12²) ≈ 42 e⁻ (Poisson shot noise √800 ≈ 28, with its variance doubled by the EMCCD excess noise (factor √2 at high gain), plus read noise in quadrature) · σ_dark ≈ read noise 12 e⁻ + dark counts · With these peaks the page’s SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) ≈ 16.8, so the two-Gaussian overlap error at the optimal threshold is ≈ 1×10⁻⁴⁰ (the fidelity card), far beyond anything a real detector reaches. At this separation real experiments are limited by what the two-Gaussian model leaves out: atom loss or heating during the exposure, and non-Gaussian tails (EMCCD multiplication noise, background fluctuations) · Illustrative parameters'
   },
   Yb171: {
     muBright: 1200, sigBright: 38, muDark: 40, sigDark: 11,
-    note: '¹⁷¹Yb fluorescence on 399 nm (¹S₀→¹P₁, Γ/2π ≈ 29 MHz) or 556 nm (¹S₀→³P₁ intercombination line, Γ/2π ≈ 182 kHz; the 578 nm clock line is far too narrow to image on) · sCMOS · Narrower dark peak due to lower background at 556 nm · Page’s SNR ≈ 29: peak overlap is negligible, so, as for ⁸⁷Rb, atom loss and non-Gaussian tails set the real limit · Illustrative parameters'
+    note: '¹⁷¹Yb fluorescence on 399 nm (¹S₀→¹P₁, Γ/2π ≈ 29 MHz) or 556 nm (¹S₀→³P₁ intercombination line, Γ/2π ≈ 182 kHz; the 578 nm clock line is far too narrow to image on) · sCMOS · Narrower dark peak due to lower background at 556 nm · Page’s SNR ≈ 29: the Gaussian overlap error is ≈ 3×10⁻¹²⁴, i.e. negligible, so, as for ⁸⁷Rb, atom loss and non-Gaussian tails set the real limit · Illustrative parameters'
   },
   Sr88: {
     muBright: 950, sigBright: 52, muDark: 65, sigDark: 18,
-    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Page’s SNR ≈ 16.1 (overlap error far below 10⁻¹⁰) · Illustrative parameters. Measured benchmark: Covey et al., PRL 122, 173201 (2019), ⁸⁸Sr imaged on the same 461 nm line in 813.4 nm magic-wavelength tweezers, with Sisyphus cooling on the intercombination line: imaging fidelity 0.99991(1) with survival 0.99932(8)'
+    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Page’s SNR ≈ 16.1 (Gaussian overlap error ≈ 5×10⁻³⁷) · Illustrative parameters. Measured benchmark: Covey et al., PRL 122, 173201 (2019), ⁸⁸Sr imaged on the same 461 nm line in 813.4 nm magic-wavelength tweezers, with Sisyphus cooling on the intercombination line: imaging fidelity 0.99991(1) with survival 0.99932(8)'
   },
   Marginal: {
     muBright: 280, sigBright: 85, muDark: 120, sigDark: 55,
@@ -1846,20 +1871,21 @@ function computeOptThreshold(muB, sigB, muD, sigD) {
   for (let i = 0; i < 80; i++) {
     const m1 = lo + (hi - lo) / 3;
     const m2 = hi - (hi - lo) / 3;
-    const f1 = normCDF((m1 - muB) / sigB) + (1 - normCDF((m1 - muD) / sigD));
-    const f2 = normCDF((m2 - muB) / sigB) + (1 - normCDF((m2 - muD) / sigD));
+    const f1 = normTail((muB - m1) / sigB) + normTail((m1 - muD) / sigD);
+    const f2 = normTail((muB - m2) / sigB) + normTail((m2 - muD) / sigD);
     if (f1 < f2) hi = m2; else lo = m1;
   }
   return Math.round((lo + hi) / 2);
 }
 
 function computeHistMetrics(muB, sigB, muD, sigD, theta) {
-  const pMiss  = normCDF((theta - muB) / sigB);          // bright falls below theta
-  const pFalse = 1 - normCDF((theta - muD) / sigD);      // dark rises above theta
-  const fidelity = 1 - (pMiss + pFalse) / 2;
+  const pMiss  = normTail((muB - theta) / sigB);         // bright falls below theta
+  const pFalse = normTail((theta - muD) / sigD);         // dark rises above theta
+  const infid = (pMiss + pFalse) / 2;
+  const fidelity = 1 - infid;
   const snr = (muB - muD) / Math.sqrt(sigB * sigB + sigD * sigD);
   const thetaOpt = computeOptThreshold(muB, sigB, muD, sigD);
-  return { pMiss, pFalse, fidelity, snr, thetaOpt };
+  return { pMiss, pFalse, infid, fidelity, snr, thetaOpt };
 }
 
 // Chart instance, initialised once
@@ -1972,12 +1998,21 @@ function updateHistDisplay() {
   const sigD  = parseFloat(document.getElementById('histSigDarkSlider').value);
   const theta = parseFloat(document.getElementById('histThrSlider').value);
 
-  const { pMiss, pFalse, fidelity, snr, thetaOpt } = computeHistMetrics(muB, sigB, muD, sigD, theta);
+  const { pMiss, pFalse, infid, fidelity, snr, thetaOpt } = computeHistMetrics(muB, sigB, muD, sigD, theta);
+  // Below the printed precision, show the size of the (Gaussian-model) error instead of 100.000% / 0.0000%
+  const setVal = (id, plain, html) => {       // html: sciSup output (digits only, safe for innerHTML)
+    const el = document.getElementById(id);
+    if (html) el.innerHTML = html; else el.textContent = plain;
+    el.classList.toggle('hist-sci', !!html);
+  };
+  const pct = (id, p) => (p * 100 >= 1e-4 || p === 0) ? setVal(id, (p * 100).toFixed(4) + '%')
+                                                       : setVal(id, null, sciSup(p * 100) + '%');
 
   document.getElementById('histSNR').textContent      = snr.toFixed(2);
-  document.getElementById('histFidelity').textContent = (fidelity * 100).toFixed(3) + '%';
-  document.getElementById('histPmiss').textContent    = (pMiss * 100).toFixed(4) + '%';
-  document.getElementById('histPfalse').textContent   = (pFalse * 100).toFixed(4) + '%';
+  if (infid >= 5e-6) setVal('histFidelity', (fidelity * 100).toFixed(3) + '%');
+  else setVal('histFidelity', null, '1 − ' + sciSup(infid));
+  pct('histPmiss', pMiss);
+  pct('histPfalse', pFalse);
   document.getElementById('histThreshDisp').textContent = thetaOpt + ' e⁻';
   document.getElementById('histThrVal').textContent   = theta;
 

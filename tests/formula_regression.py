@@ -200,6 +200,38 @@ def test_decoherence_lab_t1_t2_relation() -> None:
     assert math.isclose(1 / T2, 1 / (2 * T1) + 1 / T_phi, rel_tol=1e-12)
 
 
+def test_imaging_histogram_presets_match_notes() -> None:
+    """Each histogram preset note must quote the SNR the page computes for that preset,
+    and the histogram must use a direct upper-tail function (no 1 - (1 - tail) floor)."""
+    import re
+    text = read("pages/imaging-calculator.html")
+    block = text[text.index("const HIST_PRESETS = {"):text.index("// Gaussian PDF")]
+    presets = re.findall(
+        r"(\w+): \{\s*muBright: ([\d.]+), sigBright: ([\d.]+), muDark: ([\d.]+), sigDark: ([\d.]+),\s*note: '([^']*)'",
+        block)
+    assert len(presets) == 4, f"expected 4 histogram presets, found {len(presets)}"
+
+    def q(x: float) -> float:
+        return 0.5 * math.erfc(x / math.sqrt(2))
+
+    for key, mb, sb, md, sd, note in presets:
+        mb, sb, md, sd = map(float, (mb, sb, md, sd))
+        snr = (mb - md) / math.hypot(sb, sd)
+        quoted = re.search(r"SNR (?:= [^≈]*)?≈ ([\d.]+)", note)
+        assert quoted, f"{key} note does not quote the page's SNR"
+        val = quoted.group(1)
+        decimals = len(val.split(".")[1]) if "." in val else 0
+        tol = 0.5 * 10 ** -decimals + 0.01  # the quoted value must round from the computed one
+        assert abs(float(val) - snr) <= tol, f"{key}: note says SNR {val}, page computes {snr:.2f}"
+        # optimal-threshold fidelity by brute force
+        best = min(q((mb - t) / sb) + q((t - md) / sd) for t in [md + i * 0.1 for i in range(int((mb - md) * 10))])
+        if key == "Marginal":
+            assert "F ≈ 88%" in note and abs((1 - best / 2) - 0.8775) < 0.001
+    assert "function normTail" in text
+    assert "1 - normCDF((theta - muD) / sigD)" not in text
+    assert "Marginal (SNR≈1.6)" in text
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -213,6 +245,7 @@ def main() -> None:
         test_cavity_qed_conventions,
         test_currentness_and_wording_guardrails,
         test_decoherence_lab_t1_t2_relation,
+        test_imaging_histogram_presets_match_notes,
     ]
     for test in tests:
         test()
