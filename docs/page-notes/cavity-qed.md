@@ -30,3 +30,19 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its page-footer signature line used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## 3D cavity mode + atom position (2026-09-28)
+Inside section 02 (Results), after the conventions paragraph, there is a new panel "Where the atom sits matters" (`#cav3d`, from `js/cavity3d.js?v=1` plus `js/orbit3d.js?v=2`). It is not a new numbered section, so the route cards stay 1:1 with sections 01–06.
+
+- **What the figure shows.** A rotatable TEM₀₀ standing wave between two mirrors. The mode is drawn as nested isosurfaces of cos²(kx)·e^(−2r²/w₀²) ("beads"), with an atom placed in it.
+  - It is schematic along the axis: 9 antinodes are drawn, and the caption gives the real count 2nL/λ (e.g. ≈1,282 for the default 0.5 mm at 780 nm). The radial scale is w₀.
+- **Sliders and readout.** Two sliders set the atom's position: along the axis (antinode → node) and off axis (r/w₀). The readout gives:
+  - g = g₀·cos(kx)·e^(−r²/w₀²);
+  - g/g₀;
+  - C at the atom = C·cos²(kx)·e^(−2r²/w₀²);
+  - β = 2C/(1 + 2C).
+  - This is the near-waist formula (z_R ≫ L, true for the presets).
+- **How the numbers reach the panel.** `cqedCalc()` now also publishes `window.CQED_LAST = {g0, kappa, gamma, C, L_mm, w0_um, lam_nm, n}` and fires `cqed:update`. The panel uses the calculator's own g₀ and C rather than recomputing them.
+- **Tested.** Halfway to a node at r = w₀, g/g₀ = cos(π/4)·e⁻¹ = 0.260 and C = 9.42 × 0.0677 = 0.638, matching the readout.
+- Nothing animates, so there is no pause control.
+- **Pre-existing.** At 390 px, `.sys-table` overflows the page (409 px).

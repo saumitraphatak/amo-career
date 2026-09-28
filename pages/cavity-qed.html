@@ -278,6 +278,24 @@
       line-height: 1.6;
     }
 
+    /* ── 3D cavity mode + atom (js/cavity3d.js) ── */
+    .cav3d { margin-top:var(--sp-5); border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); padding:var(--sp-4); display:grid; gap:var(--sp-4); }
+    .cav3d[hidden] { display:none; }
+    @media(min-width:880px){ .cav3d { grid-template-columns: 1fr minmax(260px, 320px); align-items:center; } }
+    .cav3d-fig { position:relative; min-width:0; }
+    #cav3d-cvs { display:block; width:100%; height:360px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media(max-width:620px){ #cav3d-cvs { height:280px; } }
+    .cav3d-side h3 { margin:0 0 .4rem; font-size:1rem; }
+    .cav3d-side p { font-size:.82rem; color:var(--text-secondary); line-height:1.6; margin:0 0 .7rem; }
+    .cav3d-side label { display:flex; justify-content:space-between; font-size:.8rem; color:var(--text-secondary); margin-top:.5rem; }
+    .cav3d-side label b { font-family:var(--font-mono); color:var(--text-primary); }
+    .cav3d-side input[type=range] { width:100%; }
+    .cav3d-out { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; margin-top:.8rem; }
+    .cav3d-out div { border:1px solid var(--border); border-radius:8px; padding:.35rem .5rem; }
+    .cav3d-out b { display:block; font-family:var(--font-mono); font-size:.95rem; color:var(--text-primary); }
+    .cav3d-out span { font-size:.7rem; color:var(--text-muted); }
+    .cav3d-note { font-size:.74rem !important; color:var(--text-muted) !important; margin-top:.7rem !important; }
+
   </style>
 </head>
 
@@ -553,6 +571,28 @@
         <p class="anim-in delay-2" style="font-size:.82rem;color:var(--text-muted);margin-top:.65rem;line-height:1.7">
           Convention used here: rates are displayed as angular rates divided by 2π. The calculator uses a TEM₀₀ standing-wave mode volume and treats ξ as an amplitude-level overlap factor. For real experiments, multiply by Clebsch-Gordan coefficients, polarization projections, antinode position, and transverse mode overlap.
         </p>
+
+
+        <div class="cav3d anim-in delay-2" id="cav3d" hidden>
+          <div class="cav3d-fig">
+            <canvas id="cav3d-cvs" data-export-ready="true" aria-label="3D sketch of the cavity's standing-wave TEM00 mode between two mirrors, with the atom placed in it. The coupling at the atom's position is given in numbers next to the figure."></canvas>
+          </div>
+          <div class="cav3d-side">
+            <h3>Where the atom sits matters</h3>
+            <p>The g₀ above assumes the atom is on the cavity axis at an antinode. Move it and the coupling falls as g = g₀·cos(kx)·e<sup>−r²/w₀²</sup>, so the cooperativity falls as the square.</p>
+            <label for="cav3d-ax">Along the axis <b id="cav3d-ax-v">antinode</b></label>
+            <input type="range" id="cav3d-ax" min="0" max="100" value="0">
+            <label for="cav3d-r">Off axis, r / w₀ <b id="cav3d-r-v">0.00</b></label>
+            <input type="range" id="cav3d-r" min="0" max="150" value="0">
+            <div class="cav3d-out" aria-live="polite">
+              <div><b id="cav3d-g">—</b><span>g/2π at the atom (MHz)</span></div>
+              <div><b id="cav3d-gf">—</b><span>g / g₀</span></div>
+              <div><b id="cav3d-C">—</b><span>cooperativity C at the atom</span></div>
+              <div><b id="cav3d-beta">—</b><span>β = 2C/(1+2C)</span></div>
+            </div>
+            <p class="cav3d-note" id="cav3d-note">Schematic along the axis: 9 antinodes drawn; the real cavity has 2L/λ of them. Radial scale is w₀. Near-waist formula (z<sub>R</sub> ≫ L). Drag to turn it.</p>
+          </div>
+        </div>
 
         <!-- ════════════════════════════════════════
              SECTION 03 — CHART
@@ -854,6 +894,39 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
   <script src="../js/main.js?v=31"></script>
+  <script src="../js/orbit3d.js?v=2"></script>
+  <script src="../js/cavity3d.js?v=1"></script>
+  <script>
+  /* 3D cavity mode + atom position (js/cavity3d.js) — uses the calculator's g₀, κ, γ via window.CQED_LAST */
+  (function () {
+    var wrap = document.getElementById('cav3d'), cvs = document.getElementById('cav3d-cvs');
+    if (!wrap || !cvs || !window.AMO3D || !AMO3D.cavityMode) return;
+    wrap.hidden = false;
+    var fig = AMO3D.cavityMode(cvs);
+    if (!fig) { wrap.hidden = true; return; }
+    var ax = document.getElementById('cav3d-ax'), rr = document.getElementById('cav3d-r');
+    function f3(v) { return v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v >= 0.01 ? v.toFixed(3) : v.toExponential(2); }
+    function update() {
+      var a = +ax.value / 100, r = +rr.value / 100;
+      fig.setAtom(a, r);
+      document.getElementById('cav3d-ax-v').textContent = a === 0 ? 'antinode' : a === 1 ? 'node' : (a * 100).toFixed(0) + '% to node';
+      document.getElementById('cav3d-r-v').textContent = r.toFixed(2);
+      var f = fig.factors(), q = window.CQED_LAST;
+      document.getElementById('cav3d-gf').textContent = f.g.toFixed(3);
+      if (q) {
+        var C = q.C * f.C, lam = q.lam_nm * 1e-9, N = Math.round(2 * q.n * q.L_mm * 1e-3 / lam);
+        document.getElementById('cav3d-g').textContent = f3(q.g0 * f.g);
+        document.getElementById('cav3d-C').textContent = f3(C);
+        document.getElementById('cav3d-beta').textContent = (100 * 2 * C / (1 + 2 * C)).toFixed(1) + '%';
+        document.getElementById('cav3d-note').innerHTML = 'Schematic along the axis: 9 antinodes drawn; your cavity has 2nL/λ ≈ ' + N.toLocaleString('en-US') +
+          '. Radial scale is w₀. Near-waist formula (z<sub>R</sub> ≫ L). Drag to turn it.';
+      }
+    }
+    ax.addEventListener('input', update); rr.addEventListener('input', update);
+    document.addEventListener('cqed:update', update);
+    update();
+  })();
+  </script>
   <script>
     renderNav({ active: 'cavity-qed', root: '../' });
 
@@ -990,6 +1063,10 @@
         icon.textContent = '⚪';
         text.textContent = `Weak coupling — C = ${C.toFixed(3)} < 1. The atom mostly emits into free space. To reach C≈1, increase finesse by ${(1/C).toFixed(1)}× or reduce w₀ toward ${(w0_um*Math.sqrt(C)).toFixed(2)} μm.`;
       }
+
+      // Share the numbers with the 3D mode figure (js/cavity3d.js)
+      window.CQED_LAST = { g0: g0_MHz, kappa: kap_MHz, gamma: gam_MHz, C: C, L_mm: L_mm, w0_um: w0_um, lam_nm: lam_nm, n: n };
+      document.dispatchEvent(new CustomEvent('cqed:update'));
 
       // ── Update chart ────────────────────────────────────────────
       updateCQEDChart(g0_MHz, gam_MHz, FSR_Hz / 1e6);
