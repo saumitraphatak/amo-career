@@ -64,3 +64,24 @@ this session** (device_bash has no network egress) — user must push via GitHub
 
 ## Technical/SEO/consistency audit update (2026-09-28)
 Rotation re-check of the technical/SEO/consistency audit. Meta description was 205 characters (45 over the 160-char limit) — trimmed to 154 chars preserving the same facts. Also added this page (plus its three siblings) to `llms.txt`/`llms-full.txt`, which had drifted to only list 26/32 pages. See docs/technical-audit-2026-09-28.md.
+
+## Interactive pass (2026-09-28): "make the comparison pages more interesting"
+Three additions, built from the page's own content:
+- **Race replay** (top of Section 03, `js/versus.js`). Both Section-03 timelines on one shared time axis, parsed from the `.tl-item` year text.
+  - Controls: a scrubbable playhead, ▶ Replay, and a "by <year>" card per company with the latest demonstrated milestone.
+  - Roadmap/target items (`(target)` in the year, or a `company-roadmap` tag) are drawn hollow and dashed and are never shown as the latest demonstrated milestone.
+  - Clicking a marker flashes the full timeline entry. It opens at "today" (Sep 2026); Replay starts from the beginning.
+  - Maintenance: new timeline items appear automatically. Keep the `tl-year` format "Mon YYYY · Label" or "YYYY (target)".
+- **Tug of war** (top of the Full Head-to-Head section, `js/versus.js`).
+  - What it does: tallies the table's own *Edge* column, and readers toggle which categories count.
+  - How a row is attributed: by the page's `win <side>` classes; otherwise by the Edge text starting with a side's name.
+  - Conditional calls ("if it scales", "pending review", "if realized") count ½ and are drawn dashed.
+  - Clicking a row flashes it in the table.
+  - The caption says this is a tally of the page's calls, not a score. No new claims are made.
+  - Editing the table (or its Edge text / `win` classes) updates the widget automatically.
+- **Loss budget: follow the photons** (end of Section 05, `js/vs-photons.js`). A five-stage optical chain (source, on-chip routing, chip-to-chip coupling, fiber link, detector) with efficiency sliders.
+  - What it computes: η_total = Π ηᵢ (Section 05's formula), photons lost per 1,000, and the probability a k-photon resource state arrives complete (η_total^k, with k marked "illustrative").
+  - A Monte Carlo photon stream drops photons at the stage that lost them.
+  - The only company figure used is PsiQuantum's reported 88.9% on-chip detection efficiency (first preset; other stages lossless). The other presets are "every stage 99% / 97%".
+  - No per-stage losses are attributed to either company, and the caption says so.
+  - Pause button; no stream under reduced motion.

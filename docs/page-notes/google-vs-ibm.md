@@ -59,3 +59,23 @@ GitHub Desktop or terminal.
 
 ## Technical/SEO/consistency audit update (2026-09-28)
 Rotation re-check of the technical/SEO/consistency audit (oldest-redone of the ongoing rotation, last done 2026-09-16). Meta description was 225 characters (65 over the site's 160-char limit established by the original Sep-2026 technical audit) — trimmed to a 160-char version preserving the same facts (Google Quantum AI vs IBM Quantum, superconducting-qubit, architecture/error-correction/advantage-claims). Also added this page (plus its three siblings) to `llms.txt`/`llms-full.txt`, which had drifted to only list 26/32 pages. See docs/technical-audit-2026-09-28.md.
+
+## Interactive pass (2026-09-28): "make the comparison pages more interesting"
+Three additions, built from the page's own content:
+- **Race replay** (top of Section 03, `js/versus.js`). Both Section-03 timelines on one shared time axis, parsed from the `.tl-item` year text.
+  - Controls: a scrubbable playhead, ▶ Replay, and a "by <year>" card per company with the latest demonstrated milestone.
+  - Roadmap/target items (`(target)` in the year, or a `company-roadmap` tag) are drawn hollow and dashed and are never shown as the latest demonstrated milestone.
+  - Clicking a marker flashes the full timeline entry. It opens at "today" (Sep 2026); Replay starts from the beginning.
+  - Maintenance: new timeline items appear automatically. Keep the `tl-year` format "Mon YYYY · Label" or "YYYY (target)".
+- **Tug of war** (top of the Full Head-to-Head section, `js/versus.js`).
+  - What it does: tallies the table's own *Edge* column, and readers toggle which categories count.
+  - How a row is attributed: by the page's `win <side>` classes; otherwise by the Edge text starting with a side's name.
+  - Conditional calls ("if it scales", "pending review", "if realized") count ½ and are drawn dashed.
+  - Clicking a row flashes it in the table.
+  - The caption says this is a tally of the page's calls, not a score. No new claims are made.
+  - Editing the table (or its Edge text / `win` classes) updates the widget automatically.
+- **Lattice lab** (end of Section 02, `js/vs-lattice.js`). Two schematic ~50-qubit patches: a square lattice (Google Sycamore → Willow, and IBM Nighthawk) and a heavy-hex lattice built IBM-style (rows joined by bridge qubits every 4th column, alternating offset; max degree 3).
+  - Interaction: hover shows neighbours; clicking two qubits routes a gate (BFS shortest path, SWAPs = distance − 1); "Random gate on both" rolls one on each.
+  - Computed stats: square patch average degree 3.43 (sanity check against Willow's spec-sheet 3.47), max 4, 3.7 average SWAPs per random pair. Heavy-hex average degree 2.17, max 3, 5.7 SWAPs.
+  - The caption states these are schematic patches, not chip maps, and repeats the page's real counts: Willow 105, average connectivity 3.47; Nighthawk 120, up to 4; Heron 133/156.
+  - It illustrates the page's point that denser connectivity cuts SWAPs, without adding any new numeric claim about the chips.

@@ -1598,6 +1598,25 @@ Logical-qubit teleportation fidelity: 77.1(9)% (random ancilla, syndrome post-se
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 
 <script src="../js/main.js?v=32"></script>
+<script src="../js/versus.js?v=1"></script>
+<script src="../js/vs-erasure.js?v=1"></script>
+<script>
+/* Interactive comparison pieces (js/versus.js + page scene), built from this page's own content */
+if (window.AMOVersus) {
+  (function () {
+    var table = document.querySelector('#comparison table.cmp'); if (!table) return;
+    var mount = document.createElement('div'); (table.closest('.cmp-wrap') || table).insertAdjacentElement('beforebegin', mount);
+    AMOVersus.tug(table, { mount: mount, sides: [
+      { key: 'rb', name: 'Rb87', color: 'var(--rb)', match: /^Rb\b/ },
+      { key: 'yb', name: 'Yb171', color: 'var(--yb)', match: /^Yb\b/ }] });
+  })();
+  (function () {
+    var sec = document.getElementById('erasure'); if (!sec || !AMOVersus.erasureLab) return;
+    var mount = document.createElement('div'); sec.appendChild(mount);
+    AMOVersus.erasureLab(mount, { flagColor: 'var(--yb)' });
+  })();
+}
+</script>
 <script>
   renderNav({ active: 'rb87-vs-yb171', root: '../' });
 

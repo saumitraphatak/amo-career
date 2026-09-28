@@ -50,3 +50,18 @@ Follow-up freshness pass. Confirmed the April 2026 Evered et al. Rb87 preprint (
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## Interactive pass (2026-09-28): "make the comparison pages more interesting"
+Two additions. There is no dual timeline on this page, so no Race replay.
+- **Tug of war** (top of the Full Head-to-Head section, `js/versus.js`).
+  - What it does: tallies the table's own *Edge* column, and readers toggle which categories count.
+  - How a row is attributed: by the page's `win <side>` classes; otherwise by the Edge text starting with a side's name.
+  - Conditional calls ("if it scales", "pending review", "if realized") count ½ and are drawn dashed.
+  - Clicking a row flashes it in the table.
+  - The caption says this is a tally of the page's calls, not a score. No new claims are made.
+  - Editing the table (or its Edge text / `win` classes) updates the widget automatically.
+- **Throw errors at a code** (end of Section 09, `js/vs-erasure.js`). A d×d code patch (d = 3/5/7). Each thrown error is flagged as an erasure with 98% probability (the Wu, Kolkowitz, Puri et al. 2022 Yb/Sr figure the section cites).
+  - The same errors are scored twice against the guarantee e + 2t ≤ d − 1: once with the flags, once with none. This is Section 09's "d − 1 erasures but only ⌊(d−1)/2⌋ Pauli errors" in one line.
+  - The no-flag case is deliberately not labelled "Rb87", since the section says there is no single published Rb87 erasure fraction.
+  - "Beyond the guarantee" is worded as *may* fail.
+- Pre-existing, not changed: at 390 px the page scrolls horizontally to 432 px (the sticky topic nav).

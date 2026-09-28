@@ -978,6 +978,32 @@ Google's Feb 2024 result measured the error-suppression factor $\Lambda$ directl
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 
 <script src="../js/main.js?v=32"></script>
+<script src="../js/versus.js?v=1"></script>
+<script src="../js/vs-lattice.js?v=1"></script>
+<script>
+/* Interactive comparison pieces (js/versus.js + page scene), built from this page's own content */
+if (window.AMOVersus) {
+  (function () {
+    var tls = document.querySelectorAll('#generations .timeline');
+    if (tls.length < 2) return;
+    var host = tls[0].closest('.side-by-side') || tls[0];
+    var mount = document.createElement('div'); host.insertAdjacentElement('beforebegin', mount);
+    AMOVersus.race(mount, { lanes: [{ el: tls[0], name: 'Google', color: 'var(--goog)' }, { el: tls[1], name: 'IBM', color: 'var(--ibm)' }] });
+  })();
+  (function () {
+    var table = document.querySelector('#comparison table.cmp'); if (!table) return;
+    var mount = document.createElement('div'); (table.closest('.cmp-wrap') || table).insertAdjacentElement('beforebegin', mount);
+    AMOVersus.tug(table, { mount: mount, sides: [
+      { key: 'goog', name: 'Google', color: 'var(--goog)', match: /^Google/ },
+      { key: 'ibm', name: 'IBM', color: 'var(--ibm)', match: /^IBM/ }] });
+  })();
+  (function () {
+    var sec = document.getElementById('architecture'); if (!sec || !AMOVersus.lattices) return;
+    var mount = document.createElement('div'); sec.appendChild(mount);
+    AMOVersus.lattices(mount, { squareColor: 'var(--goog)', hexColor: 'var(--ibm)' });
+  })();
+}
+</script>
 <script>
   renderNav({ active: 'google-vs-ibm', root: '../' });
 

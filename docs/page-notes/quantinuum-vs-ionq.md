@@ -60,3 +60,23 @@ Rotation re-check of the science-content audit. Added two new 2026 Quantinuum lo
 
 ## Technical/SEO/consistency audit update (2026-09-28)
 Rotation re-check of the technical/SEO/consistency audit. Meta description was 202 characters (42 over the 160-char limit) — trimmed to 142 chars preserving the same facts. Also added this page (plus its three siblings) to `llms.txt`/`llms-full.txt`, which had drifted to only list 26/32 pages. See docs/technical-audit-2026-09-28.md.
+
+## Interactive pass (2026-09-28): "make the comparison pages more interesting"
+Three additions, all built from the page's own content (nothing new is asserted):
+- **Race replay** (top of Section 03, `js/versus.js`). Both Section-03 timelines on one shared time axis, parsed from the `.tl-item` year text.
+  - Controls: a scrubbable playhead, ▶ Replay, and a "by <year>" card per company with the latest demonstrated milestone.
+  - Roadmap/target items (`(target)` in the year, or a `company-roadmap` tag) are drawn hollow and dashed and are never shown as the latest demonstrated milestone.
+  - Clicking a marker flashes the full timeline entry. It opens at "today" (Sep 2026); Replay starts from the beginning.
+  - Maintenance: new timeline items appear automatically. Keep the `tl-year` format "Mon YYYY · Label" or "YYYY (target)".
+- **Tug of war** (top of the Full Head-to-Head section, `js/versus.js`).
+  - What it does: tallies the table's own *Edge* column, and readers toggle which categories count.
+  - How a row is attributed: by the page's `win <side>` classes; otherwise by the Edge text starting with a side's name.
+  - Conditional calls ("if it scales", "pending review", "if realized") count ½ and are drawn dashed.
+  - Clicking a row flashes it in the table.
+  - The caption says this is a tally of the page's calls, not a score. No new claims are made.
+  - Editing the table (or its Edge text / `win` classes) updates the widget automatically.
+- **"Two ways to talk to an ion"** (end of Section 02, `js/vs-ions.js` + `orbit3d.js`). A rotatable schematic 3D scene.
+  - Left: ions in a storage ring, a pair shuttled through a four-way junction into a gate zone, and two steered laser beams driving the gate. This follows Section 02's Helios description.
+  - Right: an ion chain above a chip, with the electrodes underneath lighting up to drive the gate. This follows the EQC description.
+  - Labelled "schematic, not to scale; ion counts illustrative". The ring is drawn static (the "rotatable" ring is not animated) to avoid implying a mechanism.
+  - Has a pause button, a still frame under reduced motion, and stacks vertically on phones.

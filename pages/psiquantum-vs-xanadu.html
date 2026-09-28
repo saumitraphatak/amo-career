@@ -913,6 +913,32 @@ Because photon loss compounds across every optical component a photon passes thr
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 
 <script src="../js/main.js?v=32"></script>
+<script src="../js/versus.js?v=1"></script>
+<script src="../js/vs-photons.js?v=1"></script>
+<script>
+/* Interactive comparison pieces (js/versus.js + page scene), built from this page's own content */
+if (window.AMOVersus) {
+  (function () {
+    var tls = document.querySelectorAll('#milestones .timeline');
+    if (tls.length < 2) return;
+    var host = tls[0].closest('.side-by-side') || tls[0];
+    var mount = document.createElement('div'); host.insertAdjacentElement('beforebegin', mount);
+    AMOVersus.race(mount, { lanes: [{ el: tls[0], name: 'PsiQuantum', color: 'var(--psi)' }, { el: tls[1], name: 'Xanadu', color: 'var(--xan)' }] });
+  })();
+  (function () {
+    var table = document.querySelector('#comparison table.cmp'); if (!table) return;
+    var mount = document.createElement('div'); (table.closest('.cmp-wrap') || table).insertAdjacentElement('beforebegin', mount);
+    AMOVersus.tug(table, { mount: mount, sides: [
+      { key: 'psi', name: 'PsiQuantum', color: 'var(--psi)', match: /^PsiQuantum/ },
+      { key: 'xan', name: 'Xanadu', color: 'var(--xan)', match: /^Xanadu/ }] });
+  })();
+  (function () {
+    var sec = document.getElementById('fault-tolerance'); if (!sec || !AMOVersus.photonLab) return;
+    var mount = document.createElement('div'); sec.appendChild(mount);
+    AMOVersus.photonLab(mount, { color: 'var(--psi)' });
+  })();
+}
+</script>
 <script>
   renderNav({ active: 'psiquantum-vs-xanadu', root: '../' });
 

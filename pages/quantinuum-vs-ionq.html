@@ -1082,6 +1082,38 @@ racing to merely cross the threshold at all.</div>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 
 <script src="../js/main.js?v=32"></script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/versus.js?v=1"></script>
+<script src="../js/vs-ions.js?v=1"></script>
+<script>
+/* Interactive comparison pieces (js/versus.js + page scene), built from this page's own content */
+if (window.AMOVersus) {
+  (function () {
+    var tls = document.querySelectorAll('#generations .timeline');
+    if (tls.length < 2) return;
+    var host = tls[0].closest('.side-by-side') || tls[0];
+    var mount = document.createElement('div'); host.insertAdjacentElement('beforebegin', mount);
+    AMOVersus.race(mount, { lanes: [{ el: tls[0], name: 'Quantinuum', color: 'var(--qtm)' }, { el: tls[1], name: 'IonQ', color: 'var(--ionq)' }] });
+  })();
+  (function () {
+    var table = document.querySelector('#comparison table.cmp'); if (!table) return;
+    var mount = document.createElement('div'); (table.closest('.cmp-wrap') || table).insertAdjacentElement('beforebegin', mount);
+    AMOVersus.tug(table, { mount: mount, sides: [
+      { key: 'qtm', name: 'Quantinuum', color: 'var(--qtm)', match: /^Quantinuum\b/ },
+      { key: 'ionq', name: 'IonQ', color: 'var(--ionq)', match: /^IonQ\b/ }] });
+  })();
+  (function () {
+    var sec = document.getElementById('architecture'); if (!sec || !window.AMO3D || !AMO3D.ionScenes) return;
+    var card = document.createElement('div'); card.className = 'vs-card';
+    card.innerHTML = '<div class="vs-card-top"><div><h3>Two ways to talk to an ion</h3><p>The whole comparison in one picture. Left: ions wait in a storage ring, a pair is shuttled through a junction into a gate zone, and steered laser beams drive the gate. Right: the ions float above a chip and the electrodes underneath drive the gate, with no per-gate beam steering. Drag to turn it.</p></div>' +
+      '<button type="button" class="vs-pill">❚❚ Pause</button></div>' +
+      '<canvas class="vs-tall-mobile" data-export-ready="true" aria-label="Schematic 3D comparison: on the left, ions shuttled from a storage ring through a four-way junction into a gate zone where two laser beams drive the gate; on the right, a chain of ions above a chip whose electrodes light up to drive the gate."></canvas>' +
+      '<p class="vs-card-note">Schematic, not to scale. Left follows the page’s description of Quantinuum Helios (rotatable storage ring, four-way junction, gate regions, laser gates); right follows IonQ’s Electronic Qubit Control (gates driven by electrodes on the trap chip, removing most free-space beam-steering optics). Ion counts are illustrative.</p>';
+    sec.appendChild(card);
+    AMO3D.ionScenes(card.querySelector('canvas'), { colorA: '#8b5cf6', colorB: '#3b82f6', pauseButton: card.querySelector('.vs-pill') });
+  })();
+}
+</script>
 <script>
   renderNav({ active: 'quantinuum-vs-ionq', root: '../' });
 
