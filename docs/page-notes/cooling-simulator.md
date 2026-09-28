@@ -44,3 +44,6 @@ Home page's tools-grid badge for this page said "TRAP 06," one behind this page'
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) and its BreadcrumbList JSON-LD leaf name used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 4 labels rendered differently after the fix, e.g. "FORCE CURVE F(V), INTERACTIVE" → "FORCE CURVE F(v), INTERACTIVE"; "T_DOPPLER VS DETUNING" → "T_Doppler VS DETUNING". No markup on the page changed apart from the cache version.

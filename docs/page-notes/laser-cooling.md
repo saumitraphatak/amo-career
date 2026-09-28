@@ -42,3 +42,6 @@ This page was never actually covered by the original interactive-correctness aud
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - `.two-col` children get `min-width:0` (display maths scroll in place). The Hood Lab simulation-repo card (`.repo-card`) wraps on phones: icon + text on one row, the "Purdue GitHub" badge below, and the long repo URL breaks anywhere.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 2 labels rendered differently after the fix, e.g. "⟨N⟩ LIMIT" → "⟨n⟩ LIMIT"; "TYPICAL ⟨N⟩ (RB, 100 KHZ)" → "TYPICAL ⟨n⟩ (Rb, 100 kHz)". KaTeX maths inside uppercase labels was uppercased too (1 formula); `.katex` now has `text-transform:none`. No markup on the page changed apart from the cache version.

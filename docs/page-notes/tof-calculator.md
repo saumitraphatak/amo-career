@@ -50,3 +50,6 @@ The "Live TOF expansion" strip is replaced by a rotatable 3D cloud (`#tofCloudCa
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - The fit table is wrapped in `.table-scroll`.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 9 labels rendered differently after the fix, e.g. "THERMAL VELOCITY V_RMS" → "THERMAL VELOCITY v_rms"; "DE BROGLIE Λ" → "DE BROGLIE λ". No markup on the page changed apart from the cache version.

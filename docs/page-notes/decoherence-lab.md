@@ -54,3 +54,6 @@ The loops now run through the shared `js/motion.js?v=1` (`AMOMotion.loop`), whic
 - **Reduced motion.** Under `prefers-reduced-motion` the loop starts paused on a still frame, and the button can still play it.
 
 The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` lines moved into the helper. This closes open item 3 of docs/3d-visualization-audit-2026-09-28.md.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 1 label rendered differently after the fix, e.g. "DETECTOR SIGNAL ΣZ(T) — OSCILLOSCOPE SWEEP" → "DETECTOR SIGNAL σz(t) — OSCILLOSCOPE SWEEP". No markup on the page changed apart from the cache version.

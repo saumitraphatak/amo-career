@@ -39,3 +39,6 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s),
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - The per-source budget table is wrapped in `<div class="table-scroll">` (scrolls sideways below 900 px only, so desktop spacing is unchanged).
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 4 labels rendered differently after the fix, e.g. "TOTAL GATE FIDELITY F = 1 − ΣΕᵢ" → "TOTAL GATE FIDELITY F = 1 − Σεᵢ"; "RYDBERG LIFETIME Τ" → "RYDBERG LIFETIME τ". No markup on the page changed apart from the cache version.

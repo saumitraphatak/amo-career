@@ -30,3 +30,13 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - Keyboard access for `.tip` tooltips (P1).
 - **Left alone.** paper-syllabus is briefly wider than the screen during the tab-switch animation (gone after it settles). It is transient and pre-existing, so no action was taken.
 
+
+## 2026-09-28 08:48–09:40 UTC — overnight run 2
+- **Lock.** Found `running 2026-09-28T05:48:55Z` (3 h old, so stale) and took it. No `.git/index.lock`. Working tree had only Saumitra's untracked `Claude outputs/*.png`, left alone.
+- **Item: P0 Greek letters and units mangled by uppercase labels.** Done.
+  - **Cause.** `text-transform: uppercase` on labels, `th`, `h5`, chip and card labels uppercases every character, so κ/2π showed as Κ/2Π, g₀ as G₀, mW/cm² as MW/CM² (megawatts), ms as MS, μK as ΜK, Cs-133 as CS-133, ⟨n⟩ as ⟨N⟩. KaTeX inside such labels was uppercased as well (rb-explorer's r_C and ε_gate headers, one formula on laser-cooling).
+  - **Fix.** A block at the end of `js/main.js` (after the KaTeX render) wraps the tokens that must keep their case in `<span class="case-keep">`, only inside text whose computed style is uppercase; a MutationObserver handles text added later. Rules are in CLAUDE.md ("Case-safe symbols"). `styles.css`: `.case-keep, .katex { text-transform:none }`. Labels keep their look; the symbols are right.
+  - **Result.** Rendered scan of every page (KaTeX served locally): 136 labels on 25 pages now display differently, all intended (before/after examples in each page note). Every token the pass kept, across all pages with tabs/accordions opened, was listed and reviewed: 115 distinct tokens, all symbols/units/elements, no ordinary words.
+  - **Checks.** Formula tests OK 11; `node --check js/main.js`; HTML changed only in the cache version, so tag balance is unchanged. `smoke.js` against the HEAD baseline: 34 pages × 3 configs, new problems 0. Targeted Playwright run on 12 pages: no page errors, and zero mutations touching `.case-keep` over 1.5 s after load (no observer feedback loop, including animated pages). Screenshots reviewed: cavity-qed parameter table, tweezer-designer output cards, rb-explorer chips, mot-designer cards, rydberg cards, decoherence-lab panel label; dark and light at 1280 px and light at 390 px.
+  - **Cache.** main.js v=34, styles.css v=24 (all pages + 404).
+- **Noticed, not changed.** decoherence-lab: the oscilloscope panel is as tall as the Bloch sphere panel, leaving a large empty area under the trace at 1280 px (pre-existing layout).

@@ -48,3 +48,6 @@ New panel **"All 55 papers in one view"** (`#paper-tower`), placed between the r
 - On touch, the first tap shows the card with a "Read the note in the list ↓" button.
 
 **Motion.** A slow turn with a Stop/Turn button (WCAG 2.2.2); it is static under `prefers-reduced-motion` and pauses offscreen. The panel is hidden until the script initialises.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 1 label rendered differently after the fix, e.g. "SU(N) PHYSICS & MULTI-ORBITAL MODELS — YB AND SR" → "SU(N) PHYSICS & MULTI-ORBITAL MODELS — Yb AND Sr". No markup on the page changed apart from the cache version.

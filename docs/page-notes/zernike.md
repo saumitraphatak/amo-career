@@ -38,3 +38,6 @@ The dynamically-generated "Wavefront Builder" mode rows (`renderWFModes()`'s tem
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - The Laguerre–Gauss table is wrapped in `.table-scroll`.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 5 labels rendered differently after the fix, e.g. "Z_N^M (OSA, UNITS Λ)" → "Z_n^m (OSA, UNITS λ)"; "RADIAL CROSS-SECTION AT Θ=0" → "RADIAL CROSS-SECTION AT θ=0". No markup on the page changed apart from the cache version.

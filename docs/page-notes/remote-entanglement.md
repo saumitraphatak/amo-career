@@ -36,3 +36,6 @@ Also fixed: the References & Further Reading section — which comes after this 
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - The HOM visibility slider row no longer overflows at 360 px (`.hom-slider-row input { min-width:0 }`).
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 3 labels rendered differently after the fix, e.g. "RB FIBER LINK WITH QFC" → "Rb FIBER LINK WITH QFC"; "COHERENT CS ATOM ARRAY REPORTED IN 2025" → "COHERENT Cs ATOM ARRAY REPORTED IN 2025". No markup on the page changed apart from the cache version.

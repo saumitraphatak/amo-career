@@ -2136,3 +2136,122 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+/* ─────────────────────────────────────────────────────────
+   CASE-SAFE SYMBOLS IN UPPERCASE LABELS
+   Labels, table headers and h5s use `text-transform: uppercase`, which
+   turns physics symbols into different symbols: γ/2π → Γ/2Π (a different
+   rate), σ → Σ, mW → MW (megawatt), ms → MS, μK → ΜK, k_B → K_B,
+   Cs-133 → CS-133. After KaTeX has run, this wraps the symbol-like tokens
+   inside uppercase text in <span class="case-keep"> (text-transform:none),
+   so the label keeps its style and the physics keeps its meaning.
+   What counts as a symbol (whole token kept):
+     • tokens with a Greek lowercase letter, sub/superscript, _ or ^,
+       ⟨⟩ or /2π, unless the part before _/^ holds an ordinary word
+       ("β-factor" keeps only β; "photons²" is left alone);
+     • SI units with a prefix (nm, mW, kHz, μK, mbar, m/s, …);
+     • single-letter variables (t, n, r, "F(v)") and element symbols
+       or AMO molecules (Rb, Cs-133, ¹⁷¹Yb, KRb).
+   Otherwise only the Greek letters themselves are kept. Add class
+   `no-case-keep` to opt a block out. New or changed text (calculator
+   outputs, tab panels) is handled by a MutationObserver.
+   ───────────────────────────────────────────────────────── */
+(function () {
+  const GREEK = 'α-ωϑϕϖϰϱϵµ';
+  const SUPSUB = '²³¹⁰-ₜᴬ-ᵪ';
+  const MARK = new RegExp('[_^' + GREEK + SUPSUB + '⟨⟩]|/2π');
+  const GREEK_RUN = new RegExp('([' + GREEK + ']+)');
+  const PRE = '[pnμµmkMG]';
+  const UNIT1 = '(?:' + PRE + '?(?:Hz|eV|dBm?|mol|s|m|g|K|W|V|T|J|A|L|Ω)|' + PRE + '(?:bar|rad|Pa|Torr)|cm)[²³¹⁰-⁻]*';
+  const UNIT = new RegExp('^[\\d.,]*' + UNIT1 + '(?:[/·]' + UNIT1 + ')*$');
+  const VAR = /^(?:[b-z]|[A-Za-z]\([a-z,]{1,5}\))$/;
+  const EL = 'Rb|Cs|Yb|Sr|Na|Li|Er|Dy|Ca|Mg|Hg|Ba|Ho|Tm|Cr|Kr|Xe|Cd|Lu|Eu|KRb|NaK|NaCs|RbCs|NaRb|LiCs|LiK|LiRb|NaLi|CaF|SrF|YbF|BaF|SrOH|CaOH|AlF';
+  const EL_MASS = 'Be|He|Ne|Ar|Al|Zn|Si';   // English-looking: only with a mass number
+  const ELEMENT = new RegExp('^(?:\\d*(?:' + EL + ')|(?:' + EL + '|' + EL_MASS + ')-\\d+|\\d+(?:' + EL_MASS + '))$');
+  const SKIP = 'script,style,textarea,select,option,svg,code,pre,.katex,.case-keep,.no-case-keep,[contenteditable]';
+  const upper = new WeakMap();
+
+  function isUpper(el) {
+    let v = upper.get(el);
+    if (v === undefined) { v = getComputedStyle(el).textTransform === 'uppercase'; upper.set(el, v); }
+    return v;
+  }
+  function keepWhole(t) {
+    if (!t || t.toUpperCase() === t) return false;
+    if (MARK.test(t) && !/[a-z]{4,}/.test(t.split(/[_^]/)[0])) return true;
+    if (UNIT.test(t) || VAR.test(t)) return true;
+    return /[a-z]/.test(t) && t.split(/[/–]/).every(p => ELEMENT.test(p) || /^\d+$/.test(p));
+  }
+  function greekRuns(s) {
+    return s.split(GREEK_RUN).map((p, i) => [p, i % 2]);
+  }
+  function segCore(core) {
+    if (keepWhole(core)) return [[core, 1]];
+    if (/^(?:n\/a|w\/o|w\/)$/i.test(core)) return [[core, 0]];
+    const pieces = core.split(/([-/])/);
+    if (pieces.length > 1 && pieces.some((p, i) => i % 2 === 0 && keepWhole(p))) {
+      const out = [];
+      pieces.forEach((p, i) => out.push(...(i % 2 ? [[p, 0]] : keepWhole(p) ? [[p, 1]] : greekRuns(p))));
+      return out;
+    }
+    return greekRuns(core);
+  }
+  function segToken(tok) {
+    let lead = '', core = tok, trail = '';
+    while (/^[(\[{"'“‘]/.test(core)) { lead += core[0]; core = core.slice(1); }
+    for (;;) {
+      const c = core.slice(-1);
+      const n = s => core.split(s).length - 1;
+      if (/[,;:.!?"'”’]/.test(c) || (c === ')' && n('(') < n(')')) ||
+          (c === ']' && n('[') < n(']')) || (c === '}' && n('{') < n('}'))) {
+        trail = c + trail; core = core.slice(0, -1);
+      } else break;
+    }
+    return [[lead, 0], ...segCore(core), [trail, 0]];
+  }
+  function fixText(node) {
+    const text = node.nodeValue, el = node.parentElement;
+    if (!el || !/[a-zµα-ω]/.test(text) || /\$|\\\(|\\\[/.test(text)) return;
+    if (!isUpper(el) || el.closest(SKIP)) return;
+    const segs = [];
+    text.split(/(\s+)/).forEach(tok => {
+      if (!tok) return;
+      if (/^\s+$/.test(tok)) segs.push([tok, 0]); else segs.push(...segToken(tok));
+    });
+    if (!segs.some(([s, k]) => k && s)) return;
+    const frag = document.createDocumentFragment();
+    let buf = '';
+    for (const [s, k] of segs) {
+      if (!s) continue;
+      if (!k) { buf += s; continue; }
+      if (buf) { frag.appendChild(document.createTextNode(buf)); buf = ''; }
+      const span = document.createElement('span');
+      span.className = 'case-keep';
+      span.textContent = s;
+      frag.appendChild(span);
+    }
+    if (buf) frag.appendChild(document.createTextNode(buf));
+    el.replaceChild(frag, node);
+  }
+  function fixTree(root) {
+    if (!root || !root.isConnected) return;
+    if (root.nodeType === 3) return fixText(root);
+    if (root.nodeType !== 1 || root.closest(SKIP)) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+    nodes.forEach(fixText);
+  }
+  function start() {
+    fixTree(document.body);
+    new MutationObserver(recs => {
+      for (const r of recs) {
+        if (r.type === 'characterData') fixTree(r.target);
+        else r.addedNodes.forEach(fixTree);
+      }
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  // Registered after the KaTeX listener above, so maths is already typeset.
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+  window.AMOCaseKeep = { fix: fixTree, keepWhole };
+})();

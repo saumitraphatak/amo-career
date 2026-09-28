@@ -58,3 +58,6 @@ A new "Where the photons go" panel (`#coll3d`, from `js/collection3d.js?v=1` plu
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - The two inline three-card grids (η / scattered / detected, and fidelity / t_min) are now `.trio-row`: three columns on desktop, and on phones the first card spans the width with two below. The noise-budget table is wrapped in `.table-scroll`.
 - Noticed but not changed here: the uppercase `.prop-card-label` turns "η" into "Η" and "θ_opt" into "Θ_OPT" (sitewide Greek-in-uppercase issue, now a backlog item).
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 6 labels rendered differently after the fix, e.g. "R_MAX AT SATURATION" → "R_max AT SATURATION"; "COLLECTION EFFICIENCY Η" → "COLLECTION EFFICIENCY η". No markup on the page changed apart from the cache version.

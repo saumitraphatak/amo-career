@@ -39,3 +39,6 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s) 
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - `.calc-grid` children get `min-width:0`, so the fiber/collimation formulas scroll inside their box instead of making the grid 503 px wide (only visible with KaTeX rendered; the CDN-free smoke test missed it). The Bessel-sideband table is wrapped in `.table-scroll`.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 3 labels rendered differently after the fix, e.g. "Β" → "β"; "J₀(Β)²" → "J₀(β)²". No markup on the page changed apart from the cache version.

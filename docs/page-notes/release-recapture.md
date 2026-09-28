@@ -51,3 +51,6 @@ The "Atom Trajectory Snapshot" canvas (`#trajCanvas`) now draws through `js/clou
 - **New shared check.** Both are fixed by a single `trajAtomAt(a, τ, tp)` helper that uses the same recapture test as `runMC()`. Tested: over 120 atoms, the snapshot's recaptured fraction matches a 20,000-atom `runMC()` at the same τ within sampling noise (e.g. 0.10 vs 0.071 at 0.45 ms; σ ≈ 0.024).
 - The old canvas also had a hard-coded cream background in dark mode. The new view is theme-aware.
 - **Pre-existing.** After a run, at 390 px, `.sum-table` / `.chart-card` overflow the page to 393 px.
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 1 label rendered differently after the fix, e.g. "SURVIVAL PROBABILITY P_CAP(ΔT)" → "SURVIVAL PROBABILITY P_cap(Δt)". No markup on the page changed apart from the cache version.

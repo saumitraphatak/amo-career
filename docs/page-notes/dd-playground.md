@@ -58,3 +58,6 @@ The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` 
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - `.two-col` now collapses properly: its children get `min-width:0` (styles.css), and display equations scroll inside `.katex-display` instead of widening the column.
 - The FID/CPMG Bloch canvases (190 px bitmaps) scale down with `max-width:100%; height:auto`; the two titles share a baseline when one wraps, and the Restart / Pause row wraps with the caption on its own line at ≤600 px (the Pause button used to be squeezed into a circle).
+
+## 2026-09-28 (overnight): symbols keep their case in uppercase labels
+Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 2 labels rendered differently after the fix, e.g. "CS-133 T₂*" → "Cs-133 T₂*"; "T₁ (CS-133)" → "T₁ (Cs-133)". No markup on the page changed apart from the cache version.
