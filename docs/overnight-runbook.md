@@ -73,6 +73,7 @@ Each run is a **fresh session with no memory**. Everything it needs is in this r
   - update `CLAUDE.md` if a convention, file or version changed;
   - tick the item in `docs/overnight-backlog.md`;
   - append a log entry to `docs/overnight-log.md` saying what was done, sources used, tests run and anything left over.
+- **After every commit, check for stranded git files.** The Mac VM cannot unlink, so `git commit` leaves `.git/HEAD.lock`, `.git/objects/maintenance.lock` and `tmp_obj_*` files behind (the commit itself succeeds). A leftover `HEAD.lock` blocks the next commit. Move them, don't delete them: `mv .git/HEAD.lock .git/_to_delete/HEAD.lock.<run>`, the same for `maintenance.lock`, and each `tmp_obj_*` to `.git/_to_delete/.git_objects_<dir>_<name>`. Then `GIT_OPTIONAL_LOCKS=0 git fsck --connectivity-only` should print nothing. Mention it in the log so Saumitra can empty `.git/_to_delete/`.
 - **Pushing.** Try `git push` once at the end of the run. From the Mac VM it currently fails (the egress proxy returns 403 for github.com). If it fails, **leave the commits**: Saumitra pushes in the morning. Never force-push, rewrite history, change remotes/credentials, or create branches.
 
 ## 5. Stopping

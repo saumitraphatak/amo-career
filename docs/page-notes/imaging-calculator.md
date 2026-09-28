@@ -61,3 +61,11 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 6 labels rendered differently after the fix, e.g. "R_MAX AT SATURATION" → "R_max AT SATURATION"; "COLLECTION EFFICIENCY Η" → "COLLECTION EFFICIENCY η". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight): which η, and two preset-note errors
+- **η wording (backlog P0).** The page's calculator uses η = η_geo × QE × T with η_geo = (1 − √(1 − NA²))/2. The Hood Lab tooltip said "NA 0.6 → η ≈ 8%" and the alkali card "NA=0.5, η≈5%", but η_geo is 10.0% at NA 0.6 and 6.7% at NA 0.5, so both figures are totals. They now say so: "η_geo = 10% …; total η = η_geo × QE × T ≈ 8%" and "(η_geo ≈ 6.7%; total η … ≈ 5%)". The ≈8%/≈5% figures themselves are unchanged; 5% is consistent with the card's own ~750 detected photons at R_sc = 3×10⁶/s for 5 ms. The calculator is untouched.
+- The tooltip's anchor text is now non-breaking ("NA&nbsp;=&nbsp;0.6&nbsp;objective"): at 390 px it wrapped over two lines and the bubble was cut off at the right edge.
+- **Histogram preset notes.**
+  - Rb87 said "EMCCD" and then "sCMOS read noise". It now derives its own σ_bright: √(2·800 + 12²) ≈ 42 e⁻ (EMCCD excess noise doubles the shot-noise variance, plus the 12 e⁻ read noise), which matches the preset's 42.
+  - Yb171 called 556 nm "the clock line" with a "higher scatter rate". 556 nm is the ¹S₀→³P₁ intercombination line (Γ/2π ≈ 182 kHz, vs ≈ 29 MHz at 399 nm); the clock line is 578 nm (Γ/2π ≈ 7.6 mHz). Source: "¹⁷¹Yb Reference Data", arXiv:2509.04416 (preprint), Tables 8–10. The unsupported "higher scatter rate" clause was removed.
+  - Sr88 ended "Ericsson/Ye-group typical parameters", an attribution with no citation; it now says "Illustrative parameters".

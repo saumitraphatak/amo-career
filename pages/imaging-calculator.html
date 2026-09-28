@@ -729,7 +729,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     <div>
       <strong>Hood Lab imaging setup:</strong>
       We image <sup>87</sup>Rb and <sup>133</sup>Cs single atoms in optical tweezers using a
-      <span class="tip" data-tip="Numerical aperture 0.6 → collection efficiency η ≈ 8%">NA = 0.6 objective</span>
+      <span class="tip" data-tip="NA 0.6 → η_geo = (1 − √(1 − NA²))/2 = 10% of emitted photons; total η = η_geo × QE × T ≈ 8%">NA&nbsp;=&nbsp;0.6&nbsp;objective</span>
       (Mitutoyo G Plan Apo) and an EMCCD camera (Andor iXon). Typical imaging: 780 nm D2 line,
       detuning Δ = −2Γ, saturation s ≈ 2, exposure 2 ms. We collect ~600 photons from Rb at 99%
       survival probability with gray molasses applied during imaging.
@@ -1026,7 +1026,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
             <p><strong>Imaging transition:</strong> D2 cycling transition (780 nm for Rb, 852 nm for Cs).
             Closed cycling transition with repumper keeps the atom in the imaging cycle.
             R_sc → Γ/2 at saturation (~3 MHz for Rb87).</p>
-            <p><strong>Photon counts:</strong> With NA=0.5, η≈5%, 5ms exposure →
+            <p><strong>Photon counts:</strong> With NA=0.5 (η_geo ≈ 6.7%; total η = η_geo × QE × T ≈ 5%), 5 ms exposure →
             ~750 detected photons. σ_bright ≈ 40e⁻ (EMCCD with excess noise). Well-separated from dark peak (~50 e⁻).</p>
             <p><strong>Main challenge:</strong> Photon recoil heating (~181 nK per one-way recoil for Rb87;
             roughly twice that per scatter cycle without cooling).
@@ -1806,15 +1806,15 @@ function onCamChange() {
 const HIST_PRESETS = {
   Rb87: {
     muBright: 800, sigBright: 42, muDark: 55, sigDark: 14,
-    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright dominated by Poisson shot noise √800≈28 plus sCMOS read noise in quadrature → ~42 e⁻ total · σ_dark ≈ read noise 12 e⁻ + dark counts · Peak separation SNR~11 → F>99.98%'
+    note: '⁸⁷Rb 780 nm D₂ fluorescence · EMCCD · 1 ms exposure · NA=0.5 · ~800 photons collected · σ_bright ≈ √(2·800 + 12²) ≈ 42 e⁻ (Poisson shot noise √800 ≈ 28, with its variance doubled by the EMCCD excess noise (factor √2 at high gain), plus read noise in quadrature) · σ_dark ≈ read noise 12 e⁻ + dark counts · Peak separation SNR~11 → F>99.98%'
   },
   Yb171: {
     muBright: 1200, sigBright: 38, muDark: 40, sigDark: 11,
-    note: '¹⁷¹Yb 399 nm (¹S₀→¹P₁) or 556 nm (¹S₀→³P₁) fluorescence · sCMOS · Narrower dark peak due to lower background at 556 nm · Higher μ_bright: higher scatter rate at 556 nm clock line · Typical SNR~16 in Kaufman-group style tweezers · F>99.99% routinely achievable'
+    note: '¹⁷¹Yb fluorescence on 399 nm (¹S₀→¹P₁, Γ/2π ≈ 29 MHz) or 556 nm (¹S₀→³P₁ intercombination line, Γ/2π ≈ 182 kHz; the 578 nm clock line is far too narrow to image on) · sCMOS · Narrower dark peak due to lower background at 556 nm · Typical SNR~16 in Kaufman-group style tweezers · F>99.99% routinely achievable'
   },
   Sr88: {
     muBright: 950, sigBright: 52, muDark: 65, sigDark: 18,
-    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Still achieves F~99.95% · Ericsson/Ye-group typical parameters'
+    note: '⁸⁸Sr 461 nm (blue MOT) imaging · sCMOS · Broader bright peak: blue line has larger photon recoil and higher scatter rate → more heating, some blurring adds variance · Dark peak wider than Yb due to higher 461 nm background scatter · Still achieves F~99.95% · Illustrative parameters'
   },
   Marginal: {
     muBright: 280, sigBright: 85, muDark: 120, sigDark: 55,
