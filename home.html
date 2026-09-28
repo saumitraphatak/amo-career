@@ -11,6 +11,7 @@
 </script>
   <meta charset="UTF-8">
   <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <script>(function(){try{if(window.WebGLRenderingContext)document.documentElement.classList.add("hero3d-on");}catch(e){}})();</script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
@@ -47,6 +48,58 @@
   <meta property="og:title" content="AMO Toolkit for AMO Physics & Quantum Science">
   <meta property="og:description" content="Interactive tools for atomic, molecular, and optical physics researchers.">
   <meta property="og:type" content="website">
+  <style>
+    /* ── 3D tweezer-array hero (js/hero3d.js). Home-only, so it lives here
+       rather than in the shared styles.css. Without WebGL, html lacks
+       .hero3d-on and the original Li / Cs cards render instead. ── */
+    .hero-3d { display: none; position: relative; width: 320px; height: 560px; }
+    html.hero3d-on .hero-3d { display: block; }
+    html.hero3d-on .hero-atoms .atom-box { display: none; }
+    #hero-canvas-3d {
+      /* A canvas is a replaced element: left/right alone won't stretch it,
+         so size it explicitly. It overflows the 320px column into the gap
+         (left) and the page margin (right); hero3d.js re-centres the array
+         on the column itself. */
+      --ext-r: clamp(0px, (100vw - 1100px) / 2 + 20px, 230px);
+      position: absolute;
+      top: -40px; left: -150px;
+      width: calc(100% + 150px + var(--ext-r));
+      height: calc(100% + 30px);
+      max-height: none !important;   /* beat the global Chart.js canvas cap in styles.css */
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(ellipse 58% 62% at 58% 50%, #000 62%, transparent 100%);
+              mask-image: radial-gradient(ellipse 58% 62% at 58% 50%, #000 62%, transparent 100%);
+    }
+    .hero-3d-caption {
+      position: absolute; left: -90px; right: -90px; bottom: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+      text-align: center; pointer-events: none;
+    }
+    .hero-3d-legend { display: flex; gap: 12px; align-items: center; letter-spacing: 0.04em; }
+    .hero-3d-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+    .hero-3d-legend .li  { background: #0366a3; }
+    .hero-3d-legend .cs  { background: #bd3d0d; }
+    .hero-3d-legend .mol { background: #6b2bcc; }
+    [data-theme="dark"] .hero-3d-legend .li  { background: #4cc7ff; box-shadow: 0 0 8px #4cc7ff; }
+    [data-theme="dark"] .hero-3d-legend .cs  { background: #ff9440; box-shadow: 0 0 8px #ff9440; }
+    [data-theme="dark"] .hero-3d-legend .mol { background: #cc94ff; box-shadow: 0 0 8px #cc94ff; }
+    .hero-3d-phase { display: flex; gap: 8px; align-items: center; color: var(--text-secondary); min-height: 1.3em; white-space: nowrap; }
+    .hero-3d-steps { display: inline-flex; gap: 3px; }
+    .hero-3d-steps span { width: 14px; height: 3px; border-radius: 2px; background: var(--border-med); transition: background 0.3s; }
+    .hero-3d-steps span.on { background: var(--c-atom); }
+    .hero-3d-link { pointer-events: auto; color: var(--c-atom); text-decoration: none; font-weight: 600; }
+    .hero-3d-link:hover { text-decoration: underline; }
+    @media (max-width: 1100px) {
+      html.hero3d-on .hero-atoms { display: flex; margin-top: -48px; }
+      .hero-3d { width: 100%; height: 400px; }
+      #hero-canvas-3d { top: 0; left: -24px; width: calc(100% + 48px); height: calc(100% - 56px);
+        -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 50%, #000 60%, transparent 100%);
+                mask-image: radial-gradient(ellipse 60% 62% at 50% 50%, #000 60%, transparent 100%); }
+    }
+    @media (max-width: 600px) { .hero-3d { height: 330px; } }
+    @media print { .hero-3d { display: none !important; } }
+  </style>
 </head>
 
 <body>
@@ -59,7 +112,6 @@
        ══════════════════════════════════════════════ -->
   <main id="main-content">
   <section class="hero" aria-label="Hero">
-    <canvas id="hero-canvas" aria-hidden="true"></canvas>
     <div class="hero-grad" aria-hidden="true"></div>
 
     <div class="container hero-with-atoms">
@@ -115,10 +167,20 @@
       </div><!-- /hero-content -->
 
       <!-- ── Atom Visualizations ────────────────────── -->
-      <div class="hero-atoms" aria-hidden="true">
+      <div class="hero-atoms">
+
+        <!-- Live 3D dual-species tweezer array (js/hero3d.js) -->
+        <div class="hero-3d">
+          <canvas id="hero-canvas-3d" aria-hidden="true"></canvas>
+          <div class="hero-3d-caption">
+            <div class="hero-3d-legend" aria-hidden="true"><span><i class="li"></i>Li</span><span><i class="cs"></i>Cs</span><span><i class="mol"></i>Li–Cs pair</span></div>
+            <div class="hero-3d-phase" aria-hidden="true"><span class="hero-3d-steps"><span data-hero3d-step></span><span data-hero3d-step></span><span data-hero3d-step></span><span data-hero3d-step></span></span><span data-hero3d-label>Live tweezer array</span></div>
+            <a class="hero-3d-link" href="pages/tweezer-designer.html">Design your own array →</a>
+          </div>
+        </div>
 
         <!-- Li — Lithium (Z=3, Period 2) -->
-        <div class="atom-box" style="--ac:#38bdf8">
+        <div class="atom-box" style="--ac:#38bdf8" aria-hidden="true">
           <div class="atom-box-label">
             <span class="atom-symbol">Li</span>
             <span class="atom-name">Lithium &middot; Z=3</span>
@@ -147,7 +209,7 @@
         </div>
 
         <!-- Cs — Cesium (Z=55, Period 6) -->
-        <div class="atom-box" style="--ac:#fb923c">
+        <div class="atom-box" style="--ac:#fb923c" aria-hidden="true">
           <div class="atom-box-label">
             <span class="atom-symbol">Cs</span>
             <span class="atom-name">Cesium &middot; Z=55</span>
@@ -1272,77 +1334,10 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
   <script src="js/main.js?v=31"></script>
+  <script src="js/hero3d.js?v=1" defer></script>
   <script>
     renderNav({ active: 'home', root: '' });
 
-    // ── Animated hero canvas: drifting atoms ──────────────────────────
-    (function() {
-      const cv = document.getElementById('hero-canvas');
-      if (!cv || !cv.getContext) return;
-      const ctx = cv.getContext('2d');
-      const COLS = ['#38bdf8','#34d399','#a78bfa','#fb923c','#f472b6','#fbbf24','#60a5fa','#2dd4bf'];
-      const N = 22;
-      let atoms = [], W = 0, H = 0, raf = null;
-
-      function resize() {
-        W = cv.offsetWidth; H = cv.offsetHeight;
-        cv.width = W; cv.height = H;
-      }
-
-      function mkAtom(i) {
-        return {
-          x: Math.random() * W, y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.14,
-          vy: (Math.random() - 0.5) * 0.14,
-          r:  1.8 + Math.random() * 2.2,
-          orb: 9 + Math.random() * 14,
-          ang: Math.random() * 6.28,
-          spd: (Math.random() > 0.5 ? 1 : -1) * (0.005 + Math.random() * 0.006),
-          ph:  Math.random() * 6.28,
-          col: COLS[i % COLS.length],
-        };
-      }
-
-      function hA(hex, alpha) {
-        return hex + Math.round(Math.max(0, Math.min(1, alpha)) * 255).toString(16).padStart(2, '0');
-      }
-
-      function init() { atoms = Array.from({length: N}, (_, i) => mkAtom(i)); }
-
-      function draw() {
-        ctx.clearRect(0, 0, W, H);
-        const t = performance.now() * 0.001;
-        for (const a of atoms) {
-          a.x += a.vx; a.y += a.vy; a.ang += a.spd;
-          if (a.x < -60) a.x = W + 60; if (a.x > W + 60) a.x = -60;
-          if (a.y < -60) a.y = H + 60; if (a.y > H + 60) a.y = -60;
-          const pulse = 0.82 + 0.18 * Math.sin(t * 0.6 + a.ph);
-          const hr = a.orb * 2.8;
-          const g = ctx.createRadialGradient(a.x, a.y, 0, a.x, a.y, hr);
-          g.addColorStop(0, hA(a.col, 0.22 * pulse));
-          g.addColorStop(0.5, hA(a.col, 0.08 * pulse));
-          g.addColorStop(1, hA(a.col, 0));
-          ctx.beginPath(); ctx.arc(a.x, a.y, hr, 0, 6.28);
-          ctx.fillStyle = g; ctx.fill();
-          ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.28);
-          ctx.fillStyle = hA(a.col, 0.8 * pulse); ctx.fill();
-          ctx.beginPath(); ctx.arc(a.x, a.y, a.orb, 0, 6.28);
-          ctx.strokeStyle = hA(a.col, 0.18 * pulse); ctx.lineWidth = 0.7; ctx.stroke();
-          const ex = a.x + a.orb * Math.cos(a.ang), ey = a.y + a.orb * Math.sin(a.ang);
-          ctx.beginPath(); ctx.arc(ex, ey, 1.3, 0, 6.28);
-          ctx.fillStyle = hA(a.col, 0.75 * pulse); ctx.fill();
-        }
-        raf = requestAnimationFrame(draw);
-      }
-
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) { cancelAnimationFrame(raf); }
-        else { raf = requestAnimationFrame(draw); }
-      });
-
-      window.addEventListener('resize', () => { resize(); init(); });
-      resize(); init(); draw();
-    })();
   </script>
 
 </body>

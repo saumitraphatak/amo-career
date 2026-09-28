@@ -41,7 +41,8 @@ amo-career/
 ├── css/
 │   └── styles.css          # SINGLE design system file — all variables, components
 ├── js/
-│   └── main.js             # SINGLE shared JS file — NAV data, renderNav(), global search, all shared logic
+│   ├── main.js             # SINGLE shared JS file — NAV data, renderNav(), global search, all shared logic
+│   └── hero3d.js           # home.html only — live 3D Li+Cs tweezer-array hero (raw WebGL, no library)
 ├── tests/
 │   └── formula_regression.py  # Physics/content regression checks
 ├── assets/cooling/         # GIFs (gray-molasses-cooling, resolved-sideband-cooling) used by tool pages
@@ -522,3 +523,4 @@ Text in eq: \text{any text}  \rm{roman font}
 - **`llms.txt` / `llms-full.txt` drift:** Not automatically regenerated — refreshed as of this writing to list all 28 pages/tools, but they will drift again the next time a page is added/removed unless someone remembers to update them by hand.
 - **home.html nav:** Uses `root: ''` (empty string, not `'../'`).
 - **index.html:** Only a redirect — never edit it.
+- **Home hero is a live WebGL scene (`js/hero3d.js`, home.html only).** It animates a dual-species Li + Cs tweezer array through load → image → rearrange → merge Li–Cs pairs. A tiny inline `<head>` script adds `html.hero3d-on` when WebGL exists; `hero3d.js` removes it on context failure/loss so the original Li/Cs `.atom-box` cards show instead. Its styles live in a `<style>` block in home.html (not styles.css, so editing them needs no sitewide cache bump). Two deliberate details: the canvas id `hero-canvas-3d` contains `hero-canvas` so `initExportButtons()` skips it (no "Export PNG" button in the hero), and it needs `max-height: none !important` to beat the global Chart.js canvas cap, whose `:not(#id)` chain outranks any class selector. It honors `prefers-reduced-motion` (single static frame), pauses offscreen and in hidden tabs, and steps resolution down on GPUs under 30 fps. Bump `hero3d.js?v=N` in home.html when editing it. The old 2D `#hero-canvas` drifting-dots script was removed — it had been running an animation loop on a `display:none` canvas.
