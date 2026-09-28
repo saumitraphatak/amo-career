@@ -22,7 +22,7 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
   - Run 2 found **18 canvases on 11 pages** that paint or show `#faf5e9` in dark theme (rendered check: CSS background or corner pixel):
     - [x] dd-playground `fidCanvas`, `cpmgCanvas` (2026-09-28 run 2; pattern: `PAL.light/PAL.dark` picked per frame + a `data-theme` MutationObserver that repaints the current frame);
     - [x] learn-quantum `mziCanvas`, `rabiBlochCanvas`, `rabiTraceCanvas`, `tqBellCanvas`, `groverCanvas`, `rydbergArrayCanvas` (2026-09-28 run 3; pattern: page-local `LQ_INK.wrap(ctx)` maps light inks to dark ones as they're set, `LQ_INK.track(frame)` repaints on theme toggle; also fixed invisible labels, a blank trace under reduced motion and the Rydberg array layout);
-    - [ ] learn-quantum's other four Bloch spheres (`blochCanvas`, `gatesBlochCanvas`, `measBlochCanvas`) are transparent, not cream, but use light inks (`#1e3a5f` outline) that are low-contrast in dark theme: wrap their contexts with `LQ_INK.wrap` too;
+    - [x] (2026-09-28 run 3) learn-quantum's other Bloch spheres (`blochCanvas`, `gatesBlochCanvas`, `measBlochCanvas`) are transparent, not cream, but use light inks (`#1e3a5f` outline) that are low-contrast in dark theme: wrap their contexts with `LQ_INK.wrap` too;
     - [x] rb87-vs-yb171 `rbBlochCanvas`, `ybBlochCanvas` (2026-09-28 run 2; also got a pause control via `AMOMotion.loop`, it had none);
     - [ ] mot-designer `motCanvas`;
     - [ ] cooling-simulator `mbCanvas`; fidelity-budget `waterfallCanvas`; imaging-calculator `fluorHistCanvas`; laser-locking `lockCanvas`; rb-explorer `rbAnimCanvas`; vacuum-systems `.mol-canvas`; zernike `gsFlowCanvas`.

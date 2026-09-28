@@ -1766,6 +1766,73 @@ renderNav({ active: 'learn-quantum', root: '../' });
 initScrollReveal();
 
 /* ═══════════════════════════════════════════════
+   Theme-aware canvas ink for this page's canvases (Bloch spheres, MZI, Rabi,
+   Bell, Grover, Rydberg array). They were drawn with inks chosen for the cream
+   light theme. LQ_INK.wrap(ctx) maps each of those inks to its dark-theme
+   counterpart as it is set (fillStyle, strokeStyle, shadowColor, gradient
+   stops), so the drawing code and the physics stay unchanged.
+   LQ_INK.track(frame) remembers the last timestamp so a theme toggle can
+   repaint the current frame, also while paused or under reduced motion.
+   ═══════════════════════════════════════════════ */
+const LQ_INK = (function () {
+  const HEX = {
+    '#faf5e9': '#0c1526',                                  // paper → --bg-card (dark)
+    '#7a4ff7': '#a78bfa', '#7451fa': '#a78bfa',            // violet
+    '#926a03': '#fbbf24', '#1c805b': '#34d399', '#076ce7': '#60a5fa',
+    '#1e3a5f': 'rgba(148,163,184,0.7)', '#0f1e35': 'rgba(148,163,184,0.35)',
+    '#1e293b': '#475569', '#334155': '#64748b',
+    '#8c8066': '#94a3b8', '#5c503c': '#94a3b8',
+  };
+  const RGB = { '122,79,247': '167,139,250', '146,106,3': '251,191,36' };
+  let dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const repaints = [];
+  new MutationObserver(function () {
+    dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    repaints.forEach(function (fn) { try { fn(); } catch (e) {} });
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  function map(v) {
+    if (!dark || typeof v !== 'string') return v;
+    const h = HEX[v.toLowerCase()];
+    if (h) return h;
+    return v.replace(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/, function (m, r, g, b) {
+      const n = RGB[r + ',' + g + ',' + b];
+      return n ? m.slice(0, m.indexOf('(') + 1) + n : m;
+    });
+  }
+  function wrapGradient(g) {
+    const add = g.addColorStop.bind(g);
+    g.addColorStop = function (o, c) { add(o, map(c)); };
+    return g;
+  }
+  function wrap(ctx) {
+    if (ctx.__lqInk) return ctx;           // idempotent (drawBloch asks for its context on every draw)
+    ctx.__lqInk = true;
+    const proto = Object.getPrototypeOf(ctx);
+    ['fillStyle', 'strokeStyle', 'shadowColor'].forEach(function (prop) {
+      const d = Object.getOwnPropertyDescriptor(proto, prop);
+      if (!d || !d.set) return;
+      Object.defineProperty(ctx, prop, {
+        configurable: true,
+        get: function () { return d.get.call(ctx); },
+        set: function (v) { d.set.call(ctx, map(v)); },
+      });
+    });
+    ['createLinearGradient', 'createRadialGradient'].forEach(function (fn) {
+      const orig = ctx[fn].bind(ctx);
+      ctx[fn] = function () { return wrapGradient(orig.apply(null, arguments)); };
+    });
+    return ctx;
+  }
+  function track(frame) {
+    let last = null;
+    repaints.push(function () { if (last !== null) frame(last); });
+    return function (ts) { last = ts; frame(ts); };
+  }
+  return { map: map, wrap: wrap, track: track, onTheme: function (fn) { repaints.push(fn); } };
+})();
+
+/* ═══════════════════════════════════════════════
    STICKY NAV HIGHLIGHT
    ═══════════════════════════════════════════════ */
 const sections = ['bloch','superposition','rabi','gates','measurement',
@@ -1822,7 +1889,7 @@ function bsCircle(ctx, pt, color, frontAlpha, backAlpha, width) {
 
 function drawBloch(canvasId, theta, phi, opts) {
   const canvas = document.getElementById(canvasId);
-  const ctx = canvas.getContext('2d');
+  const ctx = LQ_INK.wrap(canvas.getContext('2d'));
   const view = BS_VIEWS[canvasId];
   bsAz = view ? view.az : BS_A; bsEl = view ? view.el : BS_B;
   BS_LAST[canvasId] = [theta, phi, opts];
@@ -1928,6 +1995,8 @@ if (window.AMO3D) {
 
 // Initial Bloch sphere draw
 drawBloch('blochCanvas', Math.PI/2, 0);
+// Theme toggle: redraw each sphere's last state with the other theme's inks
+LQ_INK.onTheme(() => Object.keys(BS_LAST).forEach(id => drawBloch(id, ...BS_LAST[id])));
 
 /* ═══════════════════════════════════════════════
    QUANTUM GATES
@@ -2041,71 +2110,6 @@ function redrawGateBloch() {
   drawBloch('gatesBlochCanvas', th, ph);
 }
 setGateState();
-
-/* ═══════════════════════════════════════════════
-   Theme-aware canvas ink for the animated canvases below (MZI, Rabi, Bell,
-   Grover, Rydberg array). They were drawn with inks chosen for the cream
-   light theme. LQ_INK.wrap(ctx) maps each of those inks to its dark-theme
-   counterpart as it is set (fillStyle, strokeStyle, shadowColor, gradient
-   stops), so the drawing code and the physics stay unchanged.
-   LQ_INK.track(frame) remembers the last timestamp so a theme toggle can
-   repaint the current frame, also while paused or under reduced motion.
-   ═══════════════════════════════════════════════ */
-const LQ_INK = (function () {
-  const HEX = {
-    '#faf5e9': '#0c1526',                                  // paper → --bg-card (dark)
-    '#7a4ff7': '#a78bfa', '#7451fa': '#a78bfa',            // violet
-    '#926a03': '#fbbf24', '#1c805b': '#34d399', '#076ce7': '#60a5fa',
-    '#1e3a5f': 'rgba(148,163,184,0.7)', '#0f1e35': 'rgba(148,163,184,0.35)',
-    '#1e293b': '#475569', '#334155': '#64748b',
-    '#8c8066': '#94a3b8', '#5c503c': '#94a3b8',
-  };
-  const RGB = { '122,79,247': '167,139,250', '146,106,3': '251,191,36' };
-  let dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const repaints = [];
-  new MutationObserver(function () {
-    dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    repaints.forEach(function (fn) { try { fn(); } catch (e) {} });
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-
-  function map(v) {
-    if (!dark || typeof v !== 'string') return v;
-    const h = HEX[v.toLowerCase()];
-    if (h) return h;
-    return v.replace(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/, function (m, r, g, b) {
-      const n = RGB[r + ',' + g + ',' + b];
-      return n ? m.slice(0, m.indexOf('(') + 1) + n : m;
-    });
-  }
-  function wrapGradient(g) {
-    const add = g.addColorStop.bind(g);
-    g.addColorStop = function (o, c) { add(o, map(c)); };
-    return g;
-  }
-  function wrap(ctx) {
-    const proto = Object.getPrototypeOf(ctx);
-    ['fillStyle', 'strokeStyle', 'shadowColor'].forEach(function (prop) {
-      const d = Object.getOwnPropertyDescriptor(proto, prop);
-      if (!d || !d.set) return;
-      Object.defineProperty(ctx, prop, {
-        configurable: true,
-        get: function () { return d.get.call(ctx); },
-        set: function (v) { d.set.call(ctx, map(v)); },
-      });
-    });
-    ['createLinearGradient', 'createRadialGradient'].forEach(function (fn) {
-      const orig = ctx[fn].bind(ctx);
-      ctx[fn] = function () { return wrapGradient(orig.apply(null, arguments)); };
-    });
-    return ctx;
-  }
-  function track(frame) {
-    let last = null;
-    repaints.push(function () { if (last !== null) frame(last); });
-    return function (ts) { last = ts; frame(ts); };
-  }
-  return { map: map, wrap: wrap, track: track, onTheme: function (fn) { repaints.push(fn); } };
-})();
 
 /* ═══════════════════════════════════════════════
    MZI — animated canvas (proper rectangular geometry)
