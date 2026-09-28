@@ -61,3 +61,6 @@ pairs. `node --check` passes on all inline `<script>` blocks; both JSON-LD `<scr
 blocks validate as JSON. Cache-bust versions grep-verified consistent sitewide (main.js v=26 × 32 files, styles.css
 unchanged at v=21). File transferred to device via `device_commit_files` and committed locally; **not pushed from
 this session** (device_bash has no network egress) — user must push via GitHub Desktop or terminal.
+
+## Technical/SEO/consistency audit update (2026-09-28)
+Rotation re-check of the technical/SEO/consistency audit. Meta description was 205 characters (45 over the 160-char limit) — trimmed to 154 chars preserving the same facts. Also added this page (plus its three siblings) to `llms.txt`/`llms-full.txt`, which had drifted to only list 26/32 pages. See docs/technical-audit-2026-09-28.md.

@@ -57,3 +57,6 @@ pattern).
 
 ## Science-content refresh (2026-09-26)
 Rotation re-check of the science-content audit. Added two new 2026 Quantinuum logical-qubit preprints to Section 05 and Section 10, verified against primary/near-primary sources (arXiv abstract pages plus independent press coverage), purely additive alongside the existing Nov 2025 Helios launch claims: "Skinny Logic" iceberg codes (arXiv:2602.22211, Feb 2026 — up to 94 error-detected / 48 error-corrected logical qubits on the same 98-qubit Helios hardware, GHZ fidelity ≈95%) and "Helix" (arXiv:2609.03194, Sep 2026 — a logical qubit in just 10 physical ions at code distance 6, logical Clifford-gate error 2.8×10⁻⁴ and logical memory error 4.6×10⁻⁵/cycle, both below the physical baseline). Both tagged `preprint, not yet peer-reviewed`, consistent with how this page already treats IonQ's component-level 99.99% preprint. No existing claim was changed or reversed. See docs/science-audit-2026-09-26.md.
+
+## Technical/SEO/consistency audit update (2026-09-28)
+Rotation re-check of the technical/SEO/consistency audit. Meta description was 202 characters (42 over the 160-char limit) — trimmed to 142 chars preserving the same facts. Also added this page (plus its three siblings) to `llms.txt`/`llms-full.txt`, which had drifted to only list 26/32 pages. See docs/technical-audit-2026-09-28.md.

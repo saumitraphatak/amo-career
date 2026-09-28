@@ -1,6 +1,6 @@
 # AMO Toolkit
 
-A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 28 interactive research tools and guides organized by workflow (Build, Measure, Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
+A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 31 interactive research tools and guides organized by workflow (Build, Measure, Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
 **Live site:** https://amotoolkit.com/
 
@@ -39,6 +39,9 @@ Organized by workflow — build the apparatus, measure what it does, cool and tr
 | **AMO Paper Roadmap** | 53 papers organized by career stage, from undergrad entry to postdoc |
 | **Quantum Industry Map** | Company profiles, hardware platforms, job roles, career roadmaps |
 | **Rb vs Yb Qubit Comparison** | Side-by-side platform comparison for choosing a neutral-atom qubit species |
+| **Quantinuum vs IonQ** | Trapped-ion quantum computing company comparison — architecture, ion species, gate fidelity, logical qubits, roadmaps |
+| **Google vs IBM** | Superconducting-qubit quantum computing company comparison — architecture, gate fidelity, advantage/utility claims and rebuttals |
+| **PsiQuantum vs Xanadu** | Photonic quantum computing company comparison — component vs system-level demonstrations, fault-tolerance architecture |
 
 ---
 
@@ -110,17 +113,20 @@ amo-career/
 │   └── main.js             # renderNav(), global search, canvas animation, scroll reveal, accordions, tabs
 ├── tests/
 │   └── formula_regression.py
-└── pages/                  # 28 tool and content pages, grouped by NAV workflow category
+└── pages/                  # 32 tool and content pages, grouped by NAV workflow category
     ├── atom-library.html, laser-planner.html, mot-designer.html, laser-locking.html,
     │   lab-techniques.html, polarimetry.html, zernike.html, cavity-qed.html,
     │   vacuum-systems.html, tweezer-designer.html          # Build
     ├── imaging-calculator.html, release-recapture.html, tof-calculator.html,
     │   lab-calculators.html, absorption-imaging.html       # Measure
     ├── laser-cooling.html, cooling-simulator.html          # Cool
-    ├── learn-quantum.html, rydberg-calculator.html, fidelity-budget.html,
-    │   rb-explorer.html, dd-playground.html, remote-entanglement.html   # Quantum
-    └── amo-groups.html, paper-syllabus.html, qc-landscape.html,
-        rb87-vs-yb171.html                                  # Career
+    ├── decoherence-lab.html, learn-quantum.html, rydberg-calculator.html,
+    │   fidelity-budget.html, rb-explorer.html, dd-playground.html,
+    │   remote-entanglement.html                            # Quantum
+    ├── amo-groups.html, paper-syllabus.html, qc-landscape.html,
+    │   rb87-vs-yb171.html, quantinuum-vs-ionq.html, google-vs-ibm.html,
+    │   psiquantum-vs-xanadu.html                           # Career
+    └── start-here.html                                     # Site map / navigation (not a NAV tool)
 ```
 
 ---

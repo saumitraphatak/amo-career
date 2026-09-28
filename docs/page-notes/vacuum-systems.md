@@ -37,3 +37,6 @@ Follow-up to the earlier design-audit remap of this page's `--vac`/`--vac-bg`/`-
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+## Technical/SEO/consistency audit update (2026-09-28)
+`twitter:title` read "Vacuum Systems" — missing "Guide" — while `<title>`, `og:title`, and the JSON-LD `headline` all correctly say "Vacuum Systems Guide". Fixed the one outlier to match. See docs/technical-audit-2026-09-28.md.

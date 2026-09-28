@@ -56,3 +56,6 @@ blocks validate as JSON. Cache-bust versions grep-verified consistent sitewide (
 unchanged at v=21 since no shared CSS file was touched). File transferred to device via `device_commit_files` and
 committed locally; **not pushed from this session** (device_bash has no network egress) — user must push via
 GitHub Desktop or terminal.
+
+## Technical/SEO/consistency audit update (2026-09-28)
+Rotation re-check of the technical/SEO/consistency audit (oldest-redone of the ongoing rotation, last done 2026-09-16). Meta description was 225 characters (65 over the site's 160-char limit established by the original Sep-2026 technical audit) — trimmed to a 160-char version preserving the same facts (Google Quantum AI vs IBM Quantum, superconducting-qubit, architecture/error-correction/advantage-claims). Also added this page (plus its three siblings) to `llms.txt`/`llms-full.txt`, which had drifted to only list 26/32 pages. See docs/technical-audit-2026-09-28.md.

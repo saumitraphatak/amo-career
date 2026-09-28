@@ -46,7 +46,7 @@ amo-career/
 ├── tests/
 │   └── formula_regression.py  # Physics/content regression checks
 ├── assets/cooling/         # GIFs (gray-molasses-cooling, resolved-sideband-cooling) used by tool pages
-└── pages/                  # All tool and content pages (28 files)
+└── pages/                  # All tool and content pages (32 files)
     ├── atom-library.html       # Atomic Species Selector
     ├── laser-planner.html      # Laser System Planner
     ├── mot-designer.html       # MOT Designer
@@ -74,10 +74,14 @@ amo-career/
     ├── amo-groups.html         # AMO Group Finder (career map, 100+ groups)
     ├── paper-syllabus.html     # AMO Paper Roadmap (53 papers)
     ├── qc-landscape.html       # Quantum Industry Map
-    └── rb87-vs-yb171.html      # Rb vs Yb Qubit Comparison
+    ├── rb87-vs-yb171.html      # Rb vs Yb Qubit Comparison
+    ├── quantinuum-vs-ionq.html # Quantinuum vs IonQ (trapped-ion comparison)
+    ├── google-vs-ibm.html      # Google vs IBM (superconducting comparison)
+    ├── psiquantum-vs-xanadu.html # PsiQuantum vs Xanadu (photonic comparison)
+    └── start-here.html         # Site Map & Start Here (navigation index; not in NAV.tools)
 ```
 
-**Page count is 28** as of this writing (was 19 when this file was first written, grew to 27 with 10 new pages — laser-planner, cavity-qed, vacuum-systems, tweezer-designer, absorption-imaging, rb-explorer, dd-playground, remote-entanglement, amo-groups, paper-syllabus — then to 28 with `decoherence-lab.html`). `llms.txt`/`llms-full.txt` were refreshed alongside this note and now list all 28 pages/tools; re-check both any time a page is added or removed so they don't drift stale again.
+**Page count is 32** as of this writing (was 19 when this file was first written, grew to 27 with 10 new pages — laser-planner, cavity-qed, vacuum-systems, tweezer-designer, absorption-imaging, rb-explorer, dd-playground, remote-entanglement, amo-groups, paper-syllabus — then to 28 with `decoherence-lab.html`, and now to 32 with 4 more: `quantinuum-vs-ionq.html`, `google-vs-ibm.html`, `psiquantum-vs-xanadu.html` (company-comparison deep dives) and `start-here.html` (a site map / recommended-order index, not part of `NAV.tools`). `llms.txt`/`llms-full.txt` were refreshed alongside this note (2026-09-28) and now list all 32 pages/tools; re-check both any time a page is added or removed so they don't drift stale again.
 
 ---
 
@@ -524,7 +528,7 @@ Text in eq: \text{any text}  \rm{roman font}
 - **Page-local formula-box styles:** Some pages have `<style>.formula-box { background:...; border:...; }</style>` for custom colors. Keep only `background`, `border`, `border-radius`, `padding` — never font or white-space overrides.
 - **Tool counts DO auto-update (fixed):** The homepage hero stat used to be a hand-typed number and silently went stale — that's fixed now. `js/main.js`'s `updateHeroStats()` sets `#stat-tools-count` from `NAV.tools.length` and `#stat-concepts-count` from `NAV.learn.length` at runtime. The raw HTML in `home.html` still hard-codes a fallback number for no-JS/pre-hydration display — keep that fallback roughly in sync when `NAV` changes, but it's cosmetic only; the live page is always correct.
 - **Site branding vs repo name:** The live site and all page titles/meta say **"AMO Toolkit"** (custom domain `amotoolkit.com`, see `CNAME`) — the repo/folder is still named `amo-career` and this file's own title still says "AMO Career" for historical/identification reasons. Don't "fix" page titles back to "AMO Career" — that would be reverting an intentional rebrand.
-- **`llms.txt` / `llms-full.txt` drift:** Not automatically regenerated — refreshed as of this writing to list all 28 pages/tools, but they will drift again the next time a page is added/removed unless someone remembers to update them by hand.
+- **`llms.txt` / `llms-full.txt` drift:** Not automatically regenerated — refreshed as of this writing to list all 32 pages/tools, but they will drift again the next time a page is added/removed unless someone remembers to update them by hand.
 - **home.html nav:** Uses `root: ''` (empty string, not `'../'`).
 - **index.html:** Only a redirect — never edit it.
 - **Home hero is a live WebGL scene (`js/hero3d.js`, home.html only).** It animates a dual-species Li + Cs tweezer array through load → image → rearrange → merge Li–Cs pairs. A tiny inline `<head>` script adds `html.hero3d-on` when WebGL exists; `hero3d.js` removes it on context failure/loss so the original Li/Cs `.atom-box` cards show instead. Its styles live in a `<style>` block in home.html (not styles.css, so editing them needs no sitewide cache bump). Two deliberate details: the canvas id `hero-canvas-3d` contains `hero-canvas` so `initExportButtons()` skips it (no "Export PNG" button in the hero), and it needs `max-height: none !important` to beat the global Chart.js canvas cap, whose `:not(#id)` chain outranks any class selector. It honors `prefers-reduced-motion` (single static frame), pauses offscreen and in hidden tabs, and steps resolution down on GPUs under 30 fps. Bump `hero3d.js?v=N` in home.html when editing it. The old 2D `#hero-canvas` drifting-dots script was removed — it had been running an animation loop on a `display:none` canvas.
