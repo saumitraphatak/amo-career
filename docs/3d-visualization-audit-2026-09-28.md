@@ -188,13 +188,56 @@ All eight pages that load `orbit3d.js` now reference `v=2`: the five from the fi
 - **Static checks.** Tag balance unchanged against the originals; JSON-LD parses; every inline script and the three JS files pass `node --check`.
 - `tests/formula_regression.py`: 11/11.
 
+## Third pass: physics figures, the site constellation and pause controls (same day)
+
+Saumitra picked five items from a shortlist of places where 3D adds information: the photon collection cone, the cavity mode with an atom, the site constellation, 3D ballistic expansion, and pause controls for the older looping animations. He did not pick the Zernike wavefront surface or the Rydberg blockade spheres; they remain ideas.
+
+Four new opt-in helpers were added, each loaded only by its own page(s):
+
+| File | Pages | What it does |
+|---|---|---|
+| `js/collection3d.js?v=1` | imaging-calculator | Atom emission pattern, collection cone and objective; Monte Carlo photon stream |
+| `js/cavity3d.js?v=1` | cavity-qed | Standing-wave TEM₀₀ mode drawn as nested isosurfaces, plus an atom |
+| `js/sitemap3d.js?v=1` | start-here | Constellation built from the page's own lists |
+| `js/cloud3d.js?v=1` | release-recapture, tof-calculator | Generic true-to-scale renderer for released atoms (the pages do the physics) |
+| `js/motion.js?v=1` | learn-quantum, dd-playground, decoherence-lab | `AMOMotion.loop()`: pause button, offscreen stop, paused-time-aware timestamps, reduced-motion still frame |
+
+### What each adds, and what was checked
+- **Photon collection (imaging-calculator).**
+  - The panel shows η for three emission patterns: isotropic (the calculator's own `collectionGeo`), dipole ⊥ axis (equal to σ± with the quantization axis along the objective), and dipole ∥ axis.
+  - All three closed forms matched a 10⁶-sample Monte Carlo at four NAs to within 0.1%.
+  - The calculator itself is unchanged.
+  - Fixed a wrong number in the page's prose: "NA 0.95 captures ~26%" is now ~34%.
+- **Cavity mode (cavity-qed).**
+  - Position-dependent coupling: g = g₀cos(kx)e^(−r²/w₀²) and C ∝ g². It uses the calculator's own g₀ and C via `window.CQED_LAST` and the `cqed:update` event.
+  - Schematic along the axis (9 antinodes drawn); the real count 2nL/λ appears in the caption.
+  - It lives inside section 02, so the route cards stay 1:1 with the sections.
+- **Site constellation (start-here).**
+  - 31 pages and 6 paths, all read from the page's own lists; all 24 path steps resolve to a star.
+  - Hover shows a card; click opens the page (tested: it navigates).
+- **Ballistic expansion.**
+  - Release-recapture: the snapshot is now 3D and true to scale, with the tweezer envelope drawn. Two old 2D bugs were fixed: y was not propagated, and gravity was drawn upward. A shared `trajAtomAt()` now matches `runMC()` within sampling noise.
+  - TOF: a 500-atom sampled cloud, coloured by speed, with a falling-frame / lab-frame toggle. Fixed a silent bug: the old animation's hook read `window.ATOMS` (a top-level `const`, so undefined) and never followed the sliders. Also fixed the invisible "1 mm" label and the endless loop with no pause. Tested: σ at 30 ms and 100 μK matches the formula (2.93 vs 2.934 mm).
+- **Pause controls.**
+  - Covered: 5 loops on learn-quantum, the FID/CPMG loop on dd-playground, and the shared RK4 loop on decoherence-lab (buttons in the hero and in each section header).
+  - Tested: each loop animates, freezes on Pause and resumes. Under reduced motion each starts still, and Play works.
+  - These loops also no longer run while offscreen; before, all seven ran forever.
+  - This closes open item 3 below.
+
+### Verification (this pass)
+- **Rendered-browser runs.** Chromium, SwiftShader, external requests blocked, Chart.js stubbed. Dark and light themes at 1280 px, dark at 390 px. No page errors.
+- **Reduced motion.** Static frames, and pause buttons hidden where nothing would move.
+- **Mobile overflow.** No new horizontal overflow. Three pre-existing mobile overflows were found and left alone (listed below).
+- **Static checks.** Tag balance unchanged against the originals; JSON-LD parses; inline scripts and the five new files pass `node --check`; no duplicate ids.
+- `tests/formula_regression.py`: 11/11.
+
 ## Open items / decisions for Saumitra
 
 1. **Physics check:**
    - MOT: the handedness rings (axial opposite to radial) and the field and current sign.
    - Hero: species by column, about 58% loading, Li carried onto Cs rather than the reverse, and the "toward LiCs molecules" wording.
 2. **Look on real hardware** (Mac and phone): smoothness, brightness, cycle speed.
-3. **Pre-existing, same accessibility gap as the hero (not changed):**
+3. **Closed in the third pass (see above).** Was: same accessibility gap as the hero:
    - dd-playground's FID/CPMG animation and learn-quantum's looping animations run indefinitely with no pause control and no reduced-motion handling.
    - decoherence-lab has a reduced-motion still frame but no pause control.
    - WCAG 2.2.2 applies to all of them.
@@ -206,6 +249,11 @@ All eight pages that load `orbit3d.js` now reference `v=2`: the five from the fi
 6. **Globe and tower follow-ups (second pass).**
    - The Europe markers on the Industry Map globe sit close together at the default size. Zoom (wheel or pinch) would help, but it is not built.
    - Do you want AWS (Pasadena) or Anderon (Albany) on the Industry Map globe? They are mentioned elsewhere on the page but have no deep-dive card, so they were left off to keep the globe 1:1 with the cards.
+
+7. **Third-pass follow-ups.**
+   - imaging-calculator's two "η ≈ 8% / 5%" mentions look like totals including T·QE. They should say which η they mean.
+   - Pre-existing mobile overflow at 390 px: imaging-calculator (`.fidelity-badge` / `.noise-table`, 501 px), cavity-qed (`.sys-table`, 409 px) and release-recapture after a run (`.sum-table`, 393 px).
+   - Unbuilt ideas from the shortlist: the Zernike wavefront as a 3D surface, and 3D blockade spheres on the Rydberg page.
 
 ## Suggested next pass
 - The pause and reduced-motion gap in item 3: a small shared control would cover all three pages.
