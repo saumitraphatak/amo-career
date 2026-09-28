@@ -30,3 +30,21 @@ Also fixed: the Stage 3 ("Advanced Grad / Thesis") tab's intro paragraph still s
 
 ## Performance audit re-check (2026-09-26)
 Same issue as `amo-groups.html` — re-checked the missing-Google-Fonts gap the original 2026-09-11 performance audit flagged but declined to fix. Already resolved: Saumitra added the standard font-loading block himself directly (commit 5460d65, 2026-09-25, before this run started). No page content changed by this run; noting the closure for the record. See docs/performance-audit-2026-09-26.md.
+
+## 3D time tower (2026-09-28)
+New panel **"All 55 papers in one view"** (`#paper-tower`), placed between the route panel and the stage tabs. The route cards are an orthogonal lens (see above), so nothing changes there. The purpose line at the top of this file still says 53; the page has had 55 papers since 2026-09-15.
+
+**What it shows.** A rotatable Canvas-2D tower (`js/syllabus3d.js?v=1` + `js/orbit3d.js?v=2`).
+- Height is publication year: the last 19xx/20xx year in each `.paper-citation`, on a linear scale with decade rings.
+- The four faces are the four stage tabs. Within each face, papers run left to right in page order.
+- Keystone papers are larger and ringed. Type chips (All / Keystone / Review / Experiment / Theory) dim the other papers.
+- A "Papers per decade" line is computed from the same data: 1970s 2 · 1980s 5 · 1990s 9 · 2000s 11 · 2010s 10 · 2020s 18.
+
+**Built from the DOM at load.** The data is read from the `.paper-card` elements, so adding, removing or re-tagging a paper needs no change to the tower.
+
+**Interaction.**
+- Hover shows the paper's number, stage, type, title and citation.
+- Mouse click opens that stage tab, scrolls to the card and flashes it (`.paper-card.is-highlighted`).
+- On touch, the first tap shows the card with a "Read the note in the list ↓" button.
+
+**Motion.** A slow turn with a Stop/Turn button (WCAG 2.2.2); it is static under `prefers-reduced-motion` and pauses offscreen. The panel is hidden until the script initialises.

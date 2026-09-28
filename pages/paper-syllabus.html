@@ -137,6 +137,33 @@
       line-height: 1.6;
     }
 
+    /* ── 3D time tower of the papers (js/syllabus3d.js) ── */
+    .tower3d { position:relative; margin:var(--sp-6) 0 var(--sp-5); border:1px solid var(--border); border-radius:var(--r-lg);
+      background:var(--bg-card); padding:var(--sp-4); display:grid; gap:var(--sp-3); }
+    @media(min-width:880px){ .tower3d { grid-template-columns:minmax(250px, 310px) 1fr; align-items:center; } }
+    .tower3d-side { display:flex; flex-direction:column; gap:.9rem; }
+    .tower3d-stage { position:relative; min-width:0; }
+    .tower3d-decades { font-size:.76rem; color:var(--text-secondary); line-height:1.6; }
+    .tower3d-decades strong { color:var(--text-primary); }
+    .tower3d[hidden] { display:none; }
+    .tower3d-head h2 { margin:0 0 .3rem; font-size:1.15rem; }
+    .tower3d-head p { margin:0; color:var(--text-muted); font-size:.88rem; line-height:1.55; max-width:62ch; }
+    #paper-tower-cvs { display:block; width:100%; height:520px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media(max-width:620px){ #paper-tower-cvs { height:360px; } }
+    .tower3d-key { display:flex; flex-wrap:wrap; gap:.3rem .9rem; font-size:.76rem; color:var(--text-secondary); }
+    .tower3d-key span { display:inline-flex; align-items:center; gap:.35rem; }
+    .tower3d-key i { width:9px; height:9px; border-radius:50%; background:var(--k); }
+    .tower3d-key .key-ring i { background:transparent; box-shadow:0 0 0 1.5px var(--text-secondary); }
+    .tower3d-filter { display:flex; flex-wrap:wrap; gap:.3rem; }
+    .tower3d-filter button, .tower3d-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent;
+      border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
+    .tower3d-filter button[aria-pressed="true"] { color:var(--text-primary); border-color:var(--c-atom); background:color-mix(in srgb, var(--c-atom) 12%, transparent); }
+    .tower3d-filter button:hover, .tower3d-pause:hover { color:var(--text-primary); }
+    .tower3d-pause { align-self:flex-start; }
+    .tower3d-pause[hidden] { display:none; }
+    .paper-card { transition: box-shadow .4s, border-color .4s; }
+    .paper-card.is-highlighted { border-color:var(--c-atom); box-shadow:0 0 0 3px color-mix(in srgb, var(--c-atom) 35%, transparent); }
+
   </style>
 </head>
 <body>
@@ -221,6 +248,28 @@
         <div class="route-card"><span class="step">Th</span><strong>Theory track</strong><p>Many-body, open systems, quantum simulation, and gate-model papers first.</p></div>
         <div class="route-card"><span class="step">NA</span><strong>Neutral-atom track</strong><p>Rydberg arrays, tweezer assembly, sideband cooling, and fault-tolerant architectures.</p></div>
         <div class="route-card"><span class="step">Job</span><strong>Interview prep</strong><p>Use reviews and landmark demonstrations to explain the field clearly under time pressure.</p></div>
+      </div>
+    </section>
+
+    <section class="tower3d" id="paper-tower" hidden aria-labelledby="paper-tower-title">
+      <div class="tower3d-side">
+        <div class="tower3d-head">
+          <h2 id="paper-tower-title">All 55 papers in one view</h2>
+          <p>Height is the year each paper was published. The four faces of the tower are the four career stages below, each read left to right in page order. Drag to turn it; click a paper to jump to its note in the list.</p>
+        </div>
+        <div class="tower3d-key" id="paper-tower-key"></div>
+        <div class="tower3d-filter" role="group" aria-label="Highlight papers by type">
+          <button type="button" data-tag="" aria-pressed="true">All</button>
+          <button type="button" data-tag="keystone" aria-pressed="false">Keystone</button>
+          <button type="button" data-tag="review" aria-pressed="false">Review</button>
+          <button type="button" data-tag="experiment" aria-pressed="false">Experiment</button>
+          <button type="button" data-tag="theory" aria-pressed="false">Theory</button>
+        </div>
+        <div class="tower3d-decades" id="paper-tower-decades"></div>
+        <button type="button" class="tower3d-pause" id="paper-tower-pause" aria-pressed="false">❚❚ Stop turning</button>
+      </div>
+      <div class="tower3d-stage">
+        <canvas id="paper-tower-cvs" data-export-ready="true" aria-label="Time tower of the 55 papers: height is publication year, 1970 to 2026, and the four faces are the four career stages. Every paper is also listed in the stage tabs below."></canvas>
       </div>
     </section>
 
@@ -966,8 +1015,38 @@
 
 
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/syllabus3d.js?v=1"></script>
 <script>
   renderNav({ active: 'paper-syllabus', root: '../' });
+
+  /* 3D time tower (js/syllabus3d.js) — built from the paper cards on this page */
+  (function () {
+    var wrap = document.getElementById('paper-tower'), cvs = document.getElementById('paper-tower-cvs');
+    if (!wrap || !cvs || !window.AMO3D || !AMO3D.syllabusTower) return;
+    wrap.hidden = false;
+    var tower = AMO3D.syllabusTower(cvs, { pauseButton: document.getElementById('paper-tower-pause') });
+    if (!tower) { wrap.hidden = true; return; }
+    var key = document.getElementById('paper-tower-key');
+    function drawKey() {
+      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      var st = [['Undergrad', '#38bdf8', '#0369a1'], ['Grad year 1', '#34d399', '#047857'], ['Advanced grad', '#a78bfa', '#6d28d9'], ['Postdoc', '#fb923c', '#c2410c']];
+      key.innerHTML = st.map(function (s) { return '<span><i style="--k:' + (dark ? s[1] : s[2]) + '"></i>' + s[0] + '</span>'; }).join('') +
+        '<span class="key-ring"><i></i>ringed = keystone</span>';
+    }
+    drawKey();
+    var dec = {};
+    tower.papers.forEach(function (p) { var d = Math.floor(p.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
+    document.getElementById('paper-tower-decades').innerHTML = '<strong>Papers per decade:</strong> ' +
+      Object.keys(dec).sort().map(function (d) { return d + 's ' + dec[d]; }).join(' · ');
+    new MutationObserver(drawKey).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    wrap.querySelectorAll('.tower3d-filter button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        wrap.querySelectorAll('.tower3d-filter button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+        tower.setFilter(b.dataset.tag);
+      });
+    });
+  })();
 </script>
 </body>
 </html>
