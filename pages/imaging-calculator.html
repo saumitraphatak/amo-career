@@ -1209,14 +1209,18 @@ In Rb87 Harvard experiments: $\varepsilon_{\rm meas} \lesssim 0.1\%$, $\varepsil
       <span style="color:var(--c-img)">06 </span>Fluorescence Histogram — Threshold Preview
     </h2>
     <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:.75rem;">
-      Each frame adds simulated imaging shots drawn from the real Poisson distributions for your settings.
-      <strong style="color:#1c805b;">Green = atom present</strong> (N_sig photons) ·
-      <strong style="color:#4f72a4;">Gray = empty tweezer</strong> (N_bg background) ·
-      <strong style="color:#926a03;">dashed = optimal threshold θ</strong>.
-      Detection fidelity = 1 − P(miss) − P(false alarm).
+      Each frame adds simulated imaging shots for your settings above: Poisson photo-electrons plus the camera's noise
+      (sCMOS: read noise σ_read; EMCCD: gain-register multiplication, the source of the √2 excess noise, plus σ_read/G).
+      <strong style="color:#1c805b;">Green = atom present</strong> (N_sig + N_bg + N_dark) ·
+      <strong style="color:#4f72a4;">Gray = empty tweezer</strong> (N_bg + N_dark) ·
+      dotted curves = the expected histograms ·
+      <strong style="color:#926a03;">dashed = optimal threshold θ</strong> (atom if counts ≥ θ).
+      Here detection fidelity = 1 − P(miss) − P(false alarm), the stricter convention; the calculator's fidelity
+      above is 1 − (P_miss + P_false)/2, the average for equal priors.
     </p>
     <canvas id="fluorHistCanvas" width="600" height="210"
-      style="width:100%;border-radius:8px;background:#faf5e9;display:block;"></canvas>
+      style="width:100%;border-radius:8px;background:var(--bg-card);display:block;"
+      role="img" aria-label="Simulated fluorescence histogram: counts per shot with and without an atom, their Poisson envelopes and the optimal threshold; the fidelity is read out below"></canvas>
     <div style="display:flex;gap:1.5rem;margin-top:.5rem;flex-wrap:wrap;">
       <div id="histFidReadout" style="font-family:var(--font-mono);font-size:.82rem;color:#1c805b;font-weight:700;"></div>
       <div id="histShotCount"  style="font-family:var(--font-mono);font-size:.78rem;color:var(--text-muted);"></div>
@@ -1419,6 +1423,8 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
 <script src="../js/main.js?v=34"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/collection3d.js?v=1"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=1"></script>
 <script>
 /* 3D collection figure (js/collection3d.js) — follows the NA slider */
 (function () {
@@ -1692,6 +1698,8 @@ function compute() {
   // Gaussian threshold model with separate bright/dark variances.
   // This avoids the common over-optimistic shortcut of mapping a one-peak SNR directly to fidelity.
   const fidelity = detectionFidelityGaussian(N_sig, N_bg, N_dark, sigma_read, camType, emGain);
+  // for the section-06 histogram preview (same counts and camera model)
+  window.IMG_LAST = { N_sig, N_bg, N_dark, sigma_read, camType, emGain };
 
   // ── Min exposure for target SNR ──────────────────────────────
   let tMin10 = '—', tMin50 = '—';
@@ -2083,24 +2091,43 @@ compute();
 loadHistPreset('Rb87');
 
 /* ── FLUORESCENCE HISTOGRAM ANIMATION ─────────────────── */
+/* Simulated imaging shots for the calculator's current settings (window.IMG_LAST, set by
+   compute()): atom present → mean N_sig + N_bg + N_dark detected e⁻, empty → N_bg + N_dark.
+   sCMOS / ideal: Poisson + Gaussian read noise σ_read. EMCCD: each photo-electron is
+   multiplied, n input e⁻ → Gamma(n, 1) output in input-e⁻ units (high-gain model,
+   Basden, Haniff & Mackay, MNRAS 345, 985 (2003), arXiv:astro-ph/0307305; this gives the
+   excess-noise factor √2 used by the calculator), plus read noise σ_read / G.
+   The threshold, P_miss, P_false and the dashed envelopes come from the same model computed
+   exactly on the integer grid, so they match the simulated bars. */
 (function() {
   const cv = document.getElementById('fluorHistCanvas');
   if (!cv) return;
 
-  // Physics params — updated from compute() via window.histAnimUpdate
-  let _N_sig   = 500;   // mean detected photons (atom present)
-  let _N_bg    = 20;    // mean background photons (atom absent)
-  let _sigRead = 2;     // effective read-noise std-dev (electrons)
+  // Current model inputs (defaults until compute() reports)
+  let P = { lamB: 520, lamD: 20, sig: 2, em: false, camType: 'scmos' };
 
-  window.histAnimUpdate = function(n_sig, n_bg, sig_r) {
-    const changed = (Math.abs(n_sig-_N_sig)>1 || Math.abs(n_bg-_N_bg)>0.5);
-    _N_sig = Math.max(0.1, n_sig);
-    _N_bg  = Math.max(0, n_bg);
-    _sigRead = Math.max(0, sig_r);
-    if (changed) reset();
+  let ctl = null, lastT = 0;   // motion controller (AMOMotion.loop) and last frame time
+  window.histAnimUpdate = function(v) {
+    if (!v) return;
+    const em  = v.camType === 'emccd';
+    const lamD = Math.max(0, v.N_bg + v.N_dark);
+    const lamB = Math.max(0.1, v.N_sig) + lamD;
+    const sig = Math.max(0, v.camType === 'ideal' ? 0 : em ? v.sigma_read / Math.max(1, v.emGain) : v.sigma_read);
+    const changed = Math.abs(lamB - P.lamB) > 0.5 || Math.abs(lamD - P.lamD) > 0.05 ||
+                    Math.abs(sig - P.sig) > 0.05 || em !== P.em;
+    P = { lamB, lamD, sig, em, camType: v.camType };
+    if (changed) {
+      reset();
+      // paused (button or reduced motion): show the finished histogram for the new settings
+      if (ctl && !ctl.isRunning()) { fillAll(); frame(lastT); }
+    }
   };
 
-  /* ── Poisson sampler (Knuth + normal approx) ── */
+  /* ── Samplers ── */
+  function gauss() {
+    let u = 0; while (u === 0) u = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * Math.random());
+  }
   function poisson(lam) {
     if (lam <= 0) return 0;
     if (lam < 40) {
@@ -2108,82 +2135,147 @@ loadHistPreset('Rb87');
       do { k++; p*=Math.random(); } while(p>L);
       return k-1;
     }
-    let x;
-    do { x=Math.round(lam+Math.sqrt(lam)*(Math.random()+Math.random()+Math.random()+Math.random()+Math.random()+Math.random()-3)); } while(x<0);
+    return Math.max(0, Math.round(lam + Math.sqrt(lam) * gauss()));
+  }
+  // Gamma(n, 1) for integer n ≥ 1: sum of exponentials, normal approximation for large n
+  function gammaInt(n) {
+    if (n <= 0) return 0;
+    if (n > 60) return Math.max(0, n + Math.sqrt(n) * gauss());
+    let x = 0; for (let i = 0; i < n; i++) x -= Math.log(1 - Math.random());
     return x;
   }
-
-  /* ── Sample one imaging shot ── */
-  function shot(meanPhotons) {
-    const photons = poisson(meanPhotons);
-    const read = Math.round(_sigRead * (Math.random()+Math.random()-1));
-    return Math.max(0, photons + read);
+  /* ── One imaging shot: detected counts in photo-electron units ── */
+  function shot(lam) {
+    const n = poisson(lam);
+    const x = P.em ? gammaInt(n) : n;
+    return Math.max(0, Math.round(x + P.sig * gauss()));
   }
 
-  /* ── Poisson CDF (cumulative distribution) ── */
-  function poissonCDF(k, lam) {
-    if (k < 0) return 0;
-    let s=0, term=Math.exp(-lam), lim=Math.min(k, 300);
-    for (let i=0; i<=lim; i++) { s+=term; term*=lam/(i+1); }
-    return Math.min(1, s);
+  /* ── Exact count distributions on the integer grid 0..cmax ── */
+  let logFact = new Float64Array(1);
+  function ensureLogFact(k) {
+    if (logFact.length > k) return;
+    const lf = new Float64Array(k + 1);
+    for (let i = 1; i <= k; i++) lf[i] = lf[i - 1] + Math.log(i);
+    logFact = lf;
+  }
+  function erfcNR(x) {   // Numerical Recipes erfcc, fractional error < 1.2e-7
+    const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+    const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +
+              t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 +
+              t * (-0.82215223 + t * 0.17087277)))))))));
+    return x >= 0 ? r : 2 - r;
+  }
+  const Phi = x => 0.5 * erfcNR(-x / Math.SQRT2);
+  function countPmf(lam, cmax) {
+    ensureLogFact(Math.ceil(lam + 12 * Math.sqrt(lam + 1) + 20));
+    const nlo = Math.max(0, Math.floor(lam - 12 * Math.sqrt(lam + 1) - 5));
+    const nhi = Math.ceil(lam + 12 * Math.sqrt(lam + 1) + 5);
+    const pois = n => lam > 0 ? Math.exp(n * Math.log(lam) - lam - logFact[n]) : (n === 0 ? 1 : 0);
+    if (lam > 1500) {                            // large counts: Gaussian (Poisson × F², + read noise)
+      const out = new Float64Array(cmax + 1), sd = Math.sqrt((P.em ? 2 : 1) * lam + P.sig * P.sig);
+      for (let c = 0; c <= cmax; c++) out[c] = (c === cmax ? 1 : Phi((c + 0.5 - lam) / sd)) - (c === 0 ? 0 : Phi((c - 0.5 - lam) / sd));
+      return out;
+    }
+    let q = new Float64Array(cmax + 1);          // before read noise
+    for (let n = nlo; n <= nhi; n++) {
+      const w = pois(n);
+      if (w < 1e-15) continue;
+      if (!P.em || n === 0) { q[Math.min(cmax, n)] += w; continue; }
+      // Gamma(n,1) mass in [c − ½, c + ½), by its density at c (bin 0: [0, ½))
+      const lo = Math.max(0, Math.floor(n - 12 * Math.sqrt(n) - 3)), hi = Math.min(cmax, Math.ceil(n + 12 * Math.sqrt(n) + 3));
+      let acc = 0; const tmp = [];
+      for (let c = lo; c <= hi; c++) {
+        const x = c === 0 ? 0.25 : c;
+        const d = Math.exp((n - 1) * Math.log(x) - x - logFact[n - 1]) * (c === 0 ? 0.5 : 1);
+        tmp.push(d); acc += d;
+      }
+      if (acc > 0) for (let c = lo; c <= hi; c++) q[c] += w * tmp[c - lo] / acc;
+    }
+    if (P.sig < 0.3) return q;
+    // read noise: discretised Gaussian; negative totals clamp to 0 (as in shot())
+    const J = Math.ceil(6 * P.sig) + 1, kern = [];
+    for (let j = -J; j <= J; j++) kern.push(Phi((j + 0.5) / P.sig) - Phi((j - 0.5) / P.sig));
+    const out = new Float64Array(cmax + 1);
+    for (let c = 0; c <= cmax; c++) {
+      if (q[c] < 1e-16) continue;
+      for (let j = -J; j <= J; j++) {
+        const t = Math.min(cmax, Math.max(0, c + j));
+        out[t] += q[c] * kern[j + J];
+      }
+    }
+    return out;
   }
 
-  /* ── Optimal threshold (maximise fidelity for equal priors) ── */
-  function optimalThreshold() {
-    const lo=_N_bg, hi=_N_sig+_sigRead*3;
-    if (_N_sig <= _N_bg+1) return Math.ceil(_N_bg+3);
-    // Analytic: θ = (N_sig - N_bg) / ln(N_sig/N_bg)
-    const th = (_N_sig - _N_bg) / Math.log(Math.max(_N_sig/_N_bg, 1.001));
-    return Math.max(Math.ceil(_N_bg)+1, Math.round(th));
-  }
-
-  /* ── Detection fidelity ── */
-  function calcFidelity(theta) {
-    const eff_sig = _N_sig + _sigRead*_sigRead;  // effective mean including read noise variance
-    const eff_bg  = _N_bg  + _sigRead*_sigRead;
-    const p_miss  = poissonCDF(theta-1, eff_sig); // P(count < θ | atom)
-    const p_false = 1 - poissonCDF(theta, eff_bg); // P(count > θ | no atom)
-    return { fid: Math.max(0, 1-p_miss-p_false), pmiss: p_miss, pfalse: p_false };
-  }
-
-  // Histogram state
+  // Histogram + model state
   let bins_atom  = null;  // Int32Array
   let bins_empty = null;
   let nBins = 0, binMax = 0, nShots = 0;
   const MAX_SHOTS = 300;
   let _pauseStart = null;
+  let M = null;   // { theta, pmiss, pfalse, fid, envA, envE }
 
   function reset() {
     nShots = 0;
     _pauseStart = null;
-    const xMax = Math.max(_N_sig*2.5, _N_bg*5+30, 50);
+    const f2 = P.em ? 2 : 1;
+    const xMax = Math.max(P.lamB + 5 * Math.sqrt(f2 * P.lamB + P.sig * P.sig), P.lamD * 5 + 30, 50);
     nBins  = Math.min(80, Math.max(30, Math.round(xMax/3)));
     binMax = xMax;
     bins_atom  = new Int32Array(nBins);
     bins_empty = new Int32Array(nBins);
+
+    // model: count PMFs, optimal threshold (atom ⇔ count ≥ θ), binned envelopes
+    const cmax = Math.ceil(xMax * 1.6 + 20);
+    const pa = countPmf(P.lamB, cmax), pe = countPmf(P.lamD, cmax);
+    let cumA = 0, tailE = 0;
+    for (let c = 0; c <= cmax; c++) tailE += pe[c];
+    let best = { err: Infinity, theta: 1, pm: 0, pf: 1 };
+    for (let th = 1; th <= cmax; th++) {
+      cumA += pa[th - 1]; tailE -= pe[th - 1];          // P(c < θ | atom), P(c ≥ θ | empty)
+      const err = cumA + Math.max(0, tailE);
+      if (err < best.err) best = { err, theta: th, pm: cumA, pf: Math.max(0, tailE) };
+    }
+    const envA = new Float64Array(nBins), envE = new Float64Array(nBins);
+    for (let c = 0; c <= cmax; c++) {
+      const b = Math.min(nBins - 1, Math.floor(c / binMax * nBins));
+      envA[b] += pa[c]; envE[b] += pe[c];
+    }
+    M = { theta: best.theta, pmiss: best.pm, pfalse: best.pf, fid: Math.max(0, 1 - best.pm - best.pf), envA, envE };
   }
   reset();
+
+  // All MAX_SHOTS at once (reduced motion / paused)
+  function fillAll() {
+    while (nShots < MAX_SHOTS) {
+      const ba = Math.min(nBins-1, Math.floor(shot(P.lamB)/binMax*nBins));
+      const be = Math.min(nBins-1, Math.floor(shot(P.lamD)/binMax*nBins));
+      if (ba >= 0) bins_atom[ba]++;
+      if (be >= 0) bins_empty[be]++;
+      nShots++;
+    }
+  }
+
+  // the model's sums are good to ~1e-15, so smaller probabilities print as a bound
+  const fmtP = p => p < 1e-12 ? '<1e-12' : p.toExponential(1);
 
   // Throttle: add 1 shot every ~50ms so the histogram builds visibly slowly
   let _lastShotT = 0;
   function frame(ts) {
-    requestAnimationFrame(frame);
-
     // Responsive canvas width
     const W = cv.clientWidth || 600, H = 210;
     if (cv.width !== W) { cv.width = W; }
 
-    const ctx = cv.getContext('2d');
+    // light-theme inks → dark theme (js/canvas-ink.js; the wrap is idempotent)
+    const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
     ctx.fillStyle='#faf5e9'; ctx.fillRect(0,0,W,H);
 
     // Add 1 shot per ~50ms for a slow, visible build-up
     if (nShots < MAX_SHOTS) {
       if (ts - _lastShotT >= 50) {
         _lastShotT = ts;
-        const va = shot(_N_sig);
-        const ve = shot(_N_bg);
-        const ba = Math.min(nBins-1, Math.floor(va/binMax*nBins));
-        const be = Math.min(nBins-1, Math.floor(ve/binMax*nBins));
+        const ba = Math.min(nBins-1, Math.floor(shot(P.lamB)/binMax*nBins));
+        const be = Math.min(nBins-1, Math.floor(shot(P.lamD)/binMax*nBins));
         if (ba >= 0) bins_atom[ba]++;
         if (be >= 0) bins_empty[be]++;
         nShots++;
@@ -2194,37 +2286,24 @@ loadHistPreset('Rb87');
       if (ts - _pauseStart > 2500) reset();
     }
 
+    const narrow = W < 520;
     const PAD_L=52, PAD_R=20, PAD_T=38, PAD_B=36;
     const CW=W-PAD_L-PAD_R, CH=H-PAD_T-PAD_B;
 
-    // Max bar height
+    // Max bar height (bars and the expected counts of the envelopes share one scale)
     let maxCount=1;
     for (let i=0;i<nBins;i++) maxCount=Math.max(maxCount, bins_atom[i], bins_empty[i]);
+    if (nShots > 30) for (let i=0;i<nBins;i++) maxCount=Math.max(maxCount, M.envA[i]*nShots, M.envE[i]*nShots);
     const bW = Math.max(1, CW/nBins - 0.8);
     const toX = v => PAD_L + (v/binMax)*CW;
     const toY = c => PAD_T + CH*(1 - Math.min(1, c/maxCount*0.92));
 
-    // Draw Poisson envelope curves (theoretical)
-    function drawEnvelope(mu, color) {
+    // Model envelope: expected shots per bin = nShots × P(bin)
+    function drawEnvelope(env, color) {
       ctx.beginPath();
-      let first=true;
       for (let i=0;i<nBins;i++) {
-        const x_mid = (i+0.5)*binMax/nBins;
-        // Poisson PMF × nShots × binW (normalized to histogram scale)
-        const k = Math.round(x_mid);
-        // Use Stirling/log-factorial for large k
-        let logPmf;
-        if (mu <= 0) { logPmf = -1e9; }
-        else {
-          // log P(k|mu) = k*log(mu) - mu - log(k!)
-          let logFact=0; for(let j=1;j<=k;j++) logFact+=Math.log(j);
-          logPmf = k*Math.log(mu) - mu - logFact;
-        }
-        const pmf = Math.exp(logPmf);
-        const y = PAD_T + CH*(1 - Math.min(1, pmf*nShots*0.92/maxCount));
-        const xp = toX(x_mid);
-        first ? ctx.moveTo(xp,y) : ctx.lineTo(xp,y);
-        first=false;
+        const xp = PAD_L + (i+0.5)*(CW/nBins), y = toY(env[i]*nShots);
+        i === 0 ? ctx.moveTo(xp,y) : ctx.lineTo(xp,y);
       }
       ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
     }
@@ -2244,33 +2323,33 @@ loadHistPreset('Rb87');
       }
     }
 
-    // Theoretical envelopes
+    // Model envelopes
     if (nShots > 30) {
-      drawEnvelope(_N_sig, 'rgba(52,211,153,0.6)');
-      drawEnvelope(_N_bg,  'rgba(148,163,184,0.5)');
+      drawEnvelope(M.envA, 'rgba(52,211,153,0.6)');
+      drawEnvelope(M.envE, 'rgba(148,163,184,0.5)');
     }
 
     // Threshold line
-    const theta = optimalThreshold();
+    const theta = M.theta;
     const xTh = toX(theta);
     ctx.beginPath(); ctx.moveTo(xTh, PAD_T-6); ctx.lineTo(xTh, H-PAD_B);
     ctx.setLineDash([5,4]); ctx.strokeStyle='rgba(146,106,3,0.85)'; ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
-    ctx.font='bold 10px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.font='bold 10px JetBrains Mono,monospace';
     ctx.fillStyle='rgba(146,106,3,0.9)';
-    ctx.fillText('θ='+theta, xTh, PAD_T-10);
+    // narrow canvases put the legend on two lines above the plot, so the θ label goes inside it
+    if (narrow) { ctx.textAlign='left'; ctx.fillText('θ='+theta, xTh+4, PAD_T+8); }
+    else { ctx.textAlign='center'; ctx.fillText('θ='+theta, xTh, PAD_T-10); }
 
-    // Shaded error regions
-    // False alarm: gray bars right of threshold
+    // Shaded error regions: empty-tweezer shots at or above θ, atom shots below θ
     for (let i=0;i<nBins;i++) {
-      const x_mid=(i+0.5)*binMax/nBins;
-      if (x_mid > theta && bins_empty[i]>0) {
+      const x_lo=i*binMax/nBins, x_hi=(i+1)*binMax/nBins;
+      if (x_hi > theta && bins_empty[i]>0) {
         const x=PAD_L+i*(CW/nBins);
         ctx.fillStyle='rgba(248,113,113,0.18)';
         const barH=CH-(toY(bins_empty[i])-PAD_T);
         ctx.fillRect(x,toY(bins_empty[i]),bW,barH);
       }
-      // Miss: green bars left of threshold
-      if (x_mid < theta && bins_atom[i]>0) {
+      if (x_lo < theta && bins_atom[i]>0) {
         const x=PAD_L+i*(CW/nBins);
         ctx.fillStyle='rgba(248,113,113,0.18)';
         const barH=CH-(toY(bins_atom[i])-PAD_T);
@@ -2289,7 +2368,7 @@ loadHistPreset('Rb87');
       ctx.beginPath(); ctx.moveTo(x,H-PAD_B); ctx.lineTo(x,H-PAD_B+3);
       ctx.strokeStyle='#334155'; ctx.lineWidth=1; ctx.stroke();
     }
-    ctx.fillStyle='#8c8066'; ctx.fillText('detected photons per shot', W/2, H-PAD_B+25);
+    ctx.fillStyle='#8c8066'; ctx.fillText('detected photo-electrons per shot', W/2, H-PAD_B+25);
 
     // Y axis label
     ctx.save(); ctx.translate(12,H/2); ctx.rotate(-Math.PI/2);
@@ -2303,61 +2382,51 @@ loadHistPreset('Rb87');
       ctx.strokeStyle='rgba(30,41,59,0.6)'; ctx.lineWidth=1; ctx.stroke();
     }
 
-    // Legend (top-left)
+    // Legend (top-left; two lines on narrow canvases so it clears the F readout)
+    const fmtMu = m => m >= 10 ? m.toFixed(0) : m.toFixed(1);
     ctx.font='10px Inter,sans-serif'; ctx.textAlign='left';
-    ctx.fillStyle='rgba(28,128,91,0.9)'; ctx.fillText('▪ atom present  (μ='+_N_sig.toFixed(0)+')', PAD_L, PAD_T-20);
-    ctx.fillStyle='rgba(92,80,60,0.8)'; ctx.fillText('▪ no atom  (μ='+_N_bg.toFixed(0)+')', PAD_L+190, PAD_T-20);
+    ctx.fillStyle='rgba(28,128,91,0.9)'; ctx.fillText('▪ atom present  (μ='+fmtMu(P.lamB)+')', PAD_L, PAD_T-20);
+    ctx.fillStyle='rgba(92,80,60,0.8)';
+    if (narrow) ctx.fillText('▪ no atom  (μ='+fmtMu(P.lamD)+')', PAD_L, PAD_T-8);
+    else ctx.fillText('▪ no atom  (μ='+fmtMu(P.lamD)+')', PAD_L+190, PAD_T-20);
 
-    // Live fidelity readout (top-right)
-    const {fid, pmiss, pfalse} = calcFidelity(theta);
-    const fidPct = (fid*100).toFixed(2)+'%';
+    // Live fidelity readout (top-right), model values
+    const fid = M.fid, pmiss = M.pmiss, pfalse = M.pfalse;
+    const infid = pmiss + pfalse;
+    const fidEq = infid < 1e-12 ? ' > 1 − 1e-12' : ' = ' + (infid < 5e-5 ? '1 − ' + fmtP(infid) : (fid*100).toFixed(2)+'%');
     const fidColor = fid>=0.999 ? '#4ade80' : fid>=0.99 ? '#fbbf24' : '#f87171';
     ctx.font='bold 12px JetBrains Mono,monospace'; ctx.textAlign='right';
-    ctx.fillStyle=fidColor; ctx.fillText('F = '+fidPct, W-PAD_R, PAD_T-20);
-    ctx.font='9px JetBrains Mono,monospace';
-    ctx.fillStyle='rgba(226,11,11,0.8)';
-    ctx.fillText('P_miss='+pmiss.toExponential(1)+'  P_fa='+pfalse.toExponential(1), W-PAD_R, PAD_T-8);
+    ctx.fillStyle=fidColor; ctx.fillText('F'+fidEq, W-PAD_R, PAD_T-20);
+    if (!narrow) {
+      ctx.font='9px JetBrains Mono,monospace';
+      ctx.fillStyle='rgba(226,11,11,0.8)';
+      ctx.fillText('P_miss='+fmtP(pmiss)+'  P_fa='+fmtP(pfalse), W-PAD_R, PAD_T-8);
+    }
 
     // Status readouts below canvas
     const fidEl = document.getElementById('histFidReadout');
     const shotsEl = document.getElementById('histShotCount');
     const errEl = document.getElementById('histErrReadout');
-    if (fidEl) fidEl.textContent = 'F_det = '+fidPct;
+    if (fidEl) fidEl.textContent = 'F_det'+fidEq;
     if (shotsEl) shotsEl.textContent = nShots+' / '+MAX_SHOTS+' shots';
-    if (errEl) errEl.textContent = 'P_miss='+pmiss.toExponential(2)+'  P_false_alarm='+pfalse.toExponential(2);
+    if (errEl) errEl.textContent = 'P_miss='+fmtP(pmiss)+'  P_false_alarm='+fmtP(pfalse);
   }
 
-  requestAnimationFrame(frame);
+  // Pause control, offscreen stop (js/motion.js). Under reduced motion it starts paused on a
+  // finished histogram instead of an empty one. Theme toggles repaint the current frame.
+  const tick = t => { lastT = t; frame(t); };
+  if (window.AMOInk) AMOInk.onTheme(() => frame(lastT));
+  ctl = window.AMOMotion
+    ? AMOMotion.loop(cv, tick, { anchors: [{ el: document.getElementById('histErrReadout') || cv, where: 'afterend', inline: !!document.getElementById('histErrReadout') }],
+                                 onStatic: () => { fillAll(); tick(performance.now()); } })
+    : (requestAnimationFrame(function f(t) { tick(t); requestAnimationFrame(f); }), null);
 
-  // Parse fmtShort output ("1.5 k" → 1500, "234.5" → 234.5, "1.2 M" → 1.2e6)
-  function parseFmt(s) {
-    if (!s || s==='—') return NaN;
-    const v = parseFloat(s);
-    if (s.includes('M')) return v*1e6;
-    if (s.includes('k')) return v*1e3;
-    return v;
-  }
-
-  // Bootstrap: compute() already ran before this IIFE, so pull values from DOM now
-  setTimeout(() => {
-    try {
-      const n_sig   = parseFmt(document.getElementById('nDetected').textContent) || 500;
-      const sigma_r = parseFloat(document.getElementById('rnLbl').textContent) || 2;
-      const n_bg    = parseFloat(document.getElementById('bgLbl').textContent) || 20;
-      histAnimUpdate(n_sig, n_bg, sigma_r);
-    } catch(e) {}
-  }, 100);
-
-  // Patch compute() to feed updated N_sig, N_bg, sigma_read
+  // compute() already ran before this IIFE; take its numbers now, and after every compute()
+  if (window.IMG_LAST) histAnimUpdate(window.IMG_LAST);
   const _origCompute = window.compute;
   window.compute = function() {
     _origCompute && _origCompute();
-    try {
-      const n_sig   = parseFmt(document.getElementById('nDetected').textContent) || 500;
-      const sigma_r = parseFloat(document.getElementById('rnLbl').textContent) || 2;
-      const n_bg    = parseFloat(document.getElementById('bgLbl').textContent) || 20;
-      histAnimUpdate(n_sig, n_bg, sigma_r);
-    } catch(e) {}
+    try { histAnimUpdate(window.IMG_LAST); } catch(e) {}
   };
 })();
 </script>

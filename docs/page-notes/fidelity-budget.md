@@ -42,3 +42,9 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 4 labels rendered differently after the fix, e.g. "TOTAL GATE FIDELITY F = 1 − ΣΕᵢ" → "TOTAL GATE FIDELITY F = 1 − Σεᵢ"; "RYDBERG LIFETIME Τ" → "RYDBERG LIFETIME τ". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight run 3): error waterfall follows the theme; label fixes
+- The "Error waterfall" canvas was cream in the (default) dark theme. Its context now goes through the shared `js/canvas-ink.js` (`AMOInk.wrap`), the canvas has CSS background `var(--bg-card)`, and a theme toggle redraws it instantly (`drawWaterfall(…, instant)`). The 0.8 s grow-in is skipped under reduced motion.
+- Bar labels were the first word cut to 6 letters ("Dopple", "Blocka", "B-fiel"); they now use short names (Doppler, Spont., Laser φ, SPAM, Blockade, B-field, Rabi δΩ, Loss), and 5-letter ones when the columns are narrower than 48 px (phones), where the old labels ran into each other. The "99.9%" target label sat on top of the "0.0e+0" y tick; it now reads "99.9% target" at the right end of the dashed line.
+- Checks: `smoke.js` 0 new problems; Playwright dark/light 1280 and 390, toggle repaint; screenshots reviewed.
+- **Not changed, flagged (Needs Saumitra in the backlog):** at the default settings (⁸⁷Rb, n = 60, t_gate = 2 μs, T = 5 μK) the Doppler term is 0.16 and dominates the budget, because `k_Ryd = 2π/λ_Ryd` uses a single 480 nm photon. For the usual counter-propagating two-photon excitation the relevant wavevector is |k₁ − k₂| (e.g. 780 + 480 nm: k_eff ≈ 5.0×10⁶ m⁻¹ vs 1.31×10⁷ m⁻¹, so ε_D would be ≈ 7× smaller).

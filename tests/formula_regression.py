@@ -254,6 +254,17 @@ def test_cooling_simulator_doppler_temperature() -> None:
     assert abs(hbar * 2 * math.pi * 5.234e6 / (2 * kB) * 1e6 - 125.6) < 0.1
 
 
+def test_imaging_histogram_preview_uses_calculator_counts() -> None:
+    """Section-06 preview: atom-present mean includes background, per-shot counts come from
+    compute() (not the background-rate label), EMCCD read noise is divided by the gain."""
+    page = "pages/imaging-calculator.html"
+    assert_contains(page, "window.IMG_LAST = { N_sig, N_bg, N_dark, sigma_read, camType, emGain };")
+    assert_contains(page, "const lamB = Math.max(0.1, v.N_sig) + lamD;")
+    assert_contains(page, "v.sigma_read / Math.max(1, v.emGain)")
+    assert_not_contains(page, "parseFloat(document.getElementById('bgLbl').textContent)")
+    assert_not_contains(page, "const eff_sig = _N_sig + _sigRead*_sigRead")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -270,6 +281,7 @@ def main() -> None:
         test_imaging_histogram_presets_match_notes,
         test_mot_viz_matches_calculator_sigma,
         test_cooling_simulator_doppler_temperature,
+        test_imaging_histogram_preview_uses_calculator_counts,
     ]
     for test in tests:
         test()

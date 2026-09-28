@@ -156,7 +156,7 @@
       padding: .5rem; margin-top: .75rem; border-radius: 6px; transition: all .3s;
     }
     #mol-canvas {
-      width: 100%; height: 100px; background: #faf5e9; border-radius: 8px;
+      width: 100%; height: 100px; background: var(--bg-card); border-radius: 8px;
       border: 1px solid var(--border-med); display: block; margin-top: .75rem;
     }
 
@@ -489,7 +489,7 @@
               <span>Atm 10⁵</span>
             </div>
           </div>
-          <canvas id="mol-canvas" height="100"></canvas>
+          <canvas id="mol-canvas" height="100" role="img" aria-label="Schematic gas molecules in the chamber; fewer dots at lower pressure (log-scaled, not to scale)"></canvas>
           <div class="regime-label-display" id="regime-label">Ultra-High Vacuum</div>
           <div class="readout-grid">
             <div class="readout-card">
@@ -1164,6 +1164,8 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=34"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=1"></script>
 <script>
   renderNav({ active: 'vacuum-systems', root: '../' });
 
@@ -1177,7 +1179,8 @@
   /* ─── Pressure Explorer ─── */
   const slider   = document.getElementById('pslider');
   const canvas   = document.getElementById('mol-canvas');
-  const ctx      = canvas.getContext('2d');
+  const ctx      = window.AMOInk ? AMOInk.wrap(canvas.getContext('2d')) : canvas.getContext('2d');   // light inks → dark theme
+  let dpr = 1;
 
   function fmtExp(val) {
     const e = Math.floor(Math.log10(Math.abs(val) || 1e-300));
@@ -1217,17 +1220,19 @@
 
   /* Molecule positions (fixed random set, scaled by density) */
   const seeds = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), vx: (Math.random()-.5)*.6, vy: (Math.random()-.5)*.6, r: 1.5 + Math.random()*2, phase: Math.random()*Math.PI*2 }));
-  let animId = null;
   let molCount = 0;
   let t = 0;
 
-  function drawMolecules() {
-    const W = canvas.width;
-    const H = canvas.height;
+  // drawMolecules(true) advances the drift one frame; drawMolecules(false) repaints (theme, paused)
+  function drawMolecules(step) {
+    // CSS-pixel size: the context is scaled by dpr, so canvas.width (device px) put
+    // most molecules outside the visible area on high-DPI screens
+    const W = canvas.width / dpr;
+    const H = canvas.height / dpr;
     ctx.clearRect(0, 0, W, H);
     const n = Math.min(80, Math.round(molCount));
     if (n === 0) return;
-    t += 0.016;
+    if (step) t += 0.016;
     for (let i = 0; i < n; i++) {
       const s = seeds[i];
       const x = ((s.x + s.vx * t * .3 + 100) % 1) * W;
@@ -1241,7 +1246,6 @@
       ctx.fill();
     }
     ctx.shadowBlur = 0;
-    animId = requestAnimationFrame(drawMolecules);
   }
 
   function updatePressure() {
@@ -1291,14 +1295,13 @@
     const frac = Math.max(0, (logP - minLog) / (maxLog - minLog));
     molCount = Math.round(frac * frac * 75);
 
-    if (animId) cancelAnimationFrame(animId);
     t = 0;
-    drawMolecules();
+    drawMolecules(false);
   }
 
   /* Canvas DPR fix */
   function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
+    dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width  = rect.width  * dpr;
     canvas.height = rect.height * dpr;
@@ -1312,6 +1315,10 @@
   requestAnimationFrame(() => {
     resizeCanvas();
     updatePressure();
+    // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+    if (window.AMOInk) AMOInk.onTheme(() => drawMolecules(false));
+    if (window.AMOMotion) AMOMotion.loop(canvas, () => drawMolecules(true));
+    else requestAnimationFrame(function f() { drawMolecules(true); requestAnimationFrame(f); });
   });
 
   /* KaTeX */

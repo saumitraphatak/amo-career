@@ -47,3 +47,9 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 7 labels rendered differently after the fix, e.g. "TARGET PRESSURE (MBAR)" → "TARGET PRESSURE (mbar)"; "MOLECULES/CM³ AT UHV" → "MOLECULES/cm³ AT UHV". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight run 3): pressure-explorer molecules follow the theme, can be paused, fill the box
+- `#mol-canvas` had a cream CSS background in the (default) dark theme; now `var(--bg-card)`, and its context goes through `js/canvas-ink.js` (dark teal molecules become `#22d3ee` in the dark theme).
+- Its forever `requestAnimationFrame` loop is now `AMOMotion.loop` (Pause button, offscreen stop, still frame under reduced motion); slider moves and theme toggles repaint.
+- **High-DPI bug:** the canvas is sized `rect.width × dpr` and the context scaled by dpr, but molecules were placed over `canvas.width` (device pixels), so on a dpr-2 screen three quarters of them were outside the visible box. They now use CSS-pixel width/height. Checked at deviceScaleFactor 2: molecule pixels split 50/50 left/right and top/bottom (before: concentrated top-left).
+- `role="img"` + `aria-label` ("schematic; log-scaled, not to scale"). Checks: `smoke.js` 0 new problems; Playwright dark/light 1280 and 390, reduced motion + slider + toggle; screenshots reviewed.
