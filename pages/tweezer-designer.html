@@ -77,6 +77,18 @@
     @media(max-width:580px){ .arr-ctrl{grid-template-columns:1fr} }
     .arr-info { display:flex; gap:var(--sp-4); flex-wrap:wrap; margin-top:var(--sp-3); font-size:.82rem; color:var(--text-secondary); }
     .arr-info strong { color:var(--page-color); }
+    /* 3D / top-view toggle (js/tweezer3d.js) */
+    .arr-wrap [hidden] { display:none !important; }
+    .arr-wrap.arr-mode-3d .export-float { display:none !important; }  /* main.js's Export PNG/SVG belong to the top view */   /* #arr-cvs / .arr-views set display, which would override [hidden] */
+    .arr-views { display:inline-flex; gap:2px; padding:3px; border:1px solid var(--border-med); border-radius:999px; margin-bottom:var(--sp-3); }
+    .arr-views button { border:0; background:transparent; color:var(--text-secondary); font-size:.76rem; font-weight:600; padding:.3rem .85rem; border-radius:999px; cursor:pointer; }
+    .arr-views button[aria-pressed="true"] { background:color-mix(in srgb, var(--page-color) 16%, transparent); color:var(--page-color); }
+    .arr-3d { position:relative; }
+    #arr-3d { display:block; width:100%; height:380px; max-height:none !important; /* beat the global Chart.js canvas cap */
+              border-radius:var(--r); background:color-mix(in srgb, var(--bg-card) 35%, transparent); }
+    @media(max-width:580px){ #arr-3d { height:280px; } }
+    .arr-3d-scale { position:absolute; transform:translateX(-50%); font-family:var(--font-mono); font-size:.68rem; color:var(--text-secondary); pointer-events:none; white-space:nowrap; }
+    .arr-3d-note { font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted); margin-top:.35rem; }
 
     .sp-sel { width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border-med); border-radius:var(--r);
               color:var(--text-primary); padding:7px 10px; font-size:.85rem; margin-bottom:var(--sp-4); }
@@ -405,6 +417,15 @@
       </p>
 
       <div class="arr-wrap">
+        <div class="arr-views" id="arr-views" hidden>
+          <button type="button" data-arrview="3d" aria-pressed="true">3D view</button>
+          <button type="button" data-arrview="top" aria-pressed="false">Top view</button>
+        </div>
+        <div class="arr-3d" id="arr-3d-wrap" hidden>
+          <canvas id="arr-3d" data-export-ready="true"></canvas>
+          <div class="arr-3d-scale" id="arr-3d-scale" aria-hidden="true"></div>
+          <div class="arr-3d-note" id="arr-3d-note"></div>
+        </div>
         <canvas id="arr-cvs" height="260"></canvas>
         <div class="arr-ctrl">
           <div class="sl-row">
@@ -671,6 +692,8 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=1"></script>
+<script src="../js/tweezer3d.js?v=1"></script>
 <script>
   renderNav({ active:'tweezer-designer', root:'../' });
 
@@ -692,7 +715,7 @@
   const slNA  = document.getElementById('na-s');
   const slPW  = document.getElementById('pw-s');
   let   trapChart = null;
-  let   curW0 = 1e-6;
+  let   curW0 = 1e-6, curZR = 3e-6;
 
   function calcTrap(atom, λm, NA, P) {
     const ω0 = 2*Math.PI*C / atom.λ0;
@@ -723,7 +746,7 @@
     document.getElementById('res-mk').textContent = `← ${(atom.λ0*1e9).toFixed(0)} nm`;
 
     const r = calcTrap(atom, λnm*1e-9, NA, PmW*1e-3);
-    curW0 = r.w0;
+    curW0 = r.w0; curZR = r.zR;
 
     const warnEl = document.getElementById('res-warn');
     if (!r.valid) {
@@ -830,7 +853,8 @@
     else if (r >= 2) ctEl.innerHTML = '<span style="color:#926a03">⚠ Marginal — verify crosstalk</span>';
     else             ctEl.innerHTML = '<span style="color:#e20b0b">✗ Sites overlap!</span>';
 
-    drawArr(nx, ny, d_um, w0_um);
+    if (arrMode === 'top' || !tw3d) drawArr(nx, ny, d_um, w0_um);
+    if (tw3d) tw3d.set({ nx, ny, d: d_um, w0: w0_um, zR: curZR*1e6 });
   }
 
   function drawArr(nx, ny, d_um, w0_um) {
@@ -874,6 +898,32 @@
       ctx.fillText(`${bar_um} μm`,margin,H-17);
     }
   }
+
+  // ── 3D array view (js/tweezer3d.js): true-to-scale beams, drag to rotate.
+  //    Falls back to the original top view if WebGL isn't available.
+  let arrMode = 'top', tw3d = null;
+  (function initArr3D(){
+    const cvs3 = document.getElementById('arr-3d'), wrap3 = document.getElementById('arr-3d-wrap');
+    const views = document.getElementById('arr-views'), top = document.getElementById('arr-cvs');
+    if (!window.AMO3D || !AMO3D.tweezerArray || !cvs3) return;
+    wrap3.hidden = false;                                   // must have a size before GL setup
+    const view = AMO3D.orbit(cvs3, { az: 0.62, el: 0.42, label: 'Tweezer array in 3D, beams drawn to scale', hintParent: wrap3 });
+    tw3d = AMO3D.tweezerArray(cvs3, {
+      view, scaleLabel: document.getElementById('arr-3d-scale'), note: document.getElementById('arr-3d-note'),
+      onLost: () => setMode('top')
+    });
+    if (!tw3d) { wrap3.hidden = true; return; }
+    views.hidden = false;
+    function setMode(m) {
+      arrMode = m;
+      wrap3.parentElement.classList.toggle('arr-mode-3d', m === '3d');
+      wrap3.hidden = m !== '3d'; top.hidden = m === '3d';
+      views.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.arrview === m)));
+      updateArr();
+    }
+    views.addEventListener('click', e => { const b = e.target.closest('button[data-arrview]'); if (b) setMode(b.dataset.arrview); });
+    arrMode = '3d'; top.hidden = true; wrap3.parentElement.classList.add('arr-mode-3d');
+  })();
 
   [selSp, slWL, slNA, slPW].forEach(el => el.addEventListener('input', updateCalc));
   ['nx-s','ny-s','sp-s'].forEach(id => document.getElementById(id).addEventListener('input', updateArr));

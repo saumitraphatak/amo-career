@@ -28,3 +28,7 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+
+## 3D visualization update (2026-09-28)
+Section 03 (Array Geometry) gained a **3D view** (default) alongside the original **Top view**, via a two-button toggle. `js/tweezer3d.js` (raw WebGL, renders on demand only) draws every tweezer to true scale from the page's own numbers — w₀ = 0.52λ/NA, z_R = πw₀²/λ, d, Nx, Ny — as its Gaussian envelope over ±3 z_R, with atoms at focus, a focal-plane grid and a scale bar; a caption prints the exact values used. Purpose: make the existing d/w₀ crosstalk warning visible (at small d the beams visibly merge away from focus). Drag to rotate via `js/orbit3d.js`. The auto Export PNG/SVG buttons belong to the top view, so they are hidden while 3D is showing; the 3D canvas carries `data-export-ready` so `initExportButtons()` skips it. Falls back to the top view if WebGL is unavailable or the context is lost. The route panel and its anchors are unchanged.
