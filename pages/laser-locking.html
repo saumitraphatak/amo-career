@@ -252,13 +252,14 @@
   <!-- ═══ LASER DRIFT / LOCK ANIMATOR ═══ -->
   <div class="anim-in" style="margin-bottom:2.5rem;">
     <div id="lockVizWrap" style="
-      background:#faf5e9;
+      background:var(--bg-card);
       border:1px solid #1e293b;
       border-radius:14px;
       overflow:hidden;
       position:relative;
     ">
-      <canvas id="lockCanvas" style="display:block;width:100%;height:220px;"></canvas>
+      <canvas id="lockCanvas" style="display:block;width:100%;height:220px;"
+        role="img" aria-label="Laser lock visualiser: left, the saturated-absorption line with its Lamb dip, the dispersive error signal and the laser frequency as a needle; right, the laser frequency offset against time"></canvas>
 
       <!-- Buttons row -->
       <div style="
@@ -1426,6 +1427,8 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=34"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=1"></script>
 <script>
 renderNav({ active: 'laser-locking', root: '../' });
 initScrollReveal();
@@ -1742,7 +1745,7 @@ updateBeat();
 (function() {
   const cvs = document.getElementById('lockCanvas');
   if (!cvs) return;
-  const ctx = cvs.getContext('2d');
+  const ctx = window.AMOInk ? AMOInk.wrap(cvs.getContext('2d')) : cvs.getContext('2d');   // light inks → dark theme
 
   // ── State ───────────────────────────────────────────
   let locked = false;
@@ -1800,10 +1803,10 @@ updateBeat();
     cvs.height = 220;
   }
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', () => { resize(); draw(false); });
 
   // Lorentzian absorption line (Cs D2 approximation)
-  // x in MHz offset from line centre, Γ/2π = 5.234 MHz (HWHM)
+  // x in MHz offset from line centre, Γ/2π = 5.234 MHz (FWHM; HWHM = Γ/2)
   const GAMMA = 5.234;
   function lorentzian(x) {
     return 1 / (1 + (x / (GAMMA / 2)) ** 2);
@@ -1830,15 +1833,18 @@ updateBeat();
       btn.style.color = '#f87171';
       btn.style.background = 'rgba(248,113,113,0.1)';
     }
+    draw(false);   // show the new state even while paused
   };
 
   window.laserPerturb = function() {
     freq += (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 20);
     velocity = 0;
+    draw(false);
   };
 
   // ── Main draw loop ──────────────────────────────────
-  function draw() {
+  // draw(true) advances the laser/servo one frame; draw(false) repaints (theme, resize, paused)
+  function draw(step) {
     const W = cvs.width, H = cvs.height;
     ctx.clearRect(0, 0, W, H);
 
@@ -1853,6 +1859,7 @@ updateBeat();
     const traceW   = W - traceX - 16;
 
     // ── Physics update ───────────────────────────────
+    if (step) {
     if (locked) {
       // PD servo: velocity-form for guaranteed stability
       // pull ∝ -freq drives needle to line centre; damping kills overshoot
@@ -1876,6 +1883,7 @@ updateBeat();
     // Push to history
     history.push(freq);
     if (history.length > HIST) history.shift();
+    }
 
     // ── Draw absorption profile ──────────────────────
     // Axis
@@ -1911,13 +1919,14 @@ updateBeat();
     ctx.lineWidth = 1.5; ctx.stroke();
 
     // Error signal (dispersive, scaled small at bottom)
+    // (was +28 px and ×0.32: the trace sat on the bottom edge, ~4 px tall, under the caption)
     const errScale = profileH * 0.14;
-    const errMidY  = profileMidY + profileH / 2 + 28;
+    const errMidY  = profileMidY + profileH / 2 + 10;
     ctx.beginPath();
     for (let px = 12; px < profileW + 12; px++) {
       const fMHz = (px - profileCX) / freqScale;
       const es   = errorSignal(fMHz);
-      const py   = errMidY - es * errScale * 0.32;
+      const py   = errMidY - es * errScale * 1.4;
       px === 12 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
     ctx.strokeStyle = 'rgba(146,106,3,0.5)';
@@ -1962,9 +1971,12 @@ updateBeat();
     ctx.fillStyle = '#8c8066';
     ctx.font = '9.5px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Absorption + Lamb dip', profileCX, H - 8);
-    ctx.fillStyle = 'rgba(146,106,3,0.5)';
-    ctx.fillText('error signal', profileCX, H - 8 + 0);
+    ctx.textAlign = 'left';
+    ctx.fillText('Absorption + Lamb dip', 14, 14);
+    // (this label used to sit on top of the one above; it now labels the error-signal trace)
+    ctx.fillStyle = 'rgba(146,106,3,0.75)';
+    ctx.textAlign = 'left';
+    ctx.fillText('error signal', 14, errMidY - 6);
 
     // ── Draw frequency history trace ─────────────────
     // Frame
@@ -1994,8 +2006,8 @@ updateBeat();
     ctx.strokeStyle = locked ? 'rgba(52,211,153,0.85)' : 'rgba(248,113,113,0.75)';
     ctx.lineWidth = 1.8; ctx.stroke();
 
-    // Axis labels
-    ctx.fillStyle = '#faf5e9';
+    // Axis labels (were drawn in the paper colour, i.e. invisible)
+    ctx.fillStyle = '#8c8066';
     ctx.font = '9px JetBrains Mono, monospace';
     ctx.textAlign = 'left';
     ctx.fillText('+60 MHz', traceX + 3, 24);
@@ -2015,11 +2027,14 @@ updateBeat();
     const el = document.getElementById('driftHz');
     if (el) el.textContent = locked ? '< 0.1 MHz' : driftMHz + ' MHz';
 
-    t++;
-    requestAnimationFrame(draw);
+    if (step) t++;
   }
 
-  draw();
+  // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+  if (window.AMOInk) AMOInk.onTheme(() => draw(false));
+  const driftEl = document.getElementById('driftHz');
+  if (window.AMOMotion) AMOMotion.loop(cvs, () => draw(true), { anchors: [{ el: driftEl ? driftEl.parentElement : cvs, where: 'afterend', inline: !!driftEl }] });
+  else requestAnimationFrame(function f() { draw(true); requestAnimationFrame(f); });
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

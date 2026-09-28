@@ -691,7 +691,8 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
 
         <!-- GS flow diagram -->
         <canvas id="gsFlowCanvas" width="600" height="90"
-          style="display:block;width:100%;max-width:600px;border-radius:8px;background:#faf5e9;margin-bottom:1rem;"></canvas>
+          style="display:block;width:100%;max-width:600px;border-radius:8px;background:var(--bg-card);margin-bottom:1rem;"
+          role="img" aria-label="Gerchberg–Saxton loop: SLM plane, FFT to the target plane, fix the amplitude to √T while keeping the phase, inverse FFT back to the SLM plane, repeat"></canvas>
 
         <!-- Controls -->
         <div class="ctrl-panel" style="margin-bottom:1rem;">
@@ -851,6 +852,8 @@ GS convergence criterion: RMSE = $\sqrt{\frac{1}{P}\sum_i \left(|E_i|^2 - T_i\ri
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=34"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=1"></script>
 <script>
 renderNav({ active: 'zernike', root: '../' });
 initScrollReveal();
@@ -1708,10 +1711,10 @@ async function runGS() {
 (function(){
   const cv = document.getElementById('gsFlowCanvas');
   if (!cv) return;
-  const cx = cv.getContext('2d');
+  const cx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');   // light inks → dark theme
   const W=600, H=90;
   const boxes = [
-    { x:22,  label:'SLM plane\n|A|e^{iφ}', col:'#2dd4bf' },
+    { x:22,  label:'SLM plane\n|A|·exp(iφ)', col:'#2dd4bf' },
     { x:162, label:'FFT →\ntarget plane',   col:'#60a5fa' },
     { x:302, label:'Fix amplitude\n√T, keep phase', col:'#f87171' },
     { x:442, label:'IFFT →\nSLM plane',      col:'#a78bfa' },
@@ -1745,7 +1748,7 @@ async function runGS() {
       const x1=boxes[i].x+BW+2, x2=boxes[i+1].x-2, y=BY+BH/2;
       cx.strokeStyle='#334155'; cx.lineWidth=1.5;
       cx.beginPath(); cx.moveTo(x1,y); cx.lineTo(x2-8,y); cx.stroke();
-      cx.fillStyle='#faf5e9';
+      cx.fillStyle='#334155';
       cx.beginPath(); cx.moveTo(x2,y); cx.lineTo(x2-8,y-4); cx.lineTo(x2-8,y+4); cx.closePath(); cx.fill();
     }
 
@@ -1759,7 +1762,7 @@ async function runGS() {
     cx.lineTo(boxes[0].x+BW/2, BY+BH);
     cx.stroke();
     cx.setLineDash([]);
-    cx.fillStyle='#faf5e9';
+    cx.fillStyle='#334155';
     cx.beginPath(); cx.moveTo(boxes[0].x+BW/2,BY+BH); cx.lineTo(boxes[0].x+BW/2-4,BY+BH+8); cx.lineTo(boxes[0].x+BW/2+4,BY+BH+8); cx.closePath(); cx.fill();
 
     // Animated photon dot traversing the cycle
@@ -1790,10 +1793,10 @@ async function runGS() {
     cx.save(); cx.shadowColor='#926a03'; cx.shadowBlur=12;
     cx.fillStyle='#926a03'; cx.beginPath(); cx.arc(dx,dy,4,0,2*Math.PI); cx.fill();
     cx.restore();
-
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+  const tick = window.AMOInk ? AMOInk.track(frame) : frame;
+  if (window.AMOMotion) AMOMotion.loop(cv, tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

@@ -50,3 +50,7 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 12 labels rendered differently after the fix, e.g. "RB DECAY CURVE, F(M) = A · Pᵐ + B" → "RB DECAY CURVE, F(m) = A · pᵐ + B"; "P (1Q DECAY)" → "p (1Q DECAY)". KaTeX maths inside uppercase labels was uppercased too (2 formulas); `.katex` now has `text-transform:none`. No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight run 3): live RB simulation canvas follows the theme
+- `rbAnimCanvas` painted cream in the (default) dark theme, and its axis labels ("0", "depth m →", "F(m)") were drawn in the paper colour, so they were invisible in both themes. The context now goes through the shared `js/canvas-ink.js` (`AMOInk.wrap`), the labels use the page's label ink, the CSS background is `var(--bg-card)`, and a theme toggle or resize repaints the current points. The simulation is user-started and ends by itself, so it needs no pause control. Physics unchanged (F(m) = A·p^m + B with p = 1 − 2r_C for one qubit).
+- Checks: `smoke.js` 0 new problems; Playwright corner/CSS colours per theme, toggle repaint, screenshot dark 1280 reviewed.

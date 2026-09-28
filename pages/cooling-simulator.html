@@ -322,7 +322,8 @@
             style="width:100%;accent-color:#076be7;" oninput="mbSliderUpdate()">
         </div>
       </div>
-      <canvas id="mbCanvas" width="560" height="160" style="width:100%;height:160px;display:block;border-radius:8px;background:#faf5e9;"></canvas>
+      <canvas id="mbCanvas" width="560" height="160" style="width:100%;height:160px;display:block;border-radius:8px;background:var(--bg-card);"
+        role="img" aria-label="Histogram of atomic velocities along one axis; it narrows toward zero as the atoms cool to the temperature shown below"></canvas>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
         <span id="mbTLabel" style="color:#076be6;">T = — μK</span>
         <span style="color:rgba(146,106,3,0.6);">▏= Doppler limit</span>
@@ -905,6 +906,8 @@ result = qt.mesolve(H, rho0, tlist, c_ops,
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=34"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=1"></script>
 <script>
 renderNav({ active: 'cooling-simulator', root: '../' });
 initScrollReveal();
@@ -1191,7 +1194,7 @@ function updateCoolEvo() {
 (function() {
   const cvs = document.getElementById('mbCanvas');
   if (!cvs) return;
-  const ctx = cvs.getContext('2d');
+  const ctx = window.AMOInk ? AMOInk.wrap(cvs.getContext('2d')) : cvs.getContext('2d');   // light inks → dark theme
 
   // Cs D2 parameters (representative)
   const Gamma = 5.234e6 * 2 * Math.PI; // rad/s
@@ -1205,7 +1208,7 @@ function updateCoolEvo() {
 
   function initAtoms() {
     // Sample from Maxwell-Boltzmann: v ~ Normal(0, sqrt(kB T / m))
-    const sigma_v = Math.sqrt(kB * T_room / m_cs); // ~170 m/s for Cs
+    const sigma_v = Math.sqrt(kB * T_room / m_cs); // ≈ 137 m/s for Cs at 300 K
     atoms = Array.from({ length: N }, () => ({
       v: sigma_v * (boxMuller()),
       active: true,
@@ -1228,9 +1231,11 @@ function updateCoolEvo() {
   let T_cur    = T_room;
 
   function computeTTarget(dG, s) {
-    // T_D(δ,s) ∝ (1 + s + (2δ/Γ)²) / |δ/Γ| * ℏΓ/(4kB)
+    // Doppler theory: k_B T = (ℏΓ/4)·(1 + s + (2δ/Γ)²)/(2|δ|/Γ), i.e.
+    // T = T_D·(1 + s + (2δ/Γ)²)/(4|δ/Γ|), minimum T_D at δ = −Γ/2, s → 0
+    // (same form as the Doppler tab's chart and mot-designer's T_MOT).
     const x = 2 * dG; // 2δ/Γ
-    return T_Doppler_cs * (1 + s + x*x) / (2 * Math.abs(dG) + 1e-6);
+    return T_Doppler_cs * (1 + s + x*x) / (4 * Math.abs(dG) + 1e-6);
   }
 
   // Standalone slider handler (own controls at top of page)
@@ -1242,6 +1247,7 @@ function updateCoolEvo() {
     delta_G  = dG;
     s0       = s;
     T_target = Math.min(T_room, computeTTarget(dG, s));
+    snapIfPaused();
   };
 
   // Also expose a hook so the Doppler tab's updateForce() can sync
@@ -1249,7 +1255,19 @@ function updateCoolEvo() {
     delta_G  = dG;
     s0       = s;
     T_target = Math.min(T_room, computeTTarget(dG, s));
+    snapIfPaused();
   };
+
+  // Paused (button or reduced motion): jump straight to the new equilibrium so the
+  // histogram and readout still answer the sliders.
+  let ctl = null;
+  function snapIfPaused() {
+    if (!ctl || ctl.isRunning() || !_mbReady) return;
+    T_cur = T_target;
+    const sv = Math.sqrt(kB * Math.max(T_cur, 1e-9) / m_cs);
+    atoms.forEach(a => { a.v = sv * boxMuller(); });
+    render(false);
+  }
 
   // Resize
   function resize() {
@@ -1264,15 +1282,15 @@ function updateCoolEvo() {
     cvs.width  = w || 560;
     cvs.height = 160;
   }
-  window.addEventListener('resize', () => { resize(); });
+  window.addEventListener('resize', () => { resize(); if (_mbReady) render(false); });
 
   let _mbReady = false;
 
   // Histogram bins
   const BINS   = 80;
 
-  function draw() {
-    requestAnimationFrame(draw);
+  // render(true) advances the ensemble one step; render(false) repaints it (theme, resize, paused)
+  function render(step) {
     // Also retry resize every frame until we get a real width
     if (!_mbReady || cvs.width < 10) {
       resize();
@@ -1284,12 +1302,12 @@ function updateCoolEvo() {
 
     // Relax T_cur toward T_target (cooling/heating timescale)
     const tau = T_cur > T_target ? 0.012 : 0.003; // cool fast, heat slowly
-    T_cur += (T_target - T_cur) * tau;
+    if (step) T_cur += (T_target - T_cur) * tau;
 
     // Resample velocities from current T (Langevin thermostat)
     const sigma_v = Math.sqrt(kB * Math.max(T_cur, 1e-9) / m_cs);
     const mix = 0.04; // fraction of atoms resampled each frame
-    atoms.forEach(a => {
+    if (step) atoms.forEach(a => {
       if (Math.random() < mix) a.v = sigma_v * boxMuller();
     });
 
@@ -1341,8 +1359,9 @@ function updateCoolEvo() {
     ctx.beginPath(); ctx.moveTo(zeroX, 0); ctx.lineTo(zeroX, H - 18); ctx.stroke();
     ctx.setLineDash([]);
 
-    // Doppler limit marker (±v_D = sqrt(2kBT_D/m))
-    const v_D = Math.sqrt(2 * kB * T_Doppler_cs / m_cs);
+    // Doppler limit marker: ±σ_v at T_D (1D rms velocity √(k_B T_D/m), same σ as the histogram;
+    // ≈ 9 cm/s for Cs, so at this ±480 m/s scale it sits on the zero line)
+    const v_D = Math.sqrt(kB * T_Doppler_cs / m_cs);
     const xD  = v_D / v_max * (W - 2*pad) / 2;
     ctx.strokeStyle = 'rgba(146,106,3,0.5)';
     ctx.lineWidth = 1;
@@ -1356,18 +1375,22 @@ function updateCoolEvo() {
     ctx.font = '9px Inter, sans-serif';
     ctx.fillText('T_D', zeroX + xD + 3, 12);
 
-    // x-axis labels
-    ctx.fillStyle = '#faf5e9';
+    // x-axis labels: the axis spans ±3.5 v_rms(300 K) (these were drawn in the paper colour
+    // and labelled ±v_rms, although the edges are at ±3.5 v_rms)
+    ctx.fillStyle = '#8c8066';
     ctx.font = '9px Inter, sans-serif';
-    ctx.fillText('−v_rms', pad, H - 4);
-    ctx.fillText('0', zeroX - 4, H - 4);
-    ctx.fillText('+v_rms', W - pad - 34, H - 4);
+    const vEdge = Math.round(v_max) + ' m/s';
+    ctx.textAlign = 'left';  ctx.fillText('−' + vEdge, pad, H - 4);
+    ctx.textAlign = 'center'; ctx.fillText('0', zeroX, H - 4);
+    ctx.textAlign = 'right'; ctx.fillText('+' + vEdge, W - pad, H - 4);
+    ctx.textAlign = 'left';
 
     // Temperature readout
     const T_uK = T_cur * 1e6;
     const lbl = document.getElementById('mbTLabel');
     if (lbl) {
-      if (T_cur >= 1e-3)     lbl.textContent = `T ≈ ${(T_cur*1e3).toFixed(0)} mK`;
+      if (T_cur >= 1)        lbl.textContent = `T ≈ ${T_cur.toFixed(T_cur >= 10 ? 0 : 1)} K`;   // was "300000 mK" at the start
+      else if (T_cur >= 1e-3) lbl.textContent = `T ≈ ${(T_cur*1e3).toFixed(0)} mK`;
       else if (T_cur >= 1e-6) lbl.textContent = `T ≈ ${T_uK.toFixed(0)} μK`;
       else                   lbl.textContent = `T ≈ ${(T_cur*1e9).toFixed(0)} nK`;
       // Color cold → warm
@@ -1380,7 +1403,12 @@ function updateCoolEvo() {
 
   // Init target from current slider defaults
   T_target = Math.min(T_room, computeTTarget(delta_G, s0));
-  requestAnimationFrame(draw);
+  // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+  if (window.AMOInk) AMOInk.onTheme(() => { if (_mbReady) render(false); });
+  ctl = window.AMOMotion
+    ? AMOMotion.loop(cvs, () => render(true), { anchors: [{ el: document.getElementById('mbTLabel').parentElement, where: 'afterend' }] })
+    : (requestAnimationFrame(function f() { render(true); requestAnimationFrame(f); }), null);
+  snapIfPaused();
 })();
 
 /* ─── INIT INTERACTIVE CHARTS ────────────────────────── */

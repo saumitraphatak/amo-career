@@ -41,3 +41,9 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 5 labels rendered differently after the fix, e.g. "Z_N^M (OSA, UNITS Λ)" → "Z_n^m (OSA, UNITS λ)"; "RADIAL CROSS-SECTION AT Θ=0" → "RADIAL CROSS-SECTION AT θ=0". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight run 3): GS flow diagram follows the theme and can be paused
+- The animated Gerchberg–Saxton loop diagram (`gsFlowCanvas`, "GS" tab) was a cream block in the (default) dark theme, and its arrowheads were drawn in the paper colour, so they were invisible in the light theme too. The context is now wrapped with the new shared `js/canvas-ink.js` (`AMOInk.wrap`: light-theme inks are mapped to dark ones as they are set), the arrowheads use the shaft colour, and the CSS background is `var(--bg-card)`.
+- It ran a forever `requestAnimationFrame` loop with no pause; it now uses `AMOMotion.loop` (`js/motion.js`): Pause button, offscreen stop, still frame under reduced motion. A theme toggle repaints the current frame (`AMOInk.track`).
+- The first box read "|A|e^{iφ}" (raw TeX in a canvas); it now reads "|A|·exp(iφ)". The canvas has `role="img"` and an `aria-label` describing the loop.
+- Checks: `smoke.js` 0 new problems; Playwright on the GS tab: corner/CSS colours per theme, animates, holds when paused, reduced motion starts on "▶ Play animation", toggle repaints; screenshots dark 1280 reviewed.

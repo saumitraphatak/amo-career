@@ -241,6 +241,19 @@ def test_mot_viz_matches_calculator_sigma() -> None:
     assert_not_contains("pages/mot-designer.html", "(curSigma*10).toFixed(0)} μm")
 
 
+def test_cooling_simulator_doppler_temperature() -> None:
+    """Live MB animation: T(δ, s) = T_D (1 + s + (2δ/Γ)²)/(4|δ|/Γ), minimum T_D at δ = −Γ/2."""
+    assert_contains("pages/cooling-simulator.html", "return T_Doppler_cs * (1 + s + x*x) / (4 * Math.abs(dG) + 1e-6);")
+    # the Doppler-tab chart uses the same form in units of T_D
+    assert_contains("pages/cooling-simulator.html", "Ts.push((1 + (2*d)**2) / (4*Math.abs(d)));")
+    t = lambda dG, s: (1 + s + (2 * dG) ** 2) / (4 * abs(dG))
+    assert abs(t(-0.5, 0.0) - 1.0) < 1e-12
+    assert min(t(-d / 1000, 0.0) for d in range(50, 3000)) >= 1.0 - 1e-12
+    # Cs D2: T_D = hbar*Gamma/(2 kB) with Gamma/2pi = 5.234 MHz is about 125.6 uK
+    hbar, kB = 1.054_571_817e-34, 1.380_649e-23
+    assert abs(hbar * 2 * math.pi * 5.234e6 / (2 * kB) * 1e6 - 125.6) < 0.1
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -256,6 +269,7 @@ def main() -> None:
         test_decoherence_lab_t1_t2_relation,
         test_imaging_histogram_presets_match_notes,
         test_mot_viz_matches_calculator_sigma,
+        test_cooling_simulator_doppler_temperature,
     ]
     for test in tests:
         test()
