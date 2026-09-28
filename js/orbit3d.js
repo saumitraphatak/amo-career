@@ -93,7 +93,8 @@
         if (!drag || e.pointerId !== drag.id) return;
         var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
         if (Math.abs(dx) + Math.abs(dy) > 2) markUsed();
-        set(drag.az - dx * 0.011, drag.el + dy * 0.011);
+        // "Grab" feel: the surface under the pointer follows it (drag right → front moves right).
+        set(drag.az + dx * 0.011, drag.el + dy * 0.011);
       });
       function end(e) {
         if (!drag || (e && e.pointerId !== drag.id)) return;
@@ -106,8 +107,8 @@
       el.addEventListener('dblclick', function () { markUsed(); view.reset(); });
       el.addEventListener('keydown', function (e) {
         var step = e.shiftKey ? 0.35 : 0.14, used = true;
-        if (e.key === 'ArrowLeft') set(view.az + step, view.el);
-        else if (e.key === 'ArrowRight') set(view.az - step, view.el);
+        if (e.key === 'ArrowLeft') set(view.az - step, view.el);
+        else if (e.key === 'ArrowRight') set(view.az + step, view.el);
         else if (e.key === 'ArrowUp') set(view.az, view.el + step);
         else if (e.key === 'ArrowDown') set(view.az, view.el - step);
         else if (e.key === 'Home') view.reset();
