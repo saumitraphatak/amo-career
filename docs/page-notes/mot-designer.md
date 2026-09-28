@@ -36,3 +36,7 @@ This page's `<style>` block used `var(--mono)` for 6 monospace-styled rules — 
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s) used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+
+## 3D visualization update (2026-09-28)
+The "Live MOT Visualization" was a 2D cross-section; it is now a rotatable 3D MOT (`js/orbit3d.js`), same canvas and same `updateMOTViz(κ, α, T)` hook from the calculator. It shows six beams with propagation arrows, anti-Helmholtz coils with current arrows, the quadrupole field B = G(−x/2, −y/2, z) with arrow length following the dB/dz slider (axial gradient 2× radial, opposite sign; coil currents drawn consistent with that sign), a cloud compressed along the coil axis (κ_z = 2κ_r ⇒ σ_z = σ_r/√2; the calculator's σ is the axial one since its κ uses dB/dz — the readout now shows both), and rings for each beam's circular polarization about its own direction, with the axial pair opposite in handedness to the four radial beams. Geometry is schematic and says so in a short caption under the figure.
