@@ -127,6 +127,67 @@ These are the kinds of thing that break the next visual change, so they're now a
   - Touch was verified only as pointer semantics (`pan-y`), not on a physical phone.
   - `npm` access to Chart.js was blocked by workspace policy, hence the stub rather than the real library.
 
+## Globes and the time tower (second pass, same day)
+
+Saumitra asked for "3D globe type" views on the Group Finder, the Paper Roadmap and the Industry Map, "wherever it fits and however it's useful". Two of the three pages hold geographic data, so they got globes. The Roadmap's data is not geographic, so it got a time tower instead of a forced map.
+
+### Shared globe: `js/globe3d.js?v=1`
+`AMO3D.globe(canvas, {points, onPick, pauseButton, center, clusterDeg, clusterTitle})` draws a Canvas-2D orthographic dotted Earth and rotates it with `AMO3D.orbit`.
+
+- **Land data.** Natural Earth 1:50m land polygons (public domain), from the `world-atlas` `land-50m` TopoJSON. They are rasterised once to a 1° bitmask (180 × 360 bits; row 0 = 89.5°N, col 0 = 179.5°W) and embedded as 10.8 KB of base64 (8.1 KB decoded). There is no map service, no tiles and no runtime download.
+- **How the mask was built.** The TopoJSON was fetched in the desktop browser pane, because package registries and the container proxy were blocked. It was rasterised in-page with an even-odd scanline fill and carried over in two halves. The second half was re-sent run-length-encoded after a transcription error, then checked for:
+  - total land cells = 18,698;
+  - an identical hash on both sides;
+  - spot checks: land at Kansas, Boston, the UK, the Sahara, Australia and Antarctica; ocean at the mid-Atlantic, the Pacific and the Caspian.
+- **Dots.** Land dots have uniform density on the sphere (lat step 1.6°, lon step scaled by 1/cos lat, staggered rows). There is limb darkening, a near-side 30° graticule, and theme-aware palettes (dark: navy ocean with a halo; light: parchment).
+- **Markers.** Markers cluster greedily by great-circle distance: `clusterDeg` defaults to 0.35° (about 40 km); qc-landscape uses 1°. Hover shows a tooltip. Clicking a single marker calls `onPick`; clicking a cluster pins a chooser list. `setPoints(list, {focus:true})` animates to the centroid when the points are regional (mean resultant length above 0.35).
+- **Motion.** Auto-spin at 0.11 rad/s resumes 6 s after interaction. It has a pause button (WCAG 2.2.2), is off under reduced motion, and pauses offscreen and in hidden tabs.
+
+### Group Finder globe (`amo-groups.html`)
+- **Scope.** All 99 Featured Directory groups, driven by the page's own `GROUPS` array and filters. Picking a group opens the existing group panel.
+- **Phantom feature fixed.** The home card's "interactive world map … click any marker" had no map behind it. Now it does.
+- **Tested.**
+  - Boston shows a cluster of 6 (Harvard / MIT). Picking Lukin Lab opens the panel.
+  - The Europe filter gives 37 and the Asia filter 15, matching the directory, and the globe re-centres.
+  - This was re-run after the clustering change.
+
+### Industry Map globe (`qc-landscape.html`)
+- **Scope.** 27 companies and labs, one per company card in the six Platform Deep Dive tabs (verified 27/27 mapped, none missing). They sit at the city-level HQ or main hardware site, coloured by platform. Clicking opens the tab and flashes the card.
+- **Location sources, checked September 2026.**
+  - D-Wave's HQ move to Boca Raton (announced 2026-01-27; Burnaby hardware centre used for the marker): [D-Wave press release](https://www.dwavequantum.com/company/newsroom/press-release/d-wave-selects-boca-raton-for-new-corporate-headquarters-and-u-s-r-d-facility/).
+  - Infleqtion's Louisville, CO global HQ (August 2026): [Denver Gazette](https://www.denvergazette.com/2026/08/19/colorados-infleqtion-opens-new-hq-as-it-races-to-commercialize-quantum/) and [BizWest](https://bizwest.com/2026/08/19/infleqtion-consolidating-at-expanded-louisville-hq/).
+  - Atom Computing, Berkeley HQ with a Boulder centre: [Wikipedia](https://en.wikipedia.org/wiki/Atom_Computing) and [Quantum Insider 2022](https://thequantuminsider.com/2022/09/28/silicon-valley-up-start-atom-computing-chooses-colorado-to-build-next-generation-quantum-computers/).
+  - Pasqal, Palaiseau global HQ: [pasqal.com/about-us](https://www.pasqal.com/about-us/).
+  - Quandela, Massy factory: [Quandela](https://www.quandela.com/about-us/newsroom/quandelas-first-quantum-computer-manufacturing-facility/).
+  - Quantum Brilliance: [about us](https://quantumbrilliance.com/about-us/).
+  - Oxford Ionics, part of IonQ since September 2025: [IonQ investors](https://investors.ionq.com/news/news-details/2025/IonQ-Completes-Acquisition-of-Oxford-Ionics-Rapidly-Accelerating-Its-Quantum-Computing-Roadmap/default.aspx).
+  - Quantinuum, Broomfield: [Wikipedia](https://en.wikipedia.org/wiki/Quantinuum).
+  - Equal1, Dublin (a UCD spin-out): [UCD](https://www.ucd.ie/newsandopinion/news/2026/january/15/ucdspin-outraises515minfundingtorolloutquantumcomputers/).
+  - eleQtron, Siegen: [Universität Siegen](https://www.uni-siegen.de/en/news/millions-in-funding-for-university-spin-off).
+  - QuiX Quantum, Enschede: [QuiX](https://www.quixquantum.com/about).
+  - The remaining sites are long-established: IBM Research Yorktown Heights, Google Quantum AI Santa Barbara, Rigetti Berkeley, IQM Espoo, Alice & Bob Paris, IonQ College Park, AQT Innsbruck, QuEra Boston, Intel Hillsboro, Quantum Motion London, SQC Sydney/UNSW, PsiQuantum Palo Alto, Xanadu Toronto, Microsoft Redmond, Argonne (Lemont, IL) and QuTech (Delft).
+
+### Paper Roadmap time tower (`js/syllabus3d.js?v=1`, `paper-syllabus.html`)
+- **Layout.** Height is publication year on a linear scale with decade rings. The four faces are the four stage tabs, with page order running left to right on each face. Keystones are ringed.
+- **Data.** Read from the 55 `.paper-card` elements at load, so it can't drift from the list.
+- **Controls.** Type chips dim other papers. A "papers per decade" line is computed from the same data. Clicking a paper opens the stage tab, scrolls to the card and flashes it; on touch, the first tap shows the card with a button.
+- **Why a tower, not a globe.** Papers have no geography. Year × stage is the information the page actually holds.
+
+### Drag direction changed: `orbit3d.js?v=2`
+The first version rotated the view *with* the pointer, so the surface under the cursor moved the opposite way. That felt wrong once a globe made it obvious. Drag is now "grab": the surface follows the pointer. The arrow keys were swapped to match. Tested: the front point's screen X goes from 0 to +0.43 after a rightward drag.
+
+All eight pages that load `orbit3d.js` now reference `v=2`: the five from the first pass plus amo-groups, qc-landscape and paper-syllabus. The sphere, tweezer, MOT and hero-pause tests were re-run with no errors.
+
+### Verification (this pass)
+- **Rendered-browser runs** (Chromium with SwiftShader WebGL; external requests blocked; Chart.js stubbed) in both themes at 1280 and 390 px:
+  - no page errors;
+  - no horizontal overflow;
+  - hover, click-through and filter tests as above;
+  - reduced motion: pause buttons hidden and frames static;
+  - touch tap on the tower pins the card, and its button reaches the right paper.
+- **Static checks.** Tag balance unchanged against the originals; JSON-LD parses; every inline script and the three JS files pass `node --check`.
+- `tests/formula_regression.py`: 11/11.
+
 ## Open items / decisions for Saumitra
 
 1. **Physics check:**
@@ -141,6 +202,10 @@ These are the kinds of thing that break the next visual change, so they're now a
    - learn-quantum's spheres draw `#1e3a5f` lines on a transparent canvas, so in dark theme they're faint.
    - dd-playground, the Rabi sphere and the MOT canvas use a hard-coded cream background in both themes.
 5. **By design:** on phones you can rotate but not tilt, since vertical swipes stay as page scroll. decoherence-lab's small hero sphere stays fixed.
+
+6. **Globe and tower follow-ups (second pass).**
+   - The Europe markers on the Industry Map globe sit close together at the default size. Zoom (wheel or pinch) would help, but it is not built.
+   - Do you want AWS (Pasadena) or Anderon (Albany) on the Industry Map globe? They are mentioned elsewhere on the page but have no deep-dive card, so they were left off to keep the globe 1:1 with the cards.
 
 ## Suggested next pass
 - The pause and reduced-motion gap in item 3: a small shared control would cover all three pages.
