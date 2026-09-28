@@ -39,3 +39,7 @@ Added a `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>` hi
 
 ## Accessibility re-audit update (2026-09-20)
 This page had no `<footer>` element at all — went straight from `</main>` to its `<script>` tags, unlike every other page on the site. Added the standard sitewide footer block (`Decoherence Lab · AMO Toolkit · Saumitra Phatak · Purdue University`). See docs/accessibility-audit-2026-09-20.md.
+
+
+## 3D visualization update (2026-09-28)
+The four section spheres (`bloch-a`…`bloch-d`) are now rotatable in 3D via `js/orbit3d.js`. The sphere chrome is re-projected from 3D on view change (it used to be precomputed ellipses for one tilt), and the ensemble-average trail now stores 3D Bloch vectors and re-projects them every frame, so rotating carries the trail with it. The RK4 optical-Bloch integrator and all Γ/γ⊥/Δ parameters are untouched; default view (az 0, el = TILT) reproduces the original exactly. The small hero sphere stays fixed on purpose (it sits inside an aria-hidden decoration, where a focusable control would be an accessibility violation). Existing SVG aria-labels are kept, with rotate instructions appended.

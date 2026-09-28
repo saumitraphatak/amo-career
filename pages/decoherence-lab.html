@@ -286,6 +286,7 @@
 
 
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=1"></script>
 <script>
   renderNav({ active: 'decoherence-lab', root: '../' });
 
@@ -296,42 +297,72 @@
 
   function mk(tag,attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
 
-  function makeSphere(R,CX,CY,TILT){
-    function proj(x,y,z){
-      const y2=y*Math.cos(TILT)-z*Math.sin(TILT);
-      const z2=y*Math.sin(TILT)+z*Math.cos(TILT);
-      return { sx:CX+R*x, sy:CY-R*z2 };
-    }
-    return proj;
+  // view = {az, el} — live if the sphere is rotatable (js/orbit3d.js). With
+  // az = 0, el = TILT this is exactly the original fixed tilted projection.
+  function makeSphere(R,CX,CY,view){
+    return function proj(x,y,z){
+      const ca=Math.cos(view.az), sa=Math.sin(view.az), ce=Math.cos(view.el), se=Math.sin(view.el);
+      const xr=x*ca-y*sa, yr=x*sa+y*ca;
+      return { sx:CX+R*xr, sy:CY-R*(z*ce+yr*se), d:z*se-yr*ce };
+    };
   }
   function pts2str(a){ return a.map(p=>p.sx.toFixed(1)+','+p.sy.toFixed(1)).join(' '); }
 
-  function drawChrome(svg,R,CX,CY,TILT,proj){
-    const ryEq=R*Math.sin(TILT), ryMer=R*Math.cos(TILT);
-    svg.appendChild(mk('circle',{cx:CX,cy:CY,r:R,fill:'none',stroke:'var(--border-med)','stroke-width':1.3}));
-    svg.appendChild(mk('ellipse',{cx:CX,cy:CY,rx:R,ry:ryMer,fill:'none',stroke:'var(--border)','stroke-width':1,'stroke-dasharray':'3 4'}));
-    svg.appendChild(mk('ellipse',{cx:CX,cy:CY,rx:R,ry:ryEq,fill:'none',stroke:'var(--border-med)','stroke-width':1,'stroke-dasharray':'3 4'}));
-    const top=proj(0,0,1), bot=proj(0,0,-1);
-    svg.appendChild(mk('line',{x1:CX,y1:top.sy-12,x2:CX,y2:bot.sy+12,stroke:'var(--border)','stroke-width':1}));
-    svg.appendChild(mk('circle',{cx:top.sx,cy:top.sy,r:2,fill:'var(--text-muted)'}));
-    svg.appendChild(mk('circle',{cx:bot.sx,cy:bot.sy,r:2,fill:'var(--text-muted)'}));
-    const le=mk('text',{x:CX+8,y:top.sy-3,'font-family':'var(--font-mono)','font-size':10,fill:'var(--text-muted)'}); le.textContent='|e⟩';
-    const lg=mk('text',{x:CX+8,y:bot.sy+12,'font-family':'var(--font-mono)','font-size':10,fill:'var(--text-muted)'}); lg.textContent='|g⟩';
-    svg.appendChild(le); svg.appendChild(lg);
+  // Great circle as two SVG paths: near half, and a fainter far half.
+  function circlePaths(proj,pt){
+    const N=72, parts={front:'',back:''}; let prev=null;
+    for(let i=0;i<=N;i++){
+      const t=2*Math.PI*i/N, v=pt(t), q=proj(v[0],v[1],v[2]), side=q.d>=0?'front':'back';
+      const seg=q.sx.toFixed(1)+' '+q.sy.toFixed(1);
+      parts[side]+=(prev===side?' L':' M')+seg; prev=side;
+    }
+    return parts;
   }
-  function makeLive(svg,CX,CY,maxTrail){
+  // Builds the sphere chrome once and returns a function that re-projects it for the current view.
+  function drawChrome(svg,R,CX,CY,proj){
+    svg.appendChild(mk('circle',{cx:CX,cy:CY,r:R,fill:'none',stroke:'var(--border-med)','stroke-width':1.3}));
+    const merB=mk('path',{fill:'none',stroke:'var(--border)','stroke-width':1,'stroke-dasharray':'3 4','stroke-opacity':0.45});
+    const merF=mk('path',{fill:'none',stroke:'var(--border)','stroke-width':1,'stroke-dasharray':'3 4'});
+    const eqB=mk('path',{fill:'none',stroke:'var(--border-med)','stroke-width':1,'stroke-dasharray':'3 4','stroke-opacity':0.45});
+    const eqF=mk('path',{fill:'none',stroke:'var(--border-med)','stroke-width':1,'stroke-dasharray':'3 4'});
+    const axis=mk('line',{stroke:'var(--border)','stroke-width':1});
+    const pT=mk('circle',{r:2,fill:'var(--text-muted)'}), pB=mk('circle',{r:2,fill:'var(--text-muted)'});
+    const le=mk('text',{'font-family':'var(--font-mono)','font-size':10,fill:'var(--text-muted)'}); le.textContent='|e⟩';
+    const lg=mk('text',{'font-family':'var(--font-mono)','font-size':10,fill:'var(--text-muted)'}); lg.textContent='|g⟩';
+    [merB,eqB,merF,eqF,axis,pT,pB,le,lg].forEach(e=>svg.appendChild(e));
+    return function update(){
+      const m=circlePaths(proj,t=>[Math.sin(t),0,Math.cos(t)]), e=circlePaths(proj,t=>[Math.cos(t),Math.sin(t),0]);
+      merB.setAttribute('d',m.back); merF.setAttribute('d',m.front); eqB.setAttribute('d',e.back); eqF.setAttribute('d',e.front);
+      const top=proj(0,0,1), bot=proj(0,0,-1), a1=proj(0,0,1.14), a2=proj(0,0,-1.14);
+      axis.setAttribute('x1',a1.sx); axis.setAttribute('y1',a1.sy); axis.setAttribute('x2',a2.sx); axis.setAttribute('y2',a2.sy);
+      pT.setAttribute('cx',top.sx); pT.setAttribute('cy',top.sy); pB.setAttribute('cx',bot.sx); pB.setAttribute('cy',bot.sy);
+      le.setAttribute('x',top.sx+8); le.setAttribute('y',top.sy-3); lg.setAttribute('x',bot.sx+8); lg.setAttribute('y',bot.sy+12);
+    };
+  }
+  // Live ensemble-average vector + trail. Trail points are stored in 3D and
+  // re-projected every render, so rotating the view carries the trail with it.
+  function makeLive(svg,proj,CX,CY,maxTrail){
     const trailEl=mk('polyline',{fill:'none','stroke-linecap':'round','stroke-width':1.5,'stroke-opacity':0.4});
     const lineEl=mk('line',{'stroke-width':2.4});
     const tipEl=mk('circle',{r:3.4});
     svg.appendChild(trailEl); svg.appendChild(lineEl); svg.appendChild(tipEl);
-    let trail=[];
-    return function(p,color,reset){
+    let trail=[], lastColor='currentColor';
+    function render(color){
+      if(color) lastColor=color;
+      if(!trail.length) return;
+      const pts=trail.map(v=>proj(v[0],v[1],v[2])), p=pts[pts.length-1];
+      trailEl.setAttribute('points',pts2str(pts)); trailEl.setAttribute('stroke',lastColor);
+      lineEl.setAttribute('x1',CX); lineEl.setAttribute('y1',CY); lineEl.setAttribute('x2',p.sx); lineEl.setAttribute('y2',p.sy); lineEl.setAttribute('stroke',lastColor);
+      tipEl.setAttribute('cx',p.sx); tipEl.setAttribute('cy',p.sy); tipEl.setAttribute('fill',lastColor);
+      const behind=p.d<-0.05; lineEl.setAttribute('stroke-opacity',behind?0.5:1); tipEl.setAttribute('fill-opacity',behind?0.5:1);
+    }
+    function push(v,color,reset){
       if(reset) trail=[];
-      trail.push(p); if(trail.length>maxTrail) trail.shift();
-      trailEl.setAttribute('points',pts2str(trail)); trailEl.setAttribute('stroke',color);
-      lineEl.setAttribute('x1',CX); lineEl.setAttribute('y1',CY); lineEl.setAttribute('x2',p.sx); lineEl.setAttribute('y2',p.sy); lineEl.setAttribute('stroke',color);
-      tipEl.setAttribute('cx',p.sx); tipEl.setAttribute('cy',p.sy); tipEl.setAttribute('fill',color);
-    };
+      trail.push(v); if(trail.length>maxTrail) trail.shift();
+      render(color);
+    }
+    push.render=render;
+    return push;
   }
   function makeThin(svg,n,color){
     const lines=[];
@@ -410,11 +441,18 @@
 
   function buildPanel(cfg){
     const svg=document.getElementById(cfg.sphereId);
-    const proj=makeSphere(cfg.R||86,cfg.CX||130,cfg.CY||138,cfg.TILT||0.36);
-    if(svg) drawChrome(svg,cfg.R||86,cfg.CX||130,cfg.CY||138,cfg.TILT||0.36,proj);
+    const TILT=cfg.TILT||0.36;
+    // The four section spheres rotate on drag; the tiny decorative hero sphere
+    // (inside an aria-hidden block) stays at the fixed original angle.
+    const rotatable = svg && svg.tagName.toLowerCase()==='svg' && window.AMO3D;
+    const view = rotatable ? AMO3D.orbit(svg,{az:0, el:TILT, label:'Bloch sphere'}) : {az:0, el:TILT, version:0};
+    const proj=makeSphere(cfg.R||86,cfg.CX||130,cfg.CY||138,view);
+    const chrome = svg ? drawChrome(svg,cfg.R||86,cfg.CX||130,cfg.CY||138,proj) : null;
+    if(chrome) chrome();
+    let chromeVersion=view.version;
     const n=cfg.deltas.length;
     const thinBloch = (svg && n>1) ? makeThin(svg,n,cfg.thinColor()) : null;
-    const live = svg ? makeLive(svg,cfg.CX||130,cfg.CY||138,26) : null;
+    const live = svg ? makeLive(svg,proj,cfg.CX||130,cfg.CY||138,26) : null;
     const ctx = cfg.canvasId ? canvasSetup(cfg.canvasId) : null;
     const readoutEl = cfg.readoutId ? document.getElementById(cfg.readoutId) : null;
 
@@ -425,7 +463,17 @@
 
     function reset(){ states=cfg.deltas.map(()=>[0,0,-1]); simTime=0; thinHist.forEach(h=>h.length=0); avgHist.length=0; }
 
+    // Re-project everything for a new view without advancing the simulation
+    // (used when rotating a static reduced-motion frame).
+    function redraw(){
+      if(chrome){ chrome(); chromeVersion=view.version; }
+      if(thinBloch) thinBloch(cfg.CX||130, cfg.CY||138, states.map(st=>proj(st[0],st[1],st[2])));
+      if(live) live.render();
+    }
+    if(rotatable && REDUCE && view.onChange) view.onChange(redraw);
+
     return function update(dt){
+      if(chrome && view.version!==chromeVersion){ chrome(); chromeVersion=view.version; }
       let wrapped=false;
       simTime += dt;
       if (simTime > cfg.Tloop){ reset(); wrapped=true; }
@@ -440,7 +488,7 @@
       const avg = [0,1,2].map(k=> states.reduce((s,st)=>s+st[k],0)/n);
       avgHist.push({t:simTime,z:avg[2]});
       const color = cfg.colorMode==='blend' ? blend(cfg.blendFrom(), cfg.blendTo(), Math.min(1,simTime/cfg.Tloop)) : cfg.color();
-      if (live) live(proj(avg[0],avg[1],avg[2]), color, wrapped);
+      if (live) live(avg, color, wrapped);
       drawScope(ctx, cfg.Tloop, thinHist, avgHist, color, cfg.thinColor());
       if (readoutEl){
         readoutEl.textContent = n>1

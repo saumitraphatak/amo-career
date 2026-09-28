@@ -1321,6 +1321,7 @@
      JS: Nav + KaTeX + Charts + Physics engine
 ════════════════════════════════════════════════════════ -->
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=1"></script>
 <script>
   if (typeof renderNav === 'function') {
     renderNav({ active: 'dd-playground', root: '../' });
@@ -1772,8 +1773,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── FID vs CPMG BLOCH ANIMATION ─────────────────────── */
 (function(){
-  const R=75,CX=95,CY=105; const A=Math.PI/6,B=Math.PI/5;
-  function proj(x,y,z){const xr=x*Math.cos(A)-y*Math.sin(A),yr=x*Math.sin(A)+y*Math.cos(A);return[CX+R*xr,CY-R*(z*Math.cos(B)+yr*Math.sin(B))];}
+  const R=75,CX=95,CY=105;
+  // One shared view for both spheres (js/orbit3d.js): drag either and both rotate,
+  // so FID and CPMG are always compared from the same angle. Default = the old fixed view.
+  const ddView = window.AMO3D
+    ? AMO3D.orbit([document.getElementById('fidCanvas'), document.getElementById('cpmgCanvas')],
+        { az: Math.PI/6, el: Math.PI/5, label: 'Spin ensemble on the Bloch sphere' })
+    : { az: Math.PI/6, el: Math.PI/5 };
+  // → [screenX, screenY, depth toward viewer]
+  function proj(x,y,z){const A=ddView.az,B=ddView.el;const xr=x*Math.cos(A)-y*Math.sin(A),yr=x*Math.sin(A)+y*Math.cos(A);return[CX+R*xr,CY-R*(z*Math.cos(B)+yr*Math.sin(B)),z*Math.sin(B)-yr*Math.cos(B)];}
   const N_SPINS=12; // ensemble spins
   let t=0; const T_CYCLE=6; // seconds per cycle
 
@@ -1781,8 +1789,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle='#faf5e9';ctx.fillRect(0,0,cvs.width,cvs.height);
     ctx.beginPath();ctx.arc(CX,CY,R,0,2*Math.PI);ctx.strokeStyle='#1e3a5f';ctx.lineWidth=1.2;ctx.stroke();
     ctx.setLineDash([3,4]);ctx.strokeStyle='#1e3a5f';ctx.lineWidth=0.8;
-    ctx.beginPath();for(let a=0;a<=2*Math.PI;a+=0.05){const[sx,sy]=proj(Math.cos(a),Math.sin(a),0);a===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);}ctx.stroke();
-    ctx.setLineDash([]);
+    [false,true].forEach(front=>{ctx.beginPath();let pen=false;for(let i=0;i<=96;i++){const a=2*Math.PI*i/96,[sx,sy,sd]=proj(Math.cos(a),Math.sin(a),0);if((sd>=0)===front){pen?ctx.lineTo(sx,sy):ctx.moveTo(sx,sy);pen=true;}else pen=false;}ctx.globalAlpha=front?1:0.35;ctx.stroke();});
+    ctx.globalAlpha=1;ctx.setLineDash([]);
     // z axis
     const[za,zb]=proj(0,0,1.2),[zc,zd]=proj(0,0,-0.5);
     ctx.beginPath();ctx.moveTo(zc,zd);ctx.lineTo(za,zb);ctx.strokeStyle='#334155';ctx.lineWidth=1;ctx.stroke();

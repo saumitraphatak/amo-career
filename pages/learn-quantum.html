@@ -1746,6 +1746,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=31"></script>
+<script src="../js/orbit3d.js?v=1"></script>
 <script>
 renderNav({ active: 'learn-quantum', root: '../' });
 initScrollReveal();
@@ -1771,42 +1772,57 @@ sections.forEach(id => { const el=document.getElementById(id); if(el) observer.o
    BLOCH SPHERE DRAWING
    ═══════════════════════════════════════════════ */
 const BS_R = 95, BS_CX = 130, BS_CY = 140;
-const BS_A = Math.PI/6, BS_B = Math.PI/5;   // azimuth 30°, tilt 36°
+const BS_A = Math.PI/6, BS_B = Math.PI/5;   // default view: azimuth 30°, tilt 36°
+// Each sphere can be rotated by dragging (js/orbit3d.js); drawBloch() loads that
+// canvas's current view into bsAz/bsEl before projecting.
+let bsAz = BS_A, bsEl = BS_B;
+const BS_VIEWS = {}, BS_LAST = {};
 
+// → [screenX, screenY, depth toward viewer]
 function bsProject(x, y, z) {
-  const xr = x*Math.cos(BS_A) - y*Math.sin(BS_A);
-  const yr = x*Math.sin(BS_A) + y*Math.cos(BS_A);
+  const ca = Math.cos(bsAz), sa = Math.sin(bsAz), ce = Math.cos(bsEl), se = Math.sin(bsEl);
+  const xr = x*ca - y*sa;
+  const yr = x*sa + y*ca;
   return [
     BS_CX + BS_R * xr,
-    BS_CY - BS_R * (z*Math.cos(BS_B) + yr*Math.sin(BS_B))
+    BS_CY - BS_R * (z*ce + yr*se),
+    z*se - yr*ce
   ];
+}
+
+// Great circle with its far half drawn fainter — the main depth cue when rotating.
+function bsCircle(ctx, pt, color, frontAlpha, backAlpha, width) {
+  const N = 96;
+  for (const front of [false, true]) {
+    ctx.beginPath(); let pen = false;
+    for (let i = 0; i <= N; i++) {
+      const t = 2*Math.PI*i/N, p = pt(t), q = bsProject(p[0], p[1], p[2]);
+      if ((q[2] >= 0) === front) { pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; }
+      else pen = false;
+    }
+    ctx.globalAlpha = front ? frontAlpha : backAlpha;
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
 }
 
 function drawBloch(canvasId, theta, phi, opts) {
   const canvas = document.getElementById(canvasId);
   const ctx = canvas.getContext('2d');
+  const view = BS_VIEWS[canvasId];
+  bsAz = view ? view.az : BS_A; bsEl = view ? view.el : BS_B;
+  BS_LAST[canvasId] = [theta, phi, opts];
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   // Sphere outline
   ctx.beginPath(); ctx.arc(BS_CX, BS_CY, BS_R, 0, 2*Math.PI);
   ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.5; ctx.stroke();
 
-  // Equator (dashed)
-  ctx.setLineDash([4,4]); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let t=0; t<=2*Math.PI; t+=0.05) {
-    const [sx,sy] = bsProject(Math.cos(t), Math.sin(t), 0);
-    t===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
-  }
-  ctx.stroke();
-
-  // Meridian at phi=0 (dashed)
-  ctx.beginPath();
-  for (let t=0; t<=Math.PI; t+=0.05) {
-    const [sx,sy] = bsProject(Math.sin(t), 0, Math.cos(t));
-    t===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
-  }
-  ctx.stroke();
+  // Equator + the two meridians (x–z, y–z), far halves fainter
+  ctx.setLineDash([4,4]);
+  bsCircle(ctx, t => [Math.cos(t), Math.sin(t), 0], '#1e3a5f', 1, 0.35, 1);
+  bsCircle(ctx, t => [Math.sin(t), 0, Math.cos(t)], '#1e3a5f', 0.8, 0.25, 1);
+  bsCircle(ctx, t => [0, Math.sin(t), Math.cos(t)], '#1e3a5f', 0.45, 0.15, 1);
   ctx.setLineDash([]);
 
   // Axes
@@ -1858,11 +1874,13 @@ function drawBloch(canvasId, theta, phi, opts) {
   const bx = Math.sin(theta)*Math.cos(phi);
   const by = Math.sin(theta)*Math.sin(phi);
   const bz = Math.cos(theta);
-  const [sx,sy] = bsProject(bx, by, bz);
+  const [sx,sy,sd] = bsProject(bx, by, bz);
+  ctx.globalAlpha = sd < -0.05 ? 0.5 : 1;          // behind the sphere's centre plane
   ctx.beginPath(); ctx.moveTo(BS_CX,BS_CY); ctx.lineTo(sx,sy);
   ctx.strokeStyle = '#7a4ff7'; ctx.lineWidth = 3; ctx.stroke();
   ctx.beginPath(); ctx.arc(sx,sy,6,0,2*Math.PI);
   ctx.fillStyle = '#7a4ff7'; ctx.fill();
+  ctx.globalAlpha = 1;
 
   // Dotted projection lines
   const [prx,pry] = bsProject(bx,by,0);
@@ -1879,6 +1897,19 @@ function drawBloch(canvasId, theta, phi, opts) {
   if (stateEl) {
     stateEl.textContent = `|ψ⟩: bx=${bx.toFixed(2)}, by=${by.toFixed(2)}, bz=${bz.toFixed(2)} | P(0)=${(Math.cos(theta/2)**2*100).toFixed(1)}%`;
   }
+}
+
+// Drag-to-rotate (js/orbit3d.js). Each sphere keeps its own view and redraws
+// its last state when rotated, so gate trails / measurement axes rotate too.
+if (window.AMO3D) {
+  ['blochCanvas', 'gatesBlochCanvas', 'measBlochCanvas'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    BS_VIEWS[id] = AMO3D.orbit(el, {
+      az: BS_A, el: BS_B, label: 'Bloch sphere',
+      onChange: () => { if (BS_LAST[id]) drawBloch(id, ...BS_LAST[id]); }
+    });
+  });
 }
 
 // Initial Bloch sphere draw
@@ -2559,8 +2590,11 @@ function updateRabi() {
 
   // Bloch sphere geometry (same projection as main BS)
   const R = 80, CX = 110, CY = 120;
-  const A = Math.PI/6, B = Math.PI/5;
+  const rabiView = window.AMO3D
+    ? AMO3D.orbit(document.getElementById('rabiBlochCanvas'), { az: Math.PI/6, el: Math.PI/5, label: 'Rabi precession on the Bloch sphere' })
+    : { az: Math.PI/6, el: Math.PI/5 };
   function proj(x, y, z) {
+    const A = rabiView.az, B = rabiView.el;
     const xr = x*Math.cos(A) - y*Math.sin(A);
     const yr = x*Math.sin(A) + y*Math.cos(A);
     return [CX + R*xr, CY - R*(z*Math.cos(B) + yr*Math.sin(B))];

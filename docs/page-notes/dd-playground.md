@@ -38,3 +38,7 @@ Home page's tools-grid badge for this page said "QC 06", disagreeing with this p
 
 ## Content-flow & pedagogy audit update (2026-09-19)
 Cross-reference naming drift: this page's own outgoing "See Also" card label(s), its page-footer signature line, and its BreadcrumbList JSON-LD leaf name used a stale, pre-rename name for one or more target/self pages (the site has renamed several pages more than once over its history; og/twitter/JSON-LD headline were already synced by the 2026-09-16 technical audit and the breadcrumb *category* name by the 2026-09-18 cross-page-consistency audit, but these three other copies of a page's name were not). Synced to each page's current `<title>`. See docs/flow-audit-2026-09-19.md.
+
+
+## 3D visualization update (2026-09-28)
+The FID and CPMG Bloch spheres are now rotatable in 3D via `js/orbit3d.js`, sharing one linked view (drag either, both rotate) so dephasing and refocusing are always compared from the same angle — the top-down view makes the equatorial spin fan-out much clearer than the old fixed side view. Default view equals the old fixed projection; equator back half drawn fainter as a depth cue.
