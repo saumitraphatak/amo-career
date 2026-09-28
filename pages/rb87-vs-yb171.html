@@ -885,12 +885,12 @@ Crossover: $B_0 \approx 2.26\;\text{G}$ for the assumed $\delta B=1\;\text{mG}$.
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
       <div style="text-align:center;">
         <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#bc5005;margin-bottom:.4rem;">⁸⁷Rb — schematic dephasing</div>
-        <canvas id="rbBlochCanvas" width="200" height="220" style="border-radius:8px;background:#faf5e9;display:block;margin:0 auto;"></canvas>
+        <canvas id="rbBlochCanvas" width="200" height="220" style="border-radius:8px;background:var(--bg-card);display:block;margin:0 auto;"></canvas>
         <div id="rbBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:.3rem;"></div>
       </div>
       <div style="text-align:center;">
         <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#4f5ff5;margin-bottom:.4rem;">¹⁷¹Yb — schematic dephasing</div>
-        <canvas id="ybBlochCanvas" width="200" height="220" style="border-radius:8px;background:#faf5e9;display:block;margin:0 auto;"></canvas>
+        <canvas id="ybBlochCanvas" width="200" height="220" style="border-radius:8px;background:var(--bg-card);display:block;margin:0 auto;"></canvas>
         <div id="ybBlochLbl" style="font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);margin-top:.3rem;"></div>
       </div>
     </div>
@@ -1603,6 +1603,7 @@ Logical-qubit teleportation fidelity: 77.1(9)% (random ancilla, syndrome post-se
 <script src="../js/main.js?v=34"></script>
 <script src="../js/versus.js?v=2"></script>
 <script src="../js/vs-erasure.js?v=1"></script>
+<script src="../js/motion.js?v=1"></script>
 <script>
 /* Interactive comparison pieces (js/versus.js + page scene), built from this page's own content */
 if (window.AMOVersus) {
@@ -1635,22 +1636,27 @@ if (window.AMOVersus) {
 
   let t=0; // simulated time in seconds
 
+  // Theme-aware palette (light = the original colours).
+  const isDark=()=>document.documentElement.getAttribute('data-theme')==='dark';
+  const PAL={light:{bg:'#faf5e9',sphere:'#1e3a5f',axis:'#334155',label:'#8c8066',ket:'#64748b'},
+             dark:{bg:'#0c1526',sphere:'rgba(148,163,184,0.7)',axis:'#94a3b8',label:'#94a3b8',ket:'#94a3b8'}};
   function drawBS(cvs, ctx, bx, by, bz, color, trail) {
-    ctx.fillStyle='#faf5e9'; ctx.fillRect(0,0,cvs.width,cvs.height);
+    const P=isDark()?PAL.dark:PAL.light;
+    ctx.fillStyle=P.bg; ctx.fillRect(0,0,cvs.width,cvs.height);
     // sphere
-    ctx.beginPath(); ctx.arc(CX,CY,R,0,2*Math.PI); ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=1.2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(CX,CY,R,0,2*Math.PI); ctx.strokeStyle=P.sphere; ctx.lineWidth=1.2; ctx.stroke();
     // equator
-    ctx.setLineDash([3,4]); ctx.strokeStyle='#1e3a5f'; ctx.lineWidth=0.8;
+    ctx.setLineDash([3,4]); ctx.strokeStyle=P.sphere; ctx.lineWidth=0.8;
     ctx.beginPath(); for(let a=0;a<=2*Math.PI;a+=0.05){const[sx,sy]=proj(Math.cos(a),Math.sin(a),0); a===0?ctx.moveTo(sx,sy):ctx.lineTo(sx,sy);} ctx.stroke();
     ctx.setLineDash([]);
     // axes
     [[1,0,0,'x'],[0,0,1,'z']].forEach(([ax,ay,az,n])=>{
       const[sx,sy]=proj(ax*1.2,ay*1.2,az*1.2),[ox,oy]=proj(-ax*.5,-ay*.5,-az*.5);
-      ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(sx,sy);ctx.strokeStyle='#334155';ctx.lineWidth=1;ctx.stroke();
-      ctx.fillStyle='#8c8066';ctx.font='10px Inter';ctx.fillText(n,sx+3,sy+4);
+      ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(sx,sy);ctx.strokeStyle=P.axis;ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle=P.label;ctx.font='10px Inter';ctx.fillText(n,sx+3,sy+4);
     });
     const[z0x,z0y]=proj(0,0,1.15),[z1x,z1y]=proj(0,0,-1.15);
-    ctx.fillStyle='#64748b';ctx.font='11px Inter';ctx.fillText('|0⟩',z0x+3,z0y);ctx.fillText('|1⟩',z1x+3,z1y);
+    ctx.fillStyle=P.ket;ctx.font='11px Inter';ctx.fillText('|0⟩',z0x+3,z0y);ctx.fillText('|1⟩',z1x+3,z1y);
     // trail
     if(trail.length>1){for(let i=1;i<trail.length;i++){const[x0,y0]=proj(...trail[i-1]),[x1,y1]=proj(...trail[i]);ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.strokeStyle=`rgba(${hexToRgb(color)},${(i/trail.length*0.6).toFixed(2)})`;ctx.lineWidth=1.5;ctx.stroke();}}
     // vector
@@ -1664,30 +1670,40 @@ if (window.AMOVersus) {
   const trails = configs.map(()=>[]);
   const TRAIL=40;
 
-  function animate(){
-    requestAnimationFrame(animate);
-    t += 0.016; // 1 frame ≈ 16ms sim time
-    if(t > 15) { t=0; trails.forEach(tr=>tr.length=0); }
-
+  // Bloch vector at the current time: starts on the equator (|+⟩), precesses and shrinks as e^(−t/T₂).
+  function state(cfg){
+    const decay = Math.exp(-t/cfg.T2);
+    const phi = cfg.phi0 + t*2; // precession
+    return [decay*Math.cos(phi), decay*Math.sin(phi), 0, decay];
+  }
+  function drawAll(){
     configs.forEach((cfg,i)=>{
       const cvs=document.getElementById(cfg.id);
       if(!cvs) return;
-      const ctx=cvs.getContext('2d');
-      const decay = Math.exp(-t/cfg.T2);
-      const phi = cfg.phi0 + t*2; // precession
-      const bx = decay*Math.cos(phi), by = decay*Math.sin(phi), bz = Math.sqrt(Math.max(0,1-decay*decay))*(t<0.01?1:0); // start near equator
-      // Actually: start on equator (|+⟩), decay inward
-      const bx2=decay*Math.cos(phi), by2=decay*Math.sin(phi), bz2=0;
-      trails[i].push([bx2,by2,bz2]);
-      if(trails[i].length>TRAIL) trails[i].shift();
-      drawBS(cvs,ctx,bx2,by2,bz2,cfg.color,trails[i]);
+      const [bx,by,bz,decay]=state(cfg);
+      drawBS(cvs,cvs.getContext('2d'),bx,by,bz,cfg.color,trails[i]);
       const lbl=document.getElementById(cfg.lbl);
       if(lbl) lbl.textContent=`t=${t.toFixed(1)} s  |r|=${decay.toFixed(3)}`;
     });
   }
+  function step(){
+    t += 0.016; // 1 frame ≈ 16ms sim time
+    if(t > 15) { t=0; trails.forEach(tr=>tr.length=0); }
+    configs.forEach((cfg,i)=>{
+      const [bx,by,bz]=state(cfg);
+      trails[i].push([bx,by,bz]);
+      if(trails[i].length>TRAIL) trails[i].shift();
+    });
+    drawAll();
+  }
 
-  window.resetDecoAnim = function(){ t=0; trails.forEach(tr=>tr.length=0); };
-  requestAnimationFrame(animate);
+  window.resetDecoAnim = function(){ t=0; trails.forEach(tr=>tr.length=0); drawAll(); };
+  // Pause button, offscreen stop and reduced-motion still frame (js/motion.js, WCAG 2.2.2).
+  const canvases = configs.map(c=>document.getElementById(c.id)).filter(Boolean);
+  if (window.AMOMotion) AMOMotion.loop(canvases, step, { anchors: [{ el: document.querySelector('button[onclick="resetDecoAnim()"]'), where: 'afterend', inline: true }] });
+  else requestAnimationFrame(function f(){ step(); requestAnimationFrame(f); });
+  // Repaint the current frame when the theme changes (also while paused).
+  new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 })();
 
   // ── Sticky topic nav highlight ─────────────────────────────────────

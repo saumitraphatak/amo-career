@@ -72,3 +72,8 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 1 label rendered differently after the fix, e.g. "NOT RB" → "NOT Rb". No markup on the page changed apart from the cache version.
+
+## 2026-09-28 (overnight): dephasing spheres follow the theme, and can be paused
+- Section 05's two schematic dephasing spheres (`#rbBlochCanvas`, `#ybBlochCanvas`) painted cream `#faf5e9` in both themes; dark (the site default) showed two bright boxes. Same fix as dd-playground: `PAL.light` (the old colours) / `PAL.dark` picked per frame, CSS background `var(--bg-card)`, repaint on theme toggle.
+- The loop ran forever with a self-scheduled `requestAnimationFrame` and no pause control (WCAG 2.2.2), which the earlier pause pass missed. It now uses `AMOMotion.loop` (`js/motion.js?v=1` added to the page): a Pause button after "↺ Restart", stops offscreen, and starts paused on a still frame under reduced motion. "Restart" repaints immediately.
+- The frame code was split into `state()` (the Bloch vector, e^(−t/T₂) with T₂ = 4 s and 2 rad/s precession, unchanged), `step()` (advance time and trail) and `drawAll()`. An unused `bz` computation was dropped; the numbers shown are identical (checked: t = 1.6 s → |r| = 0.665 ≈ e^(−1.63/4)).

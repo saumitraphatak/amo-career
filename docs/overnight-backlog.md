@@ -22,7 +22,8 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
   - Run 2 found **18 canvases on 11 pages** that paint or show `#faf5e9` in dark theme (rendered check: CSS background or corner pixel):
     - [x] dd-playground `fidCanvas`, `cpmgCanvas` (2026-09-28 run 2; pattern: `PAL.light/PAL.dark` picked per frame + a `data-theme` MutationObserver that repaints the current frame);
     - [ ] learn-quantum `mziCanvas`, `rabiBlochCanvas`, `rabiTraceCanvas`, `tqBellCanvas`, `groverCanvas`, `rydbergArrayCanvas`;
-    - [ ] rb87-vs-yb171 `rbBlochCanvas`, `ybBlochCanvas`; mot-designer `motCanvas`;
+    - [x] rb87-vs-yb171 `rbBlochCanvas`, `ybBlochCanvas` (2026-09-28 run 2; also got a pause control via `AMOMotion.loop`, it had none);
+    - [ ] mot-designer `motCanvas`;
     - [ ] cooling-simulator `mbCanvas`; fidelity-budget `waterfallCanvas`; imaging-calculator `fluorHistCanvas`; laser-locking `lockCanvas`; rb-explorer `rbAnimCanvas`; vacuum-systems `.mol-canvas`; zernike `gsFlowCanvas`.
     - Chart.js tooltips with `backgroundColor:'#faf5e9'` (atom-library, cavity-qed, dd-playground, fidelity-budget, imaging-calculator, lab-techniques, mot-designer, rb-explorer, tof-calculator) belong to the P1 Chart.js dark-theme audit.
 - [ ] **Stale-number sweep.** Hero chips and stat pills that hard-code counts ("25+ Companies", "100+ groups", "55 Papers", "15 species") should match the page content. Fix, or derive from the DOM where cheap.
