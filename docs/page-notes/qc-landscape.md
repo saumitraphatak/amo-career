@@ -76,3 +76,11 @@ New section **"Where the Hardware Is Built"** (`#company-globe`), placed directl
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - **Dollar amounts were being typeset as maths.** KaTeX auto-render pairs any two `$` in one text node, so "$1B raise, … $7B" became italic maths with the words run together (and on this page the result could not wrap, so the page was wider than the screen even on desktop). Every amount is now wrapped in `<span class="money">`, and main.js's auto-render call ignores `.money` and `.no-math`. The Tug-of-war and Race-replay widgets built by `js/versus.js` (v=2) carry `no-math`, since they copy the page's text (including prices) before KaTeX runs. Keep writing prices as `<span class="money">$1.5B</span>` on these pages.
+
+## 2026-09-28 (overnight): Oxford Ionics is part of IonQ
+- The Trapped Ions tab's Oxford Ionics card still read like an independent startup ("£30M Series A (2023)", "single-qubit fidelity >99.9% in ⁴⁰Ca⁺"). It now opens with **part of IonQ since 17 September 2025** and cites sources for every figure:
+  - completion date: [IonQ press release](https://www.ionq.com/news/ionq-completes-acquisition-of-oxford-ionics-rapidly-accelerating-its-quantum);
+  - 99.97% 2Q / 99.9992% 1Q gate fidelity: [Oxford Ionics announcement, 11 July 2024](https://www.oxionics.com/announcements/oxford-ionics-breaks-global-quantum-performance-records/), tagged `company`;
+  - >99.99% 2Q fidelity without ground-state cooling (error 8.4(7)×10⁻⁵ at Doppler temperature): [arXiv:2510.17286](https://arxiv.org/abs/2510.17286), tagged `preprint`.
+- The Series A and ⁴⁰Ca⁺ claims were dropped: no source was found this run.
+- The career-fit list now says "Quantinuum / IonQ (incl. Oxford Ionics)". The globe tooltip already said "part of IonQ since 2025"; quantinuum-vs-ionq.html already covered the acquisition, so it was not changed.
