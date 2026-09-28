@@ -3001,7 +3001,9 @@ main p, main li { overflow-wrap: break-word; }
    the right edge can't widen the page. It also no longer inherits an
    uppercase label style (which turned κ into K). */
 .tip::after { display: none; max-width: min(240px, 72vw); text-transform: none; letter-spacing: normal; font-weight: 400; }
-.tip:hover::after, .tip:focus-visible::after { display: block; opacity: 1; }
+.tip:hover::after, .tip:focus-visible::after, .tip.tip-open::after { display: block; opacity: 1; }
+.tip.tip-dismissed::after { display: none !important; }
+.tip:focus-visible { outline: 2px solid var(--c-atom); outline-offset: 2px; border-radius: 2px; }
 .tip[data-tip-align="end"]::after { left: auto; right: 0; transform: none; }
 .tip[data-tip-align="start"]::after { left: 0; transform: none; }
 /* Symbols inside uppercase labels keep their case: main.js wraps Greek

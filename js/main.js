@@ -2109,7 +2109,9 @@ function updateHeroStats() {
 function alignTip(e) {
   const t = e.target && e.target.closest && e.target.closest('.tip');
   if (!t) return;
-  const r = t.getBoundingClientRect(), half = Math.min(240, window.innerWidth * 0.72) / 2 + 8;
+  // first line box: an anchor that wraps onto two lines has a much wider bounding box
+  const r = (t.getClientRects && t.getClientRects()[0]) || t.getBoundingClientRect();
+  const half = Math.min(240, window.innerWidth * 0.72) / 2 + 8;
   const c = r.left + r.width / 2;
   if (c + half > document.documentElement.clientWidth) t.dataset.tipAlign = 'end';
   else if (c - half < 0) t.dataset.tipAlign = 'start';
@@ -2117,6 +2119,58 @@ function alignTip(e) {
 }
 document.addEventListener('pointerover', alignTip);
 document.addEventListener('focusin', alignTip);
+
+/* Keyboard, touch and screen readers (WCAG 1.4.13 / 2.1.1):
+   • every .tip[data-tip] is focusable, and its text is its accessible description;
+   • a tap or click pins the bubble open (tap again, tap elsewhere or Esc closes it);
+   • Esc also hides the bubble of a focused tip until focus moves on. */
+(function initTipAccess() {
+  let seq = 0;
+  function setup() {
+    const tips = document.querySelectorAll('.tip[data-tip]:not([data-tip-ready])');
+    if (!tips.length) return;
+    let box = document.getElementById('amo-tip-descs');
+    if (!box) { box = document.createElement('div'); box.id = 'amo-tip-descs'; box.hidden = true; document.body.appendChild(box); }
+    tips.forEach(t => {
+      t.dataset.tipReady = '1';
+      if (!t.hasAttribute('tabindex')) t.tabIndex = 0;
+      const d = document.createElement('span');
+      d.id = 'amo-tip-' + (++seq);
+      d.textContent = t.dataset.tip;
+      box.appendChild(d);
+      t.setAttribute('aria-describedby', ((t.getAttribute('aria-describedby') || '') + ' ' + d.id).trim());
+    });
+  }
+  const closeAll = except => document.querySelectorAll('.tip.tip-open').forEach(t => { if (t !== except) t.classList.remove('tip-open'); });
+  document.addEventListener('click', e => {
+    const t = e.target && e.target.closest && e.target.closest('.tip[data-tip]');
+    if (!t) {
+      // a tip inside a <label>: the label then "clicks" its input; don't let that close the tip
+      const open = document.querySelector('.tip.tip-open');
+      if (open && e.target.labels && Array.prototype.some.call(e.target.labels, l => l.contains(open))) return;
+    }
+    closeAll(t);
+    if (!t) return;
+    alignTip({ target: t });
+    t.classList.remove('tip-dismissed');
+    t.classList.toggle('tip-open');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    closeAll(null);
+    const a = document.activeElement;
+    if (a && a.matches && a.matches('.tip[data-tip]')) a.classList.add('tip-dismissed');
+  });
+  document.addEventListener('focusout', e => {
+    const t = e.target;
+    if (!t || !t.classList || !t.classList.contains('tip')) return;
+    t.classList.remove('tip-dismissed');
+    // tapping a tip inside a <label> moves focus to the label's input: keep the tip open then
+    const lab = t.closest('label');
+    if (!(lab && e.relatedTarget && lab.control === e.relatedTarget)) t.classList.remove('tip-open');
+  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
+})();
 
 /* ─────────────────────────────────────────────────────────
    KATEX AUTO-RENDER
