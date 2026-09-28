@@ -276,7 +276,19 @@
     @media(max-width:900px) {
       .watchlist-intro, .watchlist-grid, .shortlist-grid { grid-template-columns:1fr; }
     }
-  </style>
+  
+    /* ── 3D globe of the directory (js/globe3d.js) ── */
+    .groups-globe { position:relative; margin:var(--sp-5) 0; border:1px solid var(--border); border-radius:var(--r-lg);
+      background:radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--c-atom) 6%, transparent), transparent 70%); padding:var(--sp-3) var(--sp-3) var(--sp-2); }
+    .groups-globe[hidden] { display:none; }
+    #groups-globe-cvs { display:block; width:100%; height:470px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media(max-width:620px){ #groups-globe-cvs { height:340px; } }
+    .groups-globe-bar { display:flex; flex-wrap:wrap; gap:.4rem 1rem; align-items:center; justify-content:space-between; font-size:.76rem; color:var(--text-secondary); padding:0 var(--sp-2); }
+    .groups-globe-bar strong { color:var(--text-primary); }
+    .groups-globe-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
+    .groups-globe-pause:hover { color:var(--text-primary); }
+    .groups-globe-pause[hidden] { display:none; }
+</style>
 </head>
 <body>
 <div id="nav-root"></div>
@@ -438,6 +450,14 @@
       </div>
     </div>
 
+    <div class="groups-globe" id="groups-globe" hidden>
+      <canvas id="groups-globe-cvs" data-export-ready="true" aria-label="Globe of the Featured Directory: one marker per group (clustered by campus), coloured by research area. The same groups are listed below."></canvas>
+      <div class="groups-globe-bar">
+        <span><strong id="groups-globe-count">99 groups</strong> on the globe · colours match the filter buttons · click a marker for details</span>
+        <button type="button" class="groups-globe-pause" id="groups-globe-pause" aria-pressed="false">❚❚ Stop spinning</button>
+      </div>
+    </div>
+
     <div id="group-panel">
       <button class="gp-close" onclick="closePanel()">✕</button>
       <div id="panel-content"></div>
@@ -510,6 +530,8 @@
   </div>
 </footer>
 
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/globe3d.js?v=1"></script>
 <script>
 /* ─────────────────────────────────────────────────────
    GROUP DATA
@@ -1043,6 +1065,7 @@ function applyFilters() {
   const filtered = GROUPS.filter(g => groupMatches(g, q));
   buildGrid(filtered);
   document.getElementById('result-count').textContent = `${filtered.length} group${filtered.length!==1?'s':''}`;
+  updateGlobe(filtered, true);
   updateFilterButtons();
 }
 
@@ -1068,8 +1091,38 @@ function setPreset(preset) {
   applyFilters();
 }
 
+/* ── 3D globe (js/globe3d.js): same data and filters as the directory ── */
+let groupsGlobe = null;
+function updateGlobe(groups, focus) {
+  if (!groupsGlobe) return;
+  groupsGlobe.setPoints(groups.map(g => ({
+    lat: g.lat, lon: g.lon, color: TAG_COLORS[g.tag] || '#94a3b8',
+    title: g.name, sub: `${g.pi} · ${g.inst}`, idx: GROUPS.indexOf(g)
+  })), { focus });
+  const c = document.getElementById('groups-globe-count');
+  if (c) c.textContent = `${groups.length} group${groups.length !== 1 ? 's' : ''}`;
+}
+function initGlobe() {
+  const wrap = document.getElementById('groups-globe'), cvs = document.getElementById('groups-globe-cvs');
+  if (!wrap || !cvs || !window.AMO3D || !AMO3D.globe) return;
+  wrap.hidden = false;
+  groupsGlobe = AMO3D.globe(cvs, {
+    center: { lat: 42, lon: -35 },                      // North Atlantic: US + Europe in view
+    pauseButton: document.getElementById('groups-globe-pause'),
+    label: 'Globe of AMO research groups',
+    onPick: p => showPanel(p.idx),
+    clusterTitle: list => {
+      const insts = [...new Set(list.map(p => p.sub.split(' · ').pop()))];
+      return list.length + ' groups · ' + (insts.length === 1 ? insts[0] : insts.slice(0, 2).join(' / ') + (insts.length > 2 ? ' …' : ''));
+    }
+  });
+  if (!groupsGlobe) { wrap.hidden = true; return; }
+  updateGlobe(GROUPS, false);
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   buildGrid(GROUPS);
+  initGlobe();
   renderWatchlist();
   renderShortlists();
   document.getElementById('result-count').textContent = `${GROUPS.length} groups`;
