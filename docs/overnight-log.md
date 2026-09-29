@@ -84,3 +84,15 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - **New:** `js/surface3d.js` (`AMO3D.surface`) shows W and the PSF in 3D, giving the sampled peak I/I₀ next to the Maréchal estimate.
   - **llms-full.txt:** fixed the Strehl formula and the SLM/Gouy line.
   - **Tests:** formula tests OK 17 (1 new, mutation-checked); `smoke.js` 0 new problems; Playwright checks as in the page note.
+- **P1 Chart.js dark-theme audit** (main.js v36, sitewide cache bump on all 34 HTML files).
+  - **Method.** Rendered all 57 charts on 23 pages with the real Chart.js 4.4.3. It came from the GitHub release tarball; npm and the CDNs are blocked here, and SRI attributes were stripped only in the test server. Screenshots were taken in both themes, before and after.
+  - **Problems found:**
+    - dark legend/tick text (`#22190f`, `#5c503c`) unreadable on the dark card;
+    - near-black grids (`#1e293b`) drawn over the cream paper;
+    - cream tooltips in the dark theme.
+  - **Fix.** `AMOChartInk` at the end of main.js wraps each chart's 2D context and maps known inks for the current theme (both directions); data colours are untouched and a theme toggle re-renders every chart.
+  - **Before/after review.** Every chart now reads in both themes. Two charts that are empty until the user computes (dd-playground c0, imaging-calculator c0) are empty in the baseline too.
+- **qc-landscape.**
+  - The qubit-race canvas had invisible labels in both themes (cream text on a cream fill) and blanked on resize. It is now theme-aware.
+  - Its dashed "FTQC target" at 10⁶ contradicted the caption's "order 10⁷". RSA-2048 now cites both Gidney & Ekerå 2021 (~2×10⁷ qubits, 8 h) and Gidney 2025 (arXiv:2505.15917, preprint: <10⁶ qubits, <1 week).
+  - llms-full.txt updated to match.

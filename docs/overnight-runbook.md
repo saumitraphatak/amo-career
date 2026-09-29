@@ -13,6 +13,11 @@ Each run is a **fresh session with no memory**. Everything it needs is in this r
   - `python3 tests/formula_regression.py` (run on the Mac; must print `OK 11 …` or more).
   - `tests/browser/smoke.js`: loads every page, dark + light at 1280 px and dark at 390 px, and reports page errors, console errors and horizontal overflow. It compares against a baseline so pre-existing issues don't hide new ones.
   - `tests/browser/chartstub.js`: the Chart.js stand-in the smoke test injects.
+  - **Real Chart.js / KaTeX for rendered checks.** npm and the CDNs are blocked in the cloud workspace, but GitHub release downloads work:
+    - `curl -sSL -o cjs.tgz https://github.com/chartjs/Chart.js/releases/download/v4.4.3/chart.js-4.4.3.tgz` (use `package/dist/chart.umd.js`);
+    - `https://github.com/KaTeX/KaTeX/releases/download/v0.16.11/katex.tar.gz`.
+
+    In Playwright, route the jsdelivr URLs to these files and strip `integrity="…"` in your test server's HTML responses (never in the repo).
 
 ## 1. Start of run (in this order)
 1. **Lock.** Read `.git/overnight-lock` (it's inside `.git`, so it's never committed).

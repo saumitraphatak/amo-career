@@ -87,3 +87,13 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight run 3): stale-number sweep
 - Hero pill "25+ Companies" → "27 Companies & Labs": the Platform Deep Dives have 27 company/lab cards (one ↗ link each: 6 superconducting, 5 trapped-ion, 4 neutral-atom, 4 silicon, 4 photonic, 4 defects/topological), which is also what the globe counts ("27 companies & labs"). "6 Platforms" matches the six deep-dive tabs. Guarded by `test_hand_typed_counts_match_content`.
+
+## 2026-09-29: qubit-race canvas readable in both themes; RSA-2048 estimates updated
+- **Qubit race canvas.**
+  - **Bug:** the canvas filled cream (`#f2ead9`) in both themes and drew its axis labels (`#faf5e9`) and value labels (`rgba(250,245,233,.85)`) in cream too, so the numbers were invisible in both themes and the canvas was a cream block in the dark theme.
+  - **Fix:** it now picks inks per theme (dark card, slate grid and labels; on cream, deeper shades of the same hues for bars and names). It redraws on a theme toggle and on resize (a resize used to leave it blank), and shows the final frame under reduced motion.
+- **RSA-2048 resource estimates.** The page gave only the ~20 million noisy qubits figure (Gidney & Ekerå, Quantum 5, 433 (2021), arXiv:1905.09749). It now also gives the 2025 estimate of under a million noisy qubits in under a week, at 0.1% gate error, 1 μs cycle and 10 μs reaction time (C. Gidney, arXiv:2505.15917, https://arxiv.org/abs/2505.15917, preprint, flagged as such).
+  - Updated in the "long-term" card, "The Gap" box (now "roughly 3–4 orders of magnitude"), the surface-code card and the references list.
+  - The race's dashed line sat at 10⁶ but its caption said "order 10⁷"; it is now labelled "RSA-2048 est. (2025)" with a caption giving both estimates.
+- **Charts** also get the sitewide theme-aware Chart.js inks (main.js v36; see CLAUDE.md).
+- **Checked:** Playwright, dark/light at 1280 and dark at 390 px, theme toggle; screenshots reviewed.

@@ -2309,3 +2309,75 @@ document.addEventListener('DOMContentLoaded', () => {
   else start();
   window.AMOCaseKeep = { fix: fixTree, keepWhole };
 })();
+
+/* ─────────────────────────────────────────────────────────
+   CHART.JS INKS FOLLOW THE THEME
+   The site's charts were written with a mix of cream-theme inks (tick and
+   legend text #5c503c / #22190f, tooltip paper #faf5e9) and dark-theme
+   inks (grid #1e293b, rgba(255,255,255,.05)), so each theme had some
+   unreadable parts: dark legend text on the dark card, black grids on
+   cream. Instead of editing ~60 chart configs, every chart's 2D context
+   translates known inks for the current theme as they are set (the same
+   idea as js/canvas-ink.js). Chart configs keep their colours; accent
+   colours (data series) pass through. A theme toggle re-renders every
+   chart. Add an ink here only if it is a text/grid/tooltip ink.
+   ───────────────────────────────────────────────────────── */
+(function () {
+  if (!window.Chart || window.AMOChartInk) return;
+  const root = document.documentElement;
+  const TO_DARK = {
+    '#5c503c': '#94a3b8', '#8c8066': '#94a3b8', '#666': '#94a3b8', '#666666': '#94a3b8',
+    '#3a2a18': '#cbd5e1', '#22190f': '#e2e8f0',
+    '#faf5e9': '#0c1526',                                   // tooltip paper → card
+    '#1e3a5f': 'rgba(148,163,184,0.45)',                    // tooltip border
+    'rgba(0,0,0,0.1)': 'rgba(148,163,184,0.16)',            // Chart.js default grid/border
+    'rgba(255,255,255,0.75)': 'rgba(12,21,38,0.75)'         // Chart.js default tick backdrop (radar)
+  };
+  const RGB_DARK = { '92,80,60': '148,163,184', '34,25,15': '226,232,240', '58,42,24': '203,213,225' };
+  const TO_LIGHT = {
+    '#1e293b': 'rgba(58,42,24,0.13)', '#0f1e35': 'rgba(58,42,24,0.13)', '#0d2236': 'rgba(58,42,24,0.13)',
+    '#c4b5fd': '#6d28d9'                                    // pale violet labels on cream
+  };
+  const norm = v => v.replace(/\s+/g, '').toLowerCase();
+  function map(v) {
+    if (typeof v !== 'string') return v;
+    const k = norm(v), dark = root.getAttribute('data-theme') === 'dark';
+    if (dark) {
+      if (TO_DARK[k]) return TO_DARK[k];
+      const m = k.match(/^rgba?\((\d+),(\d+),(\d+)(,[\d.]+)?\)$/);
+      if (m && RGB_DARK[m[1] + ',' + m[2] + ',' + m[3]]) return 'rgba(' + RGB_DARK[m[1] + ',' + m[2] + ',' + m[3]] + (m[4] || ',1') + ')';
+      return v;
+    }
+    if (TO_LIGHT[k]) return TO_LIGHT[k];
+    // faint white lines (dark-theme grids) → faint ink on cream; bright whites (text on bars) stay
+    const w = k.match(/^rgba\(255,255,255,([\d.]+)\)$/);
+    if (w && +w[1] < 0.5) return 'rgba(58,42,24,' + Math.min(0.6, Math.max(0.1, +w[1] * 2.5)).toFixed(2) + ')';
+    return v;
+  }
+  function wrap(ctx) {
+    if (!ctx || ctx.__amoChartInk) return;
+    ctx.__amoChartInk = true;
+    const proto = Object.getPrototypeOf(ctx);
+    ['fillStyle', 'strokeStyle'].forEach(prop => {
+      const d = Object.getOwnPropertyDescriptor(proto, prop);
+      if (!d || !d.set) return;
+      Object.defineProperty(ctx, prop, {
+        configurable: true,
+        get() { return d.get.call(ctx); },
+        set(v) { d.set.call(ctx, map(v)); }
+      });
+    });
+  }
+  try {
+    Chart.register({ id: 'amoChartInk', beforeInit(chart) { wrap(chart.ctx); } });
+    Object.values(Chart.instances || {}).forEach(c => { wrap(c.ctx); c.render(); });
+  } catch (e) { return; }
+  let dark = root.getAttribute('data-theme') === 'dark';
+  new MutationObserver(() => {
+    const d = root.getAttribute('data-theme') === 'dark';
+    if (d === dark) return;
+    dark = d;
+    Object.values(Chart.instances || {}).forEach(c => { try { c.render(); } catch (e) {} });
+  }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  window.AMOChartInk = { map };
+})();
