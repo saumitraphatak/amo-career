@@ -66,7 +66,7 @@ Each one:
 - [ ] **Laser Cooling Simulator: velocity-space flow.** Arrows show the page's Doppler/Sisyphus force F(v) acting on a Maxwell–Boltzmann cloud relaxing toward the Doppler limit (Monte Carlo with the page's parameters). Include a pause button.
 - [ ] **Polarimetry: Poincaré trajectory.** As a waveplate rotates, trace the output polarization's path on the sphere (the page's Jones/Mueller maths), with QWP and HWP presets.
 - [ ] **Absorption Imaging: 3D column-density surface.** Show the page's simulated OD image as a surface; the cursor reads out column density at a point.
-- [ ] **Fidelity budget: animated error waterfall.** The 8 error sources stack into total infidelity. Clicking a source zeroes it to show "what if we fixed this".
+- [x] **Fidelity budget: animated error waterfall.** Done 2026-09-29 (interactive): the waterfall already animated; the "what if we fixed this" part is the new Set-to-0 column in the budget table. The 8 error sources stack into total infidelity. Clicking a source zeroes it to show "what if we fixed this".
 - [ ] **Randomized benchmarking: live sequence.** Random Clifford sequences of growing length as cards; survival points fall onto the fitted decay curve in real time.
 - [ ] **Remote entanglement: Barrett–Kok timeline.** Photons leave two nodes, meet at the beam splitter, and detector clicks herald success. Tally the success rate against the page's η and loss numbers.
 - [ ] **Vacuum systems: pump-down curve.** An interactive pressure-vs-time model with chamber volume, pumping speed, outgassing rate and bakeout, using standard textbook forms (cite a source such as Hablanian or the Pfeiffer vacuum handbook). Mark the UHV regimes.

@@ -73,6 +73,15 @@
     .budget-table tr.dominant td:first-child { font-weight: 600; color: var(--text-primary); }
     .bbar { height: 6px; background: var(--bg-card); border-radius:3px; overflow:hidden; min-width:80px; }
     .bbar-fill { height:100%; border-radius:3px; }
+    /* what-if: zero one error source */
+    .fix-btn { font:inherit; font-size:.72rem; padding:2px 9px; border-radius:999px; border:1px solid var(--border-med); background:transparent; color:var(--text-secondary); cursor:pointer; white-space:nowrap; }
+    .fix-btn:hover { color:var(--text-primary); border-color:var(--c-ryd, #818cf8); }
+    .fix-btn[aria-pressed="true"] { background:rgba(74,222,128,.14); border-color:#4ade80; color:var(--text-primary); }
+    .budget-table tr.fixed td:first-child { text-decoration:line-through; text-decoration-color:rgba(74,222,128,.8); }
+    .budget-table .was { color:var(--text-muted); font-size:.72rem; }
+    .whatif-note { font-size:.8rem; color:var(--text-secondary); line-height:1.55; margin:.65rem 0 0; }
+    .whatif-note b { color:var(--text-primary); }
+    .whatif-note button { font:inherit; font-size:.76rem; background:none; border:0; padding:0; color:var(--c-ryd, #818cf8); text-decoration:underline; cursor:pointer; }
 
     /* ─── SOTA comparison ────────────────────────── */
     .sota-card {
@@ -413,15 +422,17 @@
             <th scope="col">εᵢ</th>
             <th scope="col">Fraction</th>
             <th scope="col" style="width:30%">Contribution</th>
+            <th scope="col">What if?</th>
           </tr>
         </thead>
         <tbody id="budgetBody">
-          <tr><td colspan="4" style="text-align:center;color:var(--text-muted);font-style:italic">
+          <tr><td colspan="5" style="text-align:center;color:var(--text-muted);font-style:italic">
             Computing…
           </td></tr>
         </tbody>
       </table>
       </div>
+      <p class="whatif-note" id="whatIfNote" aria-live="polite"></p>
     </div>
 
     <!-- Bar chart -->
@@ -814,6 +825,11 @@ function compute() {
   // 8. Rabi inhomogeneity
   eps['Rabi inhomogeneity'] = 0.5 * Math.pow(Math.PI * dOmega_frac / 2, 2);
 
+  // What-if: sources the reader has set to zero in the table (idealised: that error removed entirely)
+  const eps_all = { ...eps };
+  const base_total = Math.min(1, Object.values(eps_all).reduce((s, v) => s + v, 0));
+  FB_FIXED.forEach(k => { if (k in eps) eps[k] = 0; });
+
   const entries  = Object.entries(eps).sort((a, b) => b[1] - a[1]);
   const totalErr = Math.min(1, entries.reduce((s, [, v]) => s + v, 0));
   const fidelity = Math.max(0, 1 - totalErr);
@@ -847,49 +863,79 @@ function compute() {
   document.getElementById('totalErrDisplay').textContent = totalErr.toExponential(3);
 
   const [domName, domVal] = entries[0];
-  document.getElementById('dominantErr').textContent = domName;
-  document.getElementById('dominantPct').textContent =
-    `${(domVal / totalErr * 100).toFixed(1)}% of total error (ε = ${domVal.toExponential(2)})`;
+  document.getElementById('dominantErr').textContent = totalErr > 0 ? domName : '—';
+  document.getElementById('dominantPct').textContent = totalErr > 0
+    ? `${(domVal / totalErr * 100).toFixed(1)}% of total error (ε = ${domVal.toExponential(2)})` : 'every source set to zero';
 
   // SOTA comparison panel
   document.getElementById('yourFid').textContent = fidPct;
   document.getElementById('yourFid').style.color =
     fidelity >= 0.999 ? '#4ade80' : fidelity >= 0.99 ? '#fbbf24' : '#f87171';
   document.getElementById('yourFidNote').textContent =
-    `Dominant: ${domName} (${(domVal/totalErr*100).toFixed(0)}% of error)`;
+    totalErr > 0 ? `Dominant: ${domName} (${(domVal/totalErr*100).toFixed(0)}% of error)` : 'every source set to zero';
 
   // ─── Budget table ─────────────────────────────────────────
   const tbody = document.getElementById('budgetBody');
   tbody.innerHTML = entries.map(([name, val], i) => {
+    const fixed = FB_FIXED.has(name);
     const frac = totalErr > 0 ? (val / totalErr * 100) : 0;
     const barW  = Math.min(100, frac);
     const colors = ['#f87171','#fb923c','#fbbf24','#4ade80','#38bdf8','#818cf8','#e879f9','#f472b6'];
-    const isDom  = i === 0;
-    return `<tr class="${isDom ? 'dominant' : ''}">
+    const isDom  = i === 0 && !fixed && totalErr > 0;
+    return `<tr class="${isDom ? 'dominant' : ''}${fixed ? ' fixed' : ''}">
       <td>${isDom ? '⚑ ' : ''}${name}</td>
-      <td>${val.toExponential(2)}</td>
+      <td>${fixed ? `0 <span class="was">(was ${eps_all[name].toExponential(2)})</span>` : val.toExponential(2)}</td>
       <td>${frac.toFixed(1)}%</td>
       <td>
         <div class="bbar">
           <div class="bbar-fill" style="width:${barW}%;background:${colors[i % colors.length]}"></div>
         </div>
       </td>
+      <td><button type="button" class="fix-btn" data-src="${name}" aria-pressed="${fixed}" aria-label="${fixed ? 'Restore' : 'Set to zero'}: ${name}">${fixed ? 'Restore' : 'Set to 0'}</button></td>
     </tr>`;
   }).join('') + `<tr style="font-weight:700;border-top:2px solid #1e293b">
     <td>Total Σεᵢ</td>
     <td>${totalErr.toExponential(3)}</td>
     <td>100%</td>
     <td></td>
+    <td></td>
   </tr>`;
 
+  // ─── What-if note ─────────────────────────────────────────
+  const wi = document.getElementById('whatIfNote');
+  if (FB_FIXED.size) {
+    const names = [...FB_FIXED].join(', ');
+    const F0 = Math.max(0, 1 - base_total);
+    const gain = totalErr > 0 ? base_total / totalErr : Infinity;
+    wi.innerHTML = `<b>What if:</b> with ${names} set to zero, Σεᵢ = ${totalErr.toExponential(2)} and F = <b>${fidPct}</b>, against ${base_total.toExponential(2)} and ${(F0 * 100).toFixed(3)}% with every source included` +
+      (isFinite(gain) ? ` (${gain >= 10 ? gain.toFixed(0) : gain.toFixed(1)}× less error). Next in line: <b>${domName}</b>.` : '.') +
+      ` Zeroing is an idealisation: a real fix leaves a residual. The meter, chart and waterfall above and below show this what-if state. <button type="button" id="fixReset">Restore all</button>`;
+  } else {
+    wi.textContent = 'Press “Set to 0” on any row to see what removing that error source alone would buy; every readout on the page follows.';
+  }
+
+  const shown = entries.filter(([, v]) => v > 0);
+
   // ─── Bar chart ─────────────────────────────────────────────
-  ERR_CHART.data.labels   = entries.map(([n]) => n);
-  ERR_CHART.data.datasets[0].data = entries.map(([, v]) => Math.max(v, 1e-9));
+  ERR_CHART.data.labels   = shown.map(([n]) => n);
+  ERR_CHART.data.datasets[0].data = shown.map(([, v]) => Math.max(v, 1e-9));
   ERR_CHART.update('none');
 
   // ─── Waterfall animation ────────────────────────────────────
-  drawWaterfall(entries, totalErr);
+  drawWaterfall(shown, totalErr);
 }
+
+// What-if toggles in the budget table (event delegation: rows are rebuilt on every compute)
+const FB_FIXED = new Set();
+document.getElementById('budgetBody').closest('.chart-card').addEventListener('click', e => {
+  if (e.target.id === 'fixReset') { FB_FIXED.clear(); compute(); return; }
+  const b = e.target.closest('.fix-btn'); if (!b) return;
+  const k = b.dataset.src;
+  if (FB_FIXED.has(k)) FB_FIXED.delete(k); else FB_FIXED.add(k);
+  compute();
+  const nb = [...document.querySelectorAll('.fix-btn')].find(x => x.dataset.src === k);
+  if (nb) nb.focus({ preventScroll: true });
+});
 
 let _wfAnim = null, _wfLast = null;
 function drawWaterfall(entries, totalErr, instant) {
@@ -903,6 +949,7 @@ function drawWaterfall(entries, totalErr, instant) {
   const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
 
   const N = entries.length;
+  if (!N) { ctx.clearRect(0, 0, W, H); return; }   // every source set to zero (what-if)
   const PAD_L = 55, PAD_R = 15, PAD_T = 20, PAD_B = 32;
   const CHART_W = W - PAD_L - PAD_R;
   const CHART_H = H - PAD_T - PAD_B;

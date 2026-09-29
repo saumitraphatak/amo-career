@@ -48,3 +48,10 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - Bar labels were the first word cut to 6 letters ("Dopple", "Blocka", "B-fiel"); they now use short names (Doppler, Spont., Laser φ, SPAM, Blockade, B-field, Rabi δΩ, Loss), and 5-letter ones when the columns are narrower than 48 px (phones), where the old labels ran into each other. The "99.9%" target label sat on top of the "0.0e+0" y tick; it now reads "99.9% target" at the right end of the dashed line.
 - Checks: `smoke.js` 0 new problems; Playwright dark/light 1280 and 390, toggle repaint; screenshots reviewed.
 - **Not changed, flagged (Needs Saumitra in the backlog):** at the default settings (⁸⁷Rb, n = 60, t_gate = 2 μs, T = 5 μK) the Doppler term is 0.16 and dominates the budget, because `k_Ryd = 2π/λ_Ryd` uses a single 480 nm photon. For the usual counter-propagating two-photon excitation the relevant wavevector is |k₁ − k₂| (e.g. 780 + 480 nm: k_eff ≈ 5.0×10⁶ m⁻¹ vs 1.31×10⁷ m⁻¹, so ε_D would be ≈ 7× smaller).
+
+## 2026-09-29: "What if?" column: set any error source to zero
+- **What it does.** Each row of the per-source budget table has a "Set to 0" / "Restore" toggle. Zeroed sources are struck through and show their original ε. The fidelity meter, total, dominant term, bar chart and waterfall all follow that what-if state.
+- **Note under the table.** It gives the new Σεᵢ and F against the all-sources values, how many times less error that is, and which source is now dominant. It also says zeroing is an idealisation (a real fix leaves a residual), and has "Restore all".
+- **Maths.** Only the page's own formulas; nothing new.
+- **Example at the defaults** (Rb, n = 60, 2 μs, 5 μK). Zeroing Doppler takes F from 80.973% to 97.288%, 7.0× less error; spontaneous emission becomes dominant. The Doppler term's single-photon k is still an open question for Saumitra (see the backlog).
+- **Checked.** Playwright in dark 1280 and light 390 px: toggle one, two and all sources, then Restore all. Focus stays on the pressed button without scrolling the table. No errors; `smoke.js` 0 new problems.
