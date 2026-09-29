@@ -178,26 +178,130 @@ window.AMOTransitions = AMOTransitions;
 
 /* Page → page: keep the nav fixed during cross-document view transitions,
    and show above-the-fold content at once (the transition itself is the
-   entrance), instead of fading it in a second time. */
+   entrance), instead of fading it in a second time.
+
+   Shared-element morph (2026-09-29): when a card with an icon is clicked
+   (home tool cards and intent cards, start-here "see also" cards), that icon
+   flies into the same icon on the next page's hero badge. Only the clicked
+   icon and its twin are named ('amo-tool-icon'), only for the duration of
+   the transition, and only when both are on screen and show the same glyph,
+   so names stay unique and nothing morphs into something unrelated. Going
+   back to the page with the cards reverses it. A one-shot sessionStorage
+   note carries "which icon" across the navigation. */
 (function initPageTransitions() {
   const nav = () => document.querySelector('#nav-root .nav');
+  const VT_ICON = 'amo-tool-icon', KEY = 'amo-vt-icon';
+  const ICON_SEL = '.tool-card-icon, .intent-icon, .see-also-icon';
+  const EMOJI_RE = /^(\s*)(\p{Extended_Pictographic}[️⃣]?(?:‍\p{Extended_Pictographic}️?)*)/u;
+  const glyph = s => (s || '').replace(/[\s︎️]/g, '');
+  const pagePath = u => {
+    try { const x = new URL(u, location.href); return x.origin + x.pathname.replace(/\/(index\.html)?$/, '/home.html'); }
+    catch (e) { return ''; }
+  };
+  const onScreen = el => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.bottom > 64 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+  };
+  const store = v => { try { v ? sessionStorage.setItem(KEY, JSON.stringify(v)) : sessionStorage.removeItem(KEY); } catch (e) {} };
+  const take = () => { let v = null; try { v = JSON.parse(sessionStorage.getItem(KEY) || 'null'); sessionStorage.removeItem(KEY); } catch (e) {} return v; };
+  let named = [];
+  const name = el => { el.style.viewTransitionName = VT_ICON; named.push(el); };
+  const unname = () => { named.forEach(el => { el.style.viewTransitionName = ''; }); named = []; };
+
+  // The hero badge's leading emoji (".page-hero-eyebrow", ".page-tag", ".pill", …):
+  // the first non-blank text before the page <h1>. Wrapped in a span on demand.
+  function heroIcon() {
+    const hero = document.querySelector('.page-hero');
+    const h1 = hero && hero.querySelector('h1');
+    if (!h1) return null;
+    const w = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) {
+      if (h1.contains(n) || (h1.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_FOLLOWING)) return null;
+      const p = n.parentElement;
+      if (!n.data.trim() || !p || p.closest('[aria-hidden="true"], script, style, svg')) continue;
+      if (p.classList.contains('amo-vt-glyph')) return p;
+      const m = n.data.match(EMOJI_RE);
+      if (!m) return null;
+      // Where the label's first letter sits now, so wrapping (which makes the
+      // emoji its own flex item in ".page-hero-eyebrow") can't nudge the text.
+      const firstX = (node, from) => {
+        const k = node.data.slice(from).search(/\S/);
+        if (k < 0) return null;
+        const r = document.createRange(); r.setStart(node, from + k); r.setEnd(node, from + k + 1);
+        return r.getBoundingClientRect().left;
+      };
+      const x0 = firstX(n, m[0].length);
+      const glyphNode = n.splitText(m[1].length);
+      const tail = glyphNode.splitText(m[2].length);
+      const span = document.createElement('span');
+      span.className = 'amo-vt-glyph';
+      span.style.display = 'inline-block';
+      glyphNode.replaceWith(span);
+      span.appendChild(glyphNode);
+      const x1 = firstX(tail, 0);
+      if (x0 != null && x1 != null && Math.abs(x0 - x1) > 0.25) span.style.marginRight = (x0 - x1) + 'px';
+      return span;
+    }
+    return null;
+  }
+  // Cards on this page that open `path`, with their icon.
+  const cardIcons = path => [...document.querySelectorAll('a[href]')]
+    .filter(a => pagePath(a.href) === path)
+    .map(a => a.querySelector(ICON_SEL)).filter(Boolean);
+
+  let clicked = null;
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[href]');
+    const icon = a && a.querySelector(ICON_SEL);
+    clicked = icon ? { href: a.href, icon } : null;
+  }, true);
+
   window.addEventListener('pageswap', e => {
-    if (e.viewTransition && nav()) nav().style.viewTransitionName = 'site-nav';
+    unname();
+    const c = clicked; clicked = null;
+    if (!e.viewTransition) return;
+    if (nav()) nav().style.viewTransitionName = 'site-nav';
+    const dest = e.activation && e.activation.entry && e.activation.entry.url;
+    if (!dest) return store(null);
+    const to = pagePath(dest), here = pagePath(location.href);
+    if (c && pagePath(c.href) === to && !new URL(dest).hash && onScreen(c.icon)) {
+      // Forward: a card icon → the next page's hero icon.
+      name(c.icon);
+      store({ to, glyph: glyph(c.icon.textContent) });
+    } else {
+      // Backward: this page's hero icon → the matching card icon, if the
+      // next page has one on screen (it decides on arrival).
+      const h = heroIcon();
+      if (h && onScreen(h)) { name(h); store({ to, from: here, glyph: glyph(h.textContent) }); }
+      else store(null);
+    }
   });
   window.addEventListener('pagereveal', e => {
+    unname();
+    const note = take();
     if (!e.viewTransition) return;
     const n = nav();
     if (n) n.style.viewTransitionName = 'site-nav';
+    if (note && note.to === pagePath(location.href) && note.glyph) {
+      const twin = note.from
+        ? cardIcons(note.from).find(el => glyph(el.textContent) === note.glyph && onScreen(el))
+        : heroIcon();
+      if (twin && glyph(twin.textContent) === note.glyph && onScreen(twin)) name(twin);
+    }
     document.querySelectorAll('.anim-in:not(.visible)').forEach(el => {
       const r = el.getBoundingClientRect();
       if (r.top < innerHeight && r.bottom > 0) { el.style.transition = 'none'; el.classList.add('visible'); }
     });
     e.viewTransition.finished.finally(() => {
       if (n) n.style.viewTransitionName = '';
+      unname();
       document.querySelectorAll('.anim-in.visible').forEach(el => { if (el.style.transition === 'none') el.style.transition = ''; });
     });
   });
   window.addEventListener('pageshow', () => { const n = nav(); if (n) n.style.viewTransitionName = ''; });
+  window.AMOPageMorph = { heroIcon, glyph };
 })();
 
 /* Prefetch the next page on intent (hover ≥ ~200 ms, touch start, focus),
@@ -280,8 +384,8 @@ const NAV = {
     { key: 'absorption-imaging', label: 'Absorption Imaging Lab',       kind: 'Imaging lab', icon: '🌑', color: '#3f5d3f', href: 'pages/absorption-imaging.html'  },
   ],
   cooling: [
-    { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '❄️', color: '#a13c1c', href: 'pages/laser-cooling.html' },
-    { key: 'cooling-simulator', label: 'Laser Cooling Simulator',   kind: 'Simulator', icon: '🌡️', color: '#2c4a63', href: 'pages/cooling-simulator.html' },
+    { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '🧊', color: '#a13c1c', href: 'pages/laser-cooling.html' },
+    { key: 'cooling-simulator', label: 'Laser Cooling Simulator',   kind: 'Simulator', icon: '❄️', color: '#2c4a63', href: 'pages/cooling-simulator.html' },
   ],
   quantum: [
     { key: 'decoherence-lab',    label: 'Decoherence Lab',       kind: 'Deep dive', icon: '🌀', color: '#a13c1c', href: 'pages/decoherence-lab.html' },
