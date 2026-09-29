@@ -33,3 +33,9 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 - Clicking a card's icon (home tool/intent cards, start-here "see also" cards) now morphs that icon into this page's hero badge icon during the page transition, and back again on return (main.js v38 `initPageTransitions`; see `docs/motion-and-transitions.md`).
 - Found while checking: the see-also icons for laser-cooling (🧊) and cooling-simulator (❄️) disagreed with NAV and the page heroes; NAV and heroes now match these (see those pages' notes).
 - Still open (Needs Saumitra, backlog): the Quantum section numbers learn-quantum as 02 and shifts the rest (rydberg 03 … remote-entanglement 07), while the page heroes and home QC cards skip learn-quantum (rydberg = Quantum 02) and learn-quantum's own hero says "Quantum 01", the same as decoherence-lab.
+
+## 2026-09-29 (overnight): constellation works from the keyboard
+- Arrow keys already turned it (AMO3D.orbit). Now <kbd>]</kbd> / <kbd>[</kbd> (also . / ,) step through the 31 pages in the directory's order, or through the chosen guided path's steps when a path chip is on. The page gets its label and pinned card (with a keyboard hint line); a visually hidden aria-live line reads e.g. "MOT Designer, Build 03. 3 of 31 pages." / "Step 1 of 4 on this path." Enter opens the page; Esc closes the card.
+- Fixed on the way: a pinned card now follows its star when the constellation turns.
+- The intro sentence says how to use it from the keyboard. `sitemap3d.js?v=2`.
+- Checked in Playwright, dark 1280 and light 390 with reduced motion: 40 steps visit all 31 pages; a path chip restricts stepping to its 4 steps; Enter navigates; `smoke.js` 0 new problems.

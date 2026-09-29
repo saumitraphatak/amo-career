@@ -39,7 +39,7 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
 - [ ] **Keyboard access for canvas/SVG interactives** that are mouse-only today:
   - [x] lattice lab qubits (google-vs-ibm): arrow keys move a focus ring, Enter picks; (done 2026-09-29 overnight, `vs-lattice.js?v=2`)
   - [x] time tower papers (paper-syllabus); (done 2026-09-29 overnight: ] / [ step by year, Enter opens the note, `syllabus3d.js?v=2`)
-  - constellation stars (start-here);
+  - [x] constellation stars (start-here); (done 2026-09-29 overnight: ] / [ step through pages or the chosen path, Enter opens, `sitemap3d.js?v=2`)
   - globe markers (a "list of markers" button is acceptable).
 - [ ] **Print stylesheet** (`@media print` in styles.css):
   - hide the nav, topic-nav, pause buttons, search and 3D canvases that don't print well;

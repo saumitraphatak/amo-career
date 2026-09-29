@@ -16,6 +16,11 @@
    Hover names a page; click opens it. The lists below remain the
    accessible version. Slow turn with a pause button (WCAG 2.2.2), still
    under prefers-reduced-motion, paused offscreen.
+
+   Keyboard (2026-09-29): arrow keys turn it (AMO3D.orbit); ] and [ step
+   through the pages in the directory's order (or through the chosen
+   guided path), with the card and an aria-live line; Enter opens the
+   page; Esc closes the card.
    ───────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -187,19 +192,47 @@
       return best;
     }
     function esc(t) { return String(t).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
-    function showTip(s, pin) {
+    function showTip(s, pin, kb) {
       var n = s.n;
       tip.innerHTML = '<div class="const3d-head" style="color:' + catCol(n.cat) + '">' + esc(CATS[n.cat].name) + ' · ' + String(n.order).padStart(2, '0') + '</div>' +
         '<b>' + esc(n.icon + ' ' + n.name) + '</b><small>' + esc(n.desc) + '</small>' +
         (n.paths.length ? '<div class="const3d-paths">On: ' + n.paths.map(esc).join(' · ') + '</div>' : '') +
-        (pin ? '<a class="const3d-go" href="' + esc(n.href) + '">Open page →</a>' : '<div class="const3d-hint">click to open</div>');
+        (pin ? '<a class="const3d-go" href="' + esc(n.href) + '">Open page →</a>' : '<div class="const3d-hint">click to open</div>') +
+        (kb ? '<div class="const3d-hint">] next · [ previous · Enter opens · Esc closes</div>' : '');
       tip.hidden = false; tip.classList.toggle('pinned', !!pin);
       var cr = canvas.getBoundingClientRect(), hr = host.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
       var x = s.x + (cr.left - hr.left) + 14, y = s.y + (cr.top - hr.top) - 12;
       if (x + tw > host.clientWidth - 4) x = s.x + (cr.left - hr.left) - tw - 14;
       tip.style.left = Math.max(4, x) + 'px'; tip.style.top = Math.max(4, Math.min(y, host.clientHeight - th - 4)) + 'px';
     }
-    function hideTip() { tip.hidden = true; pinned = null; }
+    function hideTip() { tip.hidden = true; pinned = null; kbPinned = false; }
+
+    /* ── keyboard: ] / [ step through the pages (or the chosen path), Enter opens ── */
+    var kbPinned = false;
+    var live = document.createElement('div');
+    live.className = 'const3d-live'; live.setAttribute('aria-live', 'polite');
+    host.appendChild(live);
+    function entryFor(n) { for (var i = 0; i < screen.length; i++) if (screen[i].n === n) return screen[i]; return null; }
+    function stepNode(dir) {
+      var act = active && data.paths.filter(function (p) { return p.id === active; })[0];
+      var seq = act ? act.steps : data.nodes;
+      if (!seq.length) return;
+      var cur = pinned ? seq.indexOf(pinned.n) : -1;
+      var i = cur < 0 ? (dir > 0 ? 0 : seq.length - 1) : (cur + dir + seq.length) % seq.length;
+      var n = seq[i];
+      hover = { n: n }; draw();
+      var e = entryFor(n);
+      if (!e) return;
+      pinned = e; hover = e; kbPinned = true; showTip(e, true, true); draw();
+      live.textContent = n.name + ', ' + CATS[n.cat].name + ' ' + String(n.order).padStart(2, '0') + '. ' +
+        (act ? 'Step ' + (i + 1) + ' of ' + seq.length + ' on this path.' : (i + 1) + ' of ' + seq.length + ' pages.') + ' Enter opens it.';
+    }
+    canvas.addEventListener('keydown', function (e) {
+      if (e.key === ']' || e.key === '.') { e.preventDefault(); interacted(); stepNode(1); }
+      else if (e.key === '[' || e.key === ',') { e.preventDefault(); interacted(); stepNode(-1); }
+      else if (e.key === 'Enter' && pinned) { e.preventDefault(); window.location.href = pinned.n.href; }
+      else if (e.key === 'Escape' && pinned) { e.preventDefault(); hideTip(); hover = null; draw(); }
+    });
     var pinned = null, down = null;
     canvas.addEventListener('pointerdown', function (e) { down = { x: e.clientX, y: e.clientY }; interacted(); });
     canvas.addEventListener('pointerup', function (e) {
@@ -209,7 +242,7 @@
       var s = hit(e);
       if (!s) { hideTip(); hover = null; draw(); return; }
       if (e.pointerType === 'mouse') { window.location.href = s.n.href; return; }
-      pinned = s; hover = s; showTip(s, true); draw();          // touch: first tap shows the card with a link
+      pinned = s; hover = s; kbPinned = false; showTip(s, true); draw();   // touch: first tap shows the card with a link
     });
     canvas.addEventListener('pointermove', function (e) {
       if (pinned || e.pointerType === 'touch') return;
@@ -243,7 +276,13 @@
       else { last = 0; if (!paused && visible && !document.hidden) setTimeout(kick, 1000); }
     }
     function kick() { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame); }
-    view.onChange(function () { interacted(); if (!raf) requestAnimationFrame(function () { draw(); if (pinned) showTip(pinned, true); }); });
+    view.onChange(function () {
+      interacted();
+      if (!raf) requestAnimationFrame(function () {
+        draw();
+        if (pinned) { var e = entryFor(pinned.n); if (e) { pinned = e; hover = e; } showTip(pinned, true, kbPinned); }   // the card follows its page
+      });
+    });
 
     if (window.ResizeObserver) new ResizeObserver(function () { if (resize()) draw(); }).observe(canvas);
     else window.addEventListener('resize', function () { if (resize()) draw(); });
@@ -269,7 +308,8 @@
       '.const3d-head{font-family:var(--font-mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.05em}' +
       '.const3d-paths{margin-top:5px;font-size:.7rem;color:var(--text-secondary)}' +
       '.const3d-hint{color:var(--text-muted);font-size:.68rem;margin-top:4px}' +
-      '.const3d-go{display:inline-block;margin-top:7px;font-size:.76rem;font-weight:600;color:var(--c-atom);text-decoration:none}';
+      '.const3d-go{display:inline-block;margin-top:7px;font-size:.76rem;font-weight:600;color:var(--c-atom);text-decoration:none}' +
+      '.const3d-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}';
     document.head.appendChild(st);
   }
 })();
