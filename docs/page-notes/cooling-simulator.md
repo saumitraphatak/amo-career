@@ -70,3 +70,7 @@ The four route-cards open chapters 1–4. Simulation Codes and References have n
 - the pager, index cards, keyboard (Enter), deep links and hash updates all work.
 
 `smoke.js` on all 34 pages: 0 new problems.
+
+## 2026-09-29 (overnight): hero icon matches the rest of the site
+- Hero icon 🌡️ → ❄️, matching the home card and start-here; NAV's icon changed the same way (🌡️ had been shared with MOT Temperature / tof-calculator).
+- Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.

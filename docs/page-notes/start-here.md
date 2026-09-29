@@ -28,3 +28,8 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 
 ## 2026-09-28 (overnight run 3): stale-number sweep
 - AMO Group Finder line said "100+ research groups on a world map"; the map has 99, plus a 141-entry watchlist. Now "99 groups on a world map, plus a 141-entry watchlist". "15 species" and "55 papers" checked and correct. Guarded by `test_hand_typed_counts_match_content`.
+
+## 2026-09-29 (overnight): see-also icons morph
+- Clicking a card's icon (home tool/intent cards, start-here "see also" cards) now morphs that icon into this page's hero badge icon during the page transition, and back again on return (main.js v38 `initPageTransitions`; see `docs/motion-and-transitions.md`).
+- Found while checking: the see-also icons for laser-cooling (🧊) and cooling-simulator (❄️) disagreed with NAV and the page heroes; NAV and heroes now match these (see those pages' notes).
+- Still open (Needs Saumitra, backlog): the Quantum section numbers learn-quantum as 02 and shifts the rest (rydberg 03 … remote-entanglement 07), while the page heroes and home QC cards skip learn-quantum (rydberg = Quantum 02) and learn-quantum's own hero says "Quantum 01", the same as decoherence-lab.

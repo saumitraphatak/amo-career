@@ -67,3 +67,7 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - A small palette in the animation IIFE (`PAL.light` = the old colours, unchanged; `PAL.dark` = `#0c1526` paper, slate lines and labels, amber π-pulse flash) is picked each frame. The canvas CSS background is now `var(--bg-card)`.
 - The frame is repainted on a theme toggle (MutationObserver on `data-theme`), so it also updates while paused or under reduced motion. "Reset" now repaints too.
 - Physics and spin colours untouched. Checked: dark/light 1280, dark 390 with reduced motion, and toggling the theme on a paused frame (corner pixel switches 12,21,38 ↔ 250,245,233).
+
+## 2026-09-29 (overnight): hero icon matches the rest of the site
+- Hero pill icon 💡 (the Laser System Planner's icon) → 🛡️, the icon NAV, the home card and start-here use.
+- Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.

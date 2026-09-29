@@ -54,3 +54,7 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-09-28 (overnight run 3): live RB simulation canvas follows the theme
 - `rbAnimCanvas` painted cream in the (default) dark theme, and its axis labels ("0", "depth m →", "F(m)") were drawn in the paper colour, so they were invisible in both themes. The context now goes through the shared `js/canvas-ink.js` (`AMOInk.wrap`), the labels use the page's label ink, the CSS background is `var(--bg-card)`, and a theme toggle or resize repaints the current points. The simulation is user-started and ends by itself, so it needs no pause control. Physics unchanged (F(m) = A·p^m + B with p = 1 − 2r_C for one qubit).
 - Checks: `smoke.js` 0 new problems; Playwright corner/CSS colours per theme, toggle repaint, screenshot dark 1280 reviewed.
+
+## 2026-09-29 (overnight): hero icon matches the rest of the site
+- The hero label had no icon; it now starts with 📈 like NAV, the home card and start-here.
+- Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.

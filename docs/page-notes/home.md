@@ -60,3 +60,8 @@ The hero's right column is a live 3D Li + Cs tweezer-array scene (`js/hero3d.js`
 - The hero's no-JS fallback tool count was 28; `NAV.tools` has 31 (the live number is set by `updateHeroStats()`). Fallback now 31.
 - Checked and already right: 15 atoms (atom-library has 15 species tiles), 55 papers / 4 career stages (paper-syllabus: 55 cards, stages 10 + 17 + 18 + 10), 8 atom species (laser-planner renders 8 buttons), 8 noise sources (fidelity-budget has 8 terms), 14 quantum concepts (`NAV.learn`).
 - New regression test `test_hand_typed_counts_match_content` recomputes these counts from the pages they describe and checks every hand-typed copy, so the next change to a page's content fails the test until the cards are updated.
+
+## 2026-09-29 (overnight): shared-element page transitions
+- Clicking a card's icon (home tool/intent cards, start-here "see also" cards) now morphs that icon into this page's hero badge icon during the page transition, and back again on return (main.js v38 `initPageTransitions`; see `docs/motion-and-transitions.md`). Only the clicked card's icon is named, and only when it's on screen, so the other 30 cards stay part of the normal page fade.
+- Going back from a tool page whose hero icon is on screen flies the icon back into its card (if that card is on screen after the scroll is restored).
+- Reduced motion: no view transition at all, as before.

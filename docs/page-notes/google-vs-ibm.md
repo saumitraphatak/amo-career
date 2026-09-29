@@ -79,3 +79,7 @@ Three additions, built from the page's own content:
   - Computed stats: square patch average degree 3.43 (sanity check against Willow's spec-sheet 3.47), max 4, 3.7 average SWAPs per random pair. Heavy-hex average degree 2.17, max 3, 5.7 SWAPs.
   - The caption states these are schematic patches, not chip maps, and repeats the page's real counts: Willow 105, average connectivity 3.47; Nighthawk 120, up to 4; Heron 133/156.
   - It illustrates the page's point that denser connectivity cuts SWAPs, without adding any new numeric claim about the chips.
+
+## 2026-09-29 (overnight): hero icon matches the rest of the site
+- Hero badge icon 🔗 (copied from quantinuum-vs-ionq) → 🖥️, the NAV / start-here icon.
+- Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.

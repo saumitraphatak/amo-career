@@ -14,6 +14,7 @@ Saumitra asked for every transition to be seamless, meaning moving between pages
 |---|---|---|
 | Page → page (links, back/forward) | Old page fades up and out (160 ms); the new page rises 12 px and fades in (340 ms, 70 ms later). The nav stays perfectly still. | CSS `@view-transition { navigation: auto }` + `::view-transition-*(root)` keyframes; nav named `site-nav` during `pageswap`/`pagereveal` only |
 | First paint of every page | Held until the nav is rendered, so the nav never pops in | `<link rel="expect" href="#amo-nav-ready" blocking="render">` + marker div after the `renderNav` script |
+| Card → tool page (home tool/intent cards, start-here see-also cards), and back | The clicked card's icon flies into the new page's hero icon (420 ms, same curve) while the page dissolves around it; back navigation flies it home. Added 2026-09-29. | `view-transition-name: amo-tool-icon` set in `pageswap` on the clicked icon and in `pagereveal` on its twin, only if both are on screen and show the same glyph; cleared when the transition ends. If only one side exists it leaves/arrives with the page (`:only-child` rules) |
 | Next page loading | Prefetched when you hover or touch a link | Speculation Rules (`eagerness: moderate`); `<link rel=prefetch>` fallback; skipped on Save-Data or 2G |
 | Above-the-fold `.anim-in` after a page transition | Shown at once (the page transition is the entrance) instead of fading in twice | `pagereveal` handler in main.js |
 | Tabs (`.tab-bar`, polarimetry's `.pol-tab-nav`) | One underline glides to the new tab; the new panel slides in from the side you moved toward, and the panel height morphs so content below doesn't jump | `AMOTransitions.attachInk` + `swap` |
@@ -38,5 +39,5 @@ Chromium 141, with and without reduced motion:
 - `tests/formula_regression.py`: 11/11.
 
 ## Not done / ideas
-- Shared-element morphs between pages (e.g. a tool card's icon becoming the next page's hero icon) would need `view-transition-name`s matched on both pages. Worth trying for home → tool pages.
+- ~~Shared-element morphs between pages~~: done 2026-09-29 for card icon → hero icon (see the table). The nav dropdown's icons don't morph: the nav is its own `site-nav` group and nesting a second name inside it would pull the icon out of the still nav.
 - Chart.js charts inside a newly shown tab still draw their own intro animation after the panel arrives. This is consistent with before, but could be shortened.

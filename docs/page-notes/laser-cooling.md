@@ -50,3 +50,7 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - Both canvases filled cream (`#f2ead9`) in the dark theme; their contexts are now wrapped with `js/canvas-ink.js?v=2`.
 - Their forever loops are now `AMOMotion.loop` (Pause button, offscreen stop, reduced-motion still frame); a theme toggle repaints while paused.
 - The `sbCoolCanvas` and `gmAnimCanvas` scripts have no canvas in the page and return early; they were left as they were.
+
+## 2026-09-29 (overnight): hero icon matches the rest of the site
+- Hero icon ❄️ → 🧊, matching the home card and start-here; NAV's icon changed the same way. ❄️ now belongs only to cooling-simulator.
+- Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.

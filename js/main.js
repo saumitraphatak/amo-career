@@ -224,8 +224,8 @@ window.AMOTransitions = AMOTransitions;
       if (p.classList.contains('amo-vt-glyph')) return p;
       const m = n.data.match(EMOJI_RE);
       if (!m) return null;
-      // Where the label's first letter sits now, so wrapping (which makes the
-      // emoji its own flex item in ".page-hero-eyebrow") can't nudge the text.
+      // Where the label's first letter sits now; if wrapping the emoji moved
+      // it at all, a margin puts it back.
       const firstX = (node, from) => {
         const k = node.data.slice(from).search(/\S/);
         if (k < 0) return null;
@@ -235,10 +235,14 @@ window.AMOTransitions = AMOTransitions;
       const x0 = firstX(n, m[0].length);
       const glyphNode = n.splitText(m[1].length);
       const tail = glyphNode.splitText(m[2].length);
+      // The emoji and the rest of its text stay together in one inline run,
+      // so a flex badge still sees a single item (same wrapping as before).
+      const run = document.createElement('span');
       const span = document.createElement('span');
       span.className = 'amo-vt-glyph';
       span.style.display = 'inline-block';
-      glyphNode.replaceWith(span);
+      glyphNode.replaceWith(run);
+      run.append(span, tail);
       span.appendChild(glyphNode);
       const x1 = firstX(tail, 0);
       if (x0 != null && x1 != null && Math.abs(x0 - x1) > 0.25) span.style.marginRight = (x0 - x1) + 'px';

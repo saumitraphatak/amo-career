@@ -89,3 +89,7 @@ Three additions, built from the page's own content:
 ## 2026-09-28 (overnight): phone overflow fix
 Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked with KaTeX rendered (a local copy routed in place of the CDN), at 390 and 360 px, both themes; desktop 1280 px screenshots are unchanged.
 - **Dollar amounts were being typeset as maths.** KaTeX auto-render pairs any two `$` in one text node, so "$1B raise, … $7B" became italic maths with the words run together (and on this page the result could not wrap, so the page was wider than the screen even on desktop). Every amount is now wrapped in `<span class="money">`, and main.js's auto-render call ignores `.money` and `.no-math`. The Tug-of-war and Race-replay widgets built by `js/versus.js` (v=2) carry `no-math`, since they copy the page's text (including prices) before KaTeX runs. Keep writing prices as `<span class="money">$1.5B</span>` on these pages.
+
+## 2026-09-29 (overnight): hero icon matches the rest of the site
+- Hero badge icon 🔗 (copied from quantinuum-vs-ionq) → 💡, the NAV / start-here icon.
+- Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
