@@ -47,3 +47,8 @@ See docs/3d-visualization-audit-2026-09-28.md, "Globes and the time tower".
 - Fixed on the way: single-group markers were titled "1 groups · …"; now "1 group · …".
 - A pinned card now follows its marker while the globe turns (it used to stay where the marker had been).
 - Checked in Playwright, dark 1280 and light 390 with reduced motion; `smoke.js` 0 new problems.
+
+## 2026-09-29 (overnight): the "Andersen Group" entry was the UQ BEC Laboratory
+- The directory had `Andersen Group` with PI Halina Rubinsztein-Dunlop at the University of Queensland, and its website link (`atomlaser.phy.uq.edu.au`) no longer resolves. Mikkel Andersen's optical-tweezer group is at the University of Otago (NZ) ([Otago staff page](https://www.otago.ac.nz/physics/staff/mikkelandersen)); the UQ group is the University of Queensland Bose-Einstein Condensation Laboratory ([uq-bec.org](https://www.uq-bec.org/), with pages for Tyler Neely and Halina Rubinsztein-Dunlop and vortex-gas publications; Rubinsztein-Dunlop's research areas per her [UQ profile](https://about.uq.edu.au/experts/60): atom optics, laser micromanipulation, BEC).
+- Now `UQ BEC Laboratory`, PIs "Tyler Neely & Halina Rubinsztein-Dunlop", link `https://www.uq-bec.org/`. Focus reworded to what those pages support (BEC, quantum vortex dynamics, 2D quantum turbulence, atom optics, optical tweezers); "quantum gas microscope" removed (no source found). The flagship paper (Roadmap on structured light) is J. Opt. **19**, 013001, dated 2017 per Crossref (online Nov 2016); the year now says 2017. Location, atom (Rb) and hiring flag unchanged and not re-verified.
+- Group count unchanged (99). Adding Otago's Andersen group as its own entry is on the backlog (P2).

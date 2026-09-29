@@ -8,7 +8,7 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
 
 ## P0: bugs and correctness (do these first)
 
-- [ ] **amo-groups "Andersen Group" entry looks wrong** (found 2026-09-29 overnight, not yet researched). `GROUPS` has `{ name:'Andersen Group', pi:'Halina Rubinsztein-Dunlop', inst:'Univ. Queensland', … }` and its link is `atomlaser.phy.uq.edu.au`. Mikkel Andersen's group is at the University of Otago (NZ); Rubinsztein-Dunlop leads a UQ group. Check both groups on their own web pages and fix the name (and anything else in that entry: focus, paper, coordinates), and check whether Otago's Andersen group should be a separate entry. Update the 99-group counts/test only if the number of groups changes.
+- [x] **amo-groups "Andersen Group" entry looks wrong** Done 2026-09-29 overnight: now "UQ BEC Laboratory" (Neely & Rubinsztein-Dunlop, uq-bec.org); see the page note. (found 2026-09-29 overnight, not yet researched). `GROUPS` has `{ name:'Andersen Group', pi:'Halina Rubinsztein-Dunlop', inst:'Univ. Queensland', … }` and its link is `atomlaser.phy.uq.edu.au`. Mikkel Andersen's group is at the University of Otago (NZ); Rubinsztein-Dunlop leads a UQ group. Check both groups on their own web pages and fix the name (and anything else in that entry: focus, paper, coordinates), and check whether Otago's Andersen group should be a separate entry. Update the 99-group counts/test only if the number of groups changes.
 
 - [x] **Horizontal overflow on phones (390 px), 12 pages.** Done 2026-09-28 overnight (commit: see log). All 34 pages fit at 390 and 360 px with KaTeX rendered; the smoke test reports no overflow. Also fixed on the way: dollar amounts typeset as maths on 3 industry pages. Found by `tests/browser/smoke.js` on 2026-09-28. Widths at 390 px:
   - cavity-qed 409 · dd-playground 436 · decoherence-lab 736 · fidelity-budget 432
@@ -73,6 +73,7 @@ Each one:
 - [ ] **Remote entanglement: Barrett–Kok timeline.** Photons leave two nodes, meet at the beam splitter, and detector clicks herald success. Tally the success rate against the page's η and loss numbers.
 - [ ] **Vacuum systems: pump-down curve.** An interactive pressure-vs-time model with chamber volume, pumping speed, outgassing rate and bakeout, using standard textbook forms (cite a source such as Hablanian or the Pfeiffer vacuum handbook). Mark the UHV regimes.
 - [ ] **Atom library: level-diagram explorer.** For the selected species, draw the cooling transition, repumper and qubit levels (Grotrian-style) from the page's own constants, with wavelengths on the arrows.
+- [ ] **AMO Group Finder: add Mikkel Andersen's group (Univ. Otago, single atoms in optical tweezers).** Found 2026-09-29 while fixing the UQ entry. Needs a sourced entry (PI page, a representative paper, coordinates); the 99-group counts on home, llms.txt/llms-full.txt and `test_hand_typed_counts_match_content` must follow.
 - [ ] **Home: "today in AMO".** A rotating, sourced fact card built from the site's own references (e.g. the record numbers already cited on pages), linking to the page that explains it. No external feeds.
 
 ## Needs Saumitra (don't do these unattended)
