@@ -46,3 +46,16 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-09-29: E-field animations can be paused
 The two rotating-E-field canvases (basics `efieldCanvas`, simulator `pol-sim-canvas`) ran forever loops, restarted on every state change. Each now has one `AMOMotion.loop` (`polLoop`); a new polarization state swaps the frame and draws at once, also while paused. The pause button goes below the `.pol-canvas-wrap` flex row (inside it, it overflowed 390 px screens by 3 px).
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+The custom `.pol-tab-nav` opts in with `data-chapter-panels=".pol-section"`. There are no index cards, so an automatic "6 chapters on this page" chip strip appears. The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.

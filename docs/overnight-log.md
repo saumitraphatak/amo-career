@@ -111,3 +111,21 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - **Tests.** Playwright checked animating vs paused, reduced-motion start state, and the tiles and hero still after 5.6 s. `smoke.js` found one new overflow (the polarimetry pause row landed inside a flex row); fixed by anchoring the button below the row, then 0 new problems.
   - A `requestAnimationFrame` grep now finds no forever loop without a pause control or a time limit on any page. The shared `js/*3d.js` helpers either have their own pause controls or animate only while dragging.
 - **P2 fidelity-budget what-if** (part of "animated error waterfall": clicking a source zeroes it to show what fixing it would buy). The budget table has a "Set to 0" / "Restore" column; every readout follows, and a note compares against the all-sources budget. Page formulas only. Tests: Playwright toggles in both themes and at 390 px; `smoke.js` 0 new problems.
+
+## 2026-09-29 01:15 UTC: chapter navigation for tabbed pages (interactive, Saumitra's request)
+- **Problem (Saumitra).** Pages with main-content tabs don't make clear that more content is hidden in the other tabs, and the Page Playbook overshadows the start of the page.
+- **Measured before the fix.** The tab rows sat 1,251–2,291 px down on desktop and up to 3,291 px on phones, after the Playbook card and the route-panel. The route-cards described the tabs but were not clickable. Chapters ran 1,400–7,500 px with no reminder of the other chapters and no "next".
+- **Built:** `AMOChapters` (main.js v37, styles.css v26, sitewide bump on 34 files):
+  - a pinned chapter bar with an n / N counter;
+  - a Previous/Next pager at the end of every chapter;
+  - route-cards / path steps / stage pills now open chapters (on phones they become a compact 2-column contents list);
+  - an automatic chips strip on pages with no index;
+  - `#ch-…` deep links, and `#id` inside a hidden chapter opens it (also from in-page links);
+  - Page Playbook turned into a slim two-line note on every page.
+- **Pages:** lab-techniques, lab-calculators, cooling-simulator, zernike, paper-syllabus, laser-locking, polarimetry.
+- **Result.** On phones the lab-techniques tab row moved up from 2,202 px to 1,258 px; lab-calculators from 2,338 to 1,541; laser-locking from 2,349 to 2,160.
+- **Tests:**
+  - Playwright on all 7 pages, dark 1280 and light 390: sticky at 64 px, tab-click scroll, pager, cards, strip, keyboard, deep links, hash;
+  - `smoke.js`, all 34 pages vs HEAD: 0 new problems;
+  - formula tests OK 17; inline scripts parse and tags are balanced on every touched page.
+- **Recorded:** principle §8 added to `docs/site-philosophy.md`; CLAUDE.md updated.

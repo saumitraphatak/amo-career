@@ -601,7 +601,8 @@ function initSmoothScroll() {
       try { target = document.querySelector(hash); } catch (err) { return; }
       if (!target) return;
       e.preventDefault();
-      const offset = 80; // nav height
+      if (window.AMOChapters) AMOChapters.reveal(target);   // target may sit in a hidden chapter
+      const offset = 80 + (window.AMOChapters ? AMOChapters.offsetFor(target) : 0); // nav (+ pinned chapter bar)
       // Document position (offsetTop is relative to the offsetParent, which is wrong inside positioned containers)
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: motionOK() ? 'smooth' : 'auto' });
@@ -1859,19 +1860,15 @@ function initPagePlaybookPanel() {
   const play = PAGE_PLAYBOOKS[key];
   const container = getPageContainer();
   if (!play || !container || document.querySelector('.page-playbook-panel')) return;
-  const panel = document.createElement('section');
-  panel.className = 'page-playbook-panel workflow-panel';
+  // A slim two-line note, not a card: it used to be a large panel that sat
+  // between the hero and the page's real content and pushed it down.
+  const panel = document.createElement('aside');
+  panel.className = 'page-playbook-panel';
+  panel.setAttribute('aria-label', 'How to use this page');
   panel.innerHTML = `
-    <div class="workflow-panel-head compact">
-      <div>
-        <div class="eyebrow">Page Playbook</div>
-        <h2>${play[0]}</h2>
-      </div>
-    </div>
-    <div class="page-playbook-grid">
-      <div><span>Use it for</span><p>${play[1]}</p></div>
-      <div><span>Read with care</span><p>${play[2]}</p></div>
-    </div>
+    <p class="pp-lead">${play[0]}</p>
+    <p><span class="pp-k">Use it for</span>${play[1]}</p>
+    <p><span class="pp-k">Read with care</span>${play[2]}</p>
   `;
   container.prepend(panel);
 }
@@ -2059,6 +2056,255 @@ function initCopyOnClick() {
   });
 }
 
+/* ─────────────────────────────────────────────────────
+   CHAPTER NAVIGATION — pages whose main content lives in tabs
+   (lab-techniques, lab-calculators, laser-locking, cooling-simulator,
+   zernike, paper-syllabus, polarimetry). Opt-in: `data-chapters` on the
+   page's main .tab-bar (or .pol-tab-nav with data-chapter-panels=".pol-section").
+
+   A thin tab row below a long intro read as a divider, and once a reader
+   was inside a 4000–7000 px panel nothing said other chapters existed.
+   So each chapter page gets:
+     • a sticky chapter bar (under the site nav) with "n / N";
+     • "Previous / Next chapter" at the end of every chapter;
+     • the page's own index cards (route-cards etc. marked data-chapter="n")
+       become real links that open chapter n, and highlight the open one;
+       pages without such cards get a compact "N chapters" strip up top;
+     • deep links: #ch-<title> opens a chapter, and any #id inside a
+       hidden chapter opens that chapter first (also for in-page links).
+   Tab switching itself stays with each page's own handler (btn.click()).
+   ───────────────────────────────────────────────────── */
+const AMOChapters = (() => {
+  const NAV_H = 64;
+  const models = [];
+  const cleanTitle = s => s.replace(/\s+/g, ' ').trim()
+    .replace(/^[^\p{L}\p{N}]+/u, '')                       // leading emoji / symbols
+    .replace(/^(\d{1,2}\s*[.·:)]\s*|[①-⑳]\s*)/u, '')  // "01 · ", "1. ", "①"
+    .trim();
+  const slug = s => 'ch-' + cleanTitle(s).toLowerCase().normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  function cur(m) { return m.btns.findIndex(b => b.classList.contains('active')); }
+  function stuck(m) { return m.sentinel.getBoundingClientRect().top < NAV_H + 1; }
+  function scrollToStart(m, instant) {
+    const top = Math.round(m.sentinel.getBoundingClientRect().top + window.scrollY - NAV_H);
+    if (Math.abs(window.scrollY - top) > 4) window.scrollTo({ top, behavior: motionOK() && !instant ? 'smooth' : 'auto' });
+  }
+  function setHash(m) {
+    const h = '#' + m.slugs[cur(m)];
+    if (location.hash === h || !history.replaceState) return;
+    if (!location.hash || /^#ch-/.test(location.hash)) history.replaceState(null, '', h);
+  }
+  function update(m, withHash) {
+    const i = cur(m), n = m.btns.length;
+    m.count.innerHTML = `<b>${i + 1}</b> / ${n}`;
+    m.links.forEach(l => {
+      const on = +l.dataset.chapter - 1 === i;
+      l.classList.toggle('is-current', on);
+      const hint = l.querySelector('.chapter-open');
+      if (hint) hint.textContent = on ? 'Open now ↓' : 'Open chapter →';
+    });
+    if (m.strip) m.strip.querySelectorAll('.chapter-chip').forEach((c, k) => c.classList.toggle('is-current', k === i));
+    if (withHash) setHash(m);
+  }
+  function activate(m, i, opts = {}) {
+    if (i < 0 || i >= m.btns.length) return;
+    if (cur(m) !== i) m.btns[i].click();
+    update(m, opts.hash !== false);
+    if (opts.scroll) requestAnimationFrame(() => scrollToStart(m));
+  }
+
+  function pager(m, i) {
+    const n = m.btns.length, pc = m.pageColor;
+    const nav = document.createElement('nav');
+    nav.className = 'chapter-pager';
+    nav.setAttribute('aria-label', 'Chapter navigation');
+    if (pc) nav.style.setProperty('--page-color', pc);
+    const btn = (cls, dir, title, to) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = cls;
+      b.innerHTML = `<span class="cp-dir">${dir}</span><span class="cp-title"></span>`;
+      b.querySelector('.cp-title').textContent = title;
+      b.addEventListener('click', () => activate(m, to, { scroll: true }));
+      return b;
+    };
+    if (i > 0) nav.appendChild(btn('cp-prev', '← Previous chapter', m.titles[i - 1], i - 1));
+    const c = document.createElement('span');
+    c.className = 'cp-count';
+    c.textContent = i === n - 1 ? `Chapter ${n} of ${n} · the last one` : `Chapter ${i + 1} of ${n}`;
+    nav.appendChild(c);
+    if (i < n - 1) nav.appendChild(btn('cp-next', 'Next chapter →', m.titles[i + 1], i + 1));
+    else nav.appendChild(btn('cp-next', 'Back to the first chapter ↺', m.titles[0], 0));
+    return nav;
+  }
+
+  function build(bar) {
+    if (bar.__chapters) return;
+    const btns = Array.from(bar.querySelectorAll('.tab-btn, .pol-tab-btn'));
+    let panels;
+    if (bar.dataset.chapterPanels) {
+      panels = Array.from(document.querySelectorAll(bar.dataset.chapterPanels));
+    } else {
+      const group = bar.dataset.group, wrap = bar.closest('[data-tabs-wrap]') || document;
+      const all = Array.from(wrap.querySelectorAll('.tab-panel[data-tab]'))
+        .filter(p => !(p.dataset.group && group && p.dataset.group !== group));
+      panels = btns.map(b => all.find(p => p.dataset.tab === b.dataset.tab));
+    }
+    if (btns.length < 2 || panels.length !== btns.length || panels.some(p => !p)) return;
+
+    const m = {
+      bar, btns, panels, links: [], strip: null,
+      titles: btns.map(b => cleanTitle(b.textContent)),
+      slugs: btns.map(b => slug(b.textContent)),
+      pageColor: getComputedStyle(bar).getPropertyValue('--page-color').trim(),
+    };
+    bar.__chapters = m;
+    models.push(m);
+
+    // sticky bar: sentinel (to know when it is stuck) + wrapper with the n / N counter
+    m.sentinel = document.createElement('div');
+    m.sentinel.className = 'chapter-sentinel';
+    m.sentinel.setAttribute('aria-hidden', 'true');
+    m.nav = document.createElement('div');
+    m.nav.className = 'chapter-nav';
+    if (m.pageColor) m.nav.style.setProperty('--page-color', m.pageColor);
+    m.count = document.createElement('span');
+    m.count.className = 'chapter-count';
+    m.count.setAttribute('aria-hidden', 'true');
+    bar.before(m.sentinel);
+    bar.before(m.nav);
+    m.nav.append(m.count, bar);
+    if (bar.__ink) bar.__ink.place(false);
+
+    const fades = () => {
+      const over = bar.scrollWidth > bar.clientWidth + 2;
+      m.nav.classList.toggle('fade-l', over && bar.scrollLeft > 2);
+      m.nav.classList.toggle('fade-r', over && bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2);
+    };
+    bar.addEventListener('scroll', fades, { passive: true });
+    if (window.ResizeObserver) new ResizeObserver(fades).observe(bar);
+    fades();
+
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(([e]) => {
+        m.nav.classList.toggle('is-stuck', !e.isIntersecting && e.boundingClientRect.top < NAV_H + 1);
+      }, { rootMargin: `-${NAV_H + 1}px 0px 0px 0px` }).observe(m.sentinel);
+    }
+
+    panels.forEach((p, i) => { p.setAttribute('data-chapter-panel', ''); p.appendChild(pager(m, i)); });
+
+    btns.forEach(b => {
+      b.addEventListener('pointerdown', () => { m.wasStuck = stuck(m); });
+      b.addEventListener('click', e => {
+        const was = m.wasStuck !== undefined ? m.wasStuck : stuck(m);
+        m.wasStuck = undefined;
+        requestAnimationFrame(() => {
+          update(m, true);
+          // a reader deep inside a long chapter lands at the start of the new one
+          if (e.isTrusted && was) scrollToStart(m);
+        });
+      });
+    });
+    update(m, false);
+  }
+
+  function linkCards() {
+    const m = models[0];
+    if (!m) return;
+    document.querySelectorAll('[data-chapter]').forEach(el => {
+      const i = +el.dataset.chapter - 1;
+      if (!(i >= 0 && i < m.btns.length) || el.__chapterLink) return;
+      el.__chapterLink = true;
+      el.classList.add('chapter-link');
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-label', `Open chapter ${i + 1}: ${m.titles[i]}`);
+      if (m.pageColor) el.style.setProperty('--page-color', m.pageColor);
+      if (!el.closest('[data-chapter-hint="off"]')) {
+        const hint = document.createElement('span');
+        hint.className = 'chapter-open';
+        hint.setAttribute('aria-hidden', 'true');
+        const para = el.querySelector('p');
+        (para ? para.parentElement : el).appendChild(hint);
+      }
+      const go = () => activate(m, i, { scroll: true });
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      m.links.push(el);
+    });
+    document.querySelectorAll('[data-chapter-index]').forEach(box => {
+      if (box.querySelector('.chapter-index-note')) return;
+      const note = document.createElement('p');
+      note.className = 'chapter-index-note';
+      note.textContent = `${m.btns.length} chapters on this page. Open one from a card, or from the chapter bar below, which stays pinned while you read.`;
+      box.appendChild(note);
+    });
+    // no index cards on the page: a compact strip near the top says what is inside
+    if (!m.links.length) {
+      const strip = document.createElement('nav');
+      strip.className = 'chapter-strip';
+      strip.setAttribute('aria-label', 'Chapters on this page');
+      if (m.pageColor) strip.style.setProperty('--page-color', m.pageColor);
+      strip.innerHTML = `<span class="chapter-strip-label">${m.btns.length} chapters on this page</span>`;
+      m.titles.forEach((t, i) => {
+        const c = document.createElement('button');
+        c.type = 'button'; c.className = 'chapter-chip';
+        c.innerHTML = `<span class="n">${i + 1}</span>`;
+        c.appendChild(document.createTextNode(t));
+        c.addEventListener('click', () => activate(m, i, { scroll: true }));
+        strip.appendChild(c);
+      });
+      const after = document.querySelector('.page-playbook-panel');
+      const container = getPageContainer();
+      if (after) after.after(strip);
+      else if (container) container.prepend(strip);
+      m.strip = strip;
+    }
+    update(m, false);
+  }
+
+  // Open the chapter that contains el (if it is hidden in one). Returns true if it switched.
+  function reveal(el) {
+    for (const m of models) {
+      const i = m.panels.findIndex(p => p.contains(el));
+      if (i >= 0 && cur(m) !== i) { activate(m, i, { hash: false }); return true; }
+    }
+    return false;
+  }
+  // extra top offset for an element inside a chapter (the pinned chapter bar)
+  function offsetFor(el) {
+    const m = models.find(mm => mm.panels.some(p => p.contains(el)));
+    return m ? m.nav.getBoundingClientRect().height : 0;
+  }
+  function fromHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (!h) return;
+    for (const m of models) {
+      const i = m.slugs.indexOf(h);
+      if (i >= 0) { activate(m, i, { hash: false }); requestAnimationFrame(() => scrollToStart(m, true)); return; }
+    }
+    const el = document.getElementById(h);
+    if (el && reveal(el)) {
+      requestAnimationFrame(() => {
+        const top = el.getBoundingClientRect().top + window.scrollY - NAV_H - offsetFor(el) - 12;
+        window.scrollTo({ top, behavior: 'auto' });
+      });
+    }
+  }
+
+  function init() {
+    document.querySelectorAll('[data-chapters]').forEach(build);
+    if (!models.length) return;
+    linkCards();
+    if (document.readyState === 'complete') fromHash();
+    else window.addEventListener('load', fromHash, { once: true });
+    window.addEventListener('hashchange', fromHash);
+  }
+
+  return { init, reveal, offsetFor, activate: (i, opts) => models[0] && activate(models[0], i, opts) };
+})();
+window.AMOChapters = AMOChapters;
+
 window.AMOCareer = {
   exportTableCSV,
   exportCanvasPNG,
@@ -2079,6 +2325,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRecentTools();
   initDerivationToggles();
   initPagePlaybookPanel();
+  AMOChapters.init();
   initRelatedToolsPanel();
   initShareableCalculatorParams();
   initPaperToolBridge();

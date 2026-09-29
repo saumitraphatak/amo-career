@@ -34,5 +34,21 @@ Any edit to `js/main.js` or `css/styles.css` requires bumping the shared `?v=N` 
 ### 7. Verify before writing, especially for large reorders
 For multi-hundred-line content moves (imaging-calculator's section swap, learn-quantum's 14-section reorder), extract exact line ranges via script, assert each block starts with the expected unique marker (an `id=` or heading text) before reassembling, and for full-file reorders assert the *sorted* line-multiset of before/after are identical — this guarantees no content was lost, duplicated, or silently altered, independent of how careful the manual line-number bookkeeping was.
 
+### 8. A page whose main content is tabs must say so, keep saying so, and hand the reader on
+Seven pages keep most of their content in tabs (lab-techniques, lab-calculators, laser-locking, cooling-simulator, zernike, paper-syllabus, polarimetry). Saumitra pointed out (2026-09-29) that readers didn't realise those pages held more than the first tab. Three things caused it:
+- the tab row was a thin line of text 1,300–2,300 px down the page, below a large "Page Playbook" card and the route-panel, so it read as a divider;
+- the route-cards described the tabs but did nothing when clicked;
+- once inside a 4,000–7,500 px chapter, nothing reminded the reader that other chapters existed, and nothing at the end said where to go next.
+
+The fix is one shared system (`AMOChapters` in main.js, opt-in with `data-chapters` on the page's main tab bar):
+- **The index opens chapters.** On tabbed pages the route-cards (or other index items) carry `data-chapter="n"` and open chapter n. Where there are no index cards, a compact "N chapters on this page" chip strip appears near the top. This makes principle 2's 1:1 rule even more important: the cards are now working links.
+- **A pinned chapter bar.** The tab bar sticks under the site nav, with an "n / N" counter.
+- **An end-of-chapter pager.** Every chapter ends with "Previous chapter / Next chapter".
+- **Deep links.** `#ch-<title>` opens a chapter, and any `#id` inside a hidden chapter opens that chapter first.
+
+The Page Playbook became a slim two-line note on every page. It is still useful context, but as a big card it sat between the hero and the page's own index and pushed the real content down.
+
+Tabs inside a chapter (for example lab-techniques' optical-pumping sub-tabs) and small tab widgets (atom-library applications, qc-landscape charts) are not chapters and don't get this treatment.
+
 ## How this review works, mechanically
 We go page by page (home.html first, then each `pages/*.html` in NAV order). For each page: explain its concept and section-by-section flow, flag anything that looks like a real flow/content problem (not just stylistic), and either fix it immediately (for clear-cut, previously-established patterns) or ask before making the change (for judgment calls or large/risky edits like reorders). Approved-as-is pages get a short note; changed pages get the change and the reasoning recorded in `docs/page-notes/<slug>.md`.

@@ -50,3 +50,16 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - **Pause control (WCAG 2.2.2).** The forever `requestAnimationFrame` loop is now `AMOMotion.loop`; the Pause button sits in the Lock / Perturb row. `draw(false)` repaints without stepping the servo, used for theme toggles and resizes, and after Lock / Perturb clicks so they show while paused.
 - **Labels.** The trace's "+60 / 0 / −60 MHz" labels were drawn in the paper colour (invisible). The "error signal" label was drawn exactly on top of "Absorption + Lamb dip"; the error-signal trace itself sat on the bottom edge at ~4 px amplitude. Now: "Absorption + Lamb dip" top-left, "error signal" beside its trace, which is 10 px higher and drawn ~4× taller (±16 px; the dispersive shape, ∝ dL/dx of the page's Lorentzian, is unchanged). A code comment called Γ/2π = 5.234 MHz the HWHM; the Lorentzian uses it as the FWHM (HWHM = Γ/2), and the comment now says so.
 - `role="img"` + `aria-label` on the canvas. Checks: `smoke.js` 0 new problems; Playwright dark/light 1280 animating + pause, 390 reduced motion + toggle; screenshots dark 1280, light 1280 and light 390 reviewed.
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+There are no index cards, so an automatic "5 chapters on this page" chip strip sits under the Page Playbook. The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.

@@ -66,3 +66,16 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - **llms-full.txt** Strehl line corrected at the same time:
   - it said exp(−σ²) with σ in waves, which is wrong; it now reads exp[−(2πσ)²] with σ in waves;
   - the SLM line no longer puts the Gouy phase into the SLM pattern.
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+The four "Recommended workflow" steps open chapters 1–4. The Mode Atlas (chapter 5) is reached from step 4's text, the bar and the pager. The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.

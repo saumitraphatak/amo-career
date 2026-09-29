@@ -52,3 +52,16 @@ Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The
 
 ## 2026-09-29: Gaussian-beam dot can be paused
 The propagating dot on `gbCanvas` ran a forever loop. There is now one `AMOMotion.loop` per canvas (Pause button, offscreen stop, reduced-motion still frame), and each recompute swaps in the new frame (`gbAnimate`). The dot's phase uses a non-negative modulo, because timestamps can precede its start after a pause.
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+The seven route-cards open their chapters (`data-chapter` 1–7). The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.

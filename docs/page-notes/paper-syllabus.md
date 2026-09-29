@@ -51,3 +51,16 @@ New panel **"All 55 papers in one view"** (`#paper-tower`), placed between the r
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 1 label rendered differently after the fix, e.g. "SU(N) PHYSICS & MULTI-ORBITAL MODELS — YB AND SR" → "SU(N) PHYSICS & MULTI-ORBITAL MODELS — Yb AND Sr". No markup on the page changed apart from the cache version.
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+The four stage pills ("Stage 1 — … 10 papers") open the four stage chapters (`data-chapter` 1–4, with a → marker). The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.

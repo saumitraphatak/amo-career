@@ -55,3 +55,16 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-09-29: fiber-coupling and AOM double-pass animations follow the theme and can be paused
 - Both canvases filled cream (`#f2ead9`) in the dark theme. Their contexts are wrapped with `js/canvas-ink.js?v=2`. The "lens" label was cream text (invisible in the light theme); it now uses `amoInk()`.
 - Both forever `requestAnimationFrame` loops are now `AMOMotion.loop` (Pause button, offscreen stop, reduced-motion still frame); a theme toggle repaints while paused.
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+The six route-cards open their chapters (`data-chapter` 1–6). The card copy "These tabs now map to common lab actions" became "The six chapters below follow those actions, in this order." The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.

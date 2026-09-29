@@ -57,3 +57,16 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-09-28 (overnight run 3): Sisyphus temperature scaling corrected
 - The Sub-Doppler tab gave T_Sisyphus ∝ U₀²/E_r ∝ I²/(δ²E_r). Sisyphus cooling gives k_BT_Sis ~ U₀, the light-shift depth, with U₀ ∝ Ω²/|δ| ∝ I/|δ| for |δ| ≫ Γ (C. Cohen-Tannoudji, Nobel lecture, Rev. Mod. Phys. 70, 707 (1998); also Dalibard & Cohen-Tannoudji, JOSA B 6, 2023 (1989)), down to a floor of tens of recoil energies. The formula box now reads k_BT_Sisyphus ~ U₀ ∝ I/|δ| (|δ| ≫ Γ) with one sentence and the citation; llms-full.txt had the same formula and was corrected. Rendered with KaTeX (local copy) and checked by screenshot. Guarded in `test_cooling_simulator_doppler_temperature`.
+
+## 2026-09-29: chapter navigation (Saumitra: "not obvious that the page has more information")
+The page's main tabs are now "chapters" (`data-chapters`, `AMOChapters` in main.js; see `docs/site-philosophy.md` §8):
+- a chapter bar pinned under the site nav, with an n / N counter;
+- a Previous/Next pager at the end of every chapter;
+- deep links: `#ch-…`, or any `#id` inside a hidden chapter, opens that chapter.
+
+The four route-cards open chapters 1–4. Simulation Codes and References have no card, as agreed earlier (reference material); they are in the pinned bar and the pagers. The Page Playbook above it is now a slim two-line note instead of a large card. Checked with Playwright in dark 1280 and light 390 px:
+- the bar sticks at 64 px while scrolling a chapter;
+- clicking a tab deep inside a chapter lands at the start of the new one;
+- the pager, index cards, keyboard (Enter), deep links and hash updates all work.
+
+`smoke.js` on all 34 pages: 0 new problems.
