@@ -47,3 +47,22 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - It ran a forever `requestAnimationFrame` loop with no pause; it now uses `AMOMotion.loop` (`js/motion.js`): Pause button, offscreen stop, still frame under reduced motion. A theme toggle repaints the current frame (`AMOInk.track`).
 - The first box read "|A|e^{iφ}" (raw TeX in a canvas); it now reads "|A|·exp(iφ)". The canvas has `role="img"` and an `aria-label` describing the loop.
 - Checks: `smoke.js` 0 new problems; Playwright on the GS tab: corner/CSS colours per theme, animates, holds when paused, reduced motion starts on "▶ Play animation", toggle repaints; screenshots dark 1280 reviewed.
+
+## 2026-09-29: PSF centring fix, piston-free RMS, 3D wavefront/PSF surfaces
+- **Bug: the PSF and SLM far-field panels showed the wrong part of the FFT.**
+  - `computePSF` added an extra `+Nfft/2` on top of its fftshift, so the 128 × 128 crop was centred on the **Nyquist** bin instead of zero frequency. Both panels ("Build & Diagnose" PSF and "SLM → Far Field") were aliasing noise: a perfect pupil gave 0 at the centre pixel.
+  - Now pixel (64, 64) is the zero-frequency bin. A flat pupil gives an Airy pattern: first zero 5 px = 1.24 λ/D, first ring 0.016 of the peak.
+  - Zero padding raised from 256 to 512, so one pixel is 127/512 ≈ 0.25 λ/D and the panels show ±16 λ/D (labelled under each panel).
+- **Bug: piston lowered the Strehl.** RMS WFE was √⟨W²⟩, so a pure piston term of 0.3 λ reported σ = 0.3 λ and S ≈ 0.03. It is now the standard deviation about the mean, σ² = ⟨W²⟩ − ⟨W⟩² (the Maréchal/Mahajan form uses the variance; Mahajan, JOSA 73, 860 (1983), https://doi.org/10.1364/JOSA.73.000860). The theory text now says "summed over every term except piston". Other modes have zero mean over the pupil, so their numbers don't change.
+- **New: 3D surfaces** (backlog P2), a card under the builder, drawn by `js/surface3d.js` (`AMO3D.surface`, needs `js/orbit3d.js`).
+  - **Wavefront.** W on a polar mesh (21 rings × 72 spokes), re-evaluated with the page's own `zernikeAt()` and the same coefficients, in the map's RdBu colours and orientation. Height ∝ W with the peak |W| at half the aperture radius; the note labels this "exaggerated (schematic)".
+  - **PSF.** The page's FFT result, ±6 λ/D (49 × 49 samples). Height is I/I₀, with I₀ the peak of an unaberrated pupil on the same grid (drawn as a dashed reference line). The note gives the sampled peak next to the Maréchal estimate. At 0.1 λ astigmatism they agree (0.673 vs 0.676); at the defaults (σ = 0.61 λ) they are 0.034 vs 3 × 10⁻⁷, so the note says the Maréchal form is a small-aberration approximation. With tilt present, the note explains that tilt moves the spot without lowering its peak.
+  - Hover shows (ρ, θ, W) or (Δx, Δy in λ/D, I/I₀).
+- **Wiring.** `computeWavefront()` publishes `window.ZERN_WF_LAST` and fires `zern:wavefront`.
+- **Checked.**
+  - New test `test_zernike_psf_centred_and_piston_free` (fails when the old index line is restored).
+  - Playwright in dark/light at 1280 and dark at 390 px: flat pupil peak at (64, 64); piston 0.3 λ gives σ = 0, S = 1; tilt, astigmatism and the defaults as above; SLM far field now a centred spot; hover readouts; screenshots reviewed.
+  - `smoke.js` against the baseline showed no new problems.
+- **llms-full.txt** Strehl line corrected at the same time:
+  - it said exp(−σ²) with σ in waves, which is wrong; it now reads exp[−(2πσ)²] with σ in waves;
+  - the SLM line no longer puts the Gouy phase into the SLM pattern.

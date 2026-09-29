@@ -59,7 +59,7 @@ Each one:
 - is labelled "schematic" where it isn't to scale;
 - has a text version of the numbers.
 
-- [ ] **Zernike Wavefront Lab: 3D wavefront surface.** Draw the page's computed wavefront as a rotatable height map (`AMO3D.orbit`), next to the existing colour map, so astigmatism's saddle, defocus's bowl and coma's tilt read instantly. Include the PSF as a second surface if cheap.
+- [x] **Zernike Wavefront Lab: 3D wavefront surface.** Done 2026-09-29 (interactive): `js/surface3d.js`, W + PSF surfaces. Found and fixed on the way: PSF/SLM far-field crop was centred on the Nyquist bin (panels showed noise), and piston lowered the Strehl. Draw the page's computed wavefront as a rotatable height map (`AMO3D.orbit`), next to the existing colour map, so astigmatism's saddle, defocus's bowl and coma's tilt read instantly. Include the PSF as a second surface if cheap.
 - [x] **Rydberg Blockade Lab: 3D blockade spheres.** Done 2026-09-29 (interactive session): `js/rydberg3d.js`, square / triangular / two-layer arrays, shell table with U/ℏΩ and ε. A small 3D tweezer array with translucent spheres of radius R_b = (C₆/ħΩ)^{1/6}, computed live from the page's own C₆ and Ω. Pairs inside R_b are highlighted, with counts of blockaded nearest and next-nearest neighbours.
 - [ ] **Laser Cooling Simulator: velocity-space flow.** Arrows show the page's Doppler/Sisyphus force F(v) acting on a Maxwell–Boltzmann cloud relaxing toward the Doppler limit (Monte Carlo with the page's parameters). Include a pause button.
 - [ ] **Polarimetry: Poincaré trajectory.** As a waveplate rotates, trace the output polarization's path on the sphere (the page's Jones/Mueller maths), with QWP and HWP presets.

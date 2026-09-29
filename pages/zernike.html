@@ -338,6 +338,19 @@
       white-space:nowrap;
     }
 
+    /* 3D wavefront / PSF surface (js/surface3d.js) */
+    .wf3d { margin-top:1.25rem; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:1rem 1.1rem; }
+    .wf3d[hidden] { display:none; }
+    .wf3d-top { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:.6rem 1rem; margin-bottom:.6rem; }
+    .wf3d-top h5 { margin:0 0 .25rem; font-size:.95rem; font-weight:700; color:var(--text-primary); }
+    .wf3d-top p { margin:0; font-size:.84rem; line-height:1.55; color:var(--text-secondary); max-width:70ch; }
+    .wf3d-seg { display:inline-flex; border:1px solid var(--border-med); border-radius:999px; overflow:hidden; flex-shrink:0; }
+    .wf3d-seg button { font:inherit; font-size:.76rem; padding:4px 12px; background:transparent; border:0; color:var(--text-secondary); cursor:pointer; }
+    .wf3d-seg button[aria-pressed="true"] { background:var(--c-zern); color:#fff; }
+    #wf3dCvs { display:block; width:100%; height:420px; max-height:none !important; background:var(--bg-surface); border:1px solid var(--border); border-radius:8px; }
+    @media(max-width:620px){ #wf3dCvs { height:330px; } }
+    .wf3d-note { margin:.55rem 0 0; font-size:.8rem; line-height:1.55; color:var(--text-muted); }
+
   </style>
 </head>
 <body>
@@ -500,7 +513,7 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
           <h4>Wavefront from Zernike Expansion</h4>
           <p>
             Any wavefront over a circular aperture: <strong>W(ρ,θ) = Σ c_n^m · Z_n^m(ρ,θ)</strong>,
-            coefficients in waves (λ). RMS WFE = √(Σ c²). Strehl ratio (Maréchal approximation):
+            coefficients in waves (λ). RMS WFE = √(Σ c²), summed over every term except piston (a constant phase changes nothing). Strehl ratio (Maréchal approximation):
           </p>
           <span class="eq">S ≈ exp[−(2π · σ_W)²]</span>
           <p>
@@ -543,10 +556,26 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
               <div class="canvas-wrap">
                 <h5>PSF = |FT{P}|²</h5>
                 <canvas class="zernike-canvas" id="psfCanvas"></canvas>
-                <div class="canvas-info">Inferno colormap</div>
+                <div class="canvas-info">Inferno · field ±16 λ/D</div>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 3D view of the same result (js/surface3d.js), filled by the zern:wavefront event -->
+        <div class="wf3d" id="wf3d" hidden>
+          <div class="wf3d-top">
+            <div>
+              <h5>In 3D: the same wavefront and PSF as surfaces</h5>
+              <p>Drag to turn it; hover to read a value. Defocus is a bowl (ρ²), astigmatism a saddle (ρ² cos 2θ), coma an S-shaped fold along one axis ((3ρ³ − 2ρ) cos θ). Switch to the PSF to see what that shape does at the focus.</p>
+            </div>
+            <div class="wf3d-seg" role="group" aria-label="Surface to show">
+              <button type="button" data-s="wf" aria-pressed="true">Wavefront W</button>
+              <button type="button" data-s="psf" aria-pressed="false">PSF</button>
+            </div>
+          </div>
+          <canvas id="wf3dCvs" data-export-ready="true" aria-label="3D surface of the current wavefront (or its point-spread function). The values are listed in the note below the figure and in the RMS, peak-to-valley and Strehl readouts above."></canvas>
+          <p class="wf3d-note" id="wf3dNote" aria-live="polite"></p>
         </div>
       </div>
 
@@ -635,7 +664,7 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
           <div class="canvas-wrap">
             <h5>Far-field intensity |FT{E}|²</h5>
             <canvas class="zernike-canvas" id="slmFFCanvas"></canvas>
-            <div class="canvas-info">Inferno colormap</div>
+            <div class="canvas-info">Inferno · field ±16 λ/D</div>
           </div>
         </div>
 
@@ -1064,21 +1093,25 @@ function computePSF(E_re_N, E_im_N, Nin, Nfft) {
     re[i*Nfft+j]=E_re_N[i*Nin+j]; im[i*Nfft+j]=E_im_N[i*Nin+j];
   }
   fft2d(re, im, Nfft);
-  // fftshift: swap quadrants, crop central Nin×Nin
-  const c0=Nfft>>1, hw=Nin>>1;
+  // fftshift + crop: output pixel (i, j) is frequency bin (i−Nin/2, j−Nin/2), so the
+  // zero-frequency bin (the unaberrated focus) sits at the centre, (Nin/2, Nin/2).
+  // One bin = (Nin−1)/Nfft λ/D for a pupil spanning the Nin-sample grid.
+  // (Until 2026-09-29 an extra +Nfft/2 shift centred the crop on the Nyquist bin instead.)
+  const hw=Nin>>1;
   const psf=new Float32Array(Nin*Nin);
   let mx=0;
   for (let i=0; i<Nin; i++) {
     const si=(i-hw+Nfft)%Nfft;
     for (let j=0; j<Nin; j++) {
       const sj=(j-hw+Nfft)%Nfft;
-      const idx_s=((si+c0)%Nfft)*Nfft+((sj+c0)%Nfft);
+      const idx_s=si*Nfft+sj;
       const v=re[idx_s]*re[idx_s]+im[idx_s]*im[idx_s];
       psf[i*Nin+j]=v; if(v>mx) mx=v;
     }
   }
   const inv=1/(mx||1);
   for (let i=0; i<Nin*Nin; i++) psf[i]*=inv;
+  psf.peak=mx;   // un-normalised peak |E|², for comparison with an unaberrated pupil
   return psf;
 }
 
@@ -1222,7 +1255,7 @@ function computeWavefront() {
   status.textContent = 'Computing…';
 
   setTimeout(() => {
-    const N = 128, Nfft = 256;
+    const N = 128, Nfft = 512;   // 4× zero padding: 0.25 λ/D per pixel, ±16 λ/D field
     const W = new Float32Array(N*N);
     for (const { n, m, c } of wfModes) {
       const Z = computeZernike(n, m, G128, N);
@@ -1231,8 +1264,13 @@ function computeWavefront() {
     // Apply mask
     for (let i=0; i<N*N; i++) if (G128.rho[i] > 1) W[i] = NaN;
 
-    // Stats
-    const { rms, pv, min, max } = nanStats(W);
+    // Stats. RMS WFE is the standard deviation of W about its mean: piston (a constant
+    // phase) changes nothing optically, so it must not lower the Maréchal Strehl.
+    const st = nanStats(W), { pv, min, max } = st;
+    let wsum = 0, wcnt = 0;
+    for (let i=0; i<N*N; i++) if (!isNaN(W[i])) { wsum += W[i]; wcnt++; }
+    const wmean = wcnt ? wsum / wcnt : 0;
+    const rms = Math.sqrt(Math.max(0, st.rms*st.rms - wmean*wmean));
     const absMax = Math.max(Math.abs(min||0), Math.abs(max||0)) || 1;
     renderCanvas(document.getElementById('wfCanvas'), W, N, colorRdBu, -absMax, absMax);
 
@@ -1267,6 +1305,11 @@ function computeWavefront() {
 
     status.className = 'compute-status ok';
     status.textContent = `Done (${N}×${N} grid, ${Nfft}×${Nfft} FFT)`;
+
+    // Hand the result to the 3D view (and anything else listening)
+    let npix = 0; for (let i=0; i<N*N; i++) if (G128.rho[i] <= 1) npix++;
+    window.ZERN_WF_LAST = { W, psf, N, Nfft, absMax, rms, pv, strehl, peakRel: psf.peak / (npix*npix), modes: wfModes.map(m => ({ n: m.n, m: m.m, c: m.c })) };
+    window.dispatchEvent(new CustomEvent('zern:wavefront', { detail: window.ZERN_WF_LAST }));
   }, 20);
 }
 
@@ -1307,7 +1350,7 @@ function computeSLM() {
   status.textContent = 'Computing FFT…';
 
   setTimeout(() => {
-    const N = 128, Nfft = 256;
+    const N = 128, Nfft = 512;   // 4× zero padding: 0.25 λ/D per pixel, ±16 λ/D field
     const preset = document.getElementById('slmPreset').value;
     const l_oam  = parseInt(document.getElementById('slmL').value);
     const amp    = parseFloat(document.getElementById('slmA').value);
@@ -1797,6 +1840,69 @@ async function runGS() {
   // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
   const tick = window.AMOInk ? AMOInk.track(frame) : frame;
   if (window.AMOMotion) AMOMotion.loop(cv, tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
+})();
+</script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/surface3d.js?v=1"></script>
+<script>
+/* 3D wavefront / PSF surface for the "Build & Diagnose" tab.
+   Everything comes from computeWavefront() via the zern:wavefront event:
+   W on a polar mesh is re-evaluated with the page's own zernikeAt() and the
+   same coefficients (smooth rim), and the PSF is the page's own FFT result. */
+(function () {
+  var wrap = document.getElementById('wf3d'), cv = document.getElementById('wf3dCvs'), note = document.getElementById('wf3dNote');
+  if (!wrap || !cv || !window.AMO3D || !AMO3D.surface) return;
+  var surf = AMO3D.surface(cv, { label: '3D surface of the current wavefront' });
+  if (!surf) return;
+  wrap.hidden = false;
+  var mode = 'wf', last = window.ZERN_WF_LAST || null;
+  function sgn(v, d) { return (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(d); }
+  function show() {
+    if (!last) return;
+    var d = last;
+    if (mode === 'wf') {
+      var A = d.absMax || 1, modes = d.modes.filter(function (m) { return isFinite(m.c) && m.c !== 0; });
+      var rows = 21, cols = 72;
+      surf.set({
+        rows: rows, cols: cols, wrapCols: true, wireEvery: 4, ring: 1, extent: 1,
+        at: function (r, c) {
+          var rho = r / (rows - 1), th = 2 * Math.PI * c / cols, w = 0;
+          modes.forEach(function (m) { w += m.c * zernikeAt(m.n, m.m, rho, th); });
+          return [rho * Math.cos(th), -rho * Math.sin(th), w];      // −sin: same orientation as the 2D map (rows run downward)
+        },
+        zOf: function (w) { return 0.5 * w / A; },
+        colorOf: function (w) { return colorRdBu((w + A) / (2 * A)); },
+        readout: function (r, c, w) { return 'ρ = ' + (r / (rows - 1)).toFixed(2) + ' · θ = ' + Math.round(360 * c / cols) + '° · W = ' + sgn(w, 3) + ' λ'; },
+        caption: 'W(ρ,θ) · peak |W| = ' + A.toFixed(3) + ' λ (vertical scale exaggerated)'
+      });
+      note.innerHTML = modes.length
+        ? 'Height ∝ W: the largest |W| on the grid, ' + A.toFixed(3) + ' λ, is drawn at half the aperture radius, so the vertical scale is exaggerated (schematic); colours are the map’s RdBu scale. RMS ' + d.rms.toFixed(3) + ' λ, peak-to-valley ' + d.pv.toFixed(3) + ' λ.'
+        : 'No terms: the wavefront is flat.';
+    } else {
+      var N = d.N, hw = N >> 1, K = 24, bin = (N - 1) / d.Nfft, pr = d.peakRel, n = 2 * K + 1;
+      surf.set({
+        rows: n, cols: n, wireEvery: 4, extent: 1,
+        at: function (r, c) { var i = hw - K + r, j = hw - K + c; return [(c - K) / K, -(r - K) / K, d.psf[i * N + j] * pr]; },
+        zOf: function (v) { return 0.9 * v; },
+        colorOf: function (v) { return colorInferno(0.14 + 0.86 * Math.sqrt(Math.max(0, v / (pr || 1)))); },
+        readout: function (r, c, v) { return 'Δx = ' + sgn((c - K) * bin, 2) + ', Δy = ' + sgn(-(r - K) * bin, 2) + ' λ/D · I/I₀ = ' + v.toFixed(3); },
+        caption: 'PSF · height = I/I₀ · field ±' + (K * bin).toFixed(1) + ' λ/D',
+        pole: { z: 0.9, label: 'I₀ (no aberration)' }
+      });
+      var tilt = d.modes.some(function (m) { return m.n === 1 && isFinite(m.c) && m.c !== 0; });
+      note.innerHTML = 'Height = I/I₀, where I₀ is the focal peak of an unaberrated pupil on the same grid (a flat wavefront reaches the dashed I₀ line). Here the peak is <b>' + pr.toFixed(3) + '</b> I₀ (sampled every ' + bin.toFixed(2) + ' λ/D); the Maréchal estimate above, exp[−(2πσ)²], gives ' + (d.strehl >= 1e-3 ? d.strehl.toFixed(3) : d.strehl.toExponential(1).replace(/e-(\d+)/, ' × 10<sup>−$1</sup>')) + '. The Maréchal form is a small-aberration approximation, so the two drift apart as σ grows.' +
+        (tilt ? ' Tilt moves the spot without lowering its peak, so it lowers the Maréchal number (intensity at the original focus) but not this one.' : '');
+    }
+  }
+  window.addEventListener('zern:wavefront', function (e) { last = e.detail; show(); });
+  wrap.querySelectorAll('.wf3d-seg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      mode = b.dataset.s;
+      wrap.querySelectorAll('.wf3d-seg button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      show();
+    });
+  });
+  show();
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

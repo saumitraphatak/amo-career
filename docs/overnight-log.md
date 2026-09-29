@@ -78,3 +78,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - No new external facts, so no new sources; the formulas are the page's own.
   - Tests: formula tests OK 16; `node --check` on the JS and inline scripts; open/close tag counts balanced; `smoke.js` vs baseline showed 0 new problems; targeted Playwright in both themes at 1280 and 390 px, with geometry toggles, click, keys, drag and slider extremes; screenshots reviewed.
 - **Next up:** unchanged; P1 first (Chart.js dark-theme audit, keyboard access, print stylesheet, section search, shared-element transitions), then P2 (Zernike 3D surface next).
+- **P2 Zernike 3D surfaces, plus two real bugs** (see `docs/page-notes/zernike.md`).
+  - **Bug: the PSF and SLM far-field panels showed FFT noise around the Nyquist bin**, from a double fftshift. Now centred on zero frequency, with 512-point padding and fields labelled ±16 λ/D.
+  - **Bug: piston lowered the Maréchal Strehl.** σ is now taken about the mean (Mahajan, JOSA 73, 860 (1983)).
+  - **New:** `js/surface3d.js` (`AMO3D.surface`) shows W and the PSF in 3D, giving the sampled peak I/I₀ next to the Maréchal estimate.
+  - **llms-full.txt:** fixed the Strehl formula and the SLM/Gouy line.
+  - **Tests:** formula tests OK 17 (1 new, mutation-checked); `smoke.js` 0 new problems; Playwright checks as in the page note.

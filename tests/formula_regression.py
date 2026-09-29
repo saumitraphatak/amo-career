@@ -308,6 +308,24 @@ def test_hand_typed_counts_match_content() -> None:
     assert_contains("pages/start-here.html", f"Spectroscopic constants for {n_atoms} species")
 
 
+def test_zernike_psf_centred_and_piston_free() -> None:
+    """Zernike lab: the PSF crop must centre the zero-frequency bin (it used to centre the
+    Nyquist bin, so the PSF and SLM far-field panels showed aliasing noise), and the RMS
+    wavefront error behind the Maréchal Strehl must be taken about the mean (piston-free;
+    Mahajan, JOSA 73, 860 (1983): the Strehl depends on the aberration variance)."""
+    page = "pages/zernike.html"
+    assert_contains(page, "const idx_s=si*Nfft+sj;")
+    assert_not_contains(page, "((si+c0)%Nfft)")
+    assert_contains(page, "const rms = Math.sqrt(Math.max(0, st.rms*st.rms - wmean*wmean));")
+    # the crop mapping in pure Python: output pixel (hw, hw) must read raw DFT bin (0, 0)
+    Nin, Nfft = 128, 512
+    hw = Nin >> 1
+    si = (hw - hw + Nfft) % Nfft
+    assert si * Nfft + si == 0
+    # one output pixel is (Nin-1)/Nfft of lambda/D; the first Airy zero (1.22 lambda/D) is ~5 pixels out
+    assert abs(1.22 / ((Nin - 1) / Nfft) - 4.92) < 0.01
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -326,6 +344,7 @@ def main() -> None:
         test_cooling_simulator_doppler_temperature,
         test_imaging_histogram_preview_uses_calculator_counts,
         test_hand_typed_counts_match_content,
+        test_zernike_psf_centred_and_piston_free,
     ]
     for test in tests:
         test()
