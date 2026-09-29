@@ -1043,6 +1043,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=36"></script>
+<script src="../js/canvas-ink.js?v=2"></script>
   <script>
     renderNav({ active: 'lab-calculators', root: '../' });
 
@@ -1783,7 +1784,9 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       if (!cv) return;
       const W = cv.clientWidth || 480, H = 140;
       cv.width = W; cv.height = H;
-      const ctx = cv.getContext('2d');
+      // cream-theme inks → dark theme (js/canvas-ink.js); repaint once on a theme toggle
+      const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
+      if (window.AMOInk && !cv.__amoThemeHook) { cv.__amoThemeHook = true; AMOInk.onTheme(calcEOM); }
       ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = '#f2ead9'; ctx.fillRect(0, 0, W, H);
 

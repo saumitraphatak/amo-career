@@ -1545,6 +1545,8 @@
 <!-- /page-wrap -->
 
 <script src="../js/main.js?v=36"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=2"></script>
 <script>renderNav({ active: 'laser-cooling', root: '../' });</script>
 <div id="amo-nav-ready" hidden></div>
 <script>
@@ -1930,7 +1932,8 @@ if (typeof renderMathInElement === 'undefined') {
 (function initSisyphusAnim() {
   const canvas = document.getElementById('sisyphusCanvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  // cream-theme inks → dark theme (js/canvas-ink.js)
+  const ctx = window.AMOInk ? AMOInk.wrap(canvas.getContext('2d')) : canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
   const AMP   = 52;
@@ -2066,9 +2069,11 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.fillStyle='rgba(24,130,62,0.8)';
     ctx.fillText('energy dissipated: '+pumpCount+'·U₀', W-6, H-21);
 
-    requestAnimationFrame(drawSisyphus);
   }
-  requestAnimationFrame(drawSisyphus);
+  // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+  const tickS = window.AMOInk ? AMOInk.track(drawSisyphus) : drawSisyphus;
+  if (window.AMOMotion) AMOMotion.loop(canvas, tickS);
+  else requestAnimationFrame(function f(ts) { tickS(ts); requestAnimationFrame(f); });
 })();
 
 /* ── Phonon ladder animation ─────────────────────────────── */
@@ -2077,7 +2082,8 @@ if (typeof renderMathInElement === 'undefined') {
   if (!cv) return;
   const H = 200;
   cv.height = H;
-  const ctx = cv.getContext('2d');
+  // cream-theme inks → dark theme (js/canvas-ink.js)
+  const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
 
   /*
    * Improved phonon ladder — 3-phase cycle per level:
@@ -2249,9 +2255,11 @@ if (typeof renderMathInElement === 'undefined') {
     ctx.fillStyle = aColor;
     ctx.fillText('⟨n⟩ = '+n, W-PAD_R, PAD_T+14);
 
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+  const tickP = window.AMOInk ? AMOInk.track(frame) : frame;
+  if (window.AMOMotion) AMOMotion.loop(cv, tickP);
+  else requestAnimationFrame(function f(ts) { tickP(ts); requestAnimationFrame(f); });
 })();
 
 // ── Gray Molasses animation: energy-level diagram ─────────────────────────

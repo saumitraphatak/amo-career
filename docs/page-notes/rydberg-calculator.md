@@ -51,3 +51,7 @@ New card at the end of the calculator section, "In an array: how many neighbours
 - **Caveats.** Same as the page: isotropic vdW, approximate C₆, no angular dependence or Förster resonances. This is stated under the figure.
 - **Default.** At the page defaults (n = 50, Ω/2π = 1 MHz, r = 5 µm) R_b/a ≈ 0.99, so nothing is blockaded; the summary says so and points to the separation slider.
 - **Checked.** Playwright, dark/light at 1280 and 390 px, all three geometries, click and keys, drag, and r = 3 and 30 µm. Table values match (R_b/d)⁶ by hand (e.g. R_b = 4.97 µm, d = 3 µm → 20.6). `smoke.js` against the baseline showed no new problems.
+
+## 2026-09-29: 2D blockade visualizer follows the theme and can be paused
+- The two-atom visualizer (`blockadeCanvas`) filled cream (`#efe7d6`) in both themes; its "BLOCKADE ACTIVE" headline was pale green (invisible on cream). The context is now wrapped with `js/canvas-ink.js` (v2 adds the `#f2ead9`/`#efe7d6` creams), and the headline uses a green that maps correctly in each theme.
+- The forever `requestAnimationFrame` loop is now `AMOMotion.loop` (`js/motion.js`): Pause button, offscreen stop, still frame under reduced motion. Slider changes and resizes redraw at once, also while paused.

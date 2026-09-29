@@ -33,6 +33,8 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
 
 ## P1: polish that makes it feel finished
 
+- [ ] **Forever animation loops without a pause control (WCAG 2.2.2).** Found 2026-09-29 by grepping for `requestAnimationFrame` outside `AMOMotion`: atom-library `pulse` (~l.1477), lab-calculators Gaussian-beam `animDot`, polarimetry `polAnimEfield`/`polAnimSim`, and qc-landscape (6 rAF sites; check which run forever). Move each to `AMOMotion.loop` (`js/motion.js`) the way lab-techniques/laser-cooling were done on 2026-09-29, keeping the physics the same; check both themes and reduced motion.
+
 - [ ] **Shared-element page transitions.** On home → tool page navigation, morph the clicked tool card's icon into the page hero's eyebrow icon. The cross-document view transitions are already on (`docs/motion-and-transitions.md`). Name only the clicked element (set `view-transition-name` in `pageswap` on the card's icon and in `pagereveal` on the target hero) so names stay unique.
 - [ ] **Keyboard access for canvas/SVG interactives** that are mouse-only today:
   - lattice lab qubits (google-vs-ibm): arrow keys move a focus ring, Enter picks;

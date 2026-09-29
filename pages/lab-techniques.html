@@ -1831,6 +1831,8 @@ SteadyStateTweezer(
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=36"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=2"></script>
   <script>
     renderNav({ active: 'lab-techniques', root: '../' });
   </script>
@@ -2090,7 +2092,8 @@ SteadyStateTweezer(
       if (!cv) return;
       const W = cv.clientWidth || 560, H = 80;
       cv.width = W; cv.height = H;
-      const ctx = cv.getContext('2d');
+      // cream-theme inks → dark theme (js/canvas-ink.js)
+      const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
       const CX = W/2, CY = H/2;
 
       // Fiber core at right
@@ -2159,12 +2162,14 @@ SteadyStateTweezer(
         // Labels
         ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
         ctx.fillStyle='rgba(6,120,171,0.7)'; ctx.fillText('input beam', lensX*0.4, 12);
-        ctx.fillStyle='rgba(250,245,233,0.5)'; ctx.fillText('lens', lensX, H-6);
+        ctx.fillStyle=amoInk(0.55); ctx.fillText('lens', lensX, H-6);
         ctx.fillStyle='rgba(24,130,62,0.7)'; ctx.fillText('SM fiber', fiberX+20, 12);
 
-        requestAnimationFrame(frame);
       }
-      requestAnimationFrame(frame);
+      // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+      const tick = window.AMOInk ? AMOInk.track(frame) : frame;
+      if (window.AMOMotion) AMOMotion.loop(cv, tick);
+      else requestAnimationFrame(function f(ts) { tick(ts); requestAnimationFrame(f); });
     })();
 
     /* ── AOM cat's-eye double-pass animation ───────────────── */
@@ -2173,7 +2178,8 @@ SteadyStateTweezer(
       if (!cv) return;
       const H = 195;
       cv.height = H;
-      const ctx = cv.getContext('2d');
+      // cream-theme inks → dark theme (js/canvas-ink.js)
+      const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
 
       /*
        * Matches paper Figure 3:
@@ -2402,9 +2408,11 @@ SteadyStateTweezer(
         ctx.beginPath(); ctx.arc(dotX,dotY,7,0,2*Math.PI); ctx.fillStyle=dotCol.replace('0.95','0.15'); ctx.fill();
         ctx.beginPath(); ctx.arc(dotX,dotY,3.5,0,2*Math.PI); ctx.fillStyle=dotCol; ctx.fill();
 
-        requestAnimationFrame(frame);
       }
-      requestAnimationFrame(frame);
+      // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints
+      const tick = window.AMOInk ? AMOInk.track(frame) : frame;
+      if (window.AMOMotion) AMOMotion.loop(cv, tick);
+      else requestAnimationFrame(function f(ts) { tick(ts); requestAnimationFrame(f); });
     })();
   </script>
 

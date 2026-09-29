@@ -51,3 +51,7 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 10 labels rendered differently after the fix, e.g. "WAVELENGTH Λ (NM)" → "WAVELENGTH λ (nm)"; "INPUT BEAM W_IN (MM)" → "INPUT BEAM w_in (mm)". No markup on the page changed apart from the cache version.
+
+## 2026-09-29: fiber-coupling and AOM double-pass animations follow the theme and can be paused
+- Both canvases filled cream (`#f2ead9`) in the dark theme. Their contexts are wrapped with `js/canvas-ink.js?v=2`. The "lens" label was cream text (invisible in the light theme); it now uses `amoInk()`.
+- Both forever `requestAnimationFrame` loops are now `AMOMotion.loop` (Pause button, offscreen stop, reduced-motion still frame); a theme toggle repaints while paused.

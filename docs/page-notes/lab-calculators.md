@@ -45,3 +45,7 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-09-28 (overnight run 3): symbol tooltips work with keyboard, touch and screen readers
 Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The dashed-underline `.tip[data-tip]` symbols (5 on this page) only showed their bubble on mouse hover: the spans weren't focusable, a tap on a phone did nothing reliable, and screen readers never got the text. Now each is focusable (Tab shows the bubble, with a focus ring), its text is its accessible description (`aria-describedby` → a hidden `#amo-tip-descs` list), a tap or click pins the bubble open (tap again, tap elsewhere or Esc closes it), and Esc hides a keyboard-focused bubble (WCAG 1.4.13). A tip inside a `<label>` stays open when the tap moves focus to the label's input. Edge alignment now measures the first line box, so an anchor that wraps no longer misplaces its bubble. Checked in Playwright: all tips focusable with matching descriptions, focus shows / Esc hides / refocus shows, tap opens at 390 px (touch emulation), click elsewhere closes; `smoke.js` 0 new problems on all 34 pages.
+
+## 2026-09-29: EOM sideband canvas follows the theme
+- `eom_canvas` filled cream (`#f2ead9`) in the dark theme too. Its context is now wrapped with `js/canvas-ink.js?v=2`, and it redraws on a theme toggle (`AMOInk.onTheme(calcEOM)`).
+- Still open: the Gaussian-beam canvas's propagating-dot loop (`animDot`) runs forever without a pause control.

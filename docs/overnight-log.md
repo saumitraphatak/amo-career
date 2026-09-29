@@ -96,3 +96,12 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - The qubit-race canvas had invisible labels in both themes (cream text on a cream fill) and blanked on resize. It is now theme-aware.
   - Its dashed "FTQC target" at 10⁶ contradicted the caption's "order 10⁷". RSA-2048 now cites both Gidney & Ekerå 2021 (~2×10⁷ qubits, 8 h) and Gidney 2025 (arXiv:2505.15917, preprint: <10⁶ qubits, <1 week).
   - llms-full.txt updated to match.
+- **Cream canvases, round 2, and forever loops.**
+  - **Method.** A rendered scan of every canvas in both themes (pixel brightness, all tabs opened) found 6 canvases still cream in the dark theme. Run 3's list only covered `#faf5e9`; these use `#f2ead9`/`#efe7d6`:
+    - lab-calculators `eom_canvas`;
+    - lab-techniques `fiberCouplingCanvas` and `aomCanvas`;
+    - laser-cooling `phononLadderCanvas` and `sisyphusCanvas`;
+    - rydberg-calculator `blockadeCanvas`.
+  - **Fix.** `canvas-ink.js` v2 maps those creams; the 7 existing pages were bumped to v2. The 5 animated canvases also moved from forever rAF loops to `AMOMotion.loop`. Invisible cream labels were fixed ("lens"; rydberg's "BLOCKADE ACTIVE").
+  - **Tests.** Screenshots in both themes reviewed; `smoke.js` 0 new problems on the touched pages. The other flagged canvases are data colour maps (Zernike RdBu/inferno), left as they are.
+  - **Still open (backlog):** forever loops without pause on atom-library (pulse), lab-calculators (Gaussian-beam dot), polarimetry (2 loops), qc-landscape (to check).

@@ -821,6 +821,8 @@ $r = 5\,\mu$m, $R_b = 10\,\mu$m $\Rightarrow \varepsilon_{\rm blk} \sim 10^{-4}$
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=36"></script>
+<script src="../js/motion.js?v=1"></script>
+<script src="../js/canvas-ink.js?v=2"></script>
 <script>
 renderNav({ active: 'rydberg-calculator', root: '../' });
 
@@ -1141,7 +1143,8 @@ function updateChart(species, orbKey, Omega_MHz) {
    ═══════════════════════════════════════════════════════════ */
 (function() {
   const cvs = document.getElementById('blockadeCanvas');
-  const ctx = cvs.getContext('2d');
+  // cream-theme inks → dark theme (js/canvas-ink.js)
+  const ctx = window.AMOInk ? AMOInk.wrap(cvs.getContext('2d')) : cvs.getContext('2d');
   let vp = { Rb: 10, r: 5, n: 50, inBlockade: true };
   let t = 0;
 
@@ -1151,7 +1154,7 @@ function updateChart(species, orbKey, Omega_MHz) {
     cvs.height = 210;
   }
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', () => { resize(); draw(); });
 
   function draw() {
     const { Rb, r, inBlockade } = vp;
@@ -1277,7 +1280,7 @@ function updateChart(species, orbKey, Omega_MHz) {
     ctx.textAlign = 'center';
     if (inBlockade) {
       ctx.font = 'bold 12px Inter,sans-serif';
-      ctx.fillStyle = `rgba(134,239,172,${0.7 + 0.3 * pulse})`;
+      ctx.fillStyle = `rgba(28,128,91,${0.75 + 0.25 * pulse})`;
       ctx.fillText('BLOCKADE ACTIVE  ·  double excitation forbidden', cx, 22);
     } else {
       ctx.font = '12px Inter,sans-serif';
@@ -1285,15 +1288,20 @@ function updateChart(species, orbKey, Omega_MHz) {
       ctx.fillText('Outside blockade radius  ·  both atoms excitable', cx, 22);
     }
 
-    t++;
-    requestAnimationFrame(draw);
   }
 
-  // Called from compute() on every slider change
+  // Called from compute() on every slider change (redraws at once, also while paused)
   window.updateBlockadeViz = function(Rb_um, r_um, n_val, blocked) {
     vp = { Rb: Rb_um, r: r_um, n: n_val, inBlockade: blocked };
+    draw();
   };
 
+  // Pause control, offscreen stop, reduced-motion still frame (js/motion.js); theme toggle repaints.
+  // t counts 60 Hz frames, as the old requestAnimationFrame loop did.
+  const tick = ts => { t = ts / 16.67; draw(); };
+  const frame = window.AMOInk ? AMOInk.track(tick) : tick;
+  if (window.AMOMotion) AMOMotion.loop(cvs, frame);
+  else requestAnimationFrame(function f(ts) { frame(ts); requestAnimationFrame(f); });
   draw();
 })();
 

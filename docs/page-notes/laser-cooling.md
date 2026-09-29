@@ -45,3 +45,8 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 2 labels rendered differently after the fix, e.g. "⟨N⟩ LIMIT" → "⟨n⟩ LIMIT"; "TYPICAL ⟨N⟩ (RB, 100 KHZ)" → "TYPICAL ⟨n⟩ (Rb, 100 kHz)". KaTeX maths inside uppercase labels was uppercased too (1 formula); `.katex` now has `text-transform:none`. No markup on the page changed apart from the cache version.
+
+## 2026-09-29: phonon-ladder and Sisyphus animations follow the theme and can be paused
+- Both canvases filled cream (`#f2ead9`) in the dark theme; their contexts are now wrapped with `js/canvas-ink.js?v=2`.
+- Their forever loops are now `AMOMotion.loop` (Pause button, offscreen stop, reduced-motion still frame); a theme toggle repaints while paused.
+- The `sbCoolCanvas` and `gmAnimCanvas` scripts have no canvas in the page and return early; they were left as they were.

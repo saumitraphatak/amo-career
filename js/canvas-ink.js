@@ -25,6 +25,7 @@
 
   var HEX = {
     '#faf5e9': '#0c1526',                                 // cream paper → --bg-card (dark)
+    '#f2ead9': '#0c1526', '#efe7d6': '#0c1526',           // other cream fills used by older canvases
     '#7a4ff7': '#a78bfa', '#7451fa': '#a78bfa', '#7c3aed': '#a78bfa',   // violet
     '#926a03': '#fbbf24', '#8d6c02': '#fbbf24',           // amber
     '#b75404': '#fb923c', '#b45309': '#f59e0b',           // orange
