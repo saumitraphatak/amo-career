@@ -12,6 +12,12 @@
    (distance − 1) given. The stats line compares average degree and the
    average SWAPs over every pair of qubits, computed from these patches.
    Schematic patches, not exact chip maps — the caption says so.
+
+   Keyboard (2026-09-29): each patch is one tab stop. Arrow keys move a
+   focus ring to the nearest qubit in that screen direction, Enter/Space
+   picks it (two picks route a gate), Esc clears, Home/End jump to the
+   first/last qubit. The message line is aria-live, so the neighbour count
+   and SWAP result are read out.
    ───────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -69,7 +75,7 @@
     var st = stats(g), adj = st.adj;
     var box = document.createElement('div'); box.className = 'lat-panel'; box.style.setProperty('--c', meta.color);
     box.innerHTML = '<div class="lat-h"><b>' + meta.name + '</b><span>' + meta.sub + '</span></div>' +
-      '<svg class="lat-svg" role="img" aria-label="' + meta.name + ' patch of ' + st.n + ' qubits. Average connectivity ' + st.avgDeg.toFixed(2) + ', maximum ' + st.maxDeg + ' neighbours."></svg>' +
+      '<svg class="lat-svg" role="application" tabindex="0" aria-roledescription="qubit lattice" aria-label="' + meta.name + ' patch of ' + st.n + ' qubits. Average connectivity ' + st.avgDeg.toFixed(2) + ', maximum ' + st.maxDeg + ' neighbours. Arrow keys move between qubits, Enter picks one; pick two to route a gate; Escape clears."></svg>' +
       '<div class="lat-stats"><div><b>' + st.avgDeg.toFixed(2) + '</b><span>avg. neighbours</span></div><div><b>' + st.maxDeg + '</b><span>max neighbours</span></div>' +
       '<div><b>' + st.avgSwaps.toFixed(1) + '</b><span>avg. SWAPs per random gate</span></div></div>' +
       '<div class="lat-msg" aria-live="polite">Hover a qubit, or click two to route a gate.</div>';
@@ -91,8 +97,41 @@
       c.setAttribute('class', 'lat-q' + (p.bridge ? ' bridge' : ''));
       c.addEventListener('mouseenter', function () { hover(i); });
       c.addEventListener('mouseleave', function () { hover(-1); });
-      c.addEventListener('click', function () { pick(i); });
+      c.addEventListener('click', function () { cursor = i; placeRing(); pick(i); });
       svg.appendChild(c); return c;
+    });
+    // Keyboard focus ring (shown only while the patch has keyboard focus).
+    var ring = document.createElementNS(NS, 'circle');
+    ring.setAttribute('class', 'lat-cur'); ring.setAttribute('r', 15);
+    svg.appendChild(ring);
+    var cursor = 0;
+    function placeRing() { ring.setAttribute('cx', g.nodes[cursor].x * s); ring.setAttribute('cy', g.nodes[cursor].y * s); }
+    function step(dx, dy) {                       // nearest qubit in a screen direction
+      var p = g.nodes[cursor], best = -1, bestScore = Infinity;
+      g.nodes.forEach(function (q, j) {
+        var vx = q.x - p.x, vy = q.y - p.y, along = vx * dx + vy * dy, perp = Math.abs(vx * dy - vy * dx);
+        if (j === cursor || along < 0.05 || perp > along * 1.01 + 1e-9) return;
+        var score = along + 2 * perp;
+        if (score < bestScore - 1e-9) { bestScore = score; best = j; }
+      });
+      return best;
+    }
+    svg.addEventListener('focus', function () {   // mouse clicks focus it too; ring only for keyboard focus
+      var kb = true; try { kb = svg.matches(':focus-visible'); } catch (err) {}
+      if (kb) { svg.classList.add('kb'); placeRing(); hover(cursor); }
+    });
+    svg.addEventListener('blur', function () { svg.classList.remove('kb'); hover(-1); });
+    svg.addEventListener('keydown', function (e) {
+      var k = e.key, next = -1;
+      if (k === 'ArrowRight') next = step(1, 0); else if (k === 'ArrowLeft') next = step(-1, 0);
+      else if (k === 'ArrowDown') next = step(0, 1); else if (k === 'ArrowUp') next = step(0, -1);
+      else if (k === 'Home') next = 0; else if (k === 'End') next = g.nodes.length - 1;
+      else if (k === 'Enter' || k === ' ') { e.preventDefault(); svg.classList.add('kb'); placeRing(); pick(cursor); if (sel.length !== 2) hover(cursor); return; }
+      else if (k === 'Escape') { if (sel.length) { e.preventDefault(); sel = []; clearPath(); hover(cursor); } return; }
+      else return;
+      e.preventDefault();
+      if (!svg.classList.contains('kb')) { svg.classList.add('kb'); placeRing(); }
+      if (next >= 0) { cursor = next; placeRing(); hover(cursor); }
     });
     function edgeIndex(a, b) { for (var k = 0; k < g.edges.length; k++) { var e = g.edges[k]; if ((e[0] === a && e[1] === b) || (e[0] === b && e[1] === a)) return k; } return -1; }
     var sel = [], msg = box.querySelector('.lat-msg');
@@ -102,7 +141,7 @@
       if (i < 0) { if (!sel.length) msg.textContent = 'Hover a qubit, or click two to route a gate.'; return; }
       nodeEls[i].classList.add('hv');
       adj[i].forEach(function (j) { nodeEls[j].classList.add('nb'); var k = edgeIndex(i, j); if (k >= 0) edgeEls[k].classList.add('nb'); });
-      if (!sel.length) msg.textContent = (g.nodes[i].bridge ? 'Bridge qubit' : 'Qubit') + ' with ' + adj[i].length + ' neighbour' + (adj[i].length === 1 ? '' : 's') + '.';
+      if (sel.length !== 2) msg.textContent = (sel.length ? 'Now pick a second qubit. ' : '') + (g.nodes[i].bridge ? 'Bridge qubit' : 'Qubit') + ' ' + (i + 1) + ' of ' + g.nodes.length + ', with ' + adj[i].length + ' neighbour' + (adj[i].length === 1 ? '' : 's') + '.';
     }
     function clearPath() {
       nodeEls.forEach(function (n) { n.classList.remove('sel', 'on-path'); n.style.animationDelay = ''; });
@@ -144,7 +183,7 @@
     opts = opts || {};
     var wrap = document.createElement('div'); wrap.className = 'lat-lab';
     wrap.innerHTML = '<div class="lat-top"><div><h3>Lattice lab: why connectivity matters</h3>' +
-      '<p>Both chips can only run a two-qubit gate between <em>coupled</em> neighbours. Anything farther apart must first be moved together with SWAP gates, and every SWAP adds error. Hover a qubit, click two to route a gate, or roll a random one on both lattices at once.</p></div>' +
+      '<p>Both chips can only run a two-qubit gate between <em>coupled</em> neighbours. Anything farther apart must first be moved together with SWAP gates, and every SWAP adds error. Hover a qubit, click two to route a gate, or roll a random one on both lattices at once. Keyboard: Tab to a lattice, arrow keys to move, Enter to pick.</p></div>' +
       '<button type="button" class="lat-roll">🎲 Random gate on both</button></div><div class="lat-row"></div>' +
       '<p class="lat-note">Schematic ~50-qubit patches, not the real chip maps. Willow has 105 qubits with an average connectivity of 3.47 (its spec sheet; edge qubits have fewer than 4); Nighthawk has 120 qubits with up to 4 neighbours; the heavy-hex Heron chips have 133/156. Real compilers route more cleverly than one SWAP chain per gate, but the ranking holds.</p>';
     mount.appendChild(wrap);
@@ -174,6 +213,8 @@
       '@keyframes lat-draw{from{stroke-opacity:0}to{stroke-opacity:1}}',
       '.lat-q{fill:var(--bg-card);stroke:var(--c);stroke-width:3;cursor:pointer;transition:r .2s var(--ease-out,ease),fill .2s}',
       '.lat-q.bridge{stroke-dasharray:3 2}',
+      '.lat-svg:focus{outline:none}.lat-svg:focus-visible{outline:2px solid var(--c);outline-offset:3px;border-radius:8px}',
+      '.lat-cur{fill:none;stroke:var(--text-primary);stroke-width:2.5;stroke-dasharray:4 3;pointer-events:none;display:none}.lat-svg.kb .lat-cur{display:inline}',
       '.lat-q:hover,.lat-q.hv{r:12}.lat-q.nb{fill:color-mix(in srgb,var(--c) 45%,var(--bg-card))}',
       '.lat-q.sel{fill:var(--c);r:12}.lat-q.on-path{fill:color-mix(in srgb,var(--c) 70%,var(--bg-card));animation:lat-pop .4s var(--ease-out,ease) both}',
       '@keyframes lat-pop{from{r:6}to{r:10}}',

@@ -83,3 +83,8 @@ Three additions, built from the page's own content:
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - Hero badge icon 🔗 (copied from quantinuum-vs-ionq) → 🖥️, the NAV / start-here icon.
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## 2026-09-29 (overnight): lattice lab works from the keyboard
+- Each lattice patch is now one tab stop (`role="application"`, `aria-roledescription="qubit lattice"`, instructions in its label). Arrow keys move a dashed focus ring to the nearest qubit in that screen direction, Enter/Space picks (two picks route the gate), Esc clears, Home/End jump to the first/last qubit.
+- The aria-live message now says which qubit ("Qubit 19 of 49, with 4 neighbours.") so the neighbour count and the SWAP result are read out. Mouse behaviour is unchanged, and a mouse click doesn't show the ring (`:focus-visible`).
+- Checked: from every qubit, arrow keys reach all 49 (square) / 48 (heavy-hex) qubits; keyboard routes give the same SWAP counts as mouse routes (corner to corner on the 7×7 square: distance 12, 11 SWAPs); both themes, 390 px, reduced motion; no overflow. `vs-lattice.js?v=2`.
