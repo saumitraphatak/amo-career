@@ -302,9 +302,13 @@ def test_hand_typed_counts_match_content() -> None:
     nav = nav[nav.index("const NAV = {"):nav.index("learn:", nav.index("const NAV = {"))]
     n_tools = len(set(re.findall(r"key:\s*'([^']+)'", nav)))
     assert_contains("home.html", f'<span id="stat-tools-count">{n_tools}</span>')
-    # Atomic Species Selector: 15 species tiles
-    n_atoms = read("pages/atom-library.html").count('class="atom-tile')
+    # Atomic Species Selector: one data-table row per isotope (the periodic-table explorer
+    # reads its numbers from these rows, so they are the page's source of truth)
+    n_atoms = len(re.findall(r'<tr data-family=', read("pages/atom-library.html")))
+    assert n_atoms == 15, n_atoms
     assert_contains("home.html", f'<span class="chip">{n_atoms} atoms</span>')
+    assert_contains("pages/atom-library.html", f"The {n_atoms} isotopes in this library")
+    assert_contains("pages/atom-library.html", f"All {n_atoms} isotopes at a glance")
     assert_contains("pages/start-here.html", f"Spectroscopic constants for {n_atoms} species")
 
 

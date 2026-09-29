@@ -129,3 +129,17 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - `smoke.js`, all 34 pages vs HEAD: 0 new problems;
   - formula tests OK 17; inline scripts parse and tags are balanced on every touched page.
 - **Recorded:** principle §8 added to `docs/site-philosophy.md`; CLAUDE.md updated.
+
+## 2026-09-29 (morning, interactive): atom-library reorganized around a Periodic Table Explorer
+- **Built:** new `js/atom-explorer.js`, with the page restructured around it (details in `docs/page-notes/atom-library.md`). It adds:
+  - the table, with the selected-element summary in the table's own gap;
+  - 8 "Colour by" lenses, each with a physics caption and a text list of values;
+  - an inspector holding the revived level diagram, notes, data sheets and groups;
+  - compare mode with isotope pickers;
+  - a link from the data table into the explorer.
+- **Fixed on the way:**
+  - clicking an atom tile threw an error (the level-diagram panel's markup was missing);
+  - ⁴⁰K hyperfine splitting was missing from the table (1.286 GHz, Arimondo et al. RMP 1977);
+  - the "¹⁹K" typo.
+- **Tests:** formula tests OK 17; `smoke.js` 0 new problems; Playwright interaction checks in both themes and on phones.
+- **Note:** there are no overnight-run commits after 9fbec4a. This morning the lock still read "running 2026-09-29T01:38:29Z" from the interactive session; it is older than 55 min, so a run should have treated it as stale. Check the scheduled task's run history (the Mac may have been asleep).
