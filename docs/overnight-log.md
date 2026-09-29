@@ -105,3 +105,8 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - **Fix.** `canvas-ink.js` v2 maps those creams; the 7 existing pages were bumped to v2. The 5 animated canvases also moved from forever rAF loops to `AMOMotion.loop`. Invisible cream labels were fixed ("lens"; rydberg's "BLOCKADE ACTIVE").
   - **Tests.** Screenshots in both themes reviewed; `smoke.js` 0 new problems on the touched pages. The other flagged canvases are data colour maps (Zernike RdBu/inferno), left as they are.
   - **Still open (backlog):** forever loops without pause on atom-library (pulse), lab-calculators (Gaussian-beam dot), polarimetry (2 loops), qc-landscape (to check).
+- **Forever loops, finished.**
+  - lab-calculators (Gaussian-beam dot) and polarimetry (2 E-field canvases) now use `AMOMotion.loop`, with one loop per canvas and the frame swapped on recompute.
+  - Two decorative loops (atom-library tile glow, qc-landscape hero network) now stop after 5 s and don't run under reduced motion.
+  - **Tests.** Playwright checked animating vs paused, reduced-motion start state, and the tiles and hero still after 5.6 s. `smoke.js` found one new overflow (the polarimetry pause row landed inside a flex row); fixed by anchoring the button below the row, then 0 new problems.
+  - A `requestAnimationFrame` grep now finds no forever loop without a pause control or a time limit on any page. The shared `js/*3d.js` helpers either have their own pause controls or animate only while dragging.

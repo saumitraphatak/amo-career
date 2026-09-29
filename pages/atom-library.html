@@ -1453,18 +1453,23 @@ Narrow: 583 nm (intercombination line)</span>
       });
     });
 
-    /* ── Pulsed glow animation on atom tiles ── */
+    /* ── Pulsed glow animation on atom tiles ──
+       Decorative, so it runs for at most 5 s (WCAG 2.2.2 needs no pause control
+       below that) and not at all under prefers-reduced-motion; then the tiles
+       settle back to their static 0.12 tint. */
     (function() {
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const startT = performance.now();
       function pulse(ts) {
         const t = (ts - startT) / 1000; // seconds
+        const done = t > 5;
         document.querySelectorAll('.atom-tile').forEach((tile, i) => {
           // Each tile pulses with a slight phase offset
           const ph = t * 1.2 + i * 0.3;
           const glow = 0.5 + 0.5 * Math.sin(ph);
           // Get tile color from inline style
           const bgColor = tile.style.background || '';
-          const alpha = 0.08 + glow * 0.12;
+          const alpha = done ? 0.12 : 0.08 + glow * 0.12;
           // Re-apply background with animated alpha
           const match = bgColor.match(/rgba?\([^)]+\)/);
           if (match) {
@@ -1472,7 +1477,7 @@ Narrow: 583 nm (intercombination line)</span>
             tile.style.background = base;
           }
         });
-        requestAnimationFrame(pulse);
+        if (!done) requestAnimationFrame(pulse);
       }
       requestAnimationFrame(pulse);
     })();

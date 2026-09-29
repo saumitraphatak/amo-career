@@ -97,3 +97,6 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
   - The race's dashed line sat at 10⁶ but its caption said "order 10⁷"; it is now labelled "RSA-2048 est. (2025)" with a caption giving both estimates.
 - **Charts** also get the sitewide theme-aware Chart.js inks (main.js v36; see CLAUDE.md).
 - **Checked:** Playwright, dark/light at 1280 and dark at 390 px, theme toggle; screenshots reviewed.
+
+## 2026-09-29: hero particle network is time-limited
+The hero's decorative particle network drifted forever. It now moves for at most 5 s (WCAG 2.2.2), draws a still frame under prefers-reduced-motion, and redraws on resize.

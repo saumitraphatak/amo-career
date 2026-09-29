@@ -920,6 +920,7 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=36"></script>
+<script src="../js/motion.js?v=1"></script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';
@@ -1005,6 +1006,21 @@
     polStartEfield('efieldCanvas', d.Ex, d.Ey, d.delta, d.clr);
   }
 
+  // One pause-able loop per canvas (js/motion.js); a new polarization state swaps in a new frame
+  const _polLoops = {};
+  function polLoop(canvas, frame) {
+    const L = _polLoops[canvas.id] || (_polLoops[canvas.id] = { f: null });
+    L.f = frame;
+    if (!L.on) {
+      L.on = true;
+      // the canvas sits in a flex row (.pol-canvas-wrap): put the pause button below that row
+      const host = canvas.closest('.pol-canvas-wrap');
+      if (window.AMOMotion) AMOMotion.loop(canvas, () => { if (L.f) L.f(); }, host ? { anchors: [{ el: host, where: 'afterend' }] } : undefined);
+      else requestAnimationFrame(function g() { if (L.f) L.f(); requestAnimationFrame(g); });
+    }
+    frame();   // draw the new state at once, also while paused
+  }
+
   function polStartEfield(id, Ex, Ey, delta, clr) {
     if(polAnimEfield) cancelAnimationFrame(polAnimEfield);
     const canvas=document.getElementById(id); if(!canvas) return;
@@ -1028,9 +1044,9 @@
       ctx.strokeStyle=grad;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
       ctx.shadowBlur=10;ctx.shadowColor=clr||'#06b6d4';ctx.fillStyle=clr||'#06b6d4';ctx.beginPath();ctx.arc(ex,ey,5,0,2*Math.PI);ctx.fill();ctx.shadowBlur=0;
       ctx.fillStyle=amoInk(0.25);ctx.beginPath();ctx.arc(cx,cy,3,0,2*Math.PI);ctx.fill();
-      t+=0.04;polAnimEfield=requestAnimationFrame(frame);
+      t+=0.04;
     }
-    frame();
+    polLoop(canvas, frame);
   }
 
   /* ── Poincaré Sphere ── */
@@ -1259,9 +1275,9 @@
       const g=ctx.createLinearGradient(cx,cy,ex,ey);g.addColorStop(0,'rgba(232,121,249,0)');g.addColorStop(1,'#bf0adb');
       ctx.strokeStyle=g;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
       ctx.shadowBlur=10;ctx.shadowColor='#bf0adb';ctx.fillStyle='#bf0adb';ctx.beginPath();ctx.arc(ex,ey,4.5,0,2*Math.PI);ctx.fill();ctx.shadowBlur=0;
-      t+=0.04;polAnimSim=requestAnimationFrame(frame);
+      t+=0.04;
     }
-    frame();
+    polLoop(canvas, frame);
   }
 
   /* ── Init ── */

@@ -43,3 +43,6 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 2 labels rendered differently after the fix, e.g. "ORIENTATION Ψ" → "ORIENTATION ψ"; "ELLIPTICITY Χ" → "ELLIPTICITY χ". No markup on the page changed apart from the cache version.
+
+## 2026-09-29: E-field animations can be paused
+The two rotating-E-field canvases (basics `efieldCanvas`, simulator `pol-sim-canvas`) ran forever loops, restarted on every state change. Each now has one `AMOMotion.loop` (`polLoop`); a new polarization state swaps the frame and draws at once, also while paused. The pause button goes below the `.pol-canvas-wrap` flex row (inside it, it overflowed 390 px screens by 3 px).

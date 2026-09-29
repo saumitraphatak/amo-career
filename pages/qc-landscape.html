@@ -1933,10 +1933,13 @@ Published benchmark: $\langle n\rangle &lt; 0.05$ via resolved-sideband cooling 
           ctx.arc(n.x*W,n.y*H,n.r,0,Math.PI*2);
           ctx.fillStyle='rgba(122,79,247,0.55)'; ctx.fill();
         });
-        requestAnimationFrame(draw);
+        // Decorative: drifts for at most 5 s (WCAG 2.2.2), not at all under reduced motion
+        if (!still && performance.now() - heroT0 < 5000) requestAnimationFrame(draw);
       }
+      const heroT0 = performance.now();
+      let still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
       resize();
-      window.addEventListener('resize', () => { resize(); });
+      window.addEventListener('resize', () => { resize(); const s = still; still = true; draw(); still = s; });
       draw();
     })();
 

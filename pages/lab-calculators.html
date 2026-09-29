@@ -1044,6 +1044,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=36"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
+<script src="../js/motion.js?v=1"></script>
   <script>
     renderNav({ active: 'lab-calculators', root: '../' });
 
@@ -1442,7 +1443,15 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
     }
 
     // ── Gaussian beam visualiser ────────────────────────────────────
-    let _gbRaf = null;
+    let _gbRaf = null, _gbFrame = null, _gbLoop = false;
+    // One pause-able loop for the propagating dot (js/motion.js); each recompute swaps in a new frame
+    function gbAnimate(cv, frame) {
+      _gbFrame = frame;
+      if (_gbLoop) return;
+      _gbLoop = true;
+      if (window.AMOMotion) AMOMotion.loop(cv, ts => { if (_gbFrame) _gbFrame(ts); });
+      else requestAnimationFrame(function f(ts) { if (_gbFrame) _gbFrame(ts); requestAnimationFrame(f); });
+    }
     function drawGaussianBeam(lam_m, w0_m, zR) {
       const cv = document.getElementById('gbCanvas');
       if (!cv) return;
@@ -1532,7 +1541,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       function animDot(ts) {
         const cv2 = document.getElementById('gbCanvas');
         if (!cv2 || cv2.width !== W) return; // canvas resized, stop
-        const frac = ((ts - startT) % period) / period;
+        const frac = (((ts - startT) % period) + period) % period / period;   // ts may precede startT after a pause
         const z = (frac - 0.5) * 2 * zMax;
         const xp = toX(z);
         const wp = wz(z);
@@ -1574,9 +1583,8 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         ctx.fillStyle = 'rgba(250,245,233,0.85)'; ctx.fill();
         ctx.beginPath(); ctx.arc(xp, cy, dotR * 2.5, 0, 2*Math.PI);
         ctx.fillStyle = amoInk(0.2); ctx.fill();
-        _gbRaf = requestAnimationFrame(animDot);
       }
-      _gbRaf = requestAnimationFrame(animDot);
+      gbAnimate(cv, animDot);
 
       // Info text
       const unit = zR >= 0.001 ? [(zR*1e3).toFixed(2), 'mm'] : [(zR*1e6).toFixed(1), 'µm'];

@@ -45,3 +45,6 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s) 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 5 labels rendered differently after the fix, e.g. "COOL. Λ (NM)" → "COOL. λ (nm)"; "Γ/2Π (MHZ)" → "Γ/2π (MHz)". No markup on the page changed apart from the cache version.
+
+## 2026-09-29: tile glow is time-limited
+The decorative pulse on the atom selector tiles ran forever (a `requestAnimationFrame` loop rewriting every tile's background). It now runs for at most 5 s, so WCAG 2.2.2 needs no pause control, and not at all under prefers-reduced-motion; the tiles then settle at their static 0.12 tint.

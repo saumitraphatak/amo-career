@@ -49,3 +49,6 @@ Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The
 ## 2026-09-29: EOM sideband canvas follows the theme
 - `eom_canvas` filled cream (`#f2ead9`) in the dark theme too. Its context is now wrapped with `js/canvas-ink.js?v=2`, and it redraws on a theme toggle (`AMOInk.onTheme(calcEOM)`).
 - Still open: the Gaussian-beam canvas's propagating-dot loop (`animDot`) runs forever without a pause control.
+
+## 2026-09-29: Gaussian-beam dot can be paused
+The propagating dot on `gbCanvas` ran a forever loop. There is now one `AMOMotion.loop` per canvas (Pause button, offscreen stop, reduced-motion still frame), and each recompute swaps in the new frame (`gbAnimate`). The dot's phase uses a non-negative modulo, because timestamps can precede its start after a pause.
