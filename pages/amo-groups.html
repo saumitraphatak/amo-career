@@ -455,7 +455,7 @@
     <div class="groups-globe" id="groups-globe" hidden>
       <canvas id="groups-globe-cvs" data-export-ready="true" aria-label="Globe of the Featured Directory: one marker per group (clustered by campus), coloured by research area. The same groups are listed below."></canvas>
       <div class="groups-globe-bar">
-        <span><strong id="groups-globe-count">99 groups</strong> on the globe · colours match the filter buttons · click a marker for details</span>
+        <span><strong id="groups-globe-count">99 groups</strong> on the globe · colours match the filter buttons · click a marker for details (keyboard: <kbd>]</kbd> / <kbd>[</kbd> step through the markers, Enter opens)</span>
         <button type="button" class="groups-globe-pause" id="groups-globe-pause" aria-pressed="false">❚❚ Stop spinning</button>
       </div>
     </div>
@@ -533,7 +533,7 @@
 </footer>
 
 <script src="../js/orbit3d.js?v=2"></script>
-<script src="../js/globe3d.js?v=1"></script>
+<script src="../js/globe3d.js?v=2"></script>
 <script>
 /* ─────────────────────────────────────────────────────
    GROUP DATA
@@ -1115,7 +1115,7 @@ function initGlobe() {
     onPick: p => showPanel(p.idx),
     clusterTitle: list => {
       const insts = [...new Set(list.map(p => p.sub.split(' · ').pop()))];
-      return list.length + ' groups · ' + (insts.length === 1 ? insts[0] : insts.slice(0, 2).join(' / ') + (insts.length > 2 ? ' …' : ''));
+      return list.length + (list.length === 1 ? ' group · ' : ' groups · ') + (insts.length === 1 ? insts[0] : insts.slice(0, 2).join(' / ') + (insts.length > 2 ? ' …' : ''));
     }
   });
   if (!groupsGlobe) { wrap.hidden = true; return; }

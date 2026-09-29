@@ -16,6 +16,11 @@
    Rotation uses the shared AMO3D.orbit (js/orbit3d.js must load first).
    Auto-spin (with a pause button — WCAG 2.2.2) stops when you interact,
    is off under prefers-reduced-motion, and pauses offscreen.
+
+   Keyboard (2026-09-29): arrow keys turn it (AMO3D.orbit); ] and [ step
+   through the markers from west to east, turning the globe to each one
+   and pinning its card, with an aria-live line; Enter opens a single
+   entry (opts.onPick) or moves focus into a cluster's list; Esc closes.
    ───────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -204,6 +209,43 @@
       });
     }
     function hideTip() { tip.hidden = true; pinned = null; }
+
+    /* ── keyboard: ] / [ step through the markers west → east ── */
+    var live = document.createElement('div');
+    live.className = 'globe3d-live'; live.setAttribute('aria-live', 'polite');
+    host.appendChild(live);
+    function entryFor(c) { for (var i = 0; i < screen.length; i++) if (screen[i].c === c) return screen[i]; return null; }
+    function refreshPin() { if (pinned) { var e = entryFor(pinned.c); if (e) pinned = e; showTip(pinned, true); } }
+    function finishAnim() { if (anim) { view.az = anim.a1; view.el = anim.e1; anim = null; draw(); } }
+    function stepMarker(dir) {
+      if (!clusters.length) return;
+      var order = clusters.slice().sort(function (a, b) { return a.lon - b.lon || b.lat - a.lat; });
+      var cur = pinned ? order.indexOf(pinned.c) : -1;
+      var i = cur < 0 ? (dir > 0 ? 0 : order.length - 1) : (cur + dir + order.length) % order.length;
+      var c = order[i];
+      focusOn(c.lat, c.lon);
+      if (reduced) draw();
+      pinned = entryFor(c) || { x: CX, y: CY, r: 7, c: c };
+      showTip(pinned, true);
+      var head = opts.clusterTitle ? opts.clusterTitle(c.list) : (c.list.length + ' item' + (c.list.length > 1 ? 's' : ''));
+      var names = c.list.slice(0, 3).map(function (p) { return p.title; }).join('; ') + (c.list.length > 3 ? '; and ' + (c.list.length - 3) + ' more' : '');
+      live.textContent = head + ': ' + names + '. Place ' + (i + 1) + ' of ' + order.length + ', west to east. ' +
+        (c.list.length > 1 ? 'Enter moves to the list.' : 'Enter opens it.');
+    }
+    canvas.addEventListener('keydown', function (e) {
+      if (e.key === ']' || e.key === '.') { e.preventDefault(); interacted(); stepMarker(1); }
+      else if (e.key === '[' || e.key === ',') { e.preventDefault(); interacted(); stepMarker(-1); }
+      else if (e.key === 'Enter' && pinned) {
+        e.preventDefault(); finishAnim();
+        var c = pinned.c;
+        if (c.list.length === 1) { hideTip(); if (opts.onPick) opts.onPick(c.list[0]); }
+        else { refreshPin(); var b = tip.querySelector('.globe3d-row'); if (b) b.focus(); }
+      }
+      else if (e.key === 'Escape' && pinned) { e.preventDefault(); hideTip(); }
+    });
+    tip.addEventListener('keydown', function (e) {           // Esc inside a cluster list goes back to the globe
+      if (e.key === 'Escape' && pinned) { e.preventDefault(); hideTip(); canvas.focus(); }
+    });
     function esc(t) { return String(t).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
 
     var down = null;
@@ -250,14 +292,14 @@
         view.az += 0.11 * dt; moving = true;
       }
       draw();
-      if (pinned) showTip(pinned, true);
+      if (pinned && !tip.contains(document.activeElement)) refreshPin();   // the card follows its marker
       if (moving && visible && !document.hidden) raf = requestAnimationFrame(frame); else { running = false; last = 0; }
     }
     function kick() { if (!raf && visible && !document.hidden) { running = true; raf = requestAnimationFrame(frame); } }
     var resumeT = 0;
     view.onChange(function () {
       interacted();
-      if (!raf) requestAnimationFrame(function () { draw(); if (pinned) showTip(pinned, true); });
+      if (!raf) requestAnimationFrame(function () { draw(); if (pinned && !tip.contains(document.activeElement)) refreshPin(); });
       clearTimeout(resumeT); resumeT = setTimeout(kick, 6100);                  // resume the spin once the user lets go
     });
 
@@ -303,7 +345,8 @@
       '.globe3d-row i{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}' +
       '.globe3d-row small{display:block;color:var(--text-muted);font-size:.7rem}' +
       '.globe3d-more,.globe3d-hint{color:var(--text-muted);font-size:.68rem;margin:4px 6px 0}' +
-      '.globe3d-tip:not(.pinned) .globe3d-row{pointer-events:none}';
+      '.globe3d-tip:not(.pinned) .globe3d-row{pointer-events:none}' +
+      '.globe3d-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}';
     document.head.appendChild(st);
   }
 })();

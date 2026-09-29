@@ -8,6 +8,8 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
 
 ## P0: bugs and correctness (do these first)
 
+- [ ] **amo-groups "Andersen Group" entry looks wrong** (found 2026-09-29 overnight, not yet researched). `GROUPS` has `{ name:'Andersen Group', pi:'Halina Rubinsztein-Dunlop', inst:'Univ. Queensland', … }` and its link is `atomlaser.phy.uq.edu.au`. Mikkel Andersen's group is at the University of Otago (NZ); Rubinsztein-Dunlop leads a UQ group. Check both groups on their own web pages and fix the name (and anything else in that entry: focus, paper, coordinates), and check whether Otago's Andersen group should be a separate entry. Update the 99-group counts/test only if the number of groups changes.
+
 - [x] **Horizontal overflow on phones (390 px), 12 pages.** Done 2026-09-28 overnight (commit: see log). All 34 pages fit at 390 and 360 px with KaTeX rendered; the smoke test reports no overflow. Also fixed on the way: dollar amounts typeset as maths on 3 industry pages. Found by `tests/browser/smoke.js` on 2026-09-28. Widths at 390 px:
   - cavity-qed 409 · dd-playground 436 · decoherence-lab 736 · fidelity-budget 432
   - imaging-calculator 501 · lab-techniques 426 · laser-cooling 582 · polarimetry 636
@@ -36,11 +38,11 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
 - [x] **Forever animation loops without a pause control (WCAG 2.2.2).** Done 2026-09-29 (interactive): lab-calculators and polarimetry now use AMOMotion.loop; the decorative atom-library tile glow and qc-landscape hero are capped at 5 s. Found 2026-09-29 by grepping for `requestAnimationFrame` outside `AMOMotion`: atom-library `pulse` (~l.1477), lab-calculators Gaussian-beam `animDot`, polarimetry `polAnimEfield`/`polAnimSim`, and qc-landscape (6 rAF sites; check which run forever). Move each to `AMOMotion.loop` (`js/motion.js`) the way lab-techniques/laser-cooling were done on 2026-09-29, keeping the physics the same; check both themes and reduced motion.
 
 - [x] **Shared-element page transitions.** Done 2026-09-29 overnight (main.js v38 / styles.css v27): home tool + intent cards and start-here see-also cards → hero icon, and back; 7 mismatched hero icons fixed so every page's hero icon equals its NAV icon. On home → tool page navigation, morph the clicked tool card's icon into the page hero's eyebrow icon. The cross-document view transitions are already on (`docs/motion-and-transitions.md`). Name only the clicked element (set `view-transition-name` in `pageswap` on the card's icon and in `pagereveal` on the target hero) so names stay unique.
-- [ ] **Keyboard access for canvas/SVG interactives** that are mouse-only today:
+- [x] **Keyboard access for canvas/SVG interactives** (all four parts done 2026-09-29 overnight) that were mouse-only:
   - [x] lattice lab qubits (google-vs-ibm): arrow keys move a focus ring, Enter picks; (done 2026-09-29 overnight, `vs-lattice.js?v=2`)
   - [x] time tower papers (paper-syllabus); (done 2026-09-29 overnight: ] / [ step by year, Enter opens the note, `syllabus3d.js?v=2`)
   - [x] constellation stars (start-here); (done 2026-09-29 overnight: ] / [ step through pages or the chosen path, Enter opens, `sitemap3d.js?v=2`)
-  - globe markers (a "list of markers" button is acceptable).
+  - [x] globe markers (done 2026-09-29 overnight: ] / [ step through markers west → east, Enter opens / enters a cluster list, `globe3d.js?v=2`).
 - [ ] **Print stylesheet** (`@media print` in styles.css):
   - hide the nav, topic-nav, pause buttons, search and 3D canvases that don't print well;
   - expand all accordions and show every tab panel with its tab label as a heading;

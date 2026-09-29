@@ -41,3 +41,9 @@ Added a rotatable dotted-Earth globe above the directory (`js/globe3d.js?v=1`, w
 - Auto-spin has a Stop/Spin button (WCAG 2.2.2), is off under `prefers-reduced-motion`, and pauses offscreen.
 
 See docs/3d-visualization-audit-2026-09-28.md, "Globes and the time tower".
+
+## 2026-09-29 (overnight): globe works from the keyboard
+- Arrow keys already turned the globe. Now <kbd>]</kbd> / <kbd>[</kbd> (also . / ,) step through the markers from west to east (50 places for the 99 groups at the default filter; the filters apply), turning the globe to each one and pinning its card; a visually hidden aria-live line reads e.g. "2 groups · UC Berkeley: Stamper-Kurn Lab; Müller Group. Place 3 of 50, west to east." Enter opens a single group's panel, or moves focus into a cluster's list (Tab/Enter there; Esc returns to the globe). The caption says so. Shared code: `js/globe3d.js?v=2`.
+- Fixed on the way: single-group markers were titled "1 groups · …"; now "1 group · …".
+- A pinned card now follows its marker while the globe turns (it used to stay where the marker had been).
+- Checked in Playwright, dark 1280 and light 390 with reduced motion; `smoke.js` 0 new problems.

@@ -100,3 +100,7 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-29: hero particle network is time-limited
 The hero's decorative particle network drifted forever. It now moves for at most 5 s (WCAG 2.2.2), draws a still frame under prefers-reduced-motion, and redraws on resize.
+
+## 2026-09-29 (overnight): globe works from the keyboard
+- Same as amo-groups (shared `js/globe3d.js?v=2`): <kbd>]</kbd> / <kbd>[</kbd> step through the 20 places west to east, turning the globe and pinning the card with an aria-live line; Enter opens the company in the deep dives (or moves into a cluster's list); Esc closes. The section intro says so.
+- Checked: stepping to Burnaby and pressing Enter opened and highlighted the D-Wave card; both themes, 390 px, reduced motion; `smoke.js` 0 new problems.
