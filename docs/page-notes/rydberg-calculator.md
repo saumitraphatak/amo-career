@@ -42,3 +42,12 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 4 labels rendered differently after the fix, e.g. "ORBITAL RADIUS ⟨R⟩" → "ORBITAL RADIUS ⟨r⟩"; "BLOCKADE RADIUS RB" → "BLOCKADE RADIUS Rb". No markup on the page changed apart from the cache version.
+
+## 2026-09-29: 3D blockade array (backlog P2 "3D blockade spheres")
+New card at the end of the calculator section, "In an array: how many neighbours does one excitation block?", drawn by `js/rydberg3d.js` (`AMO3D.blockadeArray`, needs `js/orbit3d.js`).
+- **Inputs.** It takes the page's own R_b (from `blockadeRadius_um(C6, Ω)`) and the atom-separation slider as the lattice spacing a. `window.updateBlockadeViz` is wrapped so the existing 2D pair view keeps working and the array follows every `compute()`.
+- **Geometries.** 5 × 5 square, 5 × 5 triangular, or two square layers one spacing apart (drag to rotate). Click an atom, or focus the figure and press [ / ], to move the excitation.
+- **Maths.** For each neighbour shell the table lists distance, count, U/ℏΩ = (R_b/d)⁶ (from |U(R_b)| = ℏΩ and U ∝ 1/d⁶), blockaded yes/no, and the page's own ε ≈ (d/R_b)¹² for blockaded pairs.
+- **Caveats.** Same as the page: isotropic vdW, approximate C₆, no angular dependence or Förster resonances. This is stated under the figure.
+- **Default.** At the page defaults (n = 50, Ω/2π = 1 MHz, r = 5 µm) R_b/a ≈ 0.99, so nothing is blockaded; the summary says so and points to the separation slider.
+- **Checked.** Playwright, dark/light at 1280 and 390 px, all three geometries, click and keys, drag, and r = 3 and 30 µm. Table values match (R_b/d)⁶ by hand (e.g. R_b = 4.97 µm, d = 3 µm → 20.6). `smoke.js` against the baseline showed no new problems.

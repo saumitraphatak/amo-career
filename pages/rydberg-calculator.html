@@ -250,6 +250,32 @@
       line-height: 1.6;
     }
 
+    /* ── 3D blockade array (js/rydberg3d.js) ── */
+    .blk3d { margin-top:var(--sp-6); border:1px solid var(--border); border-radius:var(--r-lg); background:var(--bg-card); padding:var(--sp-5); }
+    .blk3d[hidden] { display:none; }
+    .blk3d-top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.6rem 1rem; align-items:flex-start; }
+    .blk3d-top h4 { margin:0 0 .3rem; font-size:1.05rem; color:var(--text-primary); }
+    .blk3d-top p { margin:0; font-size:.86rem; color:var(--text-secondary); line-height:1.6; max-width:66ch; }
+    .blk3d-geo { display:inline-flex; border:1px solid var(--border-med); border-radius:999px; overflow:hidden; }
+    .blk3d-geo button { font:inherit; font-size:.76rem; padding:4px 12px; background:transparent; border:0; color:var(--text-secondary); cursor:pointer; }
+    .blk3d-geo button[aria-pressed="true"] { background:var(--c-ryd, #4f46e5); color:#fff; }
+    .blk3d-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:1rem; margin-top:.8rem; align-items:start; }
+    @media(max-width:820px){ .blk3d-grid { grid-template-columns:minmax(0,1fr); } }
+    #blk3d-cvs { display:block; width:100%; height:380px; max-height:none !important; }
+    @media(max-width:620px){ #blk3d-cvs { height:320px; } }
+    .blk3d-sum { font-size:.9rem; color:var(--text-primary); margin:.2rem 0 .7rem; line-height:1.55; }
+    .blk3d-sum b { color:var(--c-ryd, #4f46e5); }
+    .blk3d-tbl { width:100%; border-collapse:collapse; font-size:.78rem; }
+    .blk3d-tbl th { text-align:left; font-weight:600; color:var(--text-muted); border-bottom:1px solid var(--border); padding:.3rem .35rem; }
+    .blk3d-tbl td { padding:.3rem .35rem; border-bottom:1px solid var(--border); font-family:var(--font-mono); color:var(--text-secondary); }
+    .blk3d-tbl tr.in td { color:var(--text-primary); }
+    .blk3d-tbl td:first-child { white-space:nowrap; }
+    .blk3d-tbl .yes { color:#4f46e5; font-weight:700; } .blk3d-tbl .no { color:#059669; font-weight:700; }
+    [data-theme="dark"] .blk3d-tbl .yes { color:#a5b4fc; } [data-theme="dark"] .blk3d-tbl .no { color:#34d399; }
+    .blk3d-key { display:flex; flex-wrap:wrap; gap:.3rem 1rem; font-size:.74rem; color:var(--text-muted); margin-top:.5rem; }
+    .blk3d-key i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:.3rem; vertical-align:middle; }
+    .blk3d-note { font-size:.74rem; color:var(--text-muted); margin:.7rem 0 0; line-height:1.55; }
+
   </style>
 
   <!-- Open Graph -->
@@ -519,6 +545,32 @@
           </p>
         </div>
       </div>
+    </div>
+
+    <!-- 3D blockade array (js/rydberg3d.js): same R_b and spacing as the calculator above -->
+    <div class="blk3d" id="blk3d" hidden>
+      <div class="blk3d-top">
+        <div>
+          <h4>In an array: how many neighbours does one excitation block?</h4>
+          <p>The same R<sub>b</sub> and spacing as above, now in a 5 × 5 tweezer array (or two stacked layers, one spacing apart). The pink atom is excited to |r⟩; every atom inside its blockade sphere (indigo) is shifted by U ≥ ℏΩ and can't follow. Drag to turn it, click any atom to move the excitation (or focus the figure and press [ and ]).</p>
+        </div>
+        <div class="blk3d-geo" role="group" aria-label="Array geometry">
+          <button type="button" data-kind="square" aria-pressed="true">Square</button>
+          <button type="button" data-kind="tri" aria-pressed="false">Triangular</button>
+          <button type="button" data-kind="bilayer" aria-pressed="false">Two layers</button>
+        </div>
+      </div>
+      <div class="blk3d-grid">
+        <div>
+          <canvas id="blk3d-cvs" data-export-ready="true" aria-label="3D tweezer array with the Rydberg blockade sphere drawn around the excited atom. The atoms inside the sphere are listed in the table next to the figure."></canvas>
+          <div class="blk3d-key"><span><i style="background:#f472b6"></i>excited |r⟩</span><span><i style="background:#818cf8"></i>blockaded (d &lt; R<sub>b</sub>)</span><span><i style="background:#34d399"></i>free to be excited</span></div>
+        </div>
+        <div>
+          <div class="blk3d-sum" id="blk3d-sum" aria-live="polite"></div>
+          <div class="table-scroll"><table class="blk3d-tbl"><thead><tr><th>Neighbour shell</th><th>Atoms</th><th>U/ℏΩ</th><th>Blockaded</th><th>ε ≈ (d/R<sub>b</sub>)¹²</th></tr></thead><tbody id="blk3d-rows"></tbody></table></div>
+        </div>
+      </div>
+      <p class="blk3d-note">U(d)/ℏΩ = (R<sub>b</sub>/d)⁶ follows from |U(R<sub>b</sub>)| = ℏΩ and U ∝ 1/d⁶; the last column is the page's own imperfect-blockade estimate, for a pair at that distance. Same caveats as the calculator: isotropic van der Waals interaction with an approximate C₆, no angular dependence or Förster resonances, so treat it as a first-pass layout check.</p>
     </div>
   </section>
 
@@ -1247,6 +1299,39 @@ function updateChart(species, orbKey, Omega_MHz) {
 
 /* ═══ Init ═══ */
 compute();
+</script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/rydberg3d.js?v=1"></script>
+<script>
+/* 3D blockade array: follows the calculator via updateBlockadeViz(R_b, r) */
+(function () {
+  var wrap = document.getElementById('blk3d'), cvs = document.getElementById('blk3d-cvs');
+  if (!wrap || !cvs || !window.AMO3D || !AMO3D.blockadeArray) return;
+  wrap.hidden = false;
+  var sum = document.getElementById('blk3d-sum'), rows = document.getElementById('blk3d-rows');
+  function f(x) { return x >= 1e6 ? x.toExponential(1) : x >= 100 ? x.toFixed(0) : x >= 1 ? x.toFixed(1) : x >= 0.01 ? x.toFixed(2) : x.toExponential(1); }
+  var arr = AMO3D.blockadeArray(cvs, {
+    onReport: function (r) {
+      sum.innerHTML = 'R<sub>b</sub>/a = ' + r.rb.toFixed(2) + ': one excitation blocks <b>' + r.blocked + ' of ' + r.total + '</b> other atoms in this array.' +
+        (r.blocked === 0 ? ' The spacing is larger than R<sub>b</sub>, so neighbours can be excited independently. Lower the atom separation (or raise n) above to bring them inside the sphere.' : '');
+      rows.innerHTML = r.shells.slice(0, 6).map(function (s) {
+        var dum = s.d * r.a, ratio = Math.pow(r.Rb / dum, 6), inb = dum < r.Rb;
+        return '<tr class="' + (inb ? 'in' : '') + '"><td>' + (s.d === 1 ? 'a' : s.d.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + ' a') + ' = ' + dum.toFixed(1) + ' μm</td><td>' + s.n + '</td><td>' + f(ratio) + '</td>' +
+          '<td class="' + (inb ? 'yes">yes' : 'no">no') + '</td><td>' + (inb ? Math.pow(dum / r.Rb, 12).toExponential(1) : '—') + '</td></tr>';
+      }).join('');
+    }
+  });
+  if (!arr) { wrap.hidden = true; return; }
+  var prev = window.updateBlockadeViz;
+  window.updateBlockadeViz = function (Rb, r, n, blocked) { if (prev) prev(Rb, r, n, blocked); arr.set({ Rb: Rb, a: r }); };
+  wrap.querySelectorAll('.blk3d-geo button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      wrap.querySelectorAll('.blk3d-geo button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      arr.set({ kind: b.dataset.kind });
+    });
+  });
+  if (typeof compute === 'function') compute();
+})();
 </script>
 <div id="amo-nav-ready" hidden></div>
 </body>

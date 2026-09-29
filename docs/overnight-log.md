@@ -68,3 +68,13 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **P1 symbol tooltips for keyboard and touch** (59a142b): the 23 `.tip[data-tip]` symbols (cavity-qed, imaging-calculator, lab-calculators) are focusable, carry their text as `aria-describedby`, pin open on tap/click, close on a second tap / tap elsewhere / Esc, and hide on Esc while focused; a tip inside a `<label>` stays open when the tap focuses the input; alignment uses the first line box. Cache bump main.js v=35, styles.css v=25 on all 34 HTML files (diff checked: only the version strings changed). `smoke.js` all 34 pages vs HEAD: 0 new problems; Playwright keyboard/touch/Esc checks and a 390 px screenshot.
 - **Push:** tried `git push` once at the end (see summary); commits stay local for Saumitra if it fails.
 - **Next up:** P1 Chart.js dark-theme audit (incl. the cream `#faf5e9` tooltip backgrounds on 9 pages), keyboard access for canvas/SVG interactives, print stylesheet, section search, shared-element transitions; then P2 features. Needs Saumitra: fidelity-budget Doppler k, Hood Lab photon count.
+
+## 2026-09-29 00:05 UTC — interactive session (Saumitra said "continue")
+- **Lock.** Took it (`running 2026-09-29T00:05:45Z`) and released it at the end, so tonight's 22:48 MT run starts normally. The tree was clean apart from Saumitra's own commit 805cf00 (`Claude outputs/` screenshots).
+- **P2 Rydberg Blockade Lab: 3D blockade spheres.** New `js/rydberg3d.js` (`AMO3D.blockadeArray`) plus a card on rydberg-calculator.
+  - It uses the page's own R_b and spacing, with three geometries (square, triangular, two layers).
+  - Click or [ / ] moves the excitation.
+  - The table shows U/ℏΩ = (R_b/d)⁶ and ε ≈ (d/R_b)¹² per neighbour shell.
+  - No new external facts, so no new sources; the formulas are the page's own.
+  - Tests: formula tests OK 16; `node --check` on the JS and inline scripts; open/close tag counts balanced; `smoke.js` vs baseline showed 0 new problems; targeted Playwright in both themes at 1280 and 390 px, with geometry toggles, click, keys, drag and slider extremes; screenshots reviewed.
+- **Next up:** unchanged; P1 first (Chart.js dark-theme audit, keyboard access, print stylesheet, section search, shared-element transitions), then P2 (Zernike 3D surface next).

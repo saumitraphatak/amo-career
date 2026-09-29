@@ -60,7 +60,7 @@ Each one:
 - has a text version of the numbers.
 
 - [ ] **Zernike Wavefront Lab: 3D wavefront surface.** Draw the page's computed wavefront as a rotatable height map (`AMO3D.orbit`), next to the existing colour map, so astigmatism's saddle, defocus's bowl and coma's tilt read instantly. Include the PSF as a second surface if cheap.
-- [ ] **Rydberg Blockade Lab: 3D blockade spheres.** A small 3D tweezer array with translucent spheres of radius R_b = (C₆/ħΩ)^{1/6}, computed live from the page's own C₆ and Ω. Pairs inside R_b are highlighted, with counts of blockaded nearest and next-nearest neighbours.
+- [x] **Rydberg Blockade Lab: 3D blockade spheres.** Done 2026-09-29 (interactive session): `js/rydberg3d.js`, square / triangular / two-layer arrays, shell table with U/ℏΩ and ε. A small 3D tweezer array with translucent spheres of radius R_b = (C₆/ħΩ)^{1/6}, computed live from the page's own C₆ and Ω. Pairs inside R_b are highlighted, with counts of blockaded nearest and next-nearest neighbours.
 - [ ] **Laser Cooling Simulator: velocity-space flow.** Arrows show the page's Doppler/Sisyphus force F(v) acting on a Maxwell–Boltzmann cloud relaxing toward the Doppler limit (Monte Carlo with the page's parameters). Include a pause button.
 - [ ] **Polarimetry: Poincaré trajectory.** As a waveplate rotates, trace the output polarization's path on the sphere (the page's Jones/Mueller maths), with QWP and HWP presets.
 - [ ] **Absorption Imaging: 3D column-density surface.** Show the page's simulated OD image as a surface; the cursor reads out column density at a point.
