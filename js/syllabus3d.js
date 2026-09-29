@@ -13,6 +13,11 @@
    Rotation uses the shared AMO3D.orbit (js/orbit3d.js must load first).
    Slow auto-turn with a pause button (WCAG 2.2.2); off under
    prefers-reduced-motion; paused while offscreen.
+
+   Keyboard (2026-09-29): arrow keys turn it (AMO3D.orbit); ] and [ step
+   through the papers in year order (respecting the type filter), with a
+   ring, the card and an aria-live line; Enter opens that paper's note in
+   the list; Esc closes the card.
    ───────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -184,13 +189,14 @@
       return best;
     }
     function esc(t) { return String(t).replace(/[&<>"]/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); }
-    function showTip(s, pin) {
+    function showTip(s, pin, kb) {
       var p = s.p;
       tip.innerHTML =
         '<div class="tower3d-tip-head"><i style="background:' + col(p.stage) + '"></i>Paper ' + esc(p.num) + ' · ' + esc(STAGES[p.stage].short) +
         (p.tagLabel ? ' · ' + esc(p.tagLabel) : '') + '</div>' +
         '<b>' + esc(p.title) + '</b><small>' + esc(p.cit) + '</small>' +
-        (pin ? '<button type="button" class="tower3d-go">Read the note in the list ↓</button>' : '<div class="tower3d-tip-hint">click for the note</div>');
+        (pin ? '<button type="button" class="tower3d-go">Read the note in the list ↓</button>' : '<div class="tower3d-tip-hint">click for the note</div>') +
+        (kb ? '<div class="tower3d-tip-hint">] next · [ previous · Enter opens the note · Esc closes</div>' : '');
       tip.hidden = false; tip.classList.toggle('pinned', !!pin);
       var cr = canvas.getBoundingClientRect(), hr = host.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
       var x = s.x + (cr.left - hr.left) + 16, y = s.y + (cr.top - hr.top) - 12;
@@ -199,7 +205,7 @@
       var go = tip.querySelector('.tower3d-go');
       if (go) go.addEventListener('click', function () { hideTip(); openCard(p); });
     }
-    function hideTip() { tip.hidden = true; pinned = null; }
+    function hideTip() { tip.hidden = true; pinned = null; kbPinned = false; }
 
     function openCard(p) {
       var btn = document.querySelector('.tab-bar[data-group="stages"] .tab-btn[data-tab="' + STAGES[p.stage].key + '"]');
@@ -215,6 +221,35 @@
       if (opts.onOpen) opts.onOpen(p);
     }
 
+    /* ── keyboard: ] / [ step through the papers by year, Enter opens the note ── */
+    var kbPinned = false;
+    var order = papers.slice().sort(function (a, b) {
+      return a.year - b.year || a.stage - b.stage || (parseFloat(a.num) || 0) - (parseFloat(b.num) || 0);
+    });
+    var live = document.createElement('div');
+    live.className = 'tower3d-live'; live.setAttribute('aria-live', 'polite');
+    host.appendChild(live);
+    function entryFor(p) { for (var i = 0; i < screen.length; i++) if (screen[i].p === p) return screen[i]; return null; }
+    function stepPaper(dir) {
+      var vis = order.filter(function (p) { return !filter || p.tag === filter; });
+      if (!vis.length) return;
+      var cur = pinned ? vis.indexOf(pinned.p) : -1;
+      var i = cur < 0 ? (dir > 0 ? 0 : vis.length - 1) : (cur + dir + vis.length) % vis.length;
+      var p = vis[i];
+      hover = { p: p }; draw();
+      var s = entryFor(p);
+      if (!s) return;
+      pinned = s; hover = s; kbPinned = true; showTip(s, true, true);
+      live.textContent = 'Paper ' + p.num + ', ' + p.year + ', ' + STAGES[p.stage].short + ': ' + p.title +
+        '. ' + (i + 1) + ' of ' + vis.length + ' in year order. Enter opens its note.';
+    }
+    canvas.addEventListener('keydown', function (e) {
+      if (e.key === ']' || e.key === '.') { e.preventDefault(); interacted(); stepPaper(1); }
+      else if (e.key === '[' || e.key === ',') { e.preventDefault(); interacted(); stepPaper(-1); }
+      else if (e.key === 'Enter' && pinned) { e.preventDefault(); var p = pinned.p; hideTip(); hover = null; draw(); openCard(p); }
+      else if (e.key === 'Escape' && pinned) { e.preventDefault(); hideTip(); hover = null; draw(); }
+    });
+
     var down = null;
     canvas.addEventListener('pointerdown', function (e) { down = { x: e.clientX, y: e.clientY }; interacted(); });
     canvas.addEventListener('pointerup', function (e) {
@@ -224,7 +259,7 @@
       var s = hit(e);
       if (!s) { hideTip(); return; }
       if (e.pointerType === 'mouse' && pinned === null && hover && hover.p === s.p) { hideTip(); openCard(s.p); return; }
-      pinned = s; hover = s; showTip(s, true);                  // touch / pen: first tap shows the card
+      pinned = s; hover = s; kbPinned = false; showTip(s, true); // touch / pen: first tap shows the card
     });
     canvas.addEventListener('pointermove', function (e) {
       if (pinned || e.pointerType === 'touch') return;
@@ -260,7 +295,10 @@
     function kick() { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame); }
     view.onChange(function () {
       interacted();
-      if (!raf) requestAnimationFrame(function () { draw(); if (pinned) showTip(pinned, true); });
+      if (!raf) requestAnimationFrame(function () {
+        draw();
+        if (pinned) { var s = entryFor(pinned.p); if (s) { pinned = s; hover = s; } showTip(pinned, true, kbPinned); }   // the card follows its paper
+      });
     });
 
     if (window.ResizeObserver) new ResizeObserver(function () { if (resize()) draw(); }).observe(canvas);
@@ -288,7 +326,8 @@
       '.tower3d-tip-head i{width:9px;height:9px;border-radius:50%;flex-shrink:0}' +
       '.tower3d-tip-hint{color:var(--text-muted);font-size:.68rem;margin-top:4px}' +
       '.tower3d-go{margin-top:7px;font:inherit;font-size:.74rem;font-weight:600;color:var(--c-atom);background:transparent;border:1px solid var(--border-med);border-radius:999px;padding:3px 10px;cursor:pointer}' +
-      '.tower3d-go:hover{background:var(--bg-card-hover)}';
+      '.tower3d-go:hover{background:var(--bg-card-hover)}' +
+      '.tower3d-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}';
     document.head.appendChild(st);
   }
 })();

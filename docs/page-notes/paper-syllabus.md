@@ -64,3 +64,9 @@ The four stage pills ("Stage 1 — … 10 papers") open the four stage chapters 
 - the pager, index cards, keyboard (Enter), deep links and hash updates all work.
 
 `smoke.js` on all 34 pages: 0 new problems.
+
+## 2026-09-29 (overnight): time tower works from the keyboard
+- The tower canvas already turned with the arrow keys (AMO3D.orbit). Now <kbd>]</kbd> / <kbd>[</kbd> (also . / ,) step through the papers in year order (oldest first; ties by stage, then paper number), respecting the type filter. The chosen paper gets its ring and the pinned card, with a keyboard hint line; a visually hidden aria-live line reads "Paper 24, 1972, Grad year 1: Optical Pumping. 2 of 55 in year order." Enter opens its note in the list (switching stage tab, highlighting the card, focusing its DOI link, as a click does); Esc closes the card.
+- Fixed on the way: a pinned card stayed where its paper had been when the tower was turned; it now follows the paper.
+- The intro sentence says how to use it from the keyboard. `syllabus3d.js?v=2`.
+- Checked in Playwright, dark 1280 and light 390 with reduced motion: 55 steps visit every paper once in year order; Enter lands on the right card in view; the Keystone filter restricts stepping to the 11 keystones; no overflow; `smoke.js` 0 new problems.

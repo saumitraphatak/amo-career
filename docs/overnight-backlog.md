@@ -38,7 +38,7 @@ An item may be split into smaller pieces. Add new ideas at the right priority, a
 - [x] **Shared-element page transitions.** Done 2026-09-29 overnight (main.js v38 / styles.css v27): home tool + intent cards and start-here see-also cards → hero icon, and back; 7 mismatched hero icons fixed so every page's hero icon equals its NAV icon. On home → tool page navigation, morph the clicked tool card's icon into the page hero's eyebrow icon. The cross-document view transitions are already on (`docs/motion-and-transitions.md`). Name only the clicked element (set `view-transition-name` in `pageswap` on the card's icon and in `pagereveal` on the target hero) so names stay unique.
 - [ ] **Keyboard access for canvas/SVG interactives** that are mouse-only today:
   - [x] lattice lab qubits (google-vs-ibm): arrow keys move a focus ring, Enter picks; (done 2026-09-29 overnight, `vs-lattice.js?v=2`)
-  - time tower papers (paper-syllabus);
+  - [x] time tower papers (paper-syllabus); (done 2026-09-29 overnight: ] / [ step by year, Enter opens the note, `syllabus3d.js?v=2`)
   - constellation stars (start-here);
   - globe markers (a "list of markers" button is acceptable).
 - [ ] **Print stylesheet** (`@media print` in styles.css):
