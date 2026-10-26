@@ -74,3 +74,7 @@ The four route-cards open chapters 1–4. Simulation Codes and References have n
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - Hero icon 🌡️ → ❄️, matching the home card and start-here; NAV's icon changed the same way (🌡️ had been shared with MOT Temperature / tof-calculator).
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## 2026-10-26 (overnight): velocity histogram no longer stretched
+- `#mbCanvas` read its width before layout and kept a 560 px bitmap that was stretched across the 1,195 px box at 1280 px (labels and bars 2.1× wide). It now reads the canvas's own width (not its padded parent's) and follows size changes with a `ResizeObserver`; bitmap = box at 1280 and 390 px. Physics unchanged.
+- Tests: screenshots dark 1280 / light 390; `smoke.js` 0 new problems.

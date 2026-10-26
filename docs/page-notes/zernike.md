@@ -79,3 +79,8 @@ The four "Recommended workflow" steps open chapters 1–4. The Mode Atlas (chapt
 - the pager, index cards, keyboard (Enter), deep links and hash updates all work.
 
 `smoke.js` on all 34 pages: 0 new problems.
+
+## 2026-10-26 (overnight): square maps stay square
+- The single-mode map (`#singleCanvas`, 180×180 bitmap) showed as a 580×280 ellipse at 1280 px, and the three SLM maps as 377×280: `canvas.zernike-canvas` is `width:100%; aspect-ratio:1`, but the sitewide Chart.js cap `canvas:not(#…){max-height:280px}` clipped the height. Now `width: min(100%, 320px); margin: 0 auto; max-height: none !important`, so every map is a centred square of at most 320 px (checked by comparing CSS box and bitmap aspect for every canvas in every chapter, at 1280 and 390 px).
+- The page has no pointer read-out on these canvases, so nothing else depends on their size.
+- Tests: Playwright screenshots of the single-mode map (dark 1280, light 390), the SLM far field after "Compute Far Field" and the Gerchberg–Saxton maps after a run; `smoke.js` 0 new problems.

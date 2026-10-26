@@ -1276,16 +1276,22 @@ function updateCoolEvo() {
   function resize() {
     // getBoundingClientRect returns 0 when inside a hidden tab panel.
     // Walk up to find a visible ancestor width as fallback.
-    let w = cvs.parentElement.getBoundingClientRect().width;
+    let w = cvs.getBoundingClientRect().width || cvs.parentElement.getBoundingClientRect().width;
     if (!w) {
       // Try the page content container
       const pc = document.querySelector('.page-content .container');
       w = pc ? pc.getBoundingClientRect().width : 0;
     }
-    cvs.width  = w || 560;
+    cvs.width  = Math.round(w) || 560;
     cvs.height = 160;
   }
   window.addEventListener('resize', () => { resize(); if (_mbReady) render(false); });
+  // The width is first read before layout (or inside a closed chapter), which
+  // left a 560 px bitmap stretched across ~1200 px; follow the canvas's real size.
+  if (window.ResizeObserver) new ResizeObserver(() => {
+    const w = Math.round(cvs.getBoundingClientRect().width);
+    if (w >= 10 && Math.abs(w - cvs.width) > 1) { cvs.width = w; cvs.height = 160; if (_mbReady) render(false); }
+  }).observe(cvs);
 
   let _mbReady = false;
 

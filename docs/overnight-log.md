@@ -176,4 +176,5 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Found, not fixed (backlog P0):** zernike's single-mode map is squashed to a 2:1 ellipse on screen by the global 280 px canvas cap.
 - No external facts were added, so no sources.
 - Stranded `HEAD.lock`, `maintenance.lock` and 39 `tmp_obj_*` from the commit moved to `.git/_to_delete/` (suffix `run1026a`); `git fsck --connectivity-only` clean.
+- **P0 squashed canvases: done.** A scan of every canvas in every chapter on all 33 pages (CSS box aspect vs bitmap aspect, 1280 px dark and 390 px light) found two: zernike's square maps (single-mode map 580×280 for a 180×180 bitmap, SLM maps 377×280), squashed by the sitewide 280 px canvas cap, now centred squares ≤ 320 px; and cooling-simulator's velocity histogram (560 px bitmap stretched over 1,195 px), now sized from the canvas itself with a `ResizeObserver`. Tests: tag counts unchanged, inline scripts parse, formula tests OK 17, screenshots reviewed (both themes), `smoke.js` 0 new problems on both pages.
 
