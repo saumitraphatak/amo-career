@@ -2888,12 +2888,30 @@ a.path-step:hover {
   .hero-badge, .hero-actions, .hero-stats, #hero-canvas, .hero-grad,
   .footer, .workflow-panel, .recent-tools-panel,
   [data-theme-toggle], .tool-card-cta, .path-step-arrow,
-  .back-to-top, .scroll-reveal-observer-target {
+  .back-to-top, .scroll-reveal-observer-target,
+  .amo-motion-btn, .amo-motion-row, .export-float, .orbit3d-hint, .topic-nav,
+  .cite-panel .mini-action, .tip::after {
     display: none !important;
   }
+  /* …but the citation is exactly what belongs on paper */
+  .cite-panel.workflow-panel { display: block !important; break-inside: avoid; margin-top: var(--sp-8); }
 
   * { animation: none !important; transition: none !important; box-shadow: none !important; }
 
+  /* Scroll-reveal content that was never scrolled into view stayed at
+     opacity 0 and printed as blank pages (2026-10-26: cavity-qed printed
+     296 words). Everything prints, revealed or not. */
+  .anim-in, .anim-in.visible { opacity: 1 !important; transform: none !important; }
+
+  /* Paper palette whatever the screen theme. main.js (AMOPrint) also drops
+     the dark theme for the duration of the print so canvases and charts
+     repaint with paper inks; these tokens cover a print without that JS. */
+  [data-theme="dark"] {
+    --bg-base: #fff; --bg-surface: #fff; --bg-card: #fff; --bg-card-hover: #fff; --bg-glass: #fff;
+    --text-primary: #111; --text-secondary: #333; --text-muted: #555;
+    --border: rgba(0,0,0,.14); --border-med: rgba(0,0,0,.24); --border-strong: rgba(0,0,0,.4);
+    --ink-rust: #a13c1c; --ink-blue: #2c4a63; --ink-green: #3f5d3f;
+  }
   html, body { background: #fff !important; color: #111 !important; }
   .page-wrap, .page-content, .container { max-width: 100% !important; }
 
@@ -2902,10 +2920,47 @@ a.path-step:hover {
 
   /* Force every accordion open and every tab panel visible — nothing
      collapsed or hidden behind interaction should be lost on paper. */
-  .accordion-body { display: block !important; max-height: none !important; }
+  .accordion-body { display: block !important; max-height: none !important; height: auto !important; overflow: visible !important; }
   .accordion-chevron { display: none !important; }
   .tab-bar { display: none !important; }
   .tab-panel { display: block !important; margin-bottom: var(--sp-6); }
+  .print-show, .print-show[hidden] { display: block !important; }
+  /* page-local collapsibles: laser-locking practice notes, remote-entanglement approaches, vacuum pump cards */
+  .prac-body, .approach-body, .pump-card-body { display: block !important; }
+
+  /* Labels main.js inserts so a reader knows which tab or chapter they are in */
+  .print-only { display: block !important; }
+  .print-chapter-label {
+    font: 700 1.05rem/1.3 var(--font-sans); color: #000;
+    border-top: 2px solid #000; padding-top: .35rem; margin: var(--sp-8) 0 var(--sp-3);
+    break-before: auto;
+  }
+  .print-tab-label {
+    font: 700 .78rem/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #333;
+    border-bottom: 1px solid #999; padding-bottom: .2rem; margin: var(--sp-5) 0 var(--sp-2);
+  }
+  .print-source { font: .72rem/1.45 var(--font-mono); color: #444; border-bottom: 1px solid #bbb; padding-bottom: .4rem; margin-bottom: var(--sp-4); }
+  canvas.print-blank { display: none !important; }
+  .print-figure-note { font: italic .78rem/1.4 var(--font-sans); color: #555; border: 1px dashed #aaa; padding: .5rem .7rem; margin: var(--sp-2) 0; }
+
+  /* Where an external link goes, written out (added by main.js as data-print-url) */
+  a[data-print-url]::after {
+    content: " \27E8" attr(data-print-url) "\27E9";
+    font: .72em/1.3 var(--font-mono); color: #444; text-decoration: none;
+    overflow-wrap: anywhere; word-break: break-all;
+  }
+
+  /* Figures shrink to the paper width instead of running off the edge, keep
+     their drawn shape (the screen's 280 px canvas cap squashed square maps
+     into ellipses) and stay under 11 cm tall, letterboxed rather than stretched */
+  canvas, svg, img, video { max-width: 100% !important; }
+  canvas { height: auto !important; max-height: 11cm !important; object-fit: contain; }
+
+  /* Keep headings with what follows, and small blocks in one piece */
+  h1, h2, h3, h4, h5, .section-title, .print-chapter-label, .print-tab-label { break-after: avoid; page-break-after: avoid; }
+  .formula-box, .concept-box, .chart-wrap, .chart-card, canvas, figure, tr, li,
+  .info-banner, .metric, .result-card, .callout, .cite-block { break-inside: avoid; page-break-inside: avoid; }
+  p { orphans: 3; widows: 3; }
 
   .formula-box, .atom-box, .tool-card, .path-card,
   .info-banner, [class*="-panel"] {
@@ -2915,9 +2970,13 @@ a.path-step:hover {
   }
 
   .page-hero { background: none !important; }
+  /* the screen-height home hero and the nav's top padding are blank paper */
+  .hero { min-height: 0 !important; }
+  .page-wrap { padding-top: 0 !important; min-height: 0 !important; }
 
   @page { margin: 1.5cm; }
 }
+.print-only { display: none; }
 
 
 /* =====================================================

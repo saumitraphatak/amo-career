@@ -18,6 +18,8 @@
 
    Under prefers-reduced-motion the loop starts paused on a still frame;
    the button still lets the reader play it deliberately.
+   On 'amo:print' (main.js, before printing) every loop draws a frame, so
+   canvases that never came on screen don't print empty.
    Loaded only by pages with looping animations (not part of main.js).
    ───────────────────────────────────────────────────────────────────── */
 (function () {
@@ -44,14 +46,15 @@
     els = els.filter(Boolean);
     if (!els.length || typeof frame !== 'function') return null;
 
-    var running = !reduced, raf = 0, offset = 0, stoppedAt = null, onScreen = new Set(), buttons = [];
+    var running = !reduced, raf = 0, offset = 0, stoppedAt = null, onScreen = new Set(), buttons = [], lastT = null;
 
     function now() { return performance.now(); }
     function live() { return running && onScreen.size > 0 && !document.hidden; }
     function tick(ts) {
       raf = 0;
       if (!live()) { if (stoppedAt === null) stoppedAt = now(); return; }
-      frame(ts - offset);
+      lastT = ts - offset;
+      frame(lastT);
       raf = requestAnimationFrame(tick);
     }
     function kick() {
@@ -97,8 +100,19 @@
     }
     document.addEventListener('visibilitychange', kick);
 
-    if (reduced) { stoppedAt = now(); if (opts.onStatic) opts.onStatic(); else frame(now()); }
+    if (reduced) { stoppedAt = now(); if (opts.onStatic) opts.onStatic(); else { lastT = now(); frame(lastT); } }
     else kick();
+
+    // Printing (main.js AMOPrint fires 'amo:print' once the paper theme is on):
+    // a loop that never came on screen has never drawn, so it would print as an
+    // empty box. Draw its still frame; repaint one that has drawn, at the same
+    // timestamp (dt = 0), so it picks up the paper inks.
+    window.addEventListener('amo:print', function () {
+      try {
+        if (lastT === null && opts.onStatic) opts.onStatic();
+        else frame(lastT === null ? now() - offset : lastT);
+      } catch (e) {}
+    });
 
     return { toggle: toggle, isRunning: function () { return running; }, buttons: buttons };
   };

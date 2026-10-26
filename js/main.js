@@ -2409,7 +2409,8 @@ const AMOChapters = (() => {
     window.addEventListener('hashchange', fromHash);
   }
 
-  return { init, reveal, offsetFor, activate: (i, opts) => models[0] && activate(models[0], i, opts) };
+  return { init, reveal, offsetFor, activate: (i, opts) => models[0] && activate(models[0], i, opts),
+           models: () => models.map(m => ({ panels: m.panels.slice(), titles: m.titles.slice() })) };
 })();
 window.AMOChapters = AMOChapters;
 
@@ -2736,3 +2737,170 @@ document.addEventListener('DOMContentLoaded', () => {
   }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   window.AMOChartInk = { map };
 })();
+
+/* ─────────────────────────────────────────────────────
+   PRINT — what paper needs that the print CSS can't do alone
+   (styles.css @media print does the rest). On beforeprint:
+   • the dark theme is dropped until afterprint, so canvases (AMOInk) and
+     Chart.js charts (AMOChartInk) repaint with paper inks;
+   • every chapter and tab panel prints, each under a label naming its
+     chapter ("Chapter 2 of 6 · …") or tab, and closed <details> open;
+   • a source line records the page address (calculator inputs travel in
+     its query string) and the date, since the figures print the values on
+     screen at that moment;
+   • external links get data-print-url so the URL is written after them;
+   • 'amo:print' fires once the paper theme is on, so looping canvases that
+     never came on screen draw a frame (js/motion.js).
+   ───────────────────────────────────────────────────── */
+const AMOPrint = (() => {
+  const root = document.documentElement;
+  let prepared = false, wasDark = false, opened = [], source = null;
+
+  const label = (cls, text) => {
+    const el = document.createElement('div');
+    el.className = 'print-only ' + cls;
+    el.setAttribute('aria-hidden', 'true');
+    el.textContent = text;
+    return el;
+  };
+  const shortUrl = href => href.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+
+  function prepare() {
+    if (prepared) return;
+    prepared = true;
+    const done = new Set();
+    // chapters (AMOChapters): "Chapter n of N · Title" above each panel
+    (window.AMOChapters && AMOChapters.models ? AMOChapters.models() : []).forEach(m => {
+      m.panels.forEach((p, i) => {
+        done.add(p);
+        p.classList.add('print-show');
+        p.before(label('print-chapter-label', `Chapter ${i + 1} of ${m.panels.length} · ${m.titles[i]}`));
+      });
+    });
+    // other tab bars: the tab's own label above its panel (same pairing as initTabs)
+    document.querySelectorAll('.tab-bar').forEach(bar => {
+      const group = bar.dataset.group, wrap = bar.closest('[data-tabs-wrap]') || document;
+      const panels = Array.from(wrap.querySelectorAll('.tab-panel[data-tab]'))
+        .filter(p => !(p.dataset.group && group && p.dataset.group !== group));
+      bar.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+        const p = panels.find(q => q.dataset.tab === btn.dataset.tab);
+        if (!p || done.has(p)) return;
+        done.add(p);
+        const text = btn.textContent.replace(/\s+/g, ' ').trim();
+        if (text) p.before(label('print-tab-label', text));
+      });
+    });
+    // derivation boxes: every view, each under its button's label
+    document.querySelectorAll('.derivation-mode').forEach(box => {
+      box.querySelectorAll('[data-deriv-panel]').forEach(p => {
+        const btn = box.querySelector(`[data-deriv-tab="${CSS.escape(p.dataset.derivPanel)}"]`);
+        p.classList.add('print-show');
+        if (btn) p.before(label('print-tab-label', btn.textContent.replace(/\s+/g, ' ').trim()));
+      });
+    });
+    // external links: write the address out after the link text
+    const main = document.getElementById('main-content') || document.body;
+    main.querySelectorAll('a[href^="http"]').forEach(a => {
+      if (a.host === location.host || /(^|\.)amotoolkit\.com$/.test(a.hostname)) return;
+      if (a.querySelector('div, p, h2, h3, h4, li, img, svg, canvas')) return;   // cards, not inline links
+      const url = shortUrl(a.href), text = a.textContent.replace(/\s+/g, '');
+      if (!url || text.includes(url.replace(/\s+/g, '')) || text.includes(a.hostname.replace(/^www\./, ''))) return;
+      a.dataset.printUrl = url;
+    });
+    // source line at the very top of the page content
+    source = label('print-source', '');
+    main.prepend(source);
+  }
+
+  function before() {
+    prepare();
+    const when = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+    const addr = location.protocol.startsWith('http') && /amotoolkit\.com$/.test(location.hostname)
+      ? shortUrl(location.href) : 'amotoolkit.com' + location.pathname.replace(/^.*?(\/pages\/|\/)([^/]*)$/, '$1$2') + location.search;
+    if (source) source.textContent = `AMO Toolkit · ${addr} · printed ${when}. Calculators and figures show the values that were on screen when printed.`;
+    opened = Array.from(document.querySelectorAll('details:not([open])'));
+    opened.forEach(d => { d.open = true; });
+    wasDark = root.getAttribute('data-theme') === 'dark';
+    if (wasDark) root.removeAttribute('data-theme');
+    root.classList.add('amo-printing');
+    // after the theme observers (AMOInk, AMOChartInk) have run: size the
+    // charts for paper, let looping canvases draw a paper-ink frame
+    // (js/motion.js), then mark canvases that are still empty
+    queueMicrotask(() => {
+      sizeCharts();
+      window.dispatchEvent(new Event('amo:print'));
+      markBlank();
+    });
+  }
+  // Chart.js sizes a chart from its container, but a chart in a closed
+  // chapter or tab has no size, so it would print empty, and an open one is
+  // sized for the screen. For each chart, briefly show any closed panel
+  // around it (no paint happens in between), fit the chart to its container,
+  // then cap it at a paper width (A4 less margins ≈ 680 CSS px) keeping that
+  // shape, and draw it at once. Charts go back to responsive sizing after
+  // printing.
+  const PAPER_W = 680;
+  let sized = [];
+  function sizeCharts() {
+    if (!window.Chart || !Chart.instances) return;
+    sized = Object.values(Chart.instances);
+    const shown = [];
+    sized.forEach(c => {
+      for (let a = c.canvas.parentElement; a && a !== document.body; a = a.parentElement) {
+        if (getComputedStyle(a).display !== 'none') continue;
+        shown.push([a, a.style.getPropertyValue('display'), a.style.getPropertyPriority('display')]);
+        a.style.setProperty('display', 'block', 'important');
+      }
+    });
+    sized.forEach(c => {
+      try {
+        c.resize();
+        const ok = c.width > 0 && c.height > 0;
+        const w = ok ? Math.min(c.width, PAPER_W) : PAPER_W;
+        c.resize(w, Math.round(w / (ok ? c.width / c.height : 2.5)));
+        c.update('none');                                 // final positions, no animation
+        c.draw();                                         // and paint now, not on the next frame
+      } catch (e) {}
+    });
+    shown.reverse().forEach(([a, v, pr]) => { if (v) a.style.setProperty('display', v, pr); else a.style.removeProperty('display'); });
+  }
+  // A canvas that is still one flat colour after all that (a figure that
+  // draws only when its tab is opened or its button pressed) would print as
+  // an empty box; print a one-line note in its place instead.
+  let blanks = [];
+  function markBlank() {
+    document.querySelectorAll('canvas').forEach(c => {
+      // (a canvas with no context yet gets a 2D one here: a WebGL canvas that is
+      // created lazily must carry data-print-skip)
+      if (!c.width || !c.height || c.closest('[aria-hidden="true"], .nav, .hero-3d, [data-print-skip]')) return;
+      let g = null;
+      try { g = c.getContext('2d'); } catch (e) {}
+      if (!g) return;                                     // WebGL: prints as drawn
+      let px;
+      try { px = new Uint32Array(g.getImageData(0, 0, c.width, c.height).data.buffer); } catch (e) { return; }
+      for (let i = 1; i < px.length; i++) if (px[i] !== px[0]) return;   // every pixel: thin chart lines count
+      c.classList.add('print-blank');
+      let note = c.nextElementSibling;
+      if (!note || !note.classList.contains('print-figure-note')) {
+        note = label('print-figure-note', 'Interactive figure: it had not been drawn when this page was printed. Open the page to use it.');
+        c.after(note);
+      }
+      blanks.push(c);
+    });
+  }
+  function after() {
+    opened.forEach(d => { d.open = false; });
+    opened = [];
+    blanks.forEach(c => c.classList.remove('print-blank'));
+    blanks = [];
+    sized.forEach(c => { try { c.resize(); } catch (e) {} });
+    sized = [];
+    if (wasDark) root.setAttribute('data-theme', 'dark');
+    wasDark = false;
+    root.classList.remove('amo-printing');
+  }
+  window.addEventListener('beforeprint', before);
+  window.addEventListener('afterprint', after);
+  return { before, after };
+})();
+window.AMOPrint = AMOPrint;
