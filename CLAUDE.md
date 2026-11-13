@@ -474,7 +474,7 @@ Calculator for atom-cavity coupling: given cavity/atom parameters, computes sing
 Reference guide covering why UHV matters for cold-atom experiments, the pressure landscape (rough/high/ultra-high vacuum regimes), the pumping chain (roughing, turbo, ion, getter pumps), bake-out procedure, materials/connections (conflat flanges, leak checking), how to read vacuum gauges, and a practical setup checklist.
 
 ### 16. Tweezer Array Design Lab (`tweezer-designer.html`)
-Design lab for optical tweezer arrays: single-tweezer trap physics (waist, depth, trap frequency), a trap-parameter calculator, array geometry planning (spacing, SLM/AOD generation), and a species/wavelength reference table for common tweezer-trapped atoms. Section 03 has a **3D view** (default, `js/tweezer3d.js`) and the original **Top view**: every beam drawn to true scale as its Gaussian envelope over ±3 z_R from the page's own w₀ = 0.52λ/NA, z_R = πw₀²/λ, d, Nx, Ny — so the d/w₀ crosstalk warning is visible (beams merge away from focus at small d).
+Design lab for optical tweezer arrays: single-tweezer trap physics (waist, depth, trap frequency), a trap-parameter calculator, array geometry planning (spacing, SLM/AOD generation), and a species/wavelength reference table for common tweezer-trapped atoms. Section 03 has a **3D view** (default, `js/tweezer3d.js`) and the original **Top view**: every beam drawn to true scale as its Gaussian envelope over ±3 z_R from the page's own w₀ = (√2/π)λ/NA ≈ 0.45λ/NA (1/e² radius matched to a filled-pupil Airy focus; never the 0.51λ/NA Airy FWHM, which is a diameter), z_R = πw₀²/λ, d, Nx, Ny — so the d/w₀ crosstalk warning is visible (beams merge away from focus at small d).
 
 ### 17. Absorption Imaging Lab (`absorption-imaging.html`)
 Companion to the fluorescence Imaging SNR Calculator, focused on absorption imaging: how it works (Beer-Lambert optical density), an imaging calculator section, species reference table, and practical considerations (resonant vs off-resonant, saturation effects, high-intensity imaging).
@@ -498,7 +498,16 @@ Career-mapping tool: a directory of 100+ AMO research groups (a "Featured Mapped
 Deep-dive companion to `learn-quantum.html#decoherence`: paired live Bloch-sphere + detector-signal simulations of dissipation (T1), dephasing (T2*/Tφ), and combined decoherence (T2) for a driven two-level atom, all integrated in real time (RK4) from Steck's optical Bloch equations rather than pre-baked animations. First entry in `NAV.quantum`. No route-panel (linear scroll with a sticky topic-nav instead); has its own numbered "08 References" section (Steck, Fox, Zurek 2003). The four section Bloch spheres are rotatable in 3D (drag/arrow keys, `js/orbit3d.js`); the RK4 engine is unchanged and trails are stored in 3D and re-projected each frame. The small hero sphere stays fixed (decorative, inside `aria-hidden`).
 
 ### Formula Regression Tests
-Run `python3 tests/formula_regression.py` after formula edits. The tests check recoil conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, release-recapture wording, presence of key site UX features, and Rb/Yb comparison-panel fact boundaries (`test_rb_yb_panel_fact_boundaries`, added since this section was last verified).
+Run `python3 tests/formula_regression.py` after formula edits. The tests check recoil conventions, imaging-fidelity mapping, beat-note RF prefactors, QC claim qualification, release-recapture wording, presence of key site UX features, and Rb/Yb comparison-panel fact boundaries (`test_rb_yb_panel_fact_boundaries`, added since this section was last verified). `test_physics_audit_2026_11` pins the fixes from the November 2026 physics audit (see below).
+
+**Physics conventions to check on every formula edit (from the 2026-11-13 audit, which found ~100 slips after a reader caught the tweezer waist):**
+- Widths: w₀ is a 1/e² intensity **radius**; FWHM and fiber MFD are diameters (FWHM = √(2 ln 2)·w; rms σ = w/2). Diffraction-limited filled pupil: w₀ ≈ (√2/π)λ/NA ≈ 0.45λ/NA, not the Airy FWHM 0.51λ/NA.
+- 2π: data tables give Γ/2π in MHz; rates (R = (Γ/2)s/…, τ = 1/Γ, ħΓ/2k_B) need Γ = 2π × that. E/h vs E/ħ: divide ħ-energies by 2π, not by h.
+- Dipole potential U = α I/(2ε₀c) with I₀ = 2P/(πw₀²).
+- Cavity: with C = g₀²/(κγ) (half-widths), F_P = C and β = C/(1+C); the 2C forms belong to C₁ = g₀²/(2κγ).
+- RB: F(m) = A p^m + B with B = 1/d and A = F(0) − 1/d ≤ 1 − 1/d.
+- Numerical integrals over oscillating filter functions must resolve the oscillation (grid step ≪ 1/N in log ω for N pulses); check convergence by doubling the grid.
+- Every worked example and reference table must be reproducible from the page's own calculator, or say where its numbers come from.
 
 ---
 

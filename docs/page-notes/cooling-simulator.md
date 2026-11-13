@@ -78,3 +78,9 @@ The four route-cards open chapters 1–4. Simulation Codes and References have n
 ## 2026-10-26 (overnight): velocity histogram no longer stretched
 - `#mbCanvas` read its width before layout and kept a 560 px bitmap that was stretched across the 1,195 px box at 1280 px (labels and bars 2.1× wide). It now reads the canvas's own width (not its padded parent's) and follows size changes with a `ResizeObserver`; bitmap = box at 1280 and 390 px. Physics unchanged.
 - Tests: screenshots dark 1280 / light 390; `smoke.js` 0 new problems.
+
+## 2026-11-13: physics audit (convention slips)
+- Doppler force sign: F = R(δ − kv) − R(δ + kv); the chart showed anti-damping and α = −0.318 at defaults.
+- α formula text 8ħk²s₀(|δ|/Γ)/(…)² (old one was dimensionally wrong).
+- Resolved-sideband floor ¼(Γ/ω)²(α + ¼), independent of η (old η²Γ²/4ω² claimed η → 0 gives ⟨n⟩ → 0); slider is now Γ/ω.
+- Higher-order sidebands scale as η^{2k}; temperature ladder: GM 8 μK, trapped-atom entries converted at 100 kHz (⟨n⟩ < 0.1 ≈ 2 μK, not 5 nK).

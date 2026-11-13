@@ -434,8 +434,8 @@
           <div>
             <div class="theory-box">
               <h4>Physical Meaning of η</h4>
-              <p>When $\eta \ll 1$, the atom's position uncertainty during a photon interaction is much smaller than the photon wavelength. A photon absorption is unlikely to change the motional quantum number ($\Delta n \neq 0$ transitions are suppressed by $\eta$). This suppression is what makes sideband cooling efficient: the carrier transition ($\Delta n = 0$) dominates, and the red sideband ($\Delta n = -1$, cooling) is preferred over the blue sideband ($\Delta n = +1$, heating) by the factor $\eta^2$.</p>
-              <p>Typical values: $\eta \approx 0.05$–$0.15$ for optical tweezers with $\nu \approx 50$–$200\,\text{kHz}$ and $\lambda \approx 780\,\text{nm}$.</p>
+              <p>When $\eta \ll 1$, the atom's position uncertainty during a photon interaction is much smaller than the photon wavelength. A photon absorption is unlikely to change the motional quantum number ($\Delta n \neq 0$ transitions are suppressed by $\eta$). This suppression is what makes sideband cooling efficient: the carrier transition ($\Delta n = 0$) dominates, and both sidebands are weaker than the carrier by $\eta^2$ (red: $\eta^2 n$, blue: $\eta^2(n+1)$). Cooling comes from tuning the laser to the red sideband ($\Delta n = -1$) so that, with resolved sidebands, the blue sideband ($\Delta n = +1$, heating) is far off resonance.</p>
+              <p>Typical values: $\eta \approx 0.14$–$0.27$ for $^{87}$Rb in optical tweezers with $\nu \approx 200$–$50\,\text{kHz}$ and $\lambda \approx 780\,\text{nm}$ ($\eta \approx 0.19$ at 100 kHz).</p>
             </div>
             <div class="insight">
               <strong>Key insight:</strong> The Lamb-Dicke parameter sets the fundamental limit for all cooling techniques. Tighter traps (larger $\nu$) give smaller $\eta$ and colder final temperatures. This is why tweezer experiments push for MHz-level trap frequencies.
@@ -555,25 +555,26 @@
           <div>
             <div class="theory-box">
               <h4>Cooling Cycle</h4>
-              <p>Step 1: Drive the red sideband, a photon at $\omega_0 - \nu$ takes $|g, n\rangle \to |e, n-1\rangle$. Step 2: Spontaneous emission returns the atom to the ground electronic state. In the Lamb-Dicke regime, the emitted photon has equal probability of going to $|g, n-1\rangle$ (the desired path) or $|g, n\rangle$ (recoil back up). The net effect per cycle: one motional quantum removed. The state $|g, 0\rangle$ is dark (no red sideband to drive), so the population accumulates there.</p>
+              <p>Step 1: Drive the red sideband, a photon at $\omega_0 - \nu$ takes $|g, n\rangle \to |e, n-1\rangle$. Step 2: Spontaneous emission returns the atom to the ground electronic state. In the Lamb-Dicke regime, spontaneous emission almost always leaves $n$ unchanged (it changes $n$ only with probability of order $\eta^2$), so the atom lands in $|g, n-1\rangle$. The net effect per cycle: one motional quantum removed. The state $|g, 0\rangle$ is dark (no red sideband to drive), so the population accumulates there.</p>
             </div>
             <div class="formula-box">
               <div class="formula-label">Resolved sideband steady-state (Eq. 38)</div>
-              $$\langle n \rangle_{ss} = \left(\frac{\Gamma}{4\nu}\right)^2$$
+              $$\langle n \rangle_{ss} = \frac{1}{4}\left(\frac{\Gamma}{\nu}\right)^2\left(\alpha + \frac{1}{4}\right)$$
+              <div style="font-size:.8rem;color:var(--text-muted);margin-top:.3rem">$\alpha$ is the emission-direction factor: $\alpha = 1$ for emission into 1D (used in the paper's simulations), $\alpha = 1/3$ averaged over all directions. The $\tfrac14$ comes from off-resonant carrier absorption, the $\alpha$ term from the recoil of the emitted photon.</div>
             </div>
             <div class="formula-box">
               <div class="formula-label">Condition for resolved sidebands</div>
-              $$\nu \gg \Gamma \quad \Leftrightarrow \quad \frac{\Gamma}{4\nu} \ll 1$$
+              $$\nu \gg \Gamma \quad \Leftrightarrow \quad \frac{\Gamma}{\nu} \ll 1$$
             </div>
           </div>
           <div>
             <div class="theory-box">
               <h4>Physical Mechanism</h4>
-              <p>The cooling rate is set by the photon scattering rate on the red sideband: $R_- = \eta^2 \Gamma$. The heating rate from off-resonant blue sideband excitation is $R_+ \propto \eta^2 \Gamma (\Gamma/4\nu)^2$. In steady state, these balance to give $\langle n \rangle_{ss} = ({\Gamma}/{4\nu})^2$.</p>
+              <p>The cooling rate is set by the photon scattering rate on the red sideband: $R_- = \eta^2 \Gamma$. Heating comes from off-resonant excitation: the blue sideband, and the carrier followed by a spontaneous photon whose recoil changes $n$, each suppressed by $(\Gamma/\nu)^2$. In steady state these balance to give $\langle n \rangle_{ss} = \tfrac14(\Gamma/\nu)^2(\alpha + \tfrac14)$.</p>
               <p>The formula is striking: the final temperature depends only on the ratio $\Gamma/\nu$, not on the laser intensity or the Lamb-Dicke parameter. Making the trap tighter (larger $\nu$) directly lowers the temperature floor.</p>
             </div>
             <div class="insight">
-              <strong>Example:</strong> For $^{87}$Rb ($\Gamma/2\pi = 6\,\text{MHz}$) in a 200 kHz trap: $\langle n \rangle = (6/(4\times0.2))^2 \approx 56$. Resolved SB requires narrow-line transitions (like the $^1S_0 \to {^3P_0}$ clock line in Sr or Yb) for deep ground-state cooling.
+              <strong>Example:</strong> For $^{87}$Rb ($\Gamma/2\pi = 6\,\text{MHz}$) in a 200 kHz trap the formula gives $\langle n \rangle \approx \tfrac14 (30)^2 \times 1.25 \approx 280$ (with $\alpha = 1$): meaningless, because the sidebands are not resolved. Resolved single-photon SB cooling needs narrow lines such as Sr $^1S_0 \to {^3P_1}$ (689 nm, $\Gamma/2\pi = 7.4$ kHz), or two-photon Raman transitions (section below).
             </div>
           </div>
         </div>
@@ -594,6 +595,13 @@
               <label for="sb-mass">Atomic mass A (amu)</label>
               <input type="number" id="sb-mass" value="87" min="1" max="300" step="1">
             </div>
+            <div class="ctrl-group">
+              <label for="sb-alpha">Emission factor α</label>
+              <select id="sb-alpha">
+                <option value="1">1 (1D, paper)</option>
+                <option value="0.3333333333">1/3 (3D avg)</option>
+              </select>
+            </div>
           </div>
           <div class="result-row">
             <div class="result-chip" id="sb-regime-chip">
@@ -601,20 +609,16 @@
               <div class="r-val" id="sb-regime">—</div>
             </div>
             <div class="result-chip">
-              <div class="r-label">⟨n⟩ resolved (Γ/4ν)²</div>
+              <div class="r-label">⟨n⟩ resolved ¼(Γ/ν)²(α+¼)</div>
               <div class="r-val" id="sb-n-resolved">—</div>
             </div>
             <div class="result-chip">
-              <div class="r-label">⟨n⟩ unresolved Γ/4ν</div>
-              <div class="r-val" id="sb-n-unresolved">—</div>
-            </div>
-            <div class="result-chip">
-              <div class="r-label">Doppler limit ⟨n⟩</div>
+              <div class="r-label">Doppler limit ⟨n⟩ (Δ = −Γ/2)</div>
               <div class="r-val" id="sb-n-doppler">—</div>
             </div>
           </div>
           <p style="font-size:.76rem;color:var(--text-muted);margin-top:.6rem;">
-            Resolved = $\nu > \Gamma/2\pi$. In the resolved regime, ⟨n⟩<sub>resolved</sub> &lt; ⟨n⟩<sub>unresolved</sub>. Doppler limit: ⟨n⟩ = Γ/(4ν) (same as unresolved SB).
+            Resolved = $\nu > \Gamma$ (both as ordinary frequencies). The resolved formula only applies in that regime. Doppler limit (unresolved, $\nu \ll \Gamma$, at the optimal $\Delta = -\Gamma/2$): $\langle n\rangle = (1+\alpha)\Gamma/(4\nu) - \tfrac12$, i.e. $k_BT_D = \hbar\Gamma/2$ for $\alpha = 1$.
           </p>
         </div>
 
@@ -646,25 +650,25 @@
           <div>
             <div class="theory-box">
               <h4>The Unresolved Sideband Limit</h4>
-              <p>When the sidebands overlap, the atom cannot distinguish cooling transitions from carrier transitions. The steady-state occupation from Eq. 39 of Phatak et al. is:</p>
+              <p>When the sidebands overlap, the atom cannot distinguish cooling transitions from carrier transitions. Expanding the rate equations for $\nu \ll \Gamma$ gives (cf. Eq. 39 of Phatak et al.):</p>
             </div>
             <div class="formula-box">
               <div class="formula-label">Unresolved sideband limit (Eq. 39)</div>
-              $$\langle n \rangle_{ss} = \frac{\Gamma}{4\nu} \gg 1$$
+              $$\langle n \rangle_{ss} = \frac{1+\alpha}{8}\,\frac{\Gamma}{\nu}\left(\frac{\Gamma}{2|\Delta|}+\frac{2|\Delta|}{\Gamma}\right)-\frac12 \;\xrightarrow{\;\Delta=-\Gamma/2\;}\; \frac{(1+\alpha)\Gamma}{4\nu}-\frac12 \gg 1$$
             </div>
             <div class="formula-box">
               <div class="formula-label">Equivalent temperature</div>
               $$k_B T_D = \frac{\hbar\Gamma}{2} \quad \text{(Doppler temperature, angular-frequency convention)}$$
             </div>
             <div class="insight">
-              <strong>Example:</strong> For Rb ($\Gamma/2\pi = 6\,\text{MHz}$) at $\nu = 100\,\text{kHz}$: $\langle n \rangle \approx 6\,\text{MHz}/(4 \times 100\,\text{kHz}) = 15$. Still very far from the ground state.
+              <strong>Example:</strong> For Rb ($\Gamma/2\pi = 6\,\text{MHz}$) at $\nu = 100\,\text{kHz}$ and $\alpha = 1$: $\langle n \rangle \approx 6\,\text{MHz}/(2 \times 100\,\text{kHz}) - \tfrac12 \approx 30$, matching $k_BT_D/h\nu$. Still very far from the ground state.
             </div>
           </div>
           <div>
             <div class="theory-box">
               <h4>The Doppler Temperature</h4>
               <p>The Doppler limit arises from the competition between two processes: the laser's viscous force damps atomic momentum (cooling), while random recoil from spontaneous emission heats the atom. At the optimal detuning $\Delta = -\Gamma/2$, the minimum achievable temperature is $T_D = \hbar\Gamma/(2k_B)$.</p>
-              <p>For $^{87}$Rb: $T_D = 146\,\mu\text{K}$. For the ground state in a 100 kHz trap, we need $T \sim \hbar\nu/k_B \approx 5\,\mu\text{K}$. Doppler cooling alone does not reach the ground state for broad-line atoms.</p>
+              <p>For $^{87}$Rb: $T_D = 146\,\mu\text{K}$. For the ground state in a 100 kHz trap, we need $T \lesssim h\nu/k_B \approx 5\,\mu\text{K}$. Doppler cooling alone does not reach the ground state for broad-line atoms.</p>
             </div>
             <div class="theory-box">
               <h4>Crossing to Sub-Doppler</h4>
@@ -744,11 +748,11 @@
           <div>
             <div class="theory-box">
               <h4>The Sisyphus Mechanism</h4>
-              <p>In the $\sigma^+$-$\sigma^-$ geometry, two beams create a standing wave. The light shift of the $m_F$ sublevels varies sinusoidally in space, and the optical pumping rate between sublevels also varies. An atom in the higher-$m_F$ state climbing a potential hill is pumped by optical pumping to the lower-$m_F$ state at the hill top, like Sisyphus rolling a boulder up forever. Each pump cycle dissipates kinetic energy equal to the light shift $U_0$.</p>
+              <p>In the lin $\perp$ lin geometry, two counter-propagating beams create a polarization gradient (the intensity stays uniform). The light shift of the $m_F$ sublevels varies sinusoidally in space, and the optical pumping rate between sublevels also varies. An atom in the higher-$m_F$ state climbing a potential hill is pumped by optical pumping to the lower-$m_F$ state at the hill top, like Sisyphus rolling a boulder up forever. Each pump cycle dissipates kinetic energy equal to the light shift $U_0$.</p>
             </div>
             <div class="theory-box">
-              <h4>Lin ⊥ Lin Geometry</h4>
-              <p>In the lin $\perp$ lin configuration, the polarization rotates from linear to circular and back over half a wavelength. The atom's internal state follows this rotation, and energy is dissipated each time the atom climbs a light-shift hill. The cooling is more efficient than $\sigma^+$-$\sigma^-$ because the polarization gradient is steeper.</p>
+              <h4>Lin ⊥ Lin vs σ⁺–σ⁻</h4>
+              <p>In lin $\perp$ lin, the polarization goes from linear to circular and back over half a wavelength, which is what creates the light-shift hills above. In $\sigma^+$-$\sigma^-$ the light is linearly polarized everywhere, with the axis rotating along the beam: there are no hills, and cooling comes instead from a motion-induced population imbalance between $m_F$ sublevels (Dalibard &amp; Cohen-Tannoudji 1989). Both reach comparable sub-Doppler temperatures.</p>
             </div>
           </div>
           <div>
@@ -1066,7 +1070,7 @@
               $$L_+ = \sqrt{\gamma_+}\,\hat{F}_+(1 + ik\hat{x})$$
             </div>
             <div class="insight">
-              <strong>Practical limits:</strong> RSB cooling is limited not by the fundamental theory but by technical factors: (1) coherence time between $|g_1\rangle$ and $|g_2\rangle$ is typically a few ms due to magnetic field fluctuations; (2) the carrier transition ($\Delta n = 0$) is driven with Rabi frequency $\Omega_R/\eta$, much larger than the red sideband, and can populate higher $n$ if not carefully timed; (3) phase coherence of both Raman lasers is required.
+              <strong>Practical limits:</strong> RSB cooling is limited not by the fundamental theory but by technical factors: (1) coherence time between $|g_1\rangle$ and $|g_2\rangle$ is typically a few ms due to magnetic field fluctuations; (2) the carrier transition ($\Delta n = 0$) is driven with Rabi frequency $\Omega_R$, a factor $1/(\eta\sqrt{n})$ larger than the red sideband, and can populate higher $n$ if not carefully timed; (3) phase coherence of both Raman lasers is required.
             </div>
           </div>
         </div>
@@ -1147,12 +1151,12 @@
         </div>
 
         <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;">
-          All techniques are benchmarked for the same atom and trap. The chart and table below show theoretical $\langle n \rangle$ limits using parameters representative of $^{87}$Rb in a 100 kHz optical tweezer ($\eta \approx 0.1$). Use the calculator to explore how the limits shift for your atom and trap.
+          All techniques are benchmarked for the same atom and trap. The chart and table below show theoretical $\langle n \rangle$ limits using parameters representative of an atom in a 100 kHz optical tweezer, with η = 0.1 by default ($^{87}$Rb at 780 nm actually has $\eta \approx 0.19$; move the slider). Use the calculator to explore how the limits shift for your atom and trap.
         </p>
 
         <div class="two-col" style="margin-bottom:1.5rem;">
           <div class="chart-wrap">
-            <h4>Steady-state ⟨n⟩ for different cooling techniques (η = 0.1, Rb D2)</h4>
+            <h4>Steady-state ⟨n⟩ for different cooling techniques (default η = 0.1, Γ of Rb D2)</h4>
             <canvas id="compareChart" height="220"></canvas>
           </div>
           <div class="calc-card">
@@ -1212,16 +1216,16 @@
             <tbody>
               <tr>
                 <td class="technique-name">Doppler</td>
-                <td>$\Gamma / (4\nu)$</td>
+                <td>$(1+\alpha)\Gamma/(4\nu) - \tfrac12$</td>
                 <td><span class="badge badge-rose">Unresolved</span></td>
                 <td>1 color</td>
                 <td>None</td>
                 <td>$\Delta = -\Gamma/2$</td>
-                <td>~15</td>
+                <td>~30</td>
               </tr>
               <tr>
                 <td class="technique-name">Resolved SB</td>
-                <td>$(\Gamma/4\nu)^2$</td>
+                <td>$\tfrac14(\Gamma/\nu)^2(\alpha+\tfrac14)$</td>
                 <td><span class="badge badge-blue">Resolved $\nu \gg \Gamma$</span></td>
                 <td>1 (narrow line)</td>
                 <td>$|n=0\rangle$ dark</td>
@@ -1239,7 +1243,7 @@
               </tr>
               <tr>
                 <td class="technique-name">Gray Molasses</td>
-                <td>$s/(1-s)$, $s \approx \eta^2\gamma_h/\gamma_+$</td>
+                <td>$s/(1-s)$, $s \approx 4\eta^2\gamma_h/\gamma_+$</td>
                 <td><span class="badge badge-amber">Sub-Doppler</span></td>
                 <td>2 (counter-prop., blue det.)</td>
                 <td>Spin dark state</td>
@@ -1447,7 +1451,7 @@
                 <div class="rc-meta">Blodgett, Peana, Phatak et al. (Hood Lab) · PRL 131, 083001 (2023)</div>
               </div>
             </div>
-            <p class="rc-desc">Experimental demonstration of Λ-GM cooling in a single-atom optical tweezer, the experiment at Purdue that motivated the generalized theory paper. Shows $\langle n \rangle \approx 0.3$–$0.5$ for $^{87}$Rb using the $F=1/2, 3/2 \to F'=3/2$ Λ-configuration.</p>
+            <p class="rc-desc">Experimental demonstration of Λ-GM cooling in a single-atom optical tweezer, the experiment at Purdue that motivated the generalized theory paper. Uses $^{6}$Li with the $F=1/2, 3/2 \to F'=3/2$ (D1) Λ-configuration.</p>
             <span class="rc-tag">Experiment · Λ-GM · Hood Lab</span>
           </a>
 
@@ -1619,14 +1623,15 @@ function calcSB() {
   const m        = parseFloat(document.getElementById('sb-mass').value) * AMU;
   if (!gamma_hz || !nu_hz) return;
 
-  const ratio = gamma_hz / (4 * nu_hz);
-  const nResolved   = ratio * ratio;
-  const nUnresolved = ratio;
-  const nDoppler    = ratio; // same as unresolved SB limit
+  const alpha = parseFloat(document.getElementById('sb-alpha').value);
+  const g_nu  = gamma_hz / nu_hz;                          // Γ/ν (same units cancel)
+  // Phatak et al. Eq. 38 (resolved, Δ = −ν) and the weak-binding Doppler limit at Δ = −Γ/2:
+  // ⟨n⟩ = ((1+α)/8)(Γ/ν)(Γ/2|Δ| + 2|Δ|/Γ) − 1/2  →  (1+α)Γ/(4ν) − 1/2
+  const nResolved   = 0.25 * g_nu * g_nu * (alpha + 0.25);
+  const nDoppler    = (1 + alpha) * g_nu / 4 - 0.5;
   const isResolved  = nu_hz > gamma_hz;
 
-  document.getElementById('sb-n-resolved').textContent   = nResolved.toFixed(4);
-  document.getElementById('sb-n-unresolved').textContent = nUnresolved.toFixed(3);
+  document.getElementById('sb-n-resolved').textContent   = isResolved ? nResolved.toFixed(4) : 'n/a (unresolved)';
   document.getElementById('sb-n-doppler').textContent    = nDoppler.toFixed(3);
 
   const chip = document.getElementById('sb-regime-chip');
@@ -1639,7 +1644,7 @@ function calcSB() {
     chip.classList.add('bad'); chip.classList.remove('good','warn');
   }
 }
-['sb-gamma','sb-nu','sb-mass'].forEach(id => document.getElementById(id).addEventListener('input', calcSB));
+['sb-gamma','sb-nu','sb-mass','sb-alpha'].forEach(id => document.getElementById(id).addEventListener('input', calcSB));
 calcSB();
 
 /* ═══════════════════════════════════════════════
@@ -1732,9 +1737,9 @@ function updateCompare() {
   document.getElementById('cmp-gamma-val').textContent = (gamma/1e6).toFixed(1);
   document.getElementById('cmp-nu-val').textContent    = (nu/1e3).toFixed(0);
 
-  const ratio   = gamma / (4 * nu);
-  const nDop    = ratio;
-  const nResSB  = ratio * ratio;
+  const g_nu    = gamma / nu;                       // Γ/ν, α = 1 (1D emission, as in the paper)
+  const nDop    = g_nu / 2 - 0.5;                   // (1+α)Γ/(4ν) − ½
+  const nResSB  = 0.25 * g_nu * g_nu * 1.25;        // ¼(Γ/ν)²(α+¼)
   // GM: approximate with γ-/γ+ = 0.11, γh/γ+ = 2
   const eta2    = eta * eta;
   const gmAsym  = 0.11, gmHeat = 2.0;
@@ -1752,7 +1757,7 @@ function updateCompare() {
 
   compareChart.data.datasets[0].data = [
     parseFloat(nDop.toFixed(3)),
-    parseFloat((0.3 * ratio).toFixed(3)),  // PG estimate: ~0.3× Doppler
+    parseFloat((0.3 * nDop).toFixed(3)),  // PG estimate: ~0.3× Doppler
     parseFloat(nGM.toFixed(4)),
     parseFloat(nEIT.toFixed(4)),
     parseFloat(nResSB.toFixed(4)),

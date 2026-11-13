@@ -74,3 +74,7 @@ The decorative pulse on the atom selector tiles ran forever (a `requestAnimation
   - Playwright in dark and light at 1280 and dark at 390 px: select by tile, chip and table cell; isotope pills; every lens; compare with the isotope picker; `#Cs-133` deep link; no page errors; no horizontal overflow; screenshots reviewed.
   - `smoke.js` 0 new problems.
   - Formula tests OK 17: the species count now comes from the table rows, and the explorer's "15 isotopes" wording is also checked.
+
+## 2026-11-13: physics audit (convention slips)
+- Compare-mode "sideband floor" used Γ/2π as Γ; now the narrow-line Doppler limit ħΓ/2k_B (Sr 689 nm ≈ 183 nK). Dy/Er 2E_r/k_B 0.66/0.71 μK (were 0.27); Cs 0.20; Rb-85 0.37; ⁴⁰K P₁/₂ hyperfine 0.155 GHz.
+- Text: larger quantum defect gives *smaller* n*; Yb 6sns δ₀ ≈ 4.28 (¹S₀)/4.44 (³S₁); Rb clock pair |1,0⟩↔|2,0⟩; ⁶Li is also a fermionic alkali; Na was not the first BEC; Yb 556 nm T_D is not sub-recoil; BEC-BCS needs fermions; no SU(4) in Rb-87.

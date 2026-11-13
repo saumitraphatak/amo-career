@@ -569,7 +569,7 @@ $$\Delta E = g_F\,m_F\,\mu_B\,B \qquad \Delta f = \frac{\Delta E}{h} \quad [\tex
               <h4>Saturation Intensity</h4>
               <div class="sub">I_sat for a dipole-allowed transition. Above I_sat, the transition is power-broadened.</div>
               <div class="formula-box">
-$$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transition]} \qquad \tau = \frac{1}{\Gamma/2\pi}$$</div>
+$$I_{\rm sat} = \frac{\pi h c \Gamma}{3\lambda^3} \quad \text{[cycling transition]} \qquad \tau = \frac{1}{\Gamma}\;\;(\Gamma\ \text{in rad/s})$$</div>
               <div class="field-row">
                 <label for="sat_preset">Preset transition</label>
                 <select id="sat_preset" onchange="applySatPreset()" style="width:220px; background:var(--bg-card); border:1px solid #2a3a52; color:var(--text-primary); border-radius:6px; padding:.3rem .6rem; font-size:.82rem;">
@@ -781,7 +781,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       ══════════════════════════════════════════════════════════ -->
       <div class="tab-panel" data-tab="eom" data-group="main">
         <h2 class="sec-title">EOM / AOM Sideband Calculator</h2>
-        <p class="sec-sub">Bessel-function sideband depths for phase (PM) and amplitude (AM) modulation. AOM double-pass shift and efficiency.</p>
+        <p class="sec-sub">Bessel-function sideband depths for phase modulation (PM), the two-sideband spectrum of pure amplitude modulation (AM), and AOM double-pass shift and efficiency.</p>
 
         <div class="calc-grid">
           <!-- EOM Phase/Amplitude Modulation -->
@@ -789,9 +789,10 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
             <div class="calc-card">
               <h4>EOM Sideband Depths — Bessel Functions J<sub>n</sub>(β)</h4>
               <div class="sub">
-                An EOM with modulation index β splits the carrier into sidebands at ±Ω, ±2Ω, … Each sideband carries
+                A phase-modulating EOM with modulation index β splits the carrier into sidebands at ±Ω, ±2Ω, … Each sideband carries
                 power fraction J<sub>n</sub>(β)² relative to the input.
-                <strong>AM:</strong> sidebands are co-phased (real amplitude modulation).
+                <strong>AM:</strong> E₀(1 + m cos Ωt) has only the ±1 sidebands, each with field m/2 and in phase with each other
+                (here β is read as the depth m, 0–1).
                 <strong>PM/FM:</strong> sidebands have alternating phase (±1 sidebands are π out of phase) — no net AM on a PD.
               </div>
               <div class="formula-box">$$P_n / P_0 = J_n(\beta)^2 \qquad \sum_{n=-\infty}^{\infty} J_n(\beta)^2 = 1$$</div>
@@ -830,10 +831,10 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
                   <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">J₁(β)²</th>
                   <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">Use</th>
                 </tr>
-                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#18813e">1.08</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.319</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.339</td><td style="padding:4px 8px;color:var(--text-secondary)">PDH: max error signal ∝ J₀J₁</td></tr>
+                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#18813e">1.08</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.531</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.216</td><td style="padding:4px 8px;color:var(--text-secondary)">PDH: max error signal ∝ J₀J₁</td></tr>
                 <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#926a03">2.405</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.269</td><td style="padding:4px 8px;color:var(--text-secondary)">Carrier suppression (STIRAP, EIT)</td></tr>
-                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#9937fa">5.520</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.204</td><td style="padding:4px 8px;color:var(--text-secondary)">2nd carrier null</td></tr>
-                <tr><td style="padding:4px 8px;font-family:var(--font-mono);color:#0678ab">0.5</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.940</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.058</td><td style="padding:4px 8px;color:var(--text-secondary)">Weak modulation (small sidebands)</td></tr>
+                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#9937fa">5.520</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.116</td><td style="padding:4px 8px;color:var(--text-secondary)">2nd carrier null</td></tr>
+                <tr><td style="padding:4px 8px;font-family:var(--font-mono);color:#0678ab">0.5</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.881</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.059</td><td style="padding:4px 8px;color:var(--text-secondary)">Weak modulation (small sidebands)</td></tr>
               </table>
               </div>
             </div>
@@ -1135,7 +1136,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       } else {
         const w0_m  = um(+document.getElementById('na_w0').value);
         const NA    = lam_m / (Math.PI * w0_m);
-        const theta = (Math.atan(NA) * 180 / Math.PI);
+        const theta = (Math.asin(Math.min(NA, 1)) * 180 / Math.PI);   // NA = sin θ
         setRes('na_res', [
           ['Numerical aperture', NA.toFixed(4)],
           ['Half-angle θ', theta.toFixed(3) + '°'],
@@ -1276,7 +1277,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const v_rec = hbar * k / m;
       const T_rec = 0.5 * m * v_rec**2 / kB;
       const T_scatter = 2 * T_rec;
-      const E_kHz = hbar * k**2 / (2 * m) / h / 1e3;
+      const E_kHz = hbar * k**2 / (2 * m) / (2 * Math.PI) / 1e3;   // E_rec/h = ħk²/(4πm)
       setRes('rec_res', [
         ['Recoil velocity v_rec', (v_rec*1e3).toFixed(4) + ' mm/s'],
         ['Single recoil E_rec/k_B', (T_rec*1e9).toFixed(4) + ' nK  =  ' + (T_rec*1e6).toFixed(4) + ' µK'],
@@ -1345,7 +1346,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const lam_m = nm(+document.getElementById('sat_lam').value);
       const Gam   = MHz(+document.getElementById('sat_G').value) * 2 * Math.PI;
       const I_sat = Math.PI * h * c * Gam / (3 * lam_m**3);
-      const tau   = 1.0 / (Gam / (2 * Math.PI));
+      const tau   = 1.0 / Gam;   // τ = 1/Γ with Γ in rad/s
       setRes('sat_res', [
         ['I_sat', I_sat.toFixed(2) + ' W/m²  =  ' + (I_sat*0.1).toFixed(4) + ' mW/cm²'],
         ['Lifetime τ', (tau*1e9).toFixed(2) + ' ns'],
@@ -1770,6 +1771,16 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const type = document.getElementById('eom_type').value;
       const rows = [];
       let totalPow = 0;
+      if (type === 'am') {
+        const a = amAmps(beta);
+        document.getElementById('eom_res').innerHTML =
+          `<span class="result-lbl">Carrier (n=0)</span>&nbsp;<span class="result-val">${(a[0]*a[0]*100).toFixed(2)}%</span><br>` +
+          `<span class="result-lbl">Sideband n=±1</span>&nbsp;<span class="result-val">${(a[1]*a[1]*100).toFixed(2)}% each</span><br>` +
+          `<span class="result-lbl">Sidebands n=±2…</span>&nbsp;<span class="result-val">0 (pure AM)</span><br>` +
+          `<span style="color:var(--text-muted);font-size:.78rem">m = ${beta.toFixed(3)} · fractions of total power, 1 : m²/4 : m²/4${beta > 1 ? ' · m > 1 is over-modulation (envelope crosses zero)' : ''}</span>`;
+        drawEOMSpectrum(beta, type);
+        return;
+      }
       for (let n = 0; n <= 5; n++) {
         const Jn = besselJ(n, beta);
         const pow = Jn * Jn;
@@ -1785,6 +1796,13 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       document.getElementById('eom_res').innerHTML = html +
         `<br><span style="color:var(--text-muted);font-size:.78rem">β = ${beta.toFixed(3)} · PDH signal ∝ J₀J₁ = ${(besselJ(0,beta)*besselJ(1,beta)).toFixed(4)} (max at β≈1.08)</span>`;
       drawEOMSpectrum(beta, type);
+    }
+
+    // Pure AM, E0(1 + m cos Ωt): carrier and ±1 sideband field amplitudes, normalised so that
+    // a0² + 2·a1² = 1 (fractions of the total power).
+    function amAmps(m) {
+      const norm = Math.sqrt(1 + m*m/2);
+      return [1/norm, (m/2)/norm];
     }
 
     function drawEOMSpectrum(beta, type) {
@@ -1809,6 +1827,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       for (let n = -nMax; n <= nMax; n++) {
         const Jn = besselJ(Math.abs(n), beta);
         let amp = Math.abs(Jn);
+        if (type === 'am') { const a = amAmps(beta); amp = n === 0 ? a[0] : (Math.abs(n) === 1 ? a[1] : 0); }
         // For PM: odd sidebands have alternating sign — show full height but note phase
         const isPM = type === 'pm';
         const isOdd = Math.abs(n) % 2 === 1;

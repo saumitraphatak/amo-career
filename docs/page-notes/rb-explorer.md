@@ -58,3 +58,7 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - The hero label had no icon; it now starts with 📈 like NAV, the home card and start-here.
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## 2026-11-13: physics audit (convention slips)
+- RB curve exceeded 1 (A up to 0.99 with B = 1/2). Slider is now F(0) and A = F(0) − 1/d; IRB uses A = 0.45 and p_int = p_ref·p_G; animation B = 1/2.
+- δr_C example 10× too small (3.5×10⁻³ for 10⁵ shots) and table column; 1/e reference line is now B + A/e; N_useful 3/(4r_C) for 2Q; IRB bounds are tight when r_C ≪ r_gate; 2Q n̄ ≈ 1.5 CZ.

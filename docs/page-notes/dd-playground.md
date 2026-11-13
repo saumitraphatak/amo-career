@@ -71,3 +71,7 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - Hero pill icon 💡 (the Laser System Planner's icon) → 🛡️, the icon NAV, the home card and start-here use.
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## 2026-11-13: physics audit (convention slips)
+- **N = 256 enhancement was a numerical artefact** (600 log points undersampled the CPMG filter; showed 199× instead of 44.8× at α = 1, and 9.7× instead of 1.0× for white noise). `computeChi` now uses ≥ 60·N points and the closed-form CPMG filter (Cywiński et al. 2008), which matches the explicit sum to 1e-10 and keeps it fast.
+- Displayed CPMG filter formula corrected; Hahn peak at ωT ≈ 4.7; α = 2 gives T₂ ∝ N^{2/3}; noise spectroscopy has a 2π; XY-8 = XYXYYXYX, XY-16 adds the phase-inverted copy; Biercuk 2009 (Nature 458, 996, DOI fixed).

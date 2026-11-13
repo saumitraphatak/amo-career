@@ -280,7 +280,7 @@
           <input type="range" id="detSlide" min="5" max="50" value="15" step="1"
             oninput="document.getElementById('detLbl').textContent=(this.value/10).toFixed(1); compute()">
           <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
-            <span>0.5Γ</span><span>1Γ (α opt)</span><span>5Γ</span>
+            <span>0.5Γ</span><span>2.75Γ</span><span>5Γ</span>
           </div>
         </div>
 
@@ -373,7 +373,7 @@
           <div class="prop-card">
             <div class="prop-card-label">Cloud radius σ</div>
             <div class="prop-card-val" id="sigmaVal">—</div>
-            <div class="prop-card-unit">μm (1/e)</div>
+            <div class="prop-card-unit">μm (rms σ; 1/e² radius = 2σ)</div>
             <div class="prop-card-sub">√(k_BT_MOT/κ)</div>
           </div>
         </div>
@@ -414,7 +414,7 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
 
     <div class="lab-tip">
       <strong>Lab tip:</strong> when loading atoms, start with a large detuning (~2–3Γ) and high gradient
-      for maximum capture volume, then compress (reduce detuning + increase gradient) for higher density
+      for maximum capture volume, then compress (increase detuning to cut radiation pressure from rescattered light + increase gradient) for higher density
       before the sub-Doppler stage. This "cMOT" step is often 10–50 ms.
     </div>
   </section>
@@ -432,7 +432,7 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
       Practical MOTs live at |Δ| = 1.5–2.5Γ, a compromise between the two.
     </p>
     <div class="chart-card">
-      <h5>α (% of max) and T_MOT / T_Doppler vs |Δ|/Γ — live operating point shown</h5>
+      <h5>α (% of max) and T_MOT / T_min vs |Δ|/Γ — live operating point shown (T_min = √(1+s)·T_Doppler)</h5>
       <canvas id="detuneChart" height="240"></canvas>
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
         <span style="display:flex;align-items:center;gap:.4rem">
@@ -441,7 +441,7 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
         </span>
         <span style="display:flex;align-items:center;gap:.4rem">
           <span style="width:20px;height:2px;border-top:2px solid #926a03;display:inline-block"></span>
-          T_MOT / T_Doppler (×100)
+          T_MOT / T_min (×100)
         </span>
         <span style="display:flex;align-items:center;gap:.4rem">
           <span style="width:20px;height:2px;border-top:2px dashed rgba(112,112,112,0.4);display:inline-block"></span>
@@ -454,7 +454,7 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
       <div class="insight-card">
         <div class="insight-label">Optimal α detuning</div>
         <div class="insight-val">|Δ| ≈ 0.29 Γ</div>
-        <div class="insight-desc">Maximum damping at low s. Shifts to ~0.5Γ√(1+s) with saturation. Rarely used in practice — capture velocity is too small.</div>
+        <div class="insight-desc">Maximum damping at low s. Shifts to Γ√((1+s)/12) ≈ 0.29Γ√(1+s) with saturation. Rarely used in practice — capture velocity is too small.</div>
       </div>
       <div class="insight-card">
         <div class="insight-label">Minimum temperature</div>
@@ -494,7 +494,7 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
             <th scope="col">λ (nm)</th>
             <th scope="col">Γ/2π (MHz)</th>
             <th scope="col">T_Doppler (μK)</th>
-            <th scope="col">T_recoil (nK)</th>
+            <th scope="col">E_rec/k_B (nK)</th>
             <th scope="col">v_c at |Δ| (m/s)</th>
             <th scope="col">α/α_Rb</th>
           </tr>
@@ -571,8 +571,8 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
         <h4>Sub-Doppler: why it works</h4>
         <p>
           Polarization gradients create spatially varying light shifts. Atoms climbing a potential hill
-          scatter a photon and are reborn at the bottom — net energy removed per cycle. For σ⁺σ⁻
-          beams (Sisyphus) this gives T ∝ U₀/k_B where U₀ ≪ ℏΓ, reaching 1–20 μK.
+          scatter a photon and are reborn at the bottom — net energy removed per cycle. For lin⊥lin
+          beams (Sisyphus; σ⁺σ⁻ beams cool by a related motion-induced orientation effect) this gives T ∝ U₀/k_B where U₀ ≪ ℏΓ, reaching 1–20 μK.
           Gray molasses (D1 line) exploits dark states to further suppress heating.
         </p>
       </div>
@@ -664,12 +664,12 @@ Maximum deceleration: $a_{\rm max} = \hbar k\Gamma s/(2m(1+s))$
           <h4>Polarization gradients and dark states break the Doppler limit</h4>
           <p>
             The Doppler limit T_D = ℏΓ/2k_B assumes a two-level atom. Multi-level alkalis in
-            polarization-gradient fields experience Sisyphus cooling (σ⁺σ⁻ geometry) or gray-molasses
+            polarization-gradient fields experience sub-Doppler cooling (Sisyphus in lin⊥lin, motion-induced orientation in σ⁺σ⁻) or gray-molasses
             cooling (D1 line, dark states), reaching temperatures 10–100× below T_D.
           </p>
         </div>
         <div class="formula-box">
-Sisyphus (PGC): $T_{\rm PGC} \approx \frac{U_0}{k_B} \propto \frac{\hbar\Omega_R^2}{\Gamma|\Delta|}$; requires $|\Delta|\gg\Gamma$, $B=0$<br>
+Sisyphus (PGC): $k_BT_{\rm PGC} \sim U_0 \propto \frac{\hbar\Omega_R^2}{|\Delta|}$; requires $|\Delta|\gg\Gamma$, $B=0$<br>
 Gray molasses (D1): exploits $\Lambda$ dark states; $T\sim 5$–$20\,\mu$K for Rb, Cs, Li<br>
 Sideband cooling (tweezer): $T\sim \hbar\omega_{\rm trap}/k_B$; $\bar{n}&lt;0.1$ achievable<br>
 Comparison (Rb87): $T_D = 146\,\mu$K $\to$ PGC $\sim10$–$30\,\mu$K $\to$ SBC $\sim1\,\mu$K
@@ -813,7 +813,7 @@ const DETUNE_CHART = new Chart(detuneCtx, {
     datasets: [
       { label:'α (% of max)',        data:[], yAxisID:'y1', borderColor:'#fb923c',
         backgroundColor:'rgba(251,146,60,0.08)', fill:true, tension:0.3, borderWidth:2.5, pointRadius:0 },
-      { label:'T_MOT / T_D (×100)',  data:[], yAxisID:'y1', borderColor:'#fbbf24',
+      { label:'T_MOT / T_min (×100)',  data:[], yAxisID:'y1', borderColor:'#fbbf24',
         borderWidth:2, tension:0.3, pointRadius:0, fill:false },
       { label:'Operating point',     data:[], yAxisID:'y1', borderColor:'rgba(255,255,255,0.35)',
         borderDash:[5,4], borderWidth:1.5, pointRadius:0, fill:false },

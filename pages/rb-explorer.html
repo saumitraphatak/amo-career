@@ -646,7 +646,7 @@
             <strong>Convert to error per native gate.</strong>
             Since each Clifford is compiled from $\bar{n}$ native gates on average,
             the error per native gate is $\varepsilon_{\rm gate} \approx r_C / \bar{n}$.
-            For 1Q: $\bar{n} \approx 1.875$. For 2Q CZ + overhead: $\bar{n} \approx 2$.
+            For 1Q: $\bar{n} \approx 1.875$. For 2Q, counting CZ gates only (they dominate the error): $\bar{n} \approx 1.5$.
           </div>
         </div>
       </div>
@@ -654,15 +654,15 @@
 
     <div class="formula-box">$$F(m) = A \cdot p^m + B$$</div>
     <div class="formula-box">$$r_C = \frac{(d-1)(1-p)}{d} \quad \text{[1Q: } r_C = \tfrac{1-p}{2}\text{, 2Q: } r_C = \tfrac{3(1-p)}{4}\text{]}$$</div>
-    <div class="formula-box">$$\varepsilon_{\rm gate} \approx \frac{r_C}{\bar{n}} \quad \text{where } \bar{n} \approx 1.875 \text{ (1Q)}, \approx 2.0 \text{ (2Q)}$$</div>
-    <div class="formula-box">$$N_{\rm useful} = \frac{1}{2r_C} \quad \text{[circuit depth at which } F \approx 1/e \approx 0.37\text{]}$$</div>
+    <div class="formula-box">$$\varepsilon_{\rm gate} \approx \frac{r_C}{\bar{n}} \quad \text{where } \bar{n} \approx 1.875 \text{ (1Q)}, \approx 1.5 \text{ CZ (2Q)}$$</div>
+    <div class="formula-box">$$N_{\rm useful} = \frac{1}{2r_C}\ \text{(1Q)},\ \frac{3}{4r_C}\ \text{(2Q)} \quad \text{[depth at which } p^m \approx 1/e\text{, i.e. the decaying part } A\,p^m \text{ has fallen to } 1/e\text{]}$$</div>
 
     <div class="two-col" style="margin-top:1rem">
       <div class="theory">
         <h4>Physical Meaning of Parameters</h4>
         <ul>
           <li><strong>$p$ (decay constant):</strong> Proximity to identity channel. $p=1$ means perfect gates, $p=0$ means fully depolarizing. Extracted directly from exponential fit.</li>
-          <li><strong>$A$ (amplitude):</strong> Absorbs SPAM. Typically $A \lesssim 0.95$ due to ~5% SPAM in neutral atom experiments. Does <em>not</em> affect $r_C$.</li>
+          <li><strong>$A$ (amplitude):</strong> Absorbs SPAM: $A = F(0) - 1/d$, so $A \le 1/2$ for one qubit. With ~5% SPAM error in neutral-atom experiments, $F(0) \approx 0.95$ and $A \approx 0.45$. Does <em>not</em> affect $r_C$.</li>
           <li><strong>$B$ (asymptote):</strong> Long-depth limit where the state is fully mixed. For 1Q: $B \to 1/2$ (chance). For 2Q: $B \to 1/4$. In practice, $B$ is a fit parameter that captures imperfect long-depth behavior.</li>
           <li><strong>$r_C$ (error per Clifford):</strong> The quantity you report. Benchmark comparing platforms. Equivalent to infidelity per Clifford averaged uniformly over the Clifford group.</li>
         </ul>
@@ -706,9 +706,9 @@
           <span class="ctrl-val" id="lblRc">r_C = 0.0050 (0.50%)</span>
         </div>
         <div class="ctrl-item">
-          <label for="slA">SPAM amplitude $A$</label>
+          <label for="slA">SPAM fidelity $F(0)$ (sets $A = F(0) - 1/d$)</label>
           <input type="range" id="slA" min="0.80" max="0.99" step="0.005" value="0.95" oninput="updateRBChart()">
-          <span class="ctrl-val" id="lblA">A = 0.950</span>
+          <span class="ctrl-val" id="lblA">F(0) = 0.950</span>
         </div>
         <div style="display:flex;align-items:flex-end;padding-bottom:.1rem">
           <button class="toggle-btn" id="btn2Q" onclick="toggle2Q()">Show 2Q RB</button>
@@ -741,8 +741,9 @@
 
     <div class="info-box" style="margin-top:1rem">
       <strong>Reading the chart:</strong>
-      The dashed $1/e \approx 0.368$ line shows the characteristic depth $N_{\rm useful} = 1/(2r_C)$
-     , roughly the depth at which your circuit maintains useful coherence. The 2Q curve decays faster
+      The dashed line sits at $B + A/e$ for the 1Q curve: it crosses that curve at the characteristic depth
+      $N_{\rm useful} = 1/(2r_C)$, where $p^m = 1/e$ (for 2Q the same point is $3/(4r_C)$). The curves level off at
+      $B = 1/d$, not at zero. The 2Q curve decays faster
       because $p_{\rm 2Q} = 1 - (4/3)r_C < p_{\rm 1Q} = 1 - 2r_C$ for the same $r_C$.
       SPAM amplitude $A$ shifts the whole curve vertically but does <em>not</em> change $r_C$.
     </div>
@@ -828,7 +829,7 @@
       <div class="warn-box">
         <strong>IRB Systematic Errors:</strong> The formula $r_{\rm gate} = \frac{d-1}{d}(1 - p_{\rm int}/p_{\rm ref})$
         is a lower bound. If the noise of $G$ is highly coherent or gate-dependent, the extracted $r_{\rm gate}$
-        can underestimate the true error. The bound is tight when $r_{\rm gate} \ll r_C$.
+        can underestimate the true error. The bounds are tight only when $r_C \ll r_{\rm gate}$ (their width grows with the reference error $r_C$).
       </div>
       <div class="info-box">
         <strong>Practical note:</strong> $p_{\rm int} \leq p_{\rm ref}$ always (the interleaved gate
@@ -972,7 +973,7 @@
         <p>$\delta r_C \approx \frac{1}{A \cdot \sqrt{K \cdot M \cdot n_{\rm shots}}}$</p>
         <p>
           With $A \approx 0.9$, $K=50$, $M=10$, $n_{\rm shots}=200$:
-          $\delta r_C \approx \frac{1}{0.9\sqrt{100{,}000}} \approx 0.00035$, about $3.5 \times 10^{-4}$.
+          $\delta r_C \approx \frac{1}{0.9\sqrt{100{,}000}} \approx 0.0035$, about $3.5 \times 10^{-3}$.
           This is the floor on how precisely you can report $r_C$. For sub-0.1% gate errors,
           you need $\gtrsim 10^6$ total shots.
         </p>
@@ -1051,9 +1052,9 @@
         </tr>
         <tr>
           <td>$\delta r_C$ (approx)</td>
-          <td class="warn">~0.001</td>
-          <td class="mono">~0.0004</td>
-          <td class="good">~0.0001</td>
+          <td class="warn">~0.010</td>
+          <td class="mono">~0.0035</td>
+          <td class="good">~0.0009</td>
         </tr>
         <tr>
           <td>Total shots</td>
@@ -1287,15 +1288,17 @@ function updateRBChart() {
   const A  = parseFloat(document.getElementById('slA').value);
 
   document.getElementById('lblRc').textContent = `r_C = ${fmt(rC,4)} (${fmtPct(rC)})`;
-  document.getElementById('lblA').textContent  = `A = ${fmt(A,3)}`;
+  document.getElementById('lblA').textContent  = `F(0) = ${fmt(A,3)}`;
 
   const p1 = Math.max(0, 1 - 2*rC);
   const p2 = Math.max(0, 1 - (4/3)*rC);
   const B1 = 0.5;
   const B2 = 0.25;
+  // slider gives the SPAM-limited survival F(0); A = F(0) − 1/d so the curve starts at F(0)
+  const A1 = A - B1, A2 = A - B2;
 
-  const y1Q = DEPTHS.map(m => A * Math.pow(p1, m) + B1);
-  const y2Q = DEPTHS.map(m => A * Math.pow(p2, m) + B2);
+  const y1Q = DEPTHS.map(m => A1 * Math.pow(p1, m) + B1);
+  const y2Q = DEPTHS.map(m => A2 * Math.pow(p2, m) + B2);
 
   if (!rbChart) {
     const ctx = document.getElementById('rbChart').getContext('2d');
@@ -1329,8 +1332,8 @@ function updateRBChart() {
             hidden: !show2Q,
           },
           {
-            label: '1/e ≈ 0.368 (reference)',
-            data: DEPTHS.map(() => 0.368),
+            label: '1Q: B + A/e (crossed at m = 1/2r_C)',
+            data: DEPTHS.map(() => B1 + A1 / Math.E),
             borderColor: 'rgba(248,113,113,0.5)',
             borderWidth: 1.2,
             borderDash: [3,3],
@@ -1373,6 +1376,7 @@ function updateRBChart() {
     rbChart.data.datasets[0].data = y1Q;
     rbChart.data.datasets[1].data = y2Q;
     rbChart.data.datasets[1].hidden = !show2Q;
+    rbChart.data.datasets[2].data = DEPTHS.map(() => B1 + A1 / Math.E);
     rbChart.update('active');
   }
 
@@ -1400,10 +1404,10 @@ function updateIRBChart() {
   // 1Q, d=2
   const pRef = Math.max(0, 1 - 2*rC);
   // Interleaved: each step applies Clifford (error rC) + gate G (error rGate)
-  // Effective error per (Clifford, G) pair: rC + rGate (approx, for small errors)
-  const pInt = Math.max(0, 1 - 2*(rC + rGate));
+  // depolarizing parameters multiply: p_int = p_ref · p_G, with p_G = 1 − 2 r_gate (d = 2)
+  const pInt = pRef * Math.max(0, 1 - 2*rGate);   // p_int = p_ref · p_G
   const B    = 0.5;
-  const A    = 0.95;
+  const A    = 0.45;                               // F(0) = 0.95
 
   const yRef = DEPTHS.map(m => A * Math.pow(pRef, m) + B);
   const yInt = DEPTHS.map(m => A * Math.pow(pInt, m) + B);
@@ -1520,8 +1524,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let depthIdx=0, runsPerDepth=12, runsDone=0;
 
   function getRc(){ return parseFloat(document.getElementById('slRc').value)||0.005; }
-  function getA(){  return parseFloat(document.getElementById('slA').value)||0.95; }
-  function getB(){  return 1-getA(); }
+  function getB(){  return 0.5; }
+  function getA(){  return (parseFloat(document.getElementById('slA').value)||0.95) - getB(); }
 
   function fidelity(m){ const p=1-2*getRc(); return getA()*Math.pow(Math.max(0,p),m)+getB(); }
 

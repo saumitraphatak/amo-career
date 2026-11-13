@@ -55,3 +55,8 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - **Maths.** Only the page's own formulas; nothing new.
 - **Example at the defaults** (Rb, n = 60, 2 μs, 5 μK). Zeroing Doppler takes F from 80.973% to 97.288%, 7.0× less error; spontaneous emission becomes dominant. The Doppler term's single-photon k is still an open question for Saumitra (see the backlog).
 - **Checked.** Playwright in dark 1280 and light 390 px: toggle one, two and all sources, then Restore all. Focus stays on the pressed button without scrolling the table. No errors; `smoke.js` 0 new problems.
+
+## 2026-11-13: physics audit (convention slips)
+- Doppler example: v_rms at 5 μK for Rb is 21.9 mm/s (not 8.5), so δφ = 0.57 and ε ≈ 0.16, matching the calculator.
+- C₆/r⁶ at 5 μm is ~6–60 MHz (was "tens to hundreds").
+- The Ω slider did nothing; it now sets t_gate to the time-optimal CZ duration 7.612/Ω (Jandura & Pupillo 2022).

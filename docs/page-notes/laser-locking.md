@@ -63,3 +63,7 @@ There are no index cards, so an automatic "5 chapters on this page" chip strip s
 - the pager, index cards, keyboard (Enter), deep links and hash updates all work.
 
 `smoke.js` on all 34 pages: 0 new problems.
+
+## 2026-11-13: physics audit (convention slips)
+- Beat-note "+5 dBm" → −22 dBm from the page's own 2R²P₁P₂Z₀; PDH slope ∝ √(P_cP_s)/δν (Black 2001), one fewer 𝓕; ring-down τ = 𝓕/(2π·FSR); SAS width a few MHz (≥ Γ/2π), not ~1 MHz; requirements-table reflectivity now consistent with 𝓕 = 25,200.
+- SAS pump power: peak intensity 2P/πw², so half the old estimate.

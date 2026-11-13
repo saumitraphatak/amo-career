@@ -90,3 +90,9 @@ Backlog P0 "cream canvases in dark theme", learn-quantum part. The MZI (`mziCanv
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - Hero eyebrow icon ⚛️ (Atomic Species Selector's icon) → 🔵, the NAV / start-here icon. The eyebrow's "Quantum 01" still clashes with decoherence-lab's; left for Saumitra (backlog, Needs Saumitra).
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## 2026-11-13: physics audit (convention slips)
+- Surface code: 2d² − 1 physical qubits (49, 97, 1249 for d = 5, 7, 25); d = 7 at p = 0.1% gives p_L ≈ A·10⁻⁴ ≈ 10⁻⁵ (was 10⁻⁸); weight-4 stabilizers; bivariate bicycle codes are IBM's proposal (Bravyi 2024), not a Google demonstration.
+- T₁ equation now decays to |0⟩ = +ẑ; typical T₁ ≥ 1 s so T₂ ≤ 2T₁ holds; decay chart legend matches the plotted ½e^{−t/T₁}.
+- Neutral ¹⁷¹Yb qubit is the nuclear spin (≈0.75 kHz/G), not the 12.6 GHz F = 0 ↔ 1 qubit of Yb⁺; ⁶Li hyperfine pair; 40 s T₂ is ⁸⁷Sr (Barnes 2022), not Rb (Evered 2023); Rb ~1 s, Cs 12.6 s.
+- Hyperfine splitting A(I + ½); quadrupole needs J ≥ 1; σ⁺ dark state only for F′ ≤ F; C₃/r³ is resonant exchange; Rb C₆(70S) = 862 GHz·μm⁶; Grover animation stops at k_opt.

@@ -625,7 +625,7 @@
           </p>
           <ul>
             <li>Zero at $\omega = 0$, static fields refocused</li>
-            <li>Peak near $\omega \approx 2\pi/T$, sensitive to noise at the echo timescale</li>
+            <li>Peak near $\omega \approx 4.7/T$ (where $\tan(\omega T/4) = \omega T/2$), sensitive to noise at the echo timescale</li>
             <li>High-pass character: suppresses $\omega \ll 1/T$ noise</li>
           </ul>
         </div>
@@ -711,9 +711,10 @@
         </div>
         <div class="theory">
           <h4>Filter Function</h4>
-          <div class="formula-box">$$|\tilde{Y}_{\rm CPMG-N}(\omega,T)|^2 = \frac{4\sin^2(\omega\tau)\sin^2(N\omega\tau)}{\omega^2}, \quad \tau = \frac{T}{2N}$$</div>
+          <div class="formula-box">$$|\tilde{Y}_{\rm CPMG-N}(\omega,T)|^2 = \frac{16\sin^4(\omega T/4N)\,\sin^2(\omega T/2)}{\omega^2\cos^2(\omega T/2N)} \quad (N\ \text{even; use}\ \cos^2(\omega T/2)\ \text{for odd}\ N)$$</div>
+          <p style="font-size:.85rem">Cywiński et al., PRB 77, 174509 (2008). For $N = 1$ this reduces to the Hahn-echo result $16\sin^4(\omega T/4)/\omega^2$.</p>
           <p>
-            Peak location: $\omega_c = \pi/\tau = \pi N / T$. More pulses → peak shifts to <em>higher</em> frequency.
+            Peak location (where $\cos(\omega T/2N) = 0$): $\omega_c = \pi/\tau = \pi N / T$. More pulses → peak shifts to <em>higher</em> frequency.
           </p>
           <p>
             For $1/f$ noise ($S(\omega) \propto 1/\omega$): higher $\omega_c$ → less noise power →
@@ -816,12 +817,12 @@
         <div class="theory">
           <h4>XY-8 and XY-16</h4>
           <p>
-            <strong>XY-8:</strong> $X\,Y\,X\,Y\,\bar{Y}\,\bar{X}\,\bar{Y}\,\bar{X}$
-            (where $\bar{X} = -\pi_x$, i.e., $\pi$ rotation about $-x$). Cancels both
+            <strong>XY-8:</strong> $X\,Y\,X\,Y\,Y\,X\,Y\,X$, an XY-4 cycle followed by its time-reverse
+            (Gullion et al. 1990). Cancels both
             first- <em>and</em> second-order errors (rotation angle AND axis tilt).
           </p>
           <p>
-            <strong>XY-16:</strong> Two concatenated XY-8 cycles. Third-order error suppression.
+            <strong>XY-16:</strong> An XY-8 cycle followed by its phase-inverted copy, $\bar{X}\,\bar{Y}\,\bar{X}\,\bar{Y}\,\bar{Y}\,\bar{X}\,\bar{Y}\,\bar{X}$ (where $\bar{X} = -\pi_x$, a $\pi$ rotation about $-x$). Third-order error suppression.
             This is the sequence used in Manetsch 2025 for T₂ = 12.6 s in a 6100-atom Cs-133 array.
           </p>
         </div>
@@ -1136,7 +1137,7 @@
             <li>For each N, measure the coherence W(T,N) and extract χ(T,N) = −ln W.</li>
             <li>The filter function for CPMG-N has a sharp peak at $\omega_c = \pi N/T$.</li>
             <li>The noise PSD at $\omega_c$ is proportional to χ at that peak:
-              $$S(\omega_c) \approx \frac{\chi(T,N)}{|\tilde{Y}(\omega_c,T)|^2 \Delta\omega_{\rm peak}}$$
+              $$S(\omega_c) \approx \frac{2\pi\,\chi(T,N)}{|\tilde{Y}(\omega_c,T)|^2 \Delta\omega_{\rm peak}}$$
             </li>
             <li>By sweeping T as well, reconstruct $S(\omega)$ over many decades of frequency.</li>
           </ol>
@@ -1288,7 +1289,7 @@
         <a class="read-link" href="https://www.nature.com/articles/s41586-025-09641-4" target="_blank" rel="noopener">Manetsch et al. 2025, 6100-atom Cs tweezer array and long coherence</a>
         <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.82.2417" target="_blank" rel="noopener">Viola, Knill &amp; Lloyd (1999), <em>PRL 82</em> 2417 — original dynamical decoupling proposal; bang-bang control to suppress decoherence</a>
         <a class="read-link" href="https://doi.org/10.1103/PhysRev.94.630" target="_blank" rel="noopener">Carr &amp; Purcell (1954), <em>Phys. Rev. 94</em> 630 — spin echo sequence; the classical forerunner of all refocusing pulse sequences</a>
-        <a class="read-link" href="https://doi.org/10.1038/nature08693" target="_blank" rel="noopener">Biercuk et al. (2011), <em>Nature 458</em> 996 — optimized DD sequences for noise suppression in trapped-ion qubits</a>
+        <a class="read-link" href="https://doi.org/10.1038/nature07951" target="_blank" rel="noopener">Biercuk et al. (2009), <em>Nature 458</em> 996 — optimized DD sequences for noise suppression in trapped-ion qubits</a>
         <a class="read-link" href="https://doi.org/10.1038/nature08232" target="_blank" rel="noopener">Du et al. (2009), <em>Nature 461</em> 1265 — preserving electron spin coherence in diamond with dynamical decoupling</a>
       </div>
     </section>
@@ -1377,22 +1378,43 @@ function filterFuncSq(omega, pulses, T) {
   return re*re + im*im;
 }
 
+// Closed form for N equally spaced π pulses at t_k = (2k−1)T/2N (CPMG timing; Cywiński et al.,
+// PRB 77, 174509 (2008)): |Ỹ|² = 16 sin⁴(ωT/4N) · [sin² or cos²](ωT/2) / (ω² cos²(ωT/2N)),
+// sin² for even N, cos² for odd N. Falls back to the explicit sum near the removable 0/0 points.
+function isCPMGTiming(pulses, T) {
+  const N = pulses.length;
+  if (N === 0) return false;
+  for (let k = 0; k < N; k++) {
+    if (Math.abs(pulses[k] - (2*k + 1) * T / (2*N)) > 1e-9 * T) return false;
+  }
+  return true;
+}
+function filterFuncSqCPMG(omega, N, T) {
+  const c = Math.cos(omega * T / (2*N));
+  if (Math.abs(c) < 1e-4 || omega * T < 1e-6) return filterFuncSq(omega, getPulses(N, T), T);
+  const s4 = Math.pow(Math.sin(omega * T / (4*N)), 4);
+  const h  = (N % 2 === 0) ? Math.sin(omega * T / 2) : Math.cos(omega * T / 2);
+  return 16 * s4 * h * h / (omega * omega * c * c);
+}
+
 /**
  * χ(T) via log-spaced numerical integration.
- * χ = (1/2π) ∫ S(ω)|Ỹ(ω,T)|² dω
- * S(ω) = A_noise · ω^{-alpha}
+ * χ = (1/2π) ∫ S(ω)|Ỹ(ω,T)|² dω,  S(ω) = A_noise · ω^{-alpha}
+ * The filter of N pulses oscillates on a scale Δω ~ π/T up to ω ~ πN/T, so the
+ * log-grid step must shrink like 1/N: use ~60 points per decade per pulse.
  */
 function computeChi(T, pulses, alpha, A_noise) {
-  const Nw = 600;
   const N = Math.max(pulses.length, 1);
   const wmin = Math.PI * 0.001 / T;
   const wmax = Math.PI * 500 * N / T;
+  const Nw = Math.max(600, 60 * N);
   const dlw = Math.log(wmax / wmin) / Nw;
+  const cpmg = isCPMGTiming(pulses, T);
   let chi = 0;
   for (let i = 0; i < Nw; i++) {
     const w = wmin * Math.exp((i + 0.5) * dlw);
     const S = A_noise * Math.pow(w, -alpha);
-    const F = filterFuncSq(w, pulses, T);
+    const F = cpmg ? filterFuncSqCPMG(w, pulses.length, T) : filterFuncSq(w, pulses, T);
     chi += S * F * w * dlw; // log-space: dw = w d(ln w)
   }
   return chi / (2 * Math.PI);
@@ -1708,7 +1730,7 @@ function updateT2Chart() {
       ${alpha < 0.05
         ? 'White noise (α≈0): DD gives no improvement, all sequences give T₂ ≈ T₂*.'
         : alpha > 1.9
-          ? '1/f² noise (α≈2): linear improvement, each doubling of N doubles T₂.'
+          ? '1/f² noise (α≈2): T₂ ∝ N^(2/3), so each doubling of N multiplies T₂ by 2^(2/3) ≈ 1.59.'
           : '1/f noise (α≈1): square-root improvement, doubling N multiplies T₂ by √2 ≈ 1.41.'
       }
     `;

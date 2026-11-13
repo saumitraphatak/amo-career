@@ -53,3 +53,8 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - Its forever `requestAnimationFrame` loop is now `AMOMotion.loop` (Pause button, offscreen stop, still frame under reduced motion); slider moves and theme toggles repaint.
 - **High-DPI bug:** the canvas is sized `rect.width × dpr` and the context scaled by dpr, but molecules were placed over `canvas.width` (device pixels), so on a dpr-2 screen three quarters of them were outside the visible box. They now use CSS-pixel width/height. Checked at deviceScaleFactor 2: molecule pixels split 50/50 left/right and top/bottom (before: concentrated top-left).
 - `role="img"` + `aria-label` ("schematic; log-scaled, not to scale"). Checks: `smoke.js` 0 new problems; Playwright dark/light 1280 and 390, reduced motion + slider + toggle; screenshots reviewed.
+
+## 2026-11-13: physics audit (convention slips)
+- **Background-gas lifetimes were ~10× too long.** σ_eff 5×10⁻¹⁵ → 3×10⁻¹⁴ cm², which reproduces the measured τ ≈ 2×10⁻⁸ Torr·s/P (Arpornthip, Sackett & Hughes 2012): ~3 s at 10⁻⁸ mbar, ~5 min at 10⁻¹⁰ mbar (were 10 s / 1000 s; the calculator itself showed 29 min).
+- Mean-free-path table was ~150× too high in the UHV/XHV rows; now from the page's own formula (66 m at 10⁻⁶, 66 km at 10⁻⁹, 665 km at 10⁻¹⁰ mbar). Density 2.5×10⁶ cm⁻³ at 293 K.
+- Bake speed-up 10²–10⁵ for E_a 0.5–1 eV (was 10⁶ for 0.5 eV); bake-curve axis labels were non-monotonic, now 10⁻⁴…10⁻⁷ with a compressed tail.

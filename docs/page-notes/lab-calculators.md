@@ -65,3 +65,10 @@ The seven route-cards open their chapters (`data-chapter` 1–7). The Page Playb
 - the pager, index cards, keyboard (Enter), deep links and hash updates all work.
 
 `smoke.js` on all 34 pages: 0 new problems.
+
+## 2026-11-13: physics audit (convention slips)
+- Recoil frequency divided ħk²/2m by h instead of 2π (showed ~10³⁴ kHz). Fixed: E_rec/h = ħk²/4πm.
+- Lifetime τ = 1/(Γ/2π) → 1/Γ (Cs D2 191 → 30.4 ns), formula text too.
+- "Key β values" table: J₀², J₁² recomputed (β = 1.08: 0.531/0.216; 5.520: J₁² 0.116; 0.5: J₀² 0.881).
+- AM mode now shows the real AM spectrum (carrier + ±1 sidebands of field m/2), not Bessel sidebands.
+- NA → half-angle uses asin (NA = sin θ), not atan.

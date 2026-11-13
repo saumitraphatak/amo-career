@@ -579,18 +579,18 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
 
         <div class="field-row" id="emGainRow">
           <label for="emGainSlide">EM gain (EMCCD only):
-            <span class="lbl-val" id="emGainLbl">300</span>×</label>
-          <input type="range" id="emGainSlide" min="0" max="240" value="150" step="1"
+            <span class="lbl-val" id="emGainLbl">302</span>×</label>
+          <input type="range" id="emGainSlide" min="0" max="300" value="248" step="1"
             oninput="document.getElementById('emGainLbl').textContent=Math.round(Math.pow(10,this.value/100)); compute()">
           <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
-            <span>1×</span><span>100×</span><span>1000×</span>
+            <span>1×</span><span>32×</span><span>1000×</span>
           </div>
         </div>
 
         <div class="field-row">
           <label for="rnSlide">Read noise σ<sub>read</sub> (e⁻ RMS):
             <span class="lbl-val" id="rnLbl">60</span> e⁻</label>
-          <input type="range" id="rnSlide" min="0" max="60" value="30" step="1"
+          <input type="range" id="rnSlide" min="0" max="60" value="60" step="1"
             oninput="document.getElementById('rnLbl').textContent=this.value; compute()">
           <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-muted);margin-top:.15rem">
             <span>0</span><span>1 e⁻ (sCMOS)</span><span>60 e⁻ (EMCCD CIC)</span>
@@ -861,7 +861,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
         </div>
         <div class="formula-box">
 $$P_{\rm dark}(n) = \mathcal{N}(\mu_{\rm dark},\,\sigma_{\rm dark}^2)$$
-$$\mu_{\rm dark} = N_{\rm bg} + N_{\rm dark} + \sigma_{\rm read}^2/G^2$$
+$$\mu_{\rm dark} = N_{\rm bg} + N_{\rm dark}$$
 $$\sigma_{\rm dark}^2 = F^2 \mu_{\rm dark} + (\sigma_{\rm read}/G)^2$$
 $$P_{\rm bright}(n) = \mathcal{N}(\mu_{\rm bright},\,\sigma_{\rm bright}^2)$$
 $$\mu_{\rm bright} = N_{\rm sig} + \mu_{\rm dark}$$
@@ -1029,12 +1029,12 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
             <h4 style="color:#b75404;">Alkali (⁸⁷Rb, ¹³³Cs)</h4>
             <p><strong>Imaging transition:</strong> D2 cycling transition (780 nm for Rb, 852 nm for Cs).
             Closed cycling transition with repumper keeps the atom in the imaging cycle.
-            R_sc → Γ/2 at saturation (~3 MHz for Rb87).</p>
-            <p><strong>Photon counts:</strong> With NA=0.5 (η_geo ≈ 6.7%; total η = η_geo × QE × T ≈ 5%), 5 ms exposure →
-            ~750 detected photons. σ_bright ≈ 40e⁻ (EMCCD with excess noise). Well-separated from dark peak (~50 e⁻).</p>
+            R_sc → Γ/2 ≈ 1.9×10⁷ photons/s for Rb87 at strong saturation (Γ = 2π × 6.07 MHz); Γ/4 at s = 1 on resonance.</p>
+            <p><strong>Photon counts:</strong> With NA=0.5 (η_geo ≈ 6.7%; total η = η_geo × QE × T ≈ 5%), 5 ms exposure at
+            R_sc ≈ 3×10⁶/s (detuned, molasses-style imaging) → ~750 detected photons. σ_bright ≈ 40e⁻ (EMCCD with excess noise). Well-separated from dark peak (~50 e⁻).</p>
             <p><strong>Main challenge:</strong> Photon recoil heating (~181 nK per one-way recoil for Rb87;
             roughly twice that per scatter cycle without cooling).
-            At R_sc = 3×10⁶/s, the atom heats by ~1 mK/s.
+            At R_sc = 3×10⁶/s, the atom heats by ~1 K/s (2E_rec·R_sc/k_B), i.e. ~1 mK per ms.
             Limit imaging to &lt;10 ms or use concurrent Sisyphus/gray molasses cooling
             (recapture imaging, EIT imaging).</p>
             <p><strong>Background:</strong> Stray light from near-resonant beams contributes to dark peak.
@@ -1043,7 +1043,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
           <div class="theory-box" style="border-left-color:#1c805b;">
             <h4 style="color:#1c805b;">Alkaline-earth-like (¹⁷¹Yb, ⁸⁸Sr)</h4>
             <p><strong>Imaging transition:</strong> Broad ¹P₁ transition (399 nm for Yb, 461 nm for Sr,
-            Γ/2π = 29/32 MHz). Very high R_sc ≥ Γ/2 at low saturation. Alternative: narrow ³P₁
+            Γ/2π = 29/32 MHz). R_sc can reach Γ/2 ≈ 10⁸ photons/s, about 5× the alkali D2 maximum. Alternative: narrow ³P₁
             (556 nm Yb, 689 nm Sr) for gentler imaging.</p>
             <p><strong>J=0 ground state advantage:</strong> Qubit states (nuclear spin) are largely spectator
             degrees of freedom for electronic cycling transitions such as ¹S₀ → ¹P₁. Atoms in the
@@ -1306,8 +1306,8 @@ Detection fidelity: $\mathcal{F} = 1 - (P_{\rm miss} + P_{\rm false})/2$.<br>
 If the bright and dark peaks have equal variance and ${\rm SNR}=(\mu_{\rm sig}-\mu_{\rm bg})/\sigma$,
 then $\mathcal{F}\approx\Phi({\rm SNR}/2)$. The calculator below uses the bright and dark variances separately.</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
-          For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that fidelity scales as
-          erfc(SNR), doubling SNR dramatically reduces error. Background suppression (e.g.
+          For SNR ≥ 10, fidelity exceeds 99.9%. The key insight is that the error is a Gaussian tail,
+          ½erfc(SNR/2√2), so doubling SNR reduces it dramatically. Background suppression (e.g.
           dark-field or EIT imaging) improves fidelity by reducing μ_bg without reducing μ_sig.
         </p>
       </div>
@@ -1322,14 +1322,14 @@ then $\mathcal{F}\approx\Phi({\rm SNR}/2)$. The calculator below uses the bright
         <div class="theory-box">
           <h4>Photon recoil vs trap depth</h4>
           <p>Every scattered photon imparts a recoil kick ℏk. At scattering rate R_sc the atom
-             heats at rate dE/dt = E_rec × R_sc (in a σ⁺/σ⁻ Sisyphus beam, this is partially
+             heats at rate dE/dt ≈ 2E_rec × R_sc — one recoil from absorption, one from emission (in a σ⁺/σ⁻ Sisyphus beam, this is partially
              cancelled; in a σ beam near resonance it accumulates).</p>
         </div>
         <div class="formula-box">
 $$E_{\rm rec} = \frac{\hbar^2 k^2}{2m}$$
 $^{87}$Rb D2: $E_{\rm rec}/k_{\rm B} \approx 181$ nK, so one absorption plus one emission deposits $\sim 2E_{\rm rec}/k_B \approx 362$ nK<br>
 Heating rate: $\dot{T} \approx 2E_{\rm rec} R_{\rm sc}/k_{\rm B}$ [absorption + spontaneous emission, no cooling]<br>
-Max imaging time ($U_0$ = trap depth): $t_{\rm max} \sim U_0/(E_{\rm rec} R_{\rm sc})$<br>
+Max imaging time ($U_0$ = trap depth): $t_{\rm max} \sim U_0/(2E_{\rm rec} R_{\rm sc})$<br>
 Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} \approx 55$ ms</div>
         <p style="font-size:.83rem;color:var(--text-secondary);line-height:1.7">
           In practice, tweezer imaging uses repump + imaging beams in a gray molasses or
@@ -1358,9 +1358,9 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
         Blodgett, Peana, Phatak et al. (2023), High-fidelity imaging of lithium in optical tweezers with gray molasses
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
-      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.114.213002" target="_blank" rel="noopener">
+      <a class="read-link" href="https://doi.org/10.1088/1367-2630/aa5a3b" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Hutzler et al. (2017), Eliminating light shifts for single-atom trapping
+        Hutzler et al. (2017), Eliminating light shifts for single atom trapping (New J. Phys.)
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://steck.us/alkalidata" target="_blank" rel="noopener">
@@ -1368,9 +1368,9 @@ Example: $U_0/k_{\rm B} = 1$ mK, $R_{\rm sc} = 50$ kHz $\Rightarrow t_{\rm max} 
         Steck, Alkali Data Sheets (D1/D2 line data for all species)
         <span class="source-confidence"><span class="source-tag textbook">textbook</span></span>
       </a>
-      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.87.1419" target="_blank" rel="noopener">
+      <a class="read-link" href="https://doi.org/10.1038/s41567-021-01357-2" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
-        Kaufman &amp; Greiner (2021), Quantum science with optical tweezers (Rev. Mod. Phys.)
+        Kaufman &amp; Ni (2021), Quantum science with optical tweezer arrays of ultracold atoms and molecules (Nat. Phys.)
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
     </div>
@@ -1580,10 +1580,11 @@ function sciSup(v) {
    CORE PHYSICS
 ═══════════════════════════════════════════════════════════════ */
 function scatterRate(Gamma_MHz, s, Delta_MHz) {
-  // Returns photons/s
-  const G = Gamma_MHz * 1e6;  // Hz
-  const D = Delta_MHz * 1e6;  // Hz
-  return (G / 2) * s / (1 + s + Math.pow(2 * D / G, 2));
+  // Returns photons/s.  R = (Γ/2)·s/(1+s+(2Δ/Γ)²) with Γ in s⁻¹ (= 2π × Γ/2π).
+  // The detuning ratio is dimensionless, so Δ/2π and Γ/2π (both in Hz) can be used there.
+  const Gamma = 2 * Math.PI * Gamma_MHz * 1e6;  // s⁻¹
+  const ratio = 2 * Delta_MHz / Gamma_MHz;
+  return (Gamma / 2) * s / (1 + s + ratio * ratio);
 }
 
 function collectionGeo(NA) {
@@ -1680,7 +1681,7 @@ function compute() {
 
   // ── Scattering rate ──────────────────────────────────────────
   const Rsc = scatterRate(atom.Gamma_MHz, s, Delta); // photons/s
-  const Rsc_max = atom.Gamma_MHz * 1e6 / 2;
+  const Rsc_max = Math.PI * atom.Gamma_MHz * 1e6;  // Γ/2 with Γ = 2π·(Γ/2π)
 
   // ── Collection ───────────────────────────────────────────────
   const eta_geo = collectionGeo(NA);

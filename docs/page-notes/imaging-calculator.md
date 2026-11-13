@@ -100,3 +100,10 @@ New model (one comment block in the code, source cited): sCMOS / ideal = Poisson
 
 ## 2026-09-28 (overnight run 3): symbol tooltips work with keyboard, touch and screen readers
 Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The dashed-underline `.tip[data-tip]` symbols (2 on this page) only showed their bubble on mouse hover: the spans weren't focusable, a tap on a phone did nothing reliable, and screen readers never got the text. Now each is focusable (Tab shows the bubble, with a focus ring), its text is its accessible description (`aria-describedby` → a hidden `#amo-tip-descs` list), a tap or click pins the bubble open (tap again, tap elsewhere or Esc closes it), and Esc hides a keyboard-focused bubble (WCAG 1.4.13). A tip inside a `<label>` stays open when the tap moves focus to the label's input. Edge alignment now measures the first line box, so an anchor that wraps no longer misplaces its bubble. Checked in Playwright: all tips focusable with matching descriptions, focus shows / Esc hides / refocus shows, tap opens at 390 px (touch emulation), click elsewhere closes; `smoke.js` 0 new problems on all 34 pages.
+
+## 2026-11-13: physics audit (convention slips)
+- **Scattering rate 2π:** `scatterRate()` used Γ/2π as Γ, so R and everything downstream (N_sig, SNR, time-to-SNR) were 2π too low (R_max 3.03 M → 19.05 M /s for Rb). Fixed.
+- Slider labels disagreed with values on load (EM gain showed 300× at G = 32; read noise 60 at 30): defaults now 10^2.48 ≈ 302× and 60 e⁻; ticks 1×/32×/1000×.
+- Text: Γ/2 is 1.9×10⁷ /s (not "3 MHz"); heating at 3×10⁶/s is ~1 K/s (not 1 mK/s); dE/dt = 2E_rec·R and t_max ~ U₀/(2E_rec R) (the 55 ms example already assumed this); μ_dark has no σ_read² term; error tail is ½erfc(SNR/2√2).
+- Citations: Hutzler et al. is NJP 19, 023007 (2017); "Kaufman & Greiner, RMP 87, 1419" was wrong (that DOI is an ion-trap noise review) → Kaufman & Ni, Nat. Phys. 2021.
+- **Not changed, needs Saumitra:** the Hood Lab callouts say the lab images ⁸⁷Rb and ¹³³Cs on 780 nm, and "685 nm gray molasses" for Cs (tooltip says D1 = 894 nm).

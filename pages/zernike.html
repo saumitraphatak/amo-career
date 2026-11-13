@@ -499,7 +499,7 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
               <div class="canvas-info" id="singleInfo">RdBu: blue=min, white=0, red=max</div>
             </div>
             <div class="canvas-wrap" id="radialWrap" style="margin-top:.75rem;">
-              <h5>Radial cross-section at θ=0</h5>
+              <h5>Radial cross-section (θ = 0 for m ≥ 0; θ = π/2|m| for m &lt; 0)</h5>
               <canvas id="radialChart" height="130"></canvas>
             </div>
           </div>
@@ -714,7 +714,7 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
         <div class="theory-box">
           <h4>Gerchberg-Saxton (GS) Algorithm — iterative phase retrieval</h4>
           <p>
-            Given a desired far-field intensity |T(u,v)|² (e.g. a reconfigurable tweezer array),
+            Given a desired far-field intensity T(u,v) (e.g. a reconfigurable tweezer array),
             GS finds the SLM phase pattern φ(x,y) that produces it.
             The algorithm alternates between the SLM plane and the target plane, enforcing
             known amplitude constraints in each:
@@ -764,7 +764,7 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
           <div class="canvas-wrap">
             <h5>Reconstructed far-field</h5>
             <canvas class="zernike-canvas" id="gsOutputCanvas"></canvas>
-            <div class="canvas-info">|FT{e^{iφ}}|² at each iteration</div>
+            <div class="canvas-info">|FT{A·e^{iφ}}|² at each iteration (A = Gaussian input beam)</div>
           </div>
         </div>
 
@@ -789,7 +789,7 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
             to separate it from undiffracted light.
           </p>
           <div class="formula-box">
-GS convergence criterion: RMSE = $\sqrt{\frac{1}{P}\sum_i \left(|E_i|^2 - T_i\right)^2}$ / mean($T$)
+GS convergence criterion: RMSE = $\sqrt{\frac{1}{P}\sum_i \left(|E_i|^2 - T_i\right)^2}$ / max($T$) (normalised to the peak of the scaled target)
           </div>
         </div>
       </div>
@@ -1157,7 +1157,7 @@ function updateSingle() {
   // Radial cross-section
   if (document.getElementById('showRadial').checked) {
     document.getElementById('radialWrap').style.display = 'block';
-    const angle = m >= 0 ? 0 : Math.PI/4;
+    const angle = m >= 0 ? 0 : Math.PI / (2 * Math.abs(m));   // sin(|m|θ) = 1: the full radial profile
     const rhos = [], zvals = [];
     for (let k = 0; k <= 300; k++) {
       const r = k/300;

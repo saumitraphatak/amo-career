@@ -545,7 +545,7 @@
               <div class="tech-section-title">2 · Double-Pass Acousto-Optic Modulators (AOMs)</div>
               <!-- AOM Bragg animation -->
               <div style="background:var(--bg-surface);border:1px solid #1e293b;border-radius:10px;padding:.75rem;margin-bottom:.9rem;">
-                <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Cat's-eye double-pass AOM (Fig. 3). Laser → PBS → lenses → AOM: 0th order blocked, +1st order (ν₀+f) deflected at Bragg angle θ_B → QWP → cat's-eye lens ↔ mirror → retroreflects → AOM again (+f) → lens → PBS. After the double QWP pass the beam is H-pol; PBS deflects it to FC. Output: ν₀+2f, direction unchanged, frequency-agile.</div>
+                <div style="font-size:.76rem;color:var(--text-muted);margin-bottom:.4rem;">Cat's-eye double-pass AOM (Fig. 3). Laser → PBS → lenses → AOM: 0th order blocked, +1st order (ν₀+f) deflected at Bragg angle θ_B → QWP → cat's-eye lens ↔ mirror → retroreflects → AOM again (+f) → lens → PBS. After the double QWP pass the polarisation is rotated by 90°, so the PBS sends it out of its other port to the FC. Output: ν₀+2f, direction unchanged, frequency-agile.</div>
                 <canvas id="aomCanvas" width="560" height="195" style="width:100%;border-radius:5px;"></canvas>
               </div>
               <div class="concept-box">
@@ -574,7 +574,7 @@
                         <li>QWP + mirror at one focal length from lens, retroreflects beam</li>
                         <li>QWP traversed twice → <strong>polarisation rotated 90°</strong></li>
                         <li>Second pass through AOM → frequency shifted by another f_RF</li>
-                        <li>PBS transmits the 2f_RF output (orthogonal polarisation) and rejects zero-order</li>
+                        <li>PBS separates the returning 2f_RF beam (now orthogonal polarisation) from the input; an iris blocks the zero order</li>
                       </ol>
                       <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.7;margin-top:var(--sp-4)">
                         The cat's-eye geometry makes retroreflection <strong>insensitive to mirror tilt</strong>, which is why it is preferred over simpler flat-mirror configurations.
@@ -603,16 +603,16 @@
                         </thead>
                         <tbody>
                           <tr><td>Acoustic mode</td><td>Atoms ∥ propagation</td><td>Atoms ⊥ propagation</td></tr>
-                          <tr><td>Sound velocity</td><td>~4–6 km/s</td><td>~1–2 km/s</td></tr>
-                          <tr><td>Deflection angle</td><td>Larger (AOD use)</td><td>Smaller</td></tr>
-                          <tr><td>RF bandwidth</td><td>Broader</td><td>Narrower</td></tr>
+                          <tr><td>Sound velocity</td><td>~4–6 km/s (TeO₂: 4.2)</td><td>~0.6–3 km/s (TeO₂ slow shear: 0.62)</td></tr>
+                          <tr><td>Deflection per MHz (θ = λf/v)</td><td>Smaller</td><td>Larger (~7× in TeO₂; AOD use)</td></tr>
+                          <tr><td>Resolvable spots (Δf·D/v)</td><td>Few</td><td>Many (slow v → long access time)</td></tr>
                           <tr><td>Diffraction eff.</td><td>Lower at peak</td><td>Higher at peak</td></tr>
                         </tbody>
                       </table>
                       </div>
                       <div class="tip-box" style="margin-top:var(--sp-4)">
-                        <strong>In the lab:</strong> Cooling/imaging beams → shear-wave AOM.
-                        Tweezer array generation → longitudinal AOM (AOD), because large deflection range is needed to position hundreds of tweezers.
+                        <strong>In the lab:</strong> Cooling/imaging beams → longitudinal AOM (fixed frequency shift, fast switching).
+                        Tweezer array generation → slow-shear TeO₂ AOD, because the slow acoustic wave gives a large deflection range and many resolvable spots to position hundreds of tweezers (at the cost of slower switching).
                       </div>
                     </div>
                   </div>
@@ -641,7 +641,7 @@
                       </div>
                     </div>
                     <div class="calc-feedback" id="aom-feedback" style="display:none"></div>
-                    <p class="calc-note">Formula: t_rise = d_beam / v_s &nbsp;·&nbsp; Focus tighter to get faster switching</p>
+                    <p class="calc-note">Formula: t_rise(10–90%) ≈ 0.64 · d / v_s for a Gaussian beam of 1/e² diameter d &nbsp;·&nbsp; Focus tighter to get faster switching</p>
                   </div>
                   <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>AOM vendors</strong><br>
                     <a href="https://gandh.com/products/acousto-optics/modulators" target="_blank" rel="noopener">Gooch &amp; Housego</a> ·
@@ -1012,7 +1012,7 @@ $S_0 = A - C \;\mid\; S_1 = 2C \;\mid\; S_2 = 2D \;\mid\; S_3 = B$
                           <div class="calc-metric-label">Match capacitor (pF)</div>
                         </div>
                       </div>
-                      <p class="calc-note">Approximate formulas, always verify with VNA measurement.</p>
+                      <p class="calc-note">Approximate formulas (single turn of 1 mm diameter wire, L = μ₀R[ln(8R/a) − 2]); stray capacitance and leads shift the match, so always verify with a VNA.</p>
                     </div>
                     <div class="vendor-card" style="margin-top:var(--sp-4)">📦 <strong>Tools &amp; instruments</strong><br>
                       <a href="https://siglentna.com/spectrum-analyzers/ssa3000x-plus/" target="_blank" rel="noopener">Siglent SVA1015X</a> VNA ·
@@ -1203,7 +1203,7 @@ SteadyStateTweezer(
                       A bare semiconductor diode lases on multiple longitudinal modes. Two tuning mechanisms in a bare diode:
                     </p>
                     <ul style="color:var(--text-secondary);font-size:0.875rem;line-height:2;margin-left:var(--sp-5);margin-bottom:var(--sp-4)">
-                      <li>Injection current: ∂ν/∂I ~ 1–3 GHz/A (fast but noisy)</li>
+                      <li>Injection current: ∂ν/∂I ~ 1–3 GHz/mA (fast but noisy)</li>
                       <li>Temperature: ∂ν/∂T ~ −20 to −40 GHz/K (slow, hysteretic)</li>
                     </ul>
                     <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8;margin-bottom:var(--sp-4)">
@@ -1504,9 +1504,9 @@ SteadyStateTweezer(
                     <span style="font-size:1.3rem">⚠️</span>
                     <div>
                       <strong>SAS crossover resonances are not real transitions — don't lock to them by accident.</strong>
-                      A crossover peak appears halfway between two real transitions that share a common ground state. It's the tallest feature on the SAS spectrum (coherent population transfer), so it's tempting to lock there. But it's 212.5 MHz below the <sup>87</sup>Rb F=2→F'=3 cycling transition, not 0 MHz.
+                      A crossover peak appears halfway between two real transitions that share a common ground state. It's the tallest feature on the SAS spectrum (coherent population transfer), so it's tempting to lock there. But the F'=1/F'=3 crossover, for example, sits 211.8 MHz below the <sup>87</sup>Rb F=2→F'=3 cycling transition, not 0 MHz.
                       <br><br>
-                      <em>Verification:</em> compare your SAS spectrum peak positions against published Rb/Cs hyperfine intervals. For Rb87 D2: F=2→{1,2,3} = 72, 157, 267 MHz above F=2→F'=1; crossovers fall at 36, 115, 212 MHz.
+                      <em>Verification:</em> compare your SAS spectrum peak positions against published Rb/Cs hyperfine intervals. For Rb87 D2 from F=2: F'=2 and F'=3 lie 156.9 and 423.6 MHz above F'=1 (excited splittings 156.9 and 266.7 MHz); crossovers fall midway, at 78.5, 211.8 and 290.3 MHz above F'=1.
                     </div>
                   </div>
 
@@ -1530,7 +1530,7 @@ SteadyStateTweezer(
                     <span style="font-size:1.3rem">⚠️</span>
                     <div>
                       <strong>High-finesse cavity drift: check temperature, not the laser.</strong>
-                      A 10 cm Zerodur spacer expands by ~0.5 nm/°C (CTE ~2×10<sup>-8</sup>/K). A 1 mK temperature drift shifts the resonance by ~2 MHz at 780 nm. If your PDH-locked laser frequency drifts slowly over minutes, the cavity is thermally drifting — improve vacuum can temperature stabilization before touching laser current.
+                      A 10 cm Zerodur spacer with CTE ~2×10<sup>-8</sup>/K expands by ~2 nm/K, and δν/ν = α·δT: a 1 mK drift shifts the resonance by ~8 kHz at 780 nm, a 0.1 K drift by ~0.8 MHz. If your PDH-locked laser frequency drifts slowly over minutes, the cavity is thermally drifting — improve vacuum can temperature stabilization before touching laser current.
                     </div>
                   </div>
 
@@ -1635,9 +1635,9 @@ SteadyStateTweezer(
                     <span style="font-size:1.3rem">⚠️</span>
                     <div>
                       <strong>Single-atom fluorescence: saturation parameter determines photon budget, not just pulse duration.</strong>
-                      At high saturation s >> 1, the scattering rate plateaus at Γ/2. Going from s=10 to s=100 only gives you ~10% more photons while increasing the recoil heating by 10×. The optimal single-atom imaging uses s ≈ 1–5 with a short pulse, not maximal power.
+                      At high saturation s >> 1, the scattering rate plateaus at Γ/2. Going from s=10 to s=100 only gives you ~9% more photons (R ∝ s/(1+s)) and ~9% more recoil heating, while the extra power adds stray light and light shifts. The optimal single-atom imaging uses s ≈ 1–5 with a short pulse, not maximal power.
                       <br><br>
-                      <em>Rule of thumb:</em> for Rb87 D2 with NA=0.5 objective, s=2 gives ~400 photons in 1 ms with ~8 recoil kicks — sufficient for single-atom detection with EMCCD EM gain ~300.
+                      <em>Rule of thumb:</em> for Rb87 D2 with NA=0.5 objective, s=2 on resonance scatters ~1.3×10<sup>4</sup> photons in 1 ms (~2.5×10<sup>4</sup> recoil kicks, so cooling during imaging matters), of which ~400 are detected — sufficient for single-atom detection with EMCCD EM gain ~300.
                     </div>
                   </div>
 
@@ -1883,7 +1883,8 @@ SteadyStateTweezer(
     function calcAOM() {
       const vs     = parseFloat(document.getElementById('aom-material').value); // mm/μs
       const d_um   = parseFloat(document.getElementById('aom-diam').value);      // μm
-      const t_ns   = (d_um * 1e-6) / (vs * 1e3) * 1e9; // ns
+      // 10–90% rise of a Gaussian beam (1/e² diameter d) swept by the acoustic front: 0.64·d/v
+      const t_ns   = 0.64 * (d_um * 1e-6) / (vs * 1e3) * 1e9; // ns
 
       document.getElementById('aom-trise').textContent = t_ns.toFixed(0) + ' ns';
       document.getElementById('aom-result').style.display = 'flex';
@@ -1907,7 +1908,9 @@ SteadyStateTweezer(
       const A   = Math.PI * (d_cm * 1e-2 / 2) ** 2;        // m²
       const lam = 3e8 / (f_MHz * 1e6);                      // m
       const R_rad = 20 * Math.PI ** 2 * (4 * Math.PI * A / lam ** 2) ** 2; // Ω
-      const L_nH = 12.566 * (d_cm / 2);                     // nH (approx single-turn)
+      // Single circular turn of round wire: L = μ0·R·[ln(8R/a) − 2], wire radius a = 0.5 mm assumed
+      const R_m  = d_cm * 1e-2 / 2, a_wire = 0.5e-3;
+      const L_nH = 4e-7 * Math.PI * R_m * (Math.log(8 * R_m / a_wire) - 2) * 1e9;   // nH
       const C_pF = 1e12 / ((2 * Math.PI * f_MHz * 1e6) ** 2 * L_nH * 1e-9); // pF
 
       document.getElementById('ant-rrad').textContent = (R_rad * 1000).toFixed(2) + ' mΩ';

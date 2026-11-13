@@ -55,3 +55,9 @@ New card at the end of the calculator section, "In an array: how many neighbours
 ## 2026-09-29: 2D blockade visualizer follows the theme and can be paused
 - The two-atom visualizer (`blockadeCanvas`) filled cream (`#efe7d6`) in both themes; its "BLOCKADE ACTIVE" headline was pale green (invisible on cream). The context is now wrapped with `js/canvas-ink.js` (v2 adds the `#f2ead9`/`#efe7d6` creams), and the headline uses a green that maps correctly in each theme.
 - The forever `requestAnimationFrame` loop is now `AMOMotion.loop` (`js/motion.js`): Pause button, offscreen stop, still frame under reduced motion. Slider changes and resizes redraw at once, also while paused.
+
+## 2026-11-13: physics audit (convention slips)
+- Rb nD quantum defects were wrong (1.248/−0.004); now Li et al. 2003 (nD₃/₂ 1.34809171/−0.60286, nD₅/₂ 1.34646572/−0.59600), nref_star 48.65.
+- ⟨r⟩ = [3n*² − l(l+1)]/2·a₀ ≈ 1.5n*²a₀ (was n*²a₀, 33% low).
+- Förster paragraph: Gaëtan et al. 2009 used Rb 58D₃/₂; electric-field-tuned Förster resonance cited to Ravets et al. 2014.
+- **Unverified (no ARC offline):** lifetimes use τ₀n*³ (Gallagher's fit exponent is ~2.94); the 50D C₆ anchor may be high.

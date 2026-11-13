@@ -52,7 +52,7 @@ pages/start-here.html
 ## INTERACTIVE FIGURES AND ACCESSIBILITY (as of 2026-09-28)
 
 All figures below are computed from the page's own formulas and inputs; schematic geometry is labelled as schematic.
-- **Rotatable 3D figures** (drag, arrow keys, Home/double-click to reset): Bloch spheres on learn-quantum and decoherence-lab (decoherence-lab integrates Steck's optical Bloch equations live), the dephasing spheres on dd-playground, the 3D MOT on mot-designer (six beams, anti-Helmholtz coils, quadrupole field B = G(−x/2, −y/2, z), cloud compressed along the coil axis, σ_z = σ_r/√2; its label reports the calculator's σ = √(k_B T_MOT/κ)), a true-to-scale tweezer array on tweezer-designer (Gaussian envelopes over ±3 z_R from w₀ = 0.52λ/NA), the emission pattern and NA collection cone on imaging-calculator (Monte Carlo photon stream converging on η for isotropic and dipole patterns), the TEM₀₀ standing wave on cavity-qed, the released-atom cloud on release-recapture and tof-calculator, a dotted-Earth globe of the 99 mapped groups (amo-groups) and of the 27 companies and labs in the industry deep dives (qc-landscape), the paper-syllabus "time tower", and a constellation site map on start-here.
+- **Rotatable 3D figures** (drag, arrow keys, Home/double-click to reset): Bloch spheres on learn-quantum and decoherence-lab (decoherence-lab integrates Steck's optical Bloch equations live), the dephasing spheres on dd-playground, the 3D MOT on mot-designer (six beams, anti-Helmholtz coils, quadrupole field B = G(−x/2, −y/2, z), cloud compressed along the coil axis, σ_z = σ_r/√2; its label reports the calculator's σ = √(k_B T_MOT/κ)), a true-to-scale tweezer array on tweezer-designer (Gaussian envelopes over ±3 z_R from w₀ = (√2/π)λ/NA ≈ 0.45λ/NA, the 1/e² radius matched to a filled-pupil Airy focus), the emission pattern and NA collection cone on imaging-calculator (Monte Carlo photon stream converging on η for isotropic and dipole patterns), the TEM₀₀ standing wave on cavity-qed, the released-atom cloud on release-recapture and tof-calculator, a dotted-Earth globe of the 99 mapped groups (amo-groups) and of the 27 companies and labs in the industry deep dives (qc-landscape), the paper-syllabus "time tower", and a constellation site map on start-here.
 - **Comparison pages** (rb87-vs-yb171, quantinuum-vs-ionq, google-vs-ibm, psiquantum-vs-xanadu): a "tug of war" tallied from each page's head-to-head table and a "race replay" of its timeline, plus one signature interactive each: throw errors at a code (erasure vs Pauli errors, e + 2t ≤ d − 1), a 3D laser-QCCD vs electronic-control ion scene, a square vs heavy-hex lattice lab counting SWAPs, and a photon loss-budget chain.
 - **Detection statistics:** imaging-calculator's histogram simulator reports each preset's SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) and optimal-threshold fidelity with exact Gaussian tails (e.g. SNR 16.8 → overlap error ≈ 10⁻⁴⁰, far below the loss- and tail-limited fidelities of real experiments; measured benchmark quoted: Covey et al., PRL 122, 173201 (2019), imaging fidelity 0.99991(1), survival 0.99932(8)). Its section-06 preview simulates shots from the calculator's own N_sig, N_bg, N_dark and camera model (EMCCD gain register as n → Gamma(n, 1), Basden, Haniff & Mackay, MNRAS 345, 985 (2003)) and reports F = 1 − P_miss − P_false (the calculator above quotes 1 − (P_miss + P_false)/2).
 - **Live cooling:** cooling-simulator's velocity histogram relaxes to the Doppler temperature T = T_D(1 + s + (2δ/Γ)²)/(4|δ|/Γ), minimum T_D = ℏΓ/2k_B at δ = −Γ/2.
@@ -131,7 +131,8 @@ Yb: Pagano (Maryland), Lukin (Harvard-Yb), Scazza (Florence)
 
 **4. Optical Tweezers**
 - Focused Gaussian beam: U(r,z) = −U₀/(1+(z/z_R)²) × exp(−2r²/w²(z))
-- Trap depth U₀ = (α/2ε₀c) × (P/πw₀²)
+- Trap depth U₀ = (α/2ε₀c) × I₀ with peak intensity I₀ = 2P/(πw₀²), i.e. U₀ = αP/(πε₀c w₀²)
+- Diffraction-limited waist (filled pupil): w₀ ≈ (√2/π)λ/NA ≈ 0.45λ/NA (1/e² radius; the Airy FWHM 0.51λ/NA is a diameter)
 - Radial frequency: ω_r = √(4U₀/mw₀²)
 - Axial frequency: ω_z = √(2U₀/mz_R²)
 
@@ -139,10 +140,10 @@ Yb: Pagano (Maryland), Lukin (Harvard-Yb), Scazza (Florence)
 - Scatter rate R_sc = (Γ/2)·s/[1+s+(2Δ/Γ)²]
 - Photons collected: N = R_sc × t_exp × η_geo × QE × T_opt
 - Camera noise: EMCCD (EM gain G, excess noise F=√2), sCMOS (direct read noise)
-- SNR = N_sig/√(N_sig + N_bg + σ_read²/G²)
+- SNR = N_sig/√(F²(N_sig + N_bg) + σ_read²/G²), F² = 2 for EMCCD (excess noise), 1 otherwise
 
 **6. Absorption Imaging**
-- Beer-Lambert: I(x,y) = I₀ exp(−n·σ₀·OD)
+- Beer-Lambert: I(x,y) = I₀ exp(−OD), with OD = σ₀ ∫ n dz
 - Resonant cross-section: σ₀ = 3λ²/(2π) (two-level)
 - Destructive — atom is lost after imaging
 - Best for large atom number (BEC, thermal cloud)
@@ -169,9 +170,9 @@ Rydberg atoms are highly excited atoms with large principal quantum number n. Th
 
 | Property | Scaling | Typical (n=70, Rb) |
 |---|---|---|
-| Orbital radius | n² | ~260 nm |
+| Orbital radius | n² | ~350 nm (⟨r⟩ ≈ 1.5 n*² a₀) |
 | Lifetime τ | n³ | ~300 μs |
-| C₆ coefficient | n¹¹ | ~10⁶ GHz·μm⁶ |
+| C₆ coefficient | n¹¹ | ~860 GHz·μm⁶ (Rb 70S) |
 | Blockade radius R_b | n^(11/6) | ~10 μm |
 | Transition dipole | n² | large |
 
@@ -244,8 +245,8 @@ SNR = N_sig / √σ²
 
 **Detection fidelity:**
 F_det ≈ Φ(SNR/2)   [equal-width Gaussian threshold model, SNR = peak separation / σ]
-Φ(x) ≈ 1 − φ(x)(b₁t + b₂t² + b₃t³)   [Abramowitz & Stegun approximation]
-where t = 1/(1+0.47047x), φ(x) = e^(−x²/2)/√(2π)
+Φ(x) ≈ 1 − φ(x)(b₁t + b₂t² + b₃t³ + b₄t⁴ + b₅t⁵)   [Abramowitz & Stegun 26.2.17]
+where t = 1/(1+0.2316419x), φ(x) = e^(−x²/2)/√(2π), b₁…b₅ = 0.319381530, −0.356563782, 1.781477937, −1.821255978, 1.330274429
 
 ### Species Data (D2 line, Steck 2019)
 | Species | λ_D2 (nm) | Γ/2π (MHz) | I_sat (mW/cm²) |
@@ -253,7 +254,7 @@ where t = 1/(1+0.47047x), φ(x) = e^(−x²/2)/√(2π)
 | ⁸⁷Rb | 780.241 | 6.065 | 1.67 |
 | ¹³³Cs | 852.347 | 5.234 | 1.10 |
 | ⁶Li | 670.977 | 5.872 | 2.54 |
-| ⁷Li | 670.977 | 5.872 | 2.54 |
+| ⁷Li | 670.961 | 5.872 | 2.54 |
 | ²³Na | 589.000 | 9.795 | 6.26 |
 | ³⁹K | 766.701 | 6.035 | 1.75 |
 | ⁴⁰K | 766.701 | 6.035 | 1.75 |
@@ -432,7 +433,7 @@ F_gate = 1 − ε_total
 
 ### BBR Correction to Rydberg Lifetime
 At room temperature T=300K, blackbody radiation drives transitions to neighboring Rydberg states:
-τ_eff = τ₀ × n*³ / (1 + α_BBR × (T/300K)⁴ × n*²)
+τ_eff = (1/(τ₀ n*³) + Γ_BBR)⁻¹, with Γ_BBR ≈ 4α³k_BT/(3ħn*²) (linear in T, ∝ 1/n*²), i.e. τ_eff = τ₀n*³/(1 + τ₀n*³Γ_BBR)
 
 ---
 
@@ -457,8 +458,8 @@ This is thermometry for a known potential, not a direct trap-frequency measureme
 
 ### Optics Calculators
 - **Beam waist:** w(z) = w₀√(1+(z/z_R)²), z_R = πw₀²/λ
-- **Numerical aperture:** NA = n·sin(θ), w₀ = λ/(π·NA) for diffraction-limited focus
-- **Fiber coupling:** η_fiber = exp(−2(Δr/w₀)²) × cos²(Δθ·kw₀/2)
+- **Numerical aperture:** NA = n·sin(θ); a Gaussian beam whose 1/e² half-angle is θ = NA focuses to w₀ = λ/(π·NA)
+- **Fiber coupling (matched waists):** η_fiber = exp(−(Δr/w₀)²) × exp(−(kw₀Δθ/2)²)
 - **Telescope magnification:** M = f₂/f₁, w_out = M·w_in
 - **f-number:** f/# = f/D = 1/(2·NA)
 - **Power (dBm ↔ mW):** P_mW = 10^(P_dBm/10), P_dBm = 10·log₁₀(P_mW)
@@ -497,7 +498,7 @@ This is thermometry for a known potential, not a direct trap-frequency measureme
 
 ### Saturated Absorption Spectroscopy (SAS)
 - Pump beam saturates the transition; probe sees Doppler-free dip at resonance
-- Error signal: derivative of absorption dip (side-of-fringe locking)
+- Error signal: derivative of the absorption dip, obtained by modulation and demodulation (a zero-crossing lock, not side-of-fringe)
 - Linewidth ~ Γ/2π × √(1 + I/I_sat) (power-broadened)
 - Crossover resonances: ν_cross = (ν_a + ν_b)/2
 
@@ -508,9 +509,10 @@ This is thermometry for a known potential, not a direct trap-frequency measureme
 
 ### PDH (Pound-Drever-Hall) Locking
 - Phase modulation at frequency Ω_m creates sidebands at ν ± Ω_m
-- Cavity reflection field: E_r = E₀[r(ν)·J₀(β) + ir(ν+Ω_m)J₁(β)e^{iΩt} − ir(ν−Ω_m)J₁(β)e^{−iΩt}]
+- Cavity reflection field (Black 2001): E_r = E₀[F(ω)J₀(β)e^{iωt} + F(ω+Ω)J₁(β)e^{i(ω+Ω)t} − F(ω−Ω)J₁(β)e^{i(ω−Ω)t}]
 - Error signal (demodulated at Ω_m):
-  ε(ν) = −2√(P_c P_s)·J₀(β)·J₁(β)·Im[F(ν)]
+  ε = −2√(P_c P_s)·Im[F(ω)F*(ω+Ω) − F*(ω)F(ω−Ω)] ≈ −4√(P_c P_s)·Im[F(ω)] near resonance (fast modulation)
+  (P_c = J₀(β)²P₀ and P_s = J₁(β)²P₀ already contain the Bessel factors)
   where P_c = carrier power, P_s = sideband power, F(ν) = cavity reflection coefficient
 
 ### Cavity Parameters
@@ -526,21 +528,22 @@ This is thermometry for a known potential, not a direct trap-frequency measureme
 **Accent color:** #2dd4bf (teal)
 
 ### OSA/ANSI Zernike Polynomials
-Z_n^m(ρ,θ) = R_n^|m|(ρ) × Θ_m(θ)
+Z_n^m(ρ,θ) = N_n^m × R_n^|m|(ρ) × Θ_m(θ),   N_n^m = √(2(n+1)) for m ≠ 0, √(n+1) for m = 0
 
 **Radial polynomial:**
 R_n^|m|(ρ) = Σ_{s=0}^{(n-|m|)/2} [(-1)^s (n−s)! / (s! ((n+|m|)/2−s)! ((n−|m|)/2−s)!)] × ρ^{n-2s}
 
 **Angular part:**
-Θ_m(θ) = √2·cos(mθ)  for m > 0
-          1            for m = 0
-          √2·sin(|m|θ) for m < 0
+Θ_m(θ) = cos(mθ)   for m > 0
+          1          for m = 0
+          sin(|m|θ)  for m < 0
 
 ### OSA/ANSI Single-Index Terms (j-ordering)
-j=0: piston Z₀⁰   j=1: tip Z₁⁻¹    j=2: tilt Z₁¹
-j=3: defocus Z₂⁰  j=4: astigmatism Z₂⁻²  j=5: astigmatism Z₂²
-j=6: coma Z₃⁻¹    j=7: coma Z₃¹    j=8: trefoil Z₃⁻³  j=9: trefoil Z₃³
-j=10: spherical Z₄⁰  j=11: secondary astigmatism ...
+j = [n(n+2)+m]/2:
+j=0: piston Z₀⁰   j=1: tilt Z₁⁻¹    j=2: tilt Z₁¹
+j=3: oblique astigmatism Z₂⁻²  j=4: defocus Z₂⁰  j=5: vertical astigmatism Z₂²
+j=6: trefoil Z₃⁻³  j=7: coma Z₃⁻¹  j=8: coma Z₃¹  j=9: trefoil Z₃³
+j=10: tetrafoil Z₄⁻⁴  j=11: secondary astigmatism Z₄⁻²  j=12: spherical Z₄⁰ ...
 
 ### Strehl Ratio
 For small aberrations (Maréchal approximation):
@@ -569,7 +572,8 @@ Degree of polarization: P = √(S₁² + S₂² + S₃²)/S₀
 
 ### Quarter-Wave Plate (rotating) Method
 Intensity vs QWP angle α:
-I(α) = (S₀/2)[1 + S₁/S₀·cos²(2α) + S₂/S₀·cos(2α)sin(2α) + S₃/S₀·(1/2)sin(4α − π)]
+I(α) = ½[S₀ + S₁/2 + (S₁/2)cos4α + (S₂/2)sin4α + S₃ sin2α]   (QWP at angle α before a horizontal polarizer; the sign of the S₃ term depends on the handedness convention)
+Fourier form I = ½[A + B sin2α + C cos4α + D sin4α] ⇒ S₀ = A − C, S₁ = 2C, S₂ = 2D, S₃ = B
 
 ### Retardance Measurement
 Phase retardance δ: Δφ between fast and slow axes
@@ -594,10 +598,10 @@ Output is species-specific: which beams you need, their wavelengths, and what no
 **Accent color:** #c084fc (violet)
 
 **Single-photon coupling rate:**
-$$g_0 = \xi\sqrt{\frac{3\Gamma c^3}{2\omega^2 V}} \qquad V = \frac{\pi w_0^2 L}{4} \qquad C = \frac{g_0^2}{\kappa\gamma} \qquad \kappa = \frac{\text{FSR}}{2\mathcal{F}} \qquad \gamma = \frac{\Gamma}{2}$$
+$$g_0 = \xi\sqrt{\frac{3\pi\Gamma c^3}{2\omega^2 V}} \qquad V = \frac{\pi w_0^2 L}{4} \qquad C = \frac{g_0^2}{\kappa\gamma} \qquad \kappa = \frac{\text{FSR}}{2\mathcal{F}} \qquad \gamma = \frac{\Gamma}{2}$$
 
 **Strong-coupling condition:**
-$$\text{Strong coupling:} \quad g_0 > \kappa,\;\gamma \quad \Leftrightarrow \quad \mathcal{F} > \frac{\pi c}{4 L g_0}$$
+$$\text{Strong coupling:} \quad g_0 > \kappa,\;\gamma \quad \Leftrightarrow \quad \mathcal{F} > \frac{\pi c}{2 L g_0}$$
 
 Classifies a given atom-cavity system into strong / weak / bad-cavity coupling regimes given cavity length L, waist w₀, finesse F, and atomic linewidth Γ; charts coupling rate vs finesse; includes reference systems and a common-mistakes section.
 
@@ -665,7 +669,7 @@ $$r_C = \frac{(d-1)(1-p)}{d} \quad \text{[1Q: } r_C = \tfrac{1-p}{2}\text{, 2Q: 
 $$\varepsilon_{\rm gate} \approx \frac{r_C}{\bar{n}} \quad \text{where } \bar{n} \approx 1.875 \text{ (1Q)}, \approx 2.0 \text{ (2Q)}$$
 
 **Useful circuit depth (fidelity ≈ 1/e):**
-$$N_{\rm useful} = \frac{1}{2r_C}$$
+$$N_{\rm useful} = \frac{1}{2r_C}\ \text{(1Q)}, \quad \frac{3}{4r_C}\ \text{(2Q)}$$
 
 **Interleaved RB (IRB) — isolating a single gate's error:**
 $$r_{\rm gate} = \frac{d-1}{d}\left(1 - \frac{p_{\rm int}}{p_{\rm ref}}\right)$$
@@ -691,7 +695,7 @@ $$|\tilde{Y}_{\rm HE}(\omega,T)|^2 \propto \frac{\sin^4(\omega T/4)}{\omega^2}$$
 
 **CPMG pulse timing and filter function (N pulses):**
 $$t_k^{\rm CPMG} = \frac{(2k-1)\,T}{2N}, \quad k = 1,\ldots,N$$
-$$|\tilde{Y}_{\rm CPMG-N}(\omega,T)|^2 = \frac{4\sin^2(\omega\tau)\sin^2(N\omega\tau)}{\omega^2}, \quad \tau = \frac{T}{2N}$$
+$$|\tilde{Y}_{\rm CPMG-N}(\omega,T)|^2 = \frac{16\sin^4(\omega T/4N)\,\sin^2(\omega T/2)}{\omega^2\cos^2(\omega T/2N)} \quad (N \text{ even; } \cos^2(\omega T/2) \text{ for odd } N)$$
 
 **CPMG scaling under power-law noise S(ω) ∝ ω⁻ᵅ:**
 $$T_2^{\rm CPMG}(N) \propto N^{\alpha/(1+\alpha)}$$
@@ -736,7 +740,7 @@ Covers heralded entanglement protocols, photon collection/loss budgets, and refe
 $$\Gamma_{\rm sc} = \frac{\Gamma}{2}\cdot\frac{s_0}{1 + s_0 + (2\delta'/\Gamma)^2}$$
 
 **Doppler cooling force and damping coefficient:**
-$$F(v) \approx -\alpha v, \qquad \alpha = \hbar k^2 \cdot \frac{4|\delta|\,s_0\,\Gamma}{(1 + s_0 + (2\delta/\Gamma)^2)^2}$$
+$$F(v) \approx -\alpha v, \qquad \alpha = 8\hbar k^2 \,\frac{s_0\,|\delta|/\Gamma}{(1 + s_0 + (2\delta/\Gamma)^2)^2}$$
 
 **Doppler temperature limit:**
 $$T_D = \frac{\hbar\Gamma}{2k_{\rm B}}$$
@@ -794,7 +798,7 @@ $$|0\rangle = |m_I{=}-\tfrac{1}{2}\rangle, \quad |1\rangle = |m_I{=}+\tfrac{1}{2
 Gate fidelity decomposition used for the head-to-head comparison:
 $$\mathcal{F}_{\rm CZ} = 1 - \varepsilon_{\rm Ryd} - \varepsilon_{\rm scatt} - \varepsilon_{\rm D} - \varepsilon_{\rm \Omega}$$
 
-Published benchmarks cited: Rb87 CZ fidelity 99.5% (up to 60 parallel atom pairs, Evered 2023, peer-reviewed) and 99.854% raw / 99.941% post-selected (Evered 2026, arXiv:2604.25987, preprint); Yb171 nuclear-spin qubit differential Zeeman shift ≈ 2.6 Hz/mG.
+Published benchmarks cited: Rb87 CZ fidelity 99.5% (up to 60 parallel atom pairs, Evered 2023, peer-reviewed) and 99.854% raw / 99.941% post-selected (Evered 2026, arXiv:2604.25987, preprint); Yb171 nuclear-spin qubit Zeeman shift ≈ 0.75 Hz/mG (μ = +0.49 μ_N), so Yb171 is less field-sensitive than the Rb87 clock qubit above B₀ ≈ 0.65 G.
 
 ### Quantinuum vs IonQ (`pages/quantinuum-vs-ionq.html`)
 Trapped-ion quantum computing company comparison. 10 sections: Why These Two Companies?, Architecture & Qubit Control (QCCD — quantum charge-coupled device — vs Quantinuum's electronic qubit control/EQC), Hardware Generations Side by Side, Gate Fidelity Deep Dive, Logical Qubits & Fault Tolerance, Full Head-to-Head Comparison, Business/Funding & Public Markets, Roadmaps to Fault-Tolerant Quantum Computing, Companies & Ecosystem, Key Papers & References. Covers Quantinuum's Helios/Tempo/Superion generations and IonQ's roadmap, both companies' barium/ytterbium ion-species choices, and logical-qubit demonstrations.
@@ -854,7 +858,7 @@ Single-qubit gates (2×2 unitary matrices):
 
 Two-qubit gates:
 - CNOT: flips target if control = |1⟩
-- CZ: phase flip if both qubits |1⟩; CZ = (H⊗I)·CNOT·(H⊗I)
+- CZ: phase flip if both qubits |1⟩; CZ = (I⊗H)·CNOT·(I⊗H) (Hadamards on the target)
 - SWAP: exchanges two qubit states; SWAP = 3 CNOTs
 
 Universality: {H, T, CNOT} is a universal gate set
@@ -946,7 +950,7 @@ CPMG: repeated π pulses, extends T₂ against slow noise
 
 ### 10. Hyperfine Qubits (#hyperfine)
 Hyperfine Hamiltonian:
-H_hf = A_hf·(I·J) + B_hf·[3(I·J)² − I(I+1)J(J+1)]/[2I(2I−1)J(2J−1)]
+H_hf = A_hf·(I·J) + B_hf·[3(I·J)² + (3/2)(I·J) − I(I+1)J(J+1)]/[2I(2I−1)J(2J−1)]
 
 Total angular momentum: F = I + J, with |I−J| ≤ F ≤ I+J
 Energy levels: E_F = (A_hf/2)·[F(F+1) − I(I+1) − J(J+1)]
@@ -956,7 +960,7 @@ Clock states (first-order field-insensitive m_F=0 ↔ m_F=0):
 ¹³³Cs: |F=3,m_F=0⟩ ↔ |F=4,m_F=0⟩ at 9.192631770 GHz (SI second definition)
 
 Qubit transitions for ⁸⁷Rb (magnetically sensitive):
-|F=1,m_F=−1⟩ ↔ |F=2,m_F=+1⟩ used in some experiments (allows MW + RF addressing)
+|F=1,m_F=−1⟩ ↔ |F=2,m_F=+1⟩ used in some experiments: a two-photon pair that is first-order field-insensitive near 3.23 G
 
 Zeeman shift (linear): ΔE = m_F·g_F·μ_B·B
 ⁸⁷Rb F=2: g_F = +1/2, sensitivity ~ 700 kHz/G
@@ -964,7 +968,7 @@ Zeeman shift (linear): ΔE = m_F·g_F·μ_B·B
 
 ### 11. Optical Pumping (#optical-pumping)
 σ⁺ light selection rule: Δm_F = +1 (drives atom toward higher m_F)
-Dark state: m_F = F_max (cannot absorb σ⁺ and decay to lower m_F)
+Dark state: m_F = F_max cannot absorb σ⁺ only when F′ ≤ F; for F′ = F+1 the stretched state is a cycling state instead
 
 For F=1 ground state with σ⁺ pumping (3 sublevels: m_F = −1, 0, +1):
 Transition rates (phenomenological 3×3 matrix):
@@ -984,7 +988,7 @@ Applications: clock-state preparation (reset after measurement), spin squeezing,
 ### 12. Quantum Error Correction (#qec)
 3-qubit bit-flip code:
 |0⟩_L = |000⟩, |1⟩_L = |111⟩
-Detects (not corrects) phase errors; corrects single bit-flips
+Corrects single bit-flips; does not detect phase (Z) errors at all (Z commutes with the ZZ checks and acts as a logical error)
 Syndrome measurement: ZZ⊗I, I⊗ZZ → identifies which qubit flipped
 
 Shor 9-qubit code:
@@ -1008,7 +1012,7 @@ Deutsch-Jozsa: Determines if f:{0,1}ⁿ→{0,1} is constant or balanced in ONE q
 Grover's search: Finds marked item in unsorted database of N elements in O(√N) queries
 Amplitude amplification: (1/√N)·Σ|x⟩ → |target⟩ after ~π√N/4 iterations
 
-Shor's factoring: Factors N-bit integer in O((log N)³) steps (classical: exponential)
+Shor's factoring: Factors an n-bit integer N in O(n³) = O((log N)³) steps (best known classical: sub-exponential)
 Key step: quantum period finding via QFT
 RSA-2048 resource estimates: ~2×10⁷ noisy qubits for 8 hours (Gidney & Ekerå, Quantum 5, 433 (2021)); <10⁶ noisy qubits for <1 week at 0.1% gate error, 1 μs cycle (Gidney, arXiv:2505.15917, 2025 preprint)
 

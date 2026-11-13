@@ -234,7 +234,7 @@
     <div class="container">
 
   <div class="concept-box anim-in" style="border-left-color:var(--page-color,#0678ab);">
-    Laser frequency stability is foundational to every AMO experiment, a coherence time of 100 μs requires laser linewidth below ~10 kHz, and Rydberg transitions need sub-MHz stability. Saturated absorption spectroscopy (SAS) provides Doppler-free atomic references with ~1 MHz width; Pound-Drever-Hall (PDH) locking to an optical cavity achieves sub-Hz linewidths by using phase-modulated sidebands to generate a dispersive error signal. This guide explains the physics of both techniques and gives you tools for exploring SAS spectra, PDH error signals, and offset locking, the three pillars of practical laser stabilization. A fourth tab, <strong>Ultrastable Cavities</strong>, goes one level deeper: PDH only works as well as the cavity you lock to, and that cavity's finesse, vacuum, thermal, and vibration engineering deserve their own treatment.
+    Laser frequency stability is foundational to every AMO experiment, a coherence time of 100 μs requires laser linewidth below ~10 kHz, and Rydberg transitions need sub-MHz stability. Saturated absorption spectroscopy (SAS) provides Doppler-free atomic references a few MHz wide (set by the natural linewidth, Γ/2π ≈ 5–6 MHz for alkali D lines, plus power broadening); Pound-Drever-Hall (PDH) locking to an optical cavity achieves sub-Hz linewidths by using phase-modulated sidebands to generate a dispersive error signal. This guide explains the physics of both techniques and gives you tools for exploring SAS spectra, PDH error signals, and offset locking, the three pillars of practical laser stabilization. A fourth tab, <strong>Ultrastable Cavities</strong>, goes one level deeper: PDH only works as well as the cavity you lock to, and that cavity's finesse, vacuum, thermal, and vibration engineering deserve their own treatment.
   </div>
 
   <div class="info-banner anim-in" style="margin-bottom: 2rem;">
@@ -716,8 +716,9 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
               <span class="eq">P_RF (dBm) = 10 log₁₀[2R²P₁P₂Z₀ / 1 mW]</span>
               <p style="margin-top:.5rem;">
                 <strong>Rule of thumb:</strong> need ≥ 20 dB SNR (linear factor 100) for a
-                reliable lock. With 0.5 mW on each arm and R = 0.5 A/W, you get ~+5 dBm RF
-                power in 1 MHz bandwidth, typically sufficient.
+                reliable lock. With 0.5 mW on each arm and R = 0.5 A/W, the beat note carries
+                P_RF = 2R²P₁P₂Z₀ ≈ −22 dBm into 50 Ω (before any amplifier); the SNR then depends on the
+                noise floor within your detection bandwidth, and is typically ample.
               </p>
             </div>
           </div>
@@ -991,7 +992,7 @@ $$\frac{\delta\nu}{\nu} = -\frac{\delta L}{L} = -\alpha_{\rm CTE}\,\delta T \qua
         <div class="formula-box">
 $$V_{\rm err} \propto \mathrm{Im}[r(\omega)] \quad \text{[imaginary part of reflection coefficient]}$$
 Near resonance: $V_{\rm err} \approx K\cdot\delta$ where $\delta = \omega - \omega_{\rm cavity}$<br>
-Discriminator slope: $K \propto \sqrt{P_{\rm carrier}\cdot P_{\rm sideband}}\cdot\mathcal{F}/\delta\nu_{\rm cav}$<br>
+Discriminator slope: $K = 8\sqrt{P_{\rm carrier}\cdot P_{\rm sideband}}/\delta\nu_{\rm cav} = 8\sqrt{P_{\rm c}P_{\rm s}}\,\mathcal{F}/\nu_{\rm FSR}$ (Black 2001)<br>
 ($P_{\rm sideband} \approx \beta^2 P_{\rm carrier}/4$)</div>
 
         <div class="two-col" style="margin-top:1.25rem;">
@@ -1058,7 +1059,7 @@ Error signal: fast path → laser current (high BW, small range)<br>
             <li><strong>Vacuum and vibration isolation:</strong> cavity must be in vacuum (P &lt; 10⁻⁵ mbar) to avoid refractive-index fluctuations. Mount on vibration-isolated platform.</li>
             <li><strong>Two-stage servo:</strong> fast path (current) compensates high-frequency noise; slow path (PZT) compensates slow drift.</li>
             <li><strong>PDH does not provide absolute frequency:</strong> the cavity resonance drifts. Beat the locked laser against a frequency comb or SAS reference for absolute knowledge.</li>
-            <li><strong>Finesse measurement:</strong> scan laser across a resonance and fit Airy function, or measure ring-down time τ_c = 𝒻/(π·FSR).</li>
+            <li><strong>Finesse measurement:</strong> scan laser across a resonance and fit Airy function, or measure the (intensity) ring-down time τ_c = 𝒻/(2π·FSR).</li>
           </ul>
         </div>
       </div>
@@ -1242,7 +1243,7 @@ $$I(t) = I_0\,e^{-t/\tau}, \qquad \mathcal{F} = 2\pi\,\tau\,\nu_{\rm FSR}$$</div
               </tr>
             </thead>
             <tbody>
-              <tr><td>Mirror reflectivity</td><td>as high as practical</td><td>99.992% (𝒻 ≈ 25,200)</td></tr>
+              <tr><td>Mirror reflectivity</td><td>as high as practical</td><td>𝒻 ≈ 25,200 measured (equivalent R ≈ 99.988%)</td></tr>
               <tr><td>Vacuum pressure</td><td>&lt; 10⁻³ mbar minimum</td><td>~10⁻⁷ mbar (ion pump)</td></tr>
               <tr><td>Temperature stability</td><td>hold near T<sub>ZC</sub></td><td>±10 mK</td></tr>
               <tr><td>Spacer material</td><td>near-zero CTE</td><td>ULE glass (T<sub>ZC</sub> = 34.49 °C here)</td></tr>
@@ -1345,7 +1346,7 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
             <tr><td>SAS (direct lock-in)</td><td>~0.1–1 mV/MHz</td><td>Limited by Doppler background contrast</td></tr>
             <tr><td>SAS (modulation transfer)</td><td>~1–10 mV/MHz</td><td>Better baseline; uses four-wave mixing</td></tr>
             <tr><td>Beat-note (freq. discriminator)</td><td>~1–10 mV/MHz</td><td>Scales with RF power and mixer gain</td></tr>
-            <tr><td>PDH (high finesse)</td><td>~10–1000 mV/MHz</td><td>Scales as √(P_c·P_s) × 𝒻/δν_cav</td></tr>
+            <tr><td>PDH (high finesse)</td><td>~10–1000 mV/MHz</td><td>Scales as √(P_c·P_s)/δν_cav = √(P_c·P_s)·𝒻/FSR</td></tr>
           </tbody>
         </table>
         </div>
@@ -1512,9 +1513,9 @@ function updateSAS() {
   const contrast   = dnu_D_MHz / Gamma_MHz;
 
   // Pump power needed to achieve I/Isat at given beam diameter
-  const r_cm = (bd / 2) * 0.1;               // radius in cm
+  const r_cm = (bd / 2) * 0.1;               // 1/e² radius w in cm
   const beam_area_cm2 = Math.PI * r_cm * r_cm;
-  const pump_mW = sat * a.Isat * beam_area_cm2;
+  const pump_mW = sat * a.Isat * beam_area_cm2 / 2;   // peak I = 2P/(πw²) reaches s·I_sat
 
   // Result box
   document.getElementById('sasResult').innerHTML = `

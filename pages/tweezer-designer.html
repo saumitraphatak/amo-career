@@ -274,13 +274,24 @@
         the trap light follow directly from the two-level interaction:
       </p>
       <div class="formula-box" style="background:var(--page-bg);border-color:var(--page-border)">
-        $$U_0 = -\frac{3\pi c^2}{2\omega_0^3}\,\frac{\Gamma}{\Delta}\,I_0
-        \qquad
-        \Gamma_{\rm sc} = \frac{3\pi c^2}{2\hbar\omega_0^3}\,\frac{\Gamma^2}{\Delta^2}\,I_0$$
+        $$U_0 = -\frac{3\pi c^2}{2\omega_0^3}\left(\frac{\Gamma}{\omega_0-\omega}+\frac{\Gamma}{\omega_0+\omega}\right) I_0
+        \;\approx\; \frac{3\pi c^2}{2\omega_0^3}\,\frac{\Gamma}{\Delta}\,I_0$$
+        $$\Gamma_{\rm sc} = \frac{3\pi c^2}{2\hbar\omega_0^3}\left(\frac{\omega}{\omega_0}\right)^3\left(\frac{\Gamma}{\omega_0-\omega}+\frac{\Gamma}{\omega_0+\omega}\right)^2 I_0
+        \;\approx\; \frac{3\pi c^2}{2\hbar\omega_0^3}\,\frac{\Gamma^2}{\Delta^2}\,I_0$$
       </div>
       <p class="section-desc" style="margin-top:var(--sp-4)">
-        where $I_0 = 2P/(\pi w_0^2)$ is the peak intensity, $\Delta = \omega_{\rm trap} - \omega_0$ (negative
-        for red-detuned), and $w_0 \approx 0.52\lambda/\text{NA}$ is the diffraction-limited beam waist.
+        (Grimm, Weidemüller &amp; Ovchinnikov 2000, Eqs. 10–12; the right-hand forms drop the counter-rotating
+        term, which the calculator keeps because it adds ~20–30% to the depth of Li or Na at 1064 nm).
+        Here $I_0 = 2P/(\pi w_0^2)$ is the peak intensity, $\Delta = \omega - \omega_0$ (negative, so $U_0 &lt; 0$,
+        for red detuning), and $w_0$ is the <strong>1/e² intensity radius</strong> of the Gaussian that best
+        matches a diffraction-limited focus of a uniformly filled pupil: $w_0 = (\sqrt2/\pi)\,\lambda/\text{NA}
+        \approx 0.45\lambda/\text{NA}$. This Gaussian has the same peak intensity and the same curvature at the
+        centre as the Airy spot, so it gives the right depth and radial frequency. (The Airy FWHM,
+        $0.51\lambda/\text{NA}$, is a <em>diameter</em>; using it as $w_0$ underestimates the depth by ~25%.)
+        If the trap beam underfills the objective, the focus is larger: use $w_0 = \lambda/(\pi\theta)$ with
+        $\theta$ the 1/e² half-angle of the converging beam. For a filled pupil the paraxial Airy focus is
+        also longer along $z$ than this Gaussian (effective $z_R \approx 1.1\lambda/\text{NA}^2$ instead of
+        $\pi w_0^2/\lambda \approx 0.64\lambda/\text{NA}^2$), so read $\omega_z$ below as an upper estimate.
         The key trade-off: $|U_0| \propto 1/|\Delta|$ while $\Gamma_{\rm sc} \propto 1/\Delta^2$ — deeper
         detuning buys a lower scattering rate at the cost of needing more power.
         The harmonic frequencies near the potential minimum and the Lamb-Dicke parameter are:
@@ -293,8 +304,10 @@
         \eta = k_{\rm probe}\sqrt{\frac{\hbar}{2m\omega_r}}$$
       </div>
       <p class="section-desc" style="margin-top:var(--sp-4)">
-        where $z_R = \pi w_0^2/\lambda$ is the Rayleigh range. The Lamb-Dicke condition $\eta \ll 1$ and
-        resolved sidebands $\omega_r \gg \Gamma_{\rm sc}$ are both required for ground-state sideband cooling.
+        where $z_R = \pi w_0^2/\lambda$ is the Rayleigh range. Ground-state sideband cooling needs the
+        Lamb-Dicke condition $\eta \ll 1$ and resolved sidebands: $\omega_r$ larger than the linewidth of the
+        cooling transition (the effective Raman or optical-pumping linewidth, set by the cooling lasers, not
+        by this calculator). Trap-light scattering $\Gamma_{\rm sc}$ is a separate, slow heating background.
       </p>
       <div class="stat-strip" style="--sc:#f59e0b">
         <div class="stat-item"><div class="stat-val">1064 nm</div><div class="stat-label">Cs, Li, Na common tweezer</div></div>
@@ -456,8 +469,10 @@
     <section class="section-block anim-in delay-4" id="tweezer-reference">
       <h2 class="section-title"><span class="accent">04</span> Species &amp; Wavelength Reference</h2>
       <p class="section-desc">
-        Typical tweezer parameters at NA 0.55 and 30 mW. Magic wavelengths eliminate differential
-        AC Stark shifts on clock transitions — essential for AEL qubit coherence.
+        Representative operating points (order of magnitude; a few mW per trap and w₀ ≈ 0.8–1.5 μm).
+        Depth and ωᵣ scale with your power and waist, so use the calculator above for real numbers.
+        η is k√(ħ/2mωᵣ) on the resonance line listed, at the ωᵣ in the table. Magic wavelengths eliminate
+        differential AC Stark shifts on clock transitions — essential for AEL qubit coherence.
       </p>
 
       <div class="table-wrap">
@@ -470,13 +485,13 @@
           </thead>
           <tbody>
             <tr><td>Rb-87</td><td>780 nm D2</td><td>850 nm</td><td>~0.8</td><td>~80</td><td>~0.22</td><td>Most common; Ti:Sapph or diode</td></tr>
-            <tr><td>Cs-133</td><td>852 nm D2</td><td>938 nm / 1064 nm</td><td>~1.0</td><td>~50</td><td>~0.18</td><td>Heavy mass helps; Lukin / Thompson groups</td></tr>
-            <tr><td>Li-6</td><td>671 nm D2</td><td>1064 nm</td><td>~0.5</td><td>~150</td><td>~0.30</td><td>Light mass → high ωᵣ; fermion</td></tr>
-            <tr><td>Li-7</td><td>671 nm D2</td><td>1064 nm</td><td>~0.5</td><td>~140</td><td>~0.29</td><td>Boson partner to Li-6</td></tr>
-            <tr><td>Na-23</td><td>589 nm D2</td><td>1064 nm</td><td>~0.7</td><td>~100</td><td>~0.25</td><td>Needs fiber amplifier; Greiner / Zwierlein</td></tr>
-            <tr><td>K-39</td><td>767 nm D2</td><td>1064 nm</td><td>~0.6</td><td>~85</td><td>~0.22</td><td>Feshbach resonances; Hulet / Salomon</td></tr>
-            <tr><td>Yb-171</td><td>399 nm ¹P₁</td><td>532 nm / 759 nm★</td><td>~1.2</td><td>~45</td><td>~0.16</td><td>★759 nm magic for clock; AEL qubit</td></tr>
-            <tr><td>Sr-88/87</td><td>461 nm ¹P₁</td><td>813 nm★</td><td>~0.9</td><td>~55</td><td>~0.18</td><td>★813 nm magic for ¹S₀→³P₀; Ye / Kaufman</td></tr>
+            <tr><td>Cs-133</td><td>852 nm D2</td><td>938 nm / 1064 nm</td><td>~1.0</td><td>~50</td><td>~0.20</td><td>Heavy mass helps; Lukin / Thompson groups</td></tr>
+            <tr><td>Li-6</td><td>671 nm D2</td><td>1064 nm</td><td>~0.5</td><td>~150</td><td>~0.70</td><td>Light mass → high ωᵣ; fermion</td></tr>
+            <tr><td>Li-7</td><td>671 nm D2</td><td>1064 nm</td><td>~0.5</td><td>~140</td><td>~0.67</td><td>Boson partner to Li-6</td></tr>
+            <tr><td>Na-23</td><td>589 nm D2</td><td>1064 nm</td><td>~0.7</td><td>~100</td><td>~0.50</td><td>Needs fiber amplifier; Greiner / Zwierlein</td></tr>
+            <tr><td>K-39</td><td>767 nm D2</td><td>1064 nm</td><td>~0.6</td><td>~85</td><td>~0.32</td><td>Feshbach resonances; Hulet / Salomon</td></tr>
+            <tr><td>Yb-171</td><td>399 nm ¹P₁</td><td>532 nm / 759 nm★</td><td>~1.2</td><td>~45</td><td>~0.40</td><td>★759 nm magic for clock; AEL qubit</td></tr>
+            <tr><td>Sr-88/87</td><td>461 nm ¹P₁</td><td>813 nm★</td><td>~0.9</td><td>~55</td><td>~0.44</td><td>★813 nm magic for ¹S₀→³P₀; Ye / Kaufman</td></tr>
           </tbody>
         </table>
       </div>
@@ -496,7 +511,7 @@
             Yb-171: magic wavelengths near 759 nm and ~1030 nm.
             Sr-87/88: magic near 813 nm and 917 nm.
             Outside these wavelengths a fractional intensity noise δI/I translates directly to qubit
-            frequency noise δν = (α₁−α₀)·δI/(2ħε₀c) — untenable for quantum computing coherence times.
+            frequency noise δν = (α₁−α₀)·δI/(2hε₀c) — untenable for quantum computing coherence times.
           </p>
           <p style="margin-top:var(--sp-3)">
             Alkali atoms (Rb, Cs, Li) have no accessible clock transition — use whatever wavelength
@@ -550,10 +565,10 @@
             </li>
             <li>
               <strong>Kaufman &amp; Ni (2021)</strong> — "Quantum science with optical tweezer arrays of ultracold atoms and molecules."
-              <em>Annu. Rev. Condens. Matter Phys.</em> <strong>12</strong>, 137–164.
+              <em>Nature Physics</em> <strong>17</strong>, 1324–1333.
               The modern comprehensive review: tweezer physics, array assembly, Rydberg gates, AEL qubits, molecules.
               Start here if you want the full current picture.
-              <a href="https://doi.org/10.1146/annurev-conmatphys-031119-050537" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+              <a href="https://doi.org/10.1038/s41567-021-01357-2" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
             </li>
             <li>
               <strong>Saffman, Walker &amp; Mølmer (2010)</strong> — "Quantum information with Rydberg atoms."
@@ -603,11 +618,11 @@
               <a href="https://doi.org/10.1126/science.aah3752" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
             </li>
             <li>
-              <strong>Kaufman et al. (2012)</strong> — "Two-particle quantum interference in tunnel-coupled optical tweezers."
+              <strong>Kaufman et al. (2014)</strong> — "Two-particle quantum interference in tunnel-coupled optical tweezers."
               <em>Science</em> <strong>345</strong>, 306–309.
               Hong-Ou-Mandel interference of two Rb atoms in adjacent tweezers; demonstrates ground-state preparation
               and Lamb-Dicke regime operation.
-              <a href="https://doi.org/10.1126/science.1257172" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
+              <a href="https://doi.org/10.1126/science.1250057" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
             </li>
             <li>
               <strong>Norcia et al. (2019)</strong> — "Seconds-scale coherence on an optical clock transition in a tweezer array."
@@ -703,10 +718,10 @@
 
   const SPECIES = {
     Rb87:  { m:87*amu,  λ0:780.24e-9, Γ:2*Math.PI*6.065e6,  name:'Rb-87',  tipWL:850  },
-    Cs133: { m:133*amu, λ0:852.11e-9, Γ:2*Math.PI*5.234e6,  name:'Cs-133', tipWL:938  },
+    Cs133: { m:133*amu, λ0:852.347e-9, Γ:2*Math.PI*5.234e6,  name:'Cs-133', tipWL:938  },
     Li6:   { m:6*amu,   λ0:670.98e-9, Γ:2*Math.PI*5.872e6,  name:'Li-6',   tipWL:1064 },
-    Li7:   { m:7*amu,   λ0:670.98e-9, Γ:2*Math.PI*5.872e6,  name:'Li-7',   tipWL:1064 },
-    Na23:  { m:23*amu,  λ0:589.00e-9, Γ:2*Math.PI*9.795e6,  name:'Na-23',  tipWL:1064 },
+    Li7:   { m:7*amu,   λ0:670.96e-9, Γ:2*Math.PI*5.872e6,  name:'Li-7',   tipWL:1064 },
+    Na23:  { m:23*amu,  λ0:589.158e-9, Γ:2*Math.PI*9.795e6,  name:'Na-23',  tipWL:1064 },
     K39:   { m:39*amu,  λ0:766.70e-9, Γ:2*Math.PI*6.035e6,  name:'K-39',   tipWL:1064 },
     Yb171: { m:171*amu, λ0:398.91e-9, Γ:2*Math.PI*29.1e6,   name:'Yb-171', tipWL:532  },
     Sr88:  { m:88*amu,  λ0:460.86e-9, Γ:2*Math.PI*32.0e6,   name:'Sr-88',  tipWL:813  },
@@ -719,20 +734,34 @@
   let   trapChart = null;
   let   curW0 = 1e-6, curZR = 3e-6;
 
+  // w0 = 1/e² intensity RADIUS of the Gaussian matched to a uniformly filled, diffraction-limited
+  // pupil: same peak intensity (P·π·NA²/λ²) and same central curvature as the Airy spot, giving
+  // w0 = (√2/π)·λ/NA ≈ 0.450 λ/NA. (0.51–0.52 λ/NA is the Airy FWHM, a diameter — do not use it here.)
+  const W0_PER_LAMBDA_NA = Math.SQRT2 / Math.PI;
+  // Two-level dipole potential and scattering rate with the counter-rotating term
+  // (Grimm, Weidemüller & Ovchinnikov 2000, Eqs. 10–11). U < 0 for red detuning.
+  function dipolePot(ω0, ω, Γ, I) {
+    return -(3*Math.PI*C*C)/(2*ω0**3) * (Γ/(ω0-ω) + Γ/(ω0+ω)) * I;
+  }
+  function scatRate(ω0, ω, Γ, I) {
+    const a = Γ/(ω0-ω) + Γ/(ω0+ω);
+    return (3*Math.PI*C*C)/(2*hbar*ω0**3) * (ω/ω0)**3 * a*a * I;
+  }
+
   function calcTrap(atom, λm, NA, P) {
     const ω0 = 2*Math.PI*C / atom.λ0;
     const ωt = 2*Math.PI*C / λm;
     const Δ  = ωt - ω0;
-    const w0 = 0.52 * λm / NA;
+    const w0 = W0_PER_LAMBDA_NA * λm / NA;
     const zR = Math.PI * w0 * w0 / λm;
     const I0 = 2 * P / (Math.PI * w0 * w0);
-    const U0J = -(3*Math.PI*C*C)/(2*ω0*ω0*ω0) * atom.Γ/Δ * I0;
+    const U0J = dipolePot(ω0, ωt, atom.Γ, I0);
     const U0K = Math.abs(U0J) / kB;
     const ωr  = Math.sqrt(4*Math.abs(U0J) / (atom.m*w0*w0));
     const ωz  = Math.sqrt(2*Math.abs(U0J) / (atom.m*zR*zR));
     const k   = 2*Math.PI / atom.λ0;
     const η   = k * Math.sqrt(hbar / (2*atom.m*ωr));
-    const Γsc = (3*Math.PI*C*C)/(2*hbar*ω0*ω0*ω0) * (atom.Γ*atom.Γ)/(Δ*Δ) * I0;
+    const Γsc = scatRate(ω0, ωt, atom.Γ, I0);
     return { w0, zR, I0, U0K, ωr, ωz, η, Γsc, Δ, valid: Δ < -3*atom.Γ };
   }
 
@@ -781,10 +810,8 @@
     const ldEl = document.getElementById('ld-status');
     const ωr_kHz  = r.ωr/(2*Math.PI*1e3);
     const gsc_kHz = gsc/1e3;
-    if (r.η < 0.3 && gsc_kHz < ωr_kHz) {
-      ldEl.innerHTML = `<div class="badge badge-ok">✓ Lamb-Dicke (η=${r.η.toFixed(2)}) & sidebands resolved — sideband cooling viable</div>`;
-    } else if (r.η < 0.3) {
-      ldEl.innerHTML = `<div class="badge badge-caution">⚠ Lamb-Dicke ok (η=${r.η.toFixed(2)}) but Γ_sc=${gsc_kHz.toFixed(1)} kHz ≥ ωᵣ=${ωr_kHz.toFixed(1)} kHz</div>`;
+    if (r.η < 0.3) {
+      ldEl.innerHTML = `<div class="badge badge-ok">✓ Lamb-Dicke (η=${r.η.toFixed(2)}) — sideband cooling viable if the Raman / pumping linewidth stays below ωᵣ/2π = ${ωr_kHz.toFixed(0)} kHz</div>`;
     } else {
       ldEl.innerHTML = `<div class="badge badge-warn">✗ η=${r.η.toFixed(2)} — outside Lamb-Dicke regime (need η ≪ 0.3)</div>`;
     }
@@ -799,11 +826,12 @@
     for (let λ = 600; λ <= 1200; λ += 5) {
       const Δ = 2*Math.PI*C*(1/(λ*1e-9) - 1/atom.λ0);
       if (Math.abs(Δ) < 5*atom.Γ) { wls.push(λ); depths.push(NaN); scats.push(NaN); continue; }
-      const w0 = 0.52*(λ*1e-9)/NA;
+      const w0 = W0_PER_LAMBDA_NA*(λ*1e-9)/NA;
       const I0 = 2*P/(Math.PI*w0*w0);
       const ω0 = 2*Math.PI*C/atom.λ0;
-      const U_mK = Math.abs(-(3*Math.PI*C*C)/(2*ω0*ω0*ω0)*atom.Γ/Δ*I0)/kB*1e3;
-      const Gsc  = (3*Math.PI*C*C)/(2*hbar*ω0*ω0*ω0)*(atom.Γ*atom.Γ)/(Δ*Δ)*I0;
+      const ωt = 2*Math.PI*C/(λ*1e-9);
+      const U_mK = Math.abs(dipolePot(ω0, ωt, atom.Γ, I0))/kB*1e3;
+      const Gsc  = scatRate(ω0, ωt, atom.Γ, I0);
       wls.push(λ);
       depths.push(λ < λ0nm ? NaN : U_mK);
       scats.push(λ  < λ0nm ? NaN : Gsc);

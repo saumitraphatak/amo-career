@@ -67,7 +67,7 @@ def test_saturation_intensity_constants_are_consistent() -> None:
     assert_contains("pages/imaging-calculator.html", "Li6:   { label: '⁶Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.8724, Isat_mWcm2: 2.56")
     assert_contains("pages/imaging-calculator.html", "Li7:   { label: '⁷Li D2',   lambda_nm: 670.977, Gamma_MHz: 5.8724, Isat_mWcm2: 2.56")
     assert_contains("pages/mot-designer.html", "Li7:   { label:'⁷Li',   mass_u:7.016,   Gamma_MHz:5.8724, lambda_nm:670.977, Isat:2.54")
-    assert_contains("pages/absorption-imaging.html", "Na23:  { name:'Na-23',  λ:589.00e-9, Γ:2*Math.PI*9.795e6, σ0:1.657e-13, Isat:62.6")
+    assert_contains("pages/absorption-imaging.html", "Na23:  { name:'Na-23',  λ:589.158e-9, Γ:2*Math.PI*9.795e6, σ0:1.657e-13, Isat:62.6")
     assert_not_contains("pages/imaging-calculator.html", "Isat_mWcm2: 7.590")
     assert_not_contains("pages/imaging-calculator.html", "Gamma_MHz: 5.924")
     assert_not_contains("pages/mot-designer.html", "Isat:7.590")
@@ -330,6 +330,83 @@ def test_zernike_psf_centred_and_piston_free() -> None:
     assert abs(1.22 / ((Nin - 1) / Nfft) - 4.92) < 0.01
 
 
+def test_physics_audit_2026_11() -> None:
+    """Convention slips found in the Nov 2026 audit (prompted by a reader's report that the
+    tweezer waist was the Airy FWHM diameter). Each guard pins the corrected form."""
+    # Tweezer waist: 1/e² radius of the Gaussian matched to a filled-pupil Airy focus.
+    # Same peak intensity (P·π·NA²/λ² vs 2P/πw²) ⇒ w0 = (√2/π)·λ/NA ≈ 0.450 λ/NA,
+    # not the Airy FWHM diameter 0.514 λ/NA.
+    w_peak = math.sqrt(2) / math.pi
+    assert abs(w_peak - 0.450) < 1e-3
+    # same central curvature: [2J1(x)/x]² ≈ 1 − x²/4 with x = k·NA·r, Gaussian ≈ 1 − 2r²/w²
+    w_curv = 2 * math.sqrt(2) / (2 * math.pi)
+    assert abs(w_curv - w_peak) < 1e-12
+    tw = "pages/tweezer-designer.html"
+    assert_contains(tw, "const W0_PER_LAMBDA_NA = Math.SQRT2 / Math.PI;")
+    assert_not_contains(tw, "0.52 * λm / NA")
+    assert_not_contains(tw, "0.52*(λ*1e-9)/NA")
+    assert_not_contains(tw, r"w_0 \approx 0.52\lambda")
+    assert_contains(tw, "(Γ/(ω0-ω) + Γ/(ω0+ω))")          # counter-rotating term kept
+    assert_not_contains("js/tweezer3d.js", "0.52 λ/NA")
+    assert_not_contains("llms-full.txt", "0.52λ/NA")
+    # scattering rate needs Γ in s⁻¹, not Γ/2π
+    assert_contains("pages/imaging-calculator.html", "const Gamma = 2 * Math.PI * Gamma_MHz * 1e6;  // s⁻¹")
+    assert_not_contains("pages/imaging-calculator.html", "const G = Gamma_MHz * 1e6;  // Hz")
+    # dipole potential U = α I /(2 ε0 c)
+    assert_contains("pages/release-recapture.html", "const U0 = alpha * I_peak / (2 * c_l * eps0);")
+    # recoil frequency E_rec/h and lifetime τ = 1/Γ
+    assert_contains("pages/lab-calculators.html", "hbar * k**2 / (2 * m) / (2 * Math.PI) / 1e3")
+    assert_contains("pages/lab-calculators.html", "const tau   = 1.0 / Gam;")
+    # Purcell factor and β with C = g0²/(κγ) (half-widths): Fp = C, β = C/(1+C)
+    cq = "pages/cavity-qed.html"
+    assert_contains(cq, "const FP = C;")
+    assert_contains(cq, "const beta = C / (1 + C);")
+    assert_not_contains(cq, "2 * C / (1 + 2 * C)")
+    assert_contains("llms-full.txt", r"g_0 = \xi\sqrt{\frac{3\pi\Gamma c^3}{2\omega^2 V}}")
+    # ¹⁷¹Yb nuclear Zeeman: 2μB/h with μ = 0.4919 μN and μN/h = 762.26 Hz/G ⇒ 0.750 kHz/G;
+    # crossover with the Rb clock qubit (2·575.15 Hz/G² · B0) at B0 ≈ 0.65 G
+    yb = 2 * 0.4919 * 762.259
+    assert abs(yb - 750) < 3
+    assert abs(yb / (2 * 575.15) - 0.65) < 0.01
+    assert_not_contains("pages/rb87-vs-yb171.html", "2.592")
+    assert_contains("pages/rb87-vs-yb171.html", r"B_0 \approx 0.65\;\text{G}")
+    # Doppler force F = R(δ − kv) − R(δ + kv): damping for red detuning
+    assert_contains("pages/cooling-simulator.html", "const dp = delta - vi;")
+    assert_contains("pages/cooling-simulator.html", r"\alpha = 8\hbar k^2")
+    # resolved-sideband floor keeps the recoil term α (Phatak et al. Eq. 38)
+    assert_not_contains("pages/laser-cooling.html", r"\left(\frac{\Gamma}{4\nu}\right)^2")
+    assert_contains("pages/laser-cooling.html", r"\left(\alpha + \frac{1}{4}\right)")
+    # RB: A = F(0) − 1/d, so the survival curve never exceeds 1
+    assert_contains("pages/rb-explorer.html", "const A1 = A - B1, A2 = A - B2;")
+    assert_contains("pages/rb-explorer.html", "const pInt = pRef * Math.max(0, 1 - 2*rGate);")
+    # CPMG closed form (Cywiński 2008) equals the explicit switching-function sum
+    def explicit(w, N, T):
+        times = [0.0] + [(2 * k + 1) * T / (2 * N) for k in range(N)] + [T]
+        re = im = 0.0
+        for i in range(len(times) - 1):
+            s = 1 if i % 2 == 0 else -1
+            re += s * (math.sin(w * times[i + 1]) - math.sin(w * times[i])) / w
+            im += s * (math.cos(w * times[i]) - math.cos(w * times[i + 1])) / w
+        return re * re + im * im
+    def closed(w, N, T):
+        h = math.sin(w * T / 2) if N % 2 == 0 else math.cos(w * T / 2)
+        return 16 * math.sin(w * T / (4 * N)) ** 4 * h * h / (w * w * math.cos(w * T / (2 * N)) ** 2)
+    for N in (1, 2, 3, 4, 8):
+        for w in (0.37, 1.9, 5.3, 11.1, 23.7):
+            a, b = explicit(w, N, 1.3), closed(w, N, 1.3)
+            assert abs(a - b) <= 1e-9 * max(1.0, a), (N, w, a, b)
+    assert_contains("pages/dd-playground.html", "function filterFuncSqCPMG(omega, N, T)")
+    assert_contains("pages/dd-playground.html", "const Nw = Math.max(600, 60 * N);")
+    # background-gas lifetime: σ_eff = 3e-14 cm² reproduces τ ≈ 2e-8 Torr·s / P
+    kB = 1.380_649e-23
+    n = 1e-6 / (kB * 293)                       # 1e-8 mbar = 1e-6 Pa
+    tau = 1 / (n * 3e-18 * 470)
+    assert abs(tau - 2e-8 / 7.50062e-9) < 0.5, tau
+    assert_contains("pages/vacuum-systems.html", "const sigma = 3e-18;")
+    # rotated surface code: 2d² − 1 physical qubits
+    assert_contains("pages/learn-quantum.html", "label: `d=${d} (${2*d*d-1} qubits)`,")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -349,6 +426,7 @@ def main() -> None:
         test_imaging_histogram_preview_uses_calculator_counts,
         test_hand_typed_counts_match_content,
         test_zernike_psf_centred_and_piston_free,
+        test_physics_audit_2026_11,
     ]
     for test in tests:
         test()

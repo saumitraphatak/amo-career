@@ -359,7 +359,7 @@
             units of e·a₀, and ω is in atomic units (Eₕ/ℏ). Converting to SI and computing
             the peak intensity:
           </p>
-          <div class="formula-box">$$U_0 = \frac{\alpha_{\rm SI}\,I_{\rm peak}}{c\,\varepsilon_0}, \qquad I_{\rm peak} = \frac{2SP}{\pi w_0^2}$$</div>
+          <div class="formula-box">$$U_0 = \frac{\alpha_{\rm SI}\,I_{\rm peak}}{2\,c\,\varepsilon_0}, \qquad I_{\rm peak} = \frac{2SP}{\pi w_0^2}$$</div>
           <p>
             where S is the Strehl ratio (1 = perfect focus). The trap frequency is then:
           </p>
@@ -573,9 +573,9 @@
       <div class="formula-box">$$\alpha(\omega) = \sum_{j\in\{D1,D2\}} \frac{\Delta E_j\,|d_j|^2}{3\!\left(\Delta E_j^2 - (\omega/\omega_{\rm au})^2\right)} + \alpha_{\rm core}$$</div>
       <p>
         SI conversion: α_SI = α_au × 4πε₀a₀³ = α_au × 1.6488×10⁻⁴¹ C·m²/V.
-        Note: for wavelengths far from resonance (λ ≫ D1, D2 wavelengths for blue detuning,
-        or red-detuned for standard tweezers), α &gt; 0 and the trap minimum is at
-        maximum intensity.
+        Note: for trap wavelengths longer than the D1 and D2 lines (red detuning, as in standard
+        tweezers), α &gt; 0 and the trap minimum is at maximum intensity; between or below the
+        lines (blue detuning) α &lt; 0 and the atom is pushed out of the light.
       </p>
     </div>
   </section>
@@ -591,7 +591,7 @@
       <li><span class="dot">▸</span><strong>Single-transition approximation:</strong> Only D1 and D2 lines contribute (core correction α_core included). Higher excited states add &lt;1% for λ &gt; 700 nm.</li>
       <li><span class="dot">▸</span><strong>Recapture efficiency:</strong> The simulation does not model atom re-heating during recapture, quantum tunnelling, or motional-state filtering. It predicts the classical recapture probability.</li>
       <li><span class="dot">▸</span><strong>Thermometry, not direct trap-frequency metrology:</strong> Release-recapture primarily extracts temperature for a known potential. Trap frequencies enter through the assumed waist, depth, and Gaussian geometry; use parametric heating or sideband spectroscopy for a direct frequency measurement.</li>
-      <li><span class="dot">▸</span><strong>Statistical noise:</strong> For N_MC = 600, standard error ≈ 1/√600 ≈ 4%. Increase to 1500 for smoother curves.</li>
+      <li><span class="dot">▸</span><strong>Statistical noise:</strong> For N_MC = 600, the binomial standard error √(p(1−p)/N) is at most 0.5/√600 ≈ 2%. Increase to 1500 for smoother curves.</li>
     </ul>
   </section>
 
@@ -729,7 +729,7 @@ function calcAlpha(sp, lambda_m) {
 function trapParams(sp, lambda_m, power_W, w0_m, strehl) {
   const alpha = calcAlpha(sp, lambda_m);
   const I_peak = strehl * 2*power_W / (PI * w0_m**2);
-  const U0 = alpha * I_peak / (c_l * eps0);   // Joules (positive for red-det)
+  const U0 = alpha * I_peak / (2 * c_l * eps0);   // Joules, depth |U| = α I/(2ε₀c) (Grimm 2000 Eq. 2)
   const m  = sp.A * amu;
   const zR = PI * w0_m**2 / lambda_m;
   const wr = Math.sqrt(4*U0 / (m * w0_m**2));

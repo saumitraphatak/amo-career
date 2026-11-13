@@ -53,3 +53,6 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 9 labels rendered differently after the fix, e.g. "THERMAL VELOCITY V_RMS" → "THERMAL VELOCITY v_rms"; "DE BROGLIE Λ" → "DE BROGLIE λ". No markup on the page changed apart from the cache version.
+
+## 2026-11-13: physics audit (convention slips)
+- Reference list: RMP 70, 721 is Phillips's Nobel lecture and RMP 74, 875 Cornell & Wieman's (titles were wrong); Anderson 1995 now links its *Science* DOI (was a PRL on hollow-fiber guiding).

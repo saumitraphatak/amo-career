@@ -745,7 +745,8 @@
             </div>
             <div>
               <div class="pol-h2" style="margin-top:0">Jones Vectors & Matrices</div>
-              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\text{H linear:}\;&[1,\,0]^\top \\ \text{V linear:}\;&[0,\,1]^\top \\ {+45°:}\;&\tfrac{1}{\sqrt{2}}[1,\,1]^\top \\ {-45°:}\;&\tfrac{1}{\sqrt{2}}[1,\,-1]^\top \\ \text{RCP:}\;&\tfrac{1}{\sqrt{2}}[1,\,-i]^\top \\ \text{LCP:}\;&\tfrac{1}{\sqrt{2}}[1,\,+i]^\top\end{aligned}$$</div>
+              <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}\text{H linear:}\;&[1,\,0]^\top \\ \text{V linear:}\;&[0,\,1]^\top \\ {+45°:}\;&\tfrac{1}{\sqrt{2}}[1,\,1]^\top \\ {-45°:}\;&\tfrac{1}{\sqrt{2}}[1,\,-1]^\top \\ \text{RCP:}\;&\tfrac{1}{\sqrt{2}}[1,\,+i]^\top \\ \text{LCP:}\;&\tfrac{1}{\sqrt{2}}[1,\,-i]^\top\end{aligned}$$</div>
+              <p class="pol-p" style="font-size:12px;margin:.25rem 0">Handedness conventions differ between textbooks; on this page RCP is the state with $S_3=+1$, consistent with the Jones → Stokes relations below.</p>
               <div class="pol-h3" style="margin-top:14px">Jones → Stokes</div>
               <p class="pol-p" style="font-size:12.5px">For $[E_x,\,E_y e^{i\delta}]$ normalized to $S_0=1$:</p>
               <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$\begin{aligned}S_0 &= |E_x|^2+|E_y|^2\\S_1 &= |E_x|^2-|E_y|^2\\S_2 &= 2|E_x||E_y|\cos\delta\\S_3 &= 2|E_x||E_y|\sin\delta\end{aligned}$$</div>
@@ -815,11 +816,12 @@
           \hat\mu_2=|D\rangle\langle D|,\quad
           \hat\mu_3=|R\rangle\langle R|$$</div>
           <p class="pol-p">
-            $\mu_0$ (both PBS outputs summed) fixes the total count for normalization; $\mu_1,\mu_2,\mu_3$ are
+            $\mu_0$ (both PBS outputs summed, so $n_0$ is the total count $N$) fixes the normalization; $\mu_1,\mu_2,\mu_3$ are
             projections onto H, +45° diagonal, and right-circular, the same three axes this page already calls
             the H/V, D/A, and R/L bases. Count $n_i$ photons in each setting, then:
           </p>
-          <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_0=2n_0,\quad S_1=2(n_1-n_0),\quad S_2=2(n_2-n_0),\quad S_3=2(n_3-n_0)$$</div>
+          <div class="formula-box" style="border-color:rgba(232,121,249,0.25);">$$S_0=n_0,\quad S_1=2n_1-n_0,\quad S_2=2n_2-n_0,\quad S_3=2n_3-n_0$$</div>
+          <p class="pol-p">(James et al. 2001 write $S_0=2n_0$, $S_i=2(n_i-n_0)$; there $\mu_0$ is a 50% neutral filter, so their $n_0$ is half of the total used here.)</p>
           <p class="pol-p">
             Feed these into $\hat\rho = \tfrac{1}{2}\sum_i (S_i/S_0)\hat\sigma_i$ above and you have a full
             single-qubit tomographic reconstruction, four measurement settings, no rotation stage required.
@@ -1144,7 +1146,7 @@
     else mn.innerHTML='<strong>Rotating HWP + PBS:</strong> Detects S₁, S₂ only.'+(Math.abs(S[3])>0.01?` <span style="color:var(--pol-orange)">⚠ S₃=${S[3].toFixed(3)} is non-zero but won't appear!</span>`:'');
 
     // Compute I(θ)
-    const thetas=[]; for(let i=0;i<=360;i++) thetas.push(i);
+    const thetas=[]; for(let i=0;i<360;i++) thetas.push(i);   // one full period, no duplicated endpoint (keeps the Fourier sums exact)
     const intFn=polMethod==='qwp'?polIqwp:polIhwp;
     const rawI=thetas.map(t=>intFn(t,S));
     const noisyI=useNoise?polAddNoise(rawI,snr):rawI;

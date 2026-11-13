@@ -434,7 +434,7 @@
             <div class="prop-card-label">Orbital radius ⟨r⟩</div>
             <div class="prop-card-val" id="orbRadius">—</div>
             <div class="prop-card-unit" id="orbRadiusNm">— nm</div>
-            <div class="prop-card-sub">≈ n*² a₀ (mean radius, l=0)</div>
+            <div class="prop-card-sub">⟨r⟩ = [3n*² − l(l+1)]/2 · a₀ ≈ 1.5 n*² a₀</div>
           </div>
           <div class="prop-card">
             <div class="prop-card-label">Radiative lifetime</div>
@@ -452,7 +452,7 @@
           <span class="eq">δ(n, l, j) = δ₀ + δ₂ / (n − δ₀)²</span>
           <p>
             gives the binding energy E_b = R_y / n*² (in eV) with R_y = 13.6057 eV.
-            Orbital radius scales as ⟨r⟩ ≈ n*² a₀ (mean value for s-wave; accurate to ~10%).
+            Mean orbital radius: ⟨r⟩ = [3n*² − l(l+1)]/2 · a₀ ≈ 1.5 n*² a₀ for low-l states.
             Radiative lifetime: τ ∝ n*³ for low-l states, ∝ n*⁵ for high-l circular states.
           </p>
         </div>
@@ -637,9 +637,10 @@
             For like-state pairs |nℓj, nℓj⟩, C₆ arises from second-order dipole-dipole coupling to
             nearly degenerate pair states |n'l', n''l''⟩. C₆ diverges near a <strong>Förster resonance</strong>
             (exact degeneracy between initial and intermediate pair states), shifting to a C₃/r³
-            interaction. For <strong>P₃/₂ states in Cs at n ≈ 43</strong> a near-perfect Förster
-            resonance gives anomalously large and controllable interactions, exploited in early
-            blockade experiments by the Browaeys group (Gaëtan et al. 2009).
+            interaction. Some pair states lie close to a Förster resonance, and a small electric field can
+            tune them onto it for large, controllable interactions (e.g. Ravets et al. 2014, Rb, Browaeys
+            group). Early two-atom blockade experiments used ordinary van der Waals pairs: Gaëtan et al. (2009)
+            used Rb 58D₃/₂.
           </p>
         </div>
         <div class="theory-box">
@@ -846,8 +847,9 @@ const DATA = {
       nS:  { label:'nS₁/₂', d0:3.1311804, d2: 0.1784, tau0_ns:1.43, C6:   15, nref_star:46.87 },
       nP1: { label:'nP₁/₂', d0:2.6548849, d2: 0.2900, tau0_ns:2.76, C6:  280, nref_star:47.35 },
       nP3: { label:'nP₃/₂', d0:2.6416737, d2: 0.2950, tau0_ns:2.76, C6:  400, nref_star:47.36 },
-      nD3: { label:'nD₃/₂', d0:1.2480,    d2:-0.0040, tau0_ns:3.80, C6:  200, nref_star:48.75 },
-      nD5: { label:'nD₅/₂', d0:1.2464,    d2:-0.0080, tau0_ns:3.80, C6:  250, nref_star:48.75 },
+      // nD defects: Li, Mourachko, Noel & Gallagher, PRA 67, 052502 (2003)
+      nD3: { label:'nD₃/₂', d0:1.34809171, d2:-0.60286, tau0_ns:3.80, C6:  200, nref_star:48.65 },
+      nD5: { label:'nD₅/₂', d0:1.34646572, d2:-0.59600, tau0_ns:3.80, C6:  250, nref_star:48.65 },
     }
   },
   Cs: {
@@ -900,9 +902,9 @@ function bindingEV(ns) {
 }
 
 function orbRadius_nm(ns) {
-  // Mean radial expectation value for l=0: <r> ≈ n*²·a₀ × (3/2 - l(l+1)/(2n*²))
-  // Simplified to n*² × a₀ for quick reference
-  return ns * ns * a0_nm;
+  // Mean radial expectation value <r> = [3n*² − l(l+1)]/2 · a₀; the l term is negligible
+  // for the low-l states here (n* ~ 50), so use 1.5·n*²·a₀
+  return 1.5 * ns * ns * a0_nm;
 }
 
 function lifetime_us(ns, tau0_ns) {

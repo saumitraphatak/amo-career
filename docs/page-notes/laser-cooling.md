@@ -54,3 +54,8 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - Hero icon ❄️ → 🧊, matching the home card and start-here; NAV's icon changed the same way. ❄️ now belongs only to cooling-simulator.
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## 2026-11-13: physics audit (convention slips)
+- **Resolved-sideband and Doppler limits now include the emission factor α** (Phatak et al. Eq. 38: ⟨n⟩ = ¼(Γ/ν)²(α + ¼)); the page showed the α = 0 case (Γ/4ν)². Doppler (ν ≪ Γ, Δ = −Γ/2): ⟨n⟩ = (1+α)Γ/(4ν) − ½, i.e. k_BT_D/hν for α = 1 (Rb, 100 kHz: ~30, was 15). Calculator gained an α selector (1 = 1D as in the paper's simulations, 1/3 = 3D average).
+- **Needs Saumitra:** arXiv HTML of Eq. 39 reads ⟨n⟩ = (1+α)/8·(Γ/2Δ + 2Δ/Γ) − ½ with no Γ/ν factor and a sign that goes negative at Δ = −Γ/2; the weak-binding expansion gives (1+α)/8·(Γ/ν)(Γ/2|Δ| + 2|Δ|/Γ) − ½. Possibly an extraction artefact or a typo in the paper.
+- Text: η for Rb at 780 nm is 0.14–0.27 over 200–50 kHz (0.19 at 100 kHz); sidebands are η²-suppressed relative to the carrier (red/blue ratio n/(n+1)); decay mostly preserves n in the LD regime; carrier Rabi frequency is Ω_R; GM table s ≈ 4η²γ_h/γ₊; Sisyphus belongs to lin⊥lin (σ⁺σ⁻ cools by motion-induced orientation); Blodgett et al. 2023 used ⁶Li (F = 1/2, 3/2 → F′ = 3/2), not ⁸⁷Rb.

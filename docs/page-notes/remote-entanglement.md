@@ -39,3 +39,8 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 3 labels rendered differently after the fix, e.g. "RB FIBER LINK WITH QFC" → "Rb FIBER LINK WITH QFC"; "COHERENT CS ATOM ARRAY REPORTED IN 2025" → "COHERENT Cs ATOM ARRAY REPORTED IN 2025". No markup on the page changed apart from the cache version.
+
+## 2026-11-13: physics audit (convention slips)
+- Heralded state from a coincidence is Ψ± (anti-correlated), not Φ±. HOM chart now plots the exponential dip the text gives; τ_c = 1/(2πΔν) for a Lorentzian photon.
+- Single-photon scheme p ≈ 2εη (ε = 0.05, F ≈ 95%), not η/2; fiber transmission label 10^(−αL/10).
+- History fixes: 2007 Moehring et al. (Monroe, Michigan); 2012 Hofmann et al. is Weinfurter (LMU, free-space traps, 20 m) and Ritter et al. is Rempe (cavities, 21 m); 2020 Stephenson et al. is Oxford Sr⁺ ions (182 /s, 94%), not Harvard Rb; Hensen 2015 did not include teleportation or room temperature; HOM is not the 2022 Nobel; Covey is UIUC (formerly Caltech).

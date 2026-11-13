@@ -27,3 +27,6 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s) 
 
 ## Accessibility re-audit update (2026-09-20)
 This page had no `<footer>` element at all — went straight from `</main>` to its `<script>` tags, unlike every other page on the site. Added the standard sitewide footer block (`Laser System Planner · AMO Toolkit · Saumitra Phatak · Purdue University`). See docs/accessibility-audit-2026-09-20.md.
+
+## 2026-11-13: physics audit (convention slips)
+- Cs D1 gray molasses is sub-Doppler, not sub-recoil.

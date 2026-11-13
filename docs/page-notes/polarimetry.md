@@ -59,3 +59,8 @@ The custom `.pol-tab-nav` opts in with `data-chapter-panels=".pol-section"`. The
 - the pager, index cards, keyboard (Enter), deep links and hash updates all work.
 
 `smoke.js` on all 34 pages: 0 new problems.
+
+## 2026-11-13: physics audit (convention slips)
+- RCP/LCP Jones vectors swapped to match the page's own S₃ = 2|Ex||Ey| sin δ convention (RCP has S₃ = +1); note on handedness conventions.
+- Photon tomography: with μ₀ = both PBS ports summed (n₀ = N), Stokes are S₀ = n₀, Sᵢ = 2nᵢ − n₀ (James et al.'s 2(nᵢ − n₀) assumes a 50% filter).
+- Fourier fit sampled 0–360° inclusive (duplicate endpoint biased S₀, S₁ by ~2%); now 0–359°.

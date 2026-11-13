@@ -378,7 +378,7 @@
             where δ' = δ + kv is the effective detuning and s₀ = I/I_sat. With counter-propagating
             beams the net force becomes velocity-dependent:
           </p>
-          <div class="formula-box">$$F(v) \approx -\alpha v, \qquad \alpha = \hbar k^2 \cdot \frac{4|\delta|\,s_0\,\Gamma}{(1 + s_0 + (2\delta/\Gamma)^2)^2}$$</div>
+          <div class="formula-box">$$F(v) \approx -\alpha v, \qquad \alpha = 8\hbar k^2 \,\frac{s_0\,|\delta|/\Gamma}{(1 + s_0 + (2\delta/\Gamma)^2)^2}$$</div>
           <p>
             This viscous force (α &gt; 0 for red detuning δ &lt; 0) cools atoms. The minimum
             Doppler temperature is set by the balance between velocity damping and momentum diffusion:
@@ -590,7 +590,8 @@
               </p>
               <div class="formula-box">$$\langle\dot{n}\rangle = -\Gamma_{\rm cool}\cdot n + \Gamma_{\rm heat}$$</div>
               <p>
-                Steady-state: ⟨n⟩_ss = (Γ_heat/Γ_cool) ≈ η²Γ²/(4ω²) for weak sideband.
+                Steady-state: ⟨n⟩_ss = Γ_heat/Γ_cool ≈ ¼(Γ/ω)²(α + ¼) for resolved sidebands (ω ≫ Γ),
+                independent of η because both rates scale as η² (α ≈ 1/3–1 is the emission-direction factor).
                 In practice ⟨n⟩_ss &lt; 0.1 is achievable.
               </p>
             </div>
@@ -641,7 +642,7 @@
                     oninput="updateCoolEvo()">
                 </div>
                 <div class="ctrl-group">
-                  <label for="gcSlide">Γ_cool/ω <span id="gcVal" class="ctrl-val">0.05</span></label>
+                  <label for="gcSlide">Γ/ω (linewidth / trap freq.) <span id="gcVal" class="ctrl-val">0.05</span></label>
                   <input type="range" id="gcSlide" min="0.01" max="0.2" step="0.005" value="0.05"
                     oninput="updateCoolEvo()">
                 </div>
@@ -755,7 +756,7 @@
           </div>
           <div class="theory-box">
             <h4>Lamb-Dicke Limit</h4>
-            <p>In a trap: ⟨n⟩_ss → η²Γ²/(4ω²). Deep into Lamb-Dicke regime (η → 0) and resolved sidebands (ω ≫ Γ), ⟨n⟩ → 0.</p>
+            <p>In a trap with resolved sidebands (ω ≫ Γ): ⟨n⟩_ss → ¼(Γ/ω)²(α + ¼), so ⟨n⟩ → 0 as Γ/ω → 0. The Lamb-Dicke parameter η sets the cooling <em>rate</em> (∝ η²) and must be small for the expansion to hold, but it cancels from the floor.</p>
           </div>
         </div>
       </div>
@@ -926,11 +927,11 @@ const hbar = 1.0546e-34, kB = 1.3806e-23, amu = 1.6605e-27;
     { label: 'Zeeman slower', T: 0.05, color: '#f97316' },
     { label: '3D MOT', T: 150e-6, color: '#eab308' },
     { label: 'cMOT / PGC', T: 10e-6, color: '#84cc16' },
-    { label: 'Gray Molasses (D1)', T: 50e-6, color: '#60a5fa' },
+    { label: 'Gray Molasses (D1)', T: 8e-6, color: '#60a5fa' },
     { label: 'Narrow-line MOT', T: 1e-6, color: '#38bdf8' },
     { label: 'Loaded tweezer', T: 20e-6, color: '#818cf8' },
-    { label: 'RSB / EIT cooled', T: 1e-7, color: '#a78bfa' },
-    { label: 'Motional GS ⟨n⟩<0.1', T: 5e-9, color: '#e879f9' },
+    { label: 'RSB / EIT, ⟨n⟩≈0.3 (100 kHz trap)', T: 3.3e-6, color: '#a78bfa' },
+    { label: 'Motional GS ⟨n⟩<0.1 (100 kHz trap)', T: 2.0e-6, color: '#e879f9' },
   ];
   const ctx = document.getElementById('ladderChart').getContext('2d');
   new Chart(ctx, {
@@ -1007,8 +1008,9 @@ function updateForce() {
   const vs = [], F1 = [], F0 = [];
   let alpha = 0;
   for (let vi = -5; vi <= 5; vi += 0.1) {
-    const dp = delta + vi;
-    const dm = delta - vi;
+    // beam along +k sees δ − kv, beam along −k sees δ + kv:  F = R(δ − kv) − R(δ + kv)
+    const dp = delta - vi;
+    const dm = delta + vi;
     const f = 0.5*s0 / (1 + s0 + (2*dp)**2) - 0.5*s0 / (1 + s0 + (2*dm)**2);
     vs.push(vi.toFixed(2));
     F1.push(f);
@@ -1114,9 +1116,10 @@ function updateSideband() {
   for (let n = -4; n <= 4; n++) {
     labels.push(n === 0 ? 'carrier' : (n > 0 ? `+${n}BSB` : `${n}RSB`));
     let val = 0;
-    if (n === 0) val = 1.0 - eta*eta*(2*nbar+1);  // carrier (LD approx)
-    else if (n > 0) val = eta*eta * (nbar + 1);     // BSB ∝ (n̄+1)
-    else            val = eta*eta * nbar;            // RSB ∝ n̄
+    const k = Math.abs(n), fact = [1, 1, 2, 6, 24][k];
+    if (n === 0) val = 1.0 - eta*eta*(2*nbar+1);                  // carrier (LD approx)
+    else if (n > 0) val = Math.pow(eta*eta*(nbar + 1), k) / fact;  // k-th BSB ∝ η^{2k}(n̄+1)^k/k!
+    else            val = Math.pow(eta*eta*nbar, k) / fact;        // k-th RSB ∝ η^{2k} n̄^k/k!
     vals.push(Math.max(0, val));
     cols.push(n < 0 ? '#60a5fa' : n === 0 ? '#fbbf24' : '#f472b6');
   }
@@ -1155,8 +1158,8 @@ function updateCoolEvo() {
   document.getElementById('n0Val').textContent = n0.toFixed(0);
   document.getElementById('gcVal').textContent = gc.toFixed(3);
 
-  // nss = eta^2 * Gamma^2 / (4 omega^2) ≈ gc^2 * 4  (rough)
-  const nss = gc * gc * 4;
+  // resolved-sideband floor ⟨n⟩ = ¼(Γ/ω)²(α + ¼), α = 1 (Phatak et al. 2024 Eq. 38; Leibfried et al. RMP 2003)
+  const nss = 0.25 * gc * gc * 1.25;
   const ts = [], ns = [], nssLine = [];
   for (let t = 0; t <= 8; t += 0.1) {
     ts.push(t.toFixed(1));
@@ -1172,8 +1175,9 @@ function updateCoolEvo() {
 /* ─── COMPARISON BAR ─────────────────────────────────── */
 (function() {
   const ctx = document.getElementById('compChart').getContext('2d');
-  const methods = ['Room Temp','Zeeman Slower','3D MOT','cMOT / PGC','Gray Molasses','Narrow-line MOT','RSB Cooled','GS (⟨n⟩<0.1)'];
-  const logTs   = [2.48, -1.3, -3.82, -5, -4.3, -6, -7, -8.3];
+  const methods = ['Room Temp','Zeeman Slower','3D MOT','cMOT / PGC','Gray Molasses','Narrow-line MOT','RSB Cooled (100 kHz)','GS ⟨n⟩<0.1 (100 kHz)'];
+  // trapped-atom entries: T = hν/(k_B ln(1 + 1/⟨n⟩)) at ν = 100 kHz
+  const logTs   = [2.48, -1.3, -3.82, -5, -5.1, -6, -5.48, -5.7];
   const colors  = ['#ef4444','#f97316','#eab308','#84cc16','#60a5fa','#38bdf8','#a78bfa','#e879f9'];
   new Chart(ctx, {
     type: 'bar',

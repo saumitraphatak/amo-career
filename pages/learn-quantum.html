@@ -912,7 +912,7 @@ Selection rules (electric dipole): $\sigma^+$: $\Delta m_F = +1$; $\sigma^-$: $\
 Scattering rate from sublevel $m_F$ ($\sigma^+$ beam):
 $$R_m = \frac{\Gamma}{2} \cdot \frac{s \cdot |C_m|^2}{1 + s|C_m|^2 + (2\Delta/\Gamma)^2}$$
 where $|C_m|^2$ = squared Clebsch–Gordan coeff. for $|F,m_F\rangle \rightarrow |F',m_F+1\rangle$<br>
-Dark state ($\sigma^+$): $m_F = +F$, no allowed $\sigma^+$ absorption<br>
+Dark state ($\sigma^+$, only if $F' \le F$): $m_F = +F$ has no allowed $\sigma^+$ absorption. For $F' = F+1$ the stretched state $m_F = +F$ is instead a <em>cycling</em> state.<br>
 Pumping time: $\tau_{pump} \approx 2F / (R_{scatter} \cdot \varepsilon_{branch})$
 </div>
 
@@ -969,7 +969,7 @@ Pumping time: $\tau_{pump} \approx 2F / (R_{scatter} \cdot \varepsilon_{branch})
       Neutral alkali atoms encode qubits in their <strong>hyperfine ground states</strong>:
       two long-lived magnetic sub-levels of the electronic ground state split by the
       interaction between nuclear spin <em>I</em> and electron spin <em>J</em>.
-      The energy splitting is ΔE = A<sub>hf</sub> · <strong>I</strong>·<strong>J</strong>,
+      The interaction is H = A<sub>hf</sub> <strong>I</strong>·<strong>J</strong>, which for a J = ½ ground state splits the levels by ΔE = A<sub>hf</sub>(I + ½),
       where A<sub>hf</sub> is the magnetic dipole hyperfine constant.
       <strong>Clock states</strong> (|F, m<sub>F</sub> = 0⟩) are first-order insensitive to
       magnetic field fluctuations, enabling T₂ &gt; 10 seconds, orders of magnitude longer
@@ -978,7 +978,7 @@ Pumping time: $\tau_{pump} \approx 2F / (R_{scatter} \cdot \varepsilon_{branch})
   </div>
 
   <div class="formula-box">
-$$\hat{H}_{hf} = A_{hf}\,\vec{I}\cdot\vec{J} + B_{hf}\left[3(\vec{I}\cdot\vec{J})^2 + \ldots\right] \quad \text{(quadrupole term, } I \geq 1\text{)}$$
+$$\hat{H}_{hf} = A_{hf}\,\vec{I}\cdot\vec{J} + B_{hf}\left[3(\vec{I}\cdot\vec{J})^2 + \ldots\right] \quad \text{(quadrupole term, needs } I \geq 1 \text{ and } J \geq 1\text{)}$$
 Qubit encoding (e.g. $^{133}$Cs): $|0\rangle = |F{=}3, m_F{=}0\rangle$, $|1\rangle = |F{=}4, m_F{=}0\rangle$<br>
 Splitting: $\Delta E/h = 9{,}192{,}631{,}770$ Hz (defines the SI second!)<br>
 2nd-order Zeeman shift (clock states):
@@ -1053,27 +1053,27 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
             <td><strong>⁸⁷Rb</strong></td>
             <td class="mono">6.835 GHz</td>
             <td class="mono">|1,0⟩ → |2,0⟩</td>
-            <td>~1 min</td>
+            <td>~1 s (with DD)</td>
             <td>Rydberg CZ</td>
           </tr>
           <tr>
             <td><strong>¹³³Cs</strong></td>
             <td class="mono hi">9.193 GHz (SI clock!)</td>
             <td class="mono">|3,0⟩ → |4,0⟩</td>
-            <td>~10 s</td>
+            <td>12.6 s (DD, 6100 atoms)</td>
             <td>Rydberg CZ</td>
           </tr>
           <tr>
             <td><strong>⁶Li</strong></td>
             <td class="mono">228.2 MHz</td>
-            <td class="mono">|1/2,+1/2⟩ → |1/2,−1/2⟩</td>
+            <td class="mono">|F=1/2⟩ → |F=3/2⟩ (m_F pair)</td>
             <td>~100 ms</td>
             <td>Rydberg / tweezer</td>
           </tr>
           <tr>
             <td><strong>¹⁷¹Yb</strong></td>
-            <td class="mono hi">12.643 GHz</td>
-            <td class="mono">|F=0⟩ → |F=1, m_F=0⟩</td>
+            <td class="mono hi">≈0.75 kHz/G × B (nuclear Zeeman)</td>
+            <td class="mono">|m_I=+½⟩ → |m_I=−½⟩ (¹S₀, F=½)</td>
             <td>&gt;10 s</td>
             <td>Rydberg CZ</td>
           </tr>
@@ -1089,14 +1089,15 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
       </div>
 
       <div class="info-banner" style="margin-top:.75rem;">
-        💡 <strong>¹⁷¹Yb</strong> is emerging as a leading neutral-atom qubit: nuclear spin
-        I = 1/2 gives a clean two-level system, and the F=0 → F=1, m<sub>F</sub>=0 transition
-        is insensitive to magnetic fields at all orders near B=0, enabling exceptionally long coherence.
+        💡 <strong>¹⁷¹Yb</strong> is emerging as a leading neutral-atom qubit: its ¹S₀ ground state has J = 0,
+        so the nuclear spin I = 1/2 (m<sub>I</sub> = ±½) is a clean two-level system that couples to magnetic
+        fields only through the small nuclear moment (≈0.75 kHz/G), enabling exceptionally long coherence.
+        (The 12.6 GHz F=0 ↔ F=1 hyperfine qubit belongs to the <em>ion</em> ¹⁷¹Yb⁺.)
       </div>
 
       <div class="good-banner" style="margin-top:.6rem;">
         🏆 <strong>Record T₂</strong>: Neutral atom clock qubits in optical tweezers have
-        demonstrated T₂ &gt; 40 seconds using dynamical decoupling on ⁸⁷Rb (Evered et al. 2023).
+        demonstrated T₂ ≈ 40 s (spin echo) for ⁸⁷Sr nuclear-spin qubits (Barnes et al., Nat. Commun. 2022) and T₂ = 12.6 s across a 6100-atom Cs array (Manetsch et al. 2025).
         For comparison, superconducting transmon qubits: T₂ ~ 100–500 μs.
       </div>
     </div>
@@ -1311,9 +1312,9 @@ Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{mot
 
   <div class="formula-box">
 Bloch equations (Lindblad):
-$$\dot{s}_z(t) = -\frac{s_z + 1}{T_1} \quad\Rightarrow\quad s_z(t) = -1 + (s_{z0}+1)\,e^{-t/T_1}$$
+$$\dot{s}_z(t) = -\frac{s_z - 1}{T_1} \quad\Rightarrow\quad s_z(t) = 1 - (1-s_{z0})\,e^{-t/T_1} \quad (|0\rangle = +\hat z \text{ is the state } T_1 \text{ decays to})$$
 $$|\rho_{01}(t)| = |\rho_{01}(0)|\,e^{-t/T_2}$$
-Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 \approx 100$ ms (echo)
+Typical (alkali hyperfine qubits in tweezers): $T_1 \gtrsim 1$ s (trap-light Raman scattering), $T_2^* \approx 1{-}5$ ms, $T_2 \approx 100$ ms (echo); always $T_2 \le 2T_1$
 </div>
 
   <div class="ctrl-row" style="margin-top:1rem;">
@@ -1473,7 +1474,7 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
         </p>
         <span class="eq">H = Σᵢ (Ω/2)σˣᵢ − Δ nᵢ + Σᵢ&lt;ⱼ V(rᵢⱼ) nᵢ nⱼ</span>
         <p>
-          V(r) = C₆/r⁶ for van der Waals, C₃/r³ for dipolar (dressed states).
+          V(r) = C₆/r⁶ for van der Waals, C₃/r³ for resonant dipole exchange (e.g. nS–nP pairs).
           By choosing array geometry, any graph's adjacency can be encoded.
           Experiments have demonstrated Z₂ symmetry breaking, topological spin liquids
           (Semeghini et al. 2021), and frustrated magnetism in programmable arrays.
@@ -1523,9 +1524,9 @@ Typical (Rydberg tweezers): $T_1 \approx 10$ ms, $T_2^* \approx 1{-}5$ ms, $T_2 
   <div class="formula-box">
 3-qubit bit-flip code: $|0_L\rangle = |000\rangle$, $|1_L\rangle = |111\rangle$<br>
 Syndrome operators: $Z_1Z_2 \otimes I$ and $I \otimes Z_2Z_3$<br><br>
-Surface code (distance-$d$): encodes 1 logical qubit in $d^2$ physical qubits.
+Surface code (distance-$d$, rotated): encodes 1 logical qubit in $d^2$ data + $d^2-1$ measure qubits $= 2d^2-1$ physical qubits.
 $$p_L \approx A \cdot \left(\frac{p}{p_{th}}\right)^{\lceil(d+1)/2\rceil} \qquad p_{th} \approx 1\%$$
-Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \approx 10^{-8}$ per logical cycle
+Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = A \times 10^{-4} \approx 10^{-5}$ per logical cycle (for $A \approx 0.1$)
 </div>
 
   <div class="two-col" style="margin-top:1rem;">
@@ -1533,10 +1534,10 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
       <div class="theory-box">
         <h4>Key QEC concepts</h4>
         <p>
-          <strong>Logical qubit</strong>: encoded in d² physical qubits; protected from errors
+          <strong>Logical qubit</strong>: encoded in 2d²−1 physical qubits (d² data + d²−1 ancilla); protected from errors
           up to weight ⌊(d−1)/2⌋, any combination of that many physical errors is correctable.<br><br>
-          <strong>Syndrome measurement</strong>: ancilla qubits measure Z<sub>i</sub>Z<sub>j</sub>
-          and X<sub>i</sub>X<sub>j</sub> stabilizers, parities only, never the logical state itself.<br><br>
+          <strong>Syndrome measurement</strong>: ancilla qubits measure weight-4 Z⊗Z⊗Z⊗Z
+          and X⊗X⊗X⊗X stabilizers (weight 2 at the boundary), parities only, never the logical state itself.<br><br>
           <strong>Threshold theorem</strong>: if physical error rate p &lt; p<sub>th</sub>,
           increasing code distance d <em>exponentially suppresses</em> logical errors —
           making arbitrarily reliable computation possible from noisy components.<br><br>
@@ -1588,11 +1589,11 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx (0.001/0.01)^4 \appr
       <tbody>
         <tr><td>3-qubit bit-flip</td><td class="mono">3</td><td class="mono">~50%</td><td>Corrects X errors only, not universal</td></tr>
         <tr><td>Steane [[7,1,3]]</td><td class="mono">7</td><td class="mono">~1%</td><td>All single-qubit errors; CSS code</td></tr>
-        <tr><td class="hi">Surface code d=5</td><td class="mono hi">25</td><td class="mono hi">~1%</td><td>Google Willow, below-threshold surface-code memory ✓</td></tr>
-        <tr><td>Surface code d=7</td><td class="mono">49</td><td class="mono">~1%</td><td>Google Willow also reported larger-distance surface-code memory</td></tr>
+        <tr><td class="hi">Surface code d=5</td><td class="mono hi">49</td><td class="mono hi">~1%</td><td>Google Willow, below-threshold surface-code memory ✓</td></tr>
+        <tr><td>Surface code d=7</td><td class="mono">97</td><td class="mono">~1%</td><td>Google Willow also reported larger-distance surface-code memory</td></tr>
         <tr><td>Neutral-atom logical qubits</td><td class="mono">hundreds of atoms</td><td class="mono">code-dependent</td><td>Harvard 2024 used reconfigurable atom arrays and transversal logical gates, not a simple d=7 surface-code row</td></tr>
-        <tr><td>Surface code d=25</td><td class="mono">625</td><td class="mono">~1%</td><td>Target for Shor's algorithm at scale</td></tr>
-        <tr><td>Bivariate bicycle (Google)</td><td class="mono">~10–15×</td><td class="mono">~0.5%</td><td>More compact; demonstrated 2024</td></tr>
+        <tr><td>Surface code d=25</td><td class="mono">1249</td><td class="mono">~1%</td><td>Target for Shor's algorithm at scale</td></tr>
+        <tr><td>Bivariate bicycle (IBM)</td><td class="mono">~10–15× fewer</td><td class="mono">~0.5%</td><td>More compact; proposed with simulations (Bravyi et al., Nature 2024)</td></tr>
       </tbody>
     </table>
     </div>
@@ -2548,7 +2549,7 @@ function updateRydberg() {
   const atom = document.getElementById('rydAtom').value;
 
   // C6 scales as n^11, calibrate to known Cs values (n=70, C6 ≈ 800 GHz·μm^6)
-  const C6_70 = atom === 'Cs' ? 800e3 : 500e3;  // MHz·μm^6
+  const C6_70 = atom === 'Cs' ? 800e3 : 862e3;  // MHz·μm^6 (Rb 70S: 862 GHz·μm⁶, Bernien et al. 2017)
   const C6    = C6_70 * Math.pow(n/70, 11);
 
   // Blockade radius (C6 / (ℏΩ))^{1/6} = (C6 / Ω_MHz * 1e6)^{1/6} μm... be careful with units
@@ -2889,7 +2890,7 @@ let decohChart;
 (function(){
   const ctx = document.getElementById('decohChart').getContext('2d');
   decohChart = new Chart(ctx,{type:'line',data:{labels:[],datasets:[
-    {label:'P₁(t) = e^{−t/T₁}/2 + ½',data:[],borderColor:'#f87171',borderWidth:2,pointRadius:0},
+    {label:'P₁(t) = ½ e^{−t/T₁} (from |+⟩)',data:[],borderColor:'#f87171',borderWidth:2,pointRadius:0},
     {label:'|ρ₀₁(t)| = ½ e^{−t/T₂}',data:[],borderColor:'#a78bfa',borderWidth:2,pointRadius:0,borderDash:[5,3]},
     {label:'P₁ steady state = 0',data:[],borderColor:'#334155',borderWidth:1,borderDash:[2,4],pointRadius:0}
   ]},options:{responsive:true,plugins:{legend:{labels:{color:'#5c503c',font:{size:11}}}},
@@ -2906,7 +2907,7 @@ function updateDecohere() {
   for (let i=0; i<=100; i++) {
     const t = tmax * i/100;
     ts.push(t.toFixed(1));
-    P1.push(0.5 * Math.exp(-t/T1) + 0);   // starting from |1⟩, decays to thermal ~0
+    P1.push(0.5 * Math.exp(-t/T1));   // starting from |+⟩ (P₁ = ½), decays to |0⟩
     coh.push(0.5 * Math.exp(-t/T2));
     zero.push(0);
   }
@@ -2943,7 +2944,7 @@ function updateDecohere() {
 
   const palette = { 3:'#60a5fa', 5:'#a78bfa', 7:'#34d399', 9:'#fbbf24', 11:'#f87171' };
   const datasets = [3, 5, 7, 9, 11].map(d => ({
-    label: `d=${d} (${d*d} qubits)`,
+    label: `d=${d} (${2*d*d-1} qubits)`,
     data: pPhys.map(p => ({ x: +(p * 100).toFixed(4), y: logicalRate(d, p) })),
     borderColor: palette[d],
     borderWidth: 1.8,
@@ -3186,7 +3187,7 @@ function opReset() {
   const snapshots = [];
   let a = new Array(N).fill(1/Math.sqrt(N));
   snapshots.push({ title: 'Initial: equal superposition', amps: [...a] });
-  for (let i = 0; i < k_opt + 1; i++) {
+  for (let i = 0; i < k_opt; i++) {
     // Oracle step
     const ao = [...a]; ao[TARGET] = -ao[TARGET];
     snapshots.push({ title: `Step ${i+1}a: oracle flips target phase`, amps: [...ao] });

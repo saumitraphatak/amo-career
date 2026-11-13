@@ -33,3 +33,9 @@ Cross-reference naming drift: this page's own outgoing "See Also" card label(s) 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 9 labels rendered differently after the fix, e.g. "RESONANT CROSS SECTION Σ₀" → "RESONANT CROSS SECTION σ₀"; "CROSS SECTION Σ(Δ)" → "CROSS SECTION σ(Δ)". No markup on the page changed apart from the cache version.
+
+## 2026-11-13: physics audit (convention slips)
+- Saturation badge said "~s·50%" error; the thin-cloud bias is s/(1+s) (9% at the default s = 0.1, which was badged "< 5%"). Thresholds now 0.05 / 0.5.
+- N_min treated per-pixel OD noise as whole-cloud noise; now sums over the pixels covering the 10 μm cloud (σ_N ∝ √N_pix): default 368 → 27 atoms.
+- Single-atom OD text (was 10⁻⁴–10⁻³; σ₀/1 μm² ≈ 0.3); "Optimal I/I_sat marked" claim removed (nothing was marked; noise alone always favours more light).
+- Vacuum wavelengths for Cs/Na, K-40 766.70 nm, σ₀ for Li/K from 3λ²/2π, Cs I_sat 1.102.

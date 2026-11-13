@@ -458,7 +458,7 @@
             <div class="out-card" style="grid-column:1/-1">
               <div class="out-lbl">Min detectable N (in 10 μm cloud)</div>
               <div class="out-val" id="o-nmin">—</div>
-              <div class="out-unit">atoms (3σ, 10 μm radius cloud)</div>
+              <div class="out-unit">atoms (3σ, summed over a 10 μm radius cloud)</div>
             </div>
           </div>
           <div id="sat-status" style="margin-top:var(--sp-3)"></div>
@@ -468,7 +468,7 @@
       <div class="chart-wrap">
         <div class="chart-hed">
           <strong style="color:var(--text-primary)">OD noise (δOD) vs probe intensity</strong>
-          — shot noise falls as 1/√s, read noise dominates at low s. Optimal I/I_sat marked.
+          — shot noise falls as 1/√s, read noise as 1/s, so noise alone always favours more light; saturation (badge above) sets the practical upper limit.
         </div>
         <canvas id="ab-chart" height="100"></canvas>
       </div>
@@ -493,12 +493,12 @@
           </thead>
           <tbody>
             <tr><td>Rb-87</td><td>780.24</td><td>2.907</td><td>1.669</td><td>~0.93</td><td>D2 F=2→F'=3 (cycling)</td></tr>
-            <tr><td>Cs-133</td><td>852.11</td><td>3.467</td><td>1.099</td><td>~1.10</td><td>D2 F=4→F'=5 (cycling)</td></tr>
-            <tr><td>Li-6</td><td>670.98</td><td>2.141</td><td>2.54</td><td>~0.68</td><td>D2 (approx cycling)</td></tr>
-            <tr><td>Li-7</td><td>670.98</td><td>2.141</td><td>2.54</td><td>~0.68</td><td>D2 (approx cycling)</td></tr>
-            <tr><td>Na-23</td><td>589.00</td><td>1.657</td><td>6.26</td><td>~0.53</td><td>D2 F=2→F'=3 (cycling)</td></tr>
-            <tr><td>K-39</td><td>766.70</td><td>2.812</td><td>1.75</td><td>~0.89</td><td>D2 F=2→F'=3 (cycling)</td></tr>
-            <tr><td>K-40</td><td>766.90</td><td>2.812</td><td>1.75</td><td>~0.89</td><td>D2 F=9/2→F'=11/2</td></tr>
+            <tr><td>Cs-133</td><td>852.35</td><td>3.469</td><td>1.102</td><td>~1.10</td><td>D2 F=4→F'=5 (cycling)</td></tr>
+            <tr><td>Li-6</td><td>670.98</td><td>2.150</td><td>2.54</td><td>~0.68</td><td>D2 (approx cycling)</td></tr>
+            <tr><td>Li-7</td><td>670.96</td><td>2.149</td><td>2.54</td><td>~0.68</td><td>D2 (approx cycling)</td></tr>
+            <tr><td>Na-23</td><td>589.16</td><td>1.657</td><td>6.26</td><td>~0.53</td><td>D2 F=2→F'=3 (cycling)</td></tr>
+            <tr><td>K-39</td><td>766.70</td><td>2.807</td><td>1.75</td><td>~0.89</td><td>D2 F=2→F'=3 (cycling)</td></tr>
+            <tr><td>K-40</td><td>766.70</td><td>2.807</td><td>1.75</td><td>~0.89</td><td>D2 F=9/2→F'=11/2</td></tr>
           </tbody>
         </table>
       </div>
@@ -571,7 +571,8 @@
         <div class="accordion-body">
           <p>
             For <strong>single atoms in tweezers</strong>, absorption imaging is typically not used —
-            the OD of one atom in a ~μm² area is OD ~ 10⁻⁴ to 10⁻³, well below any noise floor.
+            even spread over a diffraction-limited ~1 μm² spot, one atom's resonant OD is at most σ₀/A ≈ 0.3,
+            and it absorbs only a handful of photons before it is heated out — far too few against probe shot noise.
             Instead, <em>fluorescence imaging</em> (collecting photons scattered by the atom during a
             detection pulse) is the standard, giving ~50–200 detected photons per atom and a
             detection fidelity &gt; 99%.
@@ -812,12 +813,12 @@
   // σ₀ = 3λ²/2π for cycling transition
   const SPECIES = {
     Rb87:  { name:'Rb-87',  λ:780.24e-9, Γ:2*Math.PI*6.065e6, σ0:2.907e-13, Isat:16.69  },
-    Cs133: { name:'Cs-133', λ:852.11e-9, Γ:2*Math.PI*5.234e6, σ0:3.467e-13, Isat:10.99  },
-    Li6:   { name:'Li-6',   λ:670.98e-9, Γ:2*Math.PI*5.872e6, σ0:2.141e-13, Isat:25.4   },
-    Li7:   { name:'Li-7',   λ:670.98e-9, Γ:2*Math.PI*5.872e6, σ0:2.141e-13, Isat:25.4   },
-    Na23:  { name:'Na-23',  λ:589.00e-9, Γ:2*Math.PI*9.795e6, σ0:1.657e-13, Isat:62.6   },
-    K39:   { name:'K-39',   λ:766.70e-9, Γ:2*Math.PI*6.035e6, σ0:2.812e-13, Isat:17.5   },
-    K40:   { name:'K-40',   λ:766.90e-9, Γ:2*Math.PI*6.035e6, σ0:2.812e-13, Isat:17.5   },
+    Cs133: { name:'Cs-133', λ:852.347e-9, Γ:2*Math.PI*5.234e6, σ0:3.469e-13, Isat:11.02  },
+    Li6:   { name:'Li-6',   λ:670.977e-9, Γ:2*Math.PI*5.872e6, σ0:2.150e-13, Isat:25.4   },
+    Li7:   { name:'Li-7',   λ:670.961e-9, Γ:2*Math.PI*5.872e6, σ0:2.149e-13, Isat:25.4   },
+    Na23:  { name:'Na-23',  λ:589.158e-9, Γ:2*Math.PI*9.795e6, σ0:1.657e-13, Isat:62.6   },
+    K39:   { name:'K-39',   λ:766.70e-9, Γ:2*Math.PI*6.035e6, σ0:2.807e-13, Isat:17.5   },
+    K40:   { name:'K-40',   λ:766.70e-9, Γ:2*Math.PI*6.035e6, σ0:2.807e-13, Isat:17.5   },
   };
 
   const selSp  = document.getElementById('sp-sel');
@@ -844,10 +845,12 @@
     const δOD_tot  = Math.sqrt(δOD_shot*δOD_shot + δOD_read*δOD_read);
     const OD_min   = 3 * δOD_tot;
 
-    // N_min for 10 μm radius cloud
+    // N_min for a 10 μm radius cloud: N = (A_pix/σ)·Σ OD_i over the N_pix pixels covering it,
+    // so per-pixel noise adds in quadrature: σ_N = (A_pix/σ)·δOD·√N_pix.
     const r_cloud = 10e-6; // m
     const A_cloud = Math.PI * r_cloud * r_cloud;
-    const N_min   = OD_min * A_cloud / σ_Δ;
+    const A_roi   = Math.max(A_cloud, A_obj);
+    const N_min   = OD_min * Math.sqrt(A_obj * A_roi) / σ_Δ;
 
     return { σ_Δ, p_obj, N_ph, δOD_shot, δOD_read, δOD_tot, OD_min, N_min };
   }
@@ -891,11 +894,11 @@
     const satEl = document.getElementById('sat-status');
     if (s > 0.5) {
       satEl.innerHTML = `<div class="badge badge-warn">⚠ I/I_sat = ${s.toFixed(2)} — apply saturation correction</div>`;
-    } else if (s > 0.1) {
+    } else if (s > 0.05) {
       satEl.innerHTML = `<div class="badge" style="background:rgba(251,191,36,0.1);border:1px solid rgba(146,106,3,0.3);color:#926a03">
-        ⚠ I/I_sat = ${s.toFixed(2)} — ~${(s*50).toFixed(0)}% saturation error without correction</div>`;
+        ⚠ I/I_sat = ${s.toFixed(2)} — OD reads ~${(100*s/(1+s)).toFixed(0)}% low without saturation correction</div>`;
     } else {
-      satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation correction &lt; 5%</div>`;
+      satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation bias s/(1+s) &lt; 5%</div>`;
     }
 
     updateChart(atom, t_us, p_cam, M, QE, σ_e, ΔΓ);

@@ -524,8 +524,8 @@
           </div>
           <div class="metric-card">
             <div class="metric-val" id="res_FP">—</div>
-            <div class="metric-sym"><span class="tip" data-tip="Purcell factor: ratio of cavity-enhanced to free-space emission. Fₚ = 2C in bad-cavity limit (κ ≫ g₀)">Purcell <em>Fₚ</em></span></div>
-            <div class="metric-unit">= 2C</div>
+            <div class="metric-sym"><span class="tip" data-tip="Purcell factor: rate of emission into the cavity mode (2g₀²/κ) over the free-space rate Γ = 2γ. With C = g₀²/(κγ), Fₚ = C in the bad-cavity limit (κ ≫ g₀)">Purcell <em>Fₚ</em></span></div>
+            <div class="metric-unit">= C</div>
           </div>
           <div class="metric-card">
             <div class="metric-val" id="res_Vmode">—</div>
@@ -557,7 +557,7 @@
           </div>
           <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
             <div class="metric-val" style="font-size:1.1rem" id="res_beta">—</div>
-            <div class="metric-sym"><span class="tip" data-tip="Approximate fraction of spontaneous emission into the cavity mode in the bad-cavity Purcell limit: β = 2C/(1+2C)">β-factor</span></div>
+            <div class="metric-sym"><span class="tip" data-tip="Approximate fraction of spontaneous emission into the cavity mode in the bad-cavity Purcell limit: β = C/(1+C) with C = g₀²/(κγ)">β-factor</span></div>
             <div class="metric-unit">cavity photons</div>
           </div>
           <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
@@ -590,7 +590,7 @@
               <div><b id="cav3d-g">—</b><span>g/2π at the atom (MHz)</span></div>
               <div><b id="cav3d-gf">—</b><span>g / g₀</span></div>
               <div><b id="cav3d-C">—</b><span>cooperativity C at the atom</span></div>
-              <div><b id="cav3d-beta">—</b><span>β = 2C/(1+2C)</span></div>
+              <div><b id="cav3d-beta">—</b><span>β = C/(1+C)</span></div>
             </div>
             <p class="cav3d-note" id="cav3d-note">Schematic along the axis: 9 antinodes drawn; the real cavity has 2L/λ of them. Radial scale is w₀. Near-waist formula (z<sub>R</sub> ≫ L). Drag to turn it.</p>
           </div>
@@ -674,9 +674,10 @@
             <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.8">
               In the <strong>bad-cavity limit</strong> (κ ≫ g₀, κ ≫ γ) the photon leaks out before a coherent Rabi oscillation completes.
               However, when C &gt; 1 the cavity still dramatically enhances the spontaneous emission rate into
-              the cavity mode. The total emission rate becomes Γ_tot = Γ(1 + 2C), and the fraction of photons emitted
-              into the cavity mode is β = 2C/(1 + 2C). This is the <strong>Purcell effect</strong>, with Purcell factor
-              <em>Fₚ = 2C</em>. Applications: efficient single-photon sources, deterministic atom–photon entanglement.
+              the cavity mode. With C = g₀²/(κγ) (κ, γ half-widths), the cavity adds a decay channel 2g₀²/κ = CΓ, so the total
+              emission rate becomes Γ_tot = Γ(1 + C) and the fraction of photons emitted into the cavity mode is
+              β = C/(1 + C). This is the <strong>Purcell effect</strong>, with Purcell factor <em>Fₚ = C</em>. (Papers that
+              use Kimble's C₁ = g₀²/(2κγ) write the same results as 2C₁ and 2C₁/(1 + 2C₁).) Applications: efficient single-photon sources, deterministic atom–photon entanglement.
             </p>
           </div>
         </div>
@@ -723,36 +724,12 @@
                 <td>Cs, 852 nm</td>
                 <td>0.042</td>
                 <td>460 000</td>
-                <td>16</td>
+                <td>23</td>
                 <td>34</td>
                 <td>4.1</td>
                 <td>2.6</td>
-                <td>136</td>
+                <td>108</td>
                 <td><span class="badge-sc">Strong</span></td>
-              </tr>
-              <tr>
-                <td>Vuletic, MIT (2010)</td>
-                <td>Rb-87, 780 nm</td>
-                <td>1.7</td>
-                <td>130 000</td>
-                <td>57</td>
-                <td>10.4</td>
-                <td>0.36</td>
-                <td>3.0</td>
-                <td>32</td>
-                <td><span class="badge-sc">Strong</span></td>
-              </tr>
-              <tr>
-                <td>Thompson, Princeton (2013)</td>
-                <td>Sr-88, 461 nm</td>
-                <td>1.4</td>
-                <td>100 000</td>
-                <td>100</td>
-                <td>3.1</td>
-                <td>0.27</td>
-                <td>16</td>
-                <td>2.2</td>
-                <td><span class="badge-pc">Purcell</span></td>
               </tr>
               <tr>
                 <td>Hood Lab, Purdue (ongoing)</td>
@@ -770,8 +747,9 @@
           </table>
         </div>
         <p style="font-size:0.775rem;color:var(--text-muted);margin-top:var(--sp-3)">
-          g₀ and κ from published papers; γ = Γ/2 from Steck data sheets.
-          Cooperativity C = g₀²/(κγ). <em>Use the calculator above to reproduce these numbers.</em>
+          (g₀, κ, γ)/2π = (34, 4.1, 2.6) MHz for the Caltech Cs cavity (Kimble group); γ = Γ/2 from Steck data sheets.
+          C = g₀²/(κγ) is computed from those rates (papers using C₁ = g₀²/2κγ quote half). The calculator above
+          reproduces g₀ ≈ 34 MHz and κ ≈ 4 MHz from the listed L, ℱ and w₀.
         </p>
 
         <h2 class="section-title mt-8 anim-in"><span class="accent">06</span> Common Mistakes</h2>
@@ -791,7 +769,7 @@
             <strong>Hood Lab context:</strong> Our Li–Cs tweezer experiments don't use a cavity, but cavity QED is
             a natural next step — coupling a single Cs atom in a tweezer to a fiber Fabry–Pérot cavity would allow
             single-photon-level readout without destruction. The key challenge is that the Cs D2 line (γ/2π = 2.6 MHz)
-            requires finesse &gt; 50 000 for even Purcell-regime coupling in a sub-mm cavity.
+            needs a small waist and high finesse: at L = 0.5 mm and w₀ = 25 μm, reaching C = 1 already takes ℱ ≈ 4 400, and κ = g₀ takes ℱ ≈ 1.6×10⁴ (strict strong coupling also needs g₀ &gt; γ, which holds here: 9.4 vs 2.6 MHz).
           </div>
         </div>
 
@@ -919,7 +897,7 @@
         var C = q.C * f.C, lam = q.lam_nm * 1e-9, N = Math.round(2 * q.n * q.L_mm * 1e-3 / lam);
         document.getElementById('cav3d-g').textContent = f3(q.g0 * f.g);
         document.getElementById('cav3d-C').textContent = f3(C);
-        document.getElementById('cav3d-beta').textContent = (100 * 2 * C / (1 + 2 * C)).toFixed(1) + '%';
+        document.getElementById('cav3d-beta').textContent = (100 * C / (1 + C)).toFixed(1) + '%';
         document.getElementById('cav3d-note').innerHTML = 'Schematic along the axis: 9 antinodes drawn; your cavity has 2nL/λ ≈ ' + N.toLocaleString('en-US') +
           '. Radial scale is w₀. Near-waist formula (z<sub>R</sub> ≫ L). Drag to turn it.';
       }
@@ -1010,7 +988,7 @@
       const C = g0_MHz * g0_MHz / (kap_MHz * gam_MHz);
 
       // Purcell factor (bad cavity limit)
-      const FP = 2 * C;
+      const FP = C;   // Γ_cav/Γ = (2g₀²/κ)/(2γ) = g₀²/(κγ) = C in this convention
 
       // Mode volume in units of (λ/2)³
       const halfLam3 = (lam_m / 2) ** 3;
@@ -1023,7 +1001,7 @@
       const N0 = 2 / C;
 
       // Bad-cavity beta factor and finesse threshold for kappa = g0.
-      const beta = (2 * C) / (1 + 2 * C);
+      const beta = C / (1 + C);
       const F_for_k_eq_g = F * kap_MHz / g0_MHz;
 
       // Mirror reflectivity  R from finesse: F(1-R) = π√R → R via quadratic

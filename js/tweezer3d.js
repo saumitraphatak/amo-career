@@ -3,7 +3,7 @@
    Used by pages/tweezer-designer.html (section 03, Array Geometry).
 
    Every dimension comes from the page's own calculator, in micrometres:
-     w0  = 0.52 λ/NA          (beam waist)
+     w0  = (√2/π) λ/NA ≈ 0.45 λ/NA  (1/e² radius, filled pupil)
      zR  = π w0² / λ          (Rayleigh range)
      d, Nx, Ny                (site pitch and array size)
    Each tweezer is drawn as its Gaussian envelope w(z) = w0·√(1 + (z/zR)²)
