@@ -193,4 +193,4 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - **Print:** found with a real-Chart.js print probe (Chart.js 4.4.3 from its GitHub release, SRI stripped in the test only): the fidelity-budget waterfall printed empty (its theme repaint was on the next animation frame), and the zernike atlas/3D surface and polarimetry E-field never drew in unopened chapters. All now draw synchronously on `amo:print`.
   - **release-recapture** runs its default simulation on load and uses a 150 μs window (μs units); phone overflow fixed.
   - Tests: formula tests OK 19; smoke 34 pages × 3 configs vs HEAD: 0 new problems.
-
+  - **remote-entanglement link simulator** (P2 "Barrett–Kok timeline"): attempts → losses → heralds, slow motion and real-time Monte Carlo of the calculator's own η and scheme; measured p agrees with the calculator to within its √N error.

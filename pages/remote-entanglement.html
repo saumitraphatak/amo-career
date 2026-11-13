@@ -296,6 +296,19 @@
     .fid-bar-track { height: 8px; background: var(--bg-card); border-radius: 4px; overflow: hidden; margin-top: .75rem; }
     .fid-bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease, background .3s; }
 
+    /* ── link simulator (attempts → heralds) ───────────────── */
+    .bk-card { background: var(--bg-card); border: 1px solid var(--ent-border); border-radius: 12px; padding: 1.25rem 1.4rem; margin: 1rem 0; }
+    .bk-card h4 { font-size: .88rem; font-weight: 700; color: var(--ent); margin: 0 0 .5rem; }
+    .bk-card p { font-size: .8rem; color: var(--text-secondary); line-height: 1.6; margin: 0 0 .75rem; }
+    #bkCanvas { display: block; width: 100%; max-width: 760px; margin: 0 auto; height: auto; aspect-ratio: 720 / 230; max-height: none !important; border-radius: 8px; border: 1px solid var(--border); }
+    .bk-ctrls { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0 .5rem; }
+    .bk-ctrls button { font: inherit; font-size: .78rem; padding: .35rem .8rem; border-radius: 999px; border: 1px solid var(--ent-border); background: var(--ent-dim); color: var(--text-primary); cursor: pointer; }
+    .bk-ctrls button[aria-pressed="true"] { background: var(--ent); color: #fff; border-color: var(--ent); }
+    .bk-tally { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .5rem; font-family: var(--font-mono); font-size: .76rem; }
+    @media(max-width:640px) { .bk-tally { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    .bk-tally div { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: .45rem .6rem; color: var(--text-secondary); }
+    .bk-tally b { display: block; color: var(--ent); font-size: .9rem; }
+
     /* ── HOM chart ──────────────────────────────────────── */
     .hom-wrap { background: var(--bg-card); border: 1px solid var(--ent-border); border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
     .hom-wrap h4 { font-size: .88rem; font-weight: 700; color: var(--ent); margin: 0 0 .75rem; }
@@ -1201,6 +1214,26 @@
     <p style="font-size:.73rem;color:var(--text-muted);margin:.35rem 0 0;text-align:center" id="r-verdict"></p>
   </div>
 
+  <div class="bk-card" id="link-sim">
+    <h4>Watch the link run: attempts, losses and heralds</h4>
+    <p>A Monte Carlo of the link above, with the same η, scheme and repetition rate. In every attempt of the
+      two-photon scheme both atoms emit a photon; each survives collection, fiber coupling, the fiber and its
+      detector with probability η, and when both arrive the beam-splitter measurement heralds a Bell pair half
+      the time (the other half the photons leave by the same port), so p = η²/2. In the single-photon scheme each
+      atom is excited with probability ε = 0.05 and exactly one detector click heralds, p ≈ 2εη.
+      <b>Slow motion</b> plays one attempt at a time so you can see where photons are lost; <b>Real time</b>
+      runs attempts at the lab repetition rate (one second here is one second of lab time, up to 2×10⁵ attempts
+      per frame) and compares the heralded fraction with the calculator.</p>
+    <canvas id="bkCanvas" width="1440" height="460" aria-label="Schematic of two atom nodes sending photons through fibers to a beam-splitter measurement station; lost photons fade out and successful heralds flash. The running tallies are listed below the figure."></canvas>
+    <div class="bk-ctrls" role="group" aria-label="Link simulation speed">
+      <button type="button" id="bkSlow" aria-pressed="true">Slow motion</button>
+      <button type="button" id="bkFast" aria-pressed="false">Real time</button>
+      <button type="button" id="bkReset">Reset tallies</button>
+    </div>
+    <div class="bk-tally" id="bkTally" aria-live="off"></div>
+    <p style="margin:.5rem 0 0;font-size:.72rem;color:var(--text-muted)">Schematic layout (not to scale). Detector dark counts, timing jitter, multi-photon emission and imperfect HOM visibility are left out, as in the calculator.</p>
+  </div>
+
   <div class="info-box" style="margin-top:.75rem">
     📌 <strong>FTQC requirement:</strong> For surface-code error correction in a modular architecture with physical error rate $p_{\rm link}$ and code distance $d$, the link needs to generate Bell pairs faster than the error-correction cycle time $\sim d \times t_{\rm gate}$. A typical requirement is ~100–1,000 Bell pairs/second per inter-module link. Cavity-enhanced approaches easily satisfy this; free-space approaches are marginal for longer fibers.
   </div>
@@ -1354,6 +1387,8 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=41"></script>
+<script src="../js/canvas-ink.js?v=2"></script>
+<script src="../js/motion.js?v=2"></script>
 <script>
   renderNav({ active: 'remote-entanglement', root: '../' });
 
@@ -1579,6 +1614,7 @@
     }
     const rate = frep * p_success;
     const tpair = 1 / rate;
+    if (window.BKSim) BKSim.setLink({ eta: eta_total, p: p_success, frep, single: bsmFac !== 0.5, eps: 0.05, L_km });
 
     // Update display values
     document.getElementById('r-na-v').textContent  = 'NA = ' + NA.toFixed(2);
@@ -1630,6 +1666,132 @@
   document.querySelectorAll('.approach-head').forEach(h => {
     h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
   });
+
+  /* ─── Link simulator: attempts → heralds (Monte Carlo of the calculator's link) ─── */
+  const BKSim = window.BKSim = (() => {
+    const cv = document.getElementById('bkCanvas');
+    if (!cv) return null;
+    const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
+    const SC = cv.width / 720, W = 720, H = cv.height / SC, XA = 70, XB = W - 70, XC = W / 2, Y = 135;   // drawn in 720-wide units at 2× resolution
+    let link = { eta: 0.01, p: 5e-5, frep: 1e6, single: false, eps: 0.05, L_km: 0.01 };
+    let mode = 'slow', tally, cur = null, lastT = null, flash = 0, flashText = '', fastLast = 0;
+    function reset() {
+      tally = { n: 0, a: 0, b: 0, both: 0, h: 0 };
+      cur = null; flash = 0; render(); draw(lastT || 0);
+    }
+    // one attempt: who emits, who arrives, does the BSM herald?
+    function attempt() {
+      const emitA = link.single ? Math.random() < link.eps : true;
+      const emitB = link.single ? Math.random() < link.eps : true;
+      const arrA = emitA && Math.random() < link.eta, arrB = emitB && Math.random() < link.eta;
+      const herald = link.single ? (arrA !== arrB) : (arrA && arrB && Math.random() < 0.5);
+      return { emitA, emitB, arrA, arrB, herald, lossA: 0.15 + 0.8 * Math.random(), lossB: 0.15 + 0.8 * Math.random() };
+    }
+    function count(r) {
+      tally.n++; if (r.arrA) tally.a++; if (r.arrB) tally.b++; if (r.arrA && r.arrB) tally.both++; if (r.herald) tally.h++;
+    }
+    const fmtN = n => n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e4 ? (n / 1e3).toFixed(1) + 'k' : String(n);
+    function render() {
+      const el = document.getElementById('bkTally'); if (!el) return;
+      const t = tally.n / link.frep, pm = tally.n ? tally.h / tally.n : 0, err = tally.n ? Math.sqrt(tally.h) / tally.n : 0;
+      el.innerHTML =
+        `<div>attempts<b>${fmtN(tally.n)}</b>lab time ${fmtTime(t || 0)}</div>` +
+        `<div>photons detected<b>${fmtN(tally.a)} · ${fmtN(tally.b)}</b>A · B (η = ${fmtPct(link.eta)})</div>` +
+        `<div>heralded pairs<b>${fmtN(tally.h)}</b>${tally.h ? fmtRate(tally.h / t) + ' measured' : 'none yet'}</div>` +
+        `<div>p per attempt<b>${tally.h ? pm.toExponential(2) + ' ± ' + err.toExponential(1) : '—'}</b>calculator ${link.p.toExponential(2)}</div>`;
+    }
+    function photon(x0, x1, f, lostAt, emitted) {
+      if (!emitted) return;
+      const lost = lostAt !== null && f > lostAt;
+      const x = x0 + (x1 - x0) * Math.min(f, lostAt !== null ? lostAt : 1);
+      ctx.globalAlpha = lost ? Math.max(0, 1 - (f - lostAt) * 4) : 1;
+      ctx.fillStyle = '#b45309'; ctx.beginPath(); ctx.arc(x, Y, 6, 0, 2 * Math.PI); ctx.fill();
+      if (lost) { ctx.fillStyle = '#e20b0b'; ctx.font = 'bold 13px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('✗ lost', x, Y - 14); }
+      ctx.globalAlpha = 1;
+    }
+    function draw(t) {
+      ctx.setTransform(SC, 0, 0, SC, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#faf5e9'; ctx.fillRect(0, 0, W, H);
+      // fibers
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+      ctx.beginPath(); ctx.moveTo(XA + 22, Y); ctx.lineTo(XC - 26, Y); ctx.moveTo(XC + 26, Y); ctx.lineTo(XB - 22, Y); ctx.stroke(); ctx.setLineDash([]);
+      // nodes
+      [[XA, 'Node A'], [XB, 'Node B']].forEach(([x, lab]) => {
+        ctx.strokeStyle = '#076ce7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, Y, 20, 0, 2 * Math.PI); ctx.stroke();
+        ctx.fillStyle = '#076ce7'; ctx.beginPath(); ctx.arc(x, Y, 6, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(lab, x, Y + 40);
+      });
+      // beam splitter + detectors
+      ctx.strokeStyle = '#5c503c'; ctx.lineWidth = 2; ctx.strokeRect(XC - 16, Y - 16, 32, 32);
+      ctx.beginPath(); ctx.moveTo(XC - 16, Y + 16); ctx.lineTo(XC + 16, Y - 16); ctx.stroke();
+      const on = flash > 0 && cur && cur.r.herald;
+      [[XC - 40, Y - 58, 'D1'], [XC + 40, Y - 58, 'D2']].forEach(([x, y, lab], i) => {
+        const click = on && (cur.r.single ? (i === (cur.r.arrA ? 0 : 1)) : true);
+        ctx.fillStyle = click ? '#1c805b' : 'rgba(92,80,60,0.15)'; ctx.fillRect(x - 14, y - 10, 28, 20);
+        ctx.fillStyle = '#5c503c'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(lab, x, y + 26);
+      });
+      ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('beam-splitter measurement', XC, Y + 40);
+      ctx.fillText((link.single ? 'single-photon scheme' : 'two-photon scheme') + ' · fiber ' + (link.L_km < 1 ? (link.L_km * 1000).toFixed(0) + ' m' : link.L_km.toFixed(1) + ' km') + ' per arm (schematic)', XC, H - 12);
+      if (mode === 'slow' && cur) {
+        const f = Math.min(1, (t - cur.t0) / 900);
+        photon(XA, XC, f, cur.r.arrA ? null : cur.r.lossA, cur.r.emitA);
+        photon(XB, XC, f, cur.r.arrB ? null : cur.r.lossB, cur.r.emitB);
+      }
+      if (flash > 0) {
+        ctx.globalAlpha = Math.min(1, flash);
+        ctx.fillStyle = flashText.startsWith('♥') ? '#1c805b' : '#8c8066';
+        ctx.font = 'bold 15px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(flashText, XC, 24);
+        ctx.globalAlpha = 1;
+      }
+      if (mode === 'fast') {
+        ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
+        ctx.textAlign = 'left'; ctx.fillText('real time: ' + fmtN(fastLast) + ' attempts per frame', 12, 24);
+      }
+    }
+    function frame(t) {
+      const dt = lastT === null ? 16 : Math.min(100, t - lastT); lastT = t;
+      if (flash > 0) flash -= dt / 900;
+      if (mode === 'slow') {
+        if (!cur || t - cur.t0 > 1500) {
+          const r = attempt(); r.single = link.single; count(r); cur = { r, t0: t }; render();
+        } else if (!cur.done && t - cur.t0 > 900) {
+          cur.done = true;
+          const r = cur.r;
+          flash = 1;
+          flashText = r.herald ? '♥ herald: Bell pair' : (!r.emitA && !r.emitB) ? 'no excitation' :
+            (r.arrA && r.arrB) ? (link.single ? 'two clicks: rejected' : 'same port: no herald') : (link.single && !(r.arrA || r.arrB)) ? 'no click' : 'photon lost: try again';
+        }
+      } else {
+        const k = Math.min(2e5, Math.max(1, Math.round(link.frep * dt / 1000)));
+        let h = 0;
+        for (let i = 0; i < k; i++) { const r = attempt(); count(r); if (r.herald) h++; }
+        fastLast = k;
+        if (h) { flash = 1; flashText = '♥ ' + h + ' herald' + (h > 1 ? 's' : '') + ' this frame'; cur = { r: { herald: true, single: link.single, arrA: true } }; }
+        render();
+      }
+      draw(t);
+    }
+    function setMode(m) {
+      mode = m; cur = null; flash = 0;
+      document.getElementById('bkSlow').setAttribute('aria-pressed', String(m === 'slow'));
+      document.getElementById('bkFast').setAttribute('aria-pressed', String(m === 'fast'));
+    }
+    document.getElementById('bkSlow').addEventListener('click', () => setMode('slow'));
+    document.getElementById('bkFast').addEventListener('click', () => setMode('fast'));
+    document.getElementById('bkReset').addEventListener('click', reset);
+    tally = { n: 0, a: 0, b: 0, both: 0, h: 0 };
+    const tracked = window.AMOInk ? AMOInk.track(frame) : frame;
+    if (window.AMOMotion) AMOMotion.loop(cv, tracked, { anchors: [{ el: document.querySelector('#link-sim .bk-ctrls'), where: 'beforeend' }] });
+    else { const g = ts => { tracked(ts); requestAnimationFrame(g); }; requestAnimationFrame(g); }
+    return {
+      setLink(l) {
+        const changed = l.eta !== link.eta || l.single !== link.single || l.frep !== link.frep;
+        link = l; if (changed) reset(); else render();
+      }
+    };
+  })();
 
   /* ─── Init ─── */
   window.addEventListener('load', () => {
