@@ -60,3 +60,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - Doppler example: v_rms at 5 μK for Rb is 21.9 mm/s (not 8.5), so δφ = 0.57 and ε ≈ 0.16, matching the calculator.
 - C₆/r⁶ at 5 μm is ~6–60 MHz (was "tens to hundreds").
 - The Ω slider did nothing; it now sets t_gate to the time-optimal CZ duration 7.612/Ω (Jandura & Pupillo 2022).
+
+## 2026-11-13 (later): print and load fixes
+- Printing: the waterfall's static repaint (theme switch, print) now draws synchronously instead of on the next animation frame, which the browser never reaches before printing (it printed as "not drawn").

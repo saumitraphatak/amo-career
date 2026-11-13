@@ -147,6 +147,22 @@
     view.onChange(schedule);
     if (window.ResizeObserver) new ResizeObserver(schedule).observe(canvas);
     new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+    // Printing (main.js AMOPrint fires 'amo:print' with the paper theme on): a surface in a
+    // chapter that was never opened has no size, so show its hidden ancestors for a moment,
+    // draw now (the browser prints before the next frame), then put them back. The bitmap
+    // keeps the drawing; the print stylesheet shows the chapter.
+    window.addEventListener('amo:print', function () {
+      if (!spec) return;
+      var forced = [];
+      for (var a = canvas.parentElement; a && a !== document.body; a = a.parentElement) {
+        if (getComputedStyle(a).display !== 'none') continue;
+        forced.push([a, a.style.getPropertyValue('display'), a.style.getPropertyPriority('display')]);
+        a.style.setProperty('display', 'block', 'important');
+      }
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      draw();
+      forced.reverse().forEach(function (f) { if (f[1]) f[0].style.setProperty('display', f[1], f[2]); else f[0].style.removeProperty('display'); });
+    });
 
     return {
       set: function (s) { spec = s; hover = -1; build(); schedule(); },

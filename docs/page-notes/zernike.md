@@ -88,3 +88,6 @@ The four "Recommended workflow" steps open chapters 1–4. The Mode Atlas (chapt
 ## 2026-11-13: physics audit (convention slips)
 - Radial cross-section for m < 0 now taken at θ = π/2|m| (it was θ = π/4, which is identically zero for |m| = 4).
 - GS text: T is an intensity; caption includes the input amplitude A; RMSE text matches the code (normalised to the target peak).
+
+## 2026-11-13 (later): print and load fixes
+- Printing: the mode atlas is built for paper even if its tab was never opened, and the 3D wavefront surface draws synchronously on `amo:print` (surface3d.js v2). Gerchberg–Saxton panels still need a run, so they print the one-line note.

@@ -64,3 +64,6 @@ The custom `.pol-tab-nav` opts in with `data-chapter-panels=".pol-section"`. The
 - RCP/LCP Jones vectors swapped to match the page's own S₃ = 2|Ex||Ey| sin δ convention (RCP has S₃ = +1); note on handedness conventions.
 - Photon tomography: with μ₀ = both PBS ports summed (n₀ = N), Stokes are S₀ = n₀, Sᵢ = 2nᵢ − n₀ (James et al.'s 2(nᵢ − n₀) assumes a 50% filter).
 - Fourier fit sampled 0–360° inclusive (duplicate endpoint biased S₀, S₁ by ~2%); now 0–359°.
+
+## 2026-11-13 (later): print and load fixes
+- Printing: the simulator chapter is set up on `amo:print` if it was never opened, and the E-field canvas draws a frame synchronously (it used to print empty).

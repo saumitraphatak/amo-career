@@ -893,6 +893,34 @@ function initGlobalSearch(root = '') {
     return q.split(/\s+/).reduce((acc, token) => acc + (hay.includes(token) ? 2 : 0) + (entry.title.toLowerCase().includes(token) ? 3 : 0), 0);
   }
 
+  // Section hits: js/search-sections.js (built by tests/browser/build-section-index.js) lists every
+  // page's section headings; it is loaded the first time search opens. Links use #s-<slug>, which
+  // AMOSections resolves on the target page (opening the chapter, tab or accordion that holds it).
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  let sectionsLoading = false;
+  function loadSections() {
+    if (window.AMO_SECTION_INDEX || sectionsLoading) return;
+    sectionsLoading = true;
+    const s = document.createElement('script');
+    s.src = `${root}js/search-sections.js?v=1`;
+    s.onload = () => { if (!modal.hidden) render(input.value); };
+    document.head.appendChild(s);
+  }
+  function sectionMatches(query) {
+    const idx = window.AMO_SECTION_INDEX;
+    if (!idx || query.length < 2) return [];
+    const tokens = query.split(/\s+/).filter(Boolean);
+    const byKey = new Map(entries.map(e => [e.key, e]));
+    return idx.map(x => {
+      const t = x.t.toLowerCase(), page = byKey.get(x.p);
+      const s = tokens.reduce((acc, tok) => acc + (t.includes(tok) ? 3 : 0) + (page && page.keywords.includes(tok) ? 0.5 : 0), 0);
+      const all = tokens.every(tok => t.includes(tok) || (page && page.title.toLowerCase().includes(tok)));
+      return { x, page, s: all ? s : 0 };
+    }).filter(m => m.s >= 3 && m.page)
+      .sort((a, b) => b.s - a.s || a.x.t.length - b.x.t.length)
+      .slice(0, 8);
+  }
+
   function render(q = '') {
     const query = q.trim().toLowerCase();
     const matches = entries
@@ -901,7 +929,7 @@ function initGlobalSearch(root = '') {
       .sort((a, b) => b.s - a.s || a.entry.title.localeCompare(b.entry.title))
       .slice(0, 12);
 
-    results.innerHTML = matches.map(({ entry }) => `
+    const pageHtml = matches.map(({ entry }) => `
       <a class="search-result" href="${entry.href}" data-search-href="${entry.href}">
         <span class="search-result-icon" style="--sr:${entry.color}">${entry.icon}</span>
         <span>
@@ -909,7 +937,20 @@ function initGlobalSearch(root = '') {
           <small>${(SEARCH_KEYWORDS[entry.key] || '').split(' ').slice(0, 8).join(' ')}</small>
         </span>
       </a>
-    `).join('') || '<div class="search-no-results">No matches yet. Try a species, equation, or company name.</div>';
+    `).join('');
+    const secs = sectionMatches(query);
+    const secHtml = secs.length ? `<div class="search-group-label">Sections</div>` + secs.map(({ x, page }) => {
+      const href = `${page.href.split('#')[0]}#${x.s}`;
+      return `
+      <a class="search-result search-result-section" href="${href}" data-search-href="${href}">
+        <span class="search-result-icon" style="--sr:${page.color}" aria-hidden="true">§</span>
+        <span>
+          <strong>${esc(x.t)}</strong>
+          <small>${esc(page.title)}${x.c ? ' · ' + esc(x.c) : ''}</small>
+        </span>
+      </a>`;
+    }).join('') : '';
+    results.innerHTML = (pageHtml + secHtml) || '<div class="search-no-results">No matches yet. Try a species, equation, or company name.</div>';
   }
 
   const panel = modal.querySelector('.global-search-panel'), backdrop = modal.querySelector('.global-search-backdrop');
@@ -918,6 +959,7 @@ function initGlobalSearch(root = '') {
     modal.hidden = false;
     document.body.classList.add('search-open');
     render(input.value);
+    loadSections();
     AMOTransitions.enter(panel, 'translateY(-10px) scale(.985)');
     AMOTransitions.enter(backdrop, 'none');
     setTimeout(() => input.focus(), 20);
@@ -939,8 +981,16 @@ function initGlobalSearch(root = '') {
   results.addEventListener('click', e => {
     const a = e.target.closest('a.search-result');
     if (!a) return;
-    const entry = entries.find(x => normalizeHref(x.href) === normalizeHref(a.href));
-    recordRecentTool(entry);
+    const entry = entries.find(x => normalizeHref(x.href) === normalizeHref(a.href.split('#')[0]) || normalizeHref(x.href) === normalizeHref(a.href));
+    if (entry) recordRecentTool(entry);
+    // a section on the page we are already on: resolve it here (no navigation, maybe no hashchange)
+    const u = new URL(a.href, location.href);
+    if (u.pathname === location.pathname && u.hash) {
+      e.preventDefault();
+      closeSearch();
+      if (/^#s-/.test(u.hash)) { history.pushState(null, '', u.hash); AMOSections.go(u.hash.slice(1)); }
+      else location.hash = u.hash;   // chapters (#ch-…) and ids: AMOChapters / the browser handle it
+    }
   });
 
   document.addEventListener('keydown', e => {
@@ -2410,7 +2460,7 @@ const AMOChapters = (() => {
   }
 
   return { init, reveal, offsetFor, activate: (i, opts) => models[0] && activate(models[0], i, opts),
-           models: () => models.map(m => ({ panels: m.panels.slice(), titles: m.titles.slice() })) };
+           models: () => models.map(m => ({ panels: m.panels.slice(), titles: m.titles.slice(), slugs: m.slugs.slice() })) };
 })();
 window.AMOChapters = AMOChapters;
 
@@ -2421,6 +2471,96 @@ window.AMOCareer = {
   downloadText,
   recordRecentTool,
 };
+
+/* ─────────────────────────────────────────────────────
+   SECTION ANCHORS for search: #s-<slug>
+   Every section heading gets a stable address made from its own text, so the
+   search index needs no ids in the HTML. collect() lists the headings (used
+   by tests/browser/build-section-index.js to write js/search-sections.js);
+   go(slug) finds the heading, opens the chapter / tab / accordion holding it
+   and scrolls to it. Maths is dropped from the text (KaTeX may or may not
+   have run), so the slug is the same on every load.
+   ───────────────────────────────────────────────────── */
+const AMOSections = (() => {
+  const SEL = 'h2, h3, .section-title, .sec-title, .tech-section-title, .rb-section-title, .pol-h2, .accordion-header';
+  const SKIP = 'nav, footer, .global-search, .see-also, .related-tools, .print-only, [aria-hidden="true"], .hero, .page-hero, .cite-panel, .feedback-panel';
+  const GENERIC = /^(sources|references|further reading|see also)$/i;
+  const textOf = el => {
+    const c = el.cloneNode(true);
+    c.querySelectorAll('.katex, svg, .accent, .accordion-chevron, script, style, .tip-bubble').forEach(n => n.remove());
+    return c.textContent.replace(/\$[^$]*\$/g, ' ').replace(/\s+/g, ' ').trim()
+      .replace(/^[^\p{L}\p{N}(]+/u, '').replace(/^(?:§\s*)?\d{1,2}[.:)]?\s+(?=\S)/, '').trim();
+  };
+  const slugOf = t => 's-' + t.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64).replace(/-+$/, '');
+  function list() {
+    const main = document.getElementById('main-content') || document.body, seen = new Map(), out = [];
+    main.querySelectorAll(SEL).forEach(el => {
+      if (el.closest(SKIP) || el.parentElement.closest(SEL)) return;
+      const t = textOf(el);
+      if (t.length < 3 || t.length > 120 || GENERIC.test(t)) return;
+      let s = slugOf(t);
+      if (s.length < 4) return;
+      const n = (seen.get(s) || 0) + 1; seen.set(s, n);
+      if (n > 1) s += '-' + n;
+      out.push({ el, t, s });
+    });
+    return out;
+  }
+  function chapterOf(el) {
+    const models = window.AMOChapters && AMOChapters.models ? AMOChapters.models() : [];
+    for (const m of models) { const i = m.panels.findIndex(p => p.contains(el)); if (i >= 0) return m.titles[i]; }
+    return '';
+  }
+  // headings, plus each chapter itself (its #ch-… address is handled by AMOChapters)
+  function collect() {
+    const models = window.AMOChapters && AMOChapters.models ? AMOChapters.models() : [];
+    const chapters = [];
+    models.forEach(m => m.titles.forEach((t, i) => chapters.push({ t, s: m.slugs[i], c: 'Chapter ' + (i + 1) + ' of ' + m.titles.length })));
+    return chapters.concat(list().map(({ el, t, s }) => ({ t, s, c: chapterOf(el) })));
+  }
+  function go(slug) {
+    let el = document.getElementById(slug);
+    if (!el) {
+      const hit = list().find(x => x.s === slug);
+      if (!hit) return false;
+      el = hit.el;
+      if (!el.id) el.id = slug;
+    }
+    if (window.AMOChapters) AMOChapters.reveal(el);
+    // plain tab bars (not chapters): click the tab that owns the panel
+    const tp = el.closest('.tab-panel[data-tab]');
+    if (tp && !tp.classList.contains('active')) {
+      const wrap = tp.closest('[data-tabs-wrap]') || document;
+      const btn = Array.from(wrap.querySelectorAll('.tab-btn[data-tab]')).find(b => b.dataset.tab === tp.dataset.tab &&
+        (!tp.dataset.group || !b.closest('.tab-bar') || b.closest('.tab-bar').dataset.group === tp.dataset.group));
+      if (btn) btn.click();
+    }
+    // a closed accordion: open it (its header is the target, or holds it)
+    const acc = el.matches('.accordion-header') ? el : null;
+    if (acc && acc.getAttribute('aria-expanded') === 'false') acc.click();
+    const parentAcc = el.closest('.accordion');
+    if (!acc && parentAcc) { const h = parentAcc.querySelector('.accordion-header[aria-expanded="false"]'); if (h) h.click(); }
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const offset = 80 + (window.AMOChapters ? AMOChapters.offsetFor(el) : 0);
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset - 8, behavior: 'auto' });
+      el.classList.add('section-flash');
+      setTimeout(() => el.classList.remove('section-flash'), 1600);
+    }));
+    return true;
+  }
+  function fromHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (/^s-/.test(h)) go(h);
+  }
+  function init() {
+    if (document.readyState === 'complete') setTimeout(fromHash, 0);
+    else window.addEventListener('load', () => setTimeout(fromHash, 0), { once: true });
+    window.addEventListener('hashchange', fromHash);
+  }
+  return { init, collect, go, slugOf };
+})();
+window.AMOSections = AMOSections;
 
 /* ─────────────────────────────────────────────────────
    INIT — run everything on DOMContentLoaded
@@ -2435,6 +2575,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDerivationToggles();
   initPagePlaybookPanel();
   AMOChapters.init();
+  AMOSections.init();
   initRelatedToolsPanel();
   initShareableCalculatorParams();
   initPaperToolBridge();

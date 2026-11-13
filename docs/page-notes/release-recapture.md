@@ -58,3 +58,8 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-11-13: physics audit (convention slips)
 - **Trap depth factor 2:** `U0 = α·I/(c ε₀)` → `α·I/(2cε₀)` (Grimm Eq. 2) in code and formula. Default Cs depth 703 → 351 μK, ω_r/2π 83 → 59 kHz.
 - Red/blue detuning sentence corrected; binomial standard error is ≤ 0.5/√600 ≈ 2% (was "1/√600 ≈ 4%").
+
+## 2026-11-13 (later): print and load fixes
+- The default simulation now runs on page load, so the survival curves, table and 3D release view are on screen (and on paper) at once; Run re-runs with new settings.
+- Release-time window in μs, default 150 μs (was 3 ms): after the depth fix (U₀ = αI/2ε₀c) the default curves fall to ½ in 14–61 μs, which a 3 ms window could not resolve. Half-lives, chart axis and the 3D slider read in μs.
+- Phone layout: the results grid lets the summary table scroll inside its card (the page was 396 px wide at 390 px once results showed).

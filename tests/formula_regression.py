@@ -407,6 +407,25 @@ def test_physics_audit_2026_11() -> None:
     assert_contains("pages/learn-quantum.html", "label: `d=${d} (${2*d*d-1} qubits)`,")
 
 
+def test_section_search_index() -> None:
+    """Site search lists sections from js/search-sections.js (built by
+    tests/browser/build-section-index.js). Every entry must point at an existing page,
+    use an address the pages resolve (#s-… by AMOSections, #ch-… by AMOChapters),
+    and be unique per page."""
+    import json, re
+    text = read("js/search-sections.js")
+    rows = [json.loads(l.strip().rstrip(",")) for l in text.splitlines() if l.strip().startswith('{"p"')]
+    assert len(rows) > 300, len(rows)
+    seen = set()
+    for r in rows:
+        assert (ROOT / "pages" / f"{r['p']}.html").exists(), r
+        assert re.fullmatch(r"(s|ch)-[a-z0-9-]+", r["s"]), r
+        assert (r["p"], r["s"]) not in seen, r
+        seen.add((r["p"], r["s"]))
+    assert_contains("js/main.js", "const AMOSections = (() => {")
+    assert_contains("js/main.js", "js/search-sections.js?v=")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -427,6 +446,7 @@ def main() -> None:
         test_hand_typed_counts_match_content,
         test_zernike_psf_centred_and_piston_free,
         test_physics_audit_2026_11,
+        test_section_search_index,
     ]
     for test in tests:
         test()

@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Single-atom Temperature","description":"Interactive release-recapture thermometry simulator, estimate atom temperature from recapture probability in optical tweezers.","url":"https://amotoolkit.com/pages/release-recapture.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Trap, Image & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Single-atom Temperature","item":"https://amotoolkit.com/pages/release-recapture.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=28">
+  <link rel="stylesheet" href="../css/styles.css?v=29">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -119,7 +119,8 @@
     .results-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem;
     }
-    @media(max-width: 800px) { .results-grid { grid-template-columns: 1fr; } }
+    @media(max-width: 800px) { .results-grid { grid-template-columns: minmax(0, 1fr); } }
+    .results-grid > * { min-width: 0; }   /* the summary table scrolls inside its card on phones */
 
     .chart-card {
       background: var(--bg-surface); border: 1px solid #1e293b;
@@ -461,8 +462,8 @@
           </select>
         </div>
         <div class="ctrl-field">
-          <label for="dtMaxIn">Max release time (ms)</label>
-          <input type="number" id="dtMaxIn" value="3" min="0.5" max="20" step="0.5">
+          <label for="dtMaxIn">Max release time (μs)</label>
+          <input type="number" id="dtMaxIn" value="150" min="10" max="20000" step="10">
         </div>
         <div class="ctrl-field">
           <label for="nStepsSel">Time steps</label>
@@ -493,7 +494,7 @@
 
       <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
         <button class="run-btn" id="runBtn" onclick="runSimulation()">▶ Run Simulation</button>
-        <div class="sim-status" id="simStatus">Configure parameters and press Run.</div>
+        <div class="sim-status" id="simStatus">Running the default settings… change any parameter and press Run.</div>
       </div>
 
       <!-- Trajectory canvas -->
@@ -502,7 +503,7 @@
           <h5>Atom Trajectory Snapshot</h5>
           <p style="font-size:.8rem;color:var(--text-muted);margin:.2rem 0 .6rem 0;">Drag the slider to change release time τ. Green = recaptured, red = escaped. The view is true to scale in 3D (tweezer axis vertical, along gravity, as in the Monte Carlo); drag the figure to turn it.</p>
           <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap;">
-            <label for="trajSlider" style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#b75404;">0.00 ms</strong></label>
+            <label for="trajSlider" style="font-size:.82rem;color:var(--text-muted);min-width:120px;">Release time τ: <strong id="trajTauLabel" style="color:#b75404;">0.0 μs</strong></label>
             <input type="range" id="trajSlider" min="0" max="100" value="0" step="1" style="flex:1;min-width:120px;accent-color:#b75404;">
             <button class="run-btn" id="playTrajBtn" type="button" onclick="toggleTrajPlay()" style="padding:.45rem .75rem;font-size:.78rem;">▶ Play</button>
           </div>
@@ -527,7 +528,7 @@
                   <th scope="col">T (μK)</th>
                   <th scope="col">P_cap(0)</th>
                   <th scope="col">P_cap(t_max)</th>
-                  <th scope="col">½-life (ms)</th>
+                  <th scope="col">½-life (μs)</th>
                 </tr>
               </thead>
               <tbody id="sumBody"></tbody>
@@ -650,7 +651,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=40"></script>
+<script src="../js/main.js?v=41"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/cloud3d.js?v=1"></script>
 <script>
@@ -781,7 +782,7 @@ function runMC(tp, T_uK, N_MC, t_max_s, nSteps) {
       if (KE < U_f) recap++;
     }
 
-    times.push(dt * 1e3);         // in ms
+    times.push(dt * 1e6);         // in μs
     survival.push(recap / N_MC);
   }
 
@@ -792,6 +793,10 @@ function runMC(tp, T_uK, N_MC, t_max_s, nSteps) {
 let survChart = null;
 const COLORS = ['#fb923c','#60a5fa','#34d399','#f472b6','#fbbf24','#a78bfa'];
 
+// Show the default run as soon as the page loads, so the survival curves and the
+// release animation are on screen (and on paper) before anyone presses Run.
+window.addEventListener('load', () => setTimeout(() => { if (!survChart) runSimulation(); }, 200));
+
 function runSimulation() {
   const sp     = SPECIES[document.getElementById('speciesSel').value];
   const lambda = parseFloat(document.getElementById('lambdaIn').value)  * 1e-9;
@@ -799,7 +804,7 @@ function runSimulation() {
   const w0     = parseFloat(document.getElementById('waistIn').value)   * 1e-6;
   const strehl = parseFloat(document.getElementById('strehlIn').value);
   const N_MC   = parseInt(document.getElementById('mcNSel').value);
-  const dt_max = parseFloat(document.getElementById('dtMaxIn').value)   * 1e-3;
+  const dt_max = parseFloat(document.getElementById('dtMaxIn').value)   * 1e-6;
   const nSteps = parseInt(document.getElementById('nStepsSel').value);
 
   if (temps_uK.length === 0) { alert('Add at least one temperature.'); return; }
@@ -828,7 +833,7 @@ function runSimulation() {
         `I_peak:   ${(tp.I_peak/1e9).toFixed(2)} GW/m²`,
         `U₀:       ${U0_uK.toFixed(0)} μK`,
         `ωᵣ/2π:   ${wr_kHz.toFixed(1)} kHz`,
-        `ωᵤ/2π:   ${wz_kHz.toFixed(2)} kHz`,
+        `ω_z/2π:   ${wz_kHz.toFixed(2)} kHz`,
         `z_R:      ${zR_um.toFixed(2)} μm`,
       ].join('<br>');
 
@@ -850,7 +855,7 @@ function runSimulation() {
             const t0 = r.times[i-1], t1 = r.times[i];
             const p0_ = r.survival[i-1], p1_ = r.survival[i];
             const tH = t0 + (0.5 - p0_)/(p1_ - p0_) * (t1 - t0);
-            halfLife = tH.toFixed(2) + ' ms';
+            halfLife = tH.toFixed(1) + ' μs';
             break;
           }
         }
@@ -863,7 +868,7 @@ function runSimulation() {
       survChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: allResults[0].times.map(t => t.toFixed(2)),
+          labels: allResults[0].times.map(t => t.toFixed(t < 100 ? 1 : 0)),
           datasets: allResults.map(r => ({
             label: `T = ${r.T} μK`,
             data: r.survival,
@@ -887,7 +892,7 @@ function runSimulation() {
           },
           scales: {
             x: {
-              title: { display: true, text: 'Release time Δt (ms)', color: '#5c503c' },
+              title: { display: true, text: 'Release time Δt (μs)', color: '#5c503c' },
               ticks: { color: '#64748b', maxTicksLimit: 8 },
               grid: { color: '#1e293b' }
             },
@@ -979,14 +984,14 @@ function drawTrajCanvas() {
   if (!cv || !_trajTp) return;
   const tp = _trajTp;
   const dt = (parseInt(slider.value)/100) * _trajTmax;
-  document.getElementById('trajTauLabel').textContent = (dt*1e3).toFixed(3) + ' ms';
+  document.getElementById('trajTauLabel').textContent = (dt*1e6).toFixed(1) + ' μs';
   if (!_traj3d && window.AMO3D && AMO3D.atomCloud) _traj3d = AMO3D.atomCloud(cv, { el: 0.18 });
   let nRecap = 0;
   const pts = _trajAtoms.map(a => { const s = trajAtomAt(a, dt, tp); if (s.ok) nRecap++; return { x: s.x, y: s.y, z: s.z, k: s.ok ? 'in' : 'out' }; });
   const pRecap = (nRecap/_trajAtoms.length*100).toFixed(1);
   if (_traj3d) _traj3d.render({
     points: pts, center: [0, 0, 0], halfSpan: 8*tp.w0, beam: { w0: tp.w0, zR: tp.zR }, gravity: true,
-    caption: 'τ = ' + (dt*1e3).toFixed(3) + ' ms\nP_cap ≈ ' + pRecap + '%  (' + nRecap + ' of ' + _trajAtoms.length + ')'
+    caption: 'τ = ' + (dt*1e6).toFixed(1) + ' μs\nP_cap ≈ ' + pRecap + '%  (' + nRecap + ' of ' + _trajAtoms.length + ')'
   });
   document.getElementById('trajInfo').textContent =
     'w₀='+( tp.w0*1e6).toFixed(2)+'μm · U₀='+(tp.U0/kB*1e6).toFixed(0)+'μK · ωᵣ/2π='+(tp.wr/(2*Math.PI)/1e3).toFixed(1)+'kHz · P_cap ≈ '+pRecap+'%';
