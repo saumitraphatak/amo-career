@@ -93,3 +93,10 @@ Part of the sitewide 390 px overflow fix (see `docs/overnight-log.md`). Checked 
 ## 2026-09-29 (overnight): hero icon matches the rest of the site
 - Hero badge icon 🔗 (copied from quantinuum-vs-ionq) → 💡, the NAV / start-here icon.
 - Why now: the new shared-element transition flies a clicked card's icon into the hero icon, and only when both show the same glyph. A scan of all 32 pages found 7 heroes whose icon disagreed with NAV/home/start-here; all now agree.
+
+## Science-content audit (2026-10-26, rotation)
+Four additive, same-month funding/partnership items, one per company per topic:
+- PsiQuantum: the U.S. Department of War's Office of Strategic Capital conditionally committed up to $150M (Oct 8 2026) toward the Milpitas, CA manufacturing hub — added as a timeline entry, a Business-section bullet, and a new Ecosystem company-card. Worded as conditional/not-yet-disbursed throughout, and kept separate from the existing Sept-2026 $100M CHIPS Act figure rather than summed into one number, since the two are different instruments from different agencies.
+- Xanadu: a multi-year GlobalFoundries manufacturing partnership (Oct 6 2026, 300mm Malta NY fab, SNSPDs + SiN photonics) and a $10M DARPA Quantum Benchmarking Initiative extension (Oct 20 2026) — added as two timeline entries, two Business-section bullets, and a new Ecosystem company-card. Noted in both companies' GlobalFoundries cards that the two companies now share a manufacturing partner (PsiQuantum's existing card already named GlobalFoundries; this wasn't previously cross-referenced).
+Noticed, not pursued: this page's PsiQuantum section still doesn't mention the Sept-2026 CHIPS Act $100M award that qc-landscape.html's PsiQuantum flash-card already carries — a pre-existing cross-page gap from before this rotation's window, left for a future cross-page-consistency pass rather than folded into today's science-content scope.
+All four facts independently re-verified against primary/near-primary sources (company press releases, SEC filing context) before writing.
