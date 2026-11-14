@@ -424,6 +424,7 @@ const NAV = {
     { key: 'quantum-algorithms', label: 'Quantum Algorithms',    icon: '⚙️',  href: 'pages/learn-quantum.html#algorithms'   },
     { key: 'analog-sim',         label: 'Analog Simulation',     icon: '🔬',  href: 'pages/learn-quantum.html#analog-sim'   },
     { key: 'qec',                label: 'Error Correction',      icon: '🛡️',  href: 'pages/learn-quantum.html#qec'            },
+    { key: 'magic-states',       label: 'Magic States',          icon: '✨',  href: 'pages/learn-quantum.html#magic'          },
   ],
 };
 
@@ -755,7 +756,7 @@ const SEARCH_KEYWORDS = {
   'tweezer-designer': 'optical tweezer array SLM AOD hologram trap depth waist spacing single atom loading',
   'absorption-imaging': 'absorption imaging Beer-Lambert optical density column density atom number resonant off-resonant saturation phase contrast dispersive imaging non-destructive Andrews dense cloud SLM phase mask',
   'decoherence-lab': 'T1 T2 T2 star dephasing dissipation Bloch sphere Ramsey echo optical Bloch equations relaxation',
-  'remote-entanglement': 'remote entanglement photon collection heralded Bell state fiber link loss budget entanglement swapping',
+  'remote-entanglement': 'remote entanglement photon collection heralded Bell state fiber link loss budget entanglement swapping distillation purification',
   'bloch-sphere': 'Bloch sphere qubit state vector superposition rotation',
   'quantum-gates': 'quantum gates Hadamard Pauli X Y Z CNOT T-gate circuit',
   'superposition': 'superposition Born rule probability amplitude measurement collapse',
@@ -768,6 +769,7 @@ const SEARCH_KEYWORDS = {
   'hyperfine-qubits': 'hyperfine qubits clock states Zeeman shift Rb87 Cs133 qubit transitions',
   'optical-pumping': 'optical pumping selection rules population transfer three-level system',
   'qec': 'quantum error correction bit-flip Shor code surface code threshold theorem',
+  'magic-states': 'magic state T gate non-Clifford Clifford Gottesman-Knill stabilizer distillation cultivation gate teleportation universality',
   'quantum-algorithms': 'quantum algorithms Deutsch-Jozsa Grover Shor VQE',
   'analog-sim': 'analog simulation Hubbard model Ising Hamiltonian BEC-BCS crossover',
   'start-here': 'site map directory start here where to begin guided paths recommended order navigation overview',

@@ -236,6 +236,21 @@
 
     /* ─── Hyperfine / QEC tables ─────────────────────── */
     table.hf-table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+    /* Magic-states section: circuit figures and comparison table */
+    .mg-fig { margin: 0; background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: .75rem .9rem; }
+    .mg-fig figcaption { font-size: .8rem; color: var(--text-secondary); margin-bottom: .35rem; }
+    .mg-fig svg { display: block; width: 100%; max-width: 460px; height: auto; margin: 0 auto; }
+    .mg-ink { stroke: var(--text-secondary); }
+    .mg-cliff { stroke: #076ce7; }
+    .mg-cliff-fill { fill: #076ce7; }
+    .mg-t { font: 13px 'JetBrains Mono', ui-monospace, monospace; fill: var(--text-primary); }
+    .mg-b { font-weight: 700; fill: #076ce7; }
+    .mg-s { font: 10.5px Inter, system-ui, sans-serif; fill: var(--text-muted); }
+    .mg-magic { fill: #7a4ff7; }
+    [data-theme="dark"] .mg-cliff { stroke: #60a5fa; } [data-theme="dark"] .mg-cliff-fill, [data-theme="dark"] .mg-b { fill: #60a5fa; }
+    [data-theme="dark"] .mg-magic { fill: #a78bfa; }
+    .mg-table td:first-child { white-space: nowrap; }
+    .mg-table td { vertical-align: top; line-height: 1.55; }
     table.hf-table th { background: var(--bg-surface); color: var(--text-muted); padding: .4rem .6rem; border: 1px solid #1e293b; font-weight: 600; text-align: left; }
     table.hf-table td { padding: .38rem .6rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
     table.hf-table tr:hover td { background: var(--bg-surface); }
@@ -384,6 +399,7 @@
   <a href="#algorithms">⚙️ Algorithms</a>
   <a href="#analog-sim">🔬 Analog Sim</a>
   <a href="#qec">🛡️ QEC</a>
+  <a href="#magic">✨ Magic States</a>
   <a href="#resources">📚 Resources</a>
 </nav>
 
@@ -1610,6 +1626,206 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
 
 <hr class="section-divider">
 
+<!-- ══════════ 15. MAGIC STATES ══════════ -->
+<section class="topic-section" id="magic">
+  <div class="topic-header">
+    <span class="t-icon">✨</span>
+    <h2>Magic States &amp; the Clifford Trap</h2>
+    <span class="t-tag">why entanglement is not enough</span>
+  </div>
+
+  <div class="theory-box">
+    <h4>The paradox: superposition + entanglement is not a quantum advantage</h4>
+    <p>
+      A Hadamard makes superposition and a CNOT makes a maximally entangled Bell state, yet any circuit built only
+      from <strong>Clifford gates</strong> (H, S, CNOT or CZ, Paulis, Pauli measurements) on stabilizer inputs can be
+      simulated efficiently on a laptop: the <strong>Gottesman–Knill theorem</strong>. The trick is that such a state is
+      fully described by N stabilizers (for the Bell state, X⊗X and Z⊗Z), a table of about 4N² bits that updates in
+      polynomial time per gate (Aaronson &amp; Gottesman 2004), instead of 2<sup>N</sup> complex amplitudes. To outrun
+      classical computers you also need <strong>non-Clifford</strong> operations, and in a fault-tolerant machine those
+      come from consumable <strong>magic states</strong>.
+    </p>
+  </div>
+
+  <!-- Two circuits: the Clifford Bell-state circuit and the T-gate teleportation gadget -->
+  <div class="two-col" style="margin-bottom:1rem;">
+    <figure class="mg-fig">
+      <figcaption><b>The Clifford trap</b> · classically simulable</figcaption>
+      <svg viewBox="0 0 380 150" role="img" aria-labelledby="mgC1t">
+        <title id="mgC1t">Two qubits start in |0⟩; a Hadamard on the first and a CNOT from the first to the second make the Bell state (|00⟩ + |11⟩)/√2, whose stabilizers are X⊗X and Z⊗Z.</title>
+        <g class="mg-ink" stroke-width="1.6" fill="none">
+          <line x1="44" y1="45" x2="230" y2="45"/><line x1="44" y1="105" x2="230" y2="105"/>
+          <rect x="76" y="31" width="28" height="28" rx="3" class="mg-cliff"/>
+          <line x1="150" y1="45" x2="150" y2="117" class="mg-cliff"/>
+          <circle cx="150" cy="105" r="12" class="mg-cliff"/><line x1="138" y1="105" x2="162" y2="105" class="mg-cliff"/>
+        </g>
+        <circle cx="150" cy="45" r="5" class="mg-cliff-fill"/>
+        <text x="40" y="49" text-anchor="end" class="mg-t">|0⟩</text>
+        <text x="40" y="109" text-anchor="end" class="mg-t">|0⟩</text>
+        <text x="90" y="50" text-anchor="middle" class="mg-t mg-b">H</text>
+        <text x="90" y="80" text-anchor="middle" class="mg-s">superposition</text>
+        <text x="150" y="138" text-anchor="middle" class="mg-s">entanglement</text>
+        <text x="238" y="72" class="mg-t">(|00⟩+|11⟩)/√2</text>
+        <text x="238" y="90" class="mg-s">stabilizers</text>
+        <text x="238" y="104" class="mg-s">X⊗X, Z⊗Z</text>
+      </svg>
+    </figure>
+    <figure class="mg-fig">
+      <figcaption><b>Breaking out</b> · inject a magic state to apply T</figcaption>
+      <svg viewBox="0 0 380 150" role="img" aria-labelledby="mgC2t">
+        <title id="mgC2t">T-gate teleportation: the data qubit |ψ⟩ controls a CNOT onto an ancilla prepared in the magic state |T⟩; the ancilla is measured in Z; if the outcome is 1 an S gate is applied to the data qubit, which is left in T|ψ⟩.</title>
+        <g transform="translate(50,0)"><g class="mg-ink" stroke-width="1.6" fill="none">
+          <line x1="44" y1="45" x2="248" y2="45"/><line x1="44" y1="105" x2="170" y2="105"/>
+          <line x1="110" y1="45" x2="110" y2="117" class="mg-cliff"/>
+          <circle cx="110" cy="105" r="12" class="mg-cliff"/><line x1="98" y1="105" x2="122" y2="105" class="mg-cliff"/>
+          <rect x="170" y="91" width="34" height="28" rx="3"/>
+          <path d="M175 113 a12 12 0 0 1 24 0"/><line x1="187" y1="113" x2="196" y2="98"/>
+          <line x1="204" y1="103" x2="219" y2="103"/><line x1="204" y1="107" x2="219" y2="107"/>
+          <line x1="219" y1="103" x2="219" y2="59"/><line x1="223" y1="107" x2="223" y2="59"/>
+          <rect x="207" y="31" width="28" height="28" rx="3" class="mg-cliff"/>
+        </g>
+        <circle cx="110" cy="45" r="5" class="mg-cliff-fill"/>
+        <text x="40" y="49" text-anchor="end" class="mg-t">|ψ⟩</text>
+        <text x="40" y="109" text-anchor="end" class="mg-t mg-magic">|T⟩</text>
+        <text x="221" y="50" text-anchor="middle" class="mg-t mg-b">S</text>
+        <text x="236" y="80" class="mg-s">if m = 1</text>
+        <text x="187" y="138" text-anchor="middle" class="mg-s">measure Z → m</text>
+        <text x="254" y="49" class="mg-t">T|ψ⟩</text>
+        </g><text x="52" y="130" class="mg-s mg-magic">magic state</text><text x="52" y="142" class="mg-s mg-magic">(non-Clifford fuel)</text>
+      </svg>
+    </figure>
+  </div>
+  <p style="font-size:.8rem; color:var(--text-muted); margin:-.4rem 0 1rem;">
+    Check of the gadget: with |ψ⟩ = a|0⟩ + b|1⟩ and |T⟩ = (|0⟩ + e<sup>iπ/4</sup>|1⟩)/√2, the CNOT gives
+    a|0⟩(|0⟩ + e<sup>iπ/4</sup>|1⟩) + b|1⟩(|1⟩ + e<sup>iπ/4</sup>|0⟩). Outcome m = 0 leaves a|0⟩ + b e<sup>iπ/4</sup>|1⟩ = T|ψ⟩;
+    m = 1 leaves T<sup>†</sup>|ψ⟩, and S T<sup>†</sup> = T. Only Clifford operations touch the data qubit.
+  </p>
+
+  <!-- Live demo: Clifford grid vs universal gate set -->
+  <div class="chart-card" style="margin-bottom:1rem;">
+    <h5>Random gate sequences from |0⟩: where can the qubit go?</h5>
+    <div class="two-col mg-demo">
+      <div class="bloch-wrap">
+        <canvas id="mgCliffCanvas" width="260" height="280" data-export-ready="true" aria-label="Bloch sphere visited by random H and S gates: the state only ever lands on the six stabilizer states at the tips of the octahedron. The count is given below."></canvas>
+        <div class="bloch-state"><b style="color:#e20b0b">Clifford {H, S}</b>: <span id="mgCliffInfo">—</span></div>
+      </div>
+      <div class="bloch-wrap">
+        <canvas id="mgUnivCanvas" width="260" height="280" data-export-ready="true" aria-label="Bloch sphere visited by random H and T gates: the states spread over the whole sphere. The coverage is given below."></canvas>
+        <div class="bloch-state"><b style="color:#076ce7">Clifford + T {H, T}</b>: <span id="mgUnivInfo">—</span></div>
+      </div>
+    </div>
+    <div style="display:flex; gap:.5rem; justify-content:center; margin-top:.5rem;">
+      <button class="gate-btn" type="button" id="mgRestart">Restart both walks</button>
+    </div>
+    <p style="font-size:.78rem; color:var(--text-muted); margin:.6rem 0 0; line-height:1.6;">
+      Each step applies a random gate from the set. H and S only make 90° and 180° turns, so the state hops among the
+      six vertices of the <em>stabilizer octahedron</em> (dashed), the 24 rotations of the single-qubit Clifford group.
+      T is a 45° turn about z; combined with H it gives a rotation by an angle that is an irrational multiple of π, so the
+      states it reaches fill the sphere densely: that is universality. The purple dot marks |T⟩ = T|+⟩ on the equator at
+      φ = 45°, outside the octahedron. Drag a sphere to rotate it.
+    </p>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="theory-box">
+        <h4>Magic states</h4>
+        <p>
+          Clifford gates map the six cardinal states (±x, ±y, ±z on the Bloch sphere) onto each other; their convex hull
+          is the stabilizer octahedron. Any state outside it is <strong>magic</strong>: it cannot be made by
+          Clifford operations on stabilizer states, even with measurements and classical feed-forward. The standard fuel is
+          $$|T\rangle = T|+\rangle = \tfrac{1}{\sqrt2}\left(|0\rangle + e^{i\pi/4}|1\rangle\right).$$
+          One |T⟩ plus the Clifford gadget above applies one T gate. Bravyi &amp; Kitaev (2005) showed that ideal Clifford
+          operations plus noisy copies of such states are enough for universal computation, provided the copies can be purified.
+          (Naming varies: Bravyi &amp; Kitaev call this equatorial state, up to a Clifford rotation, an |H⟩-type state and reserve
+          "T-type" for the state along (1,1,1)/√3.)
+        </p>
+      </div>
+      <div class="theory-box">
+        <h4>Why |T⟩ is the convenient one</h4>
+        <p>
+          It sits exactly 45° along the equator, so teleporting it through the data qubit needs only a CNOT, a Z measurement
+          and, half the time, an S (90°) fix-up. It is also an eigenstate of a Clifford operator:
+          $$S X\,|T\rangle = e^{i\pi/4}\,|T\rangle,$$
+          equivalently the +1 eigenstate of (X + Y)/√2. Measuring that Clifford checks whether a stored |T⟩ is still a |T⟩
+          without destroying it, which is what <em>cultivation</em> (below) does over and over.
+        </p>
+      </div>
+    </div>
+    <div>
+      <div class="theory-box">
+        <h4>R gates and gate synthesis</h4>
+        <p>
+          The phase-gate family is $R_\phi = \mathrm{diag}(1, e^{i\phi})$: Z = R<sub>π</sub>, S = R<sub>π/2</sub>,
+          T = R<sub>π/4</sub> are fixed-angle members (R<sub>k</sub> with φ = 2π/2<sup>k</sup> appears in the quantum Fourier transform).
+          R<sub>x</sub>, R<sub>y</sub>, R<sub>z</sub>(θ) are continuous rotations about the Bloch axes. An error-corrected machine
+          cannot do an arbitrary continuous rotation natively, so it approximates R<sub>z</sub>(θ) by a string of H, S and T:
+          to accuracy ε this takes about 3 log<sub>2</sub>(1/ε) T gates (Ross &amp; Selinger), i.e. roughly 30–100 magic states per
+          rotation for ε between 10<sup>−3</sup> and 10<sup>−10</sup>.
+        </p>
+      </div>
+      <div class="theory-box">
+        <h4>What the classical simulator pays</h4>
+        <div class="ctrl-row" style="margin:.4rem 0 .2rem;">
+          <div class="ctrl-group">
+            <label for="mgN">Qubits N: <span class="ctrl-val" id="mgNLbl">50</span></label>
+            <input type="range" id="mgN" min="2" max="80" value="50" step="1">
+          </div>
+          <div class="ctrl-group">
+            <label for="mgT">T gates t: <span class="ctrl-val" id="mgTLbl">0</span></label>
+            <input type="range" id="mgT" min="0" max="400" value="0" step="5">
+          </div>
+        </div>
+        <p id="mgCost" style="font-family:var(--font-mono); font-size:.78rem;"></p>
+        <p style="font-size:.74rem; color:var(--text-muted); margin-top:.4rem;">
+          State vector: 2<sup>N</sup> amplitudes × 16 bytes. Stabilizer tableau: 2N(2N+1) bits. With t T gates, the best
+          stabilizer-based simulators (Bravyi &amp; Gosset 2016) cost ~2<sup>0.23t</sup> (sampling) to 2<sup>0.5t</sup>
+          (one probability) times polynomial factors: a few T gates are cheap, hundreds are not. Exponential in the
+          number of <em>magic</em> gates, not in the entanglement.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purification: distillation vs cultivation -->
+  <div class="theory-box" style="margin-top:.25rem;">
+    <h4>Purifying quantum resources: distillation vs cultivation</h4>
+    <p>
+      Noisy resources are cleaned up by spending many imperfect copies (or many checks) to get fewer good ones. Three protocols
+      share the word, but they work at different layers:
+    </p>
+  </div>
+  <div class="table-scroll">
+    <table class="hf-table mg-table">
+      <thead>
+        <tr><th scope="col"></th><th scope="col">Bell-pair (entanglement) distillation</th><th scope="col">Magic-state distillation</th><th scope="col">Magic-state cultivation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="hi">Purpose</td><td>High-fidelity entangled pairs between two nodes of a network</td><td>Clean |T⟩ states for fault-tolerant non-Clifford gates</td><td>Clean |T⟩ states, much more cheaply</td></tr>
+        <tr><td class="hi">Needs QEC?</td><td>No: runs on raw physical qubits</td><td>Yes: runs on logical qubits</td><td>Yes: grows inside a small, then larger, code patch</td></tr>
+        <tr><td class="hi">How</td><td>Both parties apply local CNOTs between two noisy pairs, measure the sacrificial pair and compare parities over a classical channel; keep the surviving pair only if they agree (Bennett et al. 1996; Deutsch et al. 1996)</td><td>Logical Clifford circuits (e.g. the 15-to-1 protocol) merge many noisy |T⟩ copies into one cleaner copy; levels can be stacked (Bravyi &amp; Kitaev 2005)</td><td>Inject one physical |T⟩ into a tiny code, repeatedly measure the Clifford check above with stabilizer rounds, discard any run that flags an error, then expand the survivor into a full surface code (Gidney, Shutty &amp; Jones 2024)</td></tr>
+        <tr><td class="hi">Output quality</td><td>Fidelity rises each round, limited by local gate errors</td><td>Arbitrarily low error by adding levels</td><td>Simulated 2×10⁻⁹ at 10⁻³ circuit noise (4×10⁻¹¹ at 5×10⁻⁴); the authors suggest further distillation may never be needed. First hardware demo: fidelity ≥ 0.9999(1), 40× lower error, keeping 8% of attempts (Rosenfeld et al., <em>Science</em> 2026)</td></tr>
+        <tr><td class="hi">Cost</td><td>At least two pairs in, one out per round, with probabilistic success</td><td>Large "factories" of many logical qubits</td><td>About the gate count of one lattice-surgery CNOT of equal reliability</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:.8rem; color:var(--text-muted); margin:.6rem 0 0;">
+    Try one round of entanglement distillation in the <a href="remote-entanglement.html#distillation">Remote Entanglement guide</a>.
+    The hardware context for cultivation is on the <a href="google-vs-ibm.html">Google vs IBM</a> page.
+  </p>
+
+  <div class="read-links" style="margin-top:.85rem;">
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevA.70.052328" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Aaronson &amp; Gottesman 2004, stabilizer simulation (PRA 70, 052328)</a>
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevA.71.022316" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bravyi &amp; Kitaev 2005, Clifford gates + noisy ancillas (PRA 71, 022316)</a>
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.116.250501" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bravyi &amp; Gosset 2016, Clifford-dominated simulation (PRL 116, 250501)</a>
+    <a class="read-link" href="https://arxiv.org/abs/1403.2975" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ross &amp; Selinger, optimal Clifford+T approximation of z-rotations</a>
+    <a class="read-link" href="https://arxiv.org/abs/2409.17595" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Gidney, Shutty &amp; Jones 2024, magic state cultivation (arXiv)</a>
+    <a class="read-link" href="https://doi.org/10.1126/science.aee7961" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Rosenfeld et al. 2026, cultivation on hardware (<em>Science</em>)</a>
+  </div>
+</section>
+
+<hr class="section-divider">
+
 <!-- ══════════ RESOURCES ══════════ -->
 <section class="topic-section" id="resources" style="padding-bottom:3rem;">
   <div class="topic-header">
@@ -1759,7 +1975,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=41"></script>
+<script src="../js/main.js?v=42"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/motion.js?v=2"></script>
 <script>
@@ -3368,6 +3584,155 @@ function opReset() {
   }
   const tick = LQ_INK.track(frame);
   if (window.AMOMotion) AMOMotion.loop(document.getElementById('rydbergArrayCanvas'), tick); else requestAnimationFrame(function f(t){ tick(t); requestAnimationFrame(f); });
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════
+   MAGIC STATES: Clifford grid vs Clifford + T
+   Two random walks from |0⟩, one with {H, S}, one with {H, T}, on a shared
+   rotatable view. The state is a complex 2-vector; each frame applies a few
+   random gates and records the Bloch vector.
+   ═══════════════════════════════════════════════ */
+(function () {
+  const cvC = document.getElementById('mgCliffCanvas'), cvU = document.getElementById('mgUnivCanvas');
+  if (!cvC || !cvU) return;
+  const R = 95, CX = 130, CY = 140, r2 = Math.SQRT1_2;
+  // gates as [[a, b], [c, d]] of complex numbers [re, im]
+  const G = {
+    H: [[[r2, 0], [r2, 0]], [[r2, 0], [-r2, 0]]],
+    S: [[[1, 0], [0, 0]], [[0, 0], [0, 1]]],
+    T: [[[1, 0], [0, 0]], [[0, 0], [r2, r2]]],
+  };
+  const cm = (p, q) => [p[0] * q[0] - p[1] * q[1], p[0] * q[1] + p[1] * q[0]];
+  const ca = (p, q) => [p[0] + q[0], p[1] + q[1]];
+  const apply = (g, s) => [ca(cm(g[0][0], s[0]), cm(g[0][1], s[1])), ca(cm(g[1][0], s[0]), cm(g[1][1], s[1]))];
+  const bloch = s => {
+    const [a, b] = s, ab = [a[0] * b[0] + a[1] * b[1], a[0] * b[1] - a[1] * b[0]];   // a* b
+    return [2 * ab[0], 2 * ab[1], a[0] * a[0] + a[1] * a[1] - b[0] * b[0] - b[1] * b[1]];
+  };
+  const BINS_Z = 10, BINS_P = 20;          // 200 equal-area cells (uniform in z and φ)
+  function walk(gates) {
+    return { gates, s: [[1, 0], [0, 0]], pts: [[0, 0, 1]], trail: [[0, 0, 1]], seen: new Map(), cells: new Set(), steps: 0 };
+  }
+  let W = { c: walk(['H', 'S']), u: walk(['H', 'T']) };
+  function step(w) {
+    const g = w.gates[Math.random() < 0.5 ? 0 : 1];
+    w.s = apply(G[g], w.s);
+    const n = Math.hypot(w.s[0][0], w.s[0][1], w.s[1][0], w.s[1][1]);           // keep it normalised
+    w.s = w.s.map(c => [c[0] / n, c[1] / n]);
+    const p = bloch(w.s);
+    w.steps++;
+    const key = p.map(v => Math.round(v * 1e6)).join(',');
+    w.seen.set(key, (w.seen.get(key) || 0) + 1);
+    const zi = Math.min(BINS_Z - 1, Math.floor((p[2] + 1) / 2 * BINS_Z));
+    const pi = Math.min(BINS_P - 1, Math.floor(((Math.atan2(p[1], p[0]) + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI) * BINS_P));
+    w.cells.add(zi * BINS_P + pi);
+    if (w.pts.length < 5000) w.pts.push(p);
+    w.trail.push(p); if (w.trail.length > 5) w.trail.shift();
+  }
+  let view = { az: Math.PI / 6, el: Math.PI / 5 };
+  const proj = (x, y, z) => {
+    if (window.AMO3D && AMO3D.project) { const q = AMO3D.project(view, x, y, z); return [CX + R * q[0], CY - R * q[1], q[2]]; }
+    const ca_ = Math.cos(view.az), sa = Math.sin(view.az), ce = Math.cos(view.el), se = Math.sin(view.el);
+    const xr = x * ca_ - y * sa, yr = x * sa + y * ca_;
+    return [CX + R * xr, CY - R * (z * ce + yr * se), z * se - yr * ce];
+  };
+  function circle(ctx, f, color, a1, a0) {
+    for (const front of [false, true]) {
+      ctx.beginPath(); let pen = false;
+      for (let i = 0; i <= 96; i++) {
+        const q = proj(...f(2 * Math.PI * i / 96));
+        if ((q[2] >= 0) === front) { pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; } else pen = false;
+      }
+      ctx.globalAlpha = front ? a1 : a0; ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  const V = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+  const VL = ['|+⟩', '|−⟩', '|+i⟩', '|−i⟩', '|0⟩', '|1⟩'];
+  function draw(cv, w, accent, isCliff) {
+    const ctx = LQ_INK.wrap(cv.getContext('2d'));
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, 2 * Math.PI); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.5; ctx.stroke();
+    circle(ctx, t => [Math.cos(t), Math.sin(t), 0], '#1e3a5f', 0.8, 0.25);
+    circle(ctx, t => [Math.sin(t), 0, Math.cos(t)], '#1e3a5f', 0.5, 0.15);
+    // stabilizer octahedron
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = '#8c8066'; ctx.lineWidth = 1;
+    for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) {
+      if (V[i].some((v, k) => v !== 0 && V[j][k] === -v)) continue;          // skip antipodal pairs
+      const a = proj(...V[i]), b = proj(...V[j]);
+      ctx.globalAlpha = (a[2] + b[2]) / 2 >= 0 ? 0.7 : 0.25;
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    }
+    ctx.globalAlpha = 1; ctx.setLineDash([]);
+    // visited states
+    if (isCliff) {
+      w.seen.forEach((n, key) => {
+        const p = key.split(',').map(v => +v / 1e6), q = proj(...p);
+        ctx.globalAlpha = q[2] < 0 ? 0.45 : 1;
+        ctx.beginPath(); ctx.arc(q[0], q[1], 3 + 1.4 * Math.log10(1 + n), 0, 2 * Math.PI); ctx.fillStyle = accent; ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = accent;
+      for (const p of w.pts) { const q = proj(...p); ctx.globalAlpha = q[2] < 0 ? 0.22 : 0.7; ctx.fillRect(q[0] - 1.2, q[1] - 1.2, 2.4, 2.4); }
+      ctx.globalAlpha = 1;
+    }
+    // last few steps
+    ctx.strokeStyle = accent; ctx.lineWidth = 1; ctx.globalAlpha = 0.35; ctx.beginPath();
+    w.trail.forEach((p, i) => { const q = proj(...p); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }); ctx.stroke(); ctx.globalAlpha = 1;
+    const cur = proj(...w.trail[w.trail.length - 1]);
+    ctx.beginPath(); ctx.arc(cur[0], cur[1], 5, 0, 2 * Math.PI); ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.stroke();
+    // |T⟩ = T|+⟩ at φ = 45° on the equator
+    const tq = proj(r2, r2, 0);
+    ctx.beginPath(); ctx.arc(tq[0], tq[1], 4.5, 0, 2 * Math.PI); ctx.fillStyle = '#7a4ff7'; ctx.fill();
+    ctx.font = '11px Inter, sans-serif'; ctx.fillStyle = '#7a4ff7'; ctx.fillText('|T⟩', tq[0] + 6, tq[1] - 4);
+    // vertex labels
+    ctx.fillStyle = '#5c503c'; ctx.font = '11px Inter, sans-serif';
+    V.forEach((p, i) => { if (i === 2 || i === 3) return; const q = proj(p[0] * 1.14, p[1] * 1.14, p[2] * 1.14); ctx.fillText(VL[i], q[0] - 8, q[1] + 4); });
+  }
+  function info() {
+    const c = W.c, u = W.u;
+    document.getElementById('mgCliffInfo').textContent = `${c.steps} gates · ${c.seen.size} distinct states (always ≤ 6)`;
+    document.getElementById('mgUnivInfo').textContent = `${u.steps} gates · ${(100 * u.cells.size / (BINS_Z * BINS_P)).toFixed(0)}% of the sphere visited (200 equal-area cells)`;
+  }
+  let acc = 0, last = null;
+  function frame(t) {
+    const dt = last === null ? 0 : Math.min(100, t - last); last = t;
+    acc += dt;
+    const n = Math.floor(acc / 25); acc -= n * 25;                    // ~40 gates per second per walk
+    for (let i = 0; i < n; i++) { step(W.c); step(W.u); }
+    draw(cvC, W.c, '#e20b0b', true); draw(cvU, W.u, '#076ce7', false); info();
+  }
+  if (window.AMO3D && AMO3D.orbit) {
+    view = AMO3D.orbit([cvC, cvU], { az: Math.PI / 6, el: Math.PI / 5, label: 'Bloch spheres of the two random walks', onChange: () => frame(last || 0) });
+  }
+  document.getElementById('mgRestart').addEventListener('click', () => { W = { c: walk(['H', 'S']), u: walk(['H', 'T']) }; frame(last || 0); });
+  // reduced motion / static frame: precompute a few hundred steps so the picture already makes the point
+  for (let i = 0; i < 600; i++) { step(W.c); step(W.u); }
+  const tick = LQ_INK.track(frame);
+  if (window.AMOMotion) AMOMotion.loop([cvC, cvU], tick, { anchors: [{ el: document.getElementById('mgRestart'), where: 'afterend' }] });
+  else requestAnimationFrame(function f(ts) { tick(ts); requestAnimationFrame(f); });
+  frame(0);
+
+  // classical cost readout
+  const fmtBytes = b => {
+    const u = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    let i = 0; while (b >= 1000 && i < u.length - 1) { b /= 1000; i++; }
+    return (b >= 1000 ? b.toExponential(1) : b.toFixed(b < 10 ? 1 : 0)) + ' ' + u[i];
+  };
+  function cost() {
+    const N = +document.getElementById('mgN').value, t = +document.getElementById('mgT').value;
+    document.getElementById('mgNLbl').textContent = N; document.getElementById('mgTLbl').textContent = t;
+    const sv = 16 * Math.pow(2, N), tab = 2 * N * (2 * N + 1) / 8;
+    const lo = Math.pow(2, 0.23 * t), hi = Math.pow(2, 0.5 * t);
+    const fx = v => v < 1e4 ? v.toFixed(v < 10 ? 1 : 0) : '10^' + Math.log10(v).toFixed(1);
+    document.getElementById('mgCost').innerHTML =
+      `state vector: ${fmtBytes(sv)}<br>stabilizer tableau: ${fmtBytes(tab)}` +
+      (t ? `<br>× magic overhead ≈ ${fx(lo)} to ${fx(hi)} (t = ${t})` : '<br>Clifford-only: polynomial time');
+  }
+  ['mgN', 'mgT'].forEach(id => document.getElementById(id).addEventListener('input', cost));
+  cost();
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

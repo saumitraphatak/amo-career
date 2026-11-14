@@ -83,7 +83,7 @@ amo-career/
     ├── absorption-imaging.html # Absorption Imaging Lab
     ├── laser-cooling.html      # Single-atom Cooling (laser cooling deep dive)
     ├── cooling-simulator.html  # Laser Cooling Simulator (Doppler / Sisyphus)
-    ├── learn-quantum.html      # Quantum Computing Learning Path (14 topics, one page)
+    ├── learn-quantum.html      # Quantum Computing Learning Path (15 topics, one page)
     ├── decoherence-lab.html    # Decoherence Lab (T1/T2/T2* Bloch-sphere + signal sim)
     ├── rydberg-calculator.html # Rydberg Blockade Lab
     ├── fidelity-budget.html    # Rydberg Gate Error Budget
@@ -518,7 +518,7 @@ All four Bloch spheres on this page (`blochCanvas`, `gatesBlochCanvas`, `measBlo
 
 The animated canvases (MZI, live Rabi sphere + trace, Bell, Grover, Rydberg array) draw with light-theme inks; a page-local `LQ_INK` helper (above the MZI script) makes them follow the theme: `LQ_INK.wrap(ctx)` remaps those inks to dark counterparts as they're set, and `LQ_INK.track(frame)` / `LQ_INK.onTheme(fn)` repaint the current frame on a theme toggle. New canvas code on this page can keep writing light-theme colours and wrap its context; add any new dark-ink colour to the `HEX` table.
 
-14 topics on one long scrollable page with a sticky internal nav:
+15 topics on one long scrollable page with a sticky internal nav:
 
 | Anchor | Topic | Key content |
 |---|---|---|
@@ -536,6 +536,7 @@ The animated canvases (MZI, live Rabi sphere + trace, Bell, Grover, Rydberg arra
 | `#qec` | Error Correction | 3-qubit bit-flip, Shor code, surface code, threshold theorem |
 | `#algorithms` | Quantum Algorithms | Deutsch-Jozsa, Grover O(√N), Shor O((log N)³), VQE |
 | `#analog-sim` | Analog Simulation | Hubbard model, Ising Hamiltonian, BEC-BCS crossover |
+| `#magic` | Magic States | Gottesman–Knill (Clifford circuits are simulable despite entanglement), \|T⟩ and T-gate teleportation, {H,S} vs {H,T} Bloch random-walk demo, R gates/synthesis, simulator-cost readout, distillation vs cultivation table |
 
 ---
 

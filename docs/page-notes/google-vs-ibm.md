@@ -91,3 +91,6 @@ Three additions, built from the page's own content:
 
 ## Science-content audit (2026-10-26, rotation)
 Added one new, peer-reviewed result to the Google side: magic-state cultivation (Gidney, Shutty, Jones et al., *Science*, Oct 16 2026, DOI 10.1126/science.aee7961) — a ~40× reduction in T-state preparation error vs. uncultivated preparation, 99.99% logical fidelity on accepted (post-selected) attempts, demonstrated on Willow (a distance-5 surface-code "grafting" experiment used 54 of its 105 qubits). Added a timeline entry (Section 02), a stat card (Section 04), and a Key Papers entry (Section 10). Independently verified against the article (which itself cites the DOI) before writing; no change to any existing claim.
+
+## 2026-11-14: cultivation paper citation corrected
+The Science paper (DOI 10.1126/science.aee7961) is "Magic state cultivation on a superconducting quantum processor", Rosenfeld, Gidney, Roberts et al. (per Crossref); the card had another title and "Gidney, Shutty, Jones et al." (the authors of the 2024 theory preprint, now cited alongside). Fidelity wording follows the abstract: at least 0.9999(1), keeping 8% of attempts. Links to Learn Quantum → Magic States.

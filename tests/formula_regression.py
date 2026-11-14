@@ -426,6 +426,43 @@ def test_section_search_index() -> None:
     assert_contains("js/main.js", "js/search-sections.js?v=")
 
 
+def test_magic_states_and_distillation() -> None:
+    """Magic-state section and entanglement distillation: pin the physics the pages state."""
+    import cmath
+    r = 1 / math.sqrt(2)
+    T = [1 * r, cmath.exp(1j * math.pi / 4) * r]                 # |T> = T|+>
+    # SX|T> = e^{i pi/4} |T>
+    X = [T[1], T[0]]
+    SX = [X[0], 1j * X[1]]
+    ph = cmath.exp(1j * math.pi / 4)
+    assert all(abs(SX[k] - ph * T[k]) < 1e-12 for k in range(2))
+    # T-gate teleportation: data controls CNOT onto |T>, outcome 1 needs S (S T^dagger = T)
+    a, b = 0.6, 0.8j
+    w = cmath.exp(1j * math.pi / 4)
+    out0 = [a, b * w]                       # ancilla measured 0
+    out1 = [a * w, b]                       # ancilla measured 1, = w * T^dagger|psi>
+    fixed = [out1[0], 1j * out1[1]]         # apply S
+    assert all(abs(fixed[k] - w * out0[k]) < 1e-12 for k in range(2))
+    # |T> lies outside the stabilizer octahedron |x|+|y|+|z| <= 1
+    assert abs(r) + abs(r) > 1
+    page = "pages/learn-quantum.html"
+    assert_contains(page, 'id="magic"')
+    assert_contains(page, "SX|T⟩".replace("SX|T⟩", "S X\\,|T\\rangle = e^{i\\pi/4}\\,|T\\rangle"))
+    assert_contains(page, "fidelity ≥ 0.9999(1)")
+    assert_contains("js/main.js", "href: 'pages/learn-quantum.html#magic'")
+    # BBPSSW recurrence for Werner states (Bennett et al. 1996)
+    def rnd(F):
+        q = (1 - F) / 3
+        d = F * F + 2 * F * q + 5 * q * q
+        return (F * F + q * q) / d, d
+    F1, p1 = rnd(0.8)
+    assert abs(F1 - 0.8382) < 1e-4 and abs(p1 - 0.7689) < 1e-4
+    assert abs(rnd(0.5)[0] - 0.5) < 1e-12           # fixed point at F = 1/2
+    assert_contains("pages/remote-entanglement.html", 'id="distillation"')
+    assert_contains("pages/remote-entanglement.html", "const q = (1 - F) / 3, p = F * F + 2 * F * q + 5 * q * q;")
+    assert_contains("pages/google-vs-ibm.html", "Magic state cultivation on a superconducting quantum processor")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -447,6 +484,7 @@ def main() -> None:
         test_zernike_psf_centred_and_piston_free,
         test_physics_audit_2026_11,
         test_section_search_index,
+        test_magic_states_and_distillation,
     ]
     for test in tests:
         test()

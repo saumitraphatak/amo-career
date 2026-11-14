@@ -194,3 +194,11 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - **release-recapture** runs its default simulation on load and uses a 150 μs window (μs units); phone overflow fixed.
   - Tests: formula tests OK 19; smoke 34 pages × 3 configs vs HEAD: 0 new problems.
   - **remote-entanglement link simulator** (P2 "Barrett–Kok timeline"): attempts → losses → heralds, slow motion and real-time Monte Carlo of the calculator's own η and scheme; measured p agrees with the calculator to within its √N error.
+
+## 2026-11-14: magic states, distillation and cultivation (interactive, from Saumitra's notes + whiteboard sketch)
+- **learn-quantum `#magic`** (new topic 15; NAV.learn entry, main.js v42): Gottesman–Knill paradox, Clifford vs T-teleportation circuits, {H,S} vs {H,T} random-walk Bloch demo, magic states / |T⟩ symmetry / R gates / synthesis cost, simulator-cost readout, distillation-vs-cultivation table.
+- **remote-entanglement `#distillation`**: Bell-pair distillation explained, drawn and computed (Bennett et al. 1996 recurrence).
+- **google-vs-ibm**: corrected the Science cultivation paper's title/authors (Rosenfeld et al.; Crossref) and fidelity wording.
+- llms.txt / llms-full.txt (also fixed the remote-entanglement Bell state there to Ψ±), CLAUDE.md topic table, start-here card, search index rebuilt (458).
+- Sources checked via arXiv/Crossref: Gidney–Shutty–Jones 2409.17595; Science aee7961; Bennett PRL 76, 722; Deutsch PRL 77, 2818; Bravyi–Kitaev PRA 71, 022316; Aaronson–Gottesman PRA 70, 052328; Bravyi–Gosset PRL 116, 250501. One correction to the brief: "cultivation's ceiling ≈ 99.99%" is the experiment's lower bound; simulations reach 2×10⁻⁹.
+

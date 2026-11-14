@@ -1,6 +1,6 @@
 # pages/learn-quantum.html
 
-**Purpose:** "Quantum Computing Learning Path" — 14 topics as a short course, then a reference. The site's flagship educational page; also hosts the spaced-repetition Quantum Quiz (`#quiz-root`, see below).
+**Purpose:** "Quantum Computing Learning Path" — 15 topics as a short course, then a reference. The site's flagship educational page; also hosts the spaced-repetition Quantum Quiz (`#quiz-root`, see below).
 
 ## Flow (post-fix)
 1. Page hero.
@@ -96,3 +96,12 @@ Backlog P0 "cream canvases in dark theme", learn-quantum part. The MZI (`mziCanv
 - T₁ equation now decays to |0⟩ = +ẑ; typical T₁ ≥ 1 s so T₂ ≤ 2T₁ holds; decay chart legend matches the plotted ½e^{−t/T₁}.
 - Neutral ¹⁷¹Yb qubit is the nuclear spin (≈0.75 kHz/G), not the 12.6 GHz F = 0 ↔ 1 qubit of Yb⁺; ⁶Li hyperfine pair; 40 s T₂ is ⁸⁷Sr (Barnes 2022), not Rb (Evered 2023); Rb ~1 s, Cs 12.6 s.
 - Hyperfine splitting A(I + ½); quadrupole needs J ≥ 1; σ⁺ dark state only for F′ ≤ F; C₃/r³ is resonant exchange; Rb C₆(70S) = 862 GHz·μm⁶; Grover animation stops at k_opt.
+
+## 2026-11-14: new topic 15, Magic States & the Clifford Trap (`#magic`)
+Requested by Saumitra (with a whiteboard sketch "Quantum Paradox: Why Entanglement Doesn't Guarantee Advantage"). Built as an interactive section rather than embedding the sketch (it had notation slips: kets written as bras ⟨q⟩, a doubled "is not is not"). Contents:
+- Gottesman–Knill paradox: Clifford circuits make superposition and Bell states yet are simulable (N stabilizers, ~4N² bits; Aaronson & Gottesman 2004).
+- Two SVG circuits: the Clifford Bell circuit, and T-gate teleportation (data controls CNOT onto |T⟩, Z-measure, S if m = 1), with the algebra checked in the text.
+- Live demo (`mgCliffCanvas`, `mgUnivCanvas`, shared orbit view): random {H,S} walk lands only on the 6 stabilizer states; random {H,T} walk covers the sphere (coverage of 200 equal-area cells reported). Stabilizer octahedron and |T⟩ drawn. AMOMotion pause, LQ_INK inks.
+- Magic states, |T⟩ symmetry SX|T⟩ = e^{iπ/4}|T⟩ (verified algebraically), naming caveat vs Bravyi–Kitaev, R gates and Ross–Selinger T-count ≈ 3 log₂(1/ε), simulator-cost readout (state vector 16·2^N B vs tableau 2N(2N+1) bits; Bravyi–Gosset 2^{0.23t}–2^{0.5t}).
+- Distillation vs cultivation table (Bell-pair distillation without QEC; magic-state distillation; cultivation). Cultivation numbers from the sources: simulated 2×10⁻⁹ at 10⁻³ noise and "may never need distillation" (Gidney, Shutty & Jones, arXiv:2409.17595); hardware fidelity ≥ 0.9999(1), 40×, 8% kept (Rosenfeld et al., Science 2026). The user's draft said cultivation "hits an accuracy ceiling around 99.99%": that figure is the first experiment's measured lower bound, not a theoretical ceiling, so the page states both.
+- NAV.learn gained "Magic States" (main.js v42); home fallback count 15.
