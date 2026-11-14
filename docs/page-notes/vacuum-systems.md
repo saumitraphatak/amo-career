@@ -64,3 +64,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Benvenuti et al. "(1996)" entry removed (DOI pointed elsewhere, paper not found); O'Hanlon, Jousten, Chambers kept as unlinked book references (DOIs unverified). Dark theme: --vac lifted to #8fbde0 pagewide.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- O'Hanlon, Jousten, Chambers DOIs restored (Crossref-verified). Regime badges darker on cream.

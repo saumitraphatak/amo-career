@@ -38,7 +38,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Absorption Imaging Lab","description":"Absorption imaging calculator for cold-atom ensembles: optical depth, column density, atom number, saturation correction, photon shot noise, and practical imaging limits.","url":"https://amotoolkit.com/pages/absorption-imaging.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Trap, Image & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Absorption Imaging Lab","item":"https://amotoolkit.com/pages/absorption-imaging.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -158,9 +158,9 @@
     .stat-item .stat-val { font-size: 1.1rem; font-weight: 800; color: var(--sc, var(--page-color)); font-family: var(--font-mono); }
     .stat-item .stat-label { font-size: .72rem; color: var(--text-muted); margin-top: .25rem; text-transform: uppercase; letter-spacing: .05em; }
 
-  
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
+      [data-theme="dark"] .page-wrap { --page-color: #86c58f; }
       [data-theme="dark"] .out-card.warn .out-val { color: #f87171; }
       [data-theme="dark"] .out-card.ok   .out-val { color: #4ade80; }
       [data-theme="dark"] .badge-warn { color: #f87171; }
@@ -175,7 +175,7 @@
   <div class="page-hero" style="--page-color:#3f5d3f;--page-bg:rgba(63, 93, 63,0.08);--page-border:rgba(63, 93, 63,0.22);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.22);color:#4160f9;">
+        <div class="page-hero-eyebrow" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.22);color:#173df7;">
           🌑 Trap, Image &amp; Cool 05 · Absorption Imaging
         </div>
         <h1>Absorption <span class="grad-text" style="--ga:#a5b4fc;--gb:#38bdf8;">Imaging</span> Lab</h1>
@@ -363,7 +363,7 @@
         $$\text{OD}_{\rm true} = \text{OD}_{\rm meas} + \frac{I_{\rm probe} - I_{\rm shadow}}{I_{\rm sat}}$$
       </div>
 
-      <div class="stat-strip" style="--sc:#818cf8">
+      <div class="stat-strip" style="--sc:#4f46e5">
         <div class="stat-item"><div class="stat-val">3λ²/2π</div><div class="stat-label">Resonant cross section σ₀</div></div>
         <div class="stat-item"><div class="stat-val">OD ~ 1–3</div><div class="stat-label">Sweet spot for SNR</div></div>
         <div class="stat-item"><div class="stat-val">√(2/N_ph)</div><div class="stat-label">Shot noise on OD</div></div>
@@ -665,7 +665,7 @@
             two-level model (and this page's saturation correction) has already broken down from collective
             and many-body effects.
           </p>
-          <div class="stat-strip" style="--sc:#818cf8;margin-top:var(--sp-4)">
+          <div class="stat-strip" style="--sc:#4f46e5;margin-top:var(--sp-4)">
             <div class="stat-item"><div class="stat-val">Non-destructive</div><div class="stat-label">Repeated shots, one cloud</div></div>
             <div class="stat-item"><div class="stat-val">φ ∝ 1/Δ</div><div class="stat-label">Phase signal vs detuning</div></div>
             <div class="stat-item"><div class="stat-val">OD ≈ 64</div><div class="stat-label">Validated dense-cloud limit (2025)</div></div>
@@ -705,10 +705,10 @@
             </li>
             <li>
               <strong>Hueck et al. (2017)</strong> — "Calibrating high intensity absorption imaging of ultracold atoms."
-              Preprint arXiv:1702.01943.
+              <em>Opt. Express</em> <strong>25</strong>, 8670.
               Rigorous treatment of saturation correction beyond the two-level model, including sublevel populations
               and polarization effects. Provides calibration procedure for I_sat in the actual experimental setup.
-              <a href="https://arxiv.org/abs/1702.01943" target="_blank" rel="noopener" style="color:var(--page-color)">arXiv:1702.01943 →</a>
+              <a href="https://doi.org/10.1364/OE.25.008670" target="_blank" rel="noopener" style="color:var(--page-color)">DOI →</a>
             </li>
             <li>
               <strong>Schmidutz et al. (2014)</strong> — "Quantum Joule-Thomson Effect in a Saturated Homogeneous Bose Gas."
@@ -940,7 +940,7 @@
     if (s > 0.5) {
       satEl.innerHTML = `<div class="badge badge-warn">⚠ I/I_sat = ${s.toFixed(2)} — apply saturation correction</div>`;
     } else if (s > 0.05) {
-      satEl.innerHTML = `<div class="badge" style="background:rgba(251,191,36,0.1);border:1px solid rgba(146,106,3,0.3);color:#926a03">
+      satEl.innerHTML = `<div class="badge" style="background:rgba(251,191,36,0.1);border:1px solid rgba(146,106,3,0.3);color:#835f03">
         ⚠ I/I_sat = ${s.toFixed(2)} — OD reads ~${(100*s/(1+s)).toFixed(0)}% low without saturation correction</div>`;
     } else {
       satEl.innerHTML = `<div class="badge badge-ok">✓ I/I_sat = ${s.toFixed(2)} — saturation bias s/(1+s) &lt; 5%</div>`;

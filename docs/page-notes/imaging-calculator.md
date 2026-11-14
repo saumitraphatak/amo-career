@@ -110,3 +110,6 @@ Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The
 
 ## 2026-11-14: citation check + contrast pass
 - Citation: Bergamini et al. 2004 is a JOSA B paper ("…by use of a programmable phase modulator"), not PRL 93, 163602; linked to arXiv:quant-ph/0402020.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Bergamini 2004 → JOSA B 21, 1889 (DOI); Manetsch title and Nature 647, 60; Blodgett et al. exact title.

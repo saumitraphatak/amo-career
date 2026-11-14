@@ -73,3 +73,6 @@ Stokes chapter gained "Waveplates move points on the sphere" (`#pwCanvas`, orbit
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Collett and Goldstein book links (Cambridge DOIs for SPIE/CRC books) removed; references kept as text.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Collett (SPIE Field Guide) and Goldstein (CRC) DOIs restored, Crossref-verified.

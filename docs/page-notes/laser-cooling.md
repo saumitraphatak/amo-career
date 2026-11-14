@@ -65,3 +65,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check + contrast pass
 - Citation: Morigi, Eschner & Keitel 2000 is the EIT-cooling proposal (title corrected); the experiment is Roos et al., PRL 85, 5547.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Stenholm 1986 title is "The semiclassical theory of laser cooling"; Brown et al. 2019 is ⁸⁷Rb gray-molasses tweezer loading (89%), not ³⁹K (title and description fixed).

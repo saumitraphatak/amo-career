@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Quantum Computing Learning Path","description":"Curated quantum computing learning path from an AMO physics perspective, qubits, gates, error correction, and neutral-atom hardware.","url":"https://amotoolkit.com/pages/learn-quantum.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Quantum Computing Learning Path","item":"https://amotoolkit.com/pages/learn-quantum.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -128,11 +128,13 @@
     .ctrl-select:focus { outline: none; border-color: var(--c-qc); }
 
     .action-btn {
-      background: var(--c-qc); color: #707070; border: none;
+      background: var(--c-qc); color: #fff; border: none;   /* white on ink-blue (light); dark theme below */
       border-radius: 7px; padding: .45rem 1rem;
       font-size: .85rem; font-weight: 600; cursor: pointer;
     }
     .action-btn:hover { opacity: .85; }
+    [data-theme="dark"] .action-btn { color: #150b2e; }   /* dark ink on the violet accent */
+    [data-theme="dark"] .action-btn.sec { color: var(--c-qc); }
     .action-btn.sec {
       background: var(--bg-card); color: var(--c-qc); border: 1px solid var(--c-qc);
     }
@@ -163,7 +165,7 @@
     }
     .matrix-wrap table { border-collapse: collapse; }
     .matrix-wrap td { padding: .2rem .5rem; color: var(--text-secondary); text-align: center; }
-    .matrix-wrap td.val { color: #7a4ff7; font-weight: 600; }
+    .matrix-wrap td.val { color: #5b26f5; font-weight: 600; }
 
     /* Truth table */
     .truth-table { border-collapse: collapse; font-family: var(--font-mono); font-size: .83rem; }
@@ -189,7 +191,7 @@
       font-family: var(--font-mono); font-size: .82rem;
     }
     .r-pair { display: flex; flex-direction: column; }
-    .r-lbl { color: #11823a; font-size: .75rem; }
+    .r-lbl { color: #0f7434; font-size: .75rem; }
     .r-val { color: #18813e; font-size: 1rem; font-weight: 700; }
 
 
@@ -206,19 +208,19 @@
 
     /* Info/good banners */
     .info-banner { background: var(--bg-card); border: 1px solid #1e3a6e; border-radius: 8px;
-      padding: .6rem 1rem; margin: .5rem 0; color: #046de1; font-size: .84rem; }
+      padding: .6rem 1rem; margin: .5rem 0; color: #0463cd; font-size: .84rem; }
     .good-banner { background: var(--bg-card); border: 1px solid #15803d; border-radius: 8px;
-      padding: .6rem 1rem; margin: .5rem 0; color: #11823a; font-size: .84rem; }
+      padding: .6rem 1rem; margin: .5rem 0; color: #0f7434; font-size: .84rem; }
 
     /* ─── Further reading links ──────────────────────── */
     .read-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
     .read-link {
       display: inline-flex; align-items: center; gap: .35rem;
       background: var(--bg-surface); border: 1px solid var(--border-med); border-radius: 6px;
-      padding: .28rem .65rem; font-size: .77rem; color: #046de1;
+      padding: .28rem .65rem; font-size: .77rem; color: #0463cd;
       text-decoration: none; transition: border-color .15s, color .15s;
     }
-    .read-link:hover { border-color: #076be7; color: #0674be; }
+    .read-link:hover { border-color: #076be7; color: #0569ad; }
     .read-link .rl-icon { font-size: .9rem; }
 
     /* ─── Resources section ──────────────────────────── */
@@ -227,8 +229,8 @@
     .res-card { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem 1.1rem; }
     .res-card h4 { font-size: .88rem; font-weight: 700; color: var(--c-qc); margin: 0 0 .65rem 0; }
     .res-item { display: flex; flex-direction: column; margin-bottom: .55rem; }
-    .res-item a { font-size: .82rem; color: #046de1; text-decoration: none; font-weight: 600; transition: color .15s; }
-    .res-item a:hover { color: #0674be; }
+    .res-item a { font-size: .82rem; color: #0463cd; text-decoration: none; font-weight: 600; transition: color .15s; }
+    .res-item a:hover { color: #0569ad; }
     .res-item span { font-size: .75rem; color: var(--text-muted); margin-top: .1rem; }
 
     /* ─── QEC styles ─────────────────────────────────── */
@@ -358,7 +360,7 @@
     .rep-mc { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: flex-end; margin: .8rem 0 .4rem; }
     .rep-mc .ctrl-group { flex: 1 1 240px; }
     .rep-chartwrap { position: relative; height: 260px; }
-  
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
       [data-theme="dark"] .matrix-wrap td.val { color: #a78bfa; }
@@ -367,7 +369,9 @@
       [data-theme="dark"] .info-banner { color: #60a5fa; }
       [data-theme="dark"] .good-banner { color: #4ade80; }
       [data-theme="dark"] .read-link { color: #60a5fa; }
+      [data-theme="dark"] .read-link:hover { color: #0790ed; }
       [data-theme="dark"] .res-item a { color: #60a5fa; }
+      [data-theme="dark"] .res-item a:hover { color: #0790ed; }
     }
   </style>
 </head>
@@ -380,7 +384,7 @@
 <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44, 74, 99,0.07);--page-border:rgba(44, 74, 99,0.2);">
   <div class="container page-hero-2col">
     <div class="page-hero-text">
-    <div class="page-hero-eyebrow" style="background:rgba(167,139,250,0.08);border-color:rgba(167,139,250,0.2);color:#7a4ff7;">🔵 Quantum 01 · Quantum Computing Learning Path</div>
+    <div class="page-hero-eyebrow" style="background:rgba(167,139,250,0.08);border-color:rgba(167,139,250,0.2);color:#5b26f5;">🔵 Quantum 01 · Quantum Computing Learning Path</div>
     <h1>
       Quantum Computing <span class="grad-text" style="--ga: var(--c-qc); --gb: #38bdf8;">Learning Path</span>
     </h1>
@@ -636,7 +640,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
         style="width:100%;border-radius:8px;background:var(--bg-card);display:block;"></canvas>
       <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;line-height:1.7;">
         The Bloch vector rotates around the <em>effective field</em>
-        <strong style="color:#7a4ff7;">n̂_eff = (Ω, 0, −Δ)/Ω'</strong> at angular frequency Ω'.
+        <strong style="color:#5b26f5;">n̂_eff = (Ω, 0, −Δ)/Ω'</strong> at angular frequency Ω'.
         At resonance (Δ=0) the rotation axis is x̂ — the vector sweeps from |0⟩ to |1⟩ and back.
         Off-resonance, the axis tilts toward ẑ and the cone shrinks.
       </div>
@@ -699,7 +703,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
         <button class="gate-btn" onclick="applyGateBtn('Rx')">Rx(π/2)</button>
         <button class="gate-btn" onclick="applyGateBtn('Ry')">Ry(π/2)</button>
         <button class="gate-btn" onclick="applyGateBtn('Rz')">Rz(π/2)</button>
-        <button class="gate-btn sec" onclick="resetGateState()" style="border-color:#e20b0b;color:#e20b0b;">Reset</button>
+        <button class="gate-btn sec" onclick="resetGateState()" style="border-color:#e20b0b;color:#cf0a0a;">Reset</button>
       </div>
 
       <div id="gateMatrix" class="matrix-wrap" style="margin-top:.75rem;"></div>
@@ -714,7 +718,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, drag-and-drop gate sandbox</a>
     <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/single-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: single-qubit gates</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0002039" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Knill et al.: universal gate sets</a>
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevA.52.3457" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Barenco et al. 1995: elementary gates for quantum computation (universal gate sets)</a>
   </div>
 </section>
 
@@ -766,7 +770,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
         <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.5rem;">Measurement probabilities</div>
         <div style="font-family:var(--font-mono);font-size:.9rem;line-height:2;">
           <span id="meas0Lbl" style="color:#076be6;">P(|0⟩)</span> = <span class="ctrl-val" id="measP0">50.0%</span><br>
-          <span id="meas1Lbl" style="color:#e20b0b;">P(|1⟩)</span> = <span class="ctrl-val" id="measP1">50.0%</span>
+          <span id="meas1Lbl" style="color:#cf0a0a;">P(|1⟩)</span> = <span class="ctrl-val" id="measP1">50.0%</span>
         </div>
       </div>
       <!-- Shot controls -->
@@ -779,7 +783,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;">
         <button class="action-btn" onclick="runMeasurement()">▶ Shoot N times</button>
-        <button class="action-btn" style="background:#0e7490;color:#0674be;" onclick="singleShot()">⚡ Single shot</button>
+        <button class="action-btn" style="background:#0e7490;color:#fff;" onclick="singleShot()">⚡ Single shot</button>
         <button class="action-btn sec" onclick="clearMeasurement()">Clear</button>
       </div>
       <div class="shot-info" id="shotInfo"></div>
@@ -922,7 +926,7 @@ $\pi$-pulse time: $t_\pi = \pi/\Omega \quad [|0\rangle \rightarrow |1\rangle$ ex
         <div style="margin-bottom:.65rem;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;">
             <span style="font-family:var(--font-mono);font-size:.8rem;color:#4f72a4;">m<sub>F</sub> = −1</span>
-            <span style="font-family:var(--font-mono);font-size:.85rem;color:#e20b0b;font-weight:600;" id="pop-m1">33.3%</span>
+            <span style="font-family:var(--font-mono);font-size:.85rem;color:#cf0a0a;font-weight:600;" id="pop-m1">33.3%</span>
           </div>
           <div style="height:14px;background:var(--bg-card);border-radius:7px;overflow:hidden;">
             <div id="bar-m1" style="height:100%;width:33.3%;background:#f87171;border-radius:7px;transition:width .4s ease;"></div>
@@ -1166,7 +1170,7 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
     <a class="read-link" href="https://steck.us/alkalidata/cesiumnumbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Cs D₂ data (hyperfine constants)</a>
     <a class="read-link" href="https://steck.us/alkalidata/rubidium87numbers.pdf" target="_blank" rel="noopener"><span class="rl-icon">📊</span>Steck: Rb-87 data</a>
     <a class="read-link" href="https://arxiv.org/abs/2112.06799" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ma et al. 2022: ¹⁷¹Yb qubit array (Princeton)</a>
-    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
+    <a class="read-link" href="https://arxiv.org/abs/1605.05207" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
     <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023, long T₂ + 99.5% gates</a>
   </div>
 </section>
@@ -1286,8 +1290,8 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
   </div>
 
   <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0504166" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al.: entanglement review</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9508009" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bell / CHSH inequality, original test</a>
+    <a class="read-link" href="https://doi.org/10.1103/RevModPhys.81.865" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al. 2009: quantum entanglement (Rev. Mod. Phys. 81, 865)</a>
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.23.880" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Clauser, Horne, Shimony &amp; Holt 1969: the CHSH inequality (PRL 23, 880)</a>
     <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Quantum Country: entanglement</a>
     <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, build Bell states visually</a>
   </div>
@@ -1344,7 +1348,7 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://algassert.com/quirk" target="_blank" rel="noopener"><span class="rl-icon">🔧</span>Quirk, apply CNOT &amp; CZ visually</a>
     <a class="read-link" href="https://quantum.cloud.ibm.com/learning/courses/basics-of-quantum-information/multiple-systems/introduction" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum: two-qubit systems</a>
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0312225" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang et al.: perfect entanglers in SU(4)</a>
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevA.67.042313" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zhang, Vala, Sastry &amp; Whaley 2003: geometric theory of nonlocal two-qubit operations (perfect entanglers)</a>
   </div>
 </section>
 
@@ -1406,9 +1410,9 @@ Gate fidelity: $\mathcal{F} \approx 1 - (\Gamma/\Omega_R) - \alpha\langle n_{mot
     </div>
   </div>
   <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/9907071" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Jaksch et al. 1999, original Rydberg gate proposal</a>
+    <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.85.2208" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Jaksch et al. 2000, original Rydberg gate proposal (PRL 85, 2208)</a>
     <a class="read-link" href="https://arxiv.org/abs/2304.05420" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Evered et al. 2023, 99.5% CZ gate (Harvard)</a>
-    <a class="read-link" href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
+    <a class="read-link" href="https://arxiv.org/abs/1605.05207" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Saffman 2016: neutral atom QC review</a>
     <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024, 48 logical qubits</a>
   </div>
 </section>
@@ -1459,7 +1463,7 @@ Typical (alkali hyperfine qubits in tweezers): $T_1 \gtrsim 1$ s (trap-light Ram
   </div>
   <div class="info-banner" id="decohInfo" style="margin-top:.6rem;"></div>
   <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/quant-ph/0301052" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zurek 2003: decoherence review</a>
+    <a class="read-link" href="https://doi.org/10.1103/RevModPhys.75.715" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Zurek 2003: decoherence review</a>
     <a class="read-link" href="https://qutip.org/docs/4.7/guide/dynamics/dynamics-master.html" target="_blank" rel="noopener"><span class="rl-icon">💻</span>QuTiP: Lindblad master equation</a>
     <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bluvstein et al. 2024, coherence in 48 logical qubits</a>
   </div>
@@ -1543,7 +1547,7 @@ Typical (alkali hyperfine qubits in tweezers): $T_1 \gtrsim 1$ s (trap-light Ram
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://quantum.country/qcvc" target="_blank" rel="noopener"><span class="rl-icon">📖</span>Matuschak &amp; Nielsen: Quantum Computing for the Very Curious (free, interactive)</a>
     <a class="read-link" href="https://learning.quantum.ibm.com/" target="_blank" rel="noopener"><span class="rl-icon">💻</span>IBM Quantum Learning, Grover &amp; QAOA tutorials with runnable circuits</a>
-    <a class="read-link" href="https://arxiv.org/abs/2110.14206" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2022, QAOA on 289-atom Rydberg processor (Harvard)</a>
+    <a class="read-link" href="https://arxiv.org/abs/2202.09372" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2022, quantum optimization of maximum independent set on a 289-atom Rydberg array (Science 376, 1209)</a>
   </div>
 </section>
 
@@ -1616,9 +1620,9 @@ Typical (alkali hyperfine qubits in tweezers): $T_1 \gtrsim 1$ s (trap-light Ram
   </div>
 
   <div class="read-links" style="margin-top:.75rem;">
-    <a class="read-link" href="https://arxiv.org/abs/2107.09341" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2021, quantum phases of matter in 256-atom Rydberg array (Harvard)</a>
+    <a class="read-link" href="https://arxiv.org/abs/2012.12281" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ebadi et al. 2021, quantum phases of matter in 256-atom Rydberg array (Harvard)</a>
     <a class="read-link" href="https://arxiv.org/abs/2104.04986" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Semeghini et al. 2021, topological spin liquid in Rydberg array</a>
-    <a class="read-link" href="https://arxiv.org/abs/2111.11798" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Gross &amp; Bloch 2017, quantum simulations with ultracold atoms in optical lattices (review)</a>
+    <a class="read-link" href="https://doi.org/10.1126/science.aal3837" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Gross &amp; Bloch 2017, quantum simulations with ultracold atoms in optical lattices (review)</a>
   </div>
 </section>
 
@@ -1840,11 +1844,11 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
     <div class="two-col mg-demo">
       <div class="bloch-wrap">
         <canvas id="mgCliffCanvas" width="260" height="280" data-export-ready="true" aria-label="Bloch sphere visited by random H and S gates: the state only ever lands on the six stabilizer states at the tips of the octahedron. The count is given below."></canvas>
-        <div class="bloch-state"><b style="color:#e20b0b">Clifford {H, S}</b>: <span id="mgCliffInfo">—</span></div>
+        <div class="bloch-state"><b style="color:#cf0a0a">Clifford {H, S}</b>: <span id="mgCliffInfo">—</span></div>
       </div>
       <div class="bloch-wrap">
         <canvas id="mgUnivCanvas" width="260" height="280" data-export-ready="true" aria-label="Bloch sphere visited by random H and T gates: the states spread over the whole sphere. The coverage is given below."></canvas>
-        <div class="bloch-state"><b style="color:#076ce7">Clifford + T {H, T}</b>: <span id="mgUnivInfo">—</span></div>
+        <div class="bloch-state"><b style="color:#0662d1">Clifford + T {H, T}</b>: <span id="mgUnivInfo">—</span></div>
       </div>
     </div>
     <div style="display:flex; gap:.5rem; justify-content:center; margin-top:.5rem;">
@@ -1999,11 +2003,11 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
         <span>Gold standard: Rb, Cs, Li, Na, K, transition frequencies, linewidths, hyperfine constants.</span>
       </div>
       <div class="res-item">
-        <a href="https://arxiv.org/abs/1605.01818" target="_blank" rel="noopener">Saffman 2016: Neutral Atom Quantum Computing Review</a>
+        <a href="https://arxiv.org/abs/1605.05207" target="_blank" rel="noopener">Saffman 2016: Neutral Atom Quantum Computing Review</a>
         <span>Comprehensive review of Rydberg-based QC. Essential reading for AMO PhD students.</span>
       </div>
       <div class="res-item">
-        <a href="https://arxiv.org/abs/1706.04073" target="_blank" rel="noopener">Kaufman &amp; Ni 2021: Atomic Array Review</a>
+        <a href="https://doi.org/10.1038/s41567-021-01357-2" target="_blank" rel="noopener">Kaufman &amp; Ni 2021: Atomic Array Review</a>
         <span>Optical tweezer arrays, from single-atom loading to many-body entanglement.</span>
       </div>
       <div class="res-item">
@@ -2011,7 +2015,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
         <span>Open-source Python: simulate Lindblad dynamics, Rabi oscillations, Wigner functions, and more.</span>
       </div>
       <div class="res-item">
-        <a href="https://arxiv.org/abs/2006.12326" target="_blank" rel="noopener">Browaeys &amp; Lahaye 2020: Many-body physics with arrays of Rydberg atoms</a>
+        <a href="https://doi.org/10.1038/s41567-019-0733-z" target="_blank" rel="noopener">Browaeys &amp; Lahaye 2020: Many-body physics with individually controlled Rydberg atoms</a>
         <span>State-of-the-art review of programmable Rydberg simulators and quantum gates.</span>
       </div>
     </div>
@@ -2019,7 +2023,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
     <div class="res-card">
       <h4>📄 Landmark Experimental Papers</h4>
       <div class="res-item">
-        <a href="https://arxiv.org/abs/quant-ph/9907071" target="_blank" rel="noopener">Jaksch et al. 1999, original Rydberg gate proposal</a>
+        <a href="https://doi.org/10.1103/PhysRevLett.85.2208" target="_blank" rel="noopener">Jaksch et al. 2000, original Rydberg gate proposal (PRL 85, 2208)</a>
         <span>The foundational theory paper proposing Rydberg blockade for neutral-atom two-qubit gates.</span>
       </div>
       <div class="res-item">
@@ -3851,7 +3855,7 @@ function opReset() {
     document.getElementById('repOut').innerHTML =
       `${w} flip${w === 1 ? '' : 's'} · lit checks: ${lit.length ? lit.join(', ') : 'none'} · decoder flips back qubit${c.filter(Boolean).length === 1 ? '' : 's'}: ${c.map((v, i) => v ? i + 1 : null).filter(Boolean).join(', ') || 'none'}<br>` +
       (w === 0 ? 'Stored bit intact, all checks quiet.' : !fail ? `<span style="color:#1c805b">Corrected ✓</span> (the code handles up to ${(d - 1) / 2} flips).`
-        : `<span style="color:#e20b0b">Logical error ✗</span>: ${w} of ${d} flipped, so the lighter explanation (${d - w} flip${d - w === 1 ? '' : 's'}) is wrong and the decoder completes the logical flip. The checks can't tell.`);
+        : `<span style="color:#cf0a0a">Logical error ✗</span>: ${w} of ${d} flipped, so the lighter explanation (${d - w} flip${d - w === 1 ? '' : 's'}) is wrong and the decoder completes the logical flip. The checks can't tell.`);
     chain.querySelectorAll('.rep-q').forEach(b => b.addEventListener('click', () => { err[+b.dataset.i] ^= 1; render(); }));
   }
   document.querySelectorAll('[data-rep-d]').forEach(b => b.addEventListener('click', () => {

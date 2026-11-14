@@ -24,7 +24,7 @@
   <meta name="description" content="Interactive Randomized Benchmarking (RB) Explorer, SPAM cancellation, Clifford group, RB decay model, interleaved RB, 2Q benchmarking, and neutral atom results.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/rb-explorer.html">
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -112,21 +112,21 @@
     .info-box {
       background: rgba(192,132,252,0.07); border: 1px solid rgba(192,132,252,0.22);
       border-radius: 10px; padding: .85rem 1.25rem;
-      font-size: .86rem; color: #7052fb; line-height: 1.7; margin: 1rem 0;
+      font-size: .86rem; color: #4d28fa; line-height: 1.7; margin: 1rem 0;
     }
     .info-box strong { color: var(--accent); }
     .warn-box {
       background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.22);
       border-radius: 10px; padding: .85rem 1.25rem;
-      font-size: .86rem; color: #886e02; line-height: 1.7; margin: 1rem 0;
+      font-size: .86rem; color: #7b6402; line-height: 1.7; margin: 1rem 0;
     }
-    .warn-box strong { color: #926a03; }
+    .warn-box strong { color: #835f03; }
     .good-box {
       background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2);
       border-radius: 10px; padding: .85rem 1.25rem;
-      font-size: .86rem; color: #158056; line-height: 1.7; margin: 1rem 0;
+      font-size: .86rem; color: #13754f; line-height: 1.7; margin: 1rem 0;
     }
-    .good-box strong { color: #1c805b; }
+    .good-box strong { color: #197352; }
 
     /* ── SVG circuit diagram ─────────────────────── */
     .circuit-wrap {
@@ -147,8 +147,8 @@
     .rb-table tr:last-child td { border-bottom: none; }
     .rb-table .mono { font-family: var(--font-mono); color: var(--accent); }
     .rb-table .paper { font-size: .78rem; color: var(--text-muted); }
-    .rb-table .good  { color: #1c805b; font-family: var(--font-mono); }
-    .rb-table .warn  { color: #926a03; font-family: var(--font-mono); }
+    .rb-table .good  { color: #197352; font-family: var(--font-mono); }
+    .rb-table .warn  { color: #835f03; font-family: var(--font-mono); }
 
     /* ── Two-col grid ────────────────────────────── */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
@@ -215,10 +215,14 @@
     .cliff-table td { padding: .4rem .6rem; border-bottom: 1px solid #0f1e38; color: var(--text-secondary); font-family: var(--font-mono); font-size: .77rem; }
     .cliff-table td:first-child { color: var(--text-primary); font-family: var(--font-sans); font-size: .82rem; }
     .cliff-table tr:last-child td { border-bottom: none; }
-  
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
+      :root[data-theme="dark"] { --accent: #8fbde0; }
+      [data-theme="dark"] .info-box { color: #8f78fc; }
+      [data-theme="dark"] .warn-box { color: #a88903; }
       [data-theme="dark"] .warn-box strong { color: #fbbf24; }
+      [data-theme="dark"] .good-box { color: #1a9f6b; }
       [data-theme="dark"] .good-box strong { color: #34d399; }
       [data-theme="dark"] .rb-table .good { color: #34d399; }
       [data-theme="dark"] .rb-table .warn { color: #fbbf24; }
@@ -525,7 +529,7 @@
           <tr><td>$S$ ($Z_{\pi/2}$)</td><td>$Z_{\pi/2}$</td><td>0 (virtual)</td><td>Frame rotation</td></tr>
           <tr><td>$T_3$ (120° face rotations)</td><td>1–3 pulse combos</td><td>1–3</td><td>8 elements, avg 2</td></tr>
           <tr><td>$T_6$ (180° edge rotations)</td><td>$X_{\pi/2}$ or $Z_{\pi/2}$</td><td>1–2</td><td>6 elements</td></tr>
-          <tr><td>Avg over all 24</td><td>—</td><td style="color:#9937fa;font-family:var(--font-mono)">1.875</td><td>Theoretical average</td></tr>
+          <tr><td>Avg over all 24</td><td>—</td><td style="color:#8c1ef9;font-family:var(--font-mono)">1.875</td><td>Theoretical average</td></tr>
         </tbody>
       </table>
       </div>
@@ -736,7 +740,7 @@
             Live RB Simulation
           </span>
           <button id="rbSimBtn" onclick="toggleRBSim()" style="background:rgba(192,132,252,0.1);border:1px solid rgba(153,55,250,0.3);
-            color:#9937fa;padding:.3rem .9rem;border-radius:6px;font-size:.78rem;cursor:pointer;">▶ Run</button>
+            color:#8c1ef9;padding:.3rem .9rem;border-radius:6px;font-size:.78rem;cursor:pointer;">▶ Run</button>
           <span id="rbSimStatus" style="font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);"></span>
         </div>
         <canvas id="rbAnimCanvas" width="600" height="100"
@@ -1142,7 +1146,7 @@
           <td class="paper">Scholl et al. / Barnes et al. 2022. Nuclear spin qubit with laser-free microwave drives.</td>
         </tr>
         <tr>
-          <td style="font-weight:700;color:#9c6506">Surface code threshold</td>
+          <td style="font-weight:700;color:#8d5b05">Surface code threshold</td>
           <td>—</td>
           <td class="good">&lt;0.001</td>
           <td class="good">&lt;0.1%</td>
@@ -1177,26 +1181,26 @@
       Foundational RB theory, scalable variants, experimental benchmarks, and QEC context.
     </p>
 
-    <h3 style="color:#9937fa;font-size:.95rem;margin:.75rem 0 .5rem">Randomized Benchmarking — Original &amp; Theory</h3>
+    <h3 style="color:#8c1ef9;font-size:.95rem;margin:.75rem 0 .5rem">Randomized Benchmarking — Original &amp; Theory</h3>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/PhysRevA.77.012307" target="_blank" rel="noopener">Knill et al. (2008), <em>PRA 77</em> 012307 — original randomized benchmarking proposal for Clifford groups</a>
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.106.180504" target="_blank" rel="noopener">Magesan, Gambetta &amp; Emerson (2011), <em>PRL 106</em> 180504 — scalable and robust RB; proves the exponential decay model</a>
       <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.109.080505" target="_blank" rel="noopener">Magesan et al. (2012), <em>PRL 109</em> 080505 — interleaved RB (IRB): extracting individual gate error rates</a>
-      <a class="read-link" href="https://arxiv.org/abs/quant-ph/0503243" target="_blank" rel="noopener">Emerson, Alicki &amp; Życzkowski (2005), arXiv:quant-ph/0503243 — scalable noise estimation with random unitary operators; early RB precursor</a>
+      <a class="read-link" href="https://doi.org/10.1088/1464-4266/7/10/021" target="_blank" rel="noopener">Emerson, Alicki &amp; Życzkowski (2005), <em>J. Opt. B 7</em> S347 — scalable noise estimation with random unitary operators; early RB precursor</a>
     </div>
 
-    <h3 style="color:#9937fa;font-size:.95rem;margin:.75rem 0 .5rem">Experimental Benchmarks (Neutral Atoms)</h3>
+    <h3 style="color:#8c1ef9;font-size:.95rem;margin:.75rem 0 .5rem">Experimental Benchmarks (Neutral Atoms)</h3>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1038/s41586-023-06481-y" target="_blank" rel="noopener">Evered et al. (2023), <em>Nature 622</em> — 99.5% two-qubit CZ gate fidelity in Rb tweezer arrays via RB</a>
       <a class="read-link" href="https://doi.org/10.1038/s41586-023-06927-3" target="_blank" rel="noopener">Bluvstein et al. (2024), <em>Nature 626</em> 58 — logical quantum processor based on reconfigurable atom arrays</a>
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.82.2313" target="_blank" rel="noopener">Saffman, Walker &amp; Mølmer (2010), <em>Rev. Mod. Phys.</em> — Rydberg quantum-information review and gate-error context</a>
     </div>
 
-    <h3 style="color:#9937fa;font-size:.95rem;margin:.75rem 0 .5rem">Error Correction Context</h3>
+    <h3 style="color:#8c1ef9;font-size:.95rem;margin:.75rem 0 .5rem">Error Correction Context</h3>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/PhysRevA.86.032324" target="_blank" rel="noopener">Fowler et al. (2012), <em>PRA 86</em> 032324 — surface code threshold analysis; why ~99% gate fidelity matters</a>
-      <a class="read-link" href="https://arxiv.org/abs/2008.11294" target="_blank" rel="noopener">Proctor et al. (2022), <em>Nature Physics</em> (arXiv:2008.11294) — measuring the capabilities of quantum computers with randomized benchmarking</a>
-      <a class="read-link" href="https://arxiv.org/abs/quant-ph/9705052" target="_blank" rel="noopener">Knill, Laflamme &amp; Zurek (1998) — quantum threshold theorem: how good gates need to be for fault tolerance</a>
+      <a class="read-link" href="https://doi.org/10.1038/s41567-021-01409-7" target="_blank" rel="noopener">Proctor et al. (2022), <em>Nature Physics 18</em> 75 — measuring the capabilities of quantum computers with randomized benchmarking</a>
+      <a class="read-link" href="https://doi.org/10.1126/science.279.5349.342" target="_blank" rel="noopener">Knill, Laflamme &amp; Zurek (1998), <em>Science 279</em> 342 — resilient quantum computation, the threshold theorem: how good gates need to be for fault tolerance</a>
     </div>
   </section>
 

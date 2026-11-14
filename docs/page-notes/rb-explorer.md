@@ -65,3 +65,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Emerson et al. 2005 is not PRA 71, 052312 (now arXiv:quant-ph/0503243); Bluvstein 2024 DOI → s41586-023-06927-3 ("RB used for gate calibration" removed); Proctor 2022 → arXiv:2008.11294 (DOI unverified).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Emerson, Alicki & Życzkowski → J. Opt. B 7, S347; Proctor et al. → Nature Physics 18, 75; Knill, Laflamme & Zurek → Science 279, 342 (all Crossref).

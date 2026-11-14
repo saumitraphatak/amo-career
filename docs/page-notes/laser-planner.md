@@ -33,3 +33,6 @@ This page had no `<footer>` element at all — went straight from `</main>` to i
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Foot, Metcalf & van der Straten, Saleh & Teich links removed (DOIs unverified or wrong).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Foot and Metcalf & van der Straten DOIs restored (Crossref-verified); Wieman & Hollberg DOI was a different RSI paper → 10.1063/1.1142305.

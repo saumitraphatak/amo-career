@@ -57,3 +57,6 @@ The drawing code is unchanged. Only the self-scheduling `requestAnimationFrame` 
 
 ## 2026-09-28 (overnight): symbols keep their case in uppercase labels
 Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "Case-safe symbols"). `text-transform: uppercase` had been turning symbols into different symbols. On this page 1 label rendered differently after the fix, e.g. "DETECTOR SIGNAL ΣZ(T) — OSCILLOSCOPE SWEEP" → "DETECTOR SIGNAL σz(t) — OSCILLOSCOPE SWEEP". No markup on the page changed apart from the cache version.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Zurek 2003 now links the RMP DOI (the arXiv id pointed elsewhere).

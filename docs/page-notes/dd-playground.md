@@ -78,3 +78,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: "Viola & Knill review" linked Degen, Reinhard & Cappellaro, RMP 89, 035002 (quantum sensing), relabelled to that; Álvarez & Suter now PRL 107, 230501 (was a wrong RMP DOI); Du et al. 2009 DOI nature08470 and "diamond" → irradiated malonic acid (solids). Light theme: bright-green accent replaced by #15803d (was 1.6:1).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Light-theme accent darkened again to #166534.

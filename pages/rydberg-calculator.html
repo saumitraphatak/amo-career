@@ -24,7 +24,7 @@
   <meta name="description" content="Rydberg atom properties calculator, quantum defect theory, blockade radius, C6 coefficients, and Rydberg gate design for neutral-atom quantum computing.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/rydberg-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -59,7 +59,7 @@
     /* ─── Blockade status banner ─────────────────────── */
     .blockade-yes {
       background: var(--bg-card); border: 1px solid #15803d; border-radius: 10px;
-      padding: 1rem 1.25rem; color: #11823a;
+      padding: 1rem 1.25rem; color: #0f7434;
       font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: .6rem;
     }
     .blockade-no {
@@ -270,7 +270,7 @@
     .blk3d-tbl td { padding:.3rem .35rem; border-bottom:1px solid var(--border); font-family:var(--font-mono); color:var(--text-secondary); }
     .blk3d-tbl tr.in td { color:var(--text-primary); }
     .blk3d-tbl td:first-child { white-space:nowrap; }
-    .blk3d-tbl .yes { color:#4f46e5; font-weight:700; } .blk3d-tbl .no { color:#059669; font-weight:700; }
+    .blk3d-tbl .yes { color:#4f46e5; font-weight:700; } .blk3d-tbl .no { color:#047351; font-weight:700; }
     [data-theme="dark"] .blk3d-tbl .yes { color:#a5b4fc; } [data-theme="dark"] .blk3d-tbl .no { color:#34d399; }
     .blk3d-key { display:flex; flex-wrap:wrap; gap:.3rem 1rem; font-size:.74rem; color:var(--text-muted); margin-top:.5rem; }
     .blk3d-key i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:.3rem; vertical-align:middle; }
@@ -284,10 +284,11 @@
     .pair-chartwrap { position: relative; height: 250px; }
     .pair-out { font-family: var(--font-mono, monospace); font-size: .76rem; line-height: 1.6; margin: .6rem 0; color: var(--text-secondary); }
     .pair-note { font-size: .74rem; line-height: 1.6; color: var(--text-muted); margin: .4rem 0 0; }
-  
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
       [data-theme="dark"] .blockade-yes { color: #4ade80; }
+      [data-theme="dark"] .blockade-no { color: #f95050; }
       [data-theme="dark"] .info-banner { color: #60a5fa; }
     }
   </style>
@@ -316,7 +317,7 @@
   <div class="page-hero" style="--page-color:#3f5d3f;--page-bg:rgba(63, 93, 63,0.07);--page-border:rgba(63, 93, 63,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.2);color:#4f5ff5;">🔮 Quantum 02 · Rydberg Blockade Lab</div>
+        <div class="page-hero-eyebrow" style="background:rgba(129,140,248,0.08);border-color:rgba(129,140,248,0.2);color:#283cf3;">🔮 Quantum 02 · Rydberg Blockade Lab</div>
         <h1>
           Rydberg <span class="grad-text" style="--ga: var(--c-ryd); --gb: #38bdf8;">Blockade Lab</span>
         </h1>
@@ -799,8 +800,8 @@ $r = 5\,\mu$m, $R_b = 10\,\mu$m $\Rightarrow \varepsilon_{\rm blk} \sim 10^{-4}$
         <span class="rl-icon">📄</span>Saffman, Walker &amp; Mølmer, Rev. Mod. Phys. 82, 2313 (2010), definitive Rydberg QC review
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
-      <a class="read-link" href="https://arxiv.org/abs/2202.13328" target="_blank" rel="noopener">
-        <span class="rl-icon">📄</span>Saffman 2022, Quantum computing with neutral atoms: current status and prospects
+      <a class="read-link" href="https://doi.org/10.1088/0953-4075/49/20/202001" target="_blank" rel="noopener">
+        <span class="rl-icon">📄</span>Saffman 2016, Quantum computing with atomic qubits and Rydberg interactions: progress and challenges (J. Phys. B 49, 202001)
         <span class="source-confidence"><span class="source-tag peer-reviewed">peer-reviewed</span></span>
       </a>
       <a class="read-link" href="https://arxiv.org/abs/2312.03982" target="_blank" rel="noopener">
@@ -1167,7 +1168,7 @@ function updateChart(species, orbKey, Omega_MHz) {
       const tr = document.createElement('tr');
       tr.style.borderBottom = '1px solid #0f1e35';
       tr.innerHTML = `
-        <td style="padding:.45rem .8rem; color:#9937fa; font-weight:600;">${oi===0 ? sp : ''}</td>
+        <td style="padding:.45rem .8rem; color:#8c1ef9; font-weight:600;">${oi===0 ? sp : ''}</td>
         <td style="padding:.45rem .8rem; font-family:var(--font-mono); color:var(--text-secondary);">${seriesLabels[orbKey]}</td>
         <td style="padding:.45rem .8rem; text-align:center; font-family:var(--font-mono); color:var(--text-primary);">${orb.d0.toFixed(7)}</td>
         <td style="padding:.45rem .8rem; text-align:center; font-family:var(--font-mono); color:var(--text-secondary);">${orb.d2.toFixed(4)}</td>

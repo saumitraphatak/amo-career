@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Quick Lab Console","description":"Essential AMO lab calculators: photon recoil, trap depth, scattering rate, beam waist, and more.","url":"https://amotoolkit.com/pages/lab-calculators.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Trap, Image & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Quick Lab Console","item":"https://amotoolkit.com/pages/lab-calculators.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -57,7 +57,7 @@
       margin-bottom: .75rem;
     }
     .calc-card h4 { color: var(--text-primary); font-size: .97rem; margin: 0 0 .15rem 0; }
-    .calc-card .sub { color: #64748b; font-size: .81rem; margin-bottom: .9rem; line-height: 1.5; }
+    .calc-card .sub { color: #59687c; font-size: .81rem; margin-bottom: .9rem; line-height: 1.5; }
 
     /* inputs */
     .field-row { display: flex; align-items: center; gap: .6rem; margin-bottom: .45rem; flex-wrap: wrap; }
@@ -220,17 +220,22 @@
 
     /* phone overflow fixes (overnight 2026-09-28) */
     .calc-grid > * { min-width: 0; }
-  
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
+      [data-theme="dark"] .calc-card .sub { color: #7d8da2; }
       [data-theme="dark"] .field-row .unit { color: #7a8aa3; }
       [data-theme="dark"] .result-val { color: #4ade80; }
       [data-theme="dark"] .result-lbl { color: #4ade80; }
       [data-theme="dark"] .result-warn { color: #fbbf24; }
+      [data-theme="dark"] .computed-M { color: #9478fb; }
       [data-theme="dark"] .cg-bra { color: #4ade80; }
       [data-theme="dark"] .cg-exact { color: #4ade80; }
       [data-theme="dark"] .cg-dec { color: #4ade80; }
       [data-theme="dark"] .cg-zero { color: #7a8aa3; }
+      [data-theme="dark"] .sym-details[open] summary { color: #de43f6; }
+      [data-theme="dark"] table.cgt th { color: #9478fb; }
+      [data-theme="dark"] table.cgt td.zero { color: #788eae; }
       [data-theme="dark"] table.cgt td.pos { color: #4ade80; }
       [data-theme="dark"] table.cgt td.neg { color: #f87171; }
     }
@@ -243,7 +248,7 @@
     <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44, 74, 99,0.07);--page-border:rgba(44, 74, 99,0.2);">
       <div class="container page-hero-2col">
         <div class="page-hero-text">
-          <div class="page-hero-eyebrow" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#926a03;">🧮 Trap, Image & Cool 04 · Quick Lab Console</div>
+          <div class="page-hero-eyebrow" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.2);color:#835f03;">🧮 Trap, Image & Cool 04 · Quick Lab Console</div>
           <h1>Quick Lab Console</h1>
           <p class="page-hero-desc">
             A console for the everyday numbers that decide whether an AMO setup is plausible: beams, RF power, recoil, trap frequencies, cavity scales, angular momentum, and unit conversions.
@@ -685,7 +690,7 @@ Reduced by wavefront curvature for $\Delta z \neq 0$</div>
         <div style="margin-top:1.5rem">
           <div style="font-size:.85rem;font-weight:600;color:var(--text-primary);margin-bottom:.5rem">References</div>
           <div class="read-links">
-            <span class="read-link">Foot (2005), <em>Atomic Physics</em> — trap frequencies, recoil, Zeeman, and laser cooling formulas</span>
+            <a class="read-link" href="https://doi.org/10.1093/oso/9780198506959.001.0001" target="_blank" rel="noopener">Foot (2005), <em>Atomic Physics</em> — trap frequencies, recoil, Zeeman, and laser cooling formulas</a>
             <a class="read-link" href="https://doi.org/10.1016/S1049-250X(08)60186-X" target="_blank" rel="noopener">Grimm, Weidemüller &amp; Ovchinnikov (2000), <em>Adv. At. Mol. Opt. Phys. 42</em> — optical dipole trap depth, polarizability, Lamb-Dicke parameter</a>
             <a class="read-link" href="https://www.wiley.com/en-us/Quantum+Electronics-p-9780471600701" target="_blank" rel="noopener">Yariv (1989), <em>Quantum Electronics</em> — gaussian beam propagation, cavity mode matching, AOM optics</a>
             <span class="read-link">Saleh &amp; Teich (2019), <em>Fundamentals of Photonics</em> — fiber coupling, telescope design, beam waist transformations</span>
@@ -846,7 +851,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
                   <th scope="col" style="text-align:left;padding:4px 8px;color:var(--text-muted);font-size:.72rem;text-transform:uppercase">Use</th>
                 </tr>
                 <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#18813e">1.08</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.531</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.216</td><td style="padding:4px 8px;color:var(--text-secondary)">PDH: max error signal ∝ J₀J₁</td></tr>
-                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#926a03">2.405</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.269</td><td style="padding:4px 8px;color:var(--text-secondary)">Carrier suppression (STIRAP, EIT)</td></tr>
+                <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#835f03">2.405</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.269</td><td style="padding:4px 8px;color:var(--text-secondary)">Carrier suppression (STIRAP, EIT)</td></tr>
                 <tr style="border-bottom:1px solid #0e1826"><td style="padding:4px 8px;font-family:var(--font-mono);color:#9937fa">5.520</td><td style="padding:4px 8px;font-family:var(--font-mono)">≈ 0</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.116</td><td style="padding:4px 8px;color:var(--text-secondary)">2nd carrier null</td></tr>
                 <tr><td style="padding:4px 8px;font-family:var(--font-mono);color:#0678ab">0.5</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.881</td><td style="padding:4px 8px;font-family:var(--font-mono)">0.059</td><td style="padding:4px 8px;color:var(--text-secondary)">Weak modulation (small sidebands)</td></tr>
               </table>

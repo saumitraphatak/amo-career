@@ -73,3 +73,6 @@ The four stage pills ("Stage 1 — … 10 papers") open the four stage chapters 
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: card 22 is Kaufman, Lester & Regal, PRX 2, 041014 (2012), not PRL 109, 163006, and the garbled "η = 0.01" line is gone; Ye, Kimble & Katori 2008 is a review of magic-wavelength traps (description rewritten); Anderson 1995 "87,000 atoms" removed; card 54 (Sundar et al., PRA 99, 043421, not found) replaced by Schweigler et al., Nature 545, 323 (2017), the coupled-1D-BEC sine-Gordon experiment its text described.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Titles corrected to the published ones (Greiner 2002, Manetsch 2025, Altman 2021, Carr 2009, Google Hartree-Fock 2020). Page content now sits in a 1280px container instead of touching the window edge.

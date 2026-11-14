@@ -110,3 +110,6 @@ Two additive updates to the Helios/IonQ flash-cards and Status(2025–2026) summ
 - Quantinuum published a third 2026 Helios logical-qubit preprint since the last rotation ("Quantum error correction well below the color code threshold," arXiv:2610.24077, Oct 16 2026): triangular color codes (d=3/5/7), logical memory error 5×10⁻⁶ with Λ≈12 suppression per distance step. Company blog (Oct 19 2026) calls it a 10× improvement over September's "Helix" result — noted as a company framing, not independently benchmarked here. Tagged preprint/not-yet-peer-reviewed, consistent with the existing "Skinny Logic"/"Helix" citations on this card.
 - IonQ announced (Oct 12 2026) an all-stock agreement to acquire Zero Trust security firm Elisity for up to $1.3B incl. earnouts; added one sentence to the IonQ profile card, worded as "announced... not yet completed" since the deal isn't expected to close until Q4 2026.
 Both facts independently re-verified (arXiv abstract page; SEC 8-K exhibit) before writing, per the site's established "delegate research, verify before acting" convention. No existing claim was changed.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Two arXiv links pointed at unrelated papers: IBM Heron R2 now links IBM's Nov 2024 post (156 qubits, heavy-hex); Alice & Bob now arXiv:2401.09541 (LDPC-cat codes).

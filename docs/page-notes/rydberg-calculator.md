@@ -64,3 +64,6 @@ New card at the end of the calculator section, "In an array: how many neighbours
 
 ## 2026-11-14: explainer sweep 2
 - **Two atoms, one laser.** Exact three-level dynamics with the calculator's Ω and U(r) (hooked into compute()); shows independent flopping → √2-faster |gg⟩↔|W⟩ oscillation; largest P(rr) → ½(Ω/U)², so the page's ε ≈ (d/R_b)¹² is the conservative side.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Saffman review is 2016, J. Phys. B 49, 202001 (was labelled 2022 with a wrong arXiv id).

@@ -45,3 +45,6 @@ Section 02 gained "What the camera gives you: a simulated OD image" (surface3d.j
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Hueck et al. 2017 journal reference (RSI 88, 123702) unverified → arXiv:1702.01943; Loftus et al. 2004 is PRA 70, 063413 (was 031401(R)).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Hueck et al. 2017 is Opt. Express 25, 8670 (Crossref); DOI restored.

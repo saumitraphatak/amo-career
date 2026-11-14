@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser Cooling Simulator","description":"Interactive laser cooling simulator, visualise Doppler and sub-Doppler cooling of atoms in real time.","url":"https://amotoolkit.com/pages/cooling-simulator.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Trap, Image & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Laser Cooling Simulator","item":"https://amotoolkit.com/pages/cooling-simulator.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -104,7 +104,7 @@
     .comp-table td { padding: .55rem .9rem; border-bottom: 1px solid #0f1e35; color: var(--text-secondary); vertical-align: top; }
     .comp-table tr:hover td { background: var(--bg-card); }
     .comp-table .hot { color: #e20b0b; }
-    .comp-table .mid { color: #926a03; }
+    .comp-table .mid { color: #835f03; }
     .comp-table .cold { color: var(--c-cool); }
     .comp-table .ultra { color: #7a4ff7; }
 
@@ -128,10 +128,10 @@
       line-height: 1.65;
     }
     .code-block .kw  { color: #9937fa; }
-    .code-block .fn  { color: #076be6; }
+    .code-block .fn  { color: #0556b9; }
     .code-block .cm  { color: #475569; }
     .code-block .st  { color: #1c805b; }
-    .code-block .num { color: #926a03; }
+    .code-block .num { color: #835f03; }
 
     /* Reference list */
     .ref-list { list-style: none; padding: 0; margin: 0; }
@@ -225,8 +225,10 @@
       font-size: .88rem;
       line-height: 1.6;
     }
-
   
+    /* six species cards: two even rows of three */
+    @media (min-width: 900px) { .atom-guide { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
       [data-theme="dark"] .comp-table .hot { color: #f87171; }
@@ -234,13 +236,11 @@
       [data-theme="dark"] .comp-table .ultra { color: #a78bfa; }
       [data-theme="dark"] .code-block { color: #93c5fd; }
       [data-theme="dark"] .code-block .kw { color: #c4b5fd; }
+      [data-theme="dark"] .code-block .fn { color: #328cf9; }
       [data-theme="dark"] .code-block .cm { color: #7a8aa3; }
       [data-theme="dark"] .code-block .st { color: #34d399; }
       [data-theme="dark"] .code-block .num { color: #fbbf24; }
     }
-  
-    /* six species cards: two even rows of three */
-    @media (min-width: 900px) { .atom-guide { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   </style>
 </head>
 <body>
@@ -250,7 +250,7 @@
   <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161, 60, 28,0.07);--page-border:rgba(161, 60, 28,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-      <div class="page-hero-eyebrow" style="background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.2);color:#076be6;">❄️ Trap, Image & Cool 07 · Laser Cooling Simulator</div>
+      <div class="page-hero-eyebrow" style="background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.2);color:#0556b9;">❄️ Trap, Image & Cool 07 · Laser Cooling Simulator</div>
       <h1>
         Laser <span class="grad-text" style="--ga: var(--c-cool); --gb: #818cf8;">Cooling Simulator</span>
       </h1>
@@ -324,14 +324,14 @@
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.75rem;">
         <div style="flex:1;min-width:180px;">
           <label for="mbDetSlide" style="font-size:.78rem;color:var(--text-muted);display:block;margin-bottom:.25rem;">
-            Detuning δ/Γ &nbsp;<span id="mbDetLbl" style="color:#076be6;font-family:var(--font-mono);">−0.5</span>
+            Detuning δ/Γ &nbsp;<span id="mbDetLbl" style="color:#0556b9;font-family:var(--font-mono);">−0.5</span>
           </label>
           <input type="range" id="mbDetSlide" min="-3" max="-0.1" step="0.05" value="-0.5"
             style="width:100%;accent-color:#076be7;" oninput="mbSliderUpdate()">
         </div>
         <div style="flex:1;min-width:180px;">
           <label for="mbSatSlide" style="font-size:.78rem;color:var(--text-muted);display:block;margin-bottom:.25rem;">
-            Saturation s₀ &nbsp;<span id="mbSatLbl" style="color:#076be6;font-family:var(--font-mono);">0.5</span>
+            Saturation s₀ &nbsp;<span id="mbSatLbl" style="color:#0556b9;font-family:var(--font-mono);">0.5</span>
           </label>
           <input type="range" id="mbSatSlide" min="0.05" max="5" step="0.05" value="0.5"
             style="width:100%;accent-color:#076be7;" oninput="mbSliderUpdate()">
@@ -340,7 +340,7 @@
       <canvas id="mbCanvas" width="560" height="160" style="width:100%;height:160px;display:block;border-radius:8px;background:var(--bg-card);"
         role="img" aria-label="Histogram of atomic velocities along one axis; it narrows toward zero as the atoms cool to the temperature shown below"></canvas>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);">
-        <span id="mbTLabel" style="color:#076be6;">T = — μK</span>
+        <span id="mbTLabel" style="color:#0556b9;">T = — μK</span>
         <span style="color:rgba(146,106,3,0.6);">▏= Doppler limit</span>
         <span>← hot &nbsp;|&nbsp; velocity &nbsp;|&nbsp; hot →</span>
       </div>

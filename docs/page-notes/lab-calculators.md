@@ -75,3 +75,6 @@ The seven route-cards open their chapters (`data-chapter` 1–7). The Page Playb
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Foot and Saleh & Teich links removed (DOIs pointed at unrelated books).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Foot, Atomic Physics: correct OUP DOI restored.

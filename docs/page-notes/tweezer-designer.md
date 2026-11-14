@@ -47,3 +47,6 @@ Prompted by a reader (Mariam, a PhD student cross-checking her thesis numbers), 
 
 ## 2026-11-14: explainer sweep
 Section 01 gained "Diameter or radius? The focal spot the formulas assume" (`.focus-card`): radial profiles of the Airy spot [2J₁(x)/x]², the matched Gaussian (w₀ = (√2/π)λ/NA, same peak and curvature) and the mistaken Gaussian (w₀ = 0.52λ/NA, peak 0.75×), all at the same power in units of λ/NA (Chart.js), plus √I false-colour images of the Airy spot (rings visible) and the Gaussian. Text: rings carry ~16% of the power (1 − J₀² − J₁² at the first zero = 0.838 inside).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Barredo 2016 title; Endres 2016 is Lukin/Greiner/Vuletić; Norcia 2019 description no longer claims ⁸⁷Sr nuclear-spin qubits.

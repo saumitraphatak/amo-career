@@ -73,3 +73,6 @@ There are no index cards, so an automatic "5 chapters on this page" chip strip s
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Drever et al. 1983 DOI corrected to BF00702605 (Appl. Phys. B 31, 97); Salomon, Hils & Hall 1988 is "laser stabilization at the millihertz level", not "shot-noise limit".
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Wieman & Hollberg DOI was a different RSI paper → 10.1063/1.1142305.

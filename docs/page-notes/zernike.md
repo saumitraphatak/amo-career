@@ -94,3 +94,6 @@ The four "Recommended workflow" steps open chapters 1–4. The Mode Atlas (chapt
 
 ## 2026-11-14: citation check + contrast pass
 - Citations: Gerchberg & Saxton is Optik 35, 237 (no DOI; the AO link was another paper); Born & Wolf and Tyson unlinked (DOIs unverified).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Noll 1976 title; Born & Wolf and Tyson DOIs restored (Crossref-verified).

@@ -97,3 +97,6 @@ The Science paper (DOI 10.1126/science.aee7961) is "Magic state cultivation on a
 
 ## 2026-11-14: citation check + contrast pass
 - Six hero stats now 3 + 3 (were 5 + 1).
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Timeline years mix the lane colour with the text colour so they read in both themes.

@@ -112,3 +112,6 @@ Entanglement section gained "Play the CHSH game": four basis-angle sliders, pred
 ## 2026-11-14: explainer sweep 3
 - **Entanglement: teleportation card.** Input |ψ⟩ (θ, φ), the four outcomes with Bob's pre-correction state and fix, and Bob's average without the bits (origin). "Teleport once" picks an outcome, "Send the bits" applies the correction.
 - **QEC: repetition-code playground.** Click-to-flip chain (d = 3/5/7), lit parity checks, minimum-weight decoder, logical-failure message; p_L vs p curves (binomial tail) with 20k-shot Monte Carlo, crossing at 50%, with a note on why the surface-code threshold is ~1%.
+
+## 2026-11-14: citation check 2 + contrast pass 2
+- Nine reference links fixed (arXiv ids that pointed at other papers → verified DOIs/ids: Barenco 1995, Horodecki 2009, CHSH 1969, Zhang 2003, Jaksch 2000, Zurek 2003, Ebadi 2021/2022, Gross & Bloch 2017, Saffman 2016, Kaufman & Ni, Browaeys & Lahaye). Action buttons: white on ink-blue (light), dark ink on violet (dark); the Single-shot button had blue text on a teal fill.

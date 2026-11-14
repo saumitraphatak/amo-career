@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Laser Locking Guide","description":"Laser frequency stabilisation guide for AMO physics: Doppler-free spectroscopy, PDH locking, offset locking, and transfer cavity.","url":"https://amotoolkit.com/pages/laser-locking.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Laser Locking Guide","item":"https://amotoolkit.com/pages/laser-locking.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -138,16 +138,16 @@
       color: var(--text-secondary); vertical-align: top;
     }
     .sum-table tr:hover td { background: var(--bg-card); }
-    .tick { color: #1c805b; }
-    .cross { color: #e20b0b; }
+    .tick { color: #197352; }
+    .cross { color: #b40909; }
 
     /* Hierarchy display */
     .hier-box {
       background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 10px;
       padding: 1rem 1.25rem; font-family: var(--font-mono); font-size: .82rem;
-      color: #4f72a4; white-space: pre; overflow-x: auto; line-height: 1.75;
+      color: #486896; white-space: pre; overflow-x: auto; line-height: 1.75;
     }
-    .hier-box .hl0 { color: #e20b0b; }
+    .hier-box .hl0 { color: #b40909; }
     .hier-box .hl1 { color: #076be6; }
     .hier-box .hl2 { color: #7a4ff7; }
 
@@ -192,19 +192,23 @@
     .pdhx-chartwrap { position: relative; height: 230px; }
     .pdhx-note { font-size: .74rem; line-height: 1.6; color: var(--text-muted); margin: .7rem 0 0; }
     @media (max-width: 560px) { .pdhx-ctrls { grid-template-columns: 1fr; } }
-  
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
+      [data-theme="dark"] .step-box { color: #8f77fc; }
       [data-theme="dark"] .step-box strong { color: #a78bfa; }
       [data-theme="dark"] .info-banner { color: #60a5fa; }
       [data-theme="dark"] .good-banner { color: #4ade80; }
+      [data-theme="dark"] .warn-banner { color: #a98802; }
       [data-theme="dark"] .r-lbl { color: #4ade80; }
       [data-theme="dark"] .r-val { color: #4ade80; }
       [data-theme="dark"] .tick { color: #34d399; }
       [data-theme="dark"] .cross { color: #f87171; }
       [data-theme="dark"] .hier-box { color: #93c5fd; }
       [data-theme="dark"] .hier-box .hl0 { color: #f87171; }
+      [data-theme="dark"] .hier-box .hl1 { color: #348cf9; }
       [data-theme="dark"] .hier-box .hl2 { color: #a78bfa; }
+      [data-theme="dark"] .lab-card h5 { color: #348cf9; }
     }
   </style>
 </head>
@@ -215,7 +219,7 @@
   <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161, 60, 28,0.07);--page-border:rgba(161, 60, 28,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.2);color:#e20b0b;">🔐 Build 04 · Laser Locking Guide</div>
+        <div class="page-hero-eyebrow" style="background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.2);color:#b40909;">🔐 Build 04 · Laser Locking Guide</div>
         <h1>
           Laser <span class="grad-text" style="--ga: var(--c-lock); --gb: #fbbf24;">Stabilization Guide</span>
         </h1>
@@ -301,17 +305,17 @@
       ">
         <button id="lockBtn" onclick="laserLockToggle()" style="
           padding:.35rem 1.1rem; border-radius:6px; border:1px solid #e20b0b;
-          background:rgba(248,113,113,0.1); color:#e20b0b;
+          background:rgba(248,113,113,0.1); color:#b40909;
           font-size:.82rem; font-weight:700; cursor:pointer; font-family:var(--font-sans);
           transition: all .2s;
         ">🔓 Free Running</button>
         <button onclick="laserPerturb()" style="
           padding:.35rem 1.1rem; border-radius:6px; border:1px solid #475569;
-          background:rgba(255,255,255,0.03); color:#4f72a4;
+          background:rgba(255,255,255,0.03); color:#486896;
           font-size:.82rem; font-weight:600; cursor:pointer; font-family:var(--font-sans);
         ">⚡ Perturb</button>
-        <span style="font-size:.8rem; color:#64748b; font-family:var(--font-mono);">
-          offset: <span id="driftHz" style="color:#4f72a4;">—</span>
+        <span style="font-size:.8rem; color:#59687c; font-family:var(--font-mono);">
+          offset: <span id="driftHz" style="color:#486896;">—</span>
         </span>
       </div>
 
@@ -325,10 +329,10 @@
         <!-- P slider -->
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem;">
-            <label style="font-size:.76rem;font-weight:700;color:#e20b0b;font-family:var(--font-mono);">
+            <label style="font-size:.76rem;font-weight:700;color:#b40909;font-family:var(--font-mono);">
               P &nbsp;<span style="font-weight:400;color:#475569;">Gain</span>
             </label>
-            <span id="pVal" style="font-size:.8rem;font-family:var(--font-mono);color:#e20b0b;">0.18</span>
+            <span id="pVal" style="font-size:.8rem;font-family:var(--font-mono);color:#b40909;">0.18</span>
           </div>
           <input type="range" id="pSlider" min="0.01" max="0.60" step="0.01" value="0.18"
             oninput="updatePID()"
@@ -360,15 +364,15 @@
           font-size:.78rem; font-family:var(--font-mono);
           padding:.35rem .6rem; border-radius:5px;
           background:rgba(52,211,153,0.07); border:1px solid rgba(52,211,153,0.2);
-          color:#1c805b; text-align:center;
+          color:#197352; text-align:center;
         ">✓ Well-tuned — fast snap, no overshoot</div>
       </div>
     </div>
 
     <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin:.5rem 0 0;">
-      Try: high <strong style="color:#e20b0b;">P</strong> + low <strong style="color:#076be6;">D</strong> to see ringing &nbsp;·&nbsp;
-      low <strong style="color:#e20b0b;">P</strong> + high <strong style="color:#076be6;">D</strong> for overdamped crawl &nbsp;·&nbsp;
-      hit <strong style="color:#4f72a4;">Perturb</strong> while locked
+      Try: high <strong style="color:#b40909;">P</strong> + low <strong style="color:#076be6;">D</strong> to see ringing &nbsp;·&nbsp;
+      low <strong style="color:#b40909;">P</strong> + high <strong style="color:#076be6;">D</strong> for overdamped crawl &nbsp;·&nbsp;
+      hit <strong style="color:#486896;">Perturb</strong> while locked
     </p>
   </div>
 
@@ -982,7 +986,7 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
           error-signal intuition, circuit diagram, and practical locking questions.
           Jump directly to the PDH section:
           <a href="#pdh"
-             style="color:#e20b0b;font-weight:700;text-decoration:underline;">
+             style="color:#b40909;font-weight:700;text-decoration:underline;">
             PDH Locking Guide →
           </a>
         </div>
@@ -1144,7 +1148,7 @@ Error signal: fast path → laser current (high BW, small range)<br>
           PDH lock stabilizes to, the vacuum, thermal, and vibration engineering that the servo electronics
           alone don't address. Based on Jamie A. Boyd &amp; Thierry Lahaye,
           <a href="https://doi.org/10.1119/5.0161369" target="_blank" rel="noopener"
-             style="color:#e20b0b;font-weight:700;text-decoration:underline;">
+             style="color:#b40909;font-weight:700;text-decoration:underline;">
             <em>Am. J. Phys.</em> 92, 50 (2024) →
           </a>
         </div>
@@ -1439,14 +1443,14 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
 
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#9c6506">04 </span>Sources
+      <span style="color:#8d5b05">04 </span>Sources
     </h2>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1119/1.1286663" target="_blank" rel="noopener">Black (2001), an introduction to Pound-Drever-Hall locking</a>
       <a class="read-link" href="https://doi.org/10.1007/BF00702605" target="_blank" rel="noopener">Drever et al. (1983), <em>Appl. Phys. B 31</em> 97 — laser phase and frequency stabilization using an optical resonator</a>
       <a class="read-link" href="https://steck.us/alkalidata/" target="_blank" rel="noopener">Steck alkali data sheets for Cs, Rb, Li, Na, K line constants</a>
       <a class="read-link" href="https://physics.nist.gov/asd" target="_blank" rel="noopener">NIST Atomic Spectra Database</a>
-      <a class="read-link" href="https://doi.org/10.1063/1.1141263" target="_blank" rel="noopener">Wieman &amp; Hollberg (1991), <em>RSI 62</em> 1 — using diode lasers in atomic physics; the definitive practical guide</a>
+      <a class="read-link" href="https://doi.org/10.1063/1.1142305" target="_blank" rel="noopener">Wieman &amp; Hollberg (1991), <em>RSI 62</em> 1 — using diode lasers in atomic physics; the definitive practical guide</a>
       <a class="read-link" href="https://doi.org/10.1016/0030-4018(80)90069-3" target="_blank" rel="noopener">Hänsch &amp; Couillaud (1980), <em>Opt. Comm. 35</em> 441 — polarization spectroscopy for cavity locking without RF modulation</a>
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.87.637" target="_blank" rel="noopener">Ludlow et al. (2015), <em>Rev. Mod. Phys. 87</em> 637 — optical atomic clocks; covers ultra-narrow laser stabilization at the frontier</a>
       <a class="read-link" href="https://doi.org/10.1364/JOSAB.5.001576" target="_blank" rel="noopener">Salomon, Hils &amp; Hall (1988), <em>JOSA B 5</em> 1576 — laser stabilization at the millihertz level</a>

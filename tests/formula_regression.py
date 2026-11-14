@@ -595,6 +595,13 @@ def test_citation_and_contrast_audit_2026_11() -> None:
     assert "science.269.5221.198" in mot[i - 300:i]
     css = read("css/styles.css")
     assert "--text-muted:     #6b604b;" in css and "--text-muted:     #7a8aa3;" in css
+    # second pass (Crossref / arXiv records): links that resolved to unrelated papers stay gone
+    for w in ["1.1141263", "arxiv.org/abs/2402.08748", "arxiv.org/abs/2401.08618", "arxiv.org/abs/1605.01818",
+              "arxiv.org/abs/2110.14206", "arxiv.org/abs/2107.09341", "arxiv.org/abs/2111.11798", "60 km fiber"]:
+        assert w not in site, w
+    for right in ["10.1063/1.1142305", "10.1364/OE.25.008670", "10.1364/JOSAB.21.001889", "10.1088/1464-4266/7/10/021",
+                  "10.1038/s41567-021-01409-7", "10.1103/RevModPhys.95.045006", "arxiv.org/abs/2401.09541", "linked by a 60 m fiber"]:
+        assert right in site, right
 
 
 def main() -> None:

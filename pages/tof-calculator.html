@@ -24,7 +24,7 @@
   <meta name="description" content="Time-of-flight thermometry calculator for ultracold atoms: ballistic expansion, T from σ² vs t² fit, de Broglie wavelength, and phase-space density.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/tof-calculator.html">
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -44,7 +44,7 @@
     }
     .prop-card-val {
       font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700;
-      color: #0678ab; line-height: 1;
+      color: #056c9a; line-height: 1;
     }
     .prop-card-unit { font-size: .8rem; color: var(--text-muted); margin-top: .25rem; }
     .prop-card-sub  { font-size: .75rem; color: var(--text-secondary); margin-top: .3rem; }
@@ -61,7 +61,7 @@
     }
     .ctrl-panel h5 {
       font-size: .8rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .07em; color: #0678ab; margin: 0 0 .9rem 0;
+      letter-spacing: .07em; color: #056c9a; margin: 0 0 .9rem 0;
     }
     .field-row { margin-bottom: .8rem; }
     .field-row label {
@@ -74,7 +74,7 @@
     }
     .field-row select:focus, .field-row input:focus { outline: none; border-color: #0678ab; }
     .field-row input[type=range] { width: 100%; accent-color: #0678ab; margin-top: .2rem; }
-    .lbl-val { color: #0678ab; font-family: var(--font-mono); }
+    .lbl-val { color: #056c9a; font-family: var(--font-mono); }
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
     @media(max-width:800px) { .two-col { grid-template-columns: 1fr; } }
@@ -84,7 +84,7 @@
       border-left: 4px solid #0678ab; border-radius: 10px;
       padding: 1rem 1.3rem; margin-bottom: 1rem;
     }
-    .theory-box h4 { font-size: .93rem; font-weight: 700; color: #0678ab; margin: 0 0 .5rem 0; }
+    .theory-box h4 { font-size: .93rem; font-weight: 700; color: #056c9a; margin: 0 0 .5rem 0; }
     .theory-box p  { font-size: .86rem; color: var(--text-secondary); line-height: 1.7; margin: 0; }
 
     .formula-box {
@@ -116,7 +116,7 @@
       font-size: .78rem; margin-bottom: .25rem;
     }
     .limit-bar-name { color: var(--text-secondary); }
-    .limit-bar-val  { font-family: var(--font-mono); color: #0678ab; }
+    .limit-bar-val  { font-family: var(--font-mono); color: #056c9a; }
     .limit-bar-track {
       height: 8px; background: var(--bg-card); border-radius: 4px; overflow: hidden;
     }
@@ -146,7 +146,7 @@
 
     .add-row-btn {
       background: rgba(56,189,248,.08); border: 1px dashed rgba(6,120,171,0.35);
-      color: #0678ab; border-radius: 7px; padding: .5rem 1rem;
+      color: #056c9a; border-radius: 7px; padding: .5rem 1rem;
       font-size: .82rem; cursor: pointer; width: 100%; margin-top: .5rem;
       transition: background .15s;
     }
@@ -163,7 +163,7 @@
 
     /* ─── PSD / degeneracy display ───────────────── */
     .psd-big {
-      font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700; color: #0678ab;
+      font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700; color: #056c9a;
       text-align: center; padding: .75rem;
     }
     .psd-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
@@ -204,7 +204,7 @@
     .aniso-out { font-family: var(--font-mono); font-size: .76rem; color: var(--text-secondary); margin: .5rem 0; }
     .aniso-note { font-size: .74rem; line-height: 1.6; color: var(--text-muted); margin: .4rem 0 0; }
     @media (max-width: 560px) { .aniso-ctrls { grid-template-columns: 1fr; } }
-  
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
       [data-theme="dark"] .prop-card-val { color: #38bdf8; }
@@ -213,6 +213,7 @@
       [data-theme="dark"] .theory-box h4 { color: #38bdf8; }
       [data-theme="dark"] .info-banner { color: #38bdf8; }
       [data-theme="dark"] .limit-bar-val { color: #38bdf8; }
+      [data-theme="dark"] .fit-table .del-btn:hover { color: #f15656; }
       [data-theme="dark"] .add-row-btn { color: #38bdf8; }
       [data-theme="dark"] .psd-big { color: #38bdf8; }
     }
@@ -242,7 +243,7 @@
   <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161, 60, 28,0.07);--page-border:rgba(161, 60, 28,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.2);color:#0678ab;">🌡️ Trap, Image & Cool 03 · MOT Temperature</div>
+        <div class="page-hero-eyebrow" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.2);color:#056c9a;">🌡️ Trap, Image & Cool 03 · MOT Temperature</div>
         <h1>
           MOT <span class="grad-text" style="--ga:#38bdf8; --gb:#818cf8;">Temperature</span>
         </h1>
@@ -321,7 +322,7 @@
   <!-- ═══ SECTION 1: ATOM & TEMPERATURE ════════════════════════ -->
   <section class="section-block anim-in delay-1">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#0678ab">01 </span>Atom &amp; Temperature
+      <span style="color:#056c9a">01 </span>Atom &amp; Temperature
     </h2>
     <div class="two-col">
 
@@ -451,7 +452,7 @@
   <!-- ═══ SECTION 2: EXPANSION CURVE ══════════════════════════ -->
   <section class="section-block anim-in delay-2">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#0678ab">02 </span>Cloud Expansion σ(t)
+      <span style="color:#056c9a">02 </span>Cloud Expansion σ(t)
     </h2>
     <div class="two-col">
 
@@ -571,7 +572,7 @@ $$\Rightarrow \sigma^2(t) = \frac{k_{\rm B}T}{m}\left(\frac{1}{\omega^2} + t^2\r
   <!-- ═══ SECTION 3: FIT FROM DATA ════════════════════════════ -->
   <section class="section-block anim-in delay-3">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#0678ab">03 </span>Fit Temperature from Data
+      <span style="color:#056c9a">03 </span>Fit Temperature from Data
     </h2>
     <p style="color:var(--text-secondary);font-size:.88rem;margin-bottom:1rem;">
       Enter measured cloud widths σ at known TOF times t. The tool performs a linear least-squares
@@ -668,7 +669,7 @@ $$\Rightarrow \sigma^2(t) = \frac{k_{\rm B}T}{m}\left(\frac{1}{\omega^2} + t^2\r
   <!-- ═══ SECTION 4: COOLING LIMITS REFERENCE ═════════════════ -->
   <section class="section-block anim-in delay-4">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#0678ab">04 </span>Cooling Limit Reference
+      <span style="color:#056c9a">04 </span>Cooling Limit Reference
     </h2>
     <div id="limitsGrid" class="prop-grid-3" style="margin-bottom:1rem;">
       <!-- filled by JS -->
@@ -739,7 +740,7 @@ $$T_c = \frac{\hbar\omega}{k_{\rm B}}\left(\frac{N}{\zeta(3)}\right)^{1/3} \qqua
   <!-- ═══ SECTION 5: REFERENCES ════════════════════════════════ -->
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#0678ab">05 </span>References
+      <span style="color:#056c9a">05 </span>References
     </h2>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.70.721" target="_blank" rel="noopener">

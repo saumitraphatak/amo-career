@@ -37,7 +37,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"AMO Group Finder","description":"Directory of AMO physics and quantum computing research groups at top US universities. Filter by species, technique, and quantum platform.","url":"https://amotoolkit.com/pages/amo-groups.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Career","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"AMO Group Finder","item":"https://amotoolkit.com/pages/amo-groups.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=30">
+  <link rel="stylesheet" href="../css/styles.css?v=31">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
 
@@ -76,7 +76,7 @@
     .path-btn {
       border:1px solid var(--border);
       border-radius:999px;
-      background:rgba(2,6,23,.24);
+      background:rgba(2,6,23,.06);
       color:var(--text-secondary);
       cursor:pointer;
       font-size:.76rem;
@@ -93,7 +93,7 @@
     .mini-filter-btn.active,
     .path-btn.active {
       border-color:rgba(24,129,62,0.72);
-      color:#0f8238;
+      color:#0c672c;
       background:rgba(74,222,128,.12);
     }
     .path-tree {
@@ -235,7 +235,7 @@
       font-size:.86rem;
       line-height:1.6;
     }
-    .curation-note strong { color:#886e02; }
+    .curation-note strong { color:#7b6402; }
     .watchlist-controls { display:flex; gap:var(--sp-3); margin:0 0 var(--sp-4); align-items:center; }
     #watchlist-search { flex:1; padding:9px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); color:var(--text-primary); font-size:.875rem; outline:none; }
     .watchlist-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4); }
@@ -290,14 +290,24 @@
     .groups-globe-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
     .groups-globe-pause:hover { color:var(--text-primary); }
     .groups-globe-pause[hidden] { display:none; }
+  
+    /* this page had no .container, so text sat flush against the window edge and stretched on wide screens */
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 var(--sp-6); }
+    .page-content { max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: var(--sp-6); padding-right: var(--sp-6); }
+    @media (max-width: 768px) { .page-hero-inner, .page-content { padding-left: var(--sp-4); padding-right: var(--sp-4); } }
+  
+    /* the dark wash only suits the dark theme; on cream it turned the filter pills grey-on-grey */
+    [data-theme="dark"] .mini-filter-btn, [data-theme="dark"] .path-btn { background: rgba(2,6,23,.24); }
 
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
+      [data-theme="dark"] .page-wrap { --page-color: #86c58f; }
       [data-theme="dark"] .mini-filter-btn.active, [data-theme="dark"] .path-btn.active { color: #4ade80; }
       [data-theme="dark"] .atom-chip { color: #4ade80; }
       [data-theme="dark"] .hire-yes { color: #34d399; }
       [data-theme="dark"] .gp-paper a { color: #a5b4fc; }
       [data-theme="dark"] .gc-link { color: #38bdf8; }
+      [data-theme="dark"] .curation-note strong { color: #a88903; }
     }
   </style>
 </head>
