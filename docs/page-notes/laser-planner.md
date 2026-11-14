@@ -30,3 +30,6 @@ This page had no `<footer>` element at all — went straight from `</main>` to i
 
 ## 2026-11-13: physics audit (convention slips)
 - Cs D1 gray molasses is sub-Doppler, not sub-recoil.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Foot, Metcalf & van der Straten, Saleh & Teich links removed (DOIs unverified or wrong).

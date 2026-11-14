@@ -576,6 +576,27 @@ def test_explainer_sweep_2026_11c() -> None:
     assert_contains("pages/tof-calculator.html", "const thermalAspect = (wp, wz, t) => Math.sqrt((1 / (wz * wz) + t * t) / (1 / (wp * wp) + t * t));")
 
 
+def test_citation_and_contrast_audit_2026_11() -> None:
+    """2026-11-14 citation check: DOIs that pointed at a different paper stay fixed; muted text stays readable."""
+    import glob
+    site = "\n".join(open(p, encoding="utf-8").read() for p in glob.glob(str(ROOT / "pages" / "*.html")))
+    wrong = ["PhysRevA.82.030306", "RevModPhys.86.361", "nature08232", "PhysRevLett.93.163602", "BF00799212",
+             "PhysRevLett.109.163006", "PhysRevA.99.043421", "PhysRevA.71.052312", "s41586-024-07875-6", "s41567-022-01743-4",
+             "nature06147", "science.357.6347", "nature04917", "s41586-022-04702-0", "AO.11.002327", "1.578381", "1.5006809",
+             "PhysRevA.70.031401", "978-3-319-14732-8"]
+    for w in wrong:
+        assert w not in site, w
+    for right in ["RevModPhys.82.2313", "nature08470", "BF00702605", "PhysRevX.2.041014", "nature22310", "nature07127",
+                  "science.aam9288", "nature06118", "s41586-022-04764-4", "RevModPhys.70.685", "PhysRevLett.59.2631"]:
+        assert right in site, right
+    # mot-designer's Anderson 1995 card links the Science paper, not Davis et al. (PRL 75, 3969)
+    mot = read("pages/mot-designer.html")
+    i = mot.index("Anderson et al. (1995)")
+    assert "science.269.5221.198" in mot[i - 300:i]
+    css = read("css/styles.css")
+    assert "--text-muted:     #6b604b;" in css and "--text-muted:     #7a8aa3;" in css
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -601,6 +622,7 @@ def main() -> None:
         test_explainer_sweep_2026_11,
         test_explainer_sweep_2026_11b,
         test_explainer_sweep_2026_11c,
+        test_citation_and_contrast_audit_2026_11,
     ]
     for test in tests:
         test()

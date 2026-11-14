@@ -39,3 +39,6 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 - Fixed on the way: a pinned card now follows its star when the constellation turns.
 - The intro sentence says how to use it from the keyboard. `sitemap3d.js?v=2`.
 - Checked in Playwright, dark 1280 and light 390 with reduced motion: 40 steps visit all 31 pages; a path chip restricts stepping to its 4 steps; Enter navigates; `smoke.js` 0 new problems.
+
+## 2026-11-14: citation check + contrast pass
+- Light theme: sky-blue page colour darkened to #0369a1 (was 2:1 on cream).

@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Vacuum Systems Guide","description":"Complete guide to ultra-high vacuum systems for AMO physics experiments.","url":"https://amotoolkit.com/pages/vacuum-systems.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Vacuum Systems Guide","item":"https://amotoolkit.com/pages/vacuum-systems.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=29">
+  <link rel="stylesheet" href="../css/styles.css?v=30">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -265,10 +265,18 @@
     .cond-ctrls { display: grid; grid-template-columns: auto 1fr; gap: .45rem .9rem; align-items: center; font-size: .8rem; margin-bottom: .6rem; }
     .cond-ctrls input, .cond-ctrls select { width: 100%; min-width: 0; }
     .cond-ctrls select { font: inherit; padding: .25rem .4rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); }
-    [data-theme="dark"] #conductance { --vac: #8fbde0; --vac-bg: rgba(143,189,224,0.08); }
     #condSvg, #condPlot { display: block; max-width: 560px; margin: 0 auto; }
     .cond-note { font-size: .74rem; line-height: 1.6; color: var(--text-muted); margin: .6rem 0 0; }
     @media (max-width: 560px) { .cond-ctrls { grid-template-columns: 1fr; } }
+  
+    :root[data-theme="dark"] { --vac: #8fbde0; --vac-bg: rgba(143,189,224,0.08); --vac-border: rgba(143,189,224,0.22); }
+  
+    /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
+    @media screen {
+      [data-theme="dark"] .info-banner { color: #38bdf8; }
+      [data-theme="dark"] .good-banner { color: #4ade80; }
+      [data-theme="dark"] .warn-banner { color: #fbbf24; }
+    }
   </style>
 </head>
 <body>
@@ -784,6 +792,7 @@
         </div>
         <!-- Conductance-limited pumping (molecular flow, Pfeiffer formulas 1-25, 1-31, 1-21) -->
         <div class="explorer-card" id="conductance" style="margin-top:1.5rem;">
+          <span class="amo-eyebrow">Interactive</span>
           <h4>Your pump is only as fast as the pipe in front of it</h4>
           <p class="cond-lead">
             In UHV the mean free path is far longer than any tube, so a molecule only reaches the pump if its random bounces happen to carry it down the pipe.
@@ -1160,10 +1169,9 @@
           Foundational texts, key experimental papers, and online resources for vacuum technology in AMO labs.
         </p>
         <div class="read-links" style="margin-top:.75rem">
-          <a class="read-link" href="https://doi.org/10.1002/9783527610853" target="_blank" rel="noopener">O'Hanlon (2003), <em>A User's Guide to Vacuum Technology</em> — the standard UHV engineering reference</a>
-          <a class="read-link" href="https://doi.org/10.1002/9783527614592" target="_blank" rel="noopener">Jousten ed. (2016), <em>Handbook of Vacuum Technology</em> — pump types, gauging, materials, bakeout procedures</a>
-          <a class="read-link" href="https://doi.org/10.1887/0750309458" target="_blank" rel="noopener">Chambers et al. (1998), <em>Basic Vacuum Technology</em> — accessible intro to pump selection and system design</a>
-          <a class="read-link" href="https://doi.org/10.1116/1.578381" target="_blank" rel="noopener">Benvenuti et al. (1996), <em>Pumping speed and outgassing</em> — quantitative outgassing model for stainless steel after bakeout</a>
+          <span class="read-link">O'Hanlon (2003), <em>A User's Guide to Vacuum Technology</em> — the standard UHV engineering reference</span>
+          <span class="read-link">Jousten ed. (2016), <em>Handbook of Vacuum Technology</em> — pump types, gauging, materials, bakeout procedures</span>
+          <span class="read-link">Chambers et al. (1998), <em>Basic Vacuum Technology</em> — accessible intro to pump selection and system design</span>
           <a class="read-link" href="https://doi.org/10.1126/science.269.5221.198" target="_blank" rel="noopener">Anderson et al. (1995), <em>Science 269</em> 198 — first BEC in rubidium: the UHV recipe that made it possible</a>
           <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.75.3969" target="_blank" rel="noopener">Davis et al. (1995), <em>PRL 75</em> 3969 — BEC in sodium; established the UHV/evaporation paradigm</a>
           <a class="read-link" href="https://www.lesker.com/newweb/techinfo.cfm" target="_blank" rel="noopener">Kurt J. Lesker Technical Library — practical guides on CF flanges, feedthroughs, getter pumps</a>

@@ -42,3 +42,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: explainer sweep
 Section 02 gained "What the camera gives you: a simulated OD image" (surface3d.js v2, orbit3d): Gaussian cloud OD = σ_Δ·N e^{−r²/2σ²}/(2πσ²) on object-plane pixels (binned to ≤ 41×41 over ±4σ), plus the calculator's per-pixel δOD (scaled by p_obj/bin). Readout: peak OD (flag above 3), peak SNR, recovered N ± √N_pix·δOD·A/σ vs true N. New-noise button (seeded RNG).
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Hueck et al. 2017 journal reference (RSI 88, 123702) unverified → arXiv:1702.01943; Loftus et al. 2004 is PRA 70, 063413 (was 031401(R)).

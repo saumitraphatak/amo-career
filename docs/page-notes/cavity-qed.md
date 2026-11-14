@@ -64,3 +64,6 @@ Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The
 
 ## 2026-11-14: explainer sweep
 Section 03 gained "What you would see: the cavity transmission spectrum": weak-probe transmission |t(Δ)|² with t = κ/(κ − iΔ + g²/(γ − iΔ)), empty cavity vs one atom, from the calculator's g₀, κ, γ (`cqed:update`), with a g/g₀ slider (atom position). Readout: C, on-resonance transmission 1/(1+C)², peak separation 2√(g² − (κ−γ)²/4) when split. Shows the Purcell dip turning into the vacuum Rabi doublet.
+
+## 2026-11-14: citation check + contrast pass
+- Six route cards now 3 + 3 on wide screens; dark-theme page colour lifted to #8fbde0.

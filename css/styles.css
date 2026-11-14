@@ -26,7 +26,7 @@ ul, ol { list-style: none; }
   /* Text — iron-gall ink, not slate-on-navy */
   --text-primary:   #22190f;
   --text-secondary: #5c503c;
-  --text-muted:     #8c8066;
+  --text-muted:     #6b604b;   /* 5.0:1 on --bg-base (was #8c8066, 3.2:1) */
 
   /* ── Ink accents: three pen colors instead of a 16-hue neon rainbow ── */
   --ink-rust:   #a13c1c;   /* red pen — the accent used most often   */
@@ -109,7 +109,7 @@ ul, ol { list-style: none; }
 
   --text-primary:   #e2e8f0;
   --text-secondary: #94a3b8;
-  --text-muted:     #475569;
+  --text-muted:     #7a8aa3;   /* 5.2:1 on --bg-card (was #475569, 2.4:1) */
 
   --ink-rust:   #38bdf8;
   --ink-blue:   #a78bfa;
@@ -3266,3 +3266,196 @@ main p, main li { overflow-wrap: break-word; }
   .chapter-nav, .chapter-pager, .chapter-strip, .chapter-open, .chapter-index-note, .chapter-sentinel { display: none !important; }
 }
 .counter-pill.chapter-link::after { content: ' →'; color: var(--cl); font-weight: 700; }
+
+/* =====================================================
+   Dark theme: lift the three light-theme accent inks where a page sets
+   them inline as --page-color / --card-color (text was 2-2.8:1 on the
+   dark cards; these are >= 7:1). Backgrounds that use the same variable
+   are small dots and accent bars, which only get brighter.
+   ===================================================== */
+[data-theme="dark"] [style*="-color:#2c4a63"], [data-theme="dark"] [style*="-color: #2c4a63"] { --page-color: #8fbde0 !important; --card-color: #8fbde0 !important; }
+[data-theme="dark"] [style*="-color:#3f5d3f"], [data-theme="dark"] [style*="-color: #3f5d3f"] { --page-color: #86c58f !important; --card-color: #86c58f !important; }
+[data-theme="dark"] [style*="-color:#a13c1c"], [data-theme="dark"] [style*="-color: #a13c1c"] { --page-color: #f0916b !important; --card-color: #f0916b !important; }
+
+
+/* Dark theme: the same lift for accent text colours written inline as style="color:#…" (screen only; print uses paper inks) */
+@media screen {
+  [data-theme="dark"] [style^="color:#046de1"],
+  [data-theme="dark"] [style^="color: #046de1"],
+  [data-theme="dark"] [style*=";color:#046de1"],
+  [data-theme="dark"] [style*=";color: #046de1"],
+  [data-theme="dark"] [style*="; color:#046de1"],
+  [data-theme="dark"] [style*="; color: #046de1"] { color: #60a5fa !important; }
+  [data-theme="dark"] [style^="color:#046aeb"],
+  [data-theme="dark"] [style^="color: #046aeb"],
+  [data-theme="dark"] [style*=";color:#046aeb"],
+  [data-theme="dark"] [style*=";color: #046aeb"],
+  [data-theme="dark"] [style*="; color:#046aeb"],
+  [data-theme="dark"] [style*="; color: #046aeb"] { color: #93c5fd !important; }
+  [data-theme="dark"] [style^="color:#076ce7"],
+  [data-theme="dark"] [style^="color: #076ce7"],
+  [data-theme="dark"] [style*=";color:#076ce7"],
+  [data-theme="dark"] [style*=";color: #076ce7"],
+  [data-theme="dark"] [style*="; color:#076ce7"],
+  [data-theme="dark"] [style*="; color: #076ce7"] { color: #60a5fa !important; }
+  [data-theme="dark"] [style^="color:#0477af"],
+  [data-theme="dark"] [style^="color: #0477af"],
+  [data-theme="dark"] [style*=";color:#0477af"],
+  [data-theme="dark"] [style*=";color: #0477af"],
+  [data-theme="dark"] [style*="; color:#0477af"],
+  [data-theme="dark"] [style*="; color: #0477af"] { color: #38bdf8 !important; }
+  [data-theme="dark"] [style^="color:#0678ab"],
+  [data-theme="dark"] [style^="color: #0678ab"],
+  [data-theme="dark"] [style*=";color:#0678ab"],
+  [data-theme="dark"] [style*=";color: #0678ab"],
+  [data-theme="dark"] [style*="; color:#0678ab"],
+  [data-theme="dark"] [style*="; color: #0678ab"] { color: #38bdf8 !important; }
+  [data-theme="dark"] [style^="color:#0b7c8d"],
+  [data-theme="dark"] [style^="color: #0b7c8d"],
+  [data-theme="dark"] [style*=";color:#0b7c8d"],
+  [data-theme="dark"] [style*=";color: #0b7c8d"],
+  [data-theme="dark"] [style*="; color:#0b7c8d"],
+  [data-theme="dark"] [style*="; color: #0b7c8d"] { color: #22d3ee !important; }
+  [data-theme="dark"] [style^="color:#0b7c8e"],
+  [data-theme="dark"] [style^="color: #0b7c8e"],
+  [data-theme="dark"] [style*=";color:#0b7c8e"],
+  [data-theme="dark"] [style*=";color: #0b7c8e"],
+  [data-theme="dark"] [style*="; color:#0b7c8e"],
+  [data-theme="dark"] [style*="; color: #0b7c8e"] { color: #22d3ee !important; }
+  [data-theme="dark"] [style^="color:#11823a"],
+  [data-theme="dark"] [style^="color: #11823a"],
+  [data-theme="dark"] [style*=";color:#11823a"],
+  [data-theme="dark"] [style*=";color: #11823a"],
+  [data-theme="dark"] [style*="; color:#11823a"],
+  [data-theme="dark"] [style*="; color: #11823a"] { color: #4ade80 !important; }
+  [data-theme="dark"] [style^="color:#18813e"],
+  [data-theme="dark"] [style^="color: #18813e"],
+  [data-theme="dark"] [style*=";color:#18813e"],
+  [data-theme="dark"] [style*=";color: #18813e"],
+  [data-theme="dark"] [style*="; color:#18813e"],
+  [data-theme="dark"] [style*="; color: #18813e"] { color: #4ade80 !important; }
+  [data-theme="dark"] [style^="color:#18823e"],
+  [data-theme="dark"] [style^="color: #18823e"],
+  [data-theme="dark"] [style*=";color:#18823e"],
+  [data-theme="dark"] [style*=";color: #18823e"],
+  [data-theme="dark"] [style*="; color:#18823e"],
+  [data-theme="dark"] [style*="; color: #18823e"] { color: #4ade80 !important; }
+  [data-theme="dark"] [style^="color:#0f8238"],
+  [data-theme="dark"] [style^="color: #0f8238"],
+  [data-theme="dark"] [style*=";color:#0f8238"],
+  [data-theme="dark"] [style*=";color: #0f8238"],
+  [data-theme="dark"] [style*="; color:#0f8238"],
+  [data-theme="dark"] [style*="; color: #0f8238"] { color: #4ade80 !important; }
+  [data-theme="dark"] [style^="color:#15803d"],
+  [data-theme="dark"] [style^="color: #15803d"],
+  [data-theme="dark"] [style*=";color:#15803d"],
+  [data-theme="dark"] [style*=";color: #15803d"],
+  [data-theme="dark"] [style*="; color:#15803d"],
+  [data-theme="dark"] [style*="; color: #15803d"] { color: #4ade80 !important; }
+  [data-theme="dark"] [style^="color:#1c805b"],
+  [data-theme="dark"] [style^="color: #1c805b"],
+  [data-theme="dark"] [style*=";color:#1c805b"],
+  [data-theme="dark"] [style*=";color: #1c805b"],
+  [data-theme="dark"] [style*="; color:#1c805b"],
+  [data-theme="dark"] [style*="; color: #1c805b"] { color: #34d399 !important; }
+  [data-theme="dark"] [style^="color:#e20b0b"],
+  [data-theme="dark"] [style^="color: #e20b0b"],
+  [data-theme="dark"] [style*=";color:#e20b0b"],
+  [data-theme="dark"] [style*=";color: #e20b0b"],
+  [data-theme="dark"] [style*="; color:#e20b0b"],
+  [data-theme="dark"] [style*="; color: #e20b0b"] { color: #f87171 !important; }
+  [data-theme="dark"] [style^="color:#a13c1c"],
+  [data-theme="dark"] [style^="color: #a13c1c"],
+  [data-theme="dark"] [style*=";color:#a13c1c"],
+  [data-theme="dark"] [style*=";color: #a13c1c"],
+  [data-theme="dark"] [style*="; color:#a13c1c"],
+  [data-theme="dark"] [style*="; color: #a13c1c"] { color: #f0916b !important; }
+  [data-theme="dark"] [style^="color:#b75404"],
+  [data-theme="dark"] [style^="color: #b75404"],
+  [data-theme="dark"] [style*=";color:#b75404"],
+  [data-theme="dark"] [style*=";color: #b75404"],
+  [data-theme="dark"] [style*="; color:#b75404"],
+  [data-theme="dark"] [style*="; color: #b75404"] { color: #fb923c !important; }
+  [data-theme="dark"] [style^="color:#926a03"],
+  [data-theme="dark"] [style^="color: #926a03"],
+  [data-theme="dark"] [style*=";color:#926a03"],
+  [data-theme="dark"] [style*=";color: #926a03"],
+  [data-theme="dark"] [style*="; color:#926a03"],
+  [data-theme="dark"] [style*="; color: #926a03"] { color: #fbbf24 !important; }
+  [data-theme="dark"] [style^="color:#8d6c02"],
+  [data-theme="dark"] [style^="color: #8d6c02"],
+  [data-theme="dark"] [style*=";color:#8d6c02"],
+  [data-theme="dark"] [style*=";color: #8d6c02"],
+  [data-theme="dark"] [style*="; color:#8d6c02"],
+  [data-theme="dark"] [style*="; color: #8d6c02"] { color: #fbbf24 !important; }
+  [data-theme="dark"] [style^="color:#2c4a63"],
+  [data-theme="dark"] [style^="color: #2c4a63"],
+  [data-theme="dark"] [style*=";color:#2c4a63"],
+  [data-theme="dark"] [style*=";color: #2c4a63"],
+  [data-theme="dark"] [style*="; color:#2c4a63"],
+  [data-theme="dark"] [style*="; color: #2c4a63"] { color: #8fbde0 !important; }
+  [data-theme="dark"] [style^="color:#3f5d3f"],
+  [data-theme="dark"] [style^="color: #3f5d3f"],
+  [data-theme="dark"] [style*=";color:#3f5d3f"],
+  [data-theme="dark"] [style*=";color: #3f5d3f"],
+  [data-theme="dark"] [style*="; color:#3f5d3f"],
+  [data-theme="dark"] [style*="; color: #3f5d3f"] { color: #86c58f !important; }
+  [data-theme="dark"] [style^="color:#475569"],
+  [data-theme="dark"] [style^="color: #475569"],
+  [data-theme="dark"] [style*=";color:#475569"],
+  [data-theme="dark"] [style*=";color: #475569"],
+  [data-theme="dark"] [style*="; color:#475569"],
+  [data-theme="dark"] [style*="; color: #475569"] { color: #7a8aa3 !important; }
+  [data-theme="dark"] [style^="color:#9937fa"],
+  [data-theme="dark"] [style^="color: #9937fa"],
+  [data-theme="dark"] [style*=";color:#9937fa"],
+  [data-theme="dark"] [style*=";color: #9937fa"],
+  [data-theme="dark"] [style*="; color:#9937fa"],
+  [data-theme="dark"] [style*="; color: #9937fa"] { color: #c4b5fd !important; }
+  [data-theme="dark"] [style^="color:#7a4ff7"],
+  [data-theme="dark"] [style^="color: #7a4ff7"],
+  [data-theme="dark"] [style*=";color:#7a4ff7"],
+  [data-theme="dark"] [style*=";color: #7a4ff7"],
+  [data-theme="dark"] [style*="; color:#7a4ff7"],
+  [data-theme="dark"] [style*="; color: #7a4ff7"] { color: #a78bfa !important; }
+  [data-theme="dark"] [style^="color:#4f72a4"],
+  [data-theme="dark"] [style^="color: #4f72a4"],
+  [data-theme="dark"] [style*=";color:#4f72a4"],
+  [data-theme="dark"] [style*=";color: #4f72a4"],
+  [data-theme="dark"] [style*="; color:#4f72a4"],
+  [data-theme="dark"] [style*="; color: #4f72a4"] { color: #93c5fd !important; }
+  [data-theme="dark"] [style^="color:#505ff5"],
+  [data-theme="dark"] [style^="color: #505ff5"],
+  [data-theme="dark"] [style*=";color:#505ff5"],
+  [data-theme="dark"] [style*=";color: #505ff5"],
+  [data-theme="dark"] [style*="; color:#505ff5"],
+  [data-theme="dark"] [style*="; color: #505ff5"] { color: #a5b4fc !important; }
+  [data-theme="dark"] [style^="color:#4f5ff5"],
+  [data-theme="dark"] [style^="color: #4f5ff5"],
+  [data-theme="dark"] [style*=";color:#4f5ff5"],
+  [data-theme="dark"] [style*=";color: #4f5ff5"],
+  [data-theme="dark"] [style*="; color:#4f5ff5"],
+  [data-theme="dark"] [style*="; color: #4f5ff5"] { color: #a5b4fc !important; }
+}
+
+
+/* =====================================================
+   "Interactive" eyebrow on explainer figures: one shared look so readers
+   can spot the parts of a page they can play with.
+   ===================================================== */
+.amo-eyebrow {
+  display: flex; width: fit-content; align-items: center; gap: .45rem;
+  margin: 0 0 .5rem; padding: .2rem .6rem .2rem .5rem; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--page-color, var(--c-atom)) 35%, transparent);
+  background: color-mix(in srgb, var(--page-color, var(--c-atom)) 8%, transparent);
+  font: 700 .62rem/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.amo-eyebrow::before {
+  content: ''; width: .42rem; height: .42rem; border-radius: 50%; flex: none;
+  background: var(--page-color, var(--c-atom));
+  animation: amo-eyebrow-pulse 2.4s ease-in-out infinite;
+}
+@keyframes amo-eyebrow-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .amo-eyebrow::before { animation: none; } }
+@media print { .amo-eyebrow { display: none !important; } }

@@ -73,3 +73,6 @@ The six route-cards open their chapters (`data-chapter` 1–6). The card copy "T
 - AOM rise time 10–90% = 0.64·d/v for a Gaussian of 1/e² diameter d (was d/v).
 - Loop inductance now μ₀R[ln(8R/a) − 2] (1 mm wire); the old μ₀R gave ~3× too large a match capacitor (3 cm, 76 MHz: 233 → ~66 pF, near the measured 47 pF).
 - Text fixes: diode current tuning GHz/mA; Zerodur 2 nm/K and 8 kHz/mK at 780 nm; Rb-87 SAS positions (F′=2, 3 at 156.9, 423.6 MHz above F′=1; crossovers 78.5, 211.8, 290.3); s = 10 → 100 gives ~9% more photons *and* heating; s = 2 for 1 ms is ~1.3×10⁴ scatters, not 8 kicks; AOM table had longitudinal/shear deflection reversed (θ = λf/v; tweezer AODs are slow-shear TeO₂); double-pass PBS wording made polarization-neutral.
+
+## 2026-11-14: citation check + contrast pass
+- Six route cards now 3 + 3 on wide screens.

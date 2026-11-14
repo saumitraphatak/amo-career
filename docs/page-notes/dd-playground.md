@@ -75,3 +75,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-11-13: physics audit (convention slips)
 - **N = 256 enhancement was a numerical artefact** (600 log points undersampled the CPMG filter; showed 199× instead of 44.8× at α = 1, and 9.7× instead of 1.0× for white noise). `computeChi` now uses ≥ 60·N points and the closed-form CPMG filter (Cywiński et al. 2008), which matches the explicit sum to 1e-10 and keeps it fast.
 - Displayed CPMG filter formula corrected; Hahn peak at ωT ≈ 4.7; α = 2 gives T₂ ∝ N^{2/3}; noise spectroscopy has a 2π; XY-8 = XYXYYXYX, XY-16 adds the phase-inverted copy; Biercuk 2009 (Nature 458, 996, DOI fixed).
+
+## 2026-11-14: citation check + contrast pass
+- Citations: "Viola & Knill review" linked Degen, Reinhard & Cappellaro, RMP 89, 035002 (quantum sensing), relabelled to that; Álvarez & Suter now PRL 107, 230501 (was a wrong RMP DOI); Du et al. 2009 DOI nature08470 and "diamond" → irradiated malonic acid (solids). Light theme: bright-green accent replaced by #15803d (was 1.6:1).

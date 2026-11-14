@@ -63,3 +63,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-13 (later): print and load fixes
 - Printing: the waterfall's static repaint (theme switch, print) now draws synchronously instead of on the next animation frame, which the browser never reaches before printing (it printed as "not drawn").
+
+## 2026-11-14: citation check + contrast pass
+- Citation: Saffman, Walker & Mølmer RMP link pointed at PRA 82, 030306; now RevModPhys.82.2313. Lone seventh reference card spans the row.

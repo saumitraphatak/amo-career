@@ -62,3 +62,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: explainer sweep 2
 - **Resolved sideband section: sideband thermometry card.** Weak-probe spectrum from η and ν of the Lamb-Dicke calculator; red/blue ratio ⟨n⟩/(⟨n⟩+1); a button pulls the resolved-sideband limit from the calculator (explains when it is unresolved). Lines are display Gaussians of FWHM ν/6.
+
+## 2026-11-14: citation check + contrast pass
+- Citation: Morigi, Eschner & Keitel 2000 is the EIT-cooling proposal (title corrected); the experiment is Roos et al., PRL 85, 5547.

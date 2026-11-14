@@ -56,3 +56,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: explainer sweep
 Section 02 gained "Why a MOT traps": 1D net force F(x)/(ħkΓ/2) for an atom at rest, s[1/D(Δ−βx) − 1/D(Δ+βx)] with β = μ′B′/ħ, against the linear spring −κx from the calculator; x_res = ħ|Δ|/(μ′B′) and the beam radius are reported. Lab tip corrected: slow loading → larger detuning and larger beams (v_c ≈ |Δ|/k grows with |Δ|), not smaller.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Chu Nobel lecture linked Phillips's (RMP 70, 721) → 70, 685; Raab et al. 1987 linked Lett et al. 1988 → PRL 59, 2631; Anderson et al. 1995 linked Davis et al. → Science 269, 198.

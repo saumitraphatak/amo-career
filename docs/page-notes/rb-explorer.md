@@ -62,3 +62,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-11-13: physics audit (convention slips)
 - RB curve exceeded 1 (A up to 0.99 with B = 1/2). Slider is now F(0) and A = F(0) − 1/d; IRB uses A = 0.45 and p_int = p_ref·p_G; animation B = 1/2.
 - δr_C example 10× too small (3.5×10⁻³ for 10⁵ shots) and table column; 1/e reference line is now B + A/e; N_useful 3/(4r_C) for 2Q; IRB bounds are tight when r_C ≪ r_gate; 2Q n̄ ≈ 1.5 CZ.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Emerson et al. 2005 is not PRA 71, 052312 (now arXiv:quant-ph/0503243); Bluvstein 2024 DOI → s41586-023-06927-3 ("RB used for gate calibration" removed); Proctor 2022 → arXiv:2008.11294 (DOI unverified).

@@ -50,3 +50,6 @@ Section 08 gained "Watch the link run", a Monte Carlo of the calculator's own li
 
 ## 2026-11-14: entanglement distillation (`#distillation`, section 05)
 "Fixing noisy pairs" card: bilateral-CNOT recurrence protocol described and drawn (SVG), plus an interactive table of 1–6 rounds of the Bennett et al. (1996) Werner recurrence (F′, P_keep, raw pairs per output = ∏ 2/P_keep), noting the F > 1/2 condition, perfect local gates, and the faster Deutsch et al. (1996) variant. Links to Learn Quantum → Magic States for the QEC-level purification protocols.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Kimble 2008 → nature07127; Wehner 2018 → science.aam9288; Moehring 2007 → nature06118; van Leent 2022 → s41586-022-04764-4 (all four DOIs pointed elsewhere). Light theme: --ent darkened to #0369a1.

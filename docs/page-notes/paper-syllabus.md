@@ -70,3 +70,6 @@ The four stage pills ("Stage 1 — … 10 papers") open the four stage chapters 
 - Fixed on the way: a pinned card stayed where its paper had been when the tower was turned; it now follows the paper.
 - The intro sentence says how to use it from the keyboard. `syllabus3d.js?v=2`.
 - Checked in Playwright, dark 1280 and light 390 with reduced motion: 55 steps visit every paper once in year order; Enter lands on the right card in view; the Keystone filter restricts stepping to the 11 keystones; no overflow; `smoke.js` 0 new problems.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: card 22 is Kaufman, Lester & Regal, PRX 2, 041014 (2012), not PRL 109, 163006, and the garbled "η = 0.01" line is gone; Ye, Kimble & Katori 2008 is a review of magic-wavelength traps (description rewritten); Anderson 1995 "87,000 atoms" removed; card 54 (Sundar et al., PRA 99, 043421, not found) replaced by Schweigler et al., Nature 545, 323 (2017), the coupled-1D-BEC sine-Gordon experiment its text described.

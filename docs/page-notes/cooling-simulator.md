@@ -84,3 +84,6 @@ The four route-cards open chapters 1–4. Simulation Codes and References have n
 - α formula text 8ħk²s₀(|δ|/Γ)/(…)² (old one was dimensionally wrong).
 - Resolved-sideband floor ¼(Γ/ω)²(α + ¼), independent of η (old η²Γ²/4ω² claimed η → 0 gives ⟨n⟩ → 0); slider is now Γ/ω.
 - Higher-order sidebands scale as η^{2k}; temperature ladder: GM 8 μK, trapped-atom entries converted at 100 kHz (⟨n⟩ < 0.1 ≈ 2 μK, not 5 nK).
+
+## 2026-11-14: citation check + contrast pass
+- Six species cards now 3 + 3 on wide screens.

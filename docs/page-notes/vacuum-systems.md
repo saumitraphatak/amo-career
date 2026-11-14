@@ -61,3 +61,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: explainer sweep 2
 - **Section 03: conductance-limited pumping.** Pump speed, bore, length, gas → C (aperture + long tube, Pfeiffer Eqs. 1-25/1-31), S_eff, pressure penalty, and the length that halves the pump, plus S_eff vs L. Dark theme brightens --vac inside this card only.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Benvenuti et al. "(1996)" entry removed (DOI pointed elsewhere, paper not found); O'Hanlon, Jousten, Chambers kept as unlinked book references (DOIs unverified). Dark theme: --vac lifted to #8fbde0 pagewide.

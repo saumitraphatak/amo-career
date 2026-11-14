@@ -70,3 +70,6 @@ The custom `.pol-tab-nav` opts in with `data-chapter-panels=".pol-section"`. The
 
 ## 2026-11-14: explainer sweep
 Stokes chapter gained "Waveplates move points on the sphere" (`#pwCanvas`, orbit3d + canvas-ink): output Stokes vector of a linear retarder (λ/4, λ/2, λ/8) as its fast axis sweeps 0–180°, for H, +45° or RCP input; the full path, the rotation axis at longitude 2θ and ψ/χ readouts. Mueller matrix in the page's own convention (matches the Reference chapter's QWP matrix). Automatic 9 s sweep with the motion.js pause button.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Collett and Goldstein book links (Cambridge DOIs for SPIE/CRC books) removed; references kept as text.

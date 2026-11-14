@@ -24,7 +24,7 @@
   <meta name="description" content="Rydberg two-qubit gate fidelity budget: spontaneous emission, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, and Rabi inhomogeneity.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/fidelity-budget.html">
-  <link rel="stylesheet" href="../css/styles.css?v=29">
+  <link rel="stylesheet" href="../css/styles.css?v=30">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -118,6 +118,7 @@
     .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
     @media(max-width:800px){ .two-col { grid-template-columns:1fr; } }
     .three-col { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; }
+    .three-col > :last-child:nth-child(3n+1) { grid-column: 1 / -1; }   /* a lone last card spans the row */
     @media(max-width:640px){ .three-col { grid-template-columns:1fr; } }
 
     .theory-box {
@@ -162,6 +163,15 @@
     }
     .read-link:hover { border-color:#e20b0b; color:var(--text-primary); }
     .rl-icon { font-size:1rem; flex-shrink:0; }
+  
+    /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
+    @media screen {
+      [data-theme="dark"] .budget-table td:nth-child(2) { color: #f87171; }
+      [data-theme="dark"] .ctrl-panel h5 { color: #f87171; }
+      [data-theme="dark"] .lbl-val { color: #f87171; }
+      [data-theme="dark"] .theory-box h4 { color: #f87171; }
+      [data-theme="dark"] .good-banner { color: #4ade80; }
+    }
   </style>
 
   <!-- Open Graph -->
@@ -639,7 +649,7 @@ Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm t
         <span class="rl-icon">📄</span>
         Jaksch et al. (2000), Fast quantum gates for neutral atoms (original Rydberg gate proposal)
       </a>
-      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.82.030306" target="_blank" rel="noopener">
+      <a class="read-link" href="https://doi.org/10.1103/RevModPhys.82.2313" target="_blank" rel="noopener">
         <span class="rl-icon">📄</span>
         Saffman, Walker &amp; Mølmer (2010), Quantum information with Rydberg atoms (Rev. Mod. Phys.)
       </a>

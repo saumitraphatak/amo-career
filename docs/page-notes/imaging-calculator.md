@@ -107,3 +107,6 @@ Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The
 - Text: Γ/2 is 1.9×10⁷ /s (not "3 MHz"); heating at 3×10⁶/s is ~1 K/s (not 1 mK/s); dE/dt = 2E_rec·R and t_max ~ U₀/(2E_rec R) (the 55 ms example already assumed this); μ_dark has no σ_read² term; error tail is ½erfc(SNR/2√2).
 - Citations: Hutzler et al. is NJP 19, 023007 (2017); "Kaufman & Greiner, RMP 87, 1419" was wrong (that DOI is an ion-trap noise review) → Kaufman & Ni, Nat. Phys. 2021.
 - **Not changed, needs Saumitra:** the Hood Lab callouts say the lab images ⁸⁷Rb and ¹³³Cs on 780 nm, and "685 nm gray molasses" for Cs (tooltip says D1 = 894 nm).
+
+## 2026-11-14: citation check + contrast pass
+- Citation: Bergamini et al. 2004 is a JOSA B paper ("…by use of a programmable phase modulator"), not PRL 93, 163602; linked to arXiv:quant-ph/0402020.

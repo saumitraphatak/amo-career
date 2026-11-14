@@ -91,3 +91,6 @@ The four "Recommended workflow" steps open chapters 1–4. The Mode Atlas (chapt
 
 ## 2026-11-13 (later): print and load fixes
 - Printing: the mode atlas is built for paper even if its tab was never opened, and the 3D wavefront surface draws synchronously on `amo:print` (surface3d.js v2). Gerchberg–Saxton panels still need a run, so they print the one-line note.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Gerchberg & Saxton is Optik 35, 237 (no DOI; the AO link was another paper); Born & Wolf and Tyson unlinked (DOIs unverified).

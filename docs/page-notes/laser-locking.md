@@ -70,3 +70,6 @@ There are no index cards, so an automatic "5 chapters on this page" chip strip s
 
 ## 2026-11-14: explainer sweep 2
 - **PDH tab: "Why PDH reads the phase, not the power".** Complex-plane circle of the reflected carrier, the RF beat at Ω with the local oscillator, and the full error signal including the sideband features (Black 2001, same Lorentzian as the existing charts). Teaching Ω/δν_cav slider plus a button for the calculator's own ratio; detuning auto-sweeps (pause button).
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Drever et al. 1983 DOI corrected to BF00702605 (Appl. Phys. B 31, 97); Salomon, Hils & Hall 1988 is "laser stabilization at the millihertz level", not "shot-noise limit".

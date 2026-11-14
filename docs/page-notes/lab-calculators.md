@@ -72,3 +72,6 @@ The seven route-cards open their chapters (`data-chapter` 1–7). The Page Playb
 - "Key β values" table: J₀², J₁² recomputed (β = 1.08: 0.531/0.216; 5.520: J₁² 0.116; 0.5: J₀² 0.881).
 - AM mode now shows the real AM spectrum (carrier + ±1 sidebands of field m/2), not Bessel sidebands.
 - NA → half-angle uses asin (NA = sin θ), not atan.
+
+## 2026-11-14: citation check + contrast pass
+- Citations: Foot and Saleh & Teich links removed (DOIs pointed at unrelated books).

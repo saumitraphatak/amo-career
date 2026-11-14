@@ -94,3 +94,6 @@ Added one new, peer-reviewed result to the Google side: magic-state cultivation 
 
 ## 2026-11-14: cultivation paper citation corrected
 The Science paper (DOI 10.1126/science.aee7961) is "Magic state cultivation on a superconducting quantum processor", Rosenfeld, Gidney, Roberts et al. (per Crossref); the card had another title and "Gidney, Shutty, Jones et al." (the authors of the 2024 theory preprint, now cited alongside). Fidelity wording follows the abstract: at least 0.9999(1), keeping 8% of attempts. Links to Learn Quantum → Magic States.
+
+## 2026-11-14: citation check + contrast pass
+- Six hero stats now 3 + 3 (were 5 + 1).
