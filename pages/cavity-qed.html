@@ -146,6 +146,10 @@
 
     /* ── Chart ── */
     .chart-wrap { position: relative; height: 280px; margin: var(--sp-4) 0; }
+    .cqed-spec-h { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: var(--sp-8) 0 var(--sp-3); }
+    .cqed-spec-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; font-size: .82rem; color: var(--text-secondary); margin-top: var(--sp-3); }
+    .cqed-spec-ctrl input { width: min(260px, 100%); }
+    .cqed-spec-info { font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); }
 
     /* ── Famous systems table ── */
     .sys-table { width: 100%; border-collapse: collapse; font-size: 0.825rem; margin-top: var(--sp-3); }
@@ -611,6 +615,25 @@
           <canvas id="cqed_chart"></canvas>
         </div>
 
+        <h3 class="cqed-spec-h anim-in">What you would see: the cavity transmission spectrum</h3>
+        <div class="concept-box anim-in delay-1">
+          Scan a weak probe laser across the cavity resonance (atom and cavity on resonance) and record the transmitted light.
+          The empty cavity gives one Lorentzian of half-width <em>κ</em>. Add one atom and the response becomes
+          $$t(\Delta) = \frac{\kappa}{\kappa - i\Delta + \dfrac{g^2}{\gamma - i\Delta}}, \qquad |t(0)|^2 = \frac{1}{(1+C)^2},\quad C = \frac{g^2}{\kappa\gamma}$$
+          (weak drive; κ and γ are the half-widths used above). With <strong>C &gt; 1</strong> the atom punches a hole in the
+          middle of the line; with <strong>g &gt; κ, γ</strong> the line splits into two dressed atom–cavity states at Δ ≈ ±g:
+          the <em>vacuum Rabi splitting</em>, 2g, set by a single atom and zero photons. Move the atom off the antinode
+          (smaller g/g₀) to watch the splitting close.
+        </div>
+        <div class="cqed-spec-ctrl anim-in delay-1">
+          <label for="cqSpecG">Atom coupling g / g₀ (position in the mode): <span id="cqSpecGv">1.00</span></label>
+          <input type="range" id="cqSpecG" min="0" max="100" value="100" step="1">
+          <span id="cqSpecInfo" class="cqed-spec-info"></span>
+        </div>
+        <div class="chart-wrap anim-in delay-2">
+          <canvas id="cqSpecChart" aria-label="Cavity transmission versus probe detuning, empty cavity and with one atom, from the calculator's g0, kappa and gamma. Key values are listed above the chart."></canvas>
+        </div>
+
         <div class="cqed-story anim-in delay-2">
           <section class="cqed-knob-panel">
             <h3>Design knobs: what should you actually change?</h3>
@@ -1051,6 +1074,52 @@
       // ── Update chart ────────────────────────────────────────────
       updateCQEDChart(g0_MHz, gam_MHz, FSR_Hz / 1e6);
     }
+
+    // Transmission spectrum of the coupled atom–cavity system (weak probe, atom and cavity resonant):
+    // t(Δ) = κ / (κ − iΔ + g²/(γ − iΔ)), κ and γ half-widths, all rates /2π in MHz.
+    let _cqSpec = null;
+    function updateCQEDSpectrum() {
+      const L = window.CQED_LAST; if (!L) return;
+      const f = +document.getElementById('cqSpecG').value / 100;
+      const g = L.g0 * f, k = L.kappa, y = L.gamma, C = g * g / (k * y);
+      document.getElementById('cqSpecGv').textContent = f.toFixed(2);
+      const span = 3.2 * Math.max(L.g0, k, y);
+      const xs = [], empty = [], atom = [];
+      for (let i = 0; i <= 400; i++) {
+        const d = -span + 2 * span * i / 400;
+        xs.push(d);
+        empty.push(k * k / (k * k + d * d));
+        // denominator κ − iΔ + g²(γ + iΔ)/(γ² + Δ²)
+        const den = y * y + d * d, re = k + g * g * y / den, im = -d + g * g * d / den;
+        atom.push(k * k / (re * re + im * im));
+      }
+      const split = g > Math.abs(k - y) / 2 ? 2 * Math.sqrt(Math.max(0, g * g - (k - y) * (k - y) / 4)) : 0;
+      document.getElementById('cqSpecInfo').textContent =
+        `g/2π = ${g.toPrecision(3)} MHz · C = ${C.toPrecision(3)} · on-resonance transmission ${(100 / ((1 + C) * (1 + C))).toPrecision(3)}%` +
+        (split ? ` · peak separation ≈ ${split.toPrecision(3)} MHz` : '');
+      const data = {
+        datasets: [
+          { label: 'empty cavity', data: empty.map((v, i) => ({ x: xs[i], y: v })), borderColor: '#94a3b8', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0 },
+          { label: 'with one atom', data: atom.map((v, i) => ({ x: xs[i], y: v })), borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.12)', borderWidth: 2.2, pointRadius: 0, fill: true, tension: 0 },
+        ],
+      };
+      if (_cqSpec) { _cqSpec.data = data; _cqSpec.options.scales.x.min = -span; _cqSpec.options.scales.x.max = span; _cqSpec.update('none'); return; }
+      _cqSpec = new Chart(document.getElementById('cqSpecChart'), {
+        type: 'line', data,
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { type: 'linear', min: -span, max: span, title: { display: true, text: 'Probe detuning Δ/2π (MHz)', color: '#5c503c' }, ticks: { color: '#5c503c', maxTicksLimit: 9 } },
+            y: { min: 0, max: 1.05, title: { display: true, text: 'Transmission |t|²', color: '#5c503c' }, ticks: { color: '#5c503c' } },
+          },
+          plugins: { legend: { labels: { color: '#22190f' } },
+                     tooltip: { callbacks: { title: c => `Δ/2π = ${c[0].parsed.x.toPrecision(3)} MHz`, label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(3)}` } } },
+        },
+      });
+    }
+    document.addEventListener('cqed:update', updateCQEDSpectrum);
+    document.getElementById('cqSpecG').addEventListener('input', updateCQEDSpectrum);
 
     function updateCQEDChart(g0_fixed, gam_fixed, FSR_MHz) {
       const Fpoints = [];

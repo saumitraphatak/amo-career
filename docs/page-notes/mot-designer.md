@@ -53,3 +53,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-13: physics audit (convention slips)
 - Cloud size label: computed σ is the rms width, not a 1/e radius. Optimal-α detuning with saturation Γ√((1+s)/12); detuning chart's temperature curve is T/T_min (T_min = √(1+s)T_D), now labelled so; cMOT increases |Δ|; T_PGC ∝ ħΩ²/|Δ|; recoil column is E_rec/k_B; σ⁺σ⁻ vs lin⊥lin wording.
+
+## 2026-11-14: explainer sweep
+Section 02 gained "Why a MOT traps": 1D net force F(x)/(ħkΓ/2) for an atom at rest, s[1/D(Δ−βx) − 1/D(Δ+βx)] with β = μ′B′/ħ, against the linear spring −κx from the calculator; x_res = ħ|Δ|/(μ′B′) and the beam radius are reported. Lab tip corrected: slow loading → larger detuning and larger beams (v_c ≈ |Δ|/k grows with |Δ|), not smaller.

@@ -44,3 +44,6 @@ Prompted by a reader (Mariam, a PhD student cross-checking her thesis numbers), 
 - **Reference table:** caption claimed "NA 0.55 and 30 mW", which the calculator does not reproduce; now labelled as representative operating points, and the η column recomputed from the table's own ω_r on the listed line (Li 0.70, Na 0.50, K 0.32, Yb 0.40, Sr 0.44, Cs 0.20).
 - Cs/Na wavelengths were air values (852.11, 589.00) → vacuum 852.347, 589.158; δν light-shift formula ħ → h; Kaufman 2014 year/DOI; Kaufman & Ni 2021 is *Nature Physics* 17, 1324 (not Annu. Rev.).
 - `js/tweezer3d.js` header comment updated. Guarded by `test_physics_audit_2026_11`.
+
+## 2026-11-14: explainer sweep
+Section 01 gained "Diameter or radius? The focal spot the formulas assume" (`.focus-card`): radial profiles of the Airy spot [2J₁(x)/x]², the matched Gaussian (w₀ = (√2/π)λ/NA, same peak and curvature) and the mistaken Gaussian (w₀ = 0.52λ/NA, peak 0.75×), all at the same power in units of λ/NA (Chart.js), plus √I false-colour images of the Airy spot (rings visible) and the Gaussian. Text: rings carry ~16% of the power (1 − J₀² − J₁² at the first zero = 0.838 inside).

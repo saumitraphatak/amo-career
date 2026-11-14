@@ -39,3 +39,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - N_min treated per-pixel OD noise as whole-cloud noise; now sums over the pixels covering the 10 μm cloud (σ_N ∝ √N_pix): default 368 → 27 atoms.
 - Single-atom OD text (was 10⁻⁴–10⁻³; σ₀/1 μm² ≈ 0.3); "Optimal I/I_sat marked" claim removed (nothing was marked; noise alone always favours more light).
 - Vacuum wavelengths for Cs/Na, K-40 766.70 nm, σ₀ for Li/K from 3λ²/2π, Cs I_sat 1.102.
+
+## 2026-11-14: explainer sweep
+Section 02 gained "What the camera gives you: a simulated OD image" (surface3d.js v2, orbit3d): Gaussian cloud OD = σ_Δ·N e^{−r²/2σ²}/(2πσ²) on object-plane pixels (binned to ≤ 41×41 over ±4σ), plus the calculator's per-pixel δOD (scaled by p_obj/bin). Readout: peak OD (flag above 3), peak SNR, recovered N ± √N_pix·δOD·A/σ vs true N. New-noise button (seeded RNG).

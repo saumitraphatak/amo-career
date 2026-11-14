@@ -189,6 +189,9 @@
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
 <style>
+.mf-text { font-size: .82rem; color: var(--text-secondary); line-height: 1.65; margin: 0 0 .6rem; }
+.mf-chart { position: relative; height: 260px; }
+.mf-info { font-family: var(--font-mono); font-size: .76rem; color: var(--text-muted); margin-top: .5rem; line-height: 1.6; }
 @keyframes md-beam{0%{stroke-dashoffset:80}100%{stroke-dashoffset:0}}
 /* transform:scale() instead of animating r directly — Safari does not
    reliably animate raw SVG geometry attributes via CSS keyframes. */
@@ -450,6 +453,16 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
       </div>
     </div>
 
+    <div class="chart-card" style="margin-top:1rem">
+      <h5>Why a MOT traps: the restoring force across the trap (atom at rest)</h5>
+      <p class="mf-text">The field gradient Zeeman-shifts the transition by ±μ′B′x/ħ, so for an atom displaced to +x the beam pushing
+        it back toward the centre is closer to resonance than the beam pushing it out. Near the centre the net force is linear,
+        F ≈ −κx (dotted: the calculator's spring constant). It is strongest where the Zeeman shift cancels the detuning,
+        x<sub>res</sub> = ħ|Δ|/(μ′B′), and fades beyond, so a larger detuning or a gentler gradient makes a wider trap with a weaker spring.</p>
+      <div class="mf-chart"><canvas id="motForceChart" data-export-ready="true" aria-label="Net 1D MOT force versus position for an atom at rest, with the linear spring approximation and the resonance positions marked. Key numbers are listed below the chart."></canvas></div>
+      <div class="mf-info" id="motForceInfo"></div>
+    </div>
+
     <div class="insight-row">
       <div class="insight-card">
         <div class="insight-label">Optimal α detuning</div>
@@ -470,8 +483,8 @@ Optimal damping: $|\Delta|_{\rm opt} \approx \Gamma/(2\sqrt{3}) \approx 0.29\,\G
 
     <div class="lab-tip">
       <strong>Lab tip:</strong> if your MOT fluorescence is high but the cloud stays hot, try moving toward
-      larger |Δ|. If loading is slow, try a smaller detuning to increase capture velocity — but watch for
-      reduced damping and a hotter cloud.
+      larger |Δ|. If loading is slow, try a larger detuning and larger beams: the capture velocity grows with |Δ|
+      (v<sub>c</sub> ≈ |Δ|/k) and the capture region with x<sub>res</sub> and w — but the damping and the spring get weaker.
     </div>
   </section>
 
@@ -1172,7 +1185,57 @@ function onSpeciesChange() {
     : (requestAnimationFrame(function f() { render(true); requestAnimationFrame(f); }), null);
 })();
 
+// ── 1D MOT force across the trap, atom at rest (same model and parameters as compute()) ──
+// F(x) = ħkΓ/2 · s [ 1/(1+s+4(Δ−βx)²/Γ²) − 1/(1+s+4(Δ+βx)²/Γ²) ],  β = μ′B′/ħ, Δ < 0;
+// its slope at x = 0 is −κ = −α μ′B′/(ħk).
+let _motForce = null;
+function updateMotForce() {
+  const atom = ATOMS[document.getElementById('speciesSel').value];
+  const G = atom.Gamma_MHz * 1e6 * 2 * Math.PI, k = 2 * Math.PI / (atom.lambda_nm * 1e-9);
+  const Delta = -(parseFloat(document.getElementById('detSlide').value) / 10) * G;
+  const s = parseFloat(document.getElementById('satSlide').value) / 10;
+  const dBdz = parseFloat(document.getElementById('gradSlide').value) * 0.01;          // T/m
+  const w_mm = parseFloat(document.getElementById('beamSlide').value);
+  const beta = atom.muEff_muB * muB * dBdz / hbar;                                     // rad/s per m
+  const xres = Math.abs(Delta) / beta;                                                  // m
+  const Fmax = hbar * k * G / 2;
+  const D = u => 1 + s + 4 * u * u / (G * G);
+  const span = Math.max(2.5 * xres, 1e-4);
+  const kappa = 8 * hbar * k * k * s * Math.abs(Delta / G) / (D(Delta) ** 2) * atom.muEff_muB * muB * dBdz / (hbar * k);
+  const net = [], lin = [];
+  for (let i = 0; i <= 240; i++) {
+    const x = -span + 2 * span * i / 240;
+    const f = s * (1 / D(Delta - beta * x) - 1 / D(Delta + beta * x));                // in units of ħkΓ/2
+    net.push({ x: x * 1e3, y: f });
+    const fl = -kappa * x / Fmax;
+    lin.push({ x: x * 1e3, y: Math.abs(fl) <= 1.05 * s / (1 + s) ? fl : null });
+  }
+  const data = { datasets: [
+    { label: 'net force (both beams)', data: net, borderColor: '#b75404', borderWidth: 2.4, pointRadius: 0, fill: false, tension: 0 },
+    { label: 'linear spring −κx', data: lin, borderColor: '#076ce7', borderDash: [3, 3], borderWidth: 1.6, pointRadius: 0, fill: false, spanGaps: false },
+  ] };
+  const opts = {
+    responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: { type: 'linear', min: -span * 1e3, max: span * 1e3, title: { display: true, text: 'position x (mm)', color: '#5c503c' }, ticks: { color: '#5c503c' } },
+      y: { title: { display: true, text: 'F / (ħkΓ/2)', color: '#5c503c' }, ticks: { color: '#5c503c' } },
+    },
+    plugins: { legend: { labels: { color: '#22190f', font: { size: 11 } } },
+               tooltip: { callbacks: { title: c => 'x = ' + c[0].parsed.x.toFixed(2) + ' mm', label: c => ' ' + c.dataset.label + ': ' + (c.parsed.y == null ? '—' : c.parsed.y.toFixed(3)) } } },
+  };
+  if (_motForce) { _motForce.data = data; _motForce.options.scales.x.min = opts.scales.x.min; _motForce.options.scales.x.max = opts.scales.x.max; _motForce.update('none'); }
+  else if (window.Chart) _motForce = new Chart(document.getElementById('motForceChart'), { type: 'line', data, options: opts });
+  document.getElementById('motForceInfo').innerHTML =
+    `x<sub>res</sub> = ħ|Δ|/(μ′B′) = ${(xres * 1e3).toFixed(2)} mm · beam radius w = ${w_mm} mm` +
+    (xres * 1e3 > w_mm ? ' (the beams, not the detuning, set the trap edge)' : '') +
+    ` · peak force ${(Math.max(...net.map(p => Math.abs(p.y)))).toFixed(2)} ħkΓ/2 · κ = ${kappa.toExponential(2)} N/m`;
+}
+['speciesSel', 'detSlide', 'satSlide', 'gradSlide', 'beamSlide'].forEach(id => {
+  const el = document.getElementById(id); if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', updateMotForce);
+});
+
 compute();
+updateMotForce();
 </script>
 <div id="amo-nav-ready" hidden></div>
 </body>

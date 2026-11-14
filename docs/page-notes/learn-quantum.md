@@ -105,3 +105,6 @@ Requested by Saumitra (with a whiteboard sketch "Quantum Paradox: Why Entangleme
 - Magic states, |T⟩ symmetry SX|T⟩ = e^{iπ/4}|T⟩ (verified algebraically), naming caveat vs Bravyi–Kitaev, R gates and Ross–Selinger T-count ≈ 3 log₂(1/ε), simulator-cost readout (state vector 16·2^N B vs tableau 2N(2N+1) bits; Bravyi–Gosset 2^{0.23t}–2^{0.5t}).
 - Distillation vs cultivation table (Bell-pair distillation without QEC; magic-state distillation; cultivation). Cultivation numbers from the sources: simulated 2×10⁻⁹ at 10⁻³ noise and "may never need distillation" (Gidney, Shutty & Jones, arXiv:2409.17595); hardware fidelity ≥ 0.9999(1), 40×, 8% kept (Rosenfeld et al., Science 2026). The user's draft said cultivation "hits an accuracy ceiling around 99.99%": that figure is the first experiment's measured lower bound, not a theoretical ceiling, so the page states both.
 - NAV.learn gained "Magic States" (main.js v42); home fallback count 15.
+
+## 2026-11-14: explainer sweep
+Entanglement section gained "Play the CHSH game": four basis-angle sliders, predicted win rate ¼[cos²(a₀−b₀)+cos²(a₀−b₁)+cos²(a₁−b₀)+sin²(a₁−b₁)] and S for |Φ⁺⟩, a 1,000-round Monte Carlo, optimal-angle button (85.4% vs the 75% classical bound) and a no-signalling note, with CHSH 1969 and the 2015 loophole-free tests cited.

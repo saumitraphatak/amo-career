@@ -250,6 +250,19 @@
     [data-theme="dark"] .mg-cliff { stroke: #60a5fa; } [data-theme="dark"] .mg-cliff-fill, [data-theme="dark"] .mg-b { fill: #60a5fa; }
     [data-theme="dark"] .mg-magic { fill: #a78bfa; }
     .mg-table td:first-child { white-space: nowrap; }
+    /* CHSH game */
+    .chsh-p { font-size: .84rem; color: var(--text-secondary); line-height: 1.65; margin: 0 0 .75rem; }
+    .chsh-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.25rem; align-items: center; }
+    @media (max-width: 800px) { .chsh-grid { grid-template-columns: minmax(0, 1fr); } }
+    .chsh-out { font-family: var(--font-mono); font-size: .78rem; color: var(--text-secondary); line-height: 1.7; }
+    .chsh-bar { position: relative; height: 26px; border-radius: 6px; background: var(--bg-surface); border: 1px solid #1e293b; margin-top: 2.2rem; }
+    .chsh-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 6px; background: linear-gradient(90deg, #7a4ff7, #076ce7); transition: width .3s; }
+    .chsh-mark { position: absolute; top: -6px; bottom: -6px; width: 2px; background: #e20b0b; }
+    .chsh-mark.tq { background: #1c805b; }
+    .chsh-mark span { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .68rem; color: var(--text-muted); padding-bottom: 2px; }
+    .chsh-mark.cl span { transform: translateX(-90%); }
+    .chsh-mark.tq span { transform: translateX(-10%); top: 100%; bottom: auto; padding-top: 2px; }
+    .chsh-axis { display: flex; justify-content: space-between; font-size: .68rem; color: var(--text-muted); margin-top: 1.3rem; font-family: var(--font-mono); }
     .mg-table td { vertical-align: top; line-height: 1.55; }
     table.hf-table th { background: var(--bg-surface); color: var(--text-muted); padding: .4rem .6rem; border: 1px solid #1e293b; font-weight: 600; text-align: left; }
     table.hf-table td { padding: .38rem .6rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
@@ -1178,6 +1191,44 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
   </div>
 
   <div id="bellInfo" class="two-col"></div>
+
+  <div class="chart-card chsh-card" style="margin-top:1rem;">
+    <h5>Is it just correlation? Play the CHSH game</h5>
+    <p class="chsh-p">A referee sends Alice and Bob random bits x and y. Without talking, they answer bits a and b, and win if
+      a ⊕ b = x·y (answers equal, except when both got a 1, when they must differ). Any classical strategy, even with
+      shared random numbers agreed in advance, wins at most <b>75%</b> of rounds. Sharing |Φ⁺⟩ and measuring along
+      angles chosen from x and y wins up to cos²(π/8) ≈ <b>85.4%</b>: the CHSH violation, S = 2√2 instead of 2.
+      Correlated coins cannot do this; entangled qubits can.</p>
+    <div class="chsh-grid">
+      <div>
+        <div class="ctrl-row" style="margin-bottom:.3rem;">
+          <div class="ctrl-group"><label for="chA0">Alice, x = 0: <span class="ctrl-val" id="chA0v">0°</span></label><input type="range" id="chA0" min="-90" max="90" value="0" step="0.5"></div>
+          <div class="ctrl-group"><label for="chA1">Alice, x = 1: <span class="ctrl-val" id="chA1v">45°</span></label><input type="range" id="chA1" min="-90" max="90" value="45" step="0.5"></div>
+        </div>
+        <div class="ctrl-row">
+          <div class="ctrl-group"><label for="chB0">Bob, y = 0: <span class="ctrl-val" id="chB0v">22.5°</span></label><input type="range" id="chB0" min="-90" max="90" value="22.5" step="0.5"></div>
+          <div class="ctrl-group"><label for="chB1">Bob, y = 1: <span class="ctrl-val" id="chB1v">−22.5°</span></label><input type="range" id="chB1" min="-90" max="90" value="-22.5" step="0.5"></div>
+        </div>
+        <div class="gate-row">
+          <button class="gate-btn" type="button" id="chPlay">Play 1,000 rounds</button>
+          <button class="gate-btn" type="button" id="chBest">Optimal angles</button>
+          <button class="gate-btn" type="button" id="chReset">Reset score</button>
+        </div>
+        <div class="chsh-out" id="chOut"></div>
+      </div>
+      <div class="chsh-meter" aria-hidden="true">
+        <div class="chsh-bar"><div class="chsh-fill" id="chFill"></div><div class="chsh-mark cl" style="left:50%"><span>75% classical</span></div><div class="chsh-mark tq" style="left:70.7%"><span>85.4% quantum max</span></div></div>
+        <div class="chsh-axis"><span>50%</span><span>100%</span></div>
+      </div>
+    </div>
+    <p class="chsh-p" style="font-size:.76rem;color:var(--text-muted);margin-top:.5rem;">
+      Angles are measurement-basis (polarizer) angles in the x–z plane; for |Φ⁺⟩ the answers agree with probability
+      cos²(θ<sub>A</sub> − θ<sub>B</sub>). Why this is not faster-than-light messaging: Alice's answers on their own are 50/50 whatever Bob measures;
+      the pattern appears only when the two records are compared, which needs an ordinary signal.
+      (Clauser, Horne, Shimony &amp; Holt 1969; loophole-free tests: Hensen et al. 2015, Giustina et al. 2015, Shalm et al. 2015.)
+    </p>
+  </div>
+
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://arxiv.org/abs/quant-ph/0504166" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al.: entanglement review</a>
     <a class="read-link" href="https://arxiv.org/abs/quant-ph/9508009" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bell / CHSH inequality, original test</a>
@@ -3587,6 +3638,48 @@ function opReset() {
 })();
 </script>
 <script>
+/* ═══════════════════════════════════════════════
+   CHSH GAME with |Φ⁺⟩: P(a = b) = cos²(θA − θB) for x–z-plane measurements
+   ═══════════════════════════════════════════════ */
+(function () {
+  const ids = ['chA0', 'chA1', 'chB0', 'chB1'];
+  if (!document.getElementById('chA0')) return;
+  const deg = Math.PI / 180, fmt = v => (v < 0 ? '−' : '') + Math.abs(v) + '°';
+  let wins = 0, rounds = 0;
+  const ang = () => ids.map(id => +document.getElementById(id).value * deg);
+  function pWin([a0, a1, b0, b1]) {
+    const c2 = d => Math.cos(d) ** 2;
+    return (c2(a0 - b0) + c2(a0 - b1) + c2(a1 - b0) + (1 - c2(a1 - b1))) / 4;
+  }
+  function render() {
+    ids.forEach(id => document.getElementById(id + 'v').textContent = fmt(+document.getElementById(id).value));
+    const A = ang(), p = pWin(A), E = d => Math.cos(2 * d);                  // correlator ⟨ab⟩ in ±1 units
+    const S = Math.abs(E(A[0] - A[2]) + E(A[0] - A[3]) + E(A[1] - A[2]) - E(A[1] - A[3]));
+    const played = rounds ? `played ${rounds.toLocaleString()} rounds: won ${(100 * wins / rounds).toFixed(1)}% ± ${(100 * Math.sqrt(p * (1 - p) / rounds)).toFixed(1)}%` : 'press Play to sample rounds';
+    document.getElementById('chOut').innerHTML =
+      `predicted win rate ${(100 * p).toFixed(1)}% · S = ${S.toFixed(3)} ${S > 2 + 1e-9 ? '<b style="color:#1c805b">(> 2: no classical strategy can do this)</b>' : '(≤ 2: a classical strategy could match it)'}<br>${played}`;
+    const shown = rounds ? wins / rounds : p;
+    document.getElementById('chFill').style.width = Math.max(0, Math.min(100, (shown - 0.5) / 0.5 * 100)) + '%';
+  }
+  function play() {
+    const A = ang();
+    for (let i = 0; i < 1000; i++) {
+      const x = Math.random() < 0.5 ? 1 : 0, y = Math.random() < 0.5 ? 1 : 0;
+      const same = Math.random() < Math.cos(A[x] - A[2 + y]) ** 2;
+      if (same !== (x === 1 && y === 1)) wins++;
+      rounds++;
+    }
+    render();
+  }
+  ids.forEach(id => document.getElementById(id).addEventListener('input', () => { wins = 0; rounds = 0; render(); }));
+  document.getElementById('chPlay').addEventListener('click', play);
+  document.getElementById('chReset').addEventListener('click', () => { wins = 0; rounds = 0; render(); });
+  document.getElementById('chBest').addEventListener('click', () => {
+    [0, 45, 22.5, -22.5].forEach((v, i) => document.getElementById(ids[i]).value = v); wins = 0; rounds = 0; render();
+  });
+  render();
+})();
+
 /* ═══════════════════════════════════════════════
    MAGIC STATES: Clifford grid vs Clifford + T
    Two random walks from |0⟩, one with {H, S}, one with {H, T}, on a shared

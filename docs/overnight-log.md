@@ -201,4 +201,12 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **google-vs-ibm**: corrected the Science cultivation paper's title/authors (Rosenfeld et al.; Crossref) and fidelity wording.
 - llms.txt / llms-full.txt (also fixed the remote-entanglement Bell state there to Ψ±), CLAUDE.md topic table, start-here card, search index rebuilt (458).
 - Sources checked via arXiv/Crossref: Gidney–Shutty–Jones 2409.17595; Science aee7961; Bennett PRL 76, 722; Deutsch PRL 77, 2818; Bravyi–Kitaev PRA 71, 022316; Aaronson–Gottesman PRA 70, 052328; Bravyi–Gosset PRL 116, 250501. One correction to the brief: "cultivation's ceiling ≈ 99.99%" is the experiment's lower bound; simulations reach 2×10⁻⁹.
+- **Explainer sweep ("add such exciting things and explanations"):** six interactive explainers, each computed from its page's own model and parameters:
+  - tweezer-designer: Airy vs matched-Gaussian vs FWHM-as-radius focal profiles and images (why w₀ = 0.45λ/NA);
+  - cavity-qed: transmission spectrum from the calculator's g₀, κ, γ (Purcell dip → vacuum Rabi splitting), atom-position slider;
+  - polarimetry: waveplate trajectories on the Poincaré sphere (λ/4 figure-eight, λ/2 double loop), page's Mueller convention;
+  - absorption-imaging: simulated noisy OD image as a 3D surface, peak SNR vs recovered atom number;
+  - mot-designer: restoring force across the trap vs the linear spring κ (and a corrected lab tip: capture velocity grows with |Δ|);
+  - learn-quantum: CHSH game (75% classical vs 85.4% quantum), with the no-signalling point.
+  - Test `test_explainer_sweep_2026_11` re-derives each figure's key relation (same-power peak ratio, t(0) = 1/(1+C), MOT slope = −κ, retarder rows, OD sum = N).
 

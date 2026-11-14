@@ -463,6 +463,41 @@ def test_magic_states_and_distillation() -> None:
     assert_contains("pages/google-vs-ibm.html", "Magic state cultivation on a superconducting quantum processor")
 
 
+def test_explainer_sweep_2026_11() -> None:
+    """Explainer figures added 2026-11-14: each must use the physics its text states."""
+    # tweezer focus card: same-power Gaussian peak relative to the Airy peak is 2/(π² w²) (w in λ/NA)
+    w = math.sqrt(2) / math.pi
+    assert abs(2 / (math.pi ** 2 * w * w) - 1) < 1e-12
+    assert abs(2 / (math.pi ** 2 * 0.52 ** 2) - 0.749) < 1e-3          # "25% low"
+    assert_contains("pages/tweezer-designer.html", "const gauss = (u, w) => (2 / (Math.PI * Math.PI * w * w)) * Math.exp(-2 * u * u / (w * w));")
+    # cavity spectrum: t(0) = κ/(κ + g²/γ) = 1/(1 + C)
+    k, g, y = 3.0, 9.0, 2.6
+    C = g * g / (k * y)
+    t0 = k / (k + g * g / y)
+    assert abs(t0 - 1 / (1 + C)) < 1e-12
+    assert_contains("pages/cavity-qed.html", "const den = y * y + d * d, re = k + g * g * y / den, im = -d + g * g * d / den;")
+    # MOT force: slope at the centre equals −κ = −α μ′B′/(ħk)
+    hbar = 1.054571817e-34
+    G, kk, s_, Delta, beta = 2 * math.pi * 6.065e6, 2 * math.pi / 780e-9, 1.0, -1.5 * 2 * math.pi * 6.065e6, 2.0e9
+    D = lambda u: 1 + s_ + 4 * u * u / (G * G)
+    F = lambda x: hbar * kk * G / 2 * s_ * (1 / D(Delta - beta * x) - 1 / D(Delta + beta * x))
+    h = 1e-9
+    slope = (F(h) - F(-h)) / (2 * h)
+    alpha = 8 * hbar * kk * kk * s_ * abs(Delta / G) / D(Delta) ** 2
+    kappa = alpha * beta / kk          # β = μ′B′/ħ, so κ = α μ′B′/(ħk) = α β / k
+    assert abs(slope + kappa) < 1e-6 * kappa
+    assert_contains("pages/mot-designer.html", "const f = s * (1 / D(Delta - beta * x) - 1 / D(Delta + beta * x));")
+    # polarimetry: retarder Mueller rows match the page's QWP matrix at δ = π/2
+    assert_contains("pages/polarimetry.html", "return [ (c * c + s * s * cd) * s1 + c * s * (1 - cd) * s2 - s * sd * s3,")
+    assert_contains("pages/polarimetry.html", "s * sd * s1 - c * sd * s2 + cd * s3 ];")
+    # absorption OD surface: noise-free sum over ±4σ recovers N
+    sig, cell, N = 20e-6, 0.2 * 20e-6, 1e4
+    tot = sum(N / (2 * math.pi * sig * sig) * math.exp(-((i * cell) ** 2 + (j * cell) ** 2) / (2 * sig * sig)) * cell * cell
+              for i in range(-20, 21) for j in range(-20, 21))
+    assert abs(tot / N - 1) < 1e-3
+    assert_contains("pages/absorption-imaging.html", "const Nrec = sum * cell * cell / r.σ_Δ, dN = dOD * cell * cell * n / r.σ_Δ;")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -485,6 +520,7 @@ def main() -> None:
         test_physics_audit_2026_11,
         test_section_search_index,
         test_magic_states_and_distillation,
+        test_explainer_sweep_2026_11,
     ]
     for test in tests:
         test()

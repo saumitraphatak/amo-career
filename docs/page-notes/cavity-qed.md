@@ -61,3 +61,6 @@ Sitewide change in main.js / styles.css (`main.js?v=35`, `styles.css?v=25`). The
 - **Purcell factor and β were double-counted.** With C = g₀²/(κγ) (half-widths) the cavity decay channel is 2g₀²/κ = CΓ, so F_P = C and β = C/(1+C) (the 2C forms belong to Kimble's C₁ = g₀²/2κγ). Defaults: F_P 18.8 → 9.4, β 95.0 → 90.4%. Now consistent with remote-entanglement.
 - Reference table: Kimble row w₀ 16 → 23 μm (reproduces g₀ = 34 MHz) and C = 108 from its own rates; the "Vuletic 2010" and "Thompson, Princeton 2013, Sr-88" rows were removed because their numbers were internally inconsistent and could not be traced to a source.
 - Hood Lab callout: C = 1 at L = 0.5 mm, w₀ = 25 μm needs 𝓕 ≈ 4,400 (was "> 50,000").
+
+## 2026-11-14: explainer sweep
+Section 03 gained "What you would see: the cavity transmission spectrum": weak-probe transmission |t(Δ)|² with t = κ/(κ − iΔ + g²/(γ − iΔ)), empty cavity vs one atom, from the calculator's g₀, κ, γ (`cqed:update`), with a g/g₀ slider (atom position). Readout: C, on-resonance transmission 1/(1+C)², peak separation 2√(g² − (κ−γ)²/4) when split. Shows the Purcell dip turning into the vacuum Rabi doublet.

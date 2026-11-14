@@ -185,6 +185,13 @@
 
     /* ── Preset buttons ── */
     .pol-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .pw-wrap { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 18px; align-items: center; margin-top: 10px; }
+    @media (max-width: 640px) { .pw-wrap { grid-template-columns: minmax(0, 1fr); } }
+    #pwCanvas { width: 100%; max-width: 320px; height: auto; aspect-ratio: 1; max-height: none !important; margin: 0 auto; display: block; }
+    .pw-side { display: flex; flex-direction: column; gap: 8px; }
+    .pw-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pw-lbl { font-size: 12px; color: var(--pol-text2); min-width: 70px; }
+    .pw-out { font-family: var(--font-mono); font-size: 12px; color: var(--pol-text2); line-height: 1.7; }
     .pol-pbtn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: all 0.18s; font-family: var(--font-sans); }
     .pol-pbtn:hover { border-color: var(--c-pol); color: var(--c-pol); background: var(--c-pol-dim); }
     .pol-pbtn.active { border-color: var(--c-pol); color: var(--c-pol); background: var(--c-pol-dim); }
@@ -538,6 +545,36 @@
               <tr><td>Unpolarized</td><td class="tc"><span class="m">1</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td class="tc"><span class="m">0</span></td><td>Center (inside)</td></tr>
             </tbody>
           </table>
+          </div>
+
+          <hr class="pol-divider">
+          <div class="pol-h2">Waveplates move points on the sphere</div>
+          <p class="pol-p">The geometric picture behind every method on this page: a waveplate with retardance δ and fast axis at
+            angle θ <strong>rotates the Stokes vector by δ about an axis in the equator at longitude 2θ</strong>. A half-wave plate
+            (δ = π) reflects linear states across that axis; a quarter-wave plate (δ = π/2) turns linear light at 45° to its axis
+            into circular light at a pole. Turn the plate and the output traces a curve: a double loop around the equator for a
+            HWP, a figure-eight through both poles for a QWP. That curve is exactly the I(θ) signal a rotating-waveplate polarimeter reads out.</p>
+          <div class="pw-wrap">
+            <div class="pw-fig"><canvas id="pwCanvas" width="320" height="320" aria-label="Poincaré sphere with the path traced by the output polarization as the waveplate's fast axis turns from 0 to 180 degrees; the current output and the rotation axis are marked. The Stokes values are listed beside the figure."></canvas></div>
+            <div class="pw-side">
+              <div class="pw-row"><span class="pw-lbl">Waveplate</span>
+                <span class="pol-presets" style="margin:0">
+                  <button type="button" class="pol-pbtn active" data-pw-d="0.25">λ/4</button>
+                  <button type="button" class="pol-pbtn" data-pw-d="0.5">λ/2</button>
+                  <button type="button" class="pol-pbtn" data-pw-d="0.125">λ/8</button>
+                </span></div>
+              <div class="pw-row"><span class="pw-lbl">Input</span>
+                <span class="pol-presets" style="margin:0">
+                  <button type="button" class="pol-pbtn active" data-pw-in="H">H</button>
+                  <button type="button" class="pol-pbtn" data-pw-in="D">+45°</button>
+                  <button type="button" class="pol-pbtn" data-pw-in="R">RCP</button>
+                </span></div>
+              <label class="pw-lbl" for="pwTheta">Fast axis θ: <b id="pwThetaV">0°</b></label>
+              <input type="range" id="pwTheta" min="0" max="180" value="0" step="1">
+              <div class="pw-out" id="pwOut" aria-live="off"></div>
+              <p class="pol-p" style="font-size:11.5px;margin-top:6px">Mueller matrix of a linear retarder (this page's convention, RCP = +S₃);
+                the path is drawn for θ from 0° to 180°. Watch the sweep or drag the slider (the pause button stops the sweep); drag the sphere to turn it.</p>
+            </div>
           </div>
 
           <hr class="pol-divider">
@@ -923,6 +960,94 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=42"></script>
 <script src="../js/motion.js?v=2"></script>
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/canvas-ink.js?v=2"></script>
+<script>
+/* Waveplate trajectories on the Poincaré sphere (Stokes-parameters chapter).
+   Linear retarder, fast axis θ, retardance δ; c = cos2θ, s = sin2θ (same sign convention as the
+   QWP Mueller matrix in the Reference chapter, whose last row is (0, sin2θ, −cos2θ, 0)). */
+(function () {
+  const cv = document.getElementById('pwCanvas'); if (!cv) return;
+  const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
+  const N = cv.width, CX = N / 2, CY = N / 2 + 4, R = N * 0.36;
+  const IN = { H: [1, 0, 0], D: [0, 1, 0], R: [0, 0, 1] };
+  let delta = Math.PI / 2, inp = IN.H, theta = 0, playing = false;
+  let view = { az: -0.55, el: 0.42 };
+  if (window.AMO3D && AMO3D.orbit) view = AMO3D.orbit(cv, { az: -0.55, el: 0.42, label: 'Poincaré sphere', onChange: () => draw() });
+  function retard(S, th, d) {
+    const c = Math.cos(2 * th), s = Math.sin(2 * th), cd = Math.cos(d), sd = Math.sin(d);
+    const [s1, s2, s3] = S;
+    return [ (c * c + s * s * cd) * s1 + c * s * (1 - cd) * s2 - s * sd * s3,
+             c * s * (1 - cd) * s1 + (s * s + c * c * cd) * s2 + c * sd * s3,
+             s * sd * s1 - c * sd * s2 + cd * s3 ];
+  }
+  // lab frame: S1 → screen-right-ish, S2 → depth, S3 → up
+  function P(x, y, z) {
+    const q = window.AMO3D && AMO3D.project ? AMO3D.project(view, x, y, z) : [x, z, y];
+    return [CX + R * q[0], CY - R * q[1], q[2]];
+  }
+  function ring(f, col, a1, a0) {
+    for (const front of [false, true]) {
+      ctx.beginPath(); let pen = false;
+      for (let i = 0; i <= 120; i++) { const q = P(...f(2 * Math.PI * i / 120)); if ((q[2] >= 0) === front) { pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; } else pen = false; }
+      ctx.globalAlpha = front ? a1 : a0; ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function draw() {
+    ctx.clearRect(0, 0, N, N);
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, 2 * Math.PI); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.4; ctx.stroke();
+    ring(t => [Math.cos(t), Math.sin(t), 0], '#1e3a5f', 0.8, 0.25);
+    ring(t => [Math.cos(t), 0, Math.sin(t)], '#1e3a5f', 0.45, 0.15);
+    ctx.font = '11px Inter, sans-serif'; ctx.fillStyle = '#5c503c';
+    [[1.18, 0, 0, 'H (+S₁)'], [-1.2, 0, 0, 'V'], [0, 1.2, 0, '+45°'], [0, -1.2, 0, '−45°'], [0, 0, 1.15, 'RCP'], [0, 0, -1.18, 'LCP']]
+      .forEach(([x, y, z, t]) => { const q = P(x, y, z); ctx.fillText(t, q[0] - 12, q[1] + 4); });
+    // full path for θ ∈ [0°, 180°]
+    for (const front of [false, true]) {
+      ctx.beginPath(); let pen = false;
+      for (let i = 0; i <= 360; i++) {
+        const q = P(...retard(inp, Math.PI * i / 360, delta));
+        if ((q[2] >= 0) === front) { pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; } else pen = false;
+      }
+      ctx.globalAlpha = front ? 0.95 : 0.3; ctx.strokeStyle = '#7a4ff7'; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    // rotation axis at longitude 2θ in the equator, and the input / output states
+    const ax = [Math.cos(2 * theta), Math.sin(2 * theta), 0], a1 = P(...ax), a0 = P(-ax[0], -ax[1], 0);
+    ctx.setLineDash([4, 3]); ctx.strokeStyle = '#926a03'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(a0[0], a0[1]); ctx.lineTo(a1[0], a1[1]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#926a03'; ctx.fillText('axis 2θ', a1[0] + 5, a1[1] - 5);
+    const pi = P(...inp); ctx.beginPath(); ctx.arc(pi[0], pi[1], 4.5, 0, 2 * Math.PI); ctx.strokeStyle = '#1c805b'; ctx.lineWidth = 2; ctx.stroke();
+    const out = retard(inp, theta, delta), po = P(...out);
+    ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(po[0], po[1]); ctx.strokeStyle = '#7a4ff7'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(po[0], po[1], 6, 0, 2 * Math.PI); ctx.fillStyle = '#7a4ff7'; ctx.fill();
+    const chi = 0.5 * Math.asin(Math.max(-1, Math.min(1, out[2]))) * 180 / Math.PI;
+    const psi = ((0.5 * Math.atan2(out[1], out[0]) * 180 / Math.PI) + 180) % 180;
+    document.getElementById('pwOut').innerHTML =
+      `output S₁ = ${out[0].toFixed(3)}, S₂ = ${out[1].toFixed(3)}, S₃ = ${out[2].toFixed(3)}<br>` +
+      `orientation ψ = ${psi.toFixed(1)}°, ellipticity χ = ${chi.toFixed(1)}° (${Math.abs(chi) < 0.5 ? 'linear' : Math.abs(chi) > 44.5 ? (chi > 0 ? 'right circular' : 'left circular') : 'elliptical'})<br>` +
+      `<span style="color:var(--pol-green)">○ input</span> · <span style="color:var(--pol-purple)">● output</span> · <span style="color:var(--pol-yellow)">rotation axis</span>`;
+    document.getElementById('pwThetaV').textContent = Math.round(theta * 180 / Math.PI) + '°';
+  }
+  const slider = document.getElementById('pwTheta');
+  slider.addEventListener('input', () => { theta = +slider.value * Math.PI / 180; draw(); });
+  document.querySelectorAll('[data-pw-d]').forEach(b => b.addEventListener('click', () => {
+    delta = 2 * Math.PI * +b.dataset.pwD; document.querySelectorAll('[data-pw-d]').forEach(o => o.classList.toggle('active', o === b)); draw(); }));
+  document.querySelectorAll('[data-pw-in]').forEach(b => b.addEventListener('click', () => {
+    inp = IN[b.dataset.pwIn]; document.querySelectorAll('[data-pw-in]').forEach(o => o.classList.toggle('active', o === b)); draw(); }));
+  // slow automatic sweep of θ (pause button from motion.js); dragging the slider takes over until play resumes
+  let last = null;
+  function frame(t) {
+    const dt = last === null ? 0 : Math.min(100, t - last); last = t;
+    theta = (theta + dt * Math.PI / 9000) % Math.PI;      // 180° in 9 s
+    slider.value = Math.round(theta * 180 / Math.PI);
+    draw();
+  }
+  if (window.AMOMotion) AMOMotion.loop(cv, window.AMOInk ? AMOInk.track(frame) : frame, { anchors: [{ el: document.getElementById('pwOut'), where: 'afterend' }] });
+  draw();
+  if (window.AMOInk) AMOInk.onTheme(draw);
+})();
+</script>
   <script>
   /* ── Namespace all functions with pol_ prefix to avoid conflicts ── */
   'use strict';
