@@ -55,3 +55,11 @@ See docs/3d-visualization-audit-2026-09-28.md, "Globes and the time tower".
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Content now in a 1280px container; filter pills no longer grey-on-grey in the light theme.
+
+## 2026-11-14: group data check (Crossref)
+- **"Key paper" links were wrong for 30 of 60 groups** (DOIs resolved to unrelated papers, some outside physics, or to another group's paper). Each replacement was read back from Crossref with the group's PI as an author: Ni, Vuletić, Zwierlein, Bakr, Chin, DeMarco, Porto, Hulet, Killian, Stamper-Kurn, Lev, Kasevich, Endres, Ye, Gupta, Bloch, Weidemüller, Dalibard, Treutlein, Foot, Adams, Sagi, Rangwala, Thywissen. Dropped where no verified paper was at hand: Gadway, Walraven, Zhu, Lan, Hauke. Pan's label cleaned.
+- Affiliations: Monroe → Duke; Simon → Stanford; Gross "formerly Stanford" → formerly MPQ; Bernien watchlist line → Innsbruck / IQOQI.
+- Species/focus: Ni (KRb, NaCs), Vuletić (Rb, Yb, Cs), Endres (Sr, Cs), Gupta (Li–Yb), Pfau (Dy, Cr, Rb), Hinds (CaF, YbF), Sagi (K), DeMille (SrF, TlF), Covey (Yb), Campbell (Na, Sr), Weidemüller (Li–Cs, Rydberg gases).
+- Removed the "Lu / Liu Dipolar Lab" entry (PI listed as "(varies)", no such group found; its paper was a Stanford one). "Zhu / Duan Lab" → Zhu Group; "Hauke / Duan Theory" → Hauke Theory Group.
+- Not checked: the other ~35 entries without a key paper beyond a read-through, and group URLs.
+
