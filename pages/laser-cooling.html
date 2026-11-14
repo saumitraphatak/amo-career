@@ -247,6 +247,10 @@
     /* phone overflow fixes (overnight 2026-09-28) */
     .repo-card > div { min-width: 0; overflow-wrap: anywhere; }
     @media(max-width:600px) { .repo-card { flex-wrap: wrap; } .repo-card > div:nth-child(2) { flex: 1 1 200px !important; } }
+  
+    /* sideband thermometry */
+    .sbt-chartwrap { position: relative; height: 240px; margin: .4rem 0 .6rem; }
+    .sbt-btn { font: inherit; font-size: .78rem; padding: .4rem .75rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-primary); cursor: pointer; }
   </style>
 </head>
 <body>
@@ -630,6 +634,44 @@
           </picture>
           <figcaption>Resolved sideband cooling cycle. The population is driven from a higher motional state to the excited-state red sideband, then decays into the next-lower motional state.</figcaption>
         </figure>
+
+        <!-- Sideband thermometry: uses η and ν from the Lamb-Dicke calculator, n̄ from the slider or the cooling limit above -->
+        <div class="calc-card" id="sb-thermometry" style="margin-top:1.5rem;">
+          <h3>🌡️ How do you know it worked? Reading ⟨n⟩ off the sidebands</h3>
+          <p style="font-size:.86rem;line-height:1.7;color:var(--text-secondary);margin:.2rem 0 .9rem;">
+            Probe the cooled atom weakly and scan the probe across the carrier. The red sideband ($\Delta n=-1$) needs a quantum to take away,
+            so its height is $\propto \eta^2\langle n\rangle$; the blue sideband ($\Delta n=+1$) can always add one, so it is $\propto \eta^2(\langle n\rangle+1)$.
+            Their ratio is the thermometer, and it needs no calibration of η or of the probe power:
+          </p>
+          <div class="formula-box" style="margin:0 0 .9rem;">
+            $$\frac{P_{\rm red}}{P_{\rm blue}} = \frac{\langle n\rangle}{\langle n\rangle+1} \quad\Longrightarrow\quad \langle n\rangle = \frac{R}{1-R}$$
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-group" style="flex:2;">
+              <label for="sbtN">Mean phonon number ⟨n⟩: <b id="sbtNV">1.00</b></label>
+              <input type="range" id="sbtN" min="-2" max="1.5" step="0.01" value="0">
+            </div>
+            <div class="ctrl-group" style="display:flex;align-items:flex-end;">
+              <button type="button" id="sbtUse" class="sbt-btn">Use the cooling limit from the calculator above</button>
+            </div>
+          </div>
+          <div class="sbt-chartwrap">
+            <canvas id="sbtChart" data-export-ready="true" aria-label="Weak-probe excitation spectrum: carrier at zero detuning (off scale), red sideband at minus the trap frequency and blue sideband at plus the trap frequency. The heights are listed below the chart."></canvas>
+          </div>
+          <div class="result-row" id="sbtChips">
+            <div class="result-chip"><div class="r-label">η, ν (from the Lamb-Dicke calculator)</div><div class="r-val" id="sbtEta">—</div></div>
+            <div class="result-chip"><div class="r-label">Red / blue ratio R</div><div class="r-val" id="sbtR">—</div></div>
+            <div class="result-chip"><div class="r-label">Ground-state population (thermal) 1/(⟨n⟩+1)</div><div class="r-val" id="sbtP0">—</div></div>
+          </div>
+          <p id="sbtNote" style="font-size:.76rem;color:var(--text-muted);margin:.6rem 0 0;line-height:1.6;"></p>
+          <p style="font-size:.74rem;color:var(--text-muted);margin:.5rem 0 0;line-height:1.6;">
+            Model: weak (perturbative) probe in the Lamb-Dicke regime, sideband strengths $\eta^2\langle n\rangle$ and $\eta^2(\langle n\rangle+1)$ relative to the carrier,
+            which is drawn with height 1 and runs off the top of the plot. The ratio holds for any phonon distribution; $P(n{=}0) = 1/(\langle n\rangle+1)$ assumes a thermal one.
+            Each line is drawn as a Gaussian of full width ν/6, a display choice, not a property of your probe. Strong (π-pulse) probing and η ≳ 0.3 need the full Rabi frequencies $\Omega_{n,n\pm1}$.
+            Used this way by Monroe et al., <a href="https://doi.org/10.1103/PhysRevLett.75.4011" target="_blank" rel="noopener">PRL 75, 4011 (1995)</a> (trapped ion)
+            and Kaufman, Lester &amp; Regal, <a href="https://doi.org/10.1103/PhysRevX.2.041014" target="_blank" rel="noopener">PRX 2, 041014 (2012)</a> (single atom in a tweezer).
+          </p>
+        </div>
 
         <hr class="section-divider">
       </section>
@@ -1646,6 +1688,76 @@ function calcSB() {
 }
 ['sb-gamma','sb-nu','sb-mass','sb-alpha'].forEach(id => document.getElementById(id).addEventListener('input', calcSB));
 calcSB();
+
+/* ═══════════════════════════════════════════════
+   SIDEBAND THERMOMETRY (weak probe, Lamb-Dicke regime)
+   red ∝ η²⟨n⟩, blue ∝ η²(⟨n⟩+1), carrier ≈ 1; R = ⟨n⟩/(⟨n⟩+1)
+══════════════════════════════════════════════════ */
+(function () {
+  const cv = document.getElementById('sbtChart'), sN = document.getElementById('sbtN');
+  if (!cv || !sN || !window.Chart) return;
+  const sb = (n, eta) => ({ red: eta * eta * n, blue: eta * eta * (n + 1), R: n / (n + 1), P0: 1 / (n + 1) });
+  window.SBTHERM = sb;                                          // for the regression test
+  let chart = null;
+  function inputs() {
+    const eta = parseFloat(document.getElementById('ld-eta').textContent);
+    const nu = parseFloat(document.getElementById('ld-nu').value);           // kHz
+    return { eta: eta > 0 ? eta : 0.1, nu: nu > 0 ? nu : 100 };
+  }
+  function draw() {
+    const n = Math.pow(10, +sN.value), { eta, nu } = inputs(), s = sb(n, eta);
+    const sig = nu / (6 * 2.3548), lor = d => Math.exp(-d * d / (2 * sig * sig));   // Gaussian, FWHM ν/6 (display only)
+    const pts = [];
+    for (let i = 0; i <= 1200; i++) {
+      const d = -1.6 * nu + 3.2 * nu * i / 1200;
+      pts.push({ x: d, y: lor(d) + s.red * lor(d + nu) + s.blue * lor(d - nu) });
+    }
+    const yMax = 1.35 * s.blue;
+    document.getElementById('sbtNV').textContent = n < 0.1 ? n.toFixed(3) : n < 10 ? n.toFixed(2) : n.toFixed(1);
+    document.getElementById('sbtEta').textContent = `η = ${eta.toFixed(3)}, ν = ${nu} kHz`;
+    document.getElementById('sbtR').textContent = s.R.toFixed(3);
+    document.getElementById('sbtP0').textContent = (100 * s.P0).toFixed(1) + ' %';
+    document.getElementById('sbtNote').innerHTML =
+      `Red sideband ${(100 * s.red).toFixed(n < 0.1 ? 3 : 2)} %, blue ${(100 * s.blue).toFixed(2)} % of the carrier. ` +
+      (n < 0.05 ? 'The red sideband has nearly vanished: |g, 0⟩ has no lower rung to go to, which is exactly why it is the dark state that sideband cooling fills.'
+        : n > 5 ? 'Hot atom: the two sidebands are almost equal, so R is close to 1 and small errors in R give large errors in ⟨n⟩. Sideband thermometry works best near the ground state.'
+        : 'Inferring ⟨n⟩ = R/(1−R) from these heights gives back ' + (s.R / (1 - s.R)).toFixed(2) + '.') +
+      (eta >= 0.3 ? ' <b>Note:</b> η ≥ 0.3 here, outside the Lamb-Dicke regime where these first-order heights hold.' : '');
+    const ds = [{ label: 'excitation probability (carrier = 1)', data: pts, borderColor: '#0b7c8d', backgroundColor: 'rgba(11,124,141,0.12)', fill: true, borderWidth: 1.8, pointRadius: 0 }];
+    if (chart) { chart.data.datasets = ds; Object.assign(chart.options.scales.x, { min: -1.6 * nu, max: 1.6 * nu }); chart.options.scales.y.max = yMax; chart.update('none'); return; }
+    chart = new Chart(cv, {
+      type: 'line', data: { datasets: ds },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+        scales: {
+          x: { type: 'linear', min: -1.6 * nu, max: 1.6 * nu, title: { display: true, text: 'Probe detuning from the carrier (kHz)', color: '#5c503c' }, ticks: { color: '#5c503c', maxTicksLimit: 9 } },
+          y: { min: 0, max: yMax, title: { display: true, text: 'Excitation (carrier = 1, off scale)', color: '#5c503c' }, ticks: { color: '#5c503c', callback: v => (100 * v).toFixed(1) + '%' } },
+        },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: t => ` ${(100 * t.parsed.y).toFixed(2)} % at ${t.parsed.x.toFixed(0)} kHz` } } },
+      },
+      plugins: [{
+        id: 'sbtLabels',
+        afterDatasetsDraw(c) {
+          const { ctx, scales: { x, y } } = c, { nu } = inputs(), n = Math.pow(10, +sN.value), s = sb(n, inputs().eta);
+          ctx.save(); ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'center';
+          const lab = (d, h, t, col) => { ctx.fillStyle = col; ctx.fillText(t, x.getPixelForValue(d), Math.max(y.top + 12, y.getPixelForValue(h) - 8)); };
+          lab(-nu, s.red, 'red  Δn = −1', '#e20b0b'); lab(nu, s.blue, 'blue  Δn = +1', '#076ce7'); lab(0, 1e9, 'carrier ↑', '#5c503c');
+          ctx.restore();
+        },
+      }],
+    });
+  }
+  sN.addEventListener('input', draw);
+  ['ld-mass', 'ld-nu', 'ld-lambda'].forEach(id => document.getElementById(id).addEventListener('input', () => setTimeout(draw, 0)));
+  document.getElementById('sbtUse').addEventListener('click', () => {
+    const v = parseFloat(document.getElementById('sb-n-resolved').textContent);
+    const note = document.getElementById('sbtNote');
+    if (!(v > 0)) { note.textContent = 'The calculator above is in the unresolved regime (ν < Γ), so it has no resolved-sideband limit to use. Lower Γ or raise ν there first.'; return; }
+    sN.value = Math.max(+sN.min, Math.min(+sN.max, Math.log10(v))); draw();
+  });
+  draw();
+  window.addEventListener('amo:print', draw);
+})();
 
 /* ═══════════════════════════════════════════════
    GRAY MOLASSES CALCULATOR

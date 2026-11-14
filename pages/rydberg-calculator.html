@@ -276,6 +276,14 @@
     .blk3d-key i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:.3rem; vertical-align:middle; }
     .blk3d-note { font-size:.74rem; color:var(--text-muted); margin:.7rem 0 0; line-height:1.55; }
 
+  
+    /* two-atom blockade dynamics */
+    .pair-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; margin: 1.25rem 0 0; }
+    .pair-card h4 { margin: 0 0 .45rem; font-size: 1rem; }
+    .pair-lead { font-size: .86rem; line-height: 1.7; color: var(--text-secondary); margin: 0 0 .7rem; }
+    .pair-chartwrap { position: relative; height: 250px; }
+    .pair-out { font-family: var(--font-mono, monospace); font-size: .76rem; line-height: 1.6; margin: .6rem 0; color: var(--text-secondary); }
+    .pair-note { font-size: .74rem; line-height: 1.6; color: var(--text-muted); margin: .4rem 0 0; }
   </style>
 
   <!-- Open Graph -->
@@ -571,6 +579,28 @@
         </div>
       </div>
       <p class="blk3d-note">U(d)/ℏΩ = (R<sub>b</sub>/d)⁶ follows from |U(R<sub>b</sub>)| = ℏΩ and U ∝ 1/d⁶; the last column is the page's own imperfect-blockade estimate, for a pair at that distance. Same caveats as the calculator: isotropic van der Waals interaction with an approximate C₆, no angular dependence or Förster resonances, so treat it as a first-pass layout check.</p>
+    </div>
+
+    <!-- Two atoms under one drive: exact three-level dynamics with the calculator's Ω and U(r) -->
+    <div class="pair-card" id="pair-dyn">
+      <h4>Two atoms, one laser: watch the blockade happen</h4>
+      <p class="pair-lead">
+        Drive both atoms with the same Ω (the slider above) and start them in |gg⟩. Without interaction each atom Rabi-flops on its own, so half the time both are excited.
+        With U ≫ ℏΩ the doubly excited |rr⟩ is pushed off resonance: the pair oscillates between |gg⟩ and the entangled
+        $|W\rangle = (|gr\rangle + |rg\rangle)/\sqrt2$ instead, and <b>√2 faster</b>, because both atoms drive the same single excitation.
+        Move the separation slider across R<sub>b</sub> and watch the green curve take over.
+      </p>
+      <div class="pair-chartwrap">
+        <canvas id="pairChart" data-export-ready="true" aria-label="Populations versus time for two atoms driven together: exactly one Rydberg excitation, both excited, and a single isolated atom for comparison. Key numbers are listed below the chart."></canvas>
+      </div>
+      <div class="pair-out" id="pairOut" aria-live="polite"></div>
+      <p class="pair-note">
+        Exact evolution of $H/\hbar = \tfrac{\Omega}{\sqrt2}\left(|gg\rangle\langle W| + |W\rangle\langle rr| + {\rm h.c.}\right) + U\,|rr\rangle\langle rr|$ on resonance, no decay,
+        with Ω and U(r) = |C₆|/r⁶ taken from the calculator (same approximate C₆). For U ≫ ℏΩ the largest |rr⟩ population tends to $\tfrac12(\Omega/U)^2$,
+        so the page's imperfect-blockade estimate ε ≈ (d/R<sub>b</sub>)¹² = (Ω/U)² is the conservative side of it.
+        The √2 speed-up was first seen with two atoms in tweezers by Gaëtan et al., <a href="https://doi.org/10.1038/nphys1183" target="_blank" rel="noopener"><em>Nat. Phys.</em> 5, 115 (2009)</a>;
+        N atoms inside one blockade sphere oscillate at √N Ω.
+      </p>
     </div>
   </section>
 
@@ -1006,6 +1036,7 @@ function compute() {
 
   // Update blockade visualizer
   if (window.updateBlockadeViz) updateBlockadeViz(Rb, r, n, r < Rb);
+  if (window.updatePairDyn) updatePairDyn(U_MHz, Omega, r, Rb);
 
   // Update chart
   updateChart(species, orbKey, Omega);
@@ -1305,6 +1336,84 @@ function updateChart(species, orbKey, Omega_MHz) {
   if (window.AMOMotion) AMOMotion.loop(cvs, frame);
   else requestAnimationFrame(function f(ts) { frame(ts); requestAnimationFrame(f); });
   draw();
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   TWO-ATOM BLOCKADE DYNAMICS (exact 3-level, resonant, no decay)
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  const cv = document.getElementById('pairChart');
+  if (!cv) return;
+  // H/ħ in the symmetric basis {|gg⟩, |W⟩ = (|gr⟩+|rg⟩)/√2, |rr⟩}, resonant drive Ω on each atom, interaction U on |rr⟩
+  function jacobi3(A) {
+    const a = A.map(r => r.slice()), V = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    for (let sweep = 0; sweep < 50; sweep++) {
+      let off = 0; for (let p = 0; p < 3; p++) for (let q = p + 1; q < 3; q++) off += a[p][q] * a[p][q];
+      if (off < 1e-30) break;
+      for (let p = 0; p < 3; p++) for (let q = p + 1; q < 3; q++) {
+        if (Math.abs(a[p][q]) < 1e-300) continue;
+        const th = (a[q][q] - a[p][p]) / (2 * a[p][q]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), s = t * c;
+        for (let k = 0; k < 3; k++) { const akp = a[k][p], akq = a[k][q]; a[k][p] = c * akp - s * akq; a[k][q] = s * akp + c * akq; }
+        for (let k = 0; k < 3; k++) { const apk = a[p][k], aqk = a[q][k]; a[p][k] = c * apk - s * aqk; a[q][k] = s * apk + c * aqk; }
+        for (let k = 0; k < 3; k++) { const vkp = V[k][p], vkq = V[k][q]; V[k][p] = c * vkp - s * vkq; V[k][q] = s * vkp + c * vkq; }
+      }
+    }
+    return { E: [a[0][0], a[1][1], a[2][2]], V };
+  }
+  // populations [P_gg, P_W, P_rr] at times ts (μs) for Ω/2π, U/2π in MHz, starting in |gg⟩
+  function pairDynamics(Om, U, ts) {
+    const w = 2 * Math.PI * Om / Math.SQRT2, u = 2 * Math.PI * U;
+    const { E, V } = jacobi3([[0, w, 0], [w, 0, w], [0, w, u]]);
+    return ts.map(t => {
+      const out = [0, 0, 0];
+      for (let i = 0; i < 3; i++) {
+        let re = 0, im = 0;
+        for (let k = 0; k < 3; k++) { const amp = V[i][k] * V[0][k]; re += amp * Math.cos(E[k] * t); im -= amp * Math.sin(E[k] * t); }
+        out[i] = re * re + im * im;
+      }
+      return out;
+    });
+  }
+  window.PAIRDYN = { pairDynamics };                            // for the regression test
+  let chart = null, lastArgs = null;
+  window.updatePairDyn = function (U, Om, r, Rb) {
+    lastArgs = [U, Om, r, Rb];
+    if (!window.Chart) return;
+    const T = 1 / Om, N = 600, ts = [];                         // single-atom Rabi period in μs
+    for (let i = 0; i <= N; i++) ts.push(3 * T * i / N);
+    const P = pairDynamics(Om, U, ts);
+    const one = P.map((p, i) => ({ x: ts[i], y: p[1] })), both = P.map((p, i) => ({ x: ts[i], y: p[2] }));
+    const solo = ts.map(t => ({ x: t, y: Math.pow(Math.sin(Math.PI * Om * t), 2) }));
+    const dense = pairDynamics(Om, U, Array.from({ length: 4001 }, (_, i) => 3 * T * i / 4000));
+    const maxRR = Math.max(...dense.map(p => p[2])), ratio = U / Om, eps = 1 / (ratio * ratio);
+    const ds = [
+      { label: 'exactly one excited (|W⟩)', data: one, borderColor: '#1c805b', borderWidth: 2.2, pointRadius: 0 },
+      { label: 'both excited (|rr⟩)', data: both, borderColor: '#e20b0b', borderWidth: 2, pointRadius: 0 },
+      { label: 'one atom alone: P(r)', data: solo, borderColor: '#8c8066', borderWidth: 1.4, borderDash: [5, 4], pointRadius: 0 },
+    ];
+    if (chart) { chart.data.datasets = ds; chart.options.scales.x.max = 3 * T; chart.update('none'); }
+    else chart = new Chart(cv, {
+      type: 'line', data: { datasets: ds },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: { type: 'linear', min: 0, max: 3 * T, title: { display: true, text: 'Time (μs)', color: '#5c503c' }, ticks: { color: '#5c503c', maxTicksLimit: 8 } },
+          y: { min: 0, max: 1.02, title: { display: true, text: 'Population', color: '#5c503c' }, ticks: { color: '#5c503c' } },
+        },
+        plugins: { legend: { labels: { color: '#22190f' } }, tooltip: { callbacks: { title: c => `t = ${c[0].parsed.x.toFixed(3)} μs`, label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(3)}` } } },
+      },
+    });
+    const fmt = v => v >= 1e4 ? v.toExponential(1) : v >= 10 ? v.toFixed(0) : v.toFixed(2);
+    document.getElementById('pairOut').innerHTML =
+      `r = ${r.toFixed(1)} μm, R<sub>b</sub> = ${Rb.toFixed(2)} μm → U/ℏΩ = ${fmt(ratio)} · ` +
+      `largest P(rr) = ${maxRR < 1e-3 ? maxRR.toExponential(1) : maxRR.toFixed(3)}` +
+      (ratio >= 3 ? ` (large-U limit ½(Ω/U)² = ${(eps / 2) < 1e-3 ? (eps / 2).toExponential(1) : (eps / 2).toFixed(3)}; page ε ≈ (Ω/U)² = ${eps < 1e-3 ? eps.toExponential(1) : eps.toFixed(3)})` : '') + '<br>' +
+      (ratio > 10 ? `Blockaded: the pair flops between |gg⟩ and |W⟩ with period ${(T / Math.SQRT2).toFixed(3)} μs = T/√2, where T = ${T.toFixed(3)} μs is one atom's Rabi period.`
+        : ratio < 0.3 ? 'Interaction negligible: the atoms flop independently and both are excited at the same moments (P(rr) = sin⁴(Ωt/2)).'
+        : 'In between: the pair partly reaches |rr⟩ and the dynamics are not a clean oscillation, which is what an imperfect blockade gate error looks like.');
+  };
+  window.addEventListener('amo:print', () => { if (lastArgs) window.updatePairDyn(...lastArgs); });
 })();
 
 /* ═══ Init ═══ */

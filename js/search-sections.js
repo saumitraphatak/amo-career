@@ -191,6 +191,7 @@ window.AMO_SECTION_INDEX = [
   {"p":"laser-cooling","t":"Lamb-Dicke Parameter Calculator","s":"s-lamb-dicke-parameter-calculator"},
   {"p":"laser-cooling","t":"Resolved Sideband Cooling","s":"s-resolved-sideband-cooling"},
   {"p":"laser-cooling","t":"Sideband Cooling Limit Calculator","s":"s-sideband-cooling-limit-calculator"},
+  {"p":"laser-cooling","t":"How do you know it worked? Reading ⟨n⟩ off the sidebands","s":"s-how-do-you-know-it-worked-reading-n-off-the-sidebands"},
   {"p":"laser-cooling","t":"Unresolved Sideband Cooling","s":"s-unresolved-sideband-cooling"},
   {"p":"laser-cooling","t":"Dark-State Sideband Cooling","s":"s-dark-state-sideband-cooling"},
   {"p":"laser-cooling","t":"Polarization Gradient Cooling","s":"s-polarization-gradient-cooling"},

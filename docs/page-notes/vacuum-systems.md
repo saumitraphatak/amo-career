@@ -58,3 +58,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 - **Background-gas lifetimes were ~10× too long.** σ_eff 5×10⁻¹⁵ → 3×10⁻¹⁴ cm², which reproduces the measured τ ≈ 2×10⁻⁸ Torr·s/P (Arpornthip, Sackett & Hughes 2012): ~3 s at 10⁻⁸ mbar, ~5 min at 10⁻¹⁰ mbar (were 10 s / 1000 s; the calculator itself showed 29 min).
 - Mean-free-path table was ~150× too high in the UHV/XHV rows; now from the page's own formula (66 m at 10⁻⁶, 66 km at 10⁻⁹, 665 km at 10⁻¹⁰ mbar). Density 2.5×10⁶ cm⁻³ at 293 K.
 - Bake speed-up 10²–10⁵ for E_a 0.5–1 eV (was 10⁶ for 0.5 eV); bake-curve axis labels were non-monotonic, now 10⁻⁴…10⁻⁷ with a compressed tail.
+
+## 2026-11-14: explainer sweep 2
+- **Section 03: conductance-limited pumping.** Pump speed, bore, length, gas → C (aperture + long tube, Pfeiffer Eqs. 1-25/1-31), S_eff, pressure penalty, and the length that halves the pump, plus S_eff vs L. Dark theme brightens --vac inside this card only.

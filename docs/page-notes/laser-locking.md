@@ -67,3 +67,6 @@ There are no index cards, so an automatic "5 chapters on this page" chip strip s
 ## 2026-11-13: physics audit (convention slips)
 - Beat-note "+5 dBm" → −22 dBm from the page's own 2R²P₁P₂Z₀; PDH slope ∝ √(P_cP_s)/δν (Black 2001), one fewer 𝓕; ring-down τ = 𝓕/(2π·FSR); SAS width a few MHz (≥ Γ/2π), not ~1 MHz; requirements-table reflectivity now consistent with 𝓕 = 25,200.
 - SAS pump power: peak intensity 2P/πw², so half the old estimate.
+
+## 2026-11-14: explainer sweep 2
+- **PDH tab: "Why PDH reads the phase, not the power".** Complex-plane circle of the reflected carrier, the RF beat at Ω with the local oscillator, and the full error signal including the sideband features (Black 2001, same Lorentzian as the existing charts). Teaching Ω/δν_cav slider plus a button for the calculator's own ratio; detuning auto-sweeps (pause button).

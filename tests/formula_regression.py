@@ -498,6 +498,47 @@ def test_explainer_sweep_2026_11() -> None:
     assert_contains("pages/absorption-imaging.html", "const Nrec = sum * cell * cell / r.σ_Δ, dN = dOD * cell * cell * n / r.σ_Δ;")
 
 
+def test_explainer_sweep_2026_11b() -> None:
+    """Second explainer batch (2026-11-14): PDH phasor, sideband thermometry, conductance, two-atom blockade."""
+    # PDH (Black 2001): F = ix/(1-ix); for Ω ≫ κ, Im χ → -2 Im F = -2x/(1+x²), the page's error-signal shape (×2)
+    F = lambda x: complex(0, x) / complex(1, -x)
+    chi = lambda x, w: F(x) * F(x + w).conjugate() - F(x).conjugate() * F(x - w)
+    for x in (-2.0, -0.3, 0.7, 3.0):
+        assert abs(chi(x, 400).imag - (-2 * x / (1 + x * x))) < 2e-2
+        assert abs(abs(F(x)) ** 2 - x * x / (1 + x * x)) < 1e-12                 # matches the Airy-dip chart
+        assert abs(abs(F(x)) - abs(F(-x))) < 1e-12 and abs(F(x).imag + F(-x).imag) < 1e-12   # same power, opposite phase
+    assert_contains("pages/laser-locking.html", "const F = x => { const d = 1 + x * x; return [-x * x / d, x / d]; };")
+    assert_contains("pages/laser-locking.html", "const Ve = -(d/kap) / (1 + (d/kap)*(d/kap));")
+    # sideband thermometry: Σ p_n n / Σ p_n (n+1) = n̄/(n̄+1) for a thermal distribution
+    nbar = 0.37
+    p = [(nbar / (1 + nbar)) ** n / (1 + nbar) for n in range(400)]
+    red = sum(pn * n for n, pn in enumerate(p)); blue = sum(pn * (n + 1) for n, pn in enumerate(p))
+    assert abs(red / blue - nbar / (nbar + 1)) < 1e-9 and abs(p[0] - 1 / (nbar + 1)) < 1e-12
+    assert_contains("pages/laser-cooling.html", "const sb = (n, eta) => ({ red: eta * eta * n, blue: eta * eta * (n + 1), R: n / (n + 1), P0: 1 / (n + 1) });")
+    # conductance: Dushman-style series of aperture 11.6 A and tube 12.1 d³/L (air, L/s, cm), series with the pump
+    d, L, S = 3.8, 15.0, 100.0
+    Cap, Ct = 11.6 * math.pi * d * d / 4, 12.1 * d ** 3 / L
+    C = 1 / (1 / Cap + 1 / Ct); Se = 1 / (1 / S + 1 / C)
+    assert abs(C - 33.1) < 0.1 and abs(Se - 24.9) < 0.1
+    assert_contains("pages/vacuum-systems.html", "const g = Math.sqrt(28.96 / M), Cap = 11.6 * Math.PI * dcm * dcm / 4 * g;")
+    assert_contains("pages/vacuum-systems.html", "const Ct = 12.1 * dcm * dcm * dcm / Lcm * g;")
+    # two-atom blockade: U = 0 → independent atoms, P_rr = sin⁴(Ωt/2); U ≫ Ω → |W⟩ at √2 Ω, max P_rr → (Ω/U)²/2
+    def evolve(Om, U, t, steps=4000):
+        w, u = 2 * math.pi * Om / math.sqrt(2), 2 * math.pi * U
+        c = [1 + 0j, 0j, 0j]; dt = t / steps
+        Hc = lambda c: [-1j * (w * c[1]), -1j * (w * c[0] + w * c[2]), -1j * (w * c[1] + u * c[2])]
+        for _ in range(steps):                         # RK4, independent of the page's eigen-solver
+            k1 = Hc(c); k2 = Hc([c[i] + dt / 2 * k1[i] for i in range(3)])
+            k3 = Hc([c[i] + dt / 2 * k2[i] for i in range(3)]); k4 = Hc([c[i] + dt * k3[i] for i in range(3)])
+            c = [c[i] + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(3)]
+        return [abs(z) ** 2 for z in c]
+    t = 0.37
+    assert abs(evolve(1.0, 0.0, t)[2] - math.sin(math.pi * t) ** 4) < 1e-8
+    assert abs(evolve(1.0, 200.0, t, 40000)[1] - math.sin(math.sqrt(2) * math.pi * t) ** 2) < 2e-4
+    assert_contains("pages/rydberg-calculator.html", "const { E, V } = jacobi3([[0, w, 0], [w, 0, w], [0, w, u]]);")
+    assert_contains("pages/rydberg-calculator.html", "if (window.updatePairDyn) updatePairDyn(U_MHz, Omega, r, Rb);")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -521,6 +562,7 @@ def main() -> None:
         test_section_search_index,
         test_magic_states_and_distillation,
         test_explainer_sweep_2026_11,
+        test_explainer_sweep_2026_11b,
     ]
     for test in tests:
         test()

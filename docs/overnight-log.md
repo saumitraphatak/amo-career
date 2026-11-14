@@ -210,3 +210,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - learn-quantum: CHSH game (75% classical vs 85.4% quantum), with the no-signalling point.
   - Test `test_explainer_sweep_2026_11` re-derives each figure's key relation (same-power peak ratio, t(0) = 1/(1+C), MOT slope = −κ, retarder rows, OD sum = N).
 
+- **Explainer sweep 2 ("do more"):** four more, again computed from each page's own inputs:
+  - laser-locking (PDH tab): reflected-carrier circle, RF beat at Ω vs the local oscillator, and the full error signal with sideband features (Black 2001);
+  - laser-cooling: sideband thermometry, red/blue = ⟨n⟩/(⟨n⟩+1) from the Lamb-Dicke calculator's η and ν (Monroe 1995; Kaufman, Lester & Regal 2012);
+  - vacuum-systems: conductance-limited pumping (aperture + long tube in series with the pump; Pfeiffer Know-How §1.2.8);
+  - rydberg-calculator: exact two-atom dynamics with the calculator's Ω and U(r): independent flopping → √2-faster |gg⟩↔|W⟩; max P(rr) → ½(Ω/U)².
+  - Test `test_explainer_sweep_2026_11b` (RK4 cross-check of the blockade solver, thermal sideband ratio, conductance example, PDH large-Ω limit).

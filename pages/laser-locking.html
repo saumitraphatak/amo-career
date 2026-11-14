@@ -176,6 +176,22 @@
     .slope-table th { background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
       padding: .5rem .8rem; border: 1px solid #1e293b; text-align: left; }
     .slope-table td { padding: .5rem .8rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
+  
+    /* PDH phasor explainer */
+    .pdhx-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; margin: 1.25rem 0; }
+    .pdhx-card h5 { margin: 0 0 .4rem; font-size: 1rem; }
+    .pdhx-lead { font-size: .86rem; line-height: 1.65; color: var(--text-secondary); margin: 0 0 .8rem; }
+    .pdhx-ctrls { display: grid; grid-template-columns: auto 1fr; gap: .45rem .8rem; align-items: center; font-size: .8rem; margin-bottom: .8rem; }
+    .pdhx-ctrls input { width: 100%; min-width: 0; }
+    .pdhx-btn { grid-column: 1 / -1; justify-self: start; font: inherit; font-size: .78rem; padding: .3rem .7rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-primary); cursor: pointer; }
+    .pdhx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .8rem; }
+    .pdhx-fig { margin: 0; text-align: center; }
+    .pdhx-fig canvas { max-width: 100%; height: auto; }
+    .pdhx-fig figcaption { font-size: .72rem; color: var(--text-muted); margin-top: .25rem; }
+    .pdhx-out { font-family: var(--font-mono, monospace); font-size: .76rem; line-height: 1.6; margin: .7rem 0; color: var(--text-secondary); }
+    .pdhx-chartwrap { position: relative; height: 230px; }
+    .pdhx-note { font-size: .74rem; line-height: 1.6; color: var(--text-muted); margin: .7rem 0 0; }
+    @media (max-width: 560px) { .pdhx-ctrls { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -1042,6 +1058,47 @@ Discriminator slope: $K = 8\sqrt{P_{\rm carrier}\cdot P_{\rm sideband}}/\delta\n
               <canvas id="pdhChart2" height="150"></canvas>
             </div>
           </div>
+        </div>
+
+        <div class="pdhx-card" id="pdh-phasor">
+          <h5>Why PDH reads the phase, not the power</h5>
+          <p class="pdhx-lead">
+            Sweep the laser through the cavity line and watch the reflected carrier field
+            $F(\delta)$ in the complex plane. Its <em>size</em> is the same at $+\delta$ and $-\delta$
+            (that is the symmetric Airy dip above), so power alone can't tell the servo which way to push.
+            Its <em>phase</em> runs the other way round the circle on each side. Beating the carrier against the
+            sidebands turns that phase into an RF signal whose sign flips at resonance.
+          </p>
+          <div class="pdhx-ctrls">
+            <label for="pdhxD">Laser detuning δ / κ: <b id="pdhxDV">0.00</b></label>
+            <input type="range" id="pdhxD" min="-4" max="4" step="0.02" value="-1.5">
+            <label for="pdhxR">Sideband offset Ω / δν<sub>cav</sub> (log): <b id="pdhxRV">6</b></label>
+            <input type="range" id="pdhxR" min="-0.5" max="2.5" step="0.01" value="0.778">
+            <button type="button" class="pdhx-btn" id="pdhxMine">Use my cavity's Ω/δν<sub>cav</sub></button>
+          </div>
+          <div class="pdhx-grid">
+            <figure class="pdhx-fig">
+              <canvas id="pdhxCircle" width="240" height="240" data-export-ready="true" aria-label="Reflected carrier field F in the complex plane. It traces a circle of radius one half centred on minus one half; the dot is the current detuning."></canvas>
+              <figcaption>Reflected carrier $F(\delta)$ in the complex plane (κ = cavity half-width)</figcaption>
+            </figure>
+            <figure class="pdhx-fig">
+              <canvas id="pdhxBeat" width="320" height="240" data-export-ready="true" aria-label="Photodiode signal at the modulation frequency over two RF periods, with the local-oscillator reference dashed. The mixer output is the overlap of the two."></canvas>
+              <figcaption>Photodiode signal at Ω over two RF periods (solid) and the mixer's local oscillator (dashed)</figcaption>
+            </figure>
+          </div>
+          <div class="pdhx-out" id="pdhxOut" aria-live="polite"></div>
+          <div class="pdhx-chartwrap">
+            <canvas id="pdhxChart" data-export-ready="true" aria-label="Full PDH error signal from minus 1.4 to plus 1.4 times the modulation frequency: the steep central slope at the carrier and two weaker features where each sideband crosses the resonance."></canvas>
+          </div>
+          <p class="pdhx-note">
+            Model: Black's PDH signal $\epsilon = 2\sqrt{P_cP_s}\,\mathrm{Im}\,\chi$, $\chi = F(\delta)F^*(\delta+\Omega) - F^*(\delta)F(\delta-\Omega)$, for a lossless,
+            impedance-matched cavity near one resonance, $F(\delta) = i(\delta/\kappa)/(1 - i\delta/\kappa)$, the same Lorentzian as the two charts above.
+            The photodiode term at Ω is $\propto \mathrm{Re}[\chi]\cos\Omega t + \mathrm{Im}[\chi]\sin\Omega t$ and the mixer keeps the $\sin\Omega t$ part.
+            When Ω ≫ δν<sub>cav</sub> the sidebands reflect with $F \approx -1$ and $\epsilon \approx -4\sqrt{P_cP_s}\,\mathrm{Im}F(\delta)$, which is linear in δ near resonance
+            while the reflected power $|F|^2 \approx (\delta/\kappa)^2$ has no first-order term at all.
+            The slider's default Ω is a teaching value chosen so all three features fit on one plot; the button switches to the calculator's own ratio.
+            Source: E. D. Black, <a href="https://doi.org/10.1119/1.1286663" target="_blank" rel="noopener"><em>Am. J. Phys.</em> 69, 79 (2001)</a>.
+          </p>
         </div>
 
         <div class="formula-box" style="margin-top:1.25rem;">
@@ -2036,6 +2093,144 @@ updateBeat();
   const driftEl = document.getElementById('driftHz');
   if (window.AMOMotion) AMOMotion.loop(cvs, () => draw(true), { anchors: [{ el: driftEl ? driftEl.parentElement : cvs, where: 'afterend', inline: !!driftEl }] });
   else requestAnimationFrame(function f() { draw(true); requestAnimationFrame(f); });
+})();
+
+/* ═══════════════════════════════════════════════
+   PDH PHASOR EXPLAINER (Black 2001)
+   F(x) = i x / (1 − i x), x = δ/κ (κ = HWHM), the Lorentzian used by updatePDH().
+   χ = F(x) F*(x + w) − F*(x) F(x − w), w = Ω/κ; error ε = 2√(PcPs) Im χ.
+   ═══════════════════════════════════════════════ */
+(function () {
+  const cvC = document.getElementById('pdhxCircle'), cvB = document.getElementById('pdhxBeat');
+  if (!cvC || !cvB) return;
+  const sD = document.getElementById('pdhxD'), sR = document.getElementById('pdhxR');
+  const F = x => { const d = 1 + x * x; return [-x * x / d, x / d]; };           // i x (1 + i x)/(1 + x²)
+  const mul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]];
+  const conj = a => [a[0], -a[1]];
+  const chi = (x, w) => { const p = mul(F(x), conj(F(x + w))), q = mul(conj(F(x)), F(x - w)); return [p[0] - q[0], p[1] - q[1]]; };
+  window.PDHX = { F, chi };                                                     // for the regression test
+  const ink = c => window.AMOInk ? AMOInk.wrap(c.getContext('2d')) : c.getContext('2d');
+  let x = +sD.value, ratio = Math.pow(10, +sR.value), chart = null;
+
+  function drawCircle() {
+    const ctx = ink(cvC), W = cvC.width, H = cvC.height, S = 190, ox = W / 2 + S / 2 - 6, oy = H / 2;   // origin (F = 0) sits right of centre
+    const P = (re, im) => [ox + S * re, oy - S * im];
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = '#8c8066'; ctx.lineWidth = 1; ctx.globalAlpha = 0.5;
+    ctx.beginPath(); ctx.moveTo(8, oy); ctx.lineTo(W - 4, oy); ctx.moveTo(ox, 10); ctx.lineTo(ox, H - 10); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.font = '10px Inter, sans-serif'; ctx.fillStyle = '#5c503c';
+    ctx.fillText('Re F', 4, oy - 5); ctx.fillText('Im F', ox + 4, 22);
+    ctx.fillText('0', ox + 3, oy + 12); ctx.fillText('−1', P(-1, 0)[0] - 4, oy + 12);
+    // the circle, coloured by side: below resonance (x < 0) lower half, above (x > 0) upper half
+    for (const [a0, a1, col] of [[-60, 0, '#076ce7'], [0, 60, '#e20b0b']]) {
+      ctx.beginPath();
+      for (let i = 0; i <= 300; i++) { const xi = a0 + (a1 - a0) * i / 300, t = Math.sign(xi) * Math.pow(Math.abs(xi) / 60, 3) * 60, f = F(t), q = P(f[0], f[1]); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }
+      ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.fillStyle = '#e20b0b'; ctx.fillText('δ > 0', P(-0.5, 0.5)[0] - 14, P(0, 0.5)[1] - 6);
+    ctx.fillStyle = '#076ce7'; ctx.fillText('δ < 0', P(-0.5, -0.5)[0] - 14, P(0, -0.5)[1] + 15);
+    // the current field: arrow from the origin, plus its mirror image at −δ (same length, opposite phase)
+    const f = F(x), q = P(f[0], f[1]), m = F(-x), qm = P(m[0], m[1]);
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = '#8c8066'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(qm[0], qm[1]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(qm[0], qm[1], 3.5, 0, 2 * Math.PI); ctx.strokeStyle = '#8c8066'; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(q[0], q[1]); ctx.strokeStyle = '#7a4ff7'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(q[0], q[1], 5.5, 0, 2 * Math.PI); ctx.fillStyle = '#7a4ff7'; ctx.fill();
+    ctx.fillStyle = '#5c503c'; ctx.fillText('dashed: same |δ|,', 6, 14); ctx.fillText('other side', 6, 26);
+  }
+
+  function drawBeat(c) {
+    const ctx = ink(cvB), W = cvB.width, H = cvB.height, L = 14, R = W - 8, mid = H / 2 - 8, A = 70;
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = '#8c8066'; ctx.globalAlpha = 0.5; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(L, mid); ctx.lineTo(R, mid); ctx.stroke(); ctx.globalAlpha = 1;
+    const norm = 1.15;                                       // |Im χ| ≤ 1 here; leave a little headroom
+    const trace = (fn, col, dash, lw) => {
+      ctx.setLineDash(dash); ctx.beginPath();
+      for (let i = 0; i <= 240; i++) { const ph = 4 * Math.PI * i / 240, X = L + (R - L) * i / 240, Y = mid - A * fn(ph); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
+      ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.stroke(); ctx.setLineDash([]);
+    };
+    trace(ph => 0.8 * Math.sin(ph), '#8c8066', [4, 3], 1.2);
+    trace(ph => Math.max(-1.3, Math.min(1.3, (c[0] * Math.cos(ph) + c[1] * Math.sin(ph)) / norm)), '#926a03', [], 2.2);
+    ctx.font = '10px Inter, sans-serif'; ctx.fillStyle = '#5c503c';
+    ctx.fillText('0', 4, mid + 4); ctx.fillText('t →', R - 22, mid + 14); ctx.fillText('mixer output ε (bar; centre line = 0)', L, H - 24);
+    // mixer output bar: ε ∝ Im χ, on the same scale as the trace
+    const bx = L, by = H - 18, bw = R - L, e = Math.max(-1, Math.min(1, c[1] / norm));
+    ctx.strokeStyle = '#8c8066'; ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, 10);
+    ctx.fillStyle = e >= 0 ? '#1c805b' : '#e20b0b';
+    const cx = bx + bw / 2; ctx.fillRect(Math.min(cx, cx + e * bw / 2), by + 1, Math.abs(e * bw / 2), 8);
+    ctx.fillStyle = '#5c503c'; ctx.fillRect(cx - 0.5, by - 2, 1, 14);
+  }
+
+  let curveW = null, curve = null, yMax = 1.2;
+  function drawChart(w) {
+    if (!window.Chart) return;
+    const span = 1.4 * Math.max(w, 4);
+    if (curveW !== w) {                                // rebuild the curve only when Ω changes
+      curveW = w; curve = []; let m = 0;
+      for (let i = 0; i < 3001; i++) { const xi = -span + 2 * span * i / 3000, y = chi(xi, w)[1]; curve.push({ x: xi, y }); m = Math.max(m, Math.abs(y)); }
+      yMax = Math.ceil(m * 11) / 10;
+    }
+    const mark = [{ x, y: chi(x, w)[1] }];
+    if (chart) {
+      chart.data.datasets[0].data = curve; chart.data.datasets[1].data = mark;
+      Object.assign(chart.options.scales.x, { min: -span, max: span }); Object.assign(chart.options.scales.y, { min: -yMax, max: yMax });
+      chart.update('none'); return;
+    }
+    chart = new Chart(document.getElementById('pdhxChart'), {
+      type: 'line',
+      data: { datasets: [
+        { label: 'PDH error ∝ Im χ', data: curve, borderColor: '#926a03', borderWidth: 1.8, pointRadius: 0 },
+        { label: 'laser now', data: mark, borderColor: '#7a4ff7', backgroundColor: '#7a4ff7', pointRadius: 5, showLine: false },
+      ] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+        interaction: { mode: 'nearest', intersect: false },
+        scales: {
+          x: { type: 'linear', min: -span, max: span, title: { display: true, text: 'Laser detuning δ / κ (κ = cavity half-width)', color: '#5c503c' }, ticks: { color: '#5c503c', maxTicksLimit: 9 } },
+          y: { min: -yMax, max: yMax, title: { display: true, text: 'Error signal (units of 2√(PcPs))', color: '#5c503c' }, ticks: { color: '#5c503c' } },
+        },
+        plugins: { legend: { labels: { color: '#22190f' } }, tooltip: { callbacks: { label: t => ` δ/κ = ${t.parsed.x.toFixed(2)}, ε = ${t.parsed.y.toFixed(3)}` } } },
+      },
+    });
+  }
+
+  function draw() {
+    const w = 2 * ratio, c = chi(x, w), f = F(x);
+    document.getElementById('pdhxDV').textContent = x.toFixed(2);
+    document.getElementById('pdhxRV').textContent = ratio >= 10 ? ratio.toFixed(0) : ratio.toFixed(1);
+    drawCircle(); drawBeat(c); drawChart(w);
+    const ph = Math.atan2(f[1], f[0]) * 180 / Math.PI;
+    const side = Math.abs(x) < 0.01 ? 'on resonance: no signal at Ω, the servo is happy'
+      : x < 0 ? 'laser below resonance: error positive, push up' : 'laser above resonance: error negative, push down';
+    document.getElementById('pdhxOut').innerHTML =
+      `reflected power |F|² = ${(f[0] * f[0] + f[1] * f[1]).toFixed(3)} (same at δ = ${(-x).toFixed(2)}κ) · phase arg F = ${Math.abs(x) < 1e-6 ? '—' : ph.toFixed(0) + '°'}<br>` +
+      `RF beat: ${c[0].toFixed(3)} cos Ωt ${c[1] < 0 ? '−' : '+'} ${Math.abs(c[1]).toFixed(3)} sin Ωt → mixer output ε ∝ ${c[1].toFixed(3)} (${side})`;
+  }
+  sD.addEventListener('input', () => { x = +sD.value; draw(); });
+  sR.addEventListener('input', () => { ratio = Math.pow(10, +sR.value); draw(); });
+  document.getElementById('pdhxMine').addEventListener('click', () => {
+    const L = +document.getElementById('pdhL').value * 1e-3, Fin = +document.getElementById('pdhF').value, Om = +document.getElementById('pdhOmega').value * 1e6;
+    if (!(L > 0 && Fin > 0 && Om > 0)) return;
+    const r = Om / (299792458 / (2 * L) / Fin);
+    sR.value = Math.max(+sR.min, Math.min(+sR.max, Math.log10(r))); ratio = Math.pow(10, +sR.value); draw();
+  });
+  // slow back-and-forth sweep of the detuning (pause button from motion.js); dragging takes over until play resumes
+  let last = null, dir = 1, held = false;
+  sD.addEventListener('pointerdown', () => { held = true; }); window.addEventListener('pointerup', () => { held = false; });
+  function frame(t) {
+    const dt = last === null ? 0 : Math.min(100, t - last); last = t;
+    if (!held && dt) {
+      x += dir * dt * 8 / 6000;                         // −4 → 4 in 6 s
+      if (x > 4) { x = 4; dir = -1; } else if (x < -4) { x = -4; dir = 1; }
+      sD.value = x.toFixed(2);
+    }
+    draw();
+  }
+  if (window.AMOMotion) AMOMotion.loop([cvC, cvB], window.AMOInk ? AMOInk.track(frame) : frame, { anchors: [{ el: document.getElementById('pdhxMine'), where: 'afterend' }] });
+  draw();
+  if (window.AMOInk) AMOInk.onTheme(draw);
+  window.addEventListener('amo:print', draw);
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

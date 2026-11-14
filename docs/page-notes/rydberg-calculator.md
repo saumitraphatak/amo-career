@@ -61,3 +61,6 @@ New card at the end of the calculator section, "In an array: how many neighbours
 - ⟨r⟩ = [3n*² − l(l+1)]/2·a₀ ≈ 1.5n*²a₀ (was n*²a₀, 33% low).
 - Förster paragraph: Gaëtan et al. 2009 used Rb 58D₃/₂; electric-field-tuned Förster resonance cited to Ravets et al. 2014.
 - **Unverified (no ARC offline):** lifetimes use τ₀n*³ (Gallagher's fit exponent is ~2.94); the 50D C₆ anchor may be high.
+
+## 2026-11-14: explainer sweep 2
+- **Two atoms, one laser.** Exact three-level dynamics with the calculator's Ω and U(r) (hooked into compute()); shows independent flopping → √2-faster |gg⟩↔|W⟩ oscillation; largest P(rr) → ½(Ω/U)², so the page's ε ≈ (d/R_b)¹² is the conservative side.
