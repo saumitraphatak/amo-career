@@ -339,6 +339,25 @@
       line-height: 1.6;
     }
 
+  
+    /* teleportation + repetition code */
+    .tele-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .5rem; margin: .8rem 0 .4rem; }
+    .tele-fig { margin: 0; text-align: center; border: 1px solid var(--border); border-radius: 8px; padding: .3rem; transition: opacity .2s, border-color .2s; }
+    .tele-fig canvas { max-width: 100%; height: auto; }
+    .tele-fig figcaption { font-size: .7rem; color: var(--text-muted); line-height: 1.35; }
+    .tele-fig.pick { border-color: #1c805b; }
+    .tele-fig.dim { opacity: .45; }
+    .gate-btn.active { border-color: var(--c-qc); color: var(--c-qc); }
+    .gate-btn:disabled { opacity: .45; cursor: default; }
+    .rep-chain { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: .3rem; margin: .9rem 0 .6rem; }
+    .rep-q { width: 2.3rem; height: 2.3rem; border-radius: 50%; border: 2px solid #076ce7; background: transparent; color: var(--text-primary); font: 600 .95rem var(--font-mono); cursor: pointer; }
+    .rep-q.flip { background: color-mix(in srgb, #e20b0b 18%, transparent); border-color: #e20b0b; }
+    .rep-q.fix { box-shadow: 0 0 0 3px color-mix(in srgb, #926a03 55%, transparent); }
+    .rep-s { width: 1rem; height: 1rem; border: 1.5px solid var(--text-muted); border-radius: 2px; }
+    .rep-s.lit { background: #926a03; border-color: #926a03; }
+    .rep-mc { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: flex-end; margin: .8rem 0 .4rem; }
+    .rep-mc .ctrl-group { flex: 1 1 240px; }
+    .rep-chartwrap { position: relative; height: 260px; }
   </style>
 </head>
 <body>
@@ -1229,6 +1248,30 @@ Single-qubit gate: resonant MW or two-photon Raman pulse; $t_\pi \sim 5\,\mu\tex
     </p>
   </div>
 
+  <div class="chart-card tele-card" id="teleport" style="margin-top:1rem;">
+    <h5>Teleportation: what the two classical bits are for</h5>
+    <p class="chsh-p">Alice holds an unknown qubit |ψ⟩ and half of a shared |Φ⁺⟩; Bob holds the other half. Alice does a CNOT and a Hadamard,
+      then measures her two qubits. Each of the four results comes up <b>25% of the time whatever |ψ⟩ is</b>, so Alice learns nothing about it,
+      and Bob's qubit is left in one of four rotated copies of |ψ⟩. Only when Alice's two bits reach him, by an ordinary signal, does he know which
+      correction undoes the rotation. Until then his qubit, averaged over the four cases, is the centre of the sphere: no information at all.</p>
+    <div class="ctrl-row">
+      <div class="ctrl-group"><label for="tpTh">|ψ⟩ polar angle θ: <span class="ctrl-val" id="tpThV">60°</span></label><input type="range" id="tpTh" min="0" max="180" value="60" step="1"></div>
+      <div class="ctrl-group"><label for="tpPh">azimuth φ: <span class="ctrl-val" id="tpPhV">30°</span></label><input type="range" id="tpPh" min="0" max="360" value="30" step="1"></div>
+    </div>
+    <div class="gate-row">
+      <button class="gate-btn" type="button" id="tpRun">Teleport once (random outcome)</button>
+      <button class="gate-btn" type="button" id="tpFix" disabled>Send the bits → Bob corrects</button>
+    </div>
+    <div class="tele-grid" id="tpGrid"></div>
+    <div class="chsh-out" id="tpOut" aria-live="polite"></div>
+    <p class="chsh-p" style="font-size:.76rem;color:var(--text-muted);margin-top:.5rem;">
+      Standard circuit (Nielsen &amp; Chuang §1.3.7): with outcomes m₁ (Alice's |ψ⟩ qubit) and m₂ (her half of the pair), Bob holds X<sup>m₂</sup>Z<sup>m₁</sup>|ψ⟩
+      and applies Z<sup>m₁</sup>X<sup>m₂</sup>. On the Bloch sphere X flips y and z, Z flips x and y, so the four cases average to zero.
+      Proposed by Bennett et al., <a href="https://doi.org/10.1103/PhysRevLett.70.1895" target="_blank" rel="noopener">PRL 70, 1895 (1993)</a>;
+      the same move, with a magic state instead of |ψ⟩, is the T-gate gadget in <a href="#magic">Magic States</a>.
+    </p>
+  </div>
+
   <div class="read-links" style="margin-top:.75rem;">
     <a class="read-link" href="https://arxiv.org/abs/quant-ph/0504166" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Horodecki et al.: entanglement review</a>
     <a class="read-link" href="https://arxiv.org/abs/quant-ph/9508009" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Bell / CHSH inequality, original test</a>
@@ -1643,6 +1686,31 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
         Target for fault-tolerant useful computation: p &lt; 0.1%.
       </div>
     </div>
+  </div>
+
+  <div class="chart-card rep-card" id="rep-code" style="margin-top:1.25rem;">
+    <h5>Try it: the repetition code, and where a threshold comes from</h5>
+    <p class="chsh-p">Store one bit as d copies. The parity checks between neighbours (the squares) light up wherever two neighbours disagree, which says <em>where</em> the
+      flips are without ever reading the stored value. The decoder picks the smallest set of flips that explains the lit checks. Click data qubits to flip them:
+      the code survives any ⌊(d−1)/2⌋ flips, and fails, silently, when more than half flip, because then the smaller explanation is the wrong one.</p>
+    <div class="gate-row" role="group" aria-label="Code distance">
+      <button class="gate-btn" type="button" data-rep-d="3">d = 3</button>
+      <button class="gate-btn active" type="button" data-rep-d="5">d = 5</button>
+      <button class="gate-btn" type="button" data-rep-d="7">d = 7</button>
+      <button class="gate-btn" type="button" id="repClear">Clear flips</button>
+    </div>
+    <div class="rep-chain" id="repChain" role="group" aria-label="Data qubits (circles, click to flip) and parity checks (squares)"></div>
+    <div class="chsh-out" id="repOut" aria-live="polite"></div>
+    <div class="rep-mc">
+      <div class="ctrl-group"><label for="repP">Physical flip probability p: <span class="ctrl-val" id="repPV">10%</span></label><input type="range" id="repP" min="0.01" max="0.6" step="0.01" value="0.1"></div>
+      <button class="gate-btn" type="button" id="repRun">Run 20,000 shots per d</button>
+    </div>
+    <div class="rep-chartwrap"><canvas id="repChart" data-export-ready="true" aria-label="Logical error rate versus physical flip probability for d = 1, 3, 5 and 7 repetition codes, with Monte Carlo points. All curves cross at p = 50 percent."></canvas></div>
+    <p class="chsh-p" style="font-size:.76rem;color:var(--text-muted);margin-top:.5rem;">
+      Curves: $p_L = \sum_{k>d/2}\binom{d}{k}p^k(1-p)^{d-k}$ for independent bit flips and perfect parity checks; points: the decoder above run on random errors.
+      Below the crossing a bigger code is exponentially better; above it, worse. Here the crossing sits at 50% because only data qubits err and only bit flips are possible.
+      Real codes must also catch phase flips (the surface code checks both), and every check is itself a noisy circuit, which is why the surface-code threshold in the chart above is about 1%, not 50%.
+    </p>
   </div>
 
   <!-- Overhead table -->
@@ -3678,6 +3746,148 @@ function opReset() {
     [0, 45, 22.5, -22.5].forEach((v, i) => document.getElementById(ids[i]).value = v); wins = 0; rounds = 0; render();
   });
   render();
+})();
+
+/* ═══════════════════════════════════════════════
+   TELEPORTATION: Bob's state for each outcome, and his average without the bits
+   ═══════════════════════════════════════════════ */
+(function () {
+  const grid = document.getElementById('tpGrid');
+  if (!grid) return;
+  // Bloch-vector action of Bob's pre-correction state X^m2 Z^m1 |ψ⟩
+  const bob = (r, m1, m2) => { let [x, y, z] = r; if (m1) { x = -x; y = -y; } if (m2) { y = -y; z = -z; } return [x, y, z]; };
+  window.TELEPORT = { bob };                                    // for the regression test
+  const CASES = [[0, 0], [0, 1], [1, 0], [1, 1]];
+  const FIX = { '00': 'I', '01': 'X', '10': 'Z', '11': 'ZX' };
+  const panels = [['in', 'Alice\'s |ψ⟩']].concat(CASES.map(([a, b]) => [`${a}${b}`, `m₁m₂ = ${a}${b} · Bob fixes with ${FIX[`${a}${b}`]}`])).concat([['avg', 'Bob, before the bits arrive']]);
+  grid.innerHTML = panels.map(([k, t]) => `<figure class="tele-fig" data-k="${k}"><canvas width="150" height="150" data-export-ready="true" aria-label="Bloch sphere: ${t}"></canvas><figcaption>${t}</figcaption></figure>`).join('');
+  const cvs = {}; grid.querySelectorAll('.tele-fig').forEach(f => { cvs[f.dataset.k] = f.querySelector('canvas'); });
+  const sTh = document.getElementById('tpTh'), sPh = document.getElementById('tpPh');
+  let picked = null, fixed = false;
+  function sphere(cv, vec, col, opts = {}) {
+    const ctx = LQ_INK.wrap(cv.getContext('2d')), R = 52, CX = 75, CY = 72, az = Math.PI / 6, el = Math.PI / 7;
+    const P = (x, y, z) => { const xr = x * Math.cos(az) - y * Math.sin(az), yr = x * Math.sin(az) + y * Math.cos(az); return [CX + R * xr, CY - R * (z * Math.cos(el) + yr * Math.sin(el))]; };
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.beginPath(); ctx.arc(CX, CY, R, 0, 2 * Math.PI); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.beginPath(); for (let i = 0; i <= 64; i++) { const t = 2 * Math.PI * i / 64, q = P(Math.cos(t), Math.sin(t), 0); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }
+    ctx.globalAlpha = 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.font = '9px Inter, sans-serif'; ctx.fillStyle = '#5c503c';
+    const t0 = P(0, 0, 1.18), t1 = P(0, 0, -1.3), tx = P(1.25, 0, 0);
+    ctx.fillText('|0⟩', t0[0] - 7, t0[1]); ctx.fillText('|1⟩', t1[0] - 7, t1[1] + 4); ctx.fillText('x', tx[0] - 2, tx[1] + 3);
+    if (opts.ghosts) opts.ghosts.forEach(g => { const q = P(...g); ctx.setLineDash([3, 3]); ctx.strokeStyle = '#8c8066'; ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.setLineDash([]); });
+    const len = Math.hypot(...vec);
+    if (len < 1e-6) { ctx.beginPath(); ctx.arc(CX, CY, 5, 0, 2 * Math.PI); ctx.fillStyle = col; ctx.fill(); return; }
+    const q = P(...vec);
+    ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(q[0], q[1]); ctx.strokeStyle = col; ctx.lineWidth = 2.4; ctx.stroke();
+    ctx.beginPath(); ctx.arc(q[0], q[1], 4.5, 0, 2 * Math.PI); ctx.fillStyle = col; ctx.fill();
+  }
+  function draw() {
+    const th = +sTh.value * Math.PI / 180, ph = +sPh.value * Math.PI / 180;
+    document.getElementById('tpThV').textContent = sTh.value + '°'; document.getElementById('tpPhV').textContent = sPh.value + '°';
+    const r = [Math.sin(th) * Math.cos(ph), Math.sin(th) * Math.sin(ph), Math.cos(th)];
+    sphere(cvs.in, r, '#7a4ff7');
+    const all = CASES.map(([a, b]) => bob(r, a, b));
+    CASES.forEach(([a, b], i) => {
+      const k = `${a}${b}`, isPick = picked === k;
+      sphere(cvs[k], isPick && fixed ? r : all[i], isPick ? (fixed ? '#1c805b' : '#926a03') : '#076ce7', isPick && fixed ? { ghosts: [all[i]] } : {});
+      cvs[k].parentElement.classList.toggle('pick', isPick); cvs[k].parentElement.classList.toggle('dim', picked !== null && !isPick);
+    });
+    const avg = [0, 1, 2].map(j => all.reduce((s, v) => s + v[j], 0) / 4);
+    sphere(cvs.avg, avg, '#e20b0b', { ghosts: all });
+    const out = document.getElementById('tpOut');
+    if (picked === null) out.innerHTML = `Bloch vector of |ψ⟩ = (${r.map(v => v.toFixed(2)).join(', ')}). Average of Bob's four possible states = (${avg.map(v => Math.abs(v).toFixed(2)).join(', ')}): the maximally mixed state.`;
+    else if (!fixed) out.innerHTML = `Alice measured m₁m₂ = ${picked} (probability 25%). Bob's qubit now points at (${all[CASES.findIndex(c => c.join('') === picked)].map(v => v.toFixed(2)).join(', ')}), but he can't know that until the two bits arrive.`;
+    else out.innerHTML = `Bob received “${picked}” and applied ${FIX[picked]}: his qubit is now exactly |ψ⟩. Alice's copy was destroyed by her measurement, so nothing was cloned, and nothing outran the classical message.`;
+  }
+  [sTh, sPh].forEach(s => s.addEventListener('input', () => { picked = null; fixed = false; document.getElementById('tpFix').disabled = true; draw(); }));
+  document.getElementById('tpRun').addEventListener('click', () => { picked = CASES[Math.floor(Math.random() * 4)].join(''); fixed = false; document.getElementById('tpFix').disabled = false; draw(); });
+  document.getElementById('tpFix').addEventListener('click', () => { if (picked) { fixed = true; document.getElementById('tpFix').disabled = true; draw(); } });
+  draw();
+  LQ_INK.onTheme && LQ_INK.onTheme(draw);
+  window.addEventListener('amo:print', draw);
+})();
+
+/* ═══════════════════════════════════════════════
+   REPETITION CODE: syndrome, minimum-weight decoding, and the threshold crossing
+   ═══════════════════════════════════════════════ */
+(function () {
+  const chain = document.getElementById('repChain');
+  if (!chain) return;
+  const syndrome = e => e.slice(0, -1).map((v, i) => v ^ e[i + 1]);
+  // the two error patterns consistent with a syndrome are e and its complement; pick the lighter one
+  function decode(s) {
+    const a = [0]; s.forEach((v, i) => a.push(a[i] ^ v));
+    const w = a.reduce((x, y) => x + y, 0);
+    return 2 * w <= a.length ? a : a.map(v => 1 - v);
+  }
+  const binom = (n, k) => { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return r; };
+  const pL = (d, p) => { let s = 0; for (let k = Math.floor(d / 2) + 1; k <= d; k++) s += binom(d, k) * Math.pow(p, k) * Math.pow(1 - p, d - k); return s; };
+  window.REPCODE = { syndrome, decode, pL };                       // for the regression test
+  let d = 5, err = new Array(5).fill(0);
+  function render() {
+    const s = syndrome(err), c = decode(s), w = err.reduce((x, y) => x + y, 0);
+    const fail = c.some((v, i) => v !== err[i]);
+    let html = '';
+    err.forEach((v, i) => {
+      html += `<button type="button" class="rep-q${v ? ' flip' : ''}${c[i] ? ' fix' : ''}" data-i="${i}" aria-pressed="${!!v}" aria-label="data qubit ${i + 1}${v ? ', flipped' : ''}">${v ? 1 : 0}</button>`;
+      if (i < err.length - 1) html += `<span class="rep-s${s[i] ? ' lit' : ''}" aria-label="parity check ${i + 1}: ${s[i] ? 'disagree' : 'agree'}"></span>`;
+    });
+    chain.innerHTML = html;
+    const lit = s.map((v, i) => v ? i + 1 : null).filter(Boolean);
+    document.getElementById('repOut').innerHTML =
+      `${w} flip${w === 1 ? '' : 's'} · lit checks: ${lit.length ? lit.join(', ') : 'none'} · decoder flips back qubit${c.filter(Boolean).length === 1 ? '' : 's'}: ${c.map((v, i) => v ? i + 1 : null).filter(Boolean).join(', ') || 'none'}<br>` +
+      (w === 0 ? 'Stored bit intact, all checks quiet.' : !fail ? `<span style="color:#1c805b">Corrected ✓</span> (the code handles up to ${(d - 1) / 2} flips).`
+        : `<span style="color:#e20b0b">Logical error ✗</span>: ${w} of ${d} flipped, so the lighter explanation (${d - w} flip${d - w === 1 ? '' : 's'}) is wrong and the decoder completes the logical flip. The checks can't tell.`);
+    chain.querySelectorAll('.rep-q').forEach(b => b.addEventListener('click', () => { err[+b.dataset.i] ^= 1; render(); }));
+  }
+  document.querySelectorAll('[data-rep-d]').forEach(b => b.addEventListener('click', () => {
+    d = +b.dataset.repD; err = new Array(d).fill(0);
+    document.querySelectorAll('[data-rep-d]').forEach(o => o.classList.toggle('active', o === b)); render();
+  }));
+  document.getElementById('repClear').addEventListener('click', () => { err = new Array(d).fill(0); render(); });
+  render();
+
+  // threshold chart
+  const DS = [1, 3, 5, 7], COL = { 1: '#8c8066', 3: '#076ce7', 5: '#7a4ff7', 7: '#1c805b' };
+  let chart = null, mc = {};
+  const sP = document.getElementById('repP');
+  function drawChart() {
+    if (!window.Chart) return;
+    const ps = Array.from({ length: 121 }, (_, i) => 0.005 + i * 0.6 / 120);
+    const ds = DS.map(dd => ({ label: dd === 1 ? 'd = 1 (unencoded)' : `d = ${dd}`, data: ps.map(p => ({ x: 100 * p, y: Math.max(1e-9, pL(dd, p)) })), borderColor: COL[dd], borderWidth: 1.8, pointRadius: 0 }));
+    DS.forEach(dd => { if (mc[dd]) ds.push({ label: `MC d = ${dd}`, data: [mc[dd]], borderColor: COL[dd], backgroundColor: COL[dd], pointRadius: 5, pointStyle: 'rectRot', showLine: false }); });
+    const p = +sP.value;
+    ds.push({ label: 'your p', data: [{ x: 100 * p, y: 1e-9 }, { x: 100 * p, y: 1 }], borderColor: '#e20b0b', borderDash: [4, 4], borderWidth: 1.2, pointRadius: 0 });
+    if (chart) { chart.data.datasets = ds; chart.update('none'); return; }
+    chart = new Chart(document.getElementById('repChart'), {
+      type: 'line', data: { datasets: ds },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+        scales: {
+          x: { type: 'linear', min: 0, max: 60, title: { display: true, text: 'Physical flip probability p (%)', color: '#5c503c' }, ticks: { color: '#5c503c' } },
+          y: { type: 'logarithmic', min: 1e-6, max: 1, title: { display: true, text: 'Logical error p_L', color: '#5c503c' }, ticks: { color: '#5c503c', callback: v => [1, 1e-2, 1e-4, 1e-6].includes(v) ? v.toExponential(0) : '' } },
+        },
+        plugins: { legend: { labels: { color: '#22190f', filter: i => !/^MC|your p/.test(i.text), boxWidth: 14 } },
+                   tooltip: { callbacks: { label: c => ` ${c.dataset.label}: p_L = ${c.parsed.y.toExponential(2)} at p = ${c.parsed.x.toFixed(1)}%` } } },
+      },
+    });
+  }
+  sP.addEventListener('input', () => { document.getElementById('repPV').textContent = Math.round(100 * +sP.value) + '%'; mc = {}; drawChart(); });
+  document.getElementById('repRun').addEventListener('click', () => {
+    const p = +sP.value, shots = 20000;
+    DS.forEach(dd => {
+      let fails = 0;
+      for (let n = 0; n < shots; n++) {
+        const e = Array.from({ length: dd }, () => Math.random() < p ? 1 : 0), c = decode(syndrome(e));
+        if (c.some((v, i) => v !== e[i])) fails++;
+      }
+      mc[dd] = { x: 100 * p, y: Math.max(1e-6, fails / shots) };
+    });
+    drawChart();
+    document.getElementById('repOut').innerHTML += `<br>At p = ${Math.round(100 * p)}%: ` + DS.map(dd => `d=${dd}: ${(100 * mc[dd].y).toFixed(mc[dd].y < 0.01 ? 3 : 1)}% (theory ${(100 * pL(dd, p)).toFixed(pL(dd, p) < 0.01 ? 3 : 1)}%)`).join(' · ');
+  });
+  drawChart();
+  window.addEventListener('amo:print', drawChart);
 })();
 
 /* ═══════════════════════════════════════════════

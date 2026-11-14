@@ -539,6 +539,43 @@ def test_explainer_sweep_2026_11b() -> None:
     assert_contains("pages/rydberg-calculator.html", "if (window.updatePairDyn) updatePairDyn(U_MHz, Omega, r, Rb);")
 
 
+def test_explainer_sweep_2026_11c() -> None:
+    """Third explainer batch (2026-11-14): teleportation, repetition code, thermal vs BEC expansion."""
+    import itertools
+    # teleportation: X flips (y, z), Z flips (x, y); the four pre-correction states average to the origin
+    r = (0.3, -0.5, math.sqrt(1 - 0.34))
+    def bob(r, m1, m2):
+        x, y, z = r
+        if m1: x, y = -x, -y
+        if m2: y, z = -y, -z
+        return (x, y, z)
+    avg = [sum(bob(r, a, b)[j] for a in (0, 1) for b in (0, 1)) / 4 for j in range(3)]
+    assert max(abs(v) for v in avg) < 1e-12
+    assert_contains("pages/learn-quantum.html", "const bob = (r, m1, m2) => { let [x, y, z] = r; if (m1) { x = -x; y = -y; } if (m2) { y = -y; z = -z; } return [x, y, z]; };")
+    # repetition code: minimum-weight decoding fails iff more than half flip; p_L = binomial tail
+    for d in (3, 5, 7):
+        p = 0.13
+        brute = sum(p ** sum(e) * (1 - p) ** (d - sum(e)) for e in itertools.product((0, 1), repeat=d) if 2 * sum(e) > d)
+        tail = sum(math.comb(d, k) * p ** k * (1 - p) ** (d - k) for k in range(d // 2 + 1, d + 1))
+        assert abs(brute - tail) < 1e-12
+        assert abs(sum(math.comb(d, k) * 0.5 ** d for k in range(d // 2 + 1, d + 1)) - 0.5) < 1e-12   # all cross at 50%
+    assert_contains("pages/learn-quantum.html", "return 2 * w <= a.length ? a : a.map(v => 1 - v);")
+    # TOF: thermal aspect → 1; condensate (Castin–Dum) matches the ε ≪ 1 analytic solution
+    eps, wp = 0.05, 1.0
+    wz = eps * wp
+    s, t, h, T = [1.0, 1.0, 0.0, 0.0], 0.0, 1e-3, 10.0
+    f_ = lambda s: [s[2], s[3], wp * wp / (s[0] ** 3 * s[1]), wz * wz / (s[0] ** 2 * s[1] ** 2)]
+    while t < T - 1e-12:
+        k1 = f_(s); k2 = f_([s[i] + h / 2 * k1[i] for i in range(4)]); k3 = f_([s[i] + h / 2 * k2[i] for i in range(4)]); k4 = f_([s[i] + h * k3[i] for i in range(4)])
+        s = [s[i] + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(4)]; t += h
+    tau = wp * T
+    assert abs(s[0] - math.sqrt(1 + tau * tau)) < 2e-2 * s[0]
+    assert abs(s[1] - (1 + eps * eps * (tau * math.atan(tau) - math.log(math.sqrt(1 + tau * tau))))) < 2e-3
+    assert abs(math.sqrt((1 / wz ** 2 + 1e6) / (1 / wp ** 2 + 1e6)) - 1) < 1e-3
+    assert_contains("pages/tof-calculator.html", "const f = s => [s[2], s[3], wp * wp / (s[0] ** 3 * s[1]), wz * wz / (s[0] ** 2 * s[1] ** 2)];")
+    assert_contains("pages/tof-calculator.html", "const thermalAspect = (wp, wz, t) => Math.sqrt((1 / (wz * wz) + t * t) / (1 / (wp * wp) + t * t));")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -563,6 +600,7 @@ def main() -> None:
         test_magic_states_and_distillation,
         test_explainer_sweep_2026_11,
         test_explainer_sweep_2026_11b,
+        test_explainer_sweep_2026_11c,
     ]
     for test in tests:
         test()

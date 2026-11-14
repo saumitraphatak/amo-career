@@ -108,3 +108,7 @@ Requested by Saumitra (with a whiteboard sketch "Quantum Paradox: Why Entangleme
 
 ## 2026-11-14: explainer sweep
 Entanglement section gained "Play the CHSH game": four basis-angle sliders, predicted win rate ¼[cos²(a₀−b₀)+cos²(a₀−b₁)+cos²(a₁−b₀)+sin²(a₁−b₁)] and S for |Φ⁺⟩, a 1,000-round Monte Carlo, optimal-angle button (85.4% vs the 75% classical bound) and a no-signalling note, with CHSH 1969 and the 2015 loophole-free tests cited.
+
+## 2026-11-14: explainer sweep 3
+- **Entanglement: teleportation card.** Input |ψ⟩ (θ, φ), the four outcomes with Bob's pre-correction state and fix, and Bob's average without the bits (origin). "Teleport once" picks an outcome, "Send the bits" applies the correction.
+- **QEC: repetition-code playground.** Click-to-flip chain (d = 3/5/7), lit parity checks, minimum-weight decoder, logical-failure message; p_L vs p curves (binomial tail) with 20k-shot Monte Carlo, crossing at 50%, with a note on why the surface-code threshold is ~1%.

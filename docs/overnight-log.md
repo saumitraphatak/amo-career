@@ -216,3 +216,4 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
   - vacuum-systems: conductance-limited pumping (aperture + long tube in series with the pump; Pfeiffer Know-How §1.2.8);
   - rydberg-calculator: exact two-atom dynamics with the calculator's Ω and U(r): independent flopping → √2-faster |gg⟩↔|W⟩; max P(rr) → ½(Ω/U)².
   - Test `test_explainer_sweep_2026_11b` (RK4 cross-check of the blockade solver, thermal sideband ratio, conductance example, PDH large-Ω limit).
+- **Explainer sweep 3:** learn-quantum teleportation card (four outcomes, Bob's average = maximally mixed until the bits arrive) and repetition-code playground (syndromes, minimum-weight decoding, p_L crossing at 50% with Monte Carlo); tof-calculator thermal-vs-condensate expansion (aspect → 1 vs inversion, Castin–Dum). Test `test_explainer_sweep_2026_11c`.

@@ -56,3 +56,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-13: physics audit (convention slips)
 - Reference list: RMP 70, 721 is Phillips's Nobel lecture and RMP 74, 875 Cornell & Wieman's (titles were wrong); Anderson 1995 now links its *Science* DOI (was a PRL on hollow-fiber guiding).
+
+## 2026-11-14: explainer sweep 3
+- **Section 02: thermal vs BEC expansion (shape only).** Aspect slider (ω⊥ from the trap-frequency slider), animated time of flight, density images and aspect ratio vs t; condensate from numerically integrated Castin–Dum scaling equations. Page now also loads motion.js and canvas-ink.js.
