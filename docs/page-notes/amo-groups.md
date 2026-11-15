@@ -63,3 +63,9 @@ See docs/3d-visualization-audit-2026-09-28.md, "Globes and the time tower".
 - Removed the "Lu / Liu Dipolar Lab" entry (PI listed as "(varies)", no such group found; its paper was a Stanford one). "Zhu / Duan Lab" → Zhu Group; "Hauke / Duan Theory" → Hauke Theory Group.
 - Not checked: the other ~35 entries without a key paper beyond a read-through, and group URLs.
 
+## 2026-11-15: lab-link check (all 98 fetched)
+- 82 links were live and on-target. Replaced the rest with fetched-and-verified pages: Ni (kni.faculty.chemistry.harvard.edu), Ye/Regal/J.K. Thompson (colorado.edu/jila/...; the old jila.colorado.edu paths now bounce to the institute homepage), Rey (JILA profile), Sagi and Steinhauer (phsites.technion.ac.il; old net.technion hosts bounce), Cornish (cornishlabs.uk), Dalibard/Beugnon (lkb.fr/boseeinsteincondensates; upmc host bounces), Reichel (lkb.fr/atomchips), Blatt/Roos (uibk.ac.at quantum-optics page; quantumoptics.at bounces there), Sherson (scienceathome.org; the Pure profile sits in Aarhus' management department), Pan (quantum.ustc.edu.cn root), Li (CQT homepage; the person page is gone).
+- Zhu Group URL removed (spe.sysu.edu.cn unreachable, and it was Sun Yat-sen, not SCNU).
+- The LKB Fermi-gas page is led by Tarik Yefsah; entry renamed "Salomon / Yefsah Lab".
+- Left alone (robots-blocked, could not be checked): Aspect/Boiron, Hauke, Tino, Ahn. Profile-style pages (Campbell/NIST, Cirac, Zoller, Spielman, Madison, Kuhr, Schneider, Rangwala, Truscott) kept: they are the stable institutional pages.
+

@@ -599,10 +599,20 @@ def test_citation_and_contrast_audit_2026_11() -> None:
     for w in ["1.1141263", "arxiv.org/abs/2402.08748", "arxiv.org/abs/2401.08618", "arxiv.org/abs/1605.01818",
               "arxiv.org/abs/2110.14206", "arxiv.org/abs/2107.09341", "arxiv.org/abs/2111.11798", "60 km fiber"]:
         assert w not in site, w
+    # third pass: publisher links on the industry map and the syllabus "why" texts
+    for w in ["nature.com/articles/35106030", "s41586-022-04903-3", "s41586-022-04566-0", "PhysRevApplied.15.034011",
+              "Bruzewicz et al.", "863.2 Hz", "two Harvard group leaders", "§V (BEC-BCS crossover)", "during Raman sideband cooling) is still the template"]:
+        assert w not in site, w
+    for right in ["nature.com/articles/35051009", "s41586-022-05117-x", "s41586-021-04182-y", "PhysRevApplied.13.034075"]:
+        assert right in site, right
     groups = read("pages/amo-groups.html")
     for w in ["s41586-021-04328-y", "s41586-018-0621-1", "PhysRevLett.120.265001", "nphys3500", "nphys4168", "(varies)", "formerly Stanford"]:
         assert w not in groups, w
-    for right in ["10.1126/science.aar7797", "10.1038/nature16155", "10.1103/PhysRevLett.103.200402", "https://iontrap.duke.edu/"]:
+    for w in ["jila.colorado.edu/YeLabs", "jila.colorado.edu/rey", "jila.colorado.edu/regal", "jila.colorado.edu/thompson",
+              "net.technion.ac.il/\"", "quantumlah.org", "lkb.upmc.fr", "spe.sysu.edu.cn", "projects.iq.harvard.edu"]:
+        assert w not in groups, w
+    for right in ["10.1126/science.aar7797", "10.1038/nature16155", "10.1103/PhysRevLett.103.200402", "https://iontrap.duke.edu/",
+                  "kni.faculty.chemistry.harvard.edu", "phsites.technion.ac.il/atomlab", "www.cornishlabs.uk", "boseeinsteincondensates"]:
         assert right in groups, right
     for right in ["10.1063/1.1142305", "10.1364/OE.25.008670", "10.1364/JOSAB.21.001889", "10.1088/1464-4266/7/10/021",
                   "10.1038/s41567-021-01409-7", "10.1103/RevModPhys.95.045006", "arxiv.org/abs/2401.09541", "linked by a 60 m fiber"]:

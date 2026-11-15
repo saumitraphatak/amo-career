@@ -76,3 +76,6 @@ The four stage pills ("Stage 1 — … 10 papers") open the four stage chapters 
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Titles corrected to the published ones (Greiner 2002, Manetsch 2025, Altman 2021, Carr 2009, Google Hartree-Fock 2020). Page content now sits in a 1280px container instead of touching the window edge.
+
+## 2026-11-15: fact check 3
+- "Why read it" texts checked: Chu lecture contents; Ashkin 1970 was an experiment; Davis 1995 (no "dark-spot imaging"; optically plugged trap, larger condensates); Jaksch 2000 uses the dipole–dipole interaction; Bakr 2009 images in optical molasses, not Raman sideband cooling; DeMarco & Jin evaporated a two-spin mixture (not sympathetic cooling); Kaufman & Ni are at JILA and Harvard; Bloch–Dalibard–Zwerger section numbers (§IV, §VIII); Urban vs Gaëtan signatures; Ebadi 2021 found ordered phases, not a spin liquid (that is Semeghini 2021); the Yb clock-frequency sentence under McGrew 2018 removed (wrong value, not that paper's result); unverifiable "Table 1", "Figure 6", "30 pages" specifics reworded. These corrections are from my knowledge of the papers, not from re-reading each one this session.

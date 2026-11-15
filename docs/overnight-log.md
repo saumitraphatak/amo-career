@@ -232,3 +232,10 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - Layout: paper-syllabus and amo-groups had no container (text touched the window edge); home page's two off-palette card colours now use the standard inks. styles.css v31 on all 34 HTML files.
 - **amo-groups data check:** 30 of the 60 "key paper" links pointed at the wrong paper (several outside physics, e.g. a p300 acetyltransferase paper under Kasevich, runaway-electron avalanches under Killian, "Top 10 physics discoveries" under Dalibard). Replaced with Crossref-verified papers by each group or dropped; stale affiliations (Monroe, Simon, Gross, Bernien) and species lists corrected; one unverifiable group entry removed. Details in docs/page-notes/amo-groups.md.
 - lab-calculators: seven tabs fit at 1280px.
+
+## 2026-11-15: fact check 3
+- Publisher links that are not doi.org links (nature.com, link.aps.org, science.org) checked against Crossref: 19 of 24 matched; five on qc-landscape fixed (KLM, Philips, Noiri, Zwolak, the mislabelled Egan et al. paper). The three DOIs that kept erroring earlier (James 2001, Magesan 2012, Dalibard & Cohen-Tannoudji 1989) are now confirmed; Hofmann 2012 and Kaufman 2014 still error at Crossref.
+- paper-syllabus: the 55 "why read it" paragraphs read against what each paper contains; 18 statements corrected or reworded (list in the page notes; from knowledge of the papers, not re-read this session).
+- Tests: formula tests OK 24 (citation test extended); smoke 34 pages × 3 configs, 0 new problems.
+- **amo-groups link check:** all 98 lab links fetched; 15 dead or off-target links replaced with verified pages (JILA moved hosts, Technion moved hosts, LKB left upmc.fr, quantumoptics.at bounces to Innsbruck), Zhu URL removed, LKB Fermi-gas entry renamed Salomon / Yefsah. Details in the page notes.
+- Mobile check: every earlier 390px "overflow" turns out to sit inside a swipe-scrollable table wrapper, so no flush-edge text remains (checker now skips scrollable containers).

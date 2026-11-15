@@ -113,3 +113,6 @@ Both facts independently re-verified (arXiv abstract page; SEC 8-K exhibit) befo
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Two arXiv links pointed at unrelated papers: IBM Heron R2 now links IBM's Nov 2024 post (156 qubits, heavy-hex); Alice & Bob now arXiv:2401.09541 (LDPC-cat codes).
+
+## 2026-11-15: fact check 3
+- Five reference links fixed against Crossref: KLM (the link opened a Nature Reviews Cancer item) → Nature 409, 46; Philips et al. and Noiri et al. Nature links (IDs did not resolve) → s41586-022-05117-x and s41586-021-04182-y; Zwolak et al. → PRApplied 13, 034075 (2020); the "Bruzewicz et al., Nature 2021" link is Egan et al., "Fault-tolerant control of an error-corrected qubit" (relabelled). The other 14 nature.com / APS / Science links on the industry pages matched their records.
