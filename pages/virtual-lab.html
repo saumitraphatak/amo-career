@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virtual Tweezer Lab — AMO Toolkit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="description" content="Run one full cycle of a neutral-atom tweezer quantum computer: stochastic loading, fluorescence imaging, rearrangement, verification, Bell pairs and readout, then a thousand-shot Monte Carlo of where defects come from.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://amotoolkit.com/pages/virtual-lab.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Virtual Tweezer Lab — AMO Toolkit">
+  <meta property="og:description" content="Load, image, rearrange, entangle and read out a simulated optical-tweezer array, one shot at a time, then see the statistics of a thousand shots.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/virtual-lab.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Virtual Tweezer Lab">
+  <meta name="twitter:description" content="Load, image, rearrange, entangle and read out a simulated optical-tweezer array, one shot at a time, then see the statistics of a thousand shots.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Virtual Tweezer Lab","description":"Run one full cycle of a neutral-atom tweezer quantum computer, then a thousand-shot Monte Carlo of where defects come from.","url":"https://amotoolkit.com/pages/virtual-lab.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Trap, Image & Cool","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Virtual Tweezer Lab","item":"https://amotoolkit.com/pages/virtual-lab.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=31">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+
+  <style>
+    :root { --page-color: var(--ink-rust); }
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .25rem 0; border-left: 3px solid var(--page-color); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.25rem .85rem; }
+    .section-block { margin-bottom: 3rem; }
+    .vl-num { font-family: var(--font-mono); font-size: .72rem; color: var(--page-color); letter-spacing: .1em; margin: 0 0 .3rem .85rem; }
+
+    /* ── stage strip ── */
+    .vl-stages { display: flex; gap: .4rem; flex-wrap: wrap; margin: 0 0 .9rem; padding: 0; list-style: none; counter-reset: st; }
+    .vl-stages li {
+      counter-increment: st; flex: 1 1 0; min-width: 92px; text-align: center;
+      font: 600 .72rem/1.2 var(--font-mono); letter-spacing: .04em; color: var(--text-muted);
+      padding: .45rem .4rem; border-radius: 8px; border: 1px solid var(--border-med); background: var(--bg-surface);
+      transition: background .25s, color .25s, border-color .25s;
+    }
+    .vl-stages li::before { content: counter(st) " · "; opacity: .7; }
+    .vl-stages li.on { color: #fff; background: var(--page-color); border-color: var(--page-color); }
+    .vl-stages li.done { color: var(--text-primary); border-color: color-mix(in srgb, var(--page-color) 55%, transparent); }
+    [data-theme="dark"] .vl-stages li.on { color: #02101c; }
+
+    /* ── lab bench: camera + readout ── */
+    .vl-bench { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 1.1rem; align-items: start; }
+    @media (max-width: 860px) { .vl-bench { grid-template-columns: minmax(0, 1fr); } }
+    .vl-cam {
+      position: relative; background: #05070d; border-radius: 14px; padding: 10px;
+      border: 1px solid #1d2638; box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .vl-cam canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 8px; image-rendering: pixelated; }
+    .vl-cam-hud {
+      position: absolute; left: 20px; top: 18px; right: 20px; display: flex; justify-content: space-between; pointer-events: none;
+      font: 600 .66rem/1.3 var(--font-mono); letter-spacing: .08em; color: #9fb3c8; text-transform: uppercase;
+    }
+    .vl-rec { color: #ff6b6b; }
+    .vl-rec::before { content: '●'; margin-right: .3rem; animation: vl-blink 1.2s steps(2, start) infinite; }
+    @keyframes vl-blink { to { visibility: hidden; } }
+    @media (prefers-reduced-motion: reduce) { .vl-rec::before { animation: none; } }
+    @media (max-width: 520px) { .vl-cam-hud { display: none; } }
+    .vl-legend { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin: .55rem .2rem 0; font-size: .74rem; color: var(--text-muted); }
+    .vl-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: .3rem; vertical-align: -1px; }
+
+    .vl-panel { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 12px; padding: 1rem 1.05rem; }
+    .vl-panel h4 { font: 700 .72rem/1.2 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 .65rem; }
+    .vl-rows { display: grid; grid-template-columns: 1fr auto; gap: .32rem .6rem; font-size: .82rem; margin: 0; }
+    .vl-rows dt { color: var(--text-secondary); }
+    .vl-rows dd { margin: 0; font-family: var(--font-mono); color: var(--text-primary); text-align: right; }
+    .vl-verdict { margin: .8rem 0 0; padding: .55rem .7rem; border-radius: 8px; font-size: .84rem; font-weight: 600; background: var(--bg-surface); color: var(--text-secondary); }
+    .vl-verdict.ok { background: rgba(28,128,91,.12); color: #17694b; }
+    .vl-verdict.bad { background: rgba(161,60,28,.1); color: #8f3416; }
+    [data-theme="dark"] .vl-verdict.ok { color: #6ee7b7; background: rgba(52,211,153,.1); }
+    [data-theme="dark"] .vl-verdict.bad { color: #fca5a5; background: rgba(248,113,113,.1); }
+    .vl-narr { font-size: .8rem; color: var(--text-secondary); line-height: 1.6; margin: .75rem 0 0; min-height: 4.8em; }
+
+    .vl-ctrls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .9rem 0 0; }
+    .vl-btn {
+      font: 600 .84rem/1 var(--font-sans, inherit); padding: .62rem 1.05rem; border-radius: 9px; cursor: pointer;
+      border: 1px solid var(--border-med); background: var(--bg-surface); color: var(--text-primary);
+    }
+    .vl-btn:hover { border-color: var(--page-color); }
+    .vl-btn.primary { background: var(--page-color); border-color: var(--page-color); color: #fff; }
+    [data-theme="dark"] .vl-btn.primary { color: #02101c; }
+    .vl-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .vl-btn:focus-visible, .vl-seg button:focus-visible { outline: 2px solid var(--page-color); outline-offset: 2px; }
+    .vl-ctrls label { font-size: .8rem; color: var(--text-secondary); display: inline-flex; gap: .35rem; align-items: center; }
+    .vl-ctrls select { background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-med); border-radius: 7px; padding: .35rem .5rem; font: inherit; font-size: .8rem; }
+
+    /* ── settings ── */
+    .vl-set { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: .9rem; }
+    .vl-group { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 12px; padding: .9rem 1rem; }
+    .vl-group h5 { margin: 0 0 .6rem; font-size: .86rem; color: var(--text-primary); }
+    .vl-field { margin: 0 0 .7rem; }
+    .vl-field:last-child { margin-bottom: 0; }
+    .vl-field label { display: flex; justify-content: space-between; gap: .5rem; font-size: .78rem; color: var(--text-secondary); margin-bottom: .2rem; }
+    .vl-field label b { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; }
+    .vl-field input[type=range] { width: 100%; accent-color: var(--page-color); }
+    .vl-src { display: block; font-size: .7rem; color: var(--text-muted); margin-top: .15rem; line-height: 1.45; }
+    .vl-tag { display: inline-block; font: 700 .6rem/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; padding: .18rem .35rem; border-radius: 4px; margin-right: .3rem; vertical-align: 1px; }
+    .vl-tag.lit { background: rgba(28,128,91,.12); color: #17694b; }
+    .vl-tag.ill { background: rgba(146,106,3,.13); color: #7a5802; }
+    [data-theme="dark"] .vl-tag.lit { color: #6ee7b7; background: rgba(52,211,153,.12); }
+    [data-theme="dark"] .vl-tag.ill { color: #fcd34d; background: rgba(251,191,36,.12); }
+    .vl-seg { display: flex; gap: .3rem; flex-wrap: wrap; margin: 0 0 .6rem; }
+    .vl-seg button { font: 600 .72rem/1.2 inherit; padding: .4rem .55rem; border-radius: 7px; border: 1px solid var(--border-med); background: var(--bg-surface); color: var(--text-secondary); cursor: pointer; text-align: left; }
+    .vl-seg button[aria-pressed="true"] { border-color: var(--page-color); color: var(--text-primary); background: color-mix(in srgb, var(--page-color) 10%, var(--bg-surface)); }
+    .vl-derived { font-size: .78rem; color: var(--text-secondary); margin: .9rem 0 0; font-family: var(--font-mono); line-height: 1.6; }
+
+    /* ── statistics ── */
+    .vl-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .7rem; margin: 1rem 0; }
+    .vl-tile { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 11px; padding: .75rem .85rem; }
+    .vl-tile .vl-k { font-size: .72rem; color: var(--text-muted); line-height: 1.35; }
+    .vl-tile .vl-v { font: 600 1.25rem/1.25 var(--font-mono); color: var(--text-primary); margin-top: .25rem; }
+    .vl-tile .vl-s { font-size: .68rem; color: var(--text-muted); margin-top: .15rem; }
+    .vl-tile.vl-hero { border-color: var(--page-color); background: color-mix(in srgb, var(--page-color) 7%, var(--bg-card)); }
+    .vl-progress { height: 4px; background: var(--bg-surface); border-radius: 3px; overflow: hidden; margin: .7rem 0 0; }
+    .vl-progress > div { height: 100%; width: 0; background: var(--page-color); transition: width .15s; }
+    .vl-two { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 860px) { .vl-two { grid-template-columns: minmax(0, 1fr); } }
+    .vl-two > * { min-width: 0; }
+    .vl-chart { position: relative; height: 290px; }
+    .vl-chart canvas, .vl-cam canvas { max-height: none !important; }   /* opt out of the global 280px chart cap */
+    .vl-cause { display: grid; grid-template-columns: 150px 1fr 52px; gap: .5rem; align-items: center; font-size: .78rem; color: var(--text-secondary); margin: .35rem 0; }
+    .vl-cause .bar { height: 10px; background: var(--bg-surface); border-radius: 5px; overflow: hidden; }
+    .vl-cause .bar > div { height: 100%; border-radius: 5px; width: 0; transition: width .3s; }
+    .vl-cause .pct { font-family: var(--font-mono); text-align: right; color: var(--text-primary); }
+    @media (max-width: 520px) { .vl-cause { grid-template-columns: 110px 1fr 46px; } }
+    .vl-note { font-size: .78rem; color: var(--text-muted); line-height: 1.6; margin: .7rem 0 0; }
+
+    .theory-box {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-left: 4px solid var(--page-color);
+      border-radius: 10px; padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--page-color); margin: 0 0 .6rem 0; }
+    .theory-box p { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+    .vl-list { margin: 0; padding-left: 1.1rem; font-size: .85rem; color: var(--text-secondary); line-height: 1.7; }
+
+    @media print {
+      .vl-ctrls, .vl-progress, .vl-cam-hud { display: none !important; }
+      .vl-cam { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+  <div class="page-hero" style="--page-color:#a13c1c;--page-bg:rgba(161, 60, 28,0.07);--page-border:rgba(161, 60, 28,0.2);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(161,60,28,0.08);border-color:rgba(161,60,28,0.2);color:#924304;">🧩 Trap, Image & Cool 08 · Virtual Tweezer Lab</div>
+        <h1>
+          Run a <span class="grad-text" style="--ga: var(--ink-rust); --gb: #f59e0b;">tweezer array</span>, one shot at a time
+        </h1>
+        <p class="page-hero-desc">
+          Every neutral-atom quantum computer repeats the same cycle: load atoms at random, photograph them,
+          drag them into a perfect block, check, entangle, measure. Step through one simulated shot on the camera,
+          then run a thousand and see which part of the cycle spoils them.
+        </p>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 340 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="vl-atom" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff7d6"/><stop offset="45%" stop-color="#fbbf24" stop-opacity=".9"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
+            </radialGradient>
+            <style>
+              @keyframes vl-m1{0%,25%{transform:translate(0,0)}45%,100%{transform:translate(34px,0)}}
+              @keyframes vl-m2{0%,40%{transform:translate(0,0)}60%,100%{transform:translate(0,-34px)}}
+              @keyframes vl-m3{0%,55%{transform:translate(0,0)}75%,100%{transform:translate(-34px,34px)}}
+              @keyframes vl-box{0%,78%{stroke-opacity:.35}86%,96%{stroke-opacity:1}100%{stroke-opacity:.35}}
+              .vl-a1{animation:vl-m1 5s ease-in-out infinite}.vl-a2{animation:vl-m2 5s ease-in-out infinite}.vl-a3{animation:vl-m3 5s ease-in-out infinite}
+              .vl-bx{animation:vl-box 5s ease-in-out infinite}
+              .vl-l{font-family:JetBrains Mono,monospace;font-size:7px;letter-spacing:.08em;text-transform:uppercase}
+            </style>
+          </defs>
+          <rect x="1" y="1" width="338" height="188" rx="16" fill="#05070d" stroke="rgba(161,60,28,.3)"/>
+          <g fill="none" stroke="#3b4a63" stroke-width=".8">
+            <circle cx="102" cy="27" r="8"/><circle cx="136" cy="27" r="8"/><circle cx="170" cy="27" r="8"/><circle cx="204" cy="27" r="8"/><circle cx="238" cy="27" r="8"/>
+            <circle cx="102" cy="61" r="8"/><circle cx="136" cy="61" r="8"/><circle cx="170" cy="61" r="8"/><circle cx="204" cy="61" r="8"/><circle cx="238" cy="61" r="8"/>
+            <circle cx="102" cy="95" r="8"/><circle cx="136" cy="95" r="8"/><circle cx="170" cy="95" r="8"/><circle cx="204" cy="95" r="8"/><circle cx="238" cy="95" r="8"/>
+            <circle cx="102" cy="129" r="8"/><circle cx="136" cy="129" r="8"/><circle cx="170" cy="129" r="8"/><circle cx="204" cy="129" r="8"/><circle cx="238" cy="129" r="8"/>
+            <circle cx="102" cy="163" r="8"/><circle cx="136" cy="163" r="8"/><circle cx="170" cy="163" r="8"/><circle cx="204" cy="163" r="8"/><circle cx="238" cy="163" r="8"/>
+          </g>
+          <rect class="vl-bx" x="119" y="44" width="102" height="102" rx="6" fill="none" stroke="#fbbf24" stroke-dasharray="4 3"/>
+          <g fill="url(#vl-atom)">
+            <circle cx="136" cy="61" r="9"/><circle cx="204" cy="61" r="9"/><circle cx="170" cy="95" r="9"/><circle cx="136" cy="129" r="9"/>
+            <circle cx="204" cy="95" r="9"/><circle cx="204" cy="129" r="9"/>
+            <circle cx="102" cy="27" r="9" opacity=".9"/><circle cx="238" cy="163" r="9" opacity=".9"/>
+            <circle class="vl-a2" cx="170" cy="163" r="9"/>
+            <circle class="vl-a3" cx="204" cy="27" r="9"/>
+            <circle class="vl-a1" cx="102" cy="95" r="9"/>
+          </g>
+          <text x="20" y="26" class="vl-l" fill="#9fb3c8">load</text>
+          <text x="20" y="98" class="vl-l" fill="#9fb3c8">sort</text>
+          <text x="20" y="166" class="vl-l" fill="#fbbf24">3 × 3</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+  <div class="container">
+
+  <!-- ═══════════ 01 · ONE SHOT ═══════════ -->
+  <section class="section-block anim-in" id="vl-shot">
+    <p class="vl-num">01 · ONE SHOT</p>
+    <h2 class="section-title">The experimental cycle, on the camera</h2>
+    <p class="section-sub">Press Run. The square is what an EMCCD/sCMOS camera would see; the panel keeps score.</p>
+    <p class="amo-eyebrow">Interactive</p>
+    <ol class="vl-stages" id="vlStages">
+      <li data-s="0">Load</li><li data-s="1">Image</li><li data-s="2">Rearrange</li><li data-s="3">Verify</li><li data-s="4">Entangle</li><li data-s="5">Read out</li>
+    </ol>
+    <div class="vl-bench">
+      <div>
+        <div class="vl-cam">
+          <canvas id="vlCam" data-export-ready="true" width="720" height="720" role="img" aria-label="Simulated camera view of the tweezer array. A text summary of each stage appears in the panel next to it."></canvas>
+          <div class="vl-cam-hud"><span id="vlHudL">Camera · idle</span><span id="vlHudR"></span></div>
+        </div>
+        <div class="vl-legend" aria-hidden="true">
+          <span><i style="background:#3b4a63"></i>empty tweezer</span>
+          <span><i style="background:#fbbf24"></i>atom (camera / tracked)</span>
+          <span><i style="background:#38bdf8"></i>moving tweezer</span>
+          <span><i style="background:#ef4444"></i>loss / hole</span>
+          <span><i style="background:#a78bfa"></i>Rydberg pulse</span>
+          <span><i style="border:2px solid #fbbf24;background:transparent;border-radius:2px"></i>target block</span>
+        </div>
+        <div class="vl-ctrls">
+          <button type="button" class="vl-btn primary" id="vlRun">▶ Run one cycle</button>
+          <button type="button" class="vl-btn" id="vlStep">Step ›</button>
+          <button type="button" class="vl-btn" id="vlNew">New load</button>
+          <label>Speed <select id="vlSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+          <label><input type="checkbox" id="vlTruth"> Show hidden truth</label>
+        </div>
+      </div>
+      <aside class="vl-panel" aria-labelledby="vlPanelH">
+        <h4 id="vlPanelH">Shot log</h4>
+        <dl class="vl-rows" id="vlRows"></dl>
+        <p class="vl-verdict" id="vlVerdict">Press Run to load the array.</p>
+        <p class="vl-narr" id="vlNarr" aria-live="polite"></p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ═══════════ 02 · APPARATUS ═══════════ -->
+  <section class="section-block anim-in" id="vl-settings">
+    <p class="vl-num">02 · YOUR APPARATUS</p>
+    <h2 class="section-title">Settings</h2>
+    <p class="section-sub">Green tags are published numbers; amber tags are illustrative defaults to replace with your own system's.</p>
+    <div class="vl-set">
+      <div class="vl-group">
+        <h5>Array</h5>
+        <div class="vl-field"><label for="vlM">Tweezer array <b id="vlMV"></b></label><input type="range" id="vlM" min="6" max="16" step="1" value="12"></div>
+        <div class="vl-field"><label for="vlK">Target block <b id="vlKV"></b></label><input type="range" id="vlK" min="2" max="14" step="1" value="8">
+          <span class="vl-src">The defect-free square you want in the centre. Rearrangement needs at least K² detected atoms.</span></div>
+      </div>
+      <div class="vl-group">
+        <h5>Loading</h5>
+        <div class="vl-seg" role="group" aria-label="Loading method">
+          <button type="button" data-p="0.5" aria-pressed="true">Collisional blockade · p ≈ 0.5</button>
+          <button type="button" data-p="0.89" aria-pressed="false">Gray-molasses enhanced · p = 0.89</button>
+        </div>
+        <div class="vl-field"><label for="vlP">Load probability p <b id="vlPV"></b></label><input type="range" id="vlP" min="0.3" max="0.99" step="0.01" value="0.5">
+          <span class="vl-src"><span class="vl-tag lit">lit</span>≈0.5 from light-assisted pair loss (Schlosser 2001); 89% in a single 0.63 mK trap with Λ-enhanced gray molasses on the ⁸⁷Rb D1 line (Brown 2019, which reports 80% for 100 traps).</span></div>
+      </div>
+      <div class="vl-group">
+        <h5>Imaging</h5>
+        <div class="vl-field"><label for="vlNb">Photons detected per atom <b id="vlNbV"></b></label><input type="range" id="vlNb" min="5" max="120" step="1" value="40"></div>
+        <div class="vl-field"><label for="vlNg">Background per site <b id="vlNgV"></b></label><input type="range" id="vlNg" min="0.2" max="15" step="0.1" value="2"></div>
+        <div class="vl-field"><label for="vlSi">Survival of one image <b id="vlSiV"></b></label><input type="range" id="vlSi" min="0.9" max="1" step="0.001" value="0.99">
+          <span class="vl-src"><span class="vl-tag ill">illustrative</span>Set from your camera and imaging data; the <a href="imaging-calculator.html">Single-atom Imaging</a> calculator estimates counts.</span></div>
+      </div>
+      <div class="vl-group">
+        <h5>Rearrangement</h5>
+        <div class="vl-field"><label for="vlEps">Loss per move <b id="vlEpsV"></b></label><input type="range" id="vlEps" min="0" max="0.05" step="0.001" value="0.01"></div>
+        <div class="vl-field"><label for="vlTm">Time per move <b id="vlTmV"></b></label><input type="range" id="vlTm" min="0.1" max="5" step="0.1" value="1"></div>
+        <div class="vl-field"><label for="vlTau">Vacuum lifetime τ <b id="vlTauV"></b></label><input type="range" id="vlTau" min="0.5" max="2" step="0.01" value="1">
+          <span class="vl-src"><span class="vl-tag ill">illustrative</span>Moves are done one at a time here; real systems often move whole rows in parallel.</span></div>
+      </div>
+      <div class="vl-group">
+        <h5>Entangling gate</h5>
+        <div class="vl-field"><label for="vlF">Bell-pair fidelity F <b id="vlFV"></b></label><input type="range" id="vlF" min="0.8" max="1" step="0.001" value="0.995">
+          <span class="vl-src"><span class="vl-tag lit">lit</span>99.5% two-qubit gate fidelity in parallel Rydberg gates (Evered et al., <em>Nature</em> 622, 268, 2023).</span></div>
+      </div>
+    </div>
+    <p class="vl-derived" id="vlDerived"></p>
+  </section>
+
+  <!-- ═══════════ 03 · STATISTICS ═══════════ -->
+  <section class="section-block anim-in" id="vl-stats">
+    <p class="vl-num">03 · A THOUSAND SHOTS</p>
+    <h2 class="section-title">Where the defects come from</h2>
+    <p class="section-sub">The same simulation without the animation, repeated. Every number below comes from these settings.</p>
+    <p class="amo-eyebrow">Interactive</p>
+    <div class="vl-ctrls" style="margin-top:0">
+      <button type="button" class="vl-btn primary" id="vlMC">Run 1,000 shots</button>
+      <button type="button" class="vl-btn" id="vlSweep">Sweep target size</button>
+      <span class="vl-src" id="vlMCstatus" aria-live="polite" style="margin:0"></span>
+    </div>
+    <div class="vl-progress" aria-hidden="true"><div id="vlProg"></div></div>
+    <div class="vl-tiles" id="vlTiles"></div>
+    <div class="vl-two">
+      <div class="vl-panel">
+        <h4>Shots spoiled by…</h4>
+        <div id="vlCauses"></div>
+        <p class="vl-note">A shot counts under every cause that left at least one hole in the target, so the bars can add to more than 100%.</p>
+      </div>
+      <div class="vl-panel">
+        <h4>Photon counts per site</h4>
+        <div class="vl-chart"><canvas id="vlHist" data-export-ready="true" aria-label="Probability of each photon count for an empty site and an occupied site, with the detection threshold marked."></canvas></div>
+        <p class="vl-note" id="vlHistNote"></p>
+      </div>
+    </div>
+    <div class="vl-panel" style="margin-top:1rem">
+      <h4>Defect-free probability vs target size</h4>
+      <div class="vl-chart" style="height:320px"><canvas id="vlSweepChart" data-export-ready="true" aria-label="Log-scale probability of a defect-free target block versus its side length K: without rearrangement, the fraction of shots with enough atoms, and the Monte Carlo result with rearrangement."></canvas></div>
+      <p class="vl-note" id="vlSweepNote">Press “Sweep target size” to fill in the Monte Carlo points (200 shots per size).</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 04 · THE WALL ═══════════ -->
+  <section class="section-block anim-in" id="vl-wall">
+    <p class="vl-num">04 · WHY REARRANGE, AND WHY RELOAD</p>
+    <h2 class="section-title">The exponential wall</h2>
+    <div class="theory-box">
+      <h4>Without rearrangement</h4>
+      <p>Each tweezer loads independently with probability $p$, so a chosen $K\times K$ block is full with probability $p^{K^2}$.
+        At $p = 0.5$ an $8\times 8$ block is full once in $2^{64} \approx 1.8\times10^{19}$ tries. Blockade loading caps $p$ near one half
+        (Schlosser 2001); enhanced loading raises it, but even $p = 0.89$ gives $0.89^{64} \approx 6\times 10^{-4}$.</p>
+      <p>Rearrangement turns this around: take an image, then use a steerable tweezer to carry spare atoms into the holes
+        (Barredo et al. 2016; Endres et al. 2016). Now the hard limit is having enough atoms, $P\big(\mathrm{Bin}(M^2, p) \ge K^2\big)$,
+        which is close to 1 once the array holds comfortably more than $K^2/p$ traps.</p>
+    </div>
+    <div class="theory-box">
+      <h4>With rearrangement, a slower wall</h4>
+      <p>Each move risks the atom being carried, and the whole sequence takes time while every atom can be knocked out by background gas.
+        If a shot needs $n$ moves of duration $t$, then roughly
+        $$P_{\text{defect-free}} \approx (1-\varepsilon)^{\,n}\; e^{-K^2 n t/\tau}\;\times(\text{imaging terms}),$$
+        and $n$ grows with $K^2$. The decay is still exponential in the number of atoms, just with a far smaller exponent.
+        Try it: raise $K$ with 1% loss per move and watch the Monte Carlo fall away from the “enough atoms” curve.</p>
+    </div>
+    <div class="theory-box">
+      <h4>Beyond one shot: keep the array full</h4>
+      <p>The newest machines stop treating each shot as a fresh start. Norcia et al. filled 1225-site ¹⁷¹Yb arrays incrementally from a
+        repeatedly refilled reservoir, reaching 99% per-site occupancy (<em>PRX Quantum</em> 5, 030316, 2024).
+        Chiu et al. kept an array of over 3,000 atoms running for more than two hours by reloading 300,000 atoms per second into tweezers
+        (<em>Nature</em> 646, 1075, 2025). Manetsch et al. trapped 6100 Cs atoms in one array (<em>Nature</em>, 2025).
+        This lab models the single-shot cycle those systems are built from.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 05 · MODEL & SOURCES ═══════════ -->
+  <section class="section-block anim-in" id="vl-model">
+    <p class="vl-num">05 · WHAT THE MODEL DOES</p>
+    <h2 class="section-title">Assumptions</h2>
+    <div class="theory-box">
+      <ul class="vl-list">
+        <li><strong>Loading:</strong> each tweezer holds one atom with probability $p$, independently; never two.</li>
+        <li><strong>Imaging:</strong> a site's count is Poisson with mean $N_{bg}$ (empty) or $N_{bg} + N_{at}$ (occupied). The threshold is the integer that minimises the sum of the false-positive and false-negative rates. An occupied site survives the image with the set probability.</li>
+        <li><strong>Assignment:</strong> empty target sites, taken from the centre outward, each claim the nearest unused atom detected outside the block. Atoms already detected inside the block stay. Paths that cross other traps are allowed.</li>
+        <li><strong>Moves:</strong> a move from a false-positive or already-lost site delivers nothing. A real atom is lost with probability ε. If it lands on a site that held an undetected atom, light-assisted collisions eject both.</li>
+        <li><strong>Vacuum:</strong> after the moves, every atom survives with $e^{-T/\tau}$, where $T$ = moves × time per move.</li>
+        <li><strong>Defect-free</strong> is judged from the true occupancy. The verification image is drawn for show; its own errors are not counted.</li>
+        <li><strong>Bell pairs:</strong> neighbouring columns in the block are paired. A pair with both atoms is a good Bell pair with probability F, giving equal Z-basis bits; otherwise its bits are random. The expected agreement is $F + (1-F)/2$. Agreement in one basis is necessary but does not prove the fidelity.</li>
+      </ul>
+    </div>
+    <div class="section-title" style="font-size:1.1rem;margin-top:1.5rem">Sources</div>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1038/35082512" target="_blank" rel="noopener">Schlosser et al. (2001), <em>Nature</em> 411, 1024 — sub-Poissonian loading of single atoms in a microscopic dipole trap</a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevX.9.011057" target="_blank" rel="noopener">Brown et al. (2019), <em>Phys. Rev. X</em> 9, 011057 — gray-molasses optical-tweezer loading</a>
+      <a class="read-link" href="https://doi.org/10.1126/science.aah3778" target="_blank" rel="noopener">Barredo et al. (2016), <em>Science</em> 354, 1021 — atom-by-atom assembler of defect-free 2D arrays</a>
+      <a class="read-link" href="https://doi.org/10.1126/science.aah3752" target="_blank" rel="noopener">Endres et al. (2016), <em>Science</em> 354, 1024 — atom-by-atom assembly of defect-free 1D arrays</a>
+      <a class="read-link" href="https://doi.org/10.1038/s41586-023-06481-y" target="_blank" rel="noopener">Evered et al. (2023), <em>Nature</em> 622, 268 — high-fidelity parallel entangling gates on a neutral-atom quantum computer</a>
+      <a class="read-link" href="https://doi.org/10.1103/PRXQuantum.5.030316" target="_blank" rel="noopener">Norcia et al. (2024), <em>PRX Quantum</em> 5, 030316 — iterative assembly of ¹⁷¹Yb atom arrays with cavity-enhanced optical lattices</a>
+      <a class="read-link" href="https://doi.org/10.1038/s41586-025-09596-6" target="_blank" rel="noopener">Chiu et al. (2025), <em>Nature</em> 646, 1075 — continuous operation of a coherent 3,000-qubit system</a>
+      <a class="read-link" href="https://doi.org/10.1038/s41586-025-09641-4" target="_blank" rel="noopener">Manetsch et al. (2025), <em>Nature</em> — a tweezer array with 6100 highly coherent atomic qubits</a>
+    </div>
+  </section>
+
+  </div>
+  </div>
+</main><!-- /page-wrap -->
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="tweezer-designer.html">
+        <span class="see-also-icon">🎯</span>
+        <div><div class="see-also-name">Tweezer Designer</div><div class="see-also-desc">Trap depth, waist and frequencies for one tweezer</div></div>
+      </a>
+      <a class="see-also-card" href="imaging-calculator.html">
+        <span class="see-also-icon">📷</span>
+        <div><div class="see-also-name">Single-atom Imaging</div><div class="see-also-desc">Photon counts, thresholds and detection fidelity</div></div>
+      </a>
+      <a class="see-also-card" href="rydberg-calculator.html">
+        <span class="see-also-icon">⚛️</span>
+        <div><div class="see-also-name">Rydberg Calculator</div><div class="see-also-desc">Blockade radius and the gates behind the Bell pairs</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Virtual Tweezer Lab &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+<script src="../js/main.js?v=43"></script>
+<script>
+renderNav({ active: 'virtual-lab', root: '../' });
+initScrollReveal();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   VIRTUAL TWEEZER LAB
+   One shot = load → image → rearrange → (vacuum) → verify → Bell pairs → readout.
+   The physics model is listed in section 05 of the page; window.VLAB exposes
+   the pieces for tests/formula_regression.py.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const rnd = Math.random;
+  const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  /* ── statistics helpers ─────────────────────────────────────────── */
+  function gauss() { let u = 0; while (!u) u = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rnd()); }
+  function poisson(lam) {
+    if (lam <= 0) return 0;
+    if (lam < 30) { const L = Math.exp(-lam); let k = 0, q = 1; do { k++; q *= rnd(); } while (q > L); return k - 1; }
+    return Math.max(0, Math.round(lam + Math.sqrt(lam) * gauss()));          // normal approximation for large means
+  }
+  function lgamma(x) {                                                       // Lanczos, x > 0
+    const g = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x);
+    x -= 1; let a = 0.99999999999980993; const t = x + 7.5;
+    for (let i = 0; i < 8; i++) a += g[i] / (x + i + 1);
+    return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+  }
+  const poisPmf = (k, lam) => Math.exp(k * Math.log(lam) - lam - lgamma(k + 1));
+  function poisCdf(n, lam) { if (n < 0) return 0; let s = 0; for (let k = 0; k <= n; k++) s += poisPmf(k, lam); return Math.min(1, s); }
+  // detect "atom" when count >= n; n minimises (false-positive rate + false-negative rate)
+  function threshold(nb, nbg) {
+    let best = 1, bestErr = Infinity;
+    const hi = Math.ceil(nbg + nb + 6 * Math.sqrt(nbg + nb) + 5);
+    for (let n = 1; n <= hi; n++) {
+      const err = (1 - poisCdf(n - 1, nbg)) + poisCdf(n - 1, nbg + nb);
+      if (err < bestErr - 1e-15) { bestErr = err; best = n; }
+    }
+    return { n: best, fp: 1 - poisCdf(best - 1, nbg), fn: poisCdf(best - 1, nbg + nb) };
+  }
+  // P(Bin(N, p) >= k): enough atoms loaded to fill a K×K block (k = K²)
+  function binomTail(N, p, k) {
+    if (k <= 0) return 1; if (k > N) return 0;
+    let s = 0;
+    for (let j = k; j <= N; j++) s += Math.exp(lgamma(N + 1) - lgamma(j + 1) - lgamma(N - j + 1) + j * Math.log(p) + (N - j) * Math.log(1 - p));
+    return Math.min(1, s);
+  }
+
+  /* ── parameters ─────────────────────────────────────────────────── */
+  function params() {
+    const M = +$('vlM').value, K = Math.min(+$('vlK').value, M);
+    const P = { M, K, p: +$('vlP').value, nb: +$('vlNb').value, ng: +$('vlNg').value, si: +$('vlSi').value,
+      eps: +$('vlEps').value, tm: +$('vlTm').value, tau: Math.pow(10, +$('vlTau').value), F: +$('vlF').value };
+    P.thr = threshold(P.nb, P.ng);
+    return P;
+  }
+
+  // empty target sites, centre outward, each claim the nearest unused detected atom outside the block
+  function assign(M, K, det) {
+    const o = Math.floor((M - K) / 2), c0 = o + (K - 1) / 2, targets = [], src = [];
+    for (let i = 0; i < M * M; i++) {
+      const r = (i / M) | 0, c = i % M, inT = r >= o && r < o + K && c >= o && c < o + K;
+      if (inT && !det[i]) targets.push(i); else if (!inT && det[i]) src.push(i);
+    }
+    const d2 = (a, b) => { const dr = ((a / M) | 0) - ((b / M) | 0), dc = a % M - b % M; return dr * dr + dc * dc; };
+    targets.sort((a, b) => { const ra = ((a / M) | 0) - c0, ca = a % M - c0, rb = ((b / M) | 0) - c0, cb = b % M - c0; return (ra * ra + ca * ca) - (rb * rb + cb * cb) || a - b; });
+    const used = new Uint8Array(src.length), moves = [];
+    for (const t of targets) {
+      let best = -1, bd = Infinity;
+      for (let j = 0; j < src.length; j++) if (!used[j]) { const d = d2(src[j], t); if (d < bd) { bd = d; best = j; } }
+      if (best < 0) break;                                                    // out of spare atoms
+      used[best] = 1; moves.push({ from: src[best], to: t });
+    }
+    return { o, moves, nTargets: targets.length, nSrc: src.length };
+  }
+
+  // hole causes
+  const CAUSES = [
+    { key: 'few',  label: 'Not enough atoms',             color: '#8b5cf6' },
+    { key: 'fp',   label: 'False detection',              color: '#f59e0b' },
+    { key: 'img',  label: 'Lost while imaging',           color: '#0ea5e9' },
+    { key: 'move', label: 'Lost in a move',               color: '#ef4444' },
+    { key: 'coll', label: 'Collision with a missed atom', color: '#ec4899' },
+    { key: 'vac',  label: 'Background-gas loss',          color: '#10b981' },
+  ];
+
+  function shot(P) {
+    const M = P.M, K = P.K, n = M * M, thr = P.thr.n;
+    const occ0 = new Uint8Array(n), occI = new Uint8Array(n), bg = new Uint16Array(n), sig = new Uint16Array(n), det = new Uint8Array(n);
+    let nLoaded = 0, nDet = 0, nFP = 0, nFN = 0, nImgLost = 0;
+    for (let i = 0; i < n; i++) {
+      occ0[i] = rnd() < P.p ? 1 : 0;
+      bg[i] = poisson(P.ng); sig[i] = occ0[i] ? poisson(P.nb) : 0;
+      det[i] = bg[i] + sig[i] >= thr ? 1 : 0;
+      occI[i] = occ0[i] && rnd() < P.si ? 1 : 0;                             // the image itself can lose the atom
+      nLoaded += occ0[i]; nDet += det[i];
+      if (det[i] && !occ0[i]) nFP++; if (!det[i] && occ0[i]) nFN++; if (occ0[i] && !occI[i]) nImgLost++;
+    }
+    const A = assign(M, K, det), o = A.o;
+    const occ = occI.slice(), lc = new Int8Array(n).fill(-1);
+    let nMoveLost = 0, nColl = 0;
+    for (const m of A.moves) {
+      const a = m.from, b = m.to;
+      if (!occ[a]) { m.res = occ0[a] ? 'img' : 'ghost'; lc[b] = occ0[a] ? 2 : 1; continue; }   // nothing to carry
+      occ[a] = 0;
+      if (rnd() < P.eps) { m.res = 'lost'; lc[b] = 3; nMoveLost++; continue; }
+      if (occ[b]) { occ[b] = 0; m.res = 'coll'; lc[b] = 4; nColl++; continue; }                 // undetected atom already there
+      occ[b] = 1; m.res = 'ok';
+    }
+    const T = A.moves.length * P.tm;                                          // ms
+    const sv = Math.exp(-T / 1000 / P.tau), preVac = occ.slice(), vacLost = [];
+    for (let i = 0; i < n; i++) if (occ[i] && rnd() > sv) { occ[i] = 0; vacLost.push(i); }
+    const holes = [], hit = new Uint8Array(CAUSES.length), holeCause = new Int8Array(n).fill(-1);
+    for (let r = o; r < o + K; r++) for (let c = o; c < o + K; c++) {
+      const i = r * M + c; if (occ[i]) continue;
+      let k;
+      if (preVac[i]) k = 5; else if (lc[i] >= 0) k = lc[i]; else if (det[i]) k = occ0[i] ? 2 : 1; else k = 0;
+      holes.push(i); holeCause[i] = k; hit[k] = 1;
+    }
+    // Bell pairs between neighbouring columns of the block
+    const pairs = [];
+    for (let r = o; r < o + K; r++) for (let c = o; c + 1 < o + K; c += 2) {
+      const a = r * M + c, b = a + 1;
+      if (!(occ[a] && occ[b])) { pairs.push({ a, b, ok: false }); continue; }
+      const good = rnd() < P.F, b1 = rnd() < 0.5 ? 1 : 0, b2 = good ? b1 : (rnd() < 0.5 ? 1 : 0);
+      pairs.push({ a, b, ok: true, bits: [b1, b2], agree: b1 === b2 });
+    }
+    return { P, M, K, o, n, occ0, occI, bg, sig, det, moves: A.moves, preVac, vacLost, occ, holes, holeCause, hit, pairs,
+      nLoaded, nDet, nFP, nFN, nImgLost, nMoveLost, nColl, T, nSrc: A.nSrc, nTargets: A.nTargets, defectFree: holes.length === 0 };
+  }
+
+  window.VLAB = { poisson, poisCdf, threshold, binomTail, assign, shot, params };
+
+  /* ═════════════ camera rendering ═════════════ */
+  const cv = $('vlCam'), ctx = cv.getContext('2d'), W = cv.width, PAD = 28, CP = 7, SIG = 1.05;
+  const off = document.createElement('canvas'), octx = off.getContext('2d');
+  const CMAP = [[0, 0, 4], [31, 12, 72], [85, 15, 109], [136, 34, 106], [186, 54, 85], [227, 89, 51], [249, 140, 10], [249, 201, 50], [252, 255, 164]];
+  const cmap = v => { v = Math.max(0, Math.min(1, v)) * (CMAP.length - 1); const i = Math.min(CMAP.length - 2, v | 0), f = v - i, a = CMAP[i], b = CMAP[i + 1]; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; };
+
+  // photons for one exposure: background spread over each site's pixels, atom photons in a Gaussian spot
+  function photons(S, bgArr, sigArr) {
+    const M = S.M, out = [];
+    for (let i = 0; i < S.n; i++) {
+      const r = (i / M) | 0, c = i % M;
+      for (let k = 0; k < bgArr[i]; k++) out.push(c * CP + rnd() * CP, r * CP + rnd() * CP);
+      for (let k = 0; k < sigArr[i]; k++) out.push(c * CP + CP / 2 + SIG * gauss(), r * CP + CP / 2 + SIG * gauss());
+    }
+    const m = out.length / 2;                                                // shuffle so a partial exposure looks uniform
+    for (let k = m - 1; k > 0; k--) { const j = (rnd() * (k + 1)) | 0, x = out[2 * k], y = out[2 * k + 1]; out[2 * k] = out[2 * j]; out[2 * k + 1] = out[2 * j + 1]; out[2 * j] = x; out[2 * j + 1] = y; }
+    return out;
+  }
+  function exposure(S, occArr, filter) {
+    const bgA = new Uint16Array(S.n), sgA = new Uint16Array(S.n);
+    for (let i = 0; i < S.n; i++) { bgA[i] = poisson(S.P.ng); sgA[i] = occArr[i] && (!filter || filter(i)) ? poisson(S.P.nb) : 0; }
+    return photons(S, bgA, sgA);
+  }
+  function drawImage(S, ph, frac, alpha) {
+    const N = S.M * CP, acc = new Float32Array(N * N), m = Math.floor(ph.length / 2 * frac);
+    for (let k = 0; k < m; k++) { const x = ph[2 * k] | 0, y = ph[2 * k + 1] | 0; if (x >= 0 && y >= 0 && x < N && y < N) acc[y * N + x]++; }
+    const vmax = 0.14 * S.P.nb + 3 * S.P.ng / (CP * CP) + 1;
+    off.width = N; off.height = N;
+    const img = octx.createImageData(N, N);
+    for (let p = 0; p < N * N; p++) { const col = cmap(acc[p] / vmax); img.data[4 * p] = col[0]; img.data[4 * p + 1] = col[1]; img.data[4 * p + 2] = col[2]; img.data[4 * p + 3] = 255; }
+    octx.putImageData(img, 0, 0);
+    ctx.save(); ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = false; ctx.drawImage(off, PAD, PAD, W - 2 * PAD, W - 2 * PAD); ctx.restore();
+  }
+
+  const cellOf = S => (W - 2 * PAD) / S.M;
+  const XY = (S, i) => { const c = cellOf(S); return [PAD + (i % S.M + 0.5) * c, PAD + (((i / S.M) | 0) + 0.5) * c]; };
+  function base(S, ringA) {
+    ctx.fillStyle = '#05070d'; ctx.fillRect(0, 0, W, W);
+    const c = cellOf(S);
+    ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(80,100,135,' + (0.75 * ringA) + ')';
+    for (let i = 0; i < S.n; i++) { const [x, y] = XY(S, i); ctx.beginPath(); ctx.arc(x, y, c * 0.3, 0, 2 * Math.PI); ctx.stroke(); }
+  }
+  function targetBox(S, a) {
+    const c = cellOf(S), x = PAD + S.o * c, w = S.K * c;
+    ctx.save(); ctx.setLineDash([7, 5]); ctx.strokeStyle = 'rgba(251,191,36,' + a + ')'; ctx.lineWidth = 1.6;
+    ctx.strokeRect(x + 2, x + 2, w - 4, w - 4); ctx.restore();
+  }
+  function glow(x, y, r, rgb, a) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, 'rgba(255,250,230,' + a + ')'); g.addColorStop(0.35, 'rgba(' + rgb + ',' + (0.9 * a) + ')'); g.addColorStop(1, 'rgba(' + rgb + ',0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill();
+  }
+  function cross(x, y, s, col, a) {
+    ctx.save(); ctx.strokeStyle = col; ctx.globalAlpha = a; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(x - s, y - s); ctx.lineTo(x + s, y + s); ctx.moveTo(x + s, y - s); ctx.lineTo(x - s, y + s); ctx.stroke(); ctx.restore();
+  }
+  function truthDots(S, arr) {
+    if (!$('vlTruth').checked) return;
+    const r = Math.max(2.2, cellOf(S) * 0.07);
+    ctx.save(); ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = '#05070d'; ctx.lineWidth = 1.5;
+    for (let i = 0; i < S.n; i++) if (arr[i]) { const [x, y] = XY(S, i); ctx.beginPath(); ctx.arc(x + cellOf(S) * 0.27, y - cellOf(S) * 0.27, r, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); }
+    ctx.restore();
+  }
+  const ease = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+  /* ── stage durations (s at 1×) and drawing ── */
+  const STAGES = ['Load', 'Image', 'Rearrange', 'Verify', 'Entangle', 'Read out'];
+  const dur = (S, k) => [1.6, 1.9, Math.max(1.2, Math.min(5.5, 0.6 + 0.09 * S.moves.length)), 1.7, 1.9, 1.9][k];
+
+  function rearrangeState(S, u) {                                             // occupancy + carried atom at progress u
+    const cur = S.occI.slice(), nm = S.moves.length, fx = [];
+    let carry = null;
+    for (let j = 0; j < nm; j++) {
+      const m = S.moves[j], t0 = j / nm, t1 = (j + 1) / nm;
+      if (u >= t1) {
+        if (m.res !== 'img' && m.res !== 'ghost') cur[m.from] = 0;
+        if (m.res === 'ok') cur[m.to] = 1; else if (m.res === 'coll') { cur[m.to] = 0; fx.push(m.to); } else if (m.res === 'lost') fx.push(m.to);
+      } else if (u >= t0) {
+        const ph = (u - t0) / (t1 - t0), real = m.res !== 'img' && m.res !== 'ghost';
+        if (real && ph > 0.15) cur[m.from] = 0;
+        carry = { m, ph, real }; break;
+      } else break;
+    }
+    return { cur, carry, fx };
+  }
+
+  function drawStage(S, k, u, ex) {
+    const c = cellOf(S);
+    if (k === 0) {
+      base(S, Math.min(1, u * 1.6));
+      const a = 0.42 * Math.sin(Math.PI * Math.min(1, u * 1.1));
+      const g = ctx.createRadialGradient(W / 2, W / 2, 0, W / 2, W / 2, W * 0.55);
+      g.addColorStop(0, 'rgba(251,146,60,' + a + ')'); g.addColorStop(1, 'rgba(251,146,60,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, W);
+      targetBox(S, 0.5 * u);
+      if (u > 0.55) truthDots(S, S.occ0);
+      return;
+    }
+    if (k === 1) {
+      base(S, 1); drawImage(S, ex.img1, Math.min(1, u / 0.8), 1);
+      ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(80,100,135,.35)';
+      for (let i = 0; i < S.n; i++) { const [x, y] = XY(S, i); ctx.beginPath(); ctx.arc(x, y, c * 0.3, 0, 2 * Math.PI); ctx.stroke(); }
+      if (u > 0.8) {
+        const a = Math.min(1, (u - 0.8) / 0.15);
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(253,224,71,' + a + ')';
+        for (let i = 0; i < S.n; i++) if (S.det[i]) { const [x, y] = XY(S, i); ctx.beginPath(); ctx.arc(x, y, c * 0.42, 0, 2 * Math.PI); ctx.stroke(); }
+      }
+      targetBox(S, 0.8); truthDots(S, S.occ0);
+      return;
+    }
+    if (k === 2) {
+      base(S, 1); drawImage(S, ex.img1, 1, 0.18); targetBox(S, 0.9);
+      const st = rearrangeState(S, u), nm = S.moves.length;
+      // finished paths, faint
+      ctx.lineWidth = 1.4;
+      for (let j = 0; j < nm; j++) {
+        if ((j + 1) / nm > u) break;
+        const [x0, y0] = XY(S, S.moves[j].from), [x1, y1] = XY(S, S.moves[j].to);
+        ctx.strokeStyle = 'rgba(56,189,248,.22)'; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      }
+      for (let i = 0; i < S.n; i++) {
+        const [x, y] = XY(S, i);
+        if (st.cur[i]) glow(x, y, c * 0.42, '251,191,36', 0.95);
+        else if (S.det[i] && !S.occI[i]) {                                   // detected, but no atom there
+          const idx = S.moves.findIndex(m => m.from === i);
+          if (idx >= 0 && u >= idx / nm) continue;                            // its (empty) tweezer has left
+          ctx.save(); ctx.setLineDash([3, 3]); ctx.strokeStyle = 'rgba(253,224,71,.95)'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(x, y, c * 0.24, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+        }
+      }
+      for (const i of st.fx) { const [x, y] = XY(S, i); cross(x, y, c * 0.2, '#ef4444', 0.95); }
+      if (st.carry) {
+        const { m, ph, real } = st.carry, [x0, y0] = XY(S, m.from), [x1, y1] = XY(S, m.to);
+        const s = ph < 0.15 ? 0 : ph > 0.85 ? 1 : ease((ph - 0.15) / 0.7), x = x0 + (x1 - x0) * s, y = y0 + (y1 - y0) * s;
+        ctx.strokeStyle = 'rgba(56,189,248,.85)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x, y); ctx.stroke();
+        if (real && !(m.res === 'lost' && s > 0.5)) glow(x, y, c * 0.42, '251,191,36', 1);
+        if (m.res === 'lost' && s > 0.5) cross(x, y, c * 0.2, '#ef4444', 1);
+        const grow = ph < 0.15 ? ph / 0.15 : ph > 0.85 ? (1 - ph) / 0.15 : 1;
+        ctx.save(); if (!real) ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(x, y, c * (0.3 + 0.18 * grow), 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+      }
+      truthDots(S, st.cur);
+      return;
+    }
+    if (k === 3) {
+      base(S, 1); drawImage(S, ex.img2, Math.min(1, u / 0.7), 1); targetBox(S, 0.9);
+      if (u < 0.5) for (const i of S.vacLost) { const [x, y] = XY(S, i); cross(x, y, c * 0.2, '#10b981', 1 - u * 2); }
+      if (u > 0.7) {
+        const a = Math.min(1, (u - 0.7) / 0.2);
+        for (let r = S.o; r < S.o + S.K; r++) for (let q = S.o; q < S.o + S.K; q++) {
+          const i = r * S.M + q, [x, y] = XY(S, i);
+          if (S.occ[i]) { ctx.strokeStyle = 'rgba(52,211,153,' + (0.7 * a) + ')'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(x, y, c * 0.42, 0, 2 * Math.PI); ctx.stroke(); }
+          else { ctx.fillStyle = 'rgba(239,68,68,' + (0.22 * a) + ')'; ctx.fillRect(x - c * 0.45, y - c * 0.45, c * 0.9, c * 0.9); ctx.strokeStyle = 'rgba(239,68,68,' + a + ')'; ctx.lineWidth = 2; ctx.strokeRect(x - c * 0.45, y - c * 0.45, c * 0.9, c * 0.9); }
+        }
+      }
+      truthDots(S, S.occ);
+      return;
+    }
+    if (k === 4) {
+      base(S, 1); targetBox(S, 0.5);
+      const pulse = Math.pow(Math.sin(Math.PI * 3 * u), 2);
+      for (const p of S.pairs) {
+        if (!p.ok) continue;
+        const [xa, ya] = XY(S, p.a), [xb, yb] = XY(S, p.b);
+        ctx.strokeStyle = 'rgba(167,139,250,' + (0.25 + 0.7 * pulse) + ')'; ctx.lineWidth = 2 + 4 * pulse;
+        ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke();
+      }
+      for (let i = 0; i < S.n; i++) if (S.occ[i]) {
+        const [x, y] = XY(S, i), inPair = S.pairs.some(p => p.ok && (p.a === i || p.b === i));
+        glow(x, y, c * (0.38 + (inPair ? 0.12 * pulse : 0)), inPair ? '167,139,250' : '251,191,36', inPair ? 0.75 + 0.25 * pulse : 0.55);
+      }
+      truthDots(S, S.occ);
+      return;
+    }
+    // k === 5: state-selective readout: only qubits that read 1 fluoresce
+    base(S, 1); drawImage(S, ex.img3, Math.min(1, u / 0.6), 1); targetBox(S, 0.5);
+    if (u > 0.6) {
+      const a = Math.min(1, (u - 0.6) / 0.25);
+      ctx.font = '600 ' + Math.round(Math.max(10, c * 0.26)) + 'px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+      for (const p of S.pairs) {
+        if (!p.ok) continue;
+        const [xa, ya] = XY(S, p.a), [xb, yb] = XY(S, p.b);
+        ctx.strokeStyle = (p.agree ? 'rgba(52,211,153,' : 'rgba(239,68,68,') + a + ')'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(xa + c * 0.2, ya); ctx.lineTo(xb - c * 0.2, yb); ctx.stroke();
+        if (c > 34) { ctx.fillStyle = 'rgba(226,232,240,' + a + ')'; ctx.fillText(p.bits[0], xa, ya + c * 0.46); ctx.fillText(p.bits[1], xb, yb + c * 0.46); }
+      }
+    }
+    truthDots(S, S.occ);
+  }
+
+  /* ── shot log ── */
+  function log(S, k) {
+    const P = S.P, show = j => k >= j, pc = S.pairs.length, ok = S.pairs.filter(p => p.ok), ag = ok.filter(p => p.agree).length;
+    const rows = [
+      ['Tweezers / target', `${S.n} / ${S.K}×${S.K}`],
+      ['Atoms loaded (truth)', show(1) ? `${S.nLoaded}` : '—'],
+      [`Detected (≥ ${P.thr.n} photons)`, show(1) ? `${S.nDet}` : '—'],
+      ['False detections / missed', show(1) ? `${S.nFP} / ${S.nFN}` : '—'],
+      ['Lost while imaging', show(1) ? `${S.nImgLost}` : '—'],
+      ['Moves · sequence time', show(2) ? `${S.moves.length} · ${S.T >= 1000 ? (S.T / 1000).toFixed(2) + ' s' : S.T.toFixed(0) + ' ms'}` : '—'],
+      ['Lost in moves / collisions', show(2) ? `${S.nMoveLost} / ${S.nColl}` : '—'],
+      ['Background-gas losses', show(3) ? `${S.vacLost.length}` : '—'],
+      ['Holes in target', show(3) ? `${S.holes.length}` : '—'],
+      ['Complete Bell pairs', show(4) ? `${ok.length} of ${pc}` : '—'],
+      ['Pairs reading equal bits', show(5) ? (ok.length ? `${ag} of ${ok.length}` : '—') : '—'],
+    ];
+    $('vlRows').innerHTML = rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('');
+    const v = $('vlVerdict');
+    if (k < 3) { v.className = 'vl-verdict'; v.textContent = k < 0 ? 'Press Run to load the array.' : `Stage ${k + 1} of 6: ${STAGES[k]}`; }
+    else if (S.defectFree) { v.className = 'vl-verdict ok'; v.textContent = `Defect-free ${S.K}×${S.K} block.`; }
+    else {
+      const counts = {}; for (const i of S.holes) counts[S.holeCause[i]] = (counts[S.holeCause[i]] || 0) + 1;
+      v.className = 'vl-verdict bad';
+      v.textContent = `${S.holes.length} hole${S.holes.length > 1 ? 's' : ''}: ` + Object.keys(counts).map(c => `${CAUSES[c].label.toLowerCase()} ×${counts[c]}`).join(', ');
+    }
+    const fpNote = S.nFP ? ` ${S.nFP} empty site${S.nFP > 1 ? 's' : ''} crossed the threshold by chance.` : '';
+    const fnNote = S.nFN ? ` ${S.nFN} atom${S.nFN > 1 ? 's were' : ' was'} too dim to count.` : '';
+    const nar = [
+      `The MOT fills the tweezers. Each one ends with one atom or none, at random (p = ${P.p.toFixed(2)}). Nothing is known yet: the camera has not looked.`,
+      `A ${P.nb}-photon exposure. Sites at or above ${P.thr.n} counts are called occupied (yellow rings): ${S.nDet} of ${S.n}.${fpNote}${fnNote}`,
+      S.moves.length ? `${S.moves.length} moves fill the ${S.nTargets} empty target sites${S.nTargets > S.moves.length ? ` (only ${S.nSrc} spare atoms, so ${S.nTargets - S.moves.length} stay empty)` : ''}. A dashed tweezer carries nothing: its source was a false detection or lost during imaging.`
+        : `No moves needed${S.nTargets ? `, but no spare atoms either` : ''}.`,
+      `A second image checks the block after ${S.T.toFixed(0)} ms of moves. ${S.holes.length ? 'Red squares are holes.' : 'Every target site is full.'}`,
+      `Rydberg pulses entangle neighbouring pairs. ${ok.length} of ${pc} pairs have both atoms.`,
+      ok.length ? `State-selective imaging: only atoms in |1⟩ fluoresce. ${ag} of ${ok.length} pairs agree (green); with F = ${P.F.toFixed(3)} you expect about ${(100 * (P.F + (1 - P.F) / 2)).toFixed(1)}%.` : 'No complete pairs to read out.',
+    ];
+    $('vlNarr').textContent = k >= 0 ? nar[k] : '';
+    document.querySelectorAll('#vlStages li').forEach((li, j) => { li.classList.toggle('on', j === k); li.classList.toggle('done', j < k); });
+    $('vlHudL').textContent = k < 0 ? 'Camera · idle' : ['MOT on · loading', 'Exposure 1', 'Moving tweezer', 'Exposure 2 · verify', 'Rydberg pulses', 'Exposure 3 · readout'][k];
+    $('vlHudR').textContent = k < 0 ? '' : `shot ${shotNo}`;
+    $('vlHudL').classList.toggle('vl-rec', k === 1 || k === 3 || k === 5);
+  }
+
+  /* ── playback ── */
+  let S = null, ex = null, stage = -1, u = 1, playing = false, raf = 0, last = null, shotNo = 0, rmTimer = 0;
+  function newShot() {
+    S = shot(params()); shotNo++;
+    ex = { img1: photons(S, S.bg, S.sig), img2: exposure(S, S.occ), img3: exposure(S, S.occ, i => S.pairs.some(p => p.ok && ((p.a === i && p.bits[0]) || (p.b === i && p.bits[1])))) };
+    stage = -1; u = 1;
+  }
+  function render() { if (!S) return; if (stage < 0) { base(S, 0.6); targetBox(S, 0.35); } else drawStage(S, stage, u, ex); }
+  function setPlaying(on) {
+    playing = on; $('vlRun').textContent = on ? '❚❚ Pause' : (S && stage === 5 && u >= 1 ? '▶ Run another shot' : '▶ Run one cycle');
+    cancelAnimationFrame(raf); clearTimeout(rmTimer); last = null;
+    if (!on) return;
+    if (reduced) { const hop = () => { if (stage >= 5) { setPlaying(false); return; } stage++; u = 1; log(S, stage); render(); rmTimer = setTimeout(hop, 900); }; hop(); return; }
+    raf = requestAnimationFrame(tick);
+  }
+  function tick(t) {
+    const dt = last === null ? 0 : Math.min(0.1, (t - last) / 1000); last = t;
+    u += dt * +$('vlSpeed').value / dur(S, stage);
+    if (u >= 1) { if (stage >= 5) { u = 1; render(); setPlaying(false); return; } stage++; u = 0; log(S, stage); }
+    render(); raf = requestAnimationFrame(tick);
+  }
+  $('vlRun').addEventListener('click', () => {
+    if (playing) { setPlaying(false); return; }
+    if (!S || (stage === 5 && u >= 1)) newShot();
+    if (stage < 0) { stage = 0; u = 0; log(S, 0); }
+    setPlaying(true);
+  });
+  $('vlStep').addEventListener('click', () => {
+    setPlaying(false);
+    if (!S || (stage === 5 && u >= 1)) newShot();
+    if (u < 1 && stage >= 0) u = 1; else { stage = Math.min(5, stage + 1); u = 1; }
+    log(S, stage); render(); setPlaying(false);
+  });
+  $('vlNew').addEventListener('click', () => { setPlaying(false); newShot(); log(S, -1); render(); setPlaying(false); });
+  $('vlTruth').addEventListener('change', render);
+
+  /* ═════════════ settings ═════════════ */
+  const fmtP = x => x >= 1e-3 ? (x >= 0.995 && x < 1 ? (100 * x).toFixed(2) + '%' : (100 * x).toFixed(1) + '%') : x > 0 ? x.toExponential(1).replace('e', '×10^').replace(/\^(-?\d+)/, (m, e) => '<sup>' + e + '</sup>').replace('×10', ' × 10').replace('-', '−') : '0';
+  function labels() {
+    const M = +$('vlM').value; $('vlK').max = Math.min(14, M); if (+$('vlK').value > M) $('vlK').value = M;
+    const K = +$('vlK').value, P = params();
+    $('vlMV').textContent = `${M} × ${M} = ${M * M}`; $('vlKV').textContent = `${K} × ${K} = ${K * K}`;
+    $('vlPV').textContent = P.p.toFixed(2); $('vlNbV').textContent = P.nb; $('vlNgV').textContent = P.ng.toFixed(1);
+    $('vlSiV').textContent = (100 * P.si).toFixed(1) + '%'; $('vlEpsV').textContent = (100 * P.eps).toFixed(1) + '%';
+    $('vlTmV').textContent = P.tm.toFixed(1) + ' ms'; $('vlTauV').textContent = (P.tau >= 10 ? P.tau.toFixed(0) : P.tau.toFixed(1)) + ' s';
+    $('vlFV').textContent = (100 * P.F).toFixed(1) + '%';
+    document.querySelectorAll('.vl-seg button').forEach(b => b.setAttribute('aria-pressed', Math.abs(+b.dataset.p - P.p) < 0.005 ? 'true' : 'false'));
+    $('vlDerived').innerHTML = `Threshold ≥ ${P.thr.n} photons · false-detection rate ${fmtP(P.thr.fp)} · miss rate ${fmtP(P.thr.fn)} · ` +
+      `expected loaded ${(P.p * M * M).toFixed(1)} of ${M * M}, need ${K * K} · P(enough atoms) = ${fmtP(binomTail(M * M, P.p, K * K))}`;
+    return P;
+  }
+  document.querySelectorAll('.vl-seg button').forEach(b => b.addEventListener('click', () => { $('vlP').value = b.dataset.p; changed(); }));
+  let deb = 0;
+  function changed() { const P = labels(); histChart(P); sweepChart(P, null); clearTimeout(deb); deb = setTimeout(() => { runMC(); runSweep(); }, 450); }
+  ['vlM', 'vlK', 'vlP', 'vlNb', 'vlNg', 'vlSi', 'vlEps', 'vlTm', 'vlTau', 'vlF'].forEach(id => $(id).addEventListener('input', changed));
+
+  /* ═════════════ statistics ═════════════ */
+  const sup = n => String(n).replace(/-/g, '⁻').replace(/\d/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
+  let mcTok = 0, swTok = 0, hist = null, sweep = null, lastSweep = null;
+  function runMC() {
+    const tok = ++mcTok, P = params(), N = 1000, acc = { n: 0, df: 0, moves: 0, T: 0, holes: 0, hit: new Array(CAUSES.length).fill(0), pairs: 0, agree: 0 };
+    $('vlMC').disabled = true; $('vlMCstatus').textContent = 'running…';
+    const chunk = () => {
+      if (tok !== mcTok) return;
+      for (let j = 0; j < 40 && acc.n < N; j++) {
+        const s = shot(P); acc.n++; acc.df += s.defectFree; acc.moves += s.moves.length; acc.T += s.T; acc.holes += s.holes.length;
+        for (let c = 0; c < CAUSES.length; c++) acc.hit[c] += s.hit[c];
+        for (const p of s.pairs) if (p.ok) { acc.pairs++; acc.agree += p.agree; }
+      }
+      $('vlProg').style.width = (100 * acc.n / N) + '%';
+      tiles(P, acc);
+      if (acc.n < N) setTimeout(chunk, 0); else { $('vlMC').disabled = false; $('vlMCstatus').textContent = `${N} shots done`; }
+    };
+    chunk();
+  }
+  function tiles(P, a) {
+    const K2 = P.K * P.K, pm = a.df / a.n, se = Math.sqrt(Math.max(pm * (1 - pm), 1e-12) / a.n);
+    const T = a.T / a.n, exp = P.F + (1 - P.F) / 2;
+    const t = [
+      ['Defect-free shots (Monte Carlo)', a.df ? fmtP(pm) : `0 of ${a.n}`, a.df ? `± ${fmtP(se)} (${a.n} shots)` : `below ~${fmtP(1 / a.n)}`, true],
+      ['Without rearranging, p<sup>K²</sup>', fmtP(Math.pow(P.p, K2)), `chosen ${P.K}×${P.K} block happens to be full`],
+      ['Enough atoms loaded', fmtP(binomTail(P.M * P.M, P.p, K2)), `P(Bin(${P.M * P.M}, ${P.p.toFixed(2)}) ≥ ${K2}): the ceiling for rearranging`],
+      ['Moves per shot', (a.moves / a.n).toFixed(1), `sequence ${T >= 1000 ? (T / 1000).toFixed(2) + ' s' : T.toFixed(0) + ' ms'} at ${P.tm} ms per move`],
+      ['Holes per shot', (a.holes / a.n).toFixed(2), `of ${K2} target sites`],
+      ['Bell pairs reading equal bits', a.pairs ? (100 * a.agree / a.pairs).toFixed(1) + '%' : '—', `expected F + (1−F)/2 = ${(100 * exp).toFixed(1)}%`],
+    ];
+    $('vlTiles').innerHTML = t.map(x => `<div class="vl-tile${x[3] ? ' vl-hero' : ''}"><div class="vl-k">${x[0]}</div><div class="vl-v">${x[1]}</div><div class="vl-s">${x[2]}</div></div>`).join('');
+    $('vlCauses').innerHTML = CAUSES.map((c, i) => { const f = a.hit[i] / a.n; return `<div class="vl-cause"><span>${c.label}</span><div class="bar"><div style="width:${(100 * f).toFixed(1)}%;background:${c.color}"></div></div><span class="pct">${(100 * f).toFixed(1)}%</span></div>`; }).join('');
+  }
+
+  const thrLine = { id: 'vlThr', afterDatasetsDraw(ch, args, o) {
+    const x = ch.scales.x, y = ch.scales.y, px = x.getPixelForValue(o.at) - (x.getPixelForValue(1) - x.getPixelForValue(0)) / 2;
+    const g = ch.ctx; g.save(); g.setLineDash([5, 4]); g.strokeStyle = o.color; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(px, y.top); g.lineTo(px, y.bottom); g.stroke(); g.setLineDash([]);
+    g.fillStyle = o.color; g.font = '11px JetBrains Mono, monospace'; g.fillText('threshold', px + 4, y.top + 12); g.restore();
+  } };
+  function histChart(P) {
+    if (!window.Chart) return;
+    const hi = Math.ceil(P.ng + P.nb + 4 * Math.sqrt(P.ng + P.nb) + 2), xs = [], e = [], f = [];
+    for (let k = 0; k <= hi; k++) { xs.push(k); e.push((1 - P.p) * poisPmf(k, P.ng)); f.push(P.p * poisPmf(k, P.ng + P.nb)); }
+    const tc = css('--text-secondary'), gc = css('--border-med');
+    $('vlHistNote').innerHTML = `Empty sites are Poisson with mean ${P.ng.toFixed(1)}; occupied ones with mean ${(P.ng + P.nb).toFixed(1)}. Bars are weighted by 1 − p and p. Threshold ≥ ${P.thr.n}: ${fmtP(P.thr.fp)} of empty sites read as full, ${fmtP(P.thr.fn)} of atoms are missed.`;
+    if (hist) {
+      hist.data.labels = xs; hist.data.datasets[0].data = e; hist.data.datasets[1].data = f;
+      hist.options.plugins.vlThr.at = P.thr.n; hist.options.plugins.vlThr.color = tc;
+      hist.options.scales.x.ticks.color = tc; hist.options.scales.y.ticks.color = tc; hist.options.scales.x.title.color = tc; hist.options.scales.y.title.color = tc;
+      hist.options.scales.y.grid.color = gc; hist.options.plugins.legend.labels.color = tc; hist.update('none'); return;
+    }
+    hist = new Chart($('vlHist'), {
+      type: 'bar', plugins: [thrLine],
+      data: { labels: xs, datasets: [
+        { label: 'empty site', data: e, backgroundColor: 'rgba(100,116,139,.7)', barPercentage: 1, categoryPercentage: 1, grouped: false },
+        { label: 'one atom', data: f, backgroundColor: 'rgba(245,158,11,.75)', barPercentage: 1, categoryPercentage: 1, grouped: false },
+      ] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false,
+        scales: { x: { title: { display: true, text: 'photons counted in one site', color: tc }, ticks: { color: tc, maxTicksLimit: 12 }, grid: { display: false } },
+                  y: { title: { display: true, text: 'probability', color: tc }, ticks: { color: tc, maxTicksLimit: 6 }, grid: { color: gc } } },
+        plugins: { vlThr: { at: P.thr.n, color: tc }, legend: { labels: { color: tc } },
+          tooltip: { callbacks: { label: t => ` ${t.dataset.label}: ${(100 * t.parsed.y).toFixed(2)}%` } } } },
+    });
+  }
+  function sweepChart(P, mc) {
+    if (!window.Chart) return;
+    const Ks = [], naive = [], enough = [], floor = 1e-6, clip = v => v >= floor ? v : null;
+    for (let K = 1; K <= P.M; K++) { Ks.push(K); naive.push(clip(Math.pow(P.p, K * K))); enough.push(clip(binomTail(P.M * P.M, P.p, K * K))); }
+    const tc = css('--text-secondary'), gc = css('--border-med'), mcData = mc ? mc.map(v => (v > 0 ? v : null)) : Ks.map(() => null);
+    const ds = [
+      { label: 'Monte Carlo, with rearrangement', data: mcData, borderColor: '#e0602f', backgroundColor: '#e0602f', pointRadius: 3.5, borderWidth: 2, spanGaps: false },
+      { label: 'Enough atoms loaded (ceiling)', data: enough, borderColor: '#f59e0b', borderWidth: 1.8, borderDash: [6, 4], pointRadius: 0 },
+      { label: 'No rearrangement, p^(K²)', data: naive, borderColor: css('--text-muted'), borderWidth: 1.8, borderDash: [2, 3], pointRadius: 0 },
+    ];
+    if (sweep) {
+      sweep.data.labels = Ks; ds.forEach((d, i) => { sweep.data.datasets[i].data = d.data; }); sweep.data.datasets[2].borderColor = ds[2].borderColor;
+      Object.assign(sweep.options.scales.x.ticks, { color: tc }); Object.assign(sweep.options.scales.y.ticks, { color: tc });
+      sweep.options.scales.x.title.color = tc; sweep.options.scales.y.title.color = tc; sweep.options.scales.y.grid.color = gc; sweep.options.plugins.legend.labels.color = tc;
+      sweep.update('none'); return;
+    }
+    sweep = new Chart($('vlSweepChart'), {
+      type: 'line', data: { labels: Ks, datasets: ds },
+      options: { responsive: true, maintainAspectRatio: false, animation: false,
+        scales: { x: { title: { display: true, text: 'target side K (block of K × K atoms)', color: tc }, ticks: { color: tc }, grid: { display: false } },
+                  y: { type: 'logarithmic', min: floor, max: 1, title: { display: true, text: 'P(defect-free K × K block)', color: tc },
+                       ticks: { color: tc, callback: v => { const l = Math.log10(v); return Math.abs(l - Math.round(l)) < 1e-9 ? (Math.round(l) === 0 ? '1' : '10' + sup(Math.round(l))) : ''; } }, grid: { color: gc } } },
+        plugins: { legend: { labels: { color: tc } }, tooltip: { callbacks: { label: t => ` ${t.dataset.label}: ${t.parsed.y >= 1e-3 ? (100 * t.parsed.y).toFixed(1) + '%' : t.parsed.y.toExponential(1)}` } } } },
+    });
+  }
+  function runSweep() {
+    const tok = ++swTok, P0 = params(), per = 200, res = [];
+    let K = 1, n = 0, df = 0;
+    $('vlSweep').disabled = true; $('vlSweepNote').textContent = 'Running 200 shots per size…';
+    const chunk = () => {
+      if (tok !== swTok) return;
+      for (let j = 0; j < 60; j++) {
+        if (K > P0.M) break;
+        const s = shot(Object.assign({}, P0, { K })); n++; df += s.defectFree;
+        if (n === per) { res.push(df / per); K++; n = 0; df = 0; }
+      }
+      sweepChart(P0, res.concat(new Array(Math.max(0, P0.M - res.length)).fill(null)));
+      if (K <= P0.M) { setTimeout(chunk, 0); return; }
+      lastSweep = res; $('vlSweep').disabled = false;
+      const z = res.map((v, i) => (v === 0 ? i + 1 : null)).filter(Boolean);
+      $('vlSweepNote').textContent = `Monte Carlo: 200 shots per size with the settings above (other K values use the same array and losses). ` +
+        (z.length ? `Sizes with no defect-free shot (K = ${z[0]}${z.length > 1 ? '–' + z[z.length - 1] : ''}) are below about 1/200 and are not plotted. ` : '') +
+        `Curves below 10⁻⁶ are cut off.`;
+    };
+    chunk();
+  }
+  $('vlMC').addEventListener('click', runMC);
+  $('vlSweep').addEventListener('click', runSweep);
+
+  // theme toggle: the camera stays dark; charts pick up the new text colours
+  new MutationObserver(() => { const P = params(); histChart(P); sweepChart(P, lastSweep); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  // print: make sure the camera shows a finished shot
+  window.addEventListener('amo:print', () => { if (!S) newShot(); if (stage < 5 || u < 1) { setPlaying(false); stage = 5; u = 1; log(S, 5); } render(); });
+
+  /* ── start ── */
+  const P0 = labels();
+  newShot(); log(S, -1); render(); setPlaying(false);
+  histChart(P0); sweepChart(P0, null);
+  setTimeout(() => { runMC(); runSweep(); }, 300);
+})();
+</script>
+<div id="amo-nav-ready" hidden></div>
+</body>
+</html>

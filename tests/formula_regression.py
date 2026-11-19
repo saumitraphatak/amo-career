@@ -619,6 +619,40 @@ def test_citation_and_contrast_audit_2026_11() -> None:
         assert right in site, right
 
 
+def test_virtual_lab_model() -> None:
+    """Virtual Tweezer Lab (2026-11-19): threshold rule, enough-atoms bound, quoted numbers, citations."""
+    page = read("pages/virtual-lab.html")
+    pois_cdf = lambda n, lam: sum(math.exp(-lam) * lam ** k / math.factorial(k) for k in range(n + 1)) if n >= 0 else 0.0
+    def threshold(nb, ng):
+        best, err = 1, float("inf")
+        for n in range(1, math.ceil(ng + nb + 6 * math.sqrt(ng + nb) + 5) + 1):
+            e = (1 - pois_cdf(n - 1, ng)) + pois_cdf(n - 1, ng + nb)
+            if e < err - 1e-15:
+                best, err = n, e
+        return best
+    assert threshold(40, 2) == 14
+    assert "const err = (1 - poisCdf(n - 1, nbg)) + poisCdf(n - 1, nbg + nb);" in page
+    tail = sum(math.comb(144, j) * 0.5 ** 144 for j in range(64, 145))
+    assert abs(tail - 0.922) < 1e-3                     # P(Bin(144, 0.5) >= 64), the default "enough atoms" tile
+    assert "j * Math.log(p) + (N - j) * Math.log(1 - p)" in page
+    # section 04 numbers
+    assert abs(2 ** 64 / 1.8e19 - 1) < 0.03 and abs(0.89 ** 64 / 6e-4 - 1) < 0.05
+    assert "2^{64} \\approx 1.8\\times10^{19}" in page and "0.89^{64} \\approx 6\\times 10^{-4}" in page
+    # Bell readout: good pairs agree, bad pairs agree half the time
+    assert "b2 = good ? b1 : (rnd() < 0.5 ? 1 : 0)" in page and "F + (1-F)/2" in page
+    # moves from false detections deliver nothing; landing on a missed atom ejects both
+    assert "if (!occ[a]) { m.res = occ0[a] ? 'img' : 'ghost';" in page
+    assert "if (occ[b]) { occ[b] = 0; m.res = 'coll';" in page
+    for doi in ["10.1038/35082512", "10.1103/PhysRevX.9.011057", "10.1126/science.aah3778", "10.1126/science.aah3752",
+                "10.1038/s41586-023-06481-y", "10.1103/PRXQuantum.5.030316", "10.1038/s41586-025-09596-6", "10.1038/s41586-025-09641-4"]:
+        assert doi in page, doi
+    assert "89% in a single 0.63 mK trap" in page and "80% for 100 traps" in page
+    assert "300,000 atoms per second" in page and "1225-site" in page
+    assert "key: 'virtual-lab'" in read("js/main.js")
+    assert 'href="pages/virtual-lab.html"' in read("home.html") and 'TRAP 08' in read("home.html")
+    assert 'href="virtual-lab.html"' in read("pages/start-here.html")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -645,6 +679,7 @@ def main() -> None:
         test_explainer_sweep_2026_11b,
         test_explainer_sweep_2026_11c,
         test_citation_and_contrast_audit_2026_11,
+        test_virtual_lab_model,
     ]
     for test in tests:
         test()

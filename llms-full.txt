@@ -28,6 +28,7 @@ pages/lab-calculators.html
 pages/absorption-imaging.html
 pages/laser-cooling.html
 pages/cooling-simulator.html
+pages/virtual-lab.html
 pages/decoherence-lab.html
 pages/learn-quantum.html
 pages/rydberg-calculator.html
@@ -56,6 +57,7 @@ All figures below are computed from the page's own formulas and inputs; schemati
 - **Comparison pages** (rb87-vs-yb171, quantinuum-vs-ionq, google-vs-ibm, psiquantum-vs-xanadu): a "tug of war" tallied from each page's head-to-head table and a "race replay" of its timeline, plus one signature interactive each: throw errors at a code (erasure vs Pauli errors, e + 2t ≤ d − 1), a 3D laser-QCCD vs electronic-control ion scene, a square vs heavy-hex lattice lab counting SWAPs, and a photon loss-budget chain.
 - **Detection statistics:** imaging-calculator's histogram simulator reports each preset's SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) and optimal-threshold fidelity with exact Gaussian tails (e.g. SNR 16.8 → overlap error ≈ 10⁻⁴⁰, far below the loss- and tail-limited fidelities of real experiments; measured benchmark quoted: Covey et al., PRL 122, 173201 (2019), imaging fidelity 0.99991(1), survival 0.99932(8)). Its section-06 preview simulates shots from the calculator's own N_sig, N_bg, N_dark and camera model (EMCCD gain register as n → Gamma(n, 1), Basden, Haniff & Mackay, MNRAS 345, 985 (2003)) and reports F = 1 − P_miss − P_false (the calculator above quotes 1 − (P_miss + P_false)/2).
 - **Live cooling:** cooling-simulator's velocity histogram relaxes to the Doppler temperature T = T_D(1 + s + (2δ/Γ)²)/(4|δ|/Γ), minimum T_D = ℏΓ/2k_B at δ = −Γ/2.
+- **Virtual Tweezer Lab:** virtual-lab simulates load → image → rearrange → verify → entangle → read out on a magma-mapped camera canvas built from individually placed Poisson photons; the defect-free metric uses the true occupancy, and each hole is attributed to one cause (not enough atoms, false detection, imaging loss, move loss, collision with a missed atom, background-gas loss).
 - **Accessibility:** every looping animation has a Pause button and honours prefers-reduced-motion (the 2D canvas loops start paused on a still frame); canvases follow the dark (default) and light themes; pages fit 360–390 px phone widths; symbols keep their case inside uppercase labels (γ/2π is not shown as Γ/2Π).
 
 ---
@@ -1108,6 +1110,21 @@ Inter — body text; JetBrains Mono (--font-mono) — equations and code display
 - `.page-wrap` + `.page-hero` + `.page-content` — page layout skeleton
 - `.tool-card` with `--card-color` and `--card-bg` CSS vars — home tool grid
 - `.anim-in.delay-N` — scroll-reveal animation (IntersectionObserver)
+
+---
+
+## TOOL 24: VIRTUAL TWEEZER LAB (simulator)
+**URL:** https://amotoolkit.com/pages/virtual-lab.html
+**Accent color:** #a13c1c (rust)
+
+One shot of a neutral-atom tweezer quantum computer, animated on a simulated camera, plus Monte Carlo statistics from the same model.
+
+**Model:** each of M² tweezers loads one atom with probability p, independently. A site's photon count is Poisson with mean N_bg (empty) or N_bg + N_at (occupied); the detection threshold n minimises P(bg ≥ n) + P(bright < n). Imaging survives with a set probability. Empty target sites (centre outward) each take the nearest unused detected atom outside the K×K block; a move from a false-positive or lost site delivers nothing, a real atom is lost with probability ε, and an atom landing on an undetected atom ejects both (light-assisted collision). After T = moves × t_move every atom survives with exp(−T/τ). Neighbouring columns form Bell pairs: good with probability F (equal Z bits), otherwise random bits, so expected agreement is F + (1−F)/2.
+
+**Reference curves:**
+$$P_{\rm no\,rearrangement} = p^{K^2}, \qquad P_{\rm enough\,atoms} = P\big(\mathrm{Bin}(M^2, p) \ge K^2\big)$$
+
+Sources: Schlosser et al., Nature 411, 1024 (2001); Brown et al., PRX 9, 011057 (2019) (89% in one 0.63 mK trap, 80% for 100 traps); Barredo et al., Science 354, 1021 (2016); Endres et al., Science 354, 1024 (2016); Evered et al., Nature 622, 268 (2023); Norcia et al., PRX Quantum 5, 030316 (2024) (1225 sites, 99% occupancy by iterative assembly); Chiu et al., Nature 646, 1075 (2025) (over 3,000 atoms for more than 2 h, 300,000 atoms/s reloading); Manetsch et al., Nature (2025) (6100 atoms). Move loss, move time, vacuum lifetime, photon numbers and imaging survival defaults are illustrative.
 
 ---
 
