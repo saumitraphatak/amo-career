@@ -260,3 +260,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Physics:** event-driven Monte Carlo with Werner-state memories; rate and delivered-fidelity vs distance for 1–16 segments against the repeaterless bound −log₂(1−η) (Pirandola et al. 2017, checked in the full text). N = 1 reproduces p/t_A within the Monte Carlo error.
 - Also fixed two low-contrast labels on the page. Search index rebuilt (new section). No main.js/styles.css change, so no cache bump.
 - Tests: formula tests OK 27 (new `test_repeater_chain`); smoke 36 pages × 3 configs; print clean; 390 px checked.
+
+## 2026-11-19 (night 2): "Watch One Photon Leave" on Cavity QED ("move to next page")
+- **New section 04 on `pages/cavity-qed.html`:** a π-pulse excites the atom; the standing wave lights up as the excitation moves into the cavity (vacuum Rabi sloshing in strong coupling), and each run ends with one photon either flying through the output mirror down a fiber to a detector or off sideways into free space. Live tallies, "Fire 2,000 photons", an ensemble chart with a time cursor, and tiles comparing the exact cavity-emission probability with the bad-cavity β.
+- **Physics:** exact single-excitation dynamics; P_cav = C/(1+C)·κ/(κ+γ) (integrated exactly, and the trajectories agree). With the calculator's default strong-coupling cavity, β = 90% but only 45% of photons leave through the mirrors; the results card now shows the exact value under β.
+- Fixed unreadable light-theme inline code on the page. motion.js added. Search index rebuilt; no main.js/styles.css change.
+- Tests: formula tests OK 28 (new `test_cavity_photon_race`); smoke 36 × 3; print clean; 390 px checked.

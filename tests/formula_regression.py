@@ -739,6 +739,36 @@ def test_repeater_chain() -> None:
     assert '<a href="#repeater">09 Repeater Chain</a>' in page and '<div class="sec-num">10</div>' in page
 
 
+def test_cavity_photon_race() -> None:
+    """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
+    page = read("pages/cavity-qed.html")
+    def amps(g, k, y, t):                               # same closed form as the page
+        s, d = (k + y) / 2, (k - y) / 2
+        e, w2 = math.exp(-s * t), g * g - d * d
+        if w2 > 1e-12:
+            w = math.sqrt(w2); C, S = math.cos(w * t), math.sin(w * t) / w
+        elif w2 < -1e-12:
+            m = math.sqrt(-w2); C, S = math.cosh(m * t), math.sinh(m * t) / m
+        else:
+            C, S = 1.0, t
+        return e * (C + d * S), e * g * S
+    for g, k, y in [(10, 3, 2.6), (1, 30, 2.6), (5, 5, 5), (20, 1, 1), (0.3, 1, 3)]:
+        # propagator satisfies the ODE: check by finite difference
+        t, h = 0.13, 1e-6
+        a0, b0 = amps(g, k, y, t); a1, b1 = amps(g, k, y, t + h)
+        assert abs((a1 - a0) / h - (-y * a0 - g * b0)) < 1e-3 * (1 + abs(g * b0))     # c1 = -i b, so -i g c1 = -g b
+        # exact branching ratio by direct integration
+        n, T = 200000, 40 / (k + y) + 40 / max(g, 1e-9)
+        dt = T / n; Pc = Pf = 0.0
+        for i in range(n):
+            a, b = amps(g, k, y, (i + 0.5) * dt); Pc += 2 * k * b * b * dt; Pf += 2 * y * a * a * dt
+        C = g * g / (k * y)
+        assert abs(Pc - C / (1 + C) * k / (k + y)) < 2e-3 and abs(Pc + Pf - 1) < 2e-3
+    assert "const pCav = (g, k, y) => { const C = g * g / (k * y); return C / (1 + C) * k / (k + y); };" in page
+    assert "rc = 2 * k * b * b, rf = 2 * y * a * a" in page
+    assert '<span class="accent">07</span> Common Mistakes' in page and 'id="res_beta_exact"' in page
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -768,6 +798,7 @@ def main() -> None:
         test_virtual_lab_model,
         test_atom_processor_compiler,
         test_repeater_chain,
+        test_cavity_photon_race,
     ]
     for test in tests:
         test()

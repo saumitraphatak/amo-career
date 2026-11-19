@@ -207,6 +207,7 @@
     .cqed-knob b { color:var(--text-primary); }
     .cqed-knob p { margin-top:.25rem; font-size:.84rem; line-height:1.65; }
     .cqed-knob code { font-size:.75rem; }
+    :root:not([data-theme="dark"]) .page-wrap code { color: #2c4a63; }   /* the global code colour is a dark-theme cyan */
     .cqed-mistakes { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-4); margin-top:var(--sp-4); }
     @media(max-width:850px){ .cqed-mistakes{ grid-template-columns:1fr; } }
     .cqed-mistake { border:1px solid rgba(248,113,113,.18); background:rgba(248,113,113,.045); border-radius:var(--r-lg); padding:var(--sp-4); }
@@ -323,6 +324,45 @@
       [data-theme="dark"] .cqed-mistake strong { color: #fc4a4a; }
       [data-theme="dark"] .cqed-source-tag { color: #4ade80; }
     }
+
+    /* ── 04 watch one photon leave ── */
+    .cq-device { background: #04070d; border: 1px solid #16243a; border-radius: 16px; padding: 12px; margin: var(--sp-4) 0; box-shadow: 0 14px 40px rgba(0,0,0,.25); color: #cbd5e1; }
+    .cq-stage { position: relative; }
+    #cqCv { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 440; max-height: none !important; border-radius: 10px; }
+    .cq-hud { position: absolute; left: 16px; right: 16px; top: 10px; display: flex; justify-content: space-between; gap: 1rem; pointer-events: none; font: 600 .68rem/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #9fb3c8; }
+    @media (max-width: 600px) { .cq-hud { display: none; } }
+    .cq-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem 1.5rem; align-items: center; margin-top: 10px; }
+    .cq-ctl { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+    .cq-ctl label { font-size: .78rem; color: #94a3b8; display: inline-flex; gap: .35rem; align-items: center; }
+    .cq-ctl select { background: #0b1322; color: #e2e8f0; border: 1px solid #22314a; border-radius: 8px; padding: .35rem .5rem; font: inherit; font-size: .8rem; }
+    .cq-btn, .cq-ctl .amo-motion-btn { font: 600 .78rem/1 inherit; padding: .5rem .85rem; border-radius: 9px; cursor: pointer; border: 1px solid #22314a; background: #0b1322; color: #e2e8f0; }
+    .cq-btn:hover { border-color: #38bdf8; }
+    .cq-btn:focus-visible, .cq-presets button:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 2px; }
+    .cq-tally { display: grid; grid-template-columns: repeat(3, auto); gap: .15rem 1.2rem; margin: 0; font-size: .74rem; }
+    .cq-tally div { display: flex; flex-direction: column; }
+    .cq-tally dt { color: #7f93ad; } .cq-tally dd { margin: 0; font: 600 .92rem/1.3 var(--font-mono); color: #f1f5f9; }
+    .cq-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 1rem; margin: var(--sp-4) 0; }
+    @media (max-width: 860px) { .cq-grid { grid-template-columns: minmax(0, 1fr); } }
+    .cq-panel { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 12px; padding: 1rem 1.1rem; min-width: 0; }
+    .cq-panel h4 { font: 700 .72rem/1.2 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 .7rem; }
+    .cq-follow { display: flex; gap: .4rem; align-items: center; font-size: .8rem; color: var(--text-secondary); margin-bottom: .7rem; }
+    .cq-field { margin-bottom: .75rem; }
+    .cq-field label { display: flex; justify-content: space-between; gap: .5rem; font-size: .78rem; color: var(--text-secondary); margin-bottom: .2rem; }
+    .cq-field label b { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; }
+    .cq-field input[type=range] { width: 100%; accent-color: var(--page-color); }
+    .cq-src { display: block; font-size: .7rem; color: var(--text-muted); margin-top: .2rem; line-height: 1.5; }
+    .cq-presets { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .3rem; }
+    .cq-presets button { font: 600 .72rem/1.2 inherit; padding: .4rem .55rem; border-radius: 7px; border: 1px solid var(--border-med); background: var(--bg-surface); color: var(--text-secondary); cursor: pointer; }
+    .cq-presets button:hover { border-color: var(--page-color); color: var(--text-primary); }
+    .cq-chart { position: relative; height: 260px; }
+    .cq-chart canvas { max-height: none !important; }
+    .cq-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; margin-top: .9rem; }
+    .cq-tile { background: var(--bg-surface); border: 1px solid var(--border-med); border-radius: 10px; padding: .6rem .7rem; }
+    .cq-tile .k { font-size: .7rem; color: var(--text-muted); line-height: 1.35; }
+    .cq-tile .v { font: 600 1.1rem/1.25 var(--font-mono); color: var(--text-primary); margin-top: .2rem; }
+    .cq-tile .s { font-size: .66rem; color: var(--text-muted); margin-top: .1rem; }
+    .cq-tile.cq-hero { border-color: var(--page-color); }
+    @media print { .cq-ctl, .cq-hud { display: none !important; } .cq-device { box-shadow: none; } }
   </style>
 </head>
 
@@ -582,8 +622,8 @@
           </div>
           <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
             <div class="metric-val" style="font-size:1.1rem" id="res_beta">—</div>
-            <div class="metric-sym"><span class="tip" data-tip="Approximate fraction of spontaneous emission into the cavity mode in the bad-cavity Purcell limit: β = C/(1+C) with C = g₀²/(κγ)">β-factor</span></div>
-            <div class="metric-unit">cavity photons</div>
+            <div class="metric-sym"><span class="tip" data-tip="Approximate fraction of spontaneous emission into the cavity mode in the bad-cavity Purcell limit: β = C/(1+C) with C = g₀²/(κγ). The exact single-photon value is C/(1+C)·κ/(κ+γ) (section 04)">β-factor</span></div>
+            <div class="metric-unit" id="res_beta_exact">cavity photons</div>
           </div>
           <div class="metric-card" style="border-color: rgba(192,132,252,0.2);">
             <div class="metric-val" style="font-size:1.1rem" id="res_Fstrong">—</div>
@@ -679,9 +719,65 @@
         </div>
 
         <!-- ════════════════════════════════════════
-             SECTION 04 — THEORY
+             SECTION 04 — ONE PHOTON AT A TIME
         ════════════════════════════════════════ -->
-        <h2 class="section-title mt-8 anim-in"><span class="accent">04</span> Coupling Regimes</h2>
+        <h2 class="section-title mt-8 anim-in" id="photon-race"><span class="accent">04</span> Watch One Photon Leave</h2>
+        <span class="amo-eyebrow">Interactive</span>
+        <div class="concept-box anim-in delay-1">
+          Excite the atom with a π-pulse and let it decay. Its one quantum of energy can leave two ways: out through the
+          cavity mirror (where a fiber can collect it) or sideways into free space. Each run below is one quantum trajectory;
+          run enough of them and the fraction that reach the detector is your <strong>photon collection efficiency</strong>.
+          In the single-excitation subspace, with κ and γ the half-widths used above,
+          $$\dot c_e = -\gamma\, c_e - i g\, c_1, \qquad \dot c_1 = -\kappa\, c_1 - i g\, c_e,$$
+          photons leave through the mirrors at rate $2\kappa|c_1|^2$ and into free space at $2\gamma|c_e|^2$.
+          Integrating these exactly gives the probability that the photon comes out of the cavity:
+          $$P_{\rm cav} = \frac{C}{1+C}\cdot\frac{\kappa}{\kappa+\gamma}, \qquad C = \frac{g^2}{\kappa\gamma}.$$
+          The β-factor C/(1+C) in the results above is its bad-cavity limit (κ ≫ γ). In strong coupling with κ comparable to γ the
+          photon sloshes back and forth and can still leak out sideways, so β overestimates what you collect.
+        </div>
+
+        <div class="cq-device anim-in delay-1">
+          <div class="cq-stage">
+            <canvas id="cqCv" width="1200" height="440" data-export-ready="true" role="img" aria-label="An atom between two cavity mirrors. The standing wave brightens when the photon is in the cavity; emitted photons either leave through the right mirror into a fiber and detector, or fly off sideways. The tallies are listed below the figure."></canvas>
+            <div class="cq-hud"><span id="cqHudL"></span><span id="cqHudR"></span></div>
+          </div>
+          <div class="cq-row">
+            <div class="cq-ctl">
+              <button type="button" class="cq-btn" id="cqReset">Reset tallies</button>
+              <label>Speed <select id="cqSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="3">3×</option><option value="10">10×</option></select></label>
+              <button type="button" class="cq-btn" id="cqBurst">Fire 2,000 photons</button>
+            </div>
+            <dl class="cq-tally" id="cqTally" aria-live="off"></dl>
+          </div>
+        </div>
+
+        <div class="cq-grid anim-in delay-1">
+          <div class="cq-panel">
+            <h4>Rates</h4>
+            <label class="cq-follow"><input type="checkbox" id="cqFollow" checked> Follow the calculator above</label>
+            <div class="cq-field"><label for="cqG">g/2π <b id="cqGV"></b></label><input type="range" id="cqG" min="-1" max="3" step="0.01" value="1"></div>
+            <div class="cq-field"><label for="cqK">κ/2π (cavity half-width) <b id="cqKV"></b></label><input type="range" id="cqK" min="-1" max="3" step="0.01" value="1"></div>
+            <div class="cq-field"><label for="cqY">γ/2π (atom half-width) <b id="cqYV"></b></label><input type="range" id="cqY" min="-1" max="2" step="0.01" value="0.48"></div>
+            <div class="cq-field"><label for="cqOut">Fraction of κ through the output mirror <b id="cqOutV"></b></label><input type="range" id="cqOut" min="0.1" max="1" step="0.01" value="0.9">
+              <span class="cq-src">Teaching default: the rest is mirror scatter and absorption, or leaks through the back mirror.</span></div>
+            <div class="cq-presets" role="group" aria-label="Regime examples">
+              <button type="button" data-g="20" data-k="2" data-y="3">Strong coupling</button>
+              <button type="button" data-g="30" data-k="100" data-y="3">Purcell (bad cavity)</button>
+              <button type="button" data-g="1" data-k="30" data-y="3">Weak coupling</button>
+            </div>
+            <span class="cq-src">Regime examples use illustrative rates (MHz) and switch off "follow".</span>
+          </div>
+          <div class="cq-panel">
+            <h4>Where the excitation goes (ensemble)</h4>
+            <div class="cq-chart"><canvas id="cqPop" data-export-ready="true" aria-label="Probability that the atom is excited, that the photon is in the cavity, and the cumulative probability that it has left through the mirrors or into free space, versus time."></canvas></div>
+            <div class="cq-tiles" id="cqTiles"></div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+             SECTION 05 — THEORY
+        ════════════════════════════════════════ -->
+        <h2 class="section-title mt-8 anim-in"><span class="accent">05</span> Coupling Regimes</h2>
 
         <div class="accordion anim-in">
           <button type="button" class="accordion-header" aria-expanded="false">
@@ -743,9 +839,9 @@
         </div>
 
         <!-- ════════════════════════════════════════
-             SECTION 05 — FAMOUS SYSTEMS
+             SECTION 06 — FAMOUS SYSTEMS
         ════════════════════════════════════════ -->
-        <h2 class="section-title mt-8 anim-in"><span class="accent">05</span> Reference Systems</h2>
+        <h2 class="section-title mt-8 anim-in"><span class="accent">06</span> Reference Systems</h2>
 
         <div class="data-table-wrap anim-in delay-1">
           <table class="sys-table">
@@ -797,7 +893,7 @@
           reproduces g₀ ≈ 34 MHz and κ ≈ 4 MHz from the listed L, ℱ and w₀.
         </p>
 
-        <h2 class="section-title mt-8 anim-in"><span class="accent">06</span> Common Mistakes</h2>
+        <h2 class="section-title mt-8 anim-in"><span class="accent">07</span> Common Mistakes</h2>
         <div class="cqed-mistake-panel anim-in delay-1">
           <h3>Three ways cavity numbers quietly go wrong</h3>
           <div class="cqed-mistakes">
@@ -921,6 +1017,7 @@
   <script src="../js/main.js?v=44"></script>
   <script src="../js/orbit3d.js?v=2"></script>
   <script src="../js/cavity3d.js?v=1"></script>
+  <script src="../js/motion.js?v=2"></script>
   <script>
   /* 3D cavity mode + atom position (js/cavity3d.js) — uses the calculator's g₀, κ, γ via window.CQED_LAST */
   (function () {
@@ -1068,6 +1165,7 @@
       document.getElementById('res_n0').textContent    = n0.toExponential(2);
       document.getElementById('res_N0').textContent    = N0.toFixed(3);
       document.getElementById('res_beta').textContent  = (100 * beta).toFixed(beta > 0.995 ? 2 : 1) + '%';
+      document.getElementById('res_beta_exact').textContent = 'exact ' + (100 * beta * kap_MHz / (kap_MHz + gam_MHz)).toFixed(1) + '% (§04)';
       document.getElementById('res_Fstrong').textContent = F_for_k_eq_g > 1e6 ? F_for_k_eq_g.toExponential(2) : Math.max(1, F_for_k_eq_g).toFixed(0);
 
       // ── Regime banner ───────────────────────────────────────────
@@ -1208,6 +1306,209 @@
     // ── Init ──────────────────────────────────────────────────────
     cqedCalc();
   </script>
+<script>
+/* ═══════════════════════════════════════════════
+   04 · WATCH ONE PHOTON LEAVE
+   Single-excitation cavity QED (resonant): ċe = −γ ce − i g c1, ċ1 = −κ c1 − i g ce,
+   κ, γ half-widths. Closed form: e^{At} = e^{−st}[cos Ωt + sin Ωt/Ω (A + s)], s = (κ+γ)/2, d = (κ−γ)/2, Ω² = g² − d².
+   Quantum-jump trajectories: jump when the norm falls to a uniform r; channel ∝ 2κ|c1|² : 2γ|ce|².
+   Exact: P_cav = C/(1+C) · κ/(κ+γ). window.CQPHOTON exposes the core for the regression test.
+   ═══════════════════════════════════════════════ */
+(function () {
+  const $ = id => document.getElementById(id);
+  const cv = $('cqCv'); if (!cv) return;
+  const TAU = 2 * Math.PI;
+
+  function amps(g, k, y, t) {                                            // rates in rad/µs, t in µs → [ce, |c1|] (c1 = −i·|c1|)
+    const s = (k + y) / 2, d = (k - y) / 2, e = Math.exp(-s * t), w2 = g * g - d * d;
+    let C, S;
+    if (w2 > 1e-12) { const w = Math.sqrt(w2); C = Math.cos(w * t); S = Math.sin(w * t) / w; }
+    else if (w2 < -1e-12) { const m = Math.sqrt(-w2); C = Math.cosh(m * t); S = Math.sinh(m * t) / m; }
+    else { C = 1; S = t; }
+    return [e * (C + d * S), e * g * S];
+  }
+  const pCav = (g, k, y) => { const C = g * g / (k * y); return C / (1 + C) * k / (k + y); };
+  function jumpTime(g, k, y, r) {                                        // norm(t) = r, norm is non-increasing
+    let hi = 1 / (k + y);
+    while (true) { const [a, b] = amps(g, k, y, hi); if (a * a + b * b < r || hi > 1e6) break; hi *= 2; }
+    let lo = 0;
+    for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2, [a, b] = amps(g, k, y, m); if (a * a + b * b > r) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  }
+  function trajectory(g, k, y, rnd) {
+    rnd = rnd || Math.random;
+    const T = jumpTime(g, k, y, rnd()), [a, b] = amps(g, k, y, T), rc = 2 * k * b * b, rf = 2 * y * a * a;
+    return { T, cav: rnd() * (rc + rf) < rc };
+  }
+  window.CQPHOTON = { amps, pCav, jumpTime, trajectory };
+
+  /* ── parameters ── */
+  const sliders = ['cqG', 'cqK', 'cqY'];
+  let R = null;                                                          // { g, k, y } in MHz (/2π) + out
+  let exact = null;                                                     // calculator values, unrounded by the log sliders
+  function read() { R = exact ? Object.assign({ out: +$('cqOut').value }, exact) : { g: Math.pow(10, +$('cqG').value), k: Math.pow(10, +$('cqK').value), y: Math.pow(10, +$('cqY').value), out: +$('cqOut').value }; }
+  const rad = () => [TAU * R.g, TAU * R.k, TAU * R.y];                    // rad/µs
+  const fmtM = v => v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
+  const fmtt = us => us >= 1 ? us.toFixed(2) + ' µs' : (us * 1e3).toFixed(us * 1e3 >= 10 ? 0 : 1) + ' ns';
+  let lastCalc = null;
+  function follow() {
+    const L = window.CQED_LAST; if (!$('cqFollow').checked || !L || L === lastCalc) return false;
+    lastCalc = L; exact = { g: L.g0, k: L.kappa, y: L.gamma };
+    const set = (id, v) => { const el = $(id); el.value = Math.max(+el.min, Math.min(+el.max, Math.log10(v))); };
+    set('cqG', L.g0); set('cqK', L.kappa); set('cqY', L.gamma);
+    return true;
+  }
+
+  /* ── ensemble chart + tiles ── */
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
+  let chart = null, tEnd = 1, meanT = 1;
+  function ensemble() {
+    const [g, k, y] = rad();
+    // mean emission time = ∫ norm dt; plot window ≈ until 99.9% has left
+    let t = 0, dt, Pc = 0, Pf = 0, I = 0; const pts = { e: [], c: [], oc: [], of: [] };
+    tEnd = 0; { let h = 1 / (k + y); while (true) { const [a, b] = amps(g, k, y, h); if (a * a + b * b < 1e-3 || h > 1e5) break; h *= 1.5; } tEnd = h; }
+    const n = 600; dt = tEnd / n;
+    for (let i = 0; i <= n; i++) {
+      t = i * dt; const [a, b] = amps(g, k, y, t), pe = a * a, p1 = b * b;
+      if (i) { Pc += 2 * k * p1 * dt; Pf += 2 * y * pe * dt; I += (pe + p1) * dt; }
+      const ns = t * 1e3;
+      pts.e.push({ x: ns, y: pe }); pts.c.push({ x: ns, y: p1 }); pts.oc.push({ x: ns, y: Pc }); pts.of.push({ x: ns, y: Pf });
+    }
+    meanT = I;
+    const tc = css('--text-secondary'), gc = css('--border-med');
+    const ds = [
+      { label: 'atom excited |c_e|²', data: pts.e, borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0 },
+      { label: 'photon in cavity |c₁|²', data: pts.c, borderColor: '#38bdf8', borderWidth: 2, pointRadius: 0 },
+      { label: 'left through mirrors', data: pts.oc, borderColor: '#22c55e', borderWidth: 1.8, borderDash: [6, 4], pointRadius: 0 },
+      { label: 'left into free space', data: pts.of, borderColor: '#ef4444', borderWidth: 1.8, borderDash: [2, 3], pointRadius: 0 },
+      { label: 'now', data: [], borderColor: tc, backgroundColor: tc, pointRadius: 0, borderWidth: 1, showLine: true },
+    ];
+    if (window.Chart) {
+      if (chart) { chart.data.datasets = ds; chart.options.scales.x.max = tEnd * 1e3; Object.assign(chart.options.scales.x.ticks, { color: tc }); Object.assign(chart.options.scales.y.ticks, { color: tc });
+        chart.options.scales.x.title.color = tc; chart.options.scales.y.grid.color = gc; chart.options.plugins.legend.labels.color = tc; chart.update('none'); }
+      else chart = new Chart($('cqPop'), { type: 'line', data: { datasets: ds },
+        options: { responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+          scales: { x: { type: 'linear', min: 0, max: tEnd * 1e3, title: { display: true, text: 'time after the π-pulse (ns)', color: tc }, ticks: { color: tc, maxTicksLimit: 8 }, grid: { display: false } },
+                    y: { min: 0, max: 1, ticks: { color: tc }, grid: { color: gc } } },
+          plugins: { legend: { labels: { color: tc, boxWidth: 14, filter: it => it.text !== 'now' } }, tooltip: { filter: it => it.dataset.label !== 'now' } } } });
+    }
+    const C = R.g * R.g / (R.k * R.y), P = pCav(g, k, y), beta = C / (1 + C);
+    const regime = R.g > R.k && R.g > R.y ? 'strong coupling' : C > 1 ? 'Purcell regime' : 'weak coupling';
+    const tiles = [
+      ['Into the cavity mode, P_cav', (100 * P).toFixed(1) + '%', 'exact, C/(1+C)·κ/(κ+γ)', true],
+      ['Collected at the detector', (100 * P * R.out).toFixed(1) + '%', `P_cav × ${(100 * R.out).toFixed(0)}% output mirror`],
+      ['Bad-cavity β = C/(1+C)', (100 * beta).toFixed(1) + '%', beta - P > 0.02 ? `overestimates by ${(100 * (beta - P)).toFixed(1)} points here` : 'close to exact here'],
+      ['Cooperativity C', C >= 100 ? C.toFixed(0) : C.toPrecision(3), regime],
+      ['Mean emission time', fmtt(meanT), `free-space lifetime ${fmtt(1 / (2 * y))}`],
+    ];
+    $('cqTiles').innerHTML = tiles.map(x => `<div class="cq-tile${x[3] ? ' cq-hero' : ''}"><div class="k">${x[0].replace('P_cav', 'P<sub>cav</sub>')}</div><div class="v">${x[1]}</div><div class="s">${x[2]}</div></div>`).join('');
+  }
+
+  /* ── animation ── */
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, XL = 170, XR = 700, YC = 210, XA = (XL + XR) / 2;
+  let wall = 0, lastT = null, phase = 'pump', ph0 = 0, traj = null, fx = [], tally = { n: 0, cav: 0, col: 0, fs: 0 }, warp = 1;
+  function newCycle() { const [g, k, y] = rad(); traj = trajectory(g, k, y); traj.out = traj.cav && Math.random() < R.out; phase = 'pump'; ph0 = wall; }
+  function setWarp() { warp = Math.max(meanT, 1e-4) / 1.4; }                // ~1.4 s on screen per mean emission time
+  function mirror(x, facingRight) {                                     // concave mirror, centre of curvature inside the cavity
+    const cx = facingRight ? x + 330 : x - 330, a0 = facingRight ? Math.PI : 0;
+    ctx.save(); ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 7; ctx.shadowColor = '#94a3b8'; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(cx, YC, 330, a0 - 0.3, a0 + 0.3); ctx.stroke(); ctx.restore();
+  }
+  function draw(pe, p1, tUs) {
+    ctx.fillStyle = '#04070d'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(148,163,184,.06)'; for (let x = 20; x < W; x += 40) for (let y = 20; y < H; y += 40) ctx.fillRect(x, y, 1.5, 1.5);
+    // standing wave: brightness ∝ photon probability
+    const amp = 70, nA = 9;
+    for (const sgn of [1, -1]) {                                         // mode envelope |cos k(x − x_atom)|, antinode at the atom
+      ctx.beginPath();
+      for (let x = XL + 6; x <= XR - 6; x += 2) { const u = (x - XL) / (XR - XL), yy = YC + sgn * amp * 0.9 * Math.abs(Math.cos(nA * Math.PI * (u - 0.5))); x === XL + 6 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy); }
+      ctx.strokeStyle = `rgba(56,189,248,${0.12 + 0.85 * p1})`; ctx.lineWidth = 2 + 3 * p1; ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 20 * p1; ctx.stroke(); ctx.shadowBlur = 0;
+    }
+    ctx.fillStyle = `rgba(56,189,248,${0.05 + 0.18 * p1})`; ctx.fillRect(XL, YC - amp, XR - XL, 2 * amp);
+    mirror(XL, true); mirror(XR, false);
+    // fiber + detector
+    ctx.strokeStyle = 'rgba(148,163,184,.55)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(XR + 18, YC); ctx.bezierCurveTo(XR + 160, YC, XR + 200, YC + 80, XR + 330, YC + 80); ctx.stroke();
+    ctx.fillStyle = '#0f1b2d'; ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5; ctx.fillRect(XR + 330, YC + 40, 110, 80); ctx.strokeRect(XR + 330, YC + 40, 110, 80);
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '600 15px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText('detector', XR + 385, YC + 68);
+    ctx.font = '700 24px JetBrains Mono, monospace'; ctx.fillStyle = '#7dd3fc'; ctx.fillText(String(tally.col), XR + 385, YC + 102);
+    // atom: glow ∝ excitation
+    const gr = ctx.createRadialGradient(XA, YC, 0, XA, YC, 42);
+    gr.addColorStop(0, `rgba(255,255,255,${0.35 + 0.65 * pe})`); gr.addColorStop(0.3, `rgba(245,158,11,${0.25 + 0.75 * pe})`); gr.addColorStop(1, 'rgba(245,158,11,0)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(XA, YC, 42, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#e2e8f0'; ctx.font = '13px JetBrains Mono, monospace'; ctx.fillText('atom', XA, YC + 66);
+    ctx.fillText('cavity mode', (XL + XA) / 2 - 40, YC - amp - 14);
+    ctx.fillText('output mirror', XR, YC + 130); ctx.fillText('mirror', XL, YC + 130);
+    // effects
+    fx = fx.filter(e => wall - e.w0 < e.dur);
+    for (const e of fx) {
+      const u = (wall - e.w0) / e.dur; if (u < 0) continue;
+      if (e.k === 'pump') { ctx.strokeStyle = `rgba(168,85,247,${1 - u})`; ctx.lineWidth = 8 * (1 - u) + 1; ctx.beginPath(); ctx.moveTo(XA, 0); ctx.lineTo(XA, YC - 30); ctx.stroke(); }
+      else if (e.k === 'fs') { const r = 40 + 380 * u; const x = XA + r * Math.cos(e.a), y = YC + r * Math.sin(e.a); glow(x, y, 10, '239,68,68', 1 - u); }
+      else if (e.k === 'cav') {
+        let x, y;
+        if (u < 0.4) { x = XA + (XR - XA + 18) * (u / 0.4); y = YC; }
+        else { const v = (u - 0.4) / 0.6, p0 = [XR + 18, YC], p1c = [XR + 160, YC], p2 = [XR + 200, YC + 80], p3 = [XR + 330, YC + 80], m = 1 - v;
+          x = m * m * m * p0[0] + 3 * m * m * v * p1c[0] + 3 * m * v * v * p2[0] + v * v * v * p3[0]; y = m * m * m * p0[1] + 3 * m * m * v * p1c[1] + 3 * m * v * v * p2[1] + v * v * v * p3[1]; }
+        if (e.lost && u > 0.4) { glow(XR + 10, YC - 40 * (u - 0.4), 9, '148,163,184', 1 - u); }
+        else glow(x, y, 11, '56,189,248', 1);
+      } else if (e.k === 'click') { ctx.strokeStyle = `rgba(125,211,252,${1 - u})`; ctx.lineWidth = 3; ctx.strokeRect(XR + 330 - 8 * u, YC + 40 - 8 * u, 110 + 16 * u, 80 + 16 * u); }
+    }
+    $('cqHudL').textContent = `1 s on screen = ${fmtt(warp)}`;
+    $('cqHudR').textContent = tUs === null ? '' : `t = ${fmtt(tUs)} after the π-pulse`;
+  }
+  function glow(x, y, r, rgb, a) { const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.2); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.35, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 2.2, 0, TAU); ctx.fill(); }
+  function tallyOut() {
+    const f = tally.n ? tally.col / tally.n : 0, se = tally.n ? Math.sqrt(f * (1 - f) / tally.n) : 0, [g, k, y] = rad();
+    const rows = [['Photons emitted', tally.n], ['Out of the cavity', tally.cav], ['Into free space', tally.fs], ['At the detector', tally.col],
+      ['Collected fraction', tally.n ? `${(100 * f).toFixed(1)}% ± ${(100 * se).toFixed(1)}` : '—'], ['Exact', (100 * pCav(g, k, y) * R.out).toFixed(1) + '%']];
+    $('cqTally').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
+  }
+  function record(t) { tally.n++; if (t.cav) tally.cav++; else tally.fs++; if (t.out) tally.col++; }
+  function frame(t) {
+    const dt = lastT === null ? 0 : Math.min(0.1, (t - lastT) / 1000) * +$('cqSpeed').value; lastT = t; wall += dt;
+    if (follow()) { read(); labels(); ensemble(); setWarp(); }
+    if (!traj) newCycle();
+    const [g, k, y] = rad();
+    let pe = 0, p1 = 0, tUs = null;
+    if (phase === 'pump') { if (!fx.some(e => e.k === 'pump' && e.w0 === ph0)) fx.push({ k: 'pump', w0: ph0, dur: 0.35 }); pe = Math.min(1, (wall - ph0) / 0.3); if (wall - ph0 > 0.35) { phase = 'evolve'; ph0 = wall; } }
+    else if (phase === 'evolve') {
+      tUs = (wall - ph0) * warp;
+      if (tUs >= traj.T) {
+        record(traj);
+        if (traj.cav) fx.push({ k: 'cav', w0: wall, dur: 0.9, lost: !traj.out }); else fx.push({ k: 'fs', w0: wall, dur: 0.9, a: Math.random() * TAU });
+        if (traj.out) fx.push({ k: 'click', w0: wall + 0.85, dur: 0.5 });
+        phase = 'gap'; ph0 = wall; tUs = traj.T;
+      } else { const [a, b] = amps(g, k, y, tUs), n = a * a + b * b; pe = a * a / n; p1 = b * b / n; }
+    } else if (wall - ph0 > 0.95) newCycle();
+    draw(pe, p1, tUs); tallyOut();
+    if (chart && tUs !== null) { chart.data.datasets[4].data = [{ x: tUs * 1e3, y: 0 }, { x: tUs * 1e3, y: 1 }]; chart.update('none'); }
+  }
+
+  function labels() {
+    read();
+    $('cqGV').textContent = fmtM(R.g) + ' MHz'; $('cqKV').textContent = fmtM(R.k) + ' MHz'; $('cqYV').textContent = fmtM(R.y) + ' MHz';
+    $('cqOutV').textContent = (100 * R.out).toFixed(0) + '%';
+  }
+  function changed() { labels(); ensemble(); setWarp(); traj = null; }
+  sliders.forEach(id => $(id).addEventListener('input', () => { $('cqFollow').checked = false; exact = null; changed(); }));
+  $('cqOut').addEventListener('input', changed);
+  $('cqFollow').addEventListener('change', () => { lastCalc = null; if (!$('cqFollow').checked) exact = null; if (follow()) changed(); });
+  document.querySelectorAll('.cq-presets button').forEach(b => b.addEventListener('click', () => {
+    $('cqFollow').checked = false; exact = null;
+    $('cqG').value = Math.log10(+b.dataset.g); $('cqK').value = Math.log10(+b.dataset.k); $('cqY').value = Math.log10(+b.dataset.y);
+    exact = { g: +b.dataset.g, k: +b.dataset.k, y: +b.dataset.y }; changed();
+    tally = { n: 0, cav: 0, col: 0, fs: 0 };
+  }));
+  $('cqReset').addEventListener('click', () => { tally = { n: 0, cav: 0, col: 0, fs: 0 }; tallyOut(); });
+  $('cqBurst').addEventListener('click', () => { const [g, k, y] = rad(); for (let i = 0; i < 2000; i++) { const t = trajectory(g, k, y); t.out = t.cav && Math.random() < R.out; record(t); } tallyOut(); });
+  new MutationObserver(() => ensemble()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  follow(); labels(); ensemble(); setWarp();
+  if (window.AMOMotion) AMOMotion.loop([cv], frame, { anchors: [{ el: $('cqReset'), where: 'beforebegin', inline: true }] });
+  else { const loop = t => { frame(t); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  window.addEventListener('amo:print', () => { draw(0, 0, null); tallyOut(); });
+})();
+</script>
 <div id="amo-nav-ready" hidden></div>
 </body>
 </html>

@@ -67,3 +67,11 @@ Section 03 gained "What you would see: the cavity transmission spectrum": weak-p
 
 ## 2026-11-14: citation check + contrast pass
 - Six route cards now 3 + 3 on wide screens; dark-theme page colour lifted to #8fbde0.
+
+
+## Watch one photon leave (2026-11-19)
+New section 04 after the transmission spectrum (old 04–06 are now 05–07).
+- **Model:** resonant single-excitation cavity QED with the page's half-width κ, γ: ċ_e = −γc_e − igc₁, ċ₁ = −κc₁ − igc_e, closed-form 2×2 propagator (cos/cosh branches). Quantum jumps: jump when the norm reaches a uniform r (norm is monotone), channel by 2κ|c₁|² : 2γ|c_e|². An output-mirror fraction (teaching default 90%) splits cavity photons into collected and lost.
+- **Exact result:** P_cav = C/(1+C)·κ/(κ+γ), C = g²/(κγ). Checked by a Lyapunov-equation integral of the same equations for five rate sets (agreement to 1e-6) and by 40,000 trajectories per set in the browser (within 2σ). β = C/(1+C) is the κ ≫ γ limit. With the calculator's default cavity (strong coupling, κ ≈ γ) β says 90% but only ~45% leaves through the mirrors: the rest leaks out sideways while the excitation sloshes. The β results card now shows the exact value underneath (`#res_beta_exact`) and its tooltip mentions it.
+- **UI:** follows the calculator (unrounded `CQED_LAST` values) until a slider or a regime example is used; examples are illustrative rates (strong 20/2/3, Purcell 30/100/3, weak 1/30/3 MHz). Ensemble chart of |c_e|², |c₁|² and cumulative emission into each channel with a cursor at the current trajectory time; tiles for P_cav, collected, β, C, mean emission time.
+- **Contrast fix:** inline `code` in the knob and mistake cards was the global dark-theme cyan (1.1:1 on cream) in the light theme; now ink blue on this page.

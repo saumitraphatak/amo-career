@@ -45,6 +45,7 @@ window.AMO_SECTION_INDEX = [
   {"p":"cavity-qed","t":"What you would see: the cavity transmission spectrum","s":"s-what-you-would-see-the-cavity-transmission-spectrum"},
   {"p":"cavity-qed","t":"Design knobs: what should you actually change?","s":"s-design-knobs-what-should-you-actually-change"},
   {"p":"cavity-qed","t":"A tiny history of making empty space non-empty","s":"s-a-tiny-history-of-making-empty-space-non-empty"},
+  {"p":"cavity-qed","t":"Watch One Photon Leave","s":"s-watch-one-photon-leave"},
   {"p":"cavity-qed","t":"Coupling Regimes","s":"s-coupling-regimes"},
   {"p":"cavity-qed","t":"Strong Coupling: g₀ > κ, γ — Vacuum Rabi Splitting","s":"s-strong-coupling-g0-vacuum-rabi-splitting"},
   {"p":"cavity-qed","t":"Purcell Regime: C > 1 but g₀ < κ — Enhanced Emission","s":"s-purcell-regime-c-1-but-g0-enhanced-emission"},
