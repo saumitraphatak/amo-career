@@ -413,6 +413,7 @@ window.AMO_SECTION_INDEX = [
   {"p":"remote-entanglement","t":"Approaches to Photon Collection & Emission","s":"s-approaches-to-photon-collection-emission"},
   {"p":"remote-entanglement","t":"Historical Milestones","s":"s-historical-milestones"},
   {"p":"remote-entanglement","t":"Entanglement Rate Calculator","s":"s-entanglement-rate-calculator"},
+  {"p":"remote-entanglement","t":"Quantum Repeater Chain","s":"s-quantum-repeater-chain"},
   {"p":"remote-entanglement","t":"Where Remote Entanglement Fits in the Computing Landscape","s":"s-where-remote-entanglement-fits-in-the-computing-landscape"},
   {"p":"remote-entanglement","t":"References & Further Reading","s":"s-references-further-reading"},
   {"p":"remote-entanglement","t":"Foundational Theory","s":"s-foundational-theory"},

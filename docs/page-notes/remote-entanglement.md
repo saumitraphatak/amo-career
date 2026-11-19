@@ -56,3 +56,12 @@ Section 08 gained "Watch the link run", a Monte Carlo of the calculator's own li
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Daiss et al. 2021: the two modules are linked by a 60 m fibre, not 60 km (arXiv:2103.13095 abstract). Azuma et al. → RMP 95, 045006. AEL-memory groups list corrected (Thompson, Covey, Kaufman ⁸⁸Sr/¹⁷¹Yb; Duke Brown group and ⁸⁴Sr removed).
+
+
+## Quantum repeater chain (2026-11-19)
+New section 09 "Quantum Repeater Chain" between the rate calculator and the landscape (landscape is now 10; sticky nav updated).
+- **Model:** D split into N segments, middle stations, per-photon η = η_node·10^(−αL₀/20); two-photon p = η²/2, single-photon p ≈ 2αη with F₀ = 1 − α; attempt time L₀/c_f + t_local (c_f = c/1.47). Werner pairs, storage w·e^(−2t/T_mem) (two memories), swap w₁w₂·w_swap as soon as possible, fidelity cutoff discards. Event-driven with geometric waiting times, so tiny p costs nothing. Check: N = 1 with no decoherence gives rate p/t_A (MC 0.098/s vs 0.0999/s exact for 4,000 deliveries).
+- **Animation:** chain canvas with attempt dashes, herald rings, swap flashes, fidelity-coloured arcs that fade as memories decohere, discards in red, delivered A–B pairs in gold; time warp set so a delivered pair takes about 4 s on screen. Pause button from motion.js (reduced motion starts paused).
+- **Charts:** rate and mean delivered fidelity vs distance (10–1000 km) for 1, 2, 4, 8, 16 segments (up to 150 delivered pairs per point) plus the repeaterless bound −log₂(1−η), η = η_node·10^(−αD/10), at one use per t_local. With the defaults the 8-segment chain beats the bound beyond ~200 km; 16 segments without distillation fall below the 0.5 cutoff unless link and swap fidelities are high.
+- **Checked this session:** Crossref records for Briegel 1998, Pirandola 2017, Humphreys 2018, Barrett & Kok 2005; Pirandola Eq. (19)–(20) (−log₂(1−η), ≈1.44η); Barrett & Kok "p = 1/2" ideal and "quadratic dependence on η"; Humphreys state ρ = (1−α)|ψ⟩⟨ψ| + α|↑↑⟩⟨↑↑|. The 2αη success probability is the standard small-η count of one click from either node (consistent with the rate calculator above), not a quote.
+- **Contrast fixes on the page:** light-theme "What the animation means" label (was the dark-theme green, 1.4:1) and the pressed Slow motion / Real time button in the dark theme.

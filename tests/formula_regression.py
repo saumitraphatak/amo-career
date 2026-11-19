@@ -712,6 +712,33 @@ def test_atom_processor_compiler() -> None:
     assert "key: 'atom-processor'" in read("js/main.js") and 'QC 07' in read("home.html")
 
 
+def test_repeater_chain() -> None:
+    """Remote Entanglement section 09 (2026-11-19): repeater-chain formulas and sources."""
+    page = read("pages/remote-entanglement.html")
+    # repeaterless bound -log2(1-eta) -> 1.44 eta at high loss; log1p form keeps tiny eta finite
+    for eta in (1e-3, 1e-12):
+        exact = -math.log1p(-eta) / math.log(2)
+        assert abs(exact / (eta / math.log(2)) - 1) < 1e-3
+    assert "const plob = eta => -Math.log1p(-eta) / Math.LN2;" in page
+    # Werner swap: w = w1 w2 (perfect BSM) composes F = (3w+1)/4
+    F = lambda w: (3 * w + 1) / 4
+    w0 = (4 * 0.98 - 1) / 3
+    assert abs(F(w0) - 0.98) < 1e-12 and F(w0 * w0) < F(w0)
+    assert "const M = { i: A.i, j: B.j, w: wAt(A, t) * wAt(B, t) * P.ws, tr: t };" in page
+    # elementary link: station in the middle, two-photon p = eta^2/2, single-photon 2*alpha*eta with F0 = 1 - alpha
+    assert "eta = P.etaN * Math.pow(10, -P.alpha * L0 / 20)" in page
+    assert "P.scheme === 'two' ? eta * eta / 2 : Math.min(1, 2 * P.a * eta)" in page
+    assert "const F0 = P.scheme === 'two' ? P.F0 : 1 - P.a;" in page
+    # geometric waiting time: mean of ceil(ln U / ln(1-p)) is 1/p
+    p = 0.01
+    mean = sum(k * p * (1 - p) ** (k - 1) for k in range(1, 5000))
+    assert abs(mean - 1 / p) < 1e-6
+    assert "Math.ceil(Math.log(1 - r) / Math.log1p(-p))" in page
+    for doi in ["10.1103/PhysRevLett.81.5932", "10.1038/ncomms15043", "10.1038/s41586-018-0200-5", "10.1103/PhysRevA.71.060310"]:
+        assert doi in page, doi
+    assert '<a href="#repeater">09 Repeater Chain</a>' in page and '<div class="sec-num">10</div>' in page
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -740,6 +767,7 @@ def main() -> None:
         test_citation_and_contrast_audit_2026_11,
         test_virtual_lab_model,
         test_atom_processor_compiler,
+        test_repeater_chain,
     ]
     for test in tests:
         test()
