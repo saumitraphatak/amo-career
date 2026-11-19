@@ -266,3 +266,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Physics:** exact single-excitation dynamics; P_cav = C/(1+C)·κ/(κ+γ) (integrated exactly, and the trajectories agree). With the calculator's default strong-coupling cavity, β = 90% but only 45% of photons leave through the mirrors; the results card now shows the exact value under β.
 - Fixed unreadable light-theme inline code on the page. motion.js added. Search index rebuilt; no main.js/styles.css change.
 - Tests: formula tests OK 28 (new `test_cavity_photon_race`); smoke 36 × 3; print clean; 390 px checked.
+
+## 2026-11-19 (night 3): "Inside the CZ Pulse" on the Rydberg Gate Error Budget ("move to next")
+- **New section 03 on `pages/fidelity-budget.html`:** the Levine et al. (2019) two-pulse CZ gate integrated exactly with finite blockade and Rydberg decay. Two atoms glow under the global pulses with a timeline (phase jump ξ between pulses); the lone-atom (|01⟩) and blockaded-pair (|11⟩) Bloch-sphere loops trace out live; a bar shows the doubly-excited leakage; phasors show the qubit phases landing on the CZ target φ₁₁ = 2φ₀₁ − π.
+- **Exact vs budget:** pulse parameters solved here (Δ/Ω = 0.377376, τΩ = 4.292654, ξ = 3.902396; paper's 0.377 and 2.732π checked). Exact errors sit below the budget's formulas (default: blockade 0.022% vs 0.1%, decay 0.17% vs 0.43%), and the error-vs-Ω sweep shows the optimal Rabi frequency.
+- Sources checked: Levine 2019 full text (parameters, phase relation), Pedersen, Møller & Mølmer 2007 (Crossref + Eq. 3). motion.js added. Search index rebuilt; no main.js/styles.css change.
+- Tests: formula tests OK 29 (new `test_cz_pulse`); smoke 36 × 3; print clean; contrast unchanged; 390 px checked.

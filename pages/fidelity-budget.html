@@ -173,6 +173,36 @@
       [data-theme="dark"] .info-banner { color: #f95050; }
       [data-theme="dark"] .good-banner { color: #4ade80; }
     }
+
+    /* ── 03 inside the CZ pulse ── */
+    .fx-lead { font-size: .88rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 1rem; max-width: 900px; }
+    .fx-device { background: #04070d; border: 1px solid #16243a; border-radius: 16px; padding: 12px; box-shadow: 0 14px 40px rgba(0,0,0,.25); color: #cbd5e1; }
+    .fx-stage { position: relative; }
+    #fxCv { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 560; max-height: none !important; border-radius: 10px; }
+    .fx-hud { position: absolute; left: 16px; right: 16px; bottom: 10px; display: flex; justify-content: space-between; gap: 1rem; pointer-events: none; font: 600 .68rem/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #9fb3c8; }
+    @media (max-width: 600px) { .fx-hud { display: none; } }
+    .fx-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem 1.5rem; align-items: center; margin-top: 10px; }
+    .fx-ctl { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+    .fx-ctl label { font-size: .78rem; color: #94a3b8; display: inline-flex; gap: .35rem; align-items: center; }
+    .fx-ctl select { background: #0b1322; color: #e2e8f0; border: 1px solid #22314a; border-radius: 8px; padding: .35rem .5rem; font: inherit; font-size: .8rem; }
+    .fx-btn, .fx-ctl .amo-motion-btn { font: 600 .78rem/1 inherit; padding: .5rem .85rem; border-radius: 9px; cursor: pointer; border: 1px solid #22314a; background: #0b1322; color: #e2e8f0; }
+    .fx-btn:focus-visible, .fx-mini:focus-visible { outline: 2px solid #f9a8d4; outline-offset: 2px; }
+    .fx-tally { display: grid; grid-template-columns: repeat(4, auto); gap: .2rem 1.1rem; margin: 0; font-size: .72rem; }
+    .fx-tally div { display: flex; flex-direction: column; }
+    .fx-tally dt { color: #7f93ad; } .fx-tally dd { margin: 0; font: 600 .9rem/1.3 var(--font-mono); color: #f1f5f9; }
+    @media (max-width: 720px) { .fx-tally { grid-template-columns: repeat(2, auto); } }
+    .fx-grid { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 1rem; margin-top: 1rem; }
+    @media (max-width: 860px) { .fx-grid { grid-template-columns: minmax(0, 1fr); } }
+    .fx-grid > * { min-width: 0; }
+    .fx-field { margin-bottom: .75rem; }
+    .fx-field label { display: flex; justify-content: space-between; gap: .5rem; font-size: .78rem; color: var(--text-secondary); margin-bottom: .2rem; }
+    .fx-field label b { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; text-align: right; }
+    .fx-field input[type=range] { width: 100%; accent-color: #b40909; }
+    .fx-mini { font: 600 .72rem/1.3 inherit; padding: .4rem .6rem; border-radius: 7px; border: 1px solid var(--border-med); background: var(--bg-surface); color: var(--text-secondary); cursor: pointer; text-align: left; }
+    .fx-src { font-size: .72rem; color: var(--text-muted); line-height: 1.6; margin: .6rem 0 0; }
+    .fx-chart { position: relative; height: 320px; }
+    .fx-chart canvas { max-height: none !important; }
+    @media print { .fx-ctl, .fx-hud { display: none !important; } .fx-device { box-shadow: none; } }
   </style>
 
   <!-- Open Graph -->
@@ -462,10 +492,59 @@
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 3: SOTA COMPARISON ══════════════════════════ -->
+  <!-- ═══ SECTION 3: INSIDE THE CZ PULSE ══════════════════════ -->
+  <section class="section-block anim-in" id="cz-pulse">
+    <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
+      <span style="color:#b40909">03 </span>Inside the CZ Pulse
+    </h2>
+    <span class="amo-eyebrow">Interactive</span>
+    <p class="fx-lead">The budget above adds error formulas. Here the gate itself runs: the two-pulse protocol of Levine et al. (2019), integrated exactly for finite blockade and Rydberg decay.
+      Both atoms see two global pulses with detuning Δ ≈ 0.377Ω, the second with its laser phase jumped by ξ. An atom alone (|01⟩) and a blockaded pair (|11⟩) follow different loops, each returns to the ground state,
+      and the phases they pick up satisfy $\phi_{11} = 2\phi_{01} - \pi$: a CZ gate up to single-qubit phases.</p>
+
+    <div class="fx-device">
+      <div class="fx-stage">
+        <canvas id="fxCv" width="1200" height="560" data-export-ready="true" role="img" aria-label="Left: two atoms under the global Rydberg pulses with the pulse timeline. Middle: Bloch-sphere loop of a lone atom (input 01). Right: loop of the blockaded pair (input 11) in the |11⟩–|W⟩ basis with the doubly excited leakage bar. Bottom: phasors of the 01 and 11 amplitudes with the CZ target. The numbers are listed beside the figure."></canvas>
+        <div class="fx-hud"><span id="fxHudL"></span><span id="fxHudR"></span></div>
+      </div>
+      <div class="fx-row">
+        <div class="fx-ctl">
+          <button type="button" class="fx-btn" id="fxReplay">Replay pulse</button>
+          <label>Speed <select id="fxSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+        </div>
+        <dl class="fx-tally" id="fxOut" aria-live="off"></dl>
+      </div>
+    </div>
+
+    <div class="fx-grid">
+      <div class="chart-card">
+        <h5>Settings</h5>
+        <div class="fx-field"><label for="fxOm">Rabi frequency Ω/2π <b id="fxOmV"></b></label><input type="range" id="fxOm" min="-1" max="1.5" step="0.01" value="0.5"></div>
+        <div class="fx-field"><label for="fxV">Blockade shift V/2π <b id="fxVV"></b></label><input type="range" id="fxV" min="0" max="3" step="0.01" value="2"></div>
+        <div class="fx-field"><label for="fxTau">Rydberg lifetime <b id="fxTauV"></b></label><input type="range" id="fxTau" min="0" max="3" step="0.01" value="2"></div>
+        <div class="fx-field"><label for="fxEps">Rabi-amplitude error <b id="fxEpsV"></b></label><input type="range" id="fxEps" min="-0.05" max="0.05" step="0.001" value="0"></div>
+        <button type="button" class="fx-mini" id="fxUse">Use Ω, U/Ω and the Rydberg lifetime from the budget above</button>
+        <p class="fx-src">Pulse: Δ/Ω = 0.377376, τΩ = 4.292654 per pulse (2τ = 2.7328π/Ω), ξ = 3.902396 rad, found here by solving for an exact CZ at V → ∞; Levine et al. quote Δ ≈ 0.377Ω and 2τ ≈ 2.732π/Ω.
+          Rates are illustrative defaults; "use the budget" copies the page's own numbers.</p>
+      </div>
+      <div class="chart-card">
+        <h5>Gate error vs Rabi frequency (exact simulation)</h5>
+        <div class="fx-chart"><canvas id="fxSweep" data-export-ready="true" aria-label="Log-log plot of the simulated gate infidelity against the Rabi frequency: blockade leakage only, Rydberg decay only, both together, and the budget's two formulas for comparison."></canvas></div>
+        <p class="fx-src" id="fxSweepNote"></p>
+      </div>
+    </div>
+    <p class="fx-src" style="margin-top:.6rem">Model: $H = \tfrac{\Omega}{2}\sum_i (e^{i\varphi}|1\rangle_i\langle r| + {\rm h.c.}) - \Delta\sum_i |r\rangle_i\langle r| + V|rr\rangle\langle rr|$, with $\varphi = 0$ then $\xi$.
+      |01⟩ is a two-level problem; |11⟩ couples to $|W\rangle = (|1r\rangle + |r1\rangle)/\sqrt2$ at $\sqrt2\,\Omega$ and on to |rr⟩ (shift V). Decay is the no-jump loss $-i\Gamma/2$ per Rydberg excitation, $\Gamma = 1/\tau_r$.
+      Fidelity $F = (|{\rm Tr}\,M|^2 + {\rm Tr}\,M^\dagger M)/20$ (Pedersen, Møller &amp; Mølmer 2007) with the best single-qubit phase removed. Laser noise, Doppler shifts and leakage back into the qubit are not included.
+      Sources: Levine et al., <a href="https://doi.org/10.1103/PhysRevLett.123.170503" target="_blank" rel="noopener"><em>PRL</em> 123, 170503 (2019)</a> · Pedersen, Møller &amp; Mølmer, <a href="https://doi.org/10.1016/j.physleta.2007.02.069" target="_blank" rel="noopener"><em>Phys. Lett. A</em> 367, 47 (2007)</a>.</p>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══ SECTION 4: SOTA COMPARISON ══════════════════════════ -->
   <section class="section-block anim-in delay-3">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#b40909">03 </span>State-of-the-Art Comparison
+      <span style="color:#b40909">04 </span>State-of-the-Art Comparison
     </h2>
     <div class="three-col" style="margin-bottom:1rem;">
       <div class="sota-card">
@@ -508,10 +587,10 @@
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 4: THEORY ════════════════════════════════════ -->
+  <!-- ═══ SECTION 5: THEORY ════════════════════════════════════ -->
   <section class="section-block anim-in delay-4">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#b40909">04 </span>Error Source Formulas
+      <span style="color:#b40909">05 </span>Error Source Formulas
     </h2>
 
     <div class="accordion">
@@ -624,10 +703,10 @@ Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm t
 
   <hr class="section-divider">
 
-  <!-- ═══ SECTION 5: REFERENCES ════════════════════════════════ -->
+  <!-- ═══ SECTION 6: REFERENCES ════════════════════════════════ -->
   <section class="section-block anim-in delay-5">
     <h2 class="section-title" style="font-size:1.15rem;margin-bottom:1rem;">
-      <span style="color:#b40909">05 </span>Key References
+      <span style="color:#b40909">06 </span>Key References
     </h2>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1038/s41586-023-06481-y" target="_blank" rel="noopener">
@@ -707,6 +786,7 @@ Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm t
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=44"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
+<script src="../js/motion.js?v=2"></script>
 <script>
 renderNav({ active: 'fidelity-budget', root: '../' });
 
@@ -1081,6 +1161,248 @@ if (window.AMOInk) AMOInk.onTheme(() => { if (_wfLast) drawWaterfall(_wfLast[0],
 function onSpeciesChange() { compute(); }
 
 compute();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   03 · INSIDE THE CZ PULSE — Levine et al. (2019) two-pulse gate, exact.
+   H = Ω/2 Σ(e^{iφ}|1⟩⟨r| + h.c.) − Δ Σ|r⟩⟨r| + V|rr⟩⟨rr|, φ = 0 then ξ.
+   Pulse found here for V → ∞: Δ/Ω = 0.377376, τΩ = 4.292654, ξ = 3.902396.
+   Fidelity (Pedersen, Møller & Mølmer 2007): F = (|Tr M|² + Tr M†M)/20.
+   window.CZPULSE exposes the core for tests/formula_regression.py.
+═══════════════════════════════════════════════════════════════ */
+(function () {
+  const $ = id => document.getElementById(id);
+  const cv = $('fxCv'); if (!cv) return;
+  const LP = { d: 0.377376, t: 4.292654, xi: 3.902396 };
+  const TAU = 2 * Math.PI;
+
+  /* complex n×n matrices as Float64Array [re, im, ...] row-major */
+  const Z = n => new Float64Array(2 * n * n);
+  function mul(A, B, n) { const C = Z(n); for (let i = 0; i < n; i++) for (let k = 0; k < n; k++) { const ar = A[2 * (i * n + k)], ai = A[2 * (i * n + k) + 1]; if (!ar && !ai) continue; for (let j = 0; j < n; j++) { const br = B[2 * (k * n + j)], bi = B[2 * (k * n + j) + 1]; C[2 * (i * n + j)] += ar * br - ai * bi; C[2 * (i * n + j) + 1] += ar * bi + ai * br; } } return C; }
+  function expm(A, n) {                                                    // scaling and squaring + Taylor
+    let nrm = 0; for (let i = 0; i < n; i++) { let s = 0; for (let j = 0; j < n; j++) s += Math.hypot(A[2 * (i * n + j)], A[2 * (i * n + j) + 1]); nrm = Math.max(nrm, s); }
+    const sq = Math.max(0, Math.ceil(Math.log2(nrm / 0.25))), f = Math.pow(2, -sq), X = A.map(v => v * f);
+    let E = Z(n), T = Z(n); for (let i = 0; i < n; i++) { E[2 * (i * n + i)] = 1; T[2 * (i * n + i)] = 1; }
+    for (let k = 1; k <= 16; k++) { T = mul(T, X, n).map(v => v / k); for (let q = 0; q < E.length; q++) E[q] += T[q]; }
+    for (let s = 0; s < sq; s++) E = mul(E, E, n);
+    return E;
+  }
+  // −i·H·dt for the lone atom (n = 2) or the pair {|11⟩, |W⟩, |rr⟩} (n = 3; n = 2 drops |rr⟩, V → ∞)
+  function gen(n, om, de, V, G, ph, dt, pair) {
+    const c = (pair ? Math.SQRT2 : 1) * om / 2, H = Z(n), set = (i, j, re, im) => { H[2 * (i * n + j)] = re; H[2 * (i * n + j) + 1] = im; };
+    set(0, 1, c * Math.cos(ph), c * Math.sin(ph)); set(1, 0, c * Math.cos(ph), -c * Math.sin(ph)); set(1, 1, -de, -G / 2);
+    if (n === 3) { set(1, 2, c * Math.cos(ph), c * Math.sin(ph)); set(2, 1, c * Math.cos(ph), -c * Math.sin(ph)); set(2, 2, -2 * de + V, -G); }
+    const A = Z(n); for (let q = 0; q < A.length; q += 2) { A[q] = H[q + 1] * dt; A[q + 1] = -H[q] * dt; }   // −i(a+ib) = b − ia
+    return A;
+  }
+  const apply = (P, v, n) => { const o = new Float64Array(2 * n); for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const pr = P[2 * (i * n + j)], pi = P[2 * (i * n + j) + 1], vr = v[2 * j], vi = v[2 * j + 1]; o[2 * i] += pr * vr - pi * vi; o[2 * i + 1] += pr * vi + pi * vr; } return o; };
+
+  // run the gate: om, V in rad/µs, G in 1/µs, eps = Rabi-amplitude error; steps > 0 records trajectories
+  function gate(om, V, G, eps, steps) {
+    const de = LP.d * om, tau = LP.t / om, omA = om * (1 + eps), n3 = isFinite(V) ? 3 : 2;
+    const out = { tau, T: 2 * tau, tr01: [], tr11: [], maxRR: 0 };
+    let v1 = new Float64Array(4), v2 = new Float64Array(2 * n3); v1[0] = 1; v2[0] = 1;
+    const N = steps || 1;
+    for (const ph of [0, LP.xi]) {
+      const P1 = expm(gen(2, omA, de, V, G, ph, tau / N, false), 2), P2 = expm(gen(n3, omA, de, V, G, ph, tau / N, true), n3);
+      for (let k = 0; k < N; k++) {
+        v1 = apply(P1, v1, 2); v2 = apply(P2, v2, n3);
+        if (n3 === 3) out.maxRR = Math.max(out.maxRR, v2[4] * v2[4] + v2[5] * v2[5]);
+        if (steps) { out.tr01.push(v1.slice()); out.tr11.push(v2.slice()); }
+      }
+    }
+    out.a01 = [v1[0], v1[1]]; out.a11 = [v2[0], v2[1]];
+    return out;
+  }
+  // average fidelity to diag(1, e^{iθ}, e^{iθ}, −e^{2iθ}), best θ
+  function fidelity(a01, a11) {
+    const f = th => { const c = Math.cos(th), s = Math.sin(th), c2 = Math.cos(2 * th), s2 = Math.sin(2 * th);
+      const tr = 1 + 2 * (a01[0] * c + a01[1] * s) - (a11[0] * c2 + a11[1] * s2), ti = 2 * (a01[1] * c - a01[0] * s) - (a11[1] * c2 - a11[0] * s2);
+      return (tr * tr + ti * ti + 1 + 2 * (a01[0] ** 2 + a01[1] ** 2) + a11[0] ** 2 + a11[1] ** 2) / 20; };
+    let best = 0, bt = 0; for (let k = 0; k < 720; k++) { const th = TAU * k / 720, v = f(th); if (v > best) { best = v; bt = th; } }
+    let lo = bt - TAU / 720, hi = bt + TAU / 720;
+    for (let k = 0; k < 40; k++) { const m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3; if (f(m1) > f(m2)) hi = m2; else lo = m1; }
+    return f((lo + hi) / 2);
+  }
+  window.CZPULSE = { LP, expm, gate, fidelity };
+
+  /* ── settings ── */
+  let S = null;
+  function params() {
+    return { om: Math.pow(10, +$('fxOm').value), V: Math.pow(10, +$('fxV').value), tau: Math.pow(10, +$('fxTau').value), eps: +$('fxEps').value };
+  }
+  const fmtt = us => us >= 1 ? us.toFixed(2) + ' µs' : (us * 1e3).toFixed(0) + ' ns';
+  const pct = e => e < 1e-4 ? e.toExponential(1) : (100 * e).toFixed(e < 0.01 ? 3 : 2) + '%';
+  function run() {
+    const P = params(), om = TAU * P.om, V = TAU * P.V, G = 1 / P.tau;
+    const g = gate(om, V, G, P.eps, 200);
+    const fB = fidelity(...[gate(om, V, 0, P.eps, 0)].map(x => [x.a01, x.a11]).flat());
+    const fD = fidelity(...[gate(om, Infinity, G, P.eps, 0)].map(x => [x.a01, x.a11]).flat());
+    const fT = fidelity(g.a01, g.a11);
+    const ph01 = Math.atan2(g.a01[1], g.a01[0]), ph11 = Math.atan2(g.a11[1], g.a11[0]);
+    let dphi = (ph11 - 2 * ph01) * 180 / Math.PI; dphi = ((dphi + 540) % 360) - 180;
+    S = { P, g, fB, fD, fT, ph01, ph11, dphi, budgetB: 1 / Math.pow(P.V / P.om, 2), budgetD: g.T / P.tau };
+    $('fxOmV').textContent = P.om.toFixed(P.om < 1 ? 2 : 1) + ' MHz'; $('fxVV').textContent = (P.V >= 100 ? P.V.toFixed(0) : P.V.toFixed(1)) + ' MHz · V/Ω = ' + (P.V / P.om).toFixed(P.V / P.om >= 10 ? 0 : 1);
+    $('fxTauV').textContent = fmtt(P.tau); $('fxEpsV').textContent = (P.eps >= 0 ? '+' : '') + (100 * P.eps).toFixed(1) + '%';
+    const rows = [['Gate time 2τ', fmtt(g.T)], ['φ₁₁ − 2φ₀₁ (CZ: −180°)', S.dphi.toFixed(1) + '°'], ['max P(rr) during |11⟩', pct(g.maxRR)],
+      ['Error: blockade only', pct(1 - fB)], ['Error: decay only', pct(1 - fD)], ['Error: both', pct(1 - fT)],
+      ['Budget: 1/(V/Ω)²', pct(S.budgetB)], ['Budget: Γ·t_gate', pct(S.budgetD)]];
+    $('fxOut').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
+    wall = 0;
+  }
+
+  /* ── drawing ── */
+  const ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+  const AZ = -0.6, EL = 0.32;
+  function proj(cx, cy, r, x, y, z) { const x1 = x * Math.cos(AZ) - y * Math.sin(AZ), y1 = x * Math.sin(AZ) + y * Math.cos(AZ); return [cx + r * x1, cy - r * (z * Math.cos(EL) - y1 * Math.sin(EL)), y1]; }
+  function sphere(cx, cy, r, top, bot, title) {
+    ctx.strokeStyle = 'rgba(148,163,184,.35)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.stroke();
+    ctx.beginPath(); for (let k = 0; k <= 80; k++) { const a = TAU * k / 80, p = proj(cx, cy, r, Math.cos(a), Math.sin(a), 0); k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); } ctx.stroke();
+    const n = proj(cx, cy, r, 0, 0, 1), s = proj(cx, cy, r, 0, 0, -1);
+    ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(n[0], n[1]); ctx.lineTo(s[0], s[1]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '600 15px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+    ctx.fillText(top, n[0], n[1] - 12); ctx.fillText(bot, s[0], s[1] + 24);
+    ctx.fillStyle = '#e2e8f0'; ctx.font = '700 15px Inter, sans-serif'; ctx.fillText(title, cx, cy - r - 48);
+  }
+  const bloch = (ar, ai, br, bi) => { const nn = ar * ar + ai * ai + br * br + bi * bi || 1; return [2 * (ar * br + ai * bi) / nn, 2 * (ar * bi - ai * br) / nn, (ar * ar + ai * ai - br * br - bi * bi) / nn]; };
+  function trace(cx, cy, r, tr, upto, n, colA, colB) {
+    const N = tr.length;
+    for (const [from, to, full] of [[0, N, false], [0, upto, true]]) {
+      ctx.lineWidth = full ? 2.6 : 1.2;
+      let half = N / 2;
+      for (const [a, b, col] of [[from, Math.min(to, half), colA], [half - 1, to, colB]]) {
+        if (b - a < 2) continue;
+        ctx.strokeStyle = full ? col : col.replace(/[\d.]+\)$/, '0.22)'); ctx.beginPath();
+        for (let k = Math.max(0, a); k < b; k++) { const v = tr[k], q = bloch(v[0], v[1], v[2], v[3]), p = proj(cx, cy, r, ...q); k === Math.max(0, a) ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); }
+        ctx.stroke();
+      }
+    }
+    const v = upto > 0 ? tr[Math.min(upto, N) - 1] : (n === 3 ? [1, 0, 0, 0, 0, 0] : [1, 0, 0, 0]), q = bloch(v[0], v[1], v[2], v[3]), p = proj(cx, cy, r, ...q);
+    ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(p[0], p[1]); ctx.stroke();
+    ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, TAU); ctx.fill();
+    return v;
+  }
+  function glow(x, y, r, rgb, a) { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.35, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+
+  let wall = 0, lastT = null;
+  const GATE_WALL = 4.2, HOLD = 1.8;
+  function draw() {
+    const g = S.g, N = g.tr01.length, u = Math.min(1, wall / GATE_WALL), k = Math.round(u * N), pulse2 = k > N / 2;
+    ctx.fillStyle = '#04070d'; ctx.fillRect(0, 0, W, H);
+    // left: atoms, beam, timeline
+    const beamA = u > 0 && u < 1 ? 0.35 : 0.08;
+    const bg = ctx.createLinearGradient(0, 40, 0, 300); bg.addColorStop(0, `rgba(168,85,247,${beamA})`); bg.addColorStop(1, 'rgba(168,85,247,0)');
+    ctx.fillStyle = bg; ctx.fillRect(40, 40, 300, 260);
+    const v11 = k ? g.tr11[k - 1] : null, nW = v11 ? v11[2] ** 2 + v11[3] ** 2 : 0, nRR = v11 && v11.length > 4 ? v11[4] ** 2 + v11[5] ** 2 : 0;
+    const pr = nW / 2 + nRR;
+    ctx.setLineDash([6, 6]); ctx.strokeStyle = 'rgba(216,180,254,.45)'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(190, 210, 125, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+    for (const x of [130, 250]) { glow(x, 210, 34, '96,165,250', 0.9); if (pr > 0.002) glow(x, 210, 30 + 26 * pr, '192,132,252', Math.min(1, 0.2 + 1.6 * pr)); }
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '13px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+    ctx.fillText('input |11⟩: P(Rydberg) per atom ' + (100 * pr).toFixed(0) + '%', 190, 280);
+    ctx.fillStyle = 'rgba(216,180,254,.8)'; ctx.fillText('blockade radius (schematic)', 190, 352);
+    ctx.fillStyle = '#e2e8f0'; ctx.font = '700 15px Inter, sans-serif'; ctx.fillText('Two atoms, global pulses', 190, 30);
+    // timeline
+    const tx0 = 40, tx1 = 340, ty = 420;
+    ctx.fillStyle = '#1e293b'; ctx.fillRect(tx0, ty, tx1 - tx0, 18);
+    ctx.fillStyle = 'rgba(56,189,248,.55)'; ctx.fillRect(tx0, ty, (tx1 - tx0) / 2 - 2, 18);
+    ctx.fillStyle = 'rgba(244,114,182,.55)'; ctx.fillRect((tx0 + tx1) / 2 + 2, ty, (tx1 - tx0) / 2 - 2, 18);
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(tx0 + (tx1 - tx0) * u - 1.5, ty - 6, 3, 30);
+    ctx.font = '12px JetBrains Mono, monospace'; ctx.fillStyle = '#cbd5e1';
+    ctx.fillText('pulse 1, phase 0', (tx0 * 3 + tx1) / 4, ty + 40); ctx.fillText('pulse 2, phase ξ', (tx0 + tx1 * 3) / 4, ty + 40);
+    ctx.fillText(`Δ = 0.377Ω on both · ξ = ${LP.xi.toFixed(3)} rad`, 190, ty + 64);
+    // spheres
+    sphere(560, 250, 125, '|1⟩', '|r⟩', 'Input |01⟩: one atom couples');
+    const a = trace(560, 250, 125, g.tr01, k, 2, 'rgba(56,189,248,1)', 'rgba(244,114,182,1)');
+    sphere(905, 250, 125, '|11⟩', '|W⟩', 'Input |11⟩: blockaded pair (√2 Ω)');
+    const b = trace(905, 250, 125, g.tr11, k, 3, 'rgba(56,189,248,1)', 'rgba(244,114,182,1)');
+    // leakage bar
+    const bx = 1110, by0 = 160, bh = 180, scale = Math.max(0.01, g.maxRR * 1.2);
+    ctx.strokeStyle = 'rgba(148,163,184,.5)'; ctx.strokeRect(bx, by0, 22, bh);
+    ctx.fillStyle = '#ef4444'; const hh = Math.min(bh, bh * nRR / scale); ctx.fillRect(bx + 1, by0 + bh - hh, 20, hh);
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '12px JetBrains Mono, monospace'; ctx.fillText('P(rr)', bx + 11, by0 - 10); ctx.fillText((100 * nRR).toFixed(2) + '%', bx + 11, by0 + bh + 18);
+    ctx.fillText('scale ' + (100 * scale).toFixed(1) + '%', bx + 11, by0 + bh + 34);
+    // phasors of the 01 and 11 amplitudes (the qubit phases)
+    const pcx = 740, pcy = 470, R = 62;
+    ctx.strokeStyle = 'rgba(148,163,184,.4)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(pcx, pcy, R, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pcx - R - 8, pcy); ctx.lineTo(pcx + R + 8, pcy); ctx.moveTo(pcx, pcy - R - 8); ctx.lineTo(pcx, pcy + R + 8); ctx.stroke();
+    const vec = (re, im, col) => { ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(pcx, pcy); ctx.lineTo(pcx + R * re, pcy - R * im); ctx.stroke(); ctx.beginPath(); ctx.arc(pcx + R * re, pcy - R * im, 5, 0, TAU); ctx.fill(); };
+    vec(a[0], a[1], '#fbbf24'); vec(b[0], b[1], '#c084fc');
+    if (u >= 1) { const t = [-(g.a01[0] ** 2 - g.a01[1] ** 2), -(2 * g.a01[0] * g.a01[1])], m = Math.hypot(...t) || 1;
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(pcx + R * t[0] / m, pcy - R * t[1] / m, 11, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
+    ctx.textAlign = 'left'; ctx.font = '13px JetBrains Mono, monospace';
+    ctx.fillStyle = '#fbbf24'; ctx.fillText('⟨01|ψ⟩', pcx + R + 24, pcy - 22);
+    ctx.fillStyle = '#c084fc'; ctx.fillText('⟨11|ψ⟩', pcx + R + 24, pcy);
+    ctx.fillStyle = '#cbd5e1'; ctx.fillText('○ CZ target −⟨01|ψ⟩²', pcx + R + 24, pcy + 22);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#e2e8f0'; ctx.font = '700 14px Inter, sans-serif'; ctx.fillText('Qubit phases', pcx, pcy - R - 18);
+    if (u >= 1) {
+      ctx.textAlign = 'left'; ctx.fillStyle = S.fT > 0.99 ? '#86efac' : '#fca5a5'; ctx.font = '700 22px JetBrains Mono, monospace';
+      ctx.fillText(`F = ${(100 * S.fT).toFixed(S.fT > 0.999 ? 3 : 2)}%`, 930, 470);
+      ctx.font = '13px JetBrains Mono, monospace'; ctx.fillStyle = '#cbd5e1'; ctx.fillText(`φ₁₁ − 2φ₀₁ = ${S.dphi.toFixed(1)}°`, 930, 496);
+    }
+    $('fxHudL').textContent = `t = ${fmtt(u * g.T)} of ${fmtt(g.T)}`;
+    $('fxHudR').textContent = pulse2 ? 'pulse 2 · laser phase ξ' : u > 0 ? 'pulse 1 · laser phase 0' : '';
+  }
+  function frame(t) {
+    const dt = lastT === null ? 0 : Math.min(0.1, (t - lastT) / 1000); lastT = t;
+    wall += dt * +$('fxSpeed').value; if (wall > GATE_WALL + HOLD) wall = 0;
+    draw();
+  }
+
+  /* ── sweep vs Ω ── */
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
+  let chart = null;
+  function sweep() {
+    if (!window.Chart) return;
+    const P = params(), V = TAU * P.V, G = 1 / P.tau, oms = [];
+    for (let i = 0; i <= 36; i++) oms.push(Math.pow(10, -1 + 2.5 * i / 36));
+    const B = [], D = [], T = [], bB = [], bD = [];
+    let best = [Infinity, 0];
+    for (const o of oms) {
+      const om = TAU * o, x = o;
+      const eB = 1 - fidelity(...(r => [r.a01, r.a11])(gate(om, V, 0, P.eps, 0)));
+      const eD = 1 - fidelity(...(r => [r.a01, r.a11])(gate(om, Infinity, G, P.eps, 0)));
+      const eT = 1 - fidelity(...(r => [r.a01, r.a11])(gate(om, V, G, P.eps, 0)));
+      B.push({ x, y: Math.max(eB, 1e-7) }); D.push({ x, y: Math.max(eD, 1e-7) }); T.push({ x, y: Math.max(eT, 1e-7) });
+      bB.push({ x, y: Math.pow(o / P.V, 2) }); bD.push({ x, y: 2 * LP.t / om / P.tau });
+      if (eT < best[0]) best = [eT, o];
+    }
+    const tc = css('--text-secondary'), gc = css('--border-med'), mut = css('--text-muted');
+    const ds = [
+      { label: 'both (exact)', data: T, borderColor: '#e11d48', borderWidth: 2.6, pointRadius: 0 },
+      { label: 'blockade only', data: B, borderColor: '#8b5cf6', borderWidth: 1.8, pointRadius: 0 },
+      { label: 'decay only', data: D, borderColor: '#0ea5e9', borderWidth: 1.8, pointRadius: 0 },
+      { label: 'budget 1/(V/Ω)²', data: bB, borderColor: '#8b5cf6', borderDash: [5, 4], borderWidth: 1.2, pointRadius: 0 },
+      { label: 'budget Γ·t_gate', data: bD, borderColor: '#0ea5e9', borderDash: [5, 4], borderWidth: 1.2, pointRadius: 0 },
+      { label: 'your Ω', data: [{ x: P.om, y: Math.max(1 - S.fT, 1e-7) }], borderColor: mut, backgroundColor: tc, pointRadius: 6, showLine: false },
+    ];
+    const sup = n => String(n).replace(/-/g, '⁻').replace(/\d/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+    const opts = { responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+      scales: { x: { type: 'logarithmic', min: 0.1, max: 31.6, title: { display: true, text: 'Rabi frequency Ω/2π (MHz)', color: tc }, ticks: { color: tc, callback: v => [0.1, 0.3, 1, 3, 10, 30].some(t => Math.abs(v - t) / t < 0.01) ? v : '' }, grid: { color: gc } },
+                y: { type: 'logarithmic', min: 1e-6, max: 1, title: { display: true, text: 'gate error 1 − F', color: tc }, ticks: { color: tc, callback: v => { const l = Math.log10(v); return Math.abs(l - Math.round(l)) < 1e-9 ? '10' + sup(Math.round(l)) : ''; } }, grid: { color: gc } } },
+      plugins: { legend: { labels: { color: tc, boxWidth: 14 } }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toExponential(2)} at Ω/2π = ${c.parsed.x.toFixed(2)} MHz` } } } };
+    if (chart) { chart.data.datasets = ds; chart.options = opts; chart.update('none'); }
+    else chart = new Chart($('fxSweep'), { type: 'line', data: { datasets: ds }, options: opts });
+    $('fxSweepNote').textContent = `With V/2π = ${S.P.V.toFixed(0)} MHz and a ${fmtt(S.P.tau)} Rydberg lifetime the error is smallest near Ω/2π ≈ ${best[1].toFixed(best[1] < 1 ? 2 : 1)} MHz (1 − F ≈ ${best[0].toExponential(1)}): faster pulses leak past the blockade, slower ones decay. ` +
+      `The dashed budget lines are the formulas used above; the exact pulse spends only part of the gate in |r⟩, so Γ·t_gate overestimates the decay error.`;
+  }
+
+  /* ── wiring ── */
+  let deb = 0;
+  const changed = () => { run(); clearTimeout(deb); deb = setTimeout(sweep, 200); };
+  ['fxOm', 'fxV', 'fxTau', 'fxEps'].forEach(id => $(id).addEventListener('input', changed));
+  $('fxReplay').addEventListener('click', () => { wall = 0; });
+  $('fxUse').addEventListener('click', () => {                           // copy Ω, U/Ω and τ_Ryd from the budget's controls
+    const om = Math.pow(10, parseFloat($('omegaSlide').value) / 10), uo = parseFloat($('blockadeSlide').value);
+    const tauTxt = $('tauDisplay').textContent, m = parseFloat(tauTxt), tau = /ms/.test(tauTxt) ? m * 1000 : m;
+    const set = (id, v) => { const el = $(id); el.value = Math.max(+el.min, Math.min(+el.max, Math.log10(v))); };
+    set('fxOm', om); set('fxV', om * uo); if (tau > 0) set('fxTau', tau); changed();
+  });
+  new MutationObserver(() => sweep()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  run(); sweep();
+  if (window.AMOMotion) AMOMotion.loop([cv], frame, { anchors: [{ el: $('fxReplay'), where: 'beforebegin', inline: true }] });
+  else { const loop = t => { frame(t); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  window.addEventListener('amo:print', () => { wall = GATE_WALL; draw(); });
+})();
 </script>
 <div id="amo-nav-ready" hidden></div>
 </body>

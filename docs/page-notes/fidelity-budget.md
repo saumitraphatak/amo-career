@@ -66,3 +66,12 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check + contrast pass
 - Citation: Saffman, Walker & Mølmer RMP link pointed at PRA 82, 030306; now RevModPhys.82.2313. Lone seventh reference card spans the row.
+
+
+## Inside the CZ pulse (2026-11-19)
+New section 03 after the budget (SOTA → 04, formulas → 05, references → 06).
+- **Gate:** Levine et al. 2019 two-pulse protocol. Parameters solved in Python (scipy least-squares) for an exact CZ at V → ∞ with H = Ω/2(e^{iφ}|1⟩⟨r| + h.c.) − Δ|r⟩⟨r|: Δ/Ω = 0.377376, τΩ = 4.292654, ξ = 3.902396; |a₀₁| = |a₁₁| = 1 and φ₁₁ − 2φ₀₁ = −180.000°. Paper text checked: "Choosing Δ ≈ 0.377Ω realizes the CZ gate", "total time 2τ ≈ 2.732π/Ω", "φ11 = 2φ01 − π". ξ is not in the part of the paper read; the solved value matches the commonly quoted 3.902.
+- **Simulation:** constant-H propagators by scaling-and-squaring Taylor expm (complex 2×2 / 3×3), 200 steps per pulse for the animation, one step for sweeps. Non-Hermitian decay −iΓ/2 per Rydberg excitation. Check in the browser: V → ∞, Γ = 0 gives 1 − F = 3.5e-10.
+- **Fidelity:** Pedersen, Møller & Mølmer 2007 Eq. (3) on the computational subspace, target diag(1, e^{iθ}, e^{iθ}, −e^{2iθ}) with the best θ (grid + ternary search). Crossref record and formula checked.
+- **Findings at the defaults** (Ω/2π = 3.2 MHz, V/2π = 100 MHz, τ_r = 100 µs): exact blockade error 0.022% vs budget 1/(V/Ω)² = 0.100%; exact decay error 0.165% vs budget Γ·t_gate = 0.432% (the pulse is not in |r⟩ the whole time). The sweep shows an optimal Ω (≈ 4.6 MHz here) where leakage and decay balance. The budget formulas are left unchanged (they remain conservative scalings); the section says how they compare.
+- "Use … from the budget above" copies Ω (omegaSlide), V = Ω·(U/Ω) (blockadeSlide) and the lifetime shown in #tauDisplay.

@@ -85,6 +85,7 @@ window.AMO_SECTION_INDEX = [
   {"p":"decoherence-lab","t":"References & Further Reading","s":"s-references-further-reading"},
   {"p":"fidelity-budget","t":"Gate & Atom Setup","s":"s-gate-atom-setup"},
   {"p":"fidelity-budget","t":"Gate Fidelity & Error Budget","s":"s-gate-fidelity-error-budget"},
+  {"p":"fidelity-budget","t":"Inside the CZ Pulse","s":"s-inside-the-cz-pulse"},
   {"p":"fidelity-budget","t":"State-of-the-Art Comparison","s":"s-state-of-the-art-comparison"},
   {"p":"fidelity-budget","t":"Error Source Formulas","s":"s-error-source-formulas"},
   {"p":"fidelity-budget","t":"Spontaneous emission from Rydberg state","s":"s-spontaneous-emission-from-rydberg-state"},

@@ -769,6 +769,33 @@ def test_cavity_photon_race() -> None:
     assert '<span class="accent">07</span> Common Mistakes' in page and 'id="res_beta_exact"' in page
 
 
+def test_cz_pulse() -> None:
+    """Rydberg budget section 03 (2026-11-19): Levine-Pichler parameters give an exact CZ at V -> infinity."""
+    page = read("pages/fidelity-budget.html")
+    import cmath
+    d, t, xi = 0.377376, 4.292654, 3.902396
+    def evolve(c, ph, vec, tau):                         # 2x2 H = [[0, c e^{i ph}], [c e^{-i ph}, -d]], exact propagator
+        h = [[0, c * cmath.exp(1j * ph)], [c * cmath.exp(-1j * ph), -d]]
+        tr2, det = (h[0][0] + h[1][1]) / 2, h[0][0] * h[1][1] - h[0][1] * h[1][0]
+        w = cmath.sqrt(tr2 * tr2 - det)                  # eigenvalues tr2 ± w
+        cosw, sinw = cmath.cos(w * tau), (cmath.sin(w * tau) / w if abs(w) > 1e-12 else tau)
+        ph0 = cmath.exp(-1j * tr2 * tau)
+        u = [[ph0 * (cosw - 1j * sinw * (h[0][0] - tr2)), ph0 * (-1j * sinw * h[0][1])],
+             [ph0 * (-1j * sinw * h[1][0]), ph0 * (cosw - 1j * sinw * (h[1][1] - tr2))]]
+        return [u[0][0] * vec[0] + u[0][1] * vec[1], u[1][0] * vec[0] + u[1][1] * vec[1]]
+    a = evolve(0.5, xi, evolve(0.5, 0, [1, 0], t), t)[0]                       # |01>: coupling Omega/2 (Omega = 1)
+    b = evolve(math.sqrt(2) / 2, xi, evolve(math.sqrt(2) / 2, 0, [1, 0], t), t)[0]   # |11>: sqrt(2) Omega / 2 to |W>
+    assert abs(abs(a) - 1) < 1e-6 and abs(abs(b) - 1) < 1e-6
+    dphi = (cmath.phase(b) - 2 * cmath.phase(a) + math.pi) % (2 * math.pi) - math.pi
+    assert abs(abs(dphi) - math.pi) < 1e-5                                     # phi11 = 2 phi01 - pi
+    assert abs(2 * t / math.pi - 2.732) < 1e-3                                 # paper: 2 tau ~ 2.732 pi / Omega
+    assert "const LP = { d: 0.377376, t: 4.292654, xi: 3.902396 };" in page
+    assert "return (tr * tr + ti * ti + 1 + 2 * (a01[0] ** 2 + a01[1] ** 2) + a11[0] ** 2 + a11[1] ** 2) / 20; };" in page
+    for doi in ["10.1103/PhysRevLett.123.170503", "10.1016/j.physleta.2007.02.069"]:
+        assert doi in page, doi
+    assert '<span style="color:#b40909">06 </span>Key References' in page
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -799,6 +826,7 @@ def main() -> None:
         test_atom_processor_compiler,
         test_repeater_chain,
         test_cavity_photon_race,
+        test_cz_pulse,
     ]
     for test in tests:
         test()
