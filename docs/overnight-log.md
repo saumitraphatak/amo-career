@@ -272,3 +272,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Exact vs budget:** pulse parameters solved here (Δ/Ω = 0.377376, τΩ = 4.292654, ξ = 3.902396; paper's 0.377 and 2.732π checked). Exact errors sit below the budget's formulas (default: blockade 0.022% vs 0.1%, decay 0.17% vs 0.43%), and the error-vs-Ω sweep shows the optimal Rabi frequency.
 - Sources checked: Levine 2019 full text (parameters, phase relation), Pedersen, Møller & Mølmer 2007 (Crossref + Eq. 3). motion.js added. Search index rebuilt; no main.js/styles.css change.
 - Tests: formula tests OK 29 (new `test_cz_pulse`); smoke 36 × 3; print clean; contrast unchanged; 390 px checked.
+
+## 2026-11-19 (night 4): the live simulations, up front ("make the coolest parts hard to miss")
+- **Home:** new showcase right after the hero: 1 big + 8 small cards with real stills of the animations, "Live" badges, hook lines and deep links straight to each figure (chapters open automatically). Hero primary button now jumps there. "● Live" markers on the 14 tool cards whose pages have live figures.
+- **Every page with live figures:** main.js now builds a "Live on this page" chip strip in the hero from the `.amo-eyebrow` markers, plus a floating "N live figures" jump menu once the hero scrolls away. 15 pages get it automatically.
+- main.js v45 and styles.css v32 on all 36 HTML files (incl. 404.html).
+- Tests: formula tests OK 30 (new `test_showcase_links_resolve`); smoke 36 × 3, 0 new problems; contrast unchanged on home; print clean; 390 px checked.

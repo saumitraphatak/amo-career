@@ -65,3 +65,7 @@ The hero's right column is a live 3D Li + Cs tweezer-array scene (`js/hero3d.js`
 - Clicking a card's icon (home tool/intent cards, start-here "see also" cards) now morphs that icon into this page's hero badge icon during the page transition, and back again on return (main.js v38 `initPageTransitions`; see `docs/motion-and-transitions.md`). Only the clicked card's icon is named, and only when it's on screen, so the other 30 cards stay part of the normal page fade.
 - Going back from a tool page whose hero icon is on screen flies the icon back into its card (if that card is on screen after the scroll is restored).
 - Reduced motion: no view transition at all, as before.
+
+
+## Showcase (2026-11-19)
+"Make the coolest parts hard to miss": a new `#showcase` section right after the hero ("Don't just read the physics. Watch it run.") with 9 cards (big: Zoned Atom Processor; small: Virtual Tweezer Lab, Inside the CZ Pulse, Watch One Photon Leave, Quantum Repeater Chain, Rydberg blockade, PDH phasor, teleportation, sideband thermometry). Stills are real dark-theme captures in `assets/showcase/*.webp`. The hero's primary button is now "Watch the simulations" (#showcase); "Explore Tools" is a ghost button. Tool cards for pages with live figures carry a "● Live" marker (14 cards). Hook texts were checked against each page (e.g. GHZ-8 7 → 3 trips; β at twice the collected fraction for the default cavity; √2-faster pair flopping).

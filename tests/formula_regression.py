@@ -796,6 +796,23 @@ def test_cz_pulse() -> None:
     assert '<span style="color:#b40909">06 </span>Key References' in page
 
 
+def test_showcase_links_resolve() -> None:
+    """Home showcase (2026-11-19): every card's image exists and its #anchor exists on the target page."""
+    import re
+    home = read("home.html")
+    sec = home[home.index('id="showcase"'):home.index('INTENT PATHS + RECENTS')]
+    cards = re.findall(r'<a class="showcase-card[^"]*[^>]*href="pages/([a-z0-9-]+\.html)(#[\w-]+)?"[\s\S]*?src="(assets/showcase/[a-z]+\.webp)"', sec)
+    assert len(cards) == 9, len(cards)
+    for page, anchor, img in cards:
+        assert (ROOT / img).exists(), img
+        text = read("pages/" + page)
+        if anchor:
+            assert f'id="{anchor[1:]}"' in text, (page, anchor)
+        assert 'class="amo-eyebrow"' in text, page            # the target really has a live figure
+    assert 'href="#showcase"' in home
+    assert "function initLiveFigures()" in read("js/main.js") and "initLiveFigures();" in read("js/main.js")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -827,6 +844,7 @@ def main() -> None:
         test_repeater_chain,
         test_cavity_photon_race,
         test_cz_pulse,
+        test_showcase_links_resolve,
     ]
     for test in tests:
         test()

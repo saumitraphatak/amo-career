@@ -2581,6 +2581,79 @@ const AMOSections = (() => {
 window.AMOSections = AMOSections;
 
 /* ─────────────────────────────────────────────────────
+   LIVE FIGURES — every .amo-eyebrow ("Interactive") marks a live figure.
+   A page with any gets a "Live on this page" chip strip in its hero and a
+   floating jump menu once the hero has scrolled away, so the animations
+   are hard to miss. Jumps go through AMOSections.go(), which opens the
+   chapter / tab / accordion holding the figure first.
+   ───────────────────────────────────────────────────── */
+function initLiveFigures() {
+  const main = document.getElementById('main-content');
+  if (!main || document.querySelector('.live-fab')) return;
+  const H = 'h2, h3, h4, h5';
+  const titleOf = h => {
+    const c = h.cloneNode(true);
+    c.querySelectorAll('.katex, svg, .accent, script, style').forEach(n => n.remove());
+    return c.textContent.replace(/\$[^$]*\$/g, ' ').replace(/\s+/g, ' ').trim().replace(/^(?:§\s*)?\d{1,2}[.:)]?\s+(?=\S)/, '');
+  };
+  const figs = [], used = new Set();
+  main.querySelectorAll('.amo-eyebrow').forEach(eb => {
+    if (eb.closest('.page-hero, .see-also, nav, footer')) return;
+    let h = eb.nextElementSibling && eb.nextElementSibling.matches(H) ? eb.nextElementSibling : null;
+    for (let p = eb.previousElementSibling, i = 0; !h && p && i < 3; p = p.previousElementSibling, i++) if (p.matches(H)) h = p;
+    for (let p = eb.nextElementSibling, i = 0; !h && p && i < 4; p = p.nextElementSibling, i++) h = p.matches(H) ? p : p.querySelector(H);
+    if (!h) return;
+    const t = titleOf(h);
+    if (t.length < 3) return;
+    let id = eb.id;
+    if (!id) {
+      const base = 'live-' + t.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48).replace(/-+$/, '');
+      id = base; for (let n = 2; used.has(id) || document.getElementById(id); n++) id = base + '-' + n;
+      eb.id = id;
+    }
+    used.add(id); figs.push({ id, t });
+  });
+  if (!figs.length) return;
+  const go = (e, id) => {
+    e.preventDefault();
+    if (history.pushState) history.pushState(null, '', '#' + id);
+    if (!AMOSections.go(id)) { const el = document.getElementById(id); if (el) el.scrollIntoView({ block: 'start' }); }
+  };
+  // hero chip strip
+  const host = document.querySelector('.page-hero .page-hero-text') || document.querySelector('.page-hero .container');
+  let strip = null;
+  if (host) {
+    strip = document.createElement('nav');
+    strip.className = 'live-strip'; strip.setAttribute('aria-label', 'Live figures on this page');
+    strip.innerHTML = `<span class="live-strip-label"><span class="live-dot" aria-hidden="true"></span>Live on this page</span>` +
+      figs.map(f => `<a class="live-chip" href="#${f.id}">${escapeHtml(f.t)}</a>`).join('');
+    host.appendChild(strip);
+    strip.querySelectorAll('a').forEach((a, i) => a.addEventListener('click', e => go(e, figs[i].id)));
+  }
+  // floating jump menu
+  const fab = document.createElement('button');
+  fab.type = 'button'; fab.className = 'live-fab'; fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-controls', 'live-menu');
+  fab.innerHTML = `<span class="live-dot" aria-hidden="true"></span>${figs.length} live figure${figs.length > 1 ? 's' : ''}`;
+  const menu = document.createElement('div');
+  menu.className = 'live-menu'; menu.id = 'live-menu'; menu.hidden = true;
+  menu.innerHTML = `<h6>Jump to a live figure</h6>` + figs.map((f, i) => `<a href="#${f.id}"><span>${String(i + 1).padStart(2, '0')}</span>${escapeHtml(f.t)}</a>`).join('');
+  document.body.append(menu, fab);
+  const close = () => { menu.hidden = true; fab.setAttribute('aria-expanded', 'false'); };
+  fab.addEventListener('click', () => { const open = menu.hidden; menu.hidden = !open; fab.setAttribute('aria-expanded', String(open)); if (open) menu.querySelector('a').focus(); });
+  menu.querySelectorAll('a').forEach((a, i) => a.addEventListener('click', e => { close(); go(e, figs[i].id); }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { close(); fab.focus(); } });
+  document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target) && !fab.contains(e.target)) close(); });
+  // show the button only once the hero strip is off screen
+  fab.dataset.hidden = 'true';
+  if (strip && 'IntersectionObserver' in window) {
+    new IntersectionObserver(es => { const vis = es[0].isIntersecting; fab.dataset.hidden = String(vis); if (vis) close(); }).observe(strip);
+  } else {
+    const upd = () => { fab.dataset.hidden = String(window.scrollY < 400); };
+    window.addEventListener('scroll', upd, { passive: true }); upd();
+  }
+}
+
+/* ─────────────────────────────────────────────────────
    INIT — run everything on DOMContentLoaded
    ───────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
@@ -2603,6 +2676,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initErrorReportWidget();
   initPathConceptMap();
   initQuantumQuiz();
+  initLiveFigures();
   updateHeroStats();
 });
 
