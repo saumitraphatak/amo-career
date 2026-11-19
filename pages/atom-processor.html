@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoned Atom Processor — AMO Toolkit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="description" content="Compile a quantum circuit onto a schematic zoned neutral-atom processor: watch atoms ride AOD tweezers to a global Rydberg pulse, follow the exact state vector, optimise qubit placement, and sample 1,000 noisy shots.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="canonical" href="https://amotoolkit.com/pages/atom-processor.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Zoned Atom Processor — AMO Toolkit">
+  <meta property="og:description" content="Watch a quantum circuit run on moving atoms: AOD transport, global Rydberg pulses, a live state vector and a placement-optimising compiler.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/atom-processor.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Zoned Atom Processor">
+  <meta name="twitter:description" content="Watch a quantum circuit run on moving atoms: AOD transport, global Rydberg pulses, a live state vector and a placement-optimising compiler.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Zoned Atom Processor","description":"Compile a circuit onto a schematic zoned neutral-atom processor and watch it run.","url":"https://amotoolkit.com/pages/atom-processor.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Zoned Atom Processor","item":"https://amotoolkit.com/pages/atom-processor.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=31">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+
+  <style>
+    :root { --page-color: var(--ink-blue); }
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--text-primary);
+      margin: 0 0 .25rem 0; border-left: 3px solid var(--page-color); padding-left: .75rem;
+    }
+    .section-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.25rem .85rem; }
+    .section-block { margin-bottom: 3rem; }
+    .zp-num { font-family: var(--font-mono); font-size: .72rem; color: var(--page-color); letter-spacing: .1em; margin: 0 0 .3rem .85rem; }
+
+    /* ── device: always dark, like a lab monitor ── */
+    .zp-device {
+      background: #05070d; border: 1px solid #1d2638; border-radius: 16px; padding: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.03); color: #cbd5e1;
+    }
+    .zp-top { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: center; margin: 0 0 .8rem; }
+    .zp-top label { font: 600 .72rem/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; display: inline-flex; align-items: center; gap: .4rem; }
+    .zp-top select, .zp-ctl select {
+      background: #0c1424; color: #e2e8f0; border: 1px solid #26324a; border-radius: 8px; padding: .4rem .55rem; font: 500 .82rem/1.2 inherit;
+    }
+    .zp-btn {
+      font: 600 .82rem/1 inherit; padding: .55rem .9rem; border-radius: 9px; cursor: pointer;
+      border: 1px solid #26324a; background: #0c1424; color: #e2e8f0;
+    }
+    .zp-btn:hover { border-color: #60a5fa; }
+    .zp-btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .zp-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .zp-btn:focus-visible, .zp-seg button:focus-visible, .zp-top select:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
+    .zp-seg { display: inline-flex; border: 1px solid #26324a; border-radius: 9px; overflow: hidden; }
+    .zp-seg button { font: 600 .74rem/1 inherit; padding: .5rem .7rem; background: #0c1424; color: #94a3b8; border: 0; cursor: pointer; }
+    .zp-seg button + button { border-left: 1px solid #26324a; }
+    .zp-seg button[aria-pressed="true"] { background: #1e3a5f; color: #fff; }
+    .zp-bits { display: inline-flex; gap: .25rem; }
+    .zp-bits button { width: 2rem; font: 600 .8rem/1 var(--font-mono); padding: .45rem 0; border-radius: 7px; border: 1px solid #26324a; background: #0c1424; color: #94a3b8; cursor: pointer; }
+    .zp-bits button[aria-pressed="true"] { background: #f59e0b; border-color: #f59e0b; color: #1a1205; }
+
+    .zp-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
+    @media (max-width: 980px) { .zp-grid { grid-template-columns: minmax(0, 1fr); } }
+    .zp-stage { position: relative; }
+    .zp-stage canvas, .zp-circ canvas, .zp-state canvas { display: block; width: 100%; height: auto; max-height: none !important; border-radius: 10px; }
+    .zp-hud { position: absolute; left: 14px; right: 14px; top: 10px; display: flex; justify-content: space-between; gap: 1rem; pointer-events: none;
+      font: 600 .68rem/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #9fb3c8; }
+    @media (max-width: 560px) { .zp-hud { display: none; } }
+    .zp-circ { margin-top: 10px; background: #070b14; border: 1px solid #172033; border-radius: 10px; padding: 6px; overflow-x: auto; }
+    .zp-circ canvas { width: auto; max-width: none; }
+    .zp-ctl { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: 10px; }
+    .zp-ctl label { font-size: .78rem; color: #94a3b8; display: inline-flex; gap: .35rem; align-items: center; }
+
+    .zp-side { display: flex; flex-direction: column; gap: 12px; }
+    .zp-card { background: #0a1120; border: 1px solid #1a2438; border-radius: 12px; padding: .8rem .9rem; }
+    .zp-card h4 { margin: 0 0 .55rem; font: 700 .68rem/1.2 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: #7f93ad; }
+    .zp-now { font-size: .84rem; line-height: 1.55; color: #dbe4ef; min-height: 5.2em; margin: 0; }
+    .zp-now b { color: #fff; }
+    .zp-top4 { list-style: none; margin: .55rem 0 0; padding: 0; font: 500 .76rem/1.6 var(--font-mono); color: #cbd5e1; }
+    .zp-top4 li { display: flex; justify-content: space-between; }
+    .zp-kv { display: grid; grid-template-columns: 1fr auto; gap: .28rem .6rem; margin: 0; font-size: .78rem; }
+    .zp-kv dt { color: #94a3b8; } .zp-kv dd { margin: 0; font-family: var(--font-mono); color: #f1f5f9; text-align: right; }
+    .zp-legend { display: flex; flex-wrap: wrap; gap: .3rem .85rem; margin: .7rem .2rem 0; font-size: .72rem; color: #94a3b8; }
+    .zp-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: .3rem; vertical-align: -1px; }
+
+    /* ── page (theme-aware) parts ── */
+    .zp-cmp { width: 100%; border-collapse: collapse; font-size: .85rem; margin: .6rem 0 0; }
+    .zp-cmp th, .zp-cmp td { padding: .55rem .7rem; border-bottom: 1px solid var(--border-med); text-align: right; }
+    .zp-cmp th:first-child, .zp-cmp td:first-child { text-align: left; color: var(--text-secondary); }
+    .zp-cmp thead th { font: 700 .7rem/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    .zp-cmp td { font-family: var(--font-mono); color: var(--text-primary); }
+    .zp-cmp td.win { color: #17694b; font-weight: 700; }
+    [data-theme="dark"] .zp-cmp td.win { color: #6ee7b7; }
+    .zp-panel { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 12px; padding: 1rem 1.1rem; }
+    .zp-panel h4 { font: 700 .72rem/1.2 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 .65rem; }
+    .zp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 860px) { .zp-two { grid-template-columns: minmax(0, 1fr); } }
+    .zp-two > * { min-width: 0; }
+    .zp-set { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: .9rem; margin-bottom: 1rem; }
+    .zp-field label { display: flex; justify-content: space-between; gap: .5rem; font-size: .78rem; color: var(--text-secondary); margin-bottom: .2rem; }
+    .zp-field label b { font-family: var(--font-mono); color: var(--text-primary); font-weight: 600; }
+    .zp-field input[type=range] { width: 100%; accent-color: var(--page-color); }
+    .zp-src { display: block; font-size: .7rem; color: var(--text-muted); margin-top: .15rem; line-height: 1.45; }
+    .zp-tag { display: inline-block; font: 700 .6rem/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; padding: .18rem .35rem; border-radius: 4px; margin-right: .3rem; vertical-align: 1px; }
+    .zp-tag.lit { background: rgba(28,128,91,.12); color: #17694b; }
+    .zp-tag.ill { background: rgba(146,106,3,.13); color: #7a5802; }
+    [data-theme="dark"] .zp-tag.lit { color: #6ee7b7; background: rgba(52,211,153,.12); }
+    [data-theme="dark"] .zp-tag.ill { color: #fcd34d; background: rgba(251,191,36,.12); }
+    .zp-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: .7rem; margin: 1rem 0; }
+    .zp-tile { background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 11px; padding: .75rem .85rem; }
+    .zp-tile .zp-k { font-size: .72rem; color: var(--text-muted); line-height: 1.35; }
+    .zp-tile .zp-v { font: 600 1.25rem/1.25 var(--font-mono); color: var(--text-primary); margin-top: .25rem; }
+    .zp-tile .zp-s { font-size: .68rem; color: var(--text-muted); margin-top: .15rem; }
+    .zp-tile.zp-hero { border-color: var(--page-color); background: color-mix(in srgb, var(--page-color) 7%, var(--bg-card)); }
+    .zp-chart { position: relative; height: 300px; }
+    .zp-chart canvas { max-height: none !important; }
+    .zp-pbtn { font: 600 .84rem/1 inherit; padding: .62rem 1.05rem; border-radius: 9px; cursor: pointer; border: 1px solid var(--page-color); background: var(--page-color); color: #fff; }
+    [data-theme="dark"] .zp-pbtn { color: #0b0820; }
+    .zp-pbtn:disabled { opacity: .5; cursor: not-allowed; }
+    .zp-note { font-size: .78rem; color: var(--text-muted); line-height: 1.6; margin: .7rem 0 0; }
+    .theory-box {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-left: 4px solid var(--page-color);
+      border-radius: 10px; padding: 1.1rem 1.4rem; margin-bottom: 1rem;
+    }
+    .theory-box h4 { font-size: .95rem; font-weight: 700; color: var(--page-color); margin: 0 0 .6rem 0; }
+    .theory-box p { font-size: .87rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 .5rem 0; }
+    .theory-box p:last-child { margin-bottom: 0; }
+    .zp-list { margin: 0; padding-left: 1.1rem; font-size: .85rem; color: var(--text-secondary); line-height: 1.7; }
+    @media print { .zp-ctl, .zp-top, .zp-hud { display: none !important; } .zp-device { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+  <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44, 74, 99,0.07);--page-border:rgba(44, 74, 99,0.2);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(44,74,99,0.08);border-color:rgba(44,74,99,0.2);color:#0556b9;">🎛️ Quantum 07 · Zoned Atom Processor</div>
+        <h1>
+          Compile a circuit onto <span class="grad-text" style="--ga: #3b82f6; --gb: #a855f7;">moving atoms</span>
+        </h1>
+        <p class="page-hero-desc">
+          Pick an algorithm and watch it run on a schematic neutral-atom processor: qubits wait in a storage zone,
+          ride crossed acousto-optic tweezers into an entangling zone for one global Rydberg pulse, and fly up to be read out.
+          A real state-vector simulation runs underneath, and a small compiler decides where every atom should live.
+        </p>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 340 190" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="zp-a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff"/><stop offset="40%" stop-color="#60a5fa" stop-opacity=".95"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+            <radialGradient id="zp-b" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff"/><stop offset="40%" stop-color="#c084fc" stop-opacity=".95"/><stop offset="100%" stop-color="#c084fc" stop-opacity="0"/></radialGradient>
+            <style>
+              @keyframes zp-up{0%,15%{transform:translate(0,0)}40%,60%{transform:translate(var(--dx),-62px)}85%,100%{transform:translate(0,0)}}
+              @keyframes zp-pulse{0%,40%{opacity:0}48%,54%{opacity:.75}62%,100%{opacity:0}}
+              .zp-m{animation:zp-up 5s ease-in-out infinite}.zp-p{animation:zp-pulse 5s ease-in-out infinite}
+              .zp-l{font-family:JetBrains Mono,monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase}
+            </style>
+          </defs>
+          <rect x="1" y="1" width="338" height="188" rx="16" fill="#05070d" stroke="rgba(96,165,250,.3)"/>
+          <rect x="18" y="14" width="304" height="34" rx="6" fill="rgba(45,212,191,.07)" stroke="rgba(45,212,191,.25)"/>
+          <rect x="18" y="70" width="304" height="40" rx="6" fill="rgba(168,85,247,.08)" stroke="rgba(168,85,247,.3)"/>
+          <rect x="18" y="132" width="304" height="40" rx="6" fill="rgba(245,158,11,.06)" stroke="rgba(245,158,11,.25)"/>
+          <text x="26" y="25" class="zp-l" fill="#5eead4">readout</text>
+          <text x="26" y="81" class="zp-l" fill="#d8b4fe">entangling</text>
+          <text x="26" y="143" class="zp-l" fill="#fcd34d">storage</text>
+          <rect class="zp-p" x="18" y="70" width="304" height="40" rx="6" fill="#a855f7"/>
+          <g fill="url(#zp-a)">
+            <circle class="zp-m" style="--dx:24px" cx="96" cy="152" r="9"/>
+            <circle class="zp-m" style="--dx:4px" cx="136" cy="152" r="9"/>
+            <circle cx="176" cy="152" r="9" opacity=".8"/>
+            <circle class="zp-m" style="--dx:-4px" cx="216" cy="152" r="9"/>
+            <circle class="zp-m" style="--dx:-24px" cx="256" cy="152" r="9"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+  <div class="container">
+
+  <!-- ═══════════ 01 · THE DEVICE ═══════════ -->
+  <section class="section-block anim-in" id="zp-device">
+    <p class="zp-num">01 · THE DEVICE</p>
+    <h2 class="section-title">Run an algorithm on a zoned atom array</h2>
+    <p class="section-sub">Atoms are coloured by their own qubit state; a pink halo means the atom is entangled with the others.</p>
+    <p class="amo-eyebrow">Interactive</p>
+    <div class="zp-device">
+      <div class="zp-top">
+        <label for="zpPreset">Circuit
+          <select id="zpPreset">
+            <option value="bell">Bell pair · 2 qubits</option>
+            <option value="ghz4">GHZ state · 4 qubits</option>
+            <option value="ghz8" selected>GHZ state · 8 qubits</option>
+            <option value="grover">Grover search · 2 qubits</option>
+            <option value="bv">Bernstein–Vazirani · 4 + 1 qubits</option>
+            <option value="random">Random circuit · 6 qubits</option>
+          </select>
+        </label>
+        <span id="zpBVwrap" hidden><label>Secret <span class="zp-bits" id="zpBits" role="group" aria-label="Secret bit string"></span></label></span>
+        <button type="button" class="zp-btn" id="zpReroll" hidden>New random circuit</button>
+        <label>Placement
+          <span class="zp-seg" role="group" aria-label="Qubit placement">
+            <button type="button" data-pl="naive" aria-pressed="false">In order</button>
+            <button type="button" data-pl="opt" aria-pressed="true">Optimised</button>
+          </span>
+        </label>
+      </div>
+      <div class="zp-grid">
+        <div>
+          <div class="zp-stage">
+            <canvas id="zpCv" width="960" height="600" data-export-ready="true" role="img" aria-label="Schematic top view of a neutral-atom processor with readout, entangling and storage zones. The panel beside it describes each step in text."></canvas>
+            <div class="zp-hud"><span id="zpHudL">ready</span><span id="zpHudR"></span></div>
+          </div>
+          <div class="zp-circ"><canvas id="zpCirc" width="960" height="120" data-export-ready="true" role="img" aria-label="The compiled circuit. Each column is one step on the device: a layer of single-qubit pulses or one trip to the entangling zone."></canvas></div>
+          <div class="zp-ctl">
+            <button type="button" class="zp-btn primary" id="zpRun">▶ Run</button>
+            <button type="button" class="zp-btn" id="zpStep">Step ›</button>
+            <button type="button" class="zp-btn" id="zpReset">Reset</button>
+            <label>Speed <select id="zpSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+          </div>
+          <div class="zp-legend" aria-hidden="true">
+            <span><i style="background:#60a5fa"></i>qubit in |0⟩</span>
+            <span><i style="background:#fbbf24"></i>qubit in |1⟩</span>
+            <span><i style="background:transparent;border:2px solid #f472b6"></i>entangled (halo)</span>
+            <span><i style="background:#22d3ee"></i>AOD tweezer beams</span>
+            <span><i style="background:#fb923c"></i>local single-qubit pulse</span>
+            <span><i style="background:#a855f7"></i>global Rydberg pulse</span>
+          </div>
+        </div>
+        <div class="zp-side">
+          <div class="zp-card">
+            <h4>Now</h4>
+            <p class="zp-now" id="zpNow" aria-live="polite"></p>
+          </div>
+          <div class="zp-card zp-state">
+            <h4>State vector · probabilities</h4>
+            <canvas id="zpState" width="560" height="300" data-export-ready="true" aria-label="Probability of every basis state; colour shows the phase of its amplitude."></canvas>
+            <ul class="zp-top4" id="zpTop"></ul>
+          </div>
+          <div class="zp-card">
+            <h4>This compilation</h4>
+            <dl class="zp-kv" id="zpKV"></dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 02 · THE COMPILER ═══════════ -->
+  <section class="section-block anim-in" id="zp-compiler">
+    <p class="zp-num">02 · THE COMPILER</p>
+    <h2 class="section-title">Where an atom sits changes how long the circuit takes</h2>
+    <p class="section-sub">Same circuit, two placements of qubits in the storage row.</p>
+    <div class="zp-two">
+      <div class="zp-panel">
+        <h4>Placement comparison</h4>
+        <table class="zp-cmp no-auto-export" id="zpCmp"></table>
+        <p class="zp-note" id="zpCmpNote"></p>
+      </div>
+      <div class="theory-box" style="margin:0">
+        <h4>Why the order of atoms matters</h4>
+        <p>The moving traps come from a crossed pair of acousto-optic deflectors (AODs): one RF tone per column, one per row, and a trap wherever a row beam crosses a column beam
+          (Bluvstein et al. 2022). In this model two column tones may never pass through each other, since equal frequencies would put both traps in one spot. The grid can only stretch, squeeze and slide, so atoms picked up in one row keep their left-to-right order.</p>
+        <p>Every pair has to land side by side at a gate site. If two pairs interleave in storage (a, c, b, d with pairs ab and cd), no order-preserving move brings both pairs together. The compiler then splits the layer into separate trips, and each trip costs another round of transport and another Rydberg pulse.
+          The optimiser tries every placement (up to 8! = 40,320) and keeps the one with the fewest trips, then the shortest pair spans.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 03 · NOISE ═══════════ -->
+  <section class="section-block anim-in" id="zp-noise">
+    <p class="zp-num">03 · RUN IT 1,000 TIMES</p>
+    <h2 class="section-title">What the hardware actually returns</h2>
+    <p class="section-sub">Each shot is a separate noisy trajectory through the same compiled program, read out with imperfect detection.</p>
+    <p class="amo-eyebrow">Interactive</p>
+    <div class="zp-set">
+      <div class="zp-field"><label for="zpF2">CZ gate fidelity <b id="zpF2V"></b></label><input type="range" id="zpF2" min="0.95" max="1" step="0.0005" value="0.995">
+        <span class="zp-src"><span class="zp-tag lit">lit</span>99.5% for parallel Rydberg CZ gates (Evered et al. 2023); 97.4% in Levine et al. 2019.</span></div>
+      <div class="zp-field"><label for="zpF1">Single-qubit gate fidelity <b id="zpF1V"></b></label><input type="range" id="zpF1" min="0.99" max="1" step="0.0001" value="0.999">
+        <span class="zp-src"><span class="zp-tag ill">illustrative</span>Set from your own benchmarking data.</span></div>
+      <div class="zp-field"><label for="zpEm">Dephasing per atom move <b id="zpEmV"></b></label><input type="range" id="zpEm" min="0" max="0.02" step="0.0005" value="0.002">
+        <span class="zp-src"><span class="zp-tag ill">illustrative</span>Probability of a Z error each time an atom is carried.</span></div>
+      <div class="zp-field"><label for="zpEr">Readout error per qubit <b id="zpErV"></b></label><input type="range" id="zpEr" min="0" max="0.05" step="0.001" value="0.005">
+        <span class="zp-src"><span class="zp-tag ill">illustrative</span>Bit flip at detection.</span></div>
+      <div class="zp-field"><label for="zpV">Transport speed <b id="zpVV"></b></label><input type="range" id="zpV" min="0.1" max="1.5" step="0.05" value="0.55">
+        <span class="zp-src"><span class="zp-tag lit">lit</span>0.55 µm/µs: the average separation speed in Bluvstein et al. 2022 (110 µm move).</span></div>
+      <div class="zp-field"><label for="zpT2">Idle coherence time T₂ <b id="zpT2V"></b></label><input type="range" id="zpT2" min="-2" max="1" step="0.05" value="0">
+        <span class="zp-src"><span class="zp-tag ill">illustrative</span>Every qubit dephases while atoms travel, so slower or longer transport costs fidelity.</span></div>
+    </div>
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+      <button type="button" class="zp-pbtn" id="zpShots">Run 1,000 shots</button>
+      <span class="zp-src" id="zpShotStatus" aria-live="polite" style="margin:0"></span>
+    </div>
+    <div class="zp-tiles" id="zpTiles"></div>
+    <div class="zp-panel">
+      <h4>Measured bit strings (q0 first)</h4>
+      <div class="zp-chart"><canvas id="zpHist" data-export-ready="true" aria-label="Ideal and noisy probabilities of the most frequent measured bit strings."></canvas></div>
+      <p class="zp-note">Noise model: after each single-qubit gate a random Pauli with probability 3(1−F₁)/2, after each CZ a random two-qubit Pauli with probability 5(1−F₂)/4 (both reproduce the average gate fidelity of a depolarizing channel), a Z error per carried atom per move, idle dephasing of every qubit during transport (Z with probability (1 − e<sup>−t/T₂</sup>)/2 per trip), and a bit flip per qubit at readout. Overlap is Σ min(p<sub>ideal</sub>, p<sub>measured</sub>) = 1 − total-variation distance.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 04 · ZONES ═══════════ -->
+  <section class="section-block anim-in" id="zp-zones">
+    <p class="zp-num">04 · WHY ZONES</p>
+    <h2 class="section-title">Separate storage, entangling and readout</h2>
+    <div class="theory-box">
+      <h4>One laser, many gates</h4>
+      <p>A Rydberg CZ needs the two atoms within the blockade radius and away from every other atom. Instead of steering a laser to each pair, the zoned architecture brings the pairs to the laser:
+        Bluvstein et al. split their array into storage, entangling and readout zones and pulse a single global Rydberg laser on every pair in the entangling zone at once,
+        running logical circuits with up to 280 physical qubits (<em>Nature</em> 626, 58, 2024). Atoms waiting in storage never see the Rydberg light, and readout happens away from the qubits still in use.</p>
+      <p>The price is transport. Moving entangled atoms preserves their coherence (Bluvstein et al., <em>Nature</em> 604, 451, 2022), but every trip takes time, which is why a compiler that keeps trips few and short matters.</p>
+    </div>
+    <div class="theory-box">
+      <h4>Reading the state panel</h4>
+      <p>Every basis state $|q_0 q_1\dots\rangle$ is a bar; its height is $|\langle x|\psi\rangle|^2$ (scaled so the tallest bar fills the panel) and its colour is the phase $\arg\langle x|\psi\rangle$. An atom's colour is its own $P(1)$, and its halo is $1 - |\vec r|$, where $\vec r$ is the Bloch vector of its reduced density matrix. For a pure global state $|\vec r| < 1$ means the qubit is entangled with the rest. In a GHZ state every atom is half blue, half amber, and fully haloed.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ 05 · MODEL ═══════════ -->
+  <section class="section-block anim-in" id="zp-model">
+    <p class="zp-num">05 · WHAT THE MODEL DOES</p>
+    <h2 class="section-title">Assumptions</h2>
+    <div class="theory-box">
+      <ul class="zp-list">
+        <li><strong>Gates:</strong> H, X, Z, S, T as local single-qubit pulses; CZ by one global Rydberg pulse on pairs in the entangling zone. CNOT is compiled as H·CZ·H on the target, and adjacent self-inverse gates on the same qubit (H·H, X·X, Z·Z) are cancelled.</li>
+        <li><strong>Scheduling:</strong> as-soon-as-possible layers; each layer's single-qubit gates run together, then its CZ pairs.</li>
+        <li><strong>Transport:</strong> one storage row, one AOD row; atoms keep their left-to-right order; four gate sites. Pairs whose storage intervals overlap need separate trips (greedy interval scheduling). Time = longest move ÷ speed, in and out; gate durations are not included.</li>
+        <li><strong>Geometry is schematic:</strong> zone sizes, spacings and the blockade circle are drawn for clarity, not to scale.</li>
+        <li><strong>Noise:</strong> independent Pauli errors as listed under the histogram; no leakage, atom loss or crosstalk. The estimated fidelity is the product of the per-operation success probabilities.</li>
+      </ul>
+    </div>
+    <div class="section-title" style="font-size:1.1rem;margin-top:1.5rem">Sources</div>
+    <div class="read-links">
+      <a class="read-link" href="https://doi.org/10.1038/s41586-023-06927-3" target="_blank" rel="noopener">Bluvstein et al. (2024), <em>Nature</em> 626, 58 — logical quantum processor based on reconfigurable atom arrays (storage, entangling and readout zones)</a>
+      <a class="read-link" href="https://doi.org/10.1038/s41586-022-04592-6" target="_blank" rel="noopener">Bluvstein et al. (2022), <em>Nature</em> 604, 451 — a quantum processor based on coherent transport of entangled atom arrays (crossed 2D AOD)</a>
+      <a class="read-link" href="https://doi.org/10.1038/s41586-023-06481-y" target="_blank" rel="noopener">Evered et al. (2023), <em>Nature</em> 622, 268 — high-fidelity parallel entangling gates on a neutral-atom quantum computer</a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevLett.123.170503" target="_blank" rel="noopener">Levine et al. (2019), <em>Phys. Rev. Lett.</em> 123, 170503 — parallel implementation of high-fidelity multi-qubit gates with neutral atoms</a>
+    </div>
+  </section>
+
+  </div>
+  </div>
+</main><!-- /page-wrap -->
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="virtual-lab.html">
+        <span class="see-also-icon">🧩</span>
+        <div><div class="see-also-name">Virtual Tweezer Lab</div><div class="see-also-desc">Load, image and sort the array these qubits live in</div></div>
+      </a>
+      <a class="see-also-card" href="fidelity-budget.html">
+        <span class="see-also-icon">📊</span>
+        <div><div class="see-also-name">Rydberg Gate Error Budget</div><div class="see-also-desc">Where the CZ infidelity comes from</div></div>
+      </a>
+      <a class="see-also-card" href="learn-quantum.html">
+        <span class="see-also-icon">🔵</span>
+        <div><div class="see-also-name">Quantum Computing Learning Path</div><div class="see-also-desc">Gates, entanglement and algorithms from scratch</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Zoned Atom Processor &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+<script src="../js/main.js?v=44"></script>
+<script>
+renderNav({ active: 'atom-processor', root: '../' });
+initScrollReveal();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   ZONED ATOM PROCESSOR
+   circuit → CX = H·CZ·H, cancel adjacent self-inverse gates → ASAP layers
+   → AOD-order trips (pairs with overlapping storage intervals cannot share a trip)
+   → placement optimiser (all n! placements, fewest trips then shortest spans)
+   → animated device + exact state vector + noisy Pauli-trajectory shots.
+   window.ZAP exposes the pieces for tests/formula_regression.py.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  /* ── circuits ── */
+  function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  let bvSecret = [1, 0, 1, 1], seed = 7;
+  function circuit(key) {
+    const H = q => ['H', q], X = q => ['X', q], CX = (c, t) => ['CX', c, t], CZ = (a, b) => ['CZ', a, b];
+    if (key === 'bell') return { n: 2, ops: [H(0), CX(0, 1)], expect: 'Equal weight on 00 and 11.' };
+    if (key === 'ghz4') return { n: 4, ops: [H(0), CX(0, 1), CX(0, 2), CX(1, 3)], expect: 'Equal weight on 0000 and 1111.' };
+    if (key === 'ghz8') return { n: 8, ops: [H(0), CX(0, 1), CX(0, 2), CX(1, 3), CX(0, 4), CX(1, 5), CX(2, 6), CX(3, 7)], expect: 'Equal weight on 00000000 and 11111111. The CNOT tree doubles the entangled set each layer.' };
+    if (key === 'grover') return { n: 2, ops: [H(0), H(1), CZ(0, 1), H(0), H(1), X(0), X(1), CZ(0, 1), X(0), X(1), H(0), H(1)], expect: 'One Grover iteration finds the marked state |11⟩ with certainty.' };
+    if (key === 'bv') {
+      const ops = [X(4), H(4)];
+      for (let i = 0; i < 4; i++) ops.push(H(i));
+      for (let i = 0; i < 4; i++) if (bvSecret[i]) ops.push(CX(i, 4));
+      for (let i = 0; i < 4; i++) ops.push(H(i));
+      return { n: 5, ops, expect: `Data qubits read the secret ${bvSecret.join('')} in one query (ancilla q4 is random).` };
+    }
+    const r = mulberry(seed), n = 6, ops = [], g1 = ['H', 'S', 'T', 'X'];
+    for (let L = 0; L < 5; L++) {
+      for (let q = 0; q < n; q++) if (r() < 0.7) ops.push([g1[(r() * 4) | 0], q]);
+      const perm = [...Array(n).keys()].sort(() => r() - 0.5);
+      for (let k = 0; k + 1 < n; k += 2) if (r() < 0.75) ops.push(CZ(Math.min(perm[k], perm[k + 1]), Math.max(perm[k], perm[k + 1])));
+    }
+    return { n, ops, expect: 'A random circuit: no special answer, but a good test of the compiler.' };
+  }
+
+  /* ── compiler ── */
+  function lower(ops) {                                                     // CX → H CZ H, then cancel H·H, X·X, Z·Z
+    const out = [];
+    for (const o of ops) { if (o[0] === 'CX') out.push(['H', o[2]], ['CZ', Math.min(o[1], o[2]), Math.max(o[1], o[2])], ['H', o[2]]); else out.push(o.slice()); }
+    let cancelled = 0, changed = true;
+    while (changed) {
+      changed = false;
+      for (let i = 0; i < out.length; i++) {
+        const o = out[i]; if (o[0] === 'CZ' || !['H', 'X', 'Z'].includes(o[0])) continue;
+        for (let j = i + 1; j < out.length; j++) {
+          const p = out[j], touches = p[0] === 'CZ' ? (p[1] === o[1] || p[2] === o[1]) : p[1] === o[1];
+          if (!touches) continue;
+          if (p[0] === o[0] && p[1] === o[1]) { out.splice(j, 1); out.splice(i, 1); cancelled += 2; changed = true; }
+          break;
+        }
+        if (changed) break;
+      }
+    }
+    return { ops: out, cancelled };
+  }
+  function layers(n, ops) {                                                 // ASAP; each layer is single-qubit or CZ
+    const L = [], last = new Array(n).fill(-1);
+    for (const o of ops) {
+      const qs = o[0] === 'CZ' ? [o[1], o[2]] : [o[1]], kind = o[0] === 'CZ' ? 'cz' : '1q';
+      let i = Math.max(...qs.map(q => last[q])) + 1;
+      while (i < L.length && L[i].kind !== kind) i++;
+      if (i >= L.length) { L.push({ kind, ops: [] }); i = L.length - 1; }
+      L[i].ops.push(o); qs.forEach(q => { last[q] = i; });
+    }
+    return L;
+  }
+  // AOD order: pairs whose storage intervals overlap cannot travel together; also at most `sites` pairs per trip
+  function trips(pairs, pos, sites) {
+    let left = pairs.map(p => { const a = pos[p[1]], b = pos[p[2]]; return { p, lo: Math.min(a, b), hi: Math.max(a, b) }; });
+    const out = [];
+    while (left.length) {
+      left.sort((x, y) => x.hi - y.hi);
+      const take = [], rest = []; let end = -Infinity;
+      for (const it of left) { if (it.lo > end && take.length < sites) { take.push(it); end = it.hi; } else rest.push(it); }
+      out.push(take.sort((x, y) => x.lo - y.lo)); left = rest;
+    }
+    return out;
+  }
+  const SITES = 4;
+  function cost(L, pos) {
+    let t = 0, span = 0;
+    for (const l of L) if (l.kind === 'cz') { t += trips(l.ops, pos, SITES).length; for (const o of l.ops) span += Math.abs(pos[o[1]] - pos[o[2]]); }
+    return [t, span];
+  }
+  function optimise(n, L) {                                                 // exhaustive over placements (n ≤ 8)
+    const pos = [...Array(n).keys()], best = { pos: pos.slice(), c: cost(L, pos) };
+    const used = new Array(n).fill(false), cur = new Array(n);
+    (function rec(k) {
+      if (k === n) { const c = cost(L, cur); if (c[0] < best.c[0] || (c[0] === best.c[0] && c[1] < best.c[1])) { best.c = c; best.pos = cur.slice(); } return; }
+      for (let s = 0; s < n; s++) if (!used[s]) { used[s] = true; cur[k] = s; rec(k + 1); used[s] = false; }
+    })(0);
+    return best.pos;
+  }
+
+  /* ── geometry (µm, schematic) ── */
+  const Y_RO = 10, Y_EN = 45, Y_ST = 80, GATE = [20, 40, 60, 80], HALF = 2.8;
+  const slotX = (s, n) => 50 + (s - (n - 1) / 2) * 10;
+
+  function compile(key, placement) {
+    const C = circuit(key), low = lower(C.ops), L = layers(C.n, low.ops);
+    const pos = placement === 'opt' ? optimise(C.n, L) : [...Array(C.n).keys()];
+    const home = pos.map(s => [slotX(s, C.n), Y_ST]), steps = [];
+    let n1 = 0, n2 = 0, moves = 0, dist = 0, tTrip = 0;
+    for (const l of L) {
+      if (l.kind === '1q') { steps.push({ kind: '1q', gates: l.ops.map(o => ({ g: o[0], q: o[1] })) }); n1 += l.ops.length; continue; }
+      n2 += l.ops.length;
+      for (const tr of trips(l.ops, pos, SITES)) {
+        const k = tr.length, dest = {};
+        let s0 = 0, bestD = Infinity;
+        for (let s = 0; s + k <= SITES; s++) {
+          let d = 0; tr.forEach((it, j) => { const [a, b] = pos[it.p[1]] < pos[it.p[2]] ? [it.p[1], it.p[2]] : [it.p[2], it.p[1]]; d += Math.abs(home[a][0] - (GATE[s + j] - HALF)) + Math.abs(home[b][0] - (GATE[s + j] + HALF)); });
+          if (d < bestD) { bestD = d; s0 = s; }
+        }
+        let far = 0;
+        tr.forEach((it, j) => {
+          const [a, b] = pos[it.p[1]] < pos[it.p[2]] ? [it.p[1], it.p[2]] : [it.p[2], it.p[1]];
+          dest[a] = [GATE[s0 + j] - HALF, Y_EN]; dest[b] = [GATE[s0 + j] + HALF, Y_EN];
+          for (const q of [a, b]) { const d = Math.hypot(dest[q][0] - home[q][0], dest[q][1] - home[q][1]); far = Math.max(far, d); dist += 2 * d; moves += 2; }
+        });
+        tTrip += 2 * far;
+        steps.push({ kind: 'trip', pairs: tr.map(it => [it.p[1], it.p[2]]), dest, sites: tr.map((_, j) => GATE[s0 + j]), far });
+      }
+    }
+    steps.push({ kind: 'read' });
+    const nTrips = steps.filter(s => s.kind === 'trip').length;
+    return { key, n: C.n, ops: C.ops, low: low.ops, cancelled: low.cancelled, L, pos, home, steps, n1, n2, nTrips, moves, dist, tTrip, readDist: Y_ST - Y_RO, expect: C.expect };
+  }
+
+  /* ── state vector ── */
+  const R2 = Math.SQRT1_2;
+  const U = { H: [[R2, 0], [R2, 0], [R2, 0], [-R2, 0]], X: [[0, 0], [1, 0], [1, 0], [0, 0]], Y: [[0, 0], [0, -1], [0, 1], [0, 0]], Z: [[1, 0], [0, 0], [0, 0], [-1, 0]],
+    S: [[1, 0], [0, 0], [0, 0], [0, 1]], T: [[1, 0], [0, 0], [0, 0], [R2, R2]] };
+  function zero(n) { const re = new Float64Array(1 << n), im = new Float64Array(1 << n); re[0] = 1; return { n, re, im }; }
+  const clone = s => ({ n: s.n, re: s.re.slice(), im: s.im.slice() });
+  function apply1(s, g, q) {
+    const u = U[g], b = 1 << q, N = 1 << s.n, re = s.re, im = s.im;
+    for (let i = 0; i < N; i++) if (!(i & b)) {
+      const j = i | b, ar = re[i], ai = im[i], br = re[j], bi = im[j];
+      re[i] = u[0][0] * ar - u[0][1] * ai + u[1][0] * br - u[1][1] * bi; im[i] = u[0][0] * ai + u[0][1] * ar + u[1][0] * bi + u[1][1] * br;
+      re[j] = u[2][0] * ar - u[2][1] * ai + u[3][0] * br - u[3][1] * bi; im[j] = u[2][0] * ai + u[2][1] * ar + u[3][0] * bi + u[3][1] * br;
+    }
+  }
+  function cz(s, a, b) { const m = (1 << a) | (1 << b), N = 1 << s.n; for (let i = 0; i < N; i++) if ((i & m) === m) { s.re[i] = -s.re[i]; s.im[i] = -s.im[i]; } }
+  const probs = s => { const p = new Float64Array(s.re.length); for (let i = 0; i < p.length; i++) p[i] = s.re[i] * s.re[i] + s.im[i] * s.im[i]; return p; };
+  function qubitInfo(s) {                                                   // P(1) and |Bloch vector| of each reduced state
+    const N = 1 << s.n, out = [];
+    for (let q = 0; q < s.n; q++) {
+      const b = 1 << q; let p1 = 0, cr = 0, ci = 0;
+      for (let i = 0; i < N; i++) {
+        const pi = s.re[i] * s.re[i] + s.im[i] * s.im[i]; if (i & b) p1 += pi;
+        else { const j = i | b; cr += s.re[i] * s.re[j] + s.im[i] * s.im[j]; ci += s.im[i] * s.re[j] - s.re[i] * s.im[j]; }
+      }
+      out.push({ p1, r: Math.min(1, Math.hypot(2 * cr, 2 * ci, 1 - 2 * p1)) });
+    }
+    return out;
+  }
+  function runIdeal(P) {                                                    // state after each step
+    let s = zero(P.n); const snaps = [clone(s)];
+    for (const st of P.steps) {
+      if (st.kind === '1q') st.gates.forEach(g => apply1(s, g.g, g.q));
+      else if (st.kind === 'trip') st.pairs.forEach(p => cz(s, p[0], p[1]));
+      snaps.push(clone(s));
+    }
+    return snaps;
+  }
+  const bits = (x, n) => { let t = ''; for (let q = 0; q < n; q++) t += (x >> q) & 1; return t; };   // q0 first
+
+  /* ── noisy shots ── */
+  function sample(p, r) { let u = r, acc = 0; for (let i = 0; i < p.length; i++) { acc += p[i]; if (u < acc) return i; } return p.length - 1; }
+  function shots(P, N, nz) {
+    const p1 = 1.5 * (1 - nz.F1), p2 = 1.25 * (1 - nz.F2), PA = ['X', 'Y', 'Z'], counts = new Map(), rnd = Math.random;
+    for (let k = 0; k < N; k++) {
+      const s = zero(P.n);
+      for (const st of P.steps) {
+        if (st.kind === '1q') for (const g of st.gates) { apply1(s, g.g, g.q); if (rnd() < p1) apply1(s, PA[(rnd() * 3) | 0], g.q); }
+        else if (st.kind === 'trip') {
+          const movers = Object.keys(st.dest).map(Number);
+          for (const q of movers) if (rnd() < nz.em) apply1(s, 'Z', q);
+          for (const pr of st.pairs) {
+            cz(s, pr[0], pr[1]);
+            if (rnd() < p2) { let e = 1 + ((rnd() * 15) | 0); const ea = e & 3, eb = e >> 2; if (ea) apply1(s, PA[ea - 1], pr[0]); if (eb) apply1(s, PA[eb - 1], pr[1]); }
+          }
+          for (const q of movers) if (rnd() < nz.em) apply1(s, 'Z', q);
+        }
+        if (st.kind !== '1q') {                                             // every qubit dephases while the atoms travel
+          const t = (st.kind === 'trip' ? 2 * st.far / nz.v : (Y_ST - Y_RO) / nz.v) * 1e-6, pz = (1 - Math.exp(-t / nz.T2)) / 2;
+          for (let q = 0; q < P.n; q++) if (rnd() < pz) apply1(s, 'Z', q);
+        }
+      }
+      let x = sample(probs(s), rnd());
+      for (let q = 0; q < P.n; q++) if (rnd() < nz.er) x ^= 1 << q;
+      counts.set(x, (counts.get(x) || 0) + 1);
+    }
+    return counts;
+  }
+
+  // product estimate; transport time T enters through idle dephasing, P(no Z error) = (1 + e^(−T/T2))/2 per qubit
+  function fidOf(Q, F) {
+    const T = (Q.tTrip + Q.readDist) / F.v * 1e-6;
+    return Math.pow(F.F1, Q.n1) * Math.pow(F.F2, Q.n2) * Math.pow(1 - F.em, Q.moves) * Math.pow(1 - F.er, Q.n) * Math.pow((1 + Math.exp(-T / F.T2)) / 2, Q.n);
+  }
+  window.ZAP = { fidOf,  circuit, lower, layers, trips, optimise, compile, runIdeal, probs, qubitInfo, bits };
+
+  /* ═════════════ drawing ═════════════ */
+  const cv = $('zpCv'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+  const X = um => 70 + um * 8.2, Y = um => 30 + um * 6.4;
+  const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  const C0 = [96, 165, 250], C1 = [251, 191, 36];
+  function glow(x, y, r, rgb, a) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.3, `rgba(${rgb},${0.95 * a})`); g.addColorStop(1, `rgba(${rgb},0)`);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill();
+  }
+  function zone(y0, y1, rgb, label) {
+    ctx.fillStyle = `rgba(${rgb},.06)`; ctx.strokeStyle = `rgba(${rgb},.28)`; ctx.lineWidth = 1.2;
+    const x0 = X(3), x1 = X(97); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x0, Y(y0), x1 - x0, Y(y1) - Y(y0), 12) : ctx.rect(x0, Y(y0), x1 - x0, Y(y1) - Y(y0)); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = `rgba(${rgb},.85)`; ctx.font = '600 12px JetBrains Mono, monospace'; ctx.textAlign = 'left'; ctx.fillText(label, x0 + 12, Y(y0) + 18);
+  }
+  function backdrop(P) {
+    ctx.fillStyle = '#05070d'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(148,163,184,.07)';
+    for (let x = 30; x < W; x += 30) for (let y = 30; y < H; y += 30) ctx.fillRect(x, y, 1.2, 1.2);
+    zone(2, 18, '45,212,191', 'READOUT'); zone(33, 57, '168,85,247', 'ENTANGLING'); zone(70, 90, '245,158,11', 'STORAGE');
+    ctx.strokeStyle = 'rgba(120,140,175,.35)'; ctx.lineWidth = 1;
+    for (let s = 0; s < P.n; s++) for (const y of [Y_ST, Y_RO]) { ctx.beginPath(); ctx.arc(X(slotX(s, P.n)), Y(y), 11, 0, 2 * Math.PI); ctx.stroke(); }
+    for (const g of GATE) for (const d of [-HALF, HALF]) { ctx.beginPath(); ctx.arc(X(g + d), Y(Y_EN), 10, 0, 2 * Math.PI); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(203,213,225,.45)'; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+    GATE.forEach((g, i) => ctx.fillText('gate site ' + (i + 1), X(g), Y(Y_EN) - 30));
+  }
+  function atom(P, q, x, y, info, opts) {
+    const c = mix(C0, C1, info.p1).join(','), halo = 1 - info.r;
+    if (opts && opts.ryd) glow(x, y, 34, '168,85,247', 0.55 * opts.ryd);
+    if (halo > 0.02) { ctx.strokeStyle = `rgba(244,114,182,${Math.min(1, halo * 1.1)})`; ctx.lineWidth = 2 + 3 * halo; ctx.beginPath(); ctx.arc(x, y, 18, 0, 2 * Math.PI); ctx.stroke(); }
+    glow(x, y, 20, c, 1);
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText('q' + q, x, y + 34);
+  }
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  /* per-step timeline (s at 1×) */
+  const DUR = { '1q': 1.0, trip: 3.0, read: 2.4 };
+  function frame(P, k, u) {                                                 // k = step index (−1 idle), u ∈ [0,1]
+    backdrop(P);
+    const st = k >= 0 ? P.steps[k] : null, before = info[Math.max(0, k)], after = info[k + 1] || before;
+    const posNow = P.home.map(h => h.slice());
+    let beams = null, ryd = 0, useAfter = false, readBits = null;
+    if (st && st.kind === '1q') {
+      useAfter = u > 0.55;
+      const a = Math.sin(Math.PI * Math.min(1, u / 0.9));
+      for (const g of st.gates) {
+        const x = X(P.home[g.q][0]), y = Y(Y_ST);
+        const gr = ctx.createLinearGradient(x, 0, x, y); gr.addColorStop(0, 'rgba(251,146,60,0)'); gr.addColorStop(1, `rgba(251,146,60,${0.75 * a})`);
+        ctx.strokeStyle = gr; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, y); ctx.stroke();
+        ctx.fillStyle = `rgba(251,146,60,${0.25 + 0.75 * a})`; ctx.strokeStyle = 'rgba(255,237,213,.9)'; ctx.lineWidth = 1;
+        ctx.fillRect(x - 13, y - 52, 26, 22); ctx.fillStyle = '#1a0f05'; ctx.font = '700 13px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(g.g, x, y - 36);
+      }
+    } else if (st && st.kind === 'trip') {
+      // 0–0.38 move in · 0.38–0.62 pulse · 0.62–1 move out
+      const movers = Object.keys(st.dest).map(Number);
+      let f = 0;
+      if (u < 0.38) f = ease(u / 0.38); else if (u < 0.62) f = 1; else f = 1 - ease((u - 0.62) / 0.38);
+      for (const q of movers) { const h = P.home[q], d = st.dest[q]; posNow[q] = [h[0] + (d[0] - h[0]) * f, h[1] + (d[1] - h[1]) * f]; }
+      if (u < 0.4 || u > 0.6) beams = movers;
+      if (u >= 0.38 && u < 0.62) ryd = Math.sin(Math.PI * (u - 0.38) / 0.24);
+      useAfter = u >= 0.5;
+      if (ryd > 0) {
+        ctx.fillStyle = `rgba(168,85,247,${0.18 * ryd})`; ctx.fillRect(X(3), Y(33), X(97) - X(3), Y(57) - Y(33));
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = `rgba(216,180,254,${0.8 * ryd})`; ctx.lineWidth = 1.5;
+        for (const g of st.sites) { ctx.beginPath(); ctx.arc(X(g), Y(Y_EN), 54, 0, 2 * Math.PI); ctx.stroke(); }
+        ctx.setLineDash([]);
+      }
+      if (beams) {
+        const yb = Y(posNow[movers[0]][1]);
+        ctx.strokeStyle = 'rgba(34,211,238,.22)'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(X(3), yb); ctx.lineTo(X(97), yb); ctx.stroke();
+        for (const q of movers) { const x = X(posNow[q][0]); ctx.beginPath(); ctx.moveTo(x, Y(0)); ctx.lineTo(x, Y(92)); ctx.stroke(); }
+        ctx.strokeStyle = 'rgba(34,211,238,.9)'; ctx.lineWidth = 1.6;
+        for (const q of movers) { ctx.beginPath(); ctx.arc(X(posNow[q][0]), Y(posNow[q][1]), 15, 0, 2 * Math.PI); ctx.stroke(); }
+      }
+    } else if (st && st.kind === 'read') {
+      const f = ease(Math.min(1, u / 0.5));
+      for (let q = 0; q < P.n; q++) posNow[q] = [P.home[q][0], Y_ST + (Y_RO - Y_ST) * f];
+      if (u < 0.5) {
+        ctx.strokeStyle = 'rgba(34,211,238,.22)'; ctx.lineWidth = 3; const yb = Y(posNow[0][1]);
+        ctx.beginPath(); ctx.moveTo(X(3), yb); ctx.lineTo(X(97), yb); ctx.stroke();
+        for (let q = 0; q < P.n; q++) { const x = X(posNow[q][0]); ctx.beginPath(); ctx.moveTo(x, Y(0)); ctx.lineTo(x, Y(92)); ctx.stroke(); }
+      } else readBits = shot1;
+      useAfter = true;
+    }
+    const inf = useAfter ? after : before;
+    for (let q = 0; q < P.n; q++) {
+      const [ux, uy] = posNow[q], x = X(ux), y = Y(uy);
+      if (readBits) {
+        const b = (readBits >> q) & 1, a = Math.min(1, (u - 0.5) / 0.2);
+        if (b) glow(x, y, 26, '255,236,179', a); else { ctx.strokeStyle = `rgba(100,116,139,${a})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 9, 0, 2 * Math.PI); ctx.stroke(); }
+        ctx.fillStyle = `rgba(226,232,240,${a})`; ctx.font = '700 14px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(String(b), x, y + 36);
+        if (u < 0.7) atom(P, q, x, y, inf[q], null);
+        continue;
+      }
+      atom(P, q, x, y, inf[q], st && st.kind === 'trip' && st.dest[q] !== undefined ? { ryd } : null);
+    }
+    if (readBits && u > 0.7) {
+      ctx.fillStyle = 'rgba(226,232,240,.95)'; ctx.font = '700 16px JetBrains Mono, monospace'; ctx.textAlign = 'right';
+      ctx.fillText('shot: ' + bits(readBits, P.n), X(96), Y(27));
+    }
+  }
+
+  /* circuit diagram: one column per device step */
+  const cc = $('zpCirc'), cx2 = cc.getContext('2d');
+  function drawCircuit(P, k) {
+    const cols = P.steps.length, colW = 46, left = 40, rowH = 22, h = 22 + P.n * rowH, wl = left + cols * colW + 20;
+    cc.width = 2 * wl; cc.height = 2 * h; cc.style.width = wl + 'px'; cc.style.height = h + 'px';
+    const g = cx2; g.setTransform(2, 0, 0, 2, 0, 0); g.fillStyle = '#070b14'; g.fillRect(0, 0, wl, h);
+    const yq = q => 16 + q * rowH;
+    g.strokeStyle = 'rgba(148,163,184,.4)'; g.lineWidth = 1;
+    for (let q = 0; q < P.n; q++) { g.beginPath(); g.moveTo(left - 6, yq(q)); g.lineTo(left + cols * colW, yq(q)); g.stroke(); g.fillStyle = '#94a3b8'; g.font = '11px JetBrains Mono, monospace'; g.textAlign = 'right'; g.fillText('q' + q, left - 10, yq(q) + 4); }
+    P.steps.forEach((st, i) => {
+      const x = left + i * colW + colW / 2;
+      if (i === k) { g.fillStyle = 'rgba(59,130,246,.18)'; g.fillRect(x - colW / 2 + 2, 2, colW - 4, h - 4); }
+      if (i < k) { g.fillStyle = 'rgba(148,163,184,.05)'; g.fillRect(x - colW / 2 + 2, 2, colW - 4, h - 4); }
+      if (st.kind === '1q') for (const gt of st.gates) {
+        g.fillStyle = '#fb923c'; g.fillRect(x - 10, yq(gt.q) - 9, 20, 18); g.fillStyle = '#1a0f05'; g.font = '700 11px JetBrains Mono, monospace'; g.textAlign = 'center'; g.fillText(gt.g, x, yq(gt.q) + 4);
+      } else if (st.kind === 'trip') {
+        st.pairs.forEach((p, j) => {
+          const xx = x - 8 + (st.pairs.length > 1 ? 16 * j / (st.pairs.length - 1) : 8);
+          g.strokeStyle = '#c084fc'; g.lineWidth = 2; g.beginPath(); g.moveTo(xx, yq(p[0])); g.lineTo(xx, yq(p[1])); g.stroke();
+          g.fillStyle = '#c084fc'; for (const q of p) { g.beginPath(); g.arc(xx, yq(q), 4, 0, 2 * Math.PI); g.fill(); }
+        });
+      } else { for (let q = 0; q < P.n; q++) { g.strokeStyle = '#5eead4'; g.lineWidth = 1.4; g.strokeRect(x - 9, yq(q) - 8, 18, 16); g.beginPath(); g.arc(x, yq(q) + 5, 6, Math.PI, 2 * Math.PI); g.stroke(); } }
+    });
+  }
+
+  /* state panel */
+  const sc = $('zpState'), sg = sc.getContext('2d');
+  function drawState(P, s) {
+    const N = 1 << P.n, p = probs(s), Wd = sc.width, Hh = sc.height, pad = 18, bw = (Wd - 2 * pad) / N;
+    sg.fillStyle = '#0a1120'; sg.fillRect(0, 0, Wd, Hh);
+    sg.strokeStyle = 'rgba(148,163,184,.25)'; sg.beginPath(); sg.moveTo(pad, Hh - 26); sg.lineTo(Wd - pad, Hh - 26); sg.stroke();
+    let pm = 0; for (let i = 0; i < N; i++) pm = Math.max(pm, p[i]);
+    sg.fillStyle = '#7f93ad'; sg.font = '18px JetBrains Mono, monospace'; sg.textAlign = 'right'; sg.fillText(`tallest bar ${(100 * pm).toFixed(1)}%`, Wd - pad, 20);
+    for (let i = 0; i < N; i++) {
+      const h = p[i] / pm * (Hh - 60), ph = Math.atan2(s.im[i], s.re[i]), hue = ((ph / (2 * Math.PI)) * 360 + 360 + 210) % 360;
+      sg.fillStyle = `hsl(${hue},80%,62%)`; sg.fillRect(pad + i * bw + (bw > 4 ? 1 : 0), Hh - 26 - h, Math.max(1, bw - (bw > 4 ? 2 : 0)), h);
+      if (p[i] > 0.12 * pm && p[i] > 0.05 && N <= 32) { sg.fillStyle = '#cbd5e1'; sg.font = '600 20px JetBrains Mono, monospace'; sg.textAlign = 'center'; sg.fillText(bits(i, P.n), pad + (i + 0.5) * bw, Hh - 8); }
+    }
+    if (N > 32) { sg.fillStyle = '#7f93ad'; sg.font = '19px JetBrains Mono, monospace'; sg.textAlign = 'left'; sg.fillText(`${N} basis states`, pad, Hh - 8); }
+    const top = [...p].map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]).filter(t => t[0] > 1e-9).slice(0, 4);
+    $('zpTop').innerHTML = top.map(([v, i]) => { const ph = Math.atan2(s.im[i], s.re[i]) * 180 / Math.PI; return `<li><span>|${bits(i, P.n)}⟩</span><span>${(100 * v).toFixed(1)}%${Math.abs(ph) > 0.5 ? ` · ${ph.toFixed(0)}°` : ''}</span></li>`; }).join('');
+  }
+
+  /* ═════════════ app state ═════════════ */
+  let P = null, snaps = null, info = null, k = -1, u = 1, playing = false, raf = 0, last = null, shot1 = 0, rmT = 0, placement = 'opt', tPhys = 0;
+  const v = () => +$('zpV').value;
+  function stepTime(st) { return st.kind === 'trip' ? 2 * st.far / v() : st.kind === 'read' ? (Y_ST - Y_RO) / v() : 0; }
+  function build() {
+    stop(); P = compile($('zpPreset').value, placement); snaps = runIdeal(P); info = snaps.map(qubitInfo);
+    const pf = probs(snaps[snaps.length - 1]); shot1 = sample(pf, Math.random());
+    k = -1; u = 1; tPhys = 0; render(); describe(); kv(); compare(); histReset();
+  }
+  function render() {
+    frame(P, k, u); drawCircuit(P, k);
+    drawState(P, snaps[k < 0 ? 0 : (u >= 0.5 || P.steps[k].kind === 'read' ? k + 1 : k)]);
+    $('zpHudL').textContent = k < 0 ? `${P.n} qubits · ready` : `step ${k + 1} of ${P.steps.length} · ${P.steps[k].kind === '1q' ? 'local pulses' : P.steps[k].kind === 'trip' ? 'AOD trip + Rydberg pulse' : 'readout'}`;
+    $('zpHudR').textContent = `transport ${tPhys.toFixed(0)} µs`;
+  }
+  function describe() {
+    const el = $('zpNow');
+    if (k < 0) { el.innerHTML = `<b>${$('zpPreset').selectedOptions[0].text}.</b> ${P.expect} Press Run or Step.`; return; }
+    const st = P.steps[k];
+    if (st.kind === '1q') el.innerHTML = `<b>Local pulses:</b> ${st.gates.map(g => `${g.g} on q${g.q}`).join(', ')}. Addressing beams hit only these atoms, all at once.`;
+    else if (st.kind === 'trip') el.innerHTML = `<b>Trip:</b> the AOD lifts ${st.pairs.map(p => `q${p[0]}–q${p[1]}`).join(', ')} into the entangling zone, keeping their order. One global Rydberg pulse applies CZ to every pair at once, then they go home (${(2 * st.far / v()).toFixed(0)} µs of transport).`;
+    else el.innerHTML = `<b>Readout:</b> every atom moves to the readout zone and is imaged. This shot gave <b>${bits(shot1, P.n)}</b>. Run 1,000 shots below to see the distribution.`;
+  }
+  function kv() {
+    const F = nz(), fid = fidOf(P, F);
+    const rows = [['Qubits', P.n], ['Gates after compiling', `${P.n1} 1q · ${P.n2} CZ`], ['Gates cancelled', P.cancelled], ['Device steps', P.steps.length],
+      ['Rydberg pulses (trips)', P.nTrips], ['Atom moves', P.moves], ['Transport time', `${((P.tTrip + P.readDist) / v()).toFixed(0)} µs`], ['Estimated fidelity', (100 * fid).toFixed(1) + '%']];
+    $('zpKV').innerHTML = rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('');
+  }
+  function compare() {
+    const a = compile(P.key, 'naive'), b = compile(P.key, 'opt'), F = nz();
+    const fid = Q => fidOf(Q, F);
+    const rows = [
+      ['Storage order (slot → qubit)', a.pos.map((_, s) => 'q' + a.pos.indexOf(s)).join(' '), b.pos.map((_, s) => 'q' + b.pos.indexOf(s)).join(' '), null],
+      ['Rydberg pulses (trips)', a.nTrips, b.nTrips, 'lo'], ['Atom moves', a.moves, b.moves, 'lo'],
+      ['Transport distance', a.dist.toFixed(0) + ' µm', b.dist.toFixed(0) + ' µm', 'lo', a.dist, b.dist],
+      ['Transport time', ((a.tTrip + a.readDist) / v()).toFixed(0) + ' µs', ((b.tTrip + b.readDist) / v()).toFixed(0) + ' µs', 'lo', a.tTrip, b.tTrip],
+      ['Estimated fidelity', (100 * fid(a)).toFixed(1) + '%', (100 * fid(b)).toFixed(1) + '%', 'hi', fid(a), fid(b)],
+    ];
+    $('zpCmp').innerHTML = '<thead><tr><th scope="col"></th><th scope="col">In order</th><th scope="col">Optimised</th></tr></thead><tbody>' + rows.map(r => {
+      const va = r[4] !== undefined ? r[4] : r[1], vb = r[5] !== undefined ? r[5] : r[2];
+      const wa = r[3] === 'lo' ? va < vb - 1e-9 : r[3] === 'hi' ? va > vb + 1e-9 : false, wb = r[3] === 'lo' ? vb < va - 1e-9 : r[3] === 'hi' ? vb > va + 1e-9 : false;
+      return `<tr><td>${r[0]}</td><td class="${wa ? 'win' : ''}">${r[1]}</td><td class="${wb ? 'win' : ''}">${r[2]}</td></tr>`;
+    }).join('') + '</tbody>';
+    $('zpCmpNote').textContent = a.nTrips > b.nTrips
+      ? `Placing the qubits in a different order saves ${a.nTrips - b.nTrips} trip${a.nTrips - b.nTrips > 1 ? 's' : ''}: pairs that interleave in index order sit next to each other once reordered.`
+      : a.dist > b.dist + 1e-6 ? 'Same number of trips either way, but the optimised order shortens the moves.' : 'For this circuit the natural order is already as good as it gets.';
+  }
+
+  /* playback */
+  function stop() { playing = false; cancelAnimationFrame(raf); clearTimeout(rmT); last = null; $('zpRun').textContent = '▶ Run'; }
+  function advance() { if (k >= 0 && k < P.steps.length) tPhys += stepTime(P.steps[k]); }
+  function tick(t) {
+    const dt = last === null ? 0 : Math.min(0.1, (t - last) / 1000); last = t;
+    u += dt * +$('zpSpeed').value / DUR[P.steps[k].kind];
+    if (u >= 1) { if (k >= P.steps.length - 1) { u = 1; render(); stop(); $('zpRun').textContent = '↻ Run again'; return; } advance(); k++; u = 0; describe(); }
+    render(); raf = requestAnimationFrame(tick);
+  }
+  function play() {
+    if (k >= P.steps.length - 1 && u >= 1) { k = -1; u = 1; tPhys = 0; shot1 = sample(probs(snaps[snaps.length - 1]), Math.random()); }
+    playing = true; $('zpRun').textContent = '❚❚ Pause';
+    if (k < 0) { k = 0; u = 0; describe(); }
+    if (reduced) {
+      const hop = () => { u = 1; render(); describe(); if (k >= P.steps.length - 1) { stop(); return; } rmT = setTimeout(() => { advance(); k++; hop(); }, 900); };
+      hop(); return;
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  $('zpRun').addEventListener('click', () => (playing ? stop() : play()));
+  $('zpStep').addEventListener('click', () => {
+    stop();
+    if (k >= P.steps.length - 1 && u >= 1) { k = -1; tPhys = 0; shot1 = sample(probs(snaps[snaps.length - 1]), Math.random()); }
+    if (k >= 0 && u < 1) u = 1; else { advance(); k++; u = 1; }
+    render(); describe();
+  });
+  $('zpReset').addEventListener('click', () => { stop(); k = -1; u = 1; tPhys = 0; render(); describe(); });
+  $('zpPreset').addEventListener('change', () => { $('zpBVwrap').hidden = $('zpPreset').value !== 'bv'; $('zpReroll').hidden = $('zpPreset').value !== 'random'; build(); });
+  $('zpReroll').addEventListener('click', () => { seed = (seed * 48271 + 11) % 2147483647; build(); });
+  const bitsEl = $('zpBits');
+  bvSecret.forEach((b, i) => { const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 's' + i; btn.setAttribute('aria-pressed', b ? 'true' : 'false');
+    btn.addEventListener('click', () => { bvSecret[i] ^= 1; btn.setAttribute('aria-pressed', bvSecret[i] ? 'true' : 'false'); build(); }); bitsEl.appendChild(btn); });
+  document.querySelectorAll('.zp-seg button').forEach(b => b.addEventListener('click', () => {
+    placement = b.dataset.pl; document.querySelectorAll('.zp-seg button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); build();
+  }));
+
+  /* ═════════════ noise + histogram ═════════════ */
+  const nz = () => ({ F2: +$('zpF2').value, F1: +$('zpF1').value, em: +$('zpEm').value, er: +$('zpEr').value, v: v(), T2: Math.pow(10, +$('zpT2').value) });
+  function noiseLabels() {
+    const F = nz();
+    $('zpF2V').textContent = (100 * F.F2).toFixed(2) + '%'; $('zpF1V').textContent = (100 * F.F1).toFixed(2) + '%';
+    $('zpEmV').textContent = (100 * F.em).toFixed(2) + '%'; $('zpErV').textContent = (100 * F.er).toFixed(1) + '%'; $('zpVV').textContent = v().toFixed(2) + ' µm/µs'; $('zpT2V').textContent = F.T2 >= 1 ? F.T2.toFixed(F.T2 >= 10 ? 0 : 1) + ' s' : (1000 * F.T2).toFixed(0) + ' ms';
+  }
+  ['zpF2', 'zpF1', 'zpEm', 'zpEr', 'zpV', 'zpT2'].forEach(id => $(id).addEventListener('input', () => { noiseLabels(); kv(); compare(); if (P) render(); clearTimeout(shDeb); shDeb = setTimeout(runShots, 500); }));
+  let shDeb = 0, chart = null, shTok = 0;
+  const css = vv => getComputedStyle(document.documentElement).getPropertyValue(vv).trim() || '#888';
+  function histReset() { shTok++; clearTimeout(shDeb); shDeb = setTimeout(runShots, 300); }
+  function runShots() {
+    const tok = ++shTok, Pn = P, N = 1000, F = nz(), counts = new Map(); let done = 0;
+    $('zpShots').disabled = true; $('zpShotStatus').textContent = 'running…';
+    const chunk = () => {
+      if (tok !== shTok) return;
+      const c = shots(Pn, Math.min(100, N - done), F); c.forEach((val, key) => counts.set(key, (counts.get(key) || 0) + val)); done += Math.min(100, N - done);
+      if (done < N) { $('zpShotStatus').textContent = `${done} / ${N}`; setTimeout(chunk, 0); return; }
+      $('zpShots').disabled = false; $('zpShotStatus').textContent = `${N} shots`;
+      showHist(Pn, counts, N, F);
+    };
+    setTimeout(chunk, 0);
+  }
+  function showHist(Pn, counts, N, F) {
+    const ideal = probs(snaps[snaps.length - 1]), keys = new Set();
+    [...ideal].map((p, i) => [p, i]).sort((a, b) => b[0] - a[0]).slice(0, 8).forEach(t => { if (t[0] > 1e-9) keys.add(t[1]); });
+    [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).forEach(t => keys.add(t[0]));
+    const ks = [...keys].sort((a, b) => (ideal[b] - ideal[a]) || ((counts.get(b) || 0) - (counts.get(a) || 0))).slice(0, 14);
+    let overlap = 0; for (let i = 0; i < ideal.length; i++) overlap += Math.min(ideal[i], (counts.get(i) || 0) / N);
+    const fid = fidOf(Pn, F);
+    let succ = null, succLabel = '';
+    if (Pn.key === 'bv') { succ = 0; counts.forEach((c, x) => { if (bits(x, 5).slice(0, 4) === bvSecret.join('')) succ += c; }); succ /= N; succLabel = `data qubits = ${bvSecret.join('')}`; }
+    else if (Pn.key === 'grover') { succ = (counts.get(3) || 0) / N; succLabel = 'found |11⟩'; }
+    else if (Pn.key.startsWith('ghz') || Pn.key === 'bell') { const all = (1 << Pn.n) - 1; succ = ((counts.get(0) || 0) + (counts.get(all) || 0)) / N; succLabel = 'all-0 or all-1'; }
+    const t = [
+      ['Overlap with ideal distribution', (100 * overlap).toFixed(1) + '%', `1 − TVD, ${N} shots`, true],
+      ['Estimated circuit fidelity', (100 * fid).toFixed(1) + '%', `F₁<sup>${Pn.n1}</sup> · F₂<sup>${Pn.n2}</sup> · move, idle & readout terms`],
+    ];
+    if (succ !== null) t.push(['Right answer', (100 * succ).toFixed(1) + '%', succLabel]);
+    t.push(['Distinct bit strings seen', String(counts.size), `of ${1 << Pn.n} possible`]);
+    $('zpTiles').innerHTML = t.map(x => `<div class="zp-tile${x[3] ? ' zp-hero' : ''}"><div class="zp-k">${x[0]}</div><div class="zp-v">${x[1]}</div><div class="zp-s">${x[2]}</div></div>`).join('');
+    if (!window.Chart) return;
+    const tc = css('--text-secondary'), gc = css('--border-med');
+    const data = { labels: ks.map(x => bits(x, Pn.n)), datasets: [
+      { label: 'ideal', data: ks.map(x => ideal[x]), backgroundColor: 'rgba(100,116,139,.55)' },
+      { label: 'noisy, 1,000 shots', data: ks.map(x => (counts.get(x) || 0) / N), backgroundColor: 'rgba(59,130,246,.85)' },
+    ] };
+    if (chart) { chart.data = data; Object.assign(chart.options.scales.x.ticks, { color: tc }); Object.assign(chart.options.scales.y.ticks, { color: tc }); chart.options.scales.y.grid.color = gc; chart.options.plugins.legend.labels.color = tc; chart.update('none'); return; }
+    chart = new Chart($('zpHist'), { type: 'bar', data,
+      options: { responsive: true, maintainAspectRatio: false, animation: false,
+        scales: { x: { ticks: { color: tc, font: { family: 'JetBrains Mono' }, maxRotation: 60, autoSkip: false }, grid: { display: false } },
+                  y: { min: 0, title: { display: true, text: 'probability', color: tc }, ticks: { color: tc }, grid: { color: gc } } },
+        plugins: { legend: { labels: { color: tc } }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${(100 * c.parsed.y).toFixed(1)}%` } } } } });
+  }
+  $('zpShots').addEventListener('click', runShots);
+  new MutationObserver(() => { if (chart) { const tc = css('--text-secondary'); chart.options.scales.x.ticks.color = tc; chart.options.scales.y.ticks.color = tc; chart.options.scales.y.title.color = tc; chart.options.scales.y.grid.color = css('--border-med'); chart.options.plugins.legend.labels.color = tc; chart.update('none'); } })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  window.addEventListener('amo:print', () => { stop(); k = P.steps.length - 1; u = 1; render(); describe(); });
+
+  noiseLabels(); build();
+})();
+</script>
+<div id="amo-nav-ready" hidden></div>
+</body>
+</html>

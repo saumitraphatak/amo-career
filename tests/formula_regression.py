@@ -653,6 +653,65 @@ def test_virtual_lab_model() -> None:
     assert 'href="virtual-lab.html"' in read("pages/start-here.html")
 
 
+def test_atom_processor_compiler() -> None:
+    """Zoned Atom Processor (2026-11-19): AOD-order trips, placement optimiser, algorithm outputs, noise conversions."""
+    import itertools
+    page = read("pages/atom-processor.html")
+
+    def trips(pairs, pos, sites=4):                     # same greedy interval scheduling as the page
+        left = sorted(((min(pos[a], pos[b]), max(pos[a], pos[b])) for a, b in pairs), key=lambda t: t[1])
+        n = 0
+        while left:
+            end, take, rest = -1, 0, []
+            for lo, hi in left:
+                if lo > end and take < sites:
+                    take += 1; end = hi
+                else:
+                    rest.append((lo, hi))
+            n += 1; left = rest
+        return n
+    ghz8 = [[(0, 1)], [(0, 2), (1, 3)], [(0, 4), (1, 5), (2, 6), (3, 7)]]
+    ident = list(range(8))
+    assert sum(trips(l, ident) for l in ghz8) == 7
+    best = min(sum(trips(l, p) for l in ghz8) for p in itertools.permutations(range(8)))
+    assert best == 3                                      # one trip per CNOT layer, e.g. bit-reversed order
+    bitrev = [int(f"{q:03b}"[::-1], 2) for q in range(8)]
+    assert sum(trips(l, bitrev) for l in ghz8) == 3
+    assert "while (left.length) {" in page and "if (it.lo > end && take.length < sites)" in page
+
+    # tiny state-vector check: Grover finds |11>, BV reads the secret (q0 first)
+    def run(n, ops):
+        amp = [0j] * (1 << n); amp[0] = 1
+        r = 1 / math.sqrt(2)
+        for g, *q in ops:
+            if g == "CZ":
+                m = (1 << q[0]) | (1 << q[1]); amp = [-a if (i & m) == m else a for i, a in enumerate(amp)]
+                continue
+            b = 1 << q[0]; new = amp[:]
+            for i in range(1 << n):
+                if i & b: continue
+                a0, a1 = amp[i], amp[i | b]
+                if g == "H": new[i], new[i | b] = r * (a0 + a1), r * (a0 - a1)
+                elif g == "X": new[i], new[i | b] = a1, a0
+            amp = new
+        return [abs(a) ** 2 for a in amp]
+    gro = run(2, [("H", 0), ("H", 1), ("CZ", 0, 1), ("H", 0), ("H", 1), ("X", 0), ("X", 1), ("CZ", 0, 1), ("X", 0), ("X", 1), ("H", 0), ("H", 1)])
+    assert abs(gro[3] - 1) < 1e-12
+    secret = [1, 0, 1, 1]
+    ops = [("X", 4)] + [("H", i) for i in range(4)] + [("CZ", i, 4) for i in range(4) if secret[i]] + [("H", i) for i in range(4)]
+    p = run(5, ops)                                       # lowered BV: H on the ancilla cancels between CNOTs
+    data = sum(p[i] for i in range(32) if [(i >> q) & 1 for q in range(4)] == secret)
+    assert abs(data - 1) < 1e-12
+    # depolarizing conversions: F_avg = 1 - 2p/3 (one qubit), 1 - 4p/5 (two qubits)
+    for F in (0.99, 0.995):
+        assert abs((1 - 2 * (1.5 * (1 - F)) / 3) - F) < 1e-12 and abs((1 - 4 * (1.25 * (1 - F)) / 5) - F) < 1e-12
+    assert "const p1 = 1.5 * (1 - nz.F1), p2 = 1.25 * (1 - nz.F2)" in page
+    for doi in ["10.1038/s41586-023-06927-3", "10.1038/s41586-022-04592-6", "10.1038/s41586-023-06481-y", "10.1103/PhysRevLett.123.170503"]:
+        assert doi in page, doi
+    assert "0.55 µm/µs" in page and "up to 280 physical qubits" in page
+    assert "key: 'atom-processor'" in read("js/main.js") and 'QC 07' in read("home.html")
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -680,6 +739,7 @@ def main() -> None:
         test_explainer_sweep_2026_11c,
         test_citation_and_contrast_audit_2026_11,
         test_virtual_lab_model,
+        test_atom_processor_compiler,
     ]
     for test in tests:
         test()

@@ -36,6 +36,7 @@ pages/fidelity-budget.html
 pages/rb-explorer.html
 pages/dd-playground.html
 pages/remote-entanglement.html
+pages/atom-processor.html
 pages/amo-groups.html
 pages/paper-syllabus.html
 pages/qc-landscape.html
@@ -58,6 +59,7 @@ All figures below are computed from the page's own formulas and inputs; schemati
 - **Detection statistics:** imaging-calculator's histogram simulator reports each preset's SNR = (μ_b − μ_d)/√(σ_b² + σ_d²) and optimal-threshold fidelity with exact Gaussian tails (e.g. SNR 16.8 → overlap error ≈ 10⁻⁴⁰, far below the loss- and tail-limited fidelities of real experiments; measured benchmark quoted: Covey et al., PRL 122, 173201 (2019), imaging fidelity 0.99991(1), survival 0.99932(8)). Its section-06 preview simulates shots from the calculator's own N_sig, N_bg, N_dark and camera model (EMCCD gain register as n → Gamma(n, 1), Basden, Haniff & Mackay, MNRAS 345, 985 (2003)) and reports F = 1 − P_miss − P_false (the calculator above quotes 1 − (P_miss + P_false)/2).
 - **Live cooling:** cooling-simulator's velocity histogram relaxes to the Doppler temperature T = T_D(1 + s + (2δ/Γ)²)/(4|δ|/Γ), minimum T_D = ℏΓ/2k_B at δ = −Γ/2.
 - **Virtual Tweezer Lab:** virtual-lab simulates load → image → rearrange → verify → entangle → read out on a magma-mapped camera canvas built from individually placed Poisson photons; the defect-free metric uses the true occupancy, and each hole is attributed to one cause (not enough atoms, false detection, imaging loss, move loss, collision with a missed atom, background-gas loss).
+- **Zoned Atom Processor:** atom-processor animates AOD trips between storage, entangling and readout zones over an exact state vector; its compiler counts the extra trips that interleaved pairs cost and searches all qubit placements.
 - **Accessibility:** every looping animation has a Pause button and honours prefers-reduced-motion (the 2D canvas loops start paused on a still frame); canvases follow the dark (default) and light themes; pages fit 360–390 px phone widths; symbols keep their case inside uppercase labels (γ/2π is not shown as Γ/2Π).
 
 ---
@@ -1125,6 +1127,22 @@ One shot of a neutral-atom tweezer quantum computer, animated on a simulated cam
 $$P_{\rm no\,rearrangement} = p^{K^2}, \qquad P_{\rm enough\,atoms} = P\big(\mathrm{Bin}(M^2, p) \ge K^2\big)$$
 
 Sources: Schlosser et al., Nature 411, 1024 (2001); Brown et al., PRX 9, 011057 (2019) (89% in one 0.63 mK trap, 80% for 100 traps); Barredo et al., Science 354, 1021 (2016); Endres et al., Science 354, 1024 (2016); Evered et al., Nature 622, 268 (2023); Norcia et al., PRX Quantum 5, 030316 (2024) (1225 sites, 99% occupancy by iterative assembly); Chiu et al., Nature 646, 1075 (2025) (over 3,000 atoms for more than 2 h, 300,000 atoms/s reloading); Manetsch et al., Nature (2025) (6100 atoms). Move loss, move time, vacuum lifetime, photon numbers and imaging survival defaults are illustrative.
+
+---
+
+## TOOL 25: ZONED ATOM PROCESSOR (simulator)
+**URL:** https://amotoolkit.com/pages/atom-processor.html
+**Accent color:** #2c4a63 (blue)
+
+A circuit compiled onto a schematic zoned neutral-atom processor and animated step by step, with an exact state vector underneath.
+
+**Compiler:** CNOT → H·CZ·H on the target; adjacent self-inverse gates on one qubit (H·H, X·X, Z·Z) cancelled; as-soon-as-possible layers (single-qubit pulses, then CZ pairs). Transport uses one storage row and one AOD row whose atoms keep their left-to-right order, with four gate sites; pairs whose storage intervals overlap cannot share a trip (greedy interval scheduling), and each trip is one global Rydberg pulse. The placement optimiser tries all n! storage orders (n ≤ 8) and keeps the fewest trips, then the shortest pair spans. Example: the log-depth GHZ-8 tree needs 7 trips in index order and 3 in the bit-reversed order the optimiser finds.
+
+**Display:** atom colour = its own P(1); pink halo = 1 − |r|, r the Bloch vector of the reduced state (entanglement for a pure global state); state panel bars = |⟨x|ψ⟩|² coloured by phase.
+
+**Noise (shots):** random Pauli after each 1q gate with probability 3(1−F₁)/2 and after each CZ with 5(1−F₂)/4 (depolarizing channels with average fidelity F), Z per carried atom per move, idle dephasing (1 − e^(−t/T₂))/2 per qubit per trip, readout bit flips. Estimated fidelity = product of per-operation success probabilities. Overlap = Σ min(p_ideal, p_measured).
+
+Sources: Bluvstein et al., Nature 626, 58 (2024) (storage, entangling and readout zones; single global Rydberg laser; up to 280 physical qubits); Bluvstein et al., Nature 604, 451 (2022) (crossed 2D AOD transport; 0.55 µm/µs average separation speed); Evered et al., Nature 622, 268 (2023) (99.5% CZ); Levine et al., PRL 123, 170503 (2019) (97.4%). Geometry is schematic; F₁, move error, readout error and T₂ defaults are illustrative.
 
 ---
 
