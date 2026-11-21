@@ -143,7 +143,7 @@ def test_currentness_and_wording_guardrails() -> None:
     assert_contains("pages/atom-library.html", "518,295,836,590,864 Hz")
     assert_contains("pages/remote-entanglement.html", "6,100-atom Cs benchmark")
     assert_contains("pages/remote-entanglement.html", "magnetic sensitivity is suppressed to the nuclear-magneton scale")
-    assert_contains("pages/remote-entanglement.html", "Rb fiber link with QFC")
+    assert_contains("pages/remote-entanglement.html", "Rb atom–atom link over telecom fiber (2022)")
     assert_contains("pages/remote-entanglement.html", "coherent Cs atom array reported in 2025")
     assert_contains("pages/remote-entanglement.html", "the perfect-HOM limit has no coincidence counts")
     assert_contains("pages/remote-entanglement.html", "about 0.18–0.25 dB/km near 1550 nm")
@@ -739,6 +739,65 @@ def test_repeater_chain() -> None:
     assert '<a href="#repeater">09 Repeater Chain</a>' in page and '<div class="sec-num">10</div>' in page
 
 
+def test_remote_entanglement_figures() -> None:
+    """Remote Entanglement overhaul (2026-11-21): one detection scheme (Hofmann et al. 2012) in every figure,
+    linear-optics Bell sorting checked from scratch, honest rates, and the reordered sections."""
+    page = read("pages/remote-entanglement.html")
+    from itertools import product
+    # two photons on a 50:50 beam splitter: a -> (c + d)/sqrt2, b -> (c - d)/sqrt2, polarization kept.
+    # Expand each photonic Bell state and read off which detector pairs (port, polarization) can click.
+    def out(terms):                                    # terms: {(polA, polB): amp} for a_polA^dag b_polB^dag
+        res = {}
+        for (pa, pb), amp in terms.items():
+            for (pa_port, sa), (pb_port, sb) in product([("c", 1), ("d", 1)], [("c", 1), ("d", -1)]):
+                key = tuple(sorted([pa_port + pa, pb_port + pb]))
+                res[key] = res.get(key, 0) + amp * sa * sb / 2
+        return {k: v for k, v in res.items() if abs(v) > 1e-12}
+    r2 = 2 ** -0.5
+    psi_m, psi_p = out({("H", "V"): r2, ("V", "H"): -r2}), out({("H", "V"): r2, ("V", "H"): r2})
+    phi_p, phi_m = out({("H", "H"): r2, ("V", "V"): r2}), out({("H", "H"): r2, ("V", "V"): -r2})
+    assert set(psi_m) == {("cH", "dV"), ("cV", "dH")}          # different ports, orthogonal: H1V2 / V1H2
+    assert set(psi_p) == {("cH", "cV"), ("dH", "dV")}          # same port, orthogonal: H1V1 / H2V2
+    for phi in (phi_p, phi_m):                                 # same port, same polarization: one detector
+        assert all(k[0] == k[1] for k in phi)
+    for s in ["clicks = Math.random() < .5 ? ['H1', 'V2'] : ['V1', 'H2']; herald = true; bell = 'Ψ⁻';",
+              "clicks = Math.random() < .5 ? ['H1', 'V1'] : ['H2', 'V2']; herald = true; bell = 'Ψ⁺';",
+              "{ clicks: ['H1', 'V2'], k: 'Ψ⁻'", "{ clicks: ['H1', 'V1'], k: 'Ψ⁺'", "{ clicks: ['H2', 'H2'], k: 'Φ'",
+              "return { clicks: Math.random() < .5 ? ['H1', 'V2'] : ['V1', 'H2'], herald: 'Ψ⁻' };"]:
+        assert s in page, s
+    # HOM dip of two exponential wavepackets: P = (1 - M e^{-|tau|/tau_c})/2
+    assert "y: 0.5 * (1 - M * Math.exp(-Math.abs(t)))" in page
+    # zero-point Doppler spread k v_zpf / 2pi for Rb-87 at 780 nm in a 100 kHz trap
+    hbar, amu = 1.054571817e-34, 1.66053907e-27
+    v = math.sqrt(hbar * 2 * math.pi * 100e3 / (2 * 86.909 * amu))
+    assert abs(v / 780e-9 / 1e3 - 19) < 1, v / 780e-9
+    assert "about 19 kHz" in page
+    # calculator: attempt slider 0..4 spans 100 kHz..10 MHz; attempts wait 2L/v for the herald
+    assert "const frep   = 1e5 * Math.pow(10, repLog / 2);" in page and abs(1e5 * 10 ** (4 / 2) - 1e7) < 1
+    assert "const tRound = 2 * L_km * 1e3 / 2.04e8, fMax = 1 / tRound, fEff = Math.min(frep, fMax);" in page
+    assert "rough rule of thumb, not a published threshold" in page
+    # DFG for the Rb link (van Leent et al. 2022): 1/780 - 1/1607 -> 1517 nm
+    assert abs(1 / (1 / 780 - 1 / 1607) - 1517) < 2 and "a 1607 nm pump converts 780 nm photons to 1517 nm" in page
+    # facts that were wrong or unsupported before
+    for bad in ["acquired by Google", "Roadmap explicitly includes inter-module photonic links by 2027", "~10⁷",
+                "nuclear spin $I = 1/2$ serves", "pump 1450 nm", "Bell state fidelity 79%", "duty cycle} = p",
+                "Cs atoms in a 2D optical lattice", "Hunger (LMU)", "deployed metrop"]:
+        assert bad not in page, bad
+    for good in ["arxiv.org/abs/2505.15917", "10.1103/PhysRevLett.124.110501", "arxiv.org/abs/2407.00835",
+                 "blog.google/innovation-and-ai/technology/research/neutral-atom-quantum-computers/",
+                 "$^{171}$Yb ($I = 1/2$) and $^{87}$Sr ($I = 9/2$)", "Chou et al. (Caltech; <em>Nature</em> 438, 828)"]:
+        assert good in page, good
+    # page order: theory -> hardware -> numbers -> fixes -> scaling -> context
+    order = ["why", "protocol", "atom-photon", "bsm", "challenges", "approaches", "calculator", "distillation",
+             "repeater", "landscape", "history", "references"]
+    pos = [page.index(f'<section class="ent-section" id="{i}">') for i in order]
+    assert pos == sorted(pos)
+    for n, i in enumerate(order, 1):
+        assert f'<a href="#{i}">{n:02d} ' in page, i
+        sec = page[page.index(f'<section class="ent-section" id="{i}">'):]
+        assert sec.index(f'<div class="sec-num">{n:02d}</div>') < 200, i
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -842,6 +901,7 @@ def main() -> None:
         test_virtual_lab_model,
         test_atom_processor_compiler,
         test_repeater_chain,
+        test_remote_entanglement_figures,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

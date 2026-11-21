@@ -747,14 +747,16 @@ $$|\Psi_{\rm after\ BSM}\rangle = \frac{1}{\sqrt{2}}\!\left(|{\uparrow}_A\, {\do
 **Fidelity bound from HOM-type interference visibility M:**
 $$\mathcal{F} \leq \frac{1 + M}{2}$$
 
-**Entanglement generation rate:**
-$$\text{duty cycle} = p_{\rm success} \times f_{\rm rep} \times \tau_{\rm attempt}$$
+**Mean time per Bell pair:**
+$$\langle t\rangle = \frac{1}{p_{\rm success}\, f_{\rm eff}}, \qquad f_{\rm eff} = \min\!\left(f_{\rm rep},\ \frac{v_{\rm fiber}}{2L}\right)$$  (each attempt waits for the photon to reach the midpoint station and the herald to come back; L per arm, v ≈ c/1.47)
 
-**Entanglement distillation (section 05, "Fixing noisy pairs"):** bilateral CNOT between two shared noisy pairs, both nodes measure the sacrificial pair in Z, keep the other pair if the parities agree. Local operations + classical communication on raw physical qubits, no QEC. Interactive one-to-six rounds of the Bennett et al. (PRL 76, 722, 1996) recurrence for Werner pairs:
+**Entanglement distillation (section 08, "Fixing Noisy Pairs"):** bilateral CNOT between two shared noisy pairs, both nodes measure the sacrificial pair in Z, keep the other pair if the parities agree. Local operations + classical communication on raw physical qubits, no QEC. Interactive one-to-six rounds of the Bennett et al. (PRL 76, 722, 1996) recurrence for Werner pairs:
 $$F' = \frac{F^2 + \left(\frac{1-F}{3}\right)^2}{F^2 + \frac{2F(1-F)}{3} + 5\left(\frac{1-F}{3}\right)^2}, \quad P_{\rm keep} = \text{denominator}, \quad \text{works for } F > 1/2$$
 Raw pairs per output after n rounds = ∏ 2/P_keep (e.g. F = 0.80 → 0.838, 0.874, 0.905 after 1–3 rounds, costing 2.6, 6.4, 15.2 raw pairs). Deutsch et al. (PRL 77, 2818, 1996) converges faster.
 
-**Link simulator (section 08):** Monte Carlo of the calculator's link (slow motion per attempt; real time at f_rep), measured herald fraction vs p = η²/2 (two-photon) or ≈ 2εη (single-photon, ε = 0.05).
+**Link simulator (section 07, under the rate calculator):** Monte Carlo of the calculator's link (slow motion per attempt; real time at f_eff), drawn with the same detection scheme as the hero and protocol figures (50:50 fiber BS, a PBS in each output, detectors H₁ V₁ H₂ V₂): H₁V₂/V₁H₂ herald |Ψ⁻⟩, H₁V₁/H₂V₂ herald |Ψ⁺⟩, both photons in one detector is no herald, so p = η²/2 (Hofmann et al., Science 337, 72, 2012). Single-photon scheme: one click at D₁ or D₂, p ≈ 2εη (ε = 0.05).
+
+**Page order (2026-11-21):** 01 Why · 02 Protocol · 03 Atom–photon · 04 BSM & HOM · 05 Challenges · 06 Approaches · 07 Rate calculator + link simulator · 08 Distillation · 09 Repeater chain · 10 Landscape · 11 History · 12 References.
 
 Covers heralded entanglement protocols, photon collection/loss budgets, and reference experimental results linking remote atoms via optical fiber/free-space photon links.
 

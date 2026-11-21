@@ -122,6 +122,8 @@
       padding: .35rem;
     }
     .ent-hero-visual svg { display:block; width:100%; height:auto; }
+    #protoCv { display:block; width:100%; height:auto; aspect-ratio: 1000 / 400; max-height:none !important; border-radius: 12px; margin: .6rem 0; }
+    #entHeroCv { display:block; width:100%; height:auto; aspect-ratio: 1440 / 760; max-height:none !important; border-radius: 16px; }
     .ent-hero-note {
       display: inline-flex;
       gap: .45rem;
@@ -331,6 +333,14 @@
     .hom-slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: .75rem; }
     .hom-slider-row label { font-size: .78rem; color: var(--text-muted); white-space: nowrap; }
     .hom-slider-row input { flex: 1; }
+    .hom-read { font: 600 .8rem/1.6 var(--font-mono); color: var(--text-secondary); margin: .4rem 0 .6rem; display: flex; flex-wrap: wrap; gap: .2rem 1.2rem; }
+    .hom-read b { color: var(--text-primary); }
+    #hom-waves { display:block; width:100%; height:auto; aspect-ratio: 1040 / 320; max-height:none !important; border-radius: 8px; }
+    .hom-chart { position: relative; height: 220px; }
+    .hom-chart canvas { max-height: none !important; }
+    .hom-slider-row input[type=range] { accent-color: var(--ent); }
+    .ap-levels { max-width: 360px; margin: .6rem auto .2rem; }
+    .ap-levels figcaption { font-size: .72rem; color: var(--text-muted); text-align: center; }
     .hom-val { font-size: .88rem; font-weight: 700; color: var(--ent); font-family: var(--font-mono); min-width: 3rem; text-align: right; }
 
     /* ── computing landscape ────────────────────────────── */
@@ -397,6 +407,10 @@
     .rp-note { font-size: .74rem; color: var(--text-muted); margin: .5rem 0 0; line-height: 1.6; }
     @media print { .rp-ctl, .rp-hud { display: none !important; } .rp-device { box-shadow: none; } }
     .rp-ctl .amo-motion-btn { color: #e2e8f0; border-color: #22314a; font-size: .78rem; padding: .45rem .8rem; }
+    .read-links { display: flex; flex-direction: column; gap: .45rem; margin-top: .5rem; }
+    .read-link { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: .55rem .85rem; font-size: .82rem; line-height: 1.55; color: var(--text-secondary); text-decoration: none; transition: border-color .15s, color .15s; }
+    .read-link:hover { border-color: var(--ent); color: var(--text-primary); }
+    .ref-h3 { color: var(--ent); font-size: .95rem; margin: 1.1rem 0 .3rem; }
   </style>
 </head>
 <body>
@@ -420,150 +434,18 @@
         turning independent tweezer modules into a scalable quantum computer.
       </p>
       <div class="hero-stats">
-        <div class="h-stat"><div class="v">~22 kHz</div><div class="l">Bell-pair-rate target</div></div>
-        <div class="h-stat"><div class="v">&lt;10⁻³</div><div class="l">Link-error goal</div></div>
-        <div class="h-stat"><div class="v">33 km</div><div class="l">Rb fiber link with QFC</div></div>
-        <div class="h-stat"><div class="v">BSM</div><div class="l">Heralds success</div></div>
+        <div class="h-stat"><div class="v">20 m</div><div class="l">first atom–atom link (2012)</div></div>
+        <div class="h-stat"><div class="v">33 km</div><div class="l">Rb atom–atom link over telecom fiber (2022)</div></div>
+        <div class="h-stat"><div class="v">½ η²</div><div class="l">two-photon success per attempt</div></div>
+        <div class="h-stat"><div class="v">50%</div><div class="l">max linear-optics BSM</div></div>
       </div>
     </div>
 
     <div class="page-hero-anim">
       <div class="ent-hero-visual">
-        <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Remote entanglement optical link: two atom traps coupled by fibers to a Bell-state measurement station">
-          <defs>
-            <filter id="ent-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <filter id="ent-soft"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <linearGradient id="trapBeamL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fbbf24" stop-opacity="0"/><stop offset="1" stop-color="#fbbf24" stop-opacity=".8"/></linearGradient>
-            <linearGradient id="trapBeamR" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fbbf24" stop-opacity="0"/><stop offset="1" stop-color="#fbbf24" stop-opacity=".8"/></linearGradient>
-            <linearGradient id="fiberGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#38bdf8" stop-opacity=".75"/>
-              <stop offset=".5" stop-color="#94a3b8" stop-opacity=".5"/>
-              <stop offset="1" stop-color="#818cf8" stop-opacity=".75"/>
-            </linearGradient>
-            <path id="leftPhotonPath" d="M76,236 C132,237 132,267 198,258 C268,248 305,236 372,220 C398,214 410,202 421,184"/>
-            <path id="rightPhotonPath" d="M644,236 C586,237 556,231 506,222 C470,215 446,204 433,184"/>
-            <path id="heraldLeft" d="M420,102 C326,84 194,92 80,222"/>
-            <path id="heraldRight" d="M434,102 C508,96 602,116 640,222"/>
-            <marker id="ent-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#18823e"/></marker>
-            <style>
-              @keyframes ent-click { 0%,56%,100%{opacity:0;transform:scale(.4)} 63%,75%{opacity:1;transform:scale(1)} }
-              @keyframes ent-bell { 0%,66%,100%{opacity:0} 74%,90%{opacity:1} }
-              @keyframes ent-wave { 0%,100%{stroke-dashoffset:0} 50%{stroke-dashoffset:18} }
-              @keyframes ent-spin { to { transform: rotate(360deg); } }
-              .fiber-line{fill:none;stroke:url(#fiberGrad);stroke-width:5;stroke-linecap:round;opacity:.86}
-              .fiber-loop{fill:none;stroke:#0477ae;stroke-width:5;stroke-linecap:round;opacity:.72}
-              .label{fill:var(--text-secondary);font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:700}
-              .mini{fill:var(--text-muted);font-family:JetBrains Mono,monospace;font-size:10px}
-              .photon-wave{fill:none;stroke:#926a03;stroke-width:2;stroke-dasharray:5 5;animation:ent-wave 1.1s linear infinite}
-              .click-ring{transform-box:fill-box;transform-origin:center;animation:ent-click 4.6s ease-in-out infinite}
-              .bell-ok{animation:ent-bell 4.6s ease-in-out infinite}
-              .spin-orbit{transform-box:fill-box;transform-origin:center;animation:ent-spin 5s linear infinite}
-            </style>
-          </defs>
-
-          <rect x="4" y="4" width="712" height="352" rx="22" fill="rgba(2,8,23,.2)" stroke="rgba(14,165,233,.12)"/>
-          <g opacity=".10" stroke="#1e3a5f" stroke-width=".7">
-            <path d="M30 292H690M30 242H690M30 192H690M30 142H690M30 92H690"/>
-            <path d="M90 30V320M180 30V320M270 30V320M360 30V320M450 30V320M540 30V320M630 30V320"/>
-          </g>
-
-          <!-- BSM station -->
-          <path d="M386,22 H644 Q668,22 668,46 V174 Q668,198 644,198 H481 Q454,198 447,221 C441,196 421,199 399,198 H386 Q362,198 362,174 V46 Q362,22 386,22 Z"
-                fill="color-mix(in srgb, var(--bg-surface) 72%, transparent)" stroke="var(--border-strong)" stroke-width="2.4" stroke-dasharray="3 10" stroke-linecap="round"/>
-          <text x="675" y="124" class="label" font-size="22">BSM</text>
-          <text x="512" y="42" class="mini" text-anchor="middle">Bell-state measurement</text>
-
-          <!-- BSM optics: fiber BS, waveplates, PBS, detectors -->
-          <rect x="452" y="204" width="18" height="56" rx="3" fill="var(--text-muted)" stroke="var(--border-strong)" stroke-width="1.5"/>
-          <text x="478" y="235" class="label" font-size="15">fiber</text>
-          <text x="478" y="252" class="label" font-size="15">BS</text>
-          <path d="M461,204 C450,178 437,164 416,150" class="fiber-line"/>
-          <path d="M461,204 C474,178 498,164 531,150" class="fiber-line"/>
-
-          <g transform="translate(404 77)">
-            <rect x="0" y="46" width="50" height="5" fill="#0478af" opacity=".95"/><text x="-13" y="53" class="mini">λ/4</text>
-            <rect x="0" y="64" width="50" height="5" fill="#0478af" opacity=".82"/><text x="-13" y="71" class="mini">λ/2</text>
-            <rect x="4" y="0" width="34" height="34" fill="var(--bg-surface)" stroke="var(--text-muted)" stroke-width="2"/><path d="M6,2 L36,32" stroke="var(--text-muted)" stroke-width="3"/>
-            <text x="45" y="22" class="label">PBS</text>
-            <path d="M-18,17 A17,17 0 0 1 0,2 V32 A17,17 0 0 1 -18,17" fill="var(--text-muted)" stroke="var(--border-strong)" stroke-width="1.5"/>
-            <text x="-46" y="24" class="label">V₂</text>
-            <rect x="6" y="-38" width="28" height="18" rx="9" fill="var(--text-muted)" stroke="var(--border-strong)" stroke-width="1.5"/>
-            <path d="M6,-38 A14,14 0 0 1 34,-38" fill="none" stroke="var(--border-strong)" stroke-width="4"/>
-            <text x="10" y="-51" class="label">H₂</text>
-            <text x="41" y="-23" class="label" font-size="13">APD</text>
-          </g>
-          <g transform="translate(542 77)">
-            <rect x="0" y="46" width="50" height="5" fill="#0478af" opacity=".95"/><text x="55" y="53" class="mini">λ/4</text>
-            <rect x="0" y="64" width="50" height="5" fill="#0478af" opacity=".82"/><text x="55" y="71" class="mini">λ/2</text>
-            <rect x="4" y="0" width="34" height="34" fill="var(--bg-surface)" stroke="var(--text-muted)" stroke-width="2"/><path d="M6,32 L36,2" stroke="var(--text-muted)" stroke-width="3"/>
-            <path d="M38,2 A17,17 0 0 1 56,17 A17,17 0 0 1 38,32" fill="var(--text-muted)" stroke="var(--border-strong)" stroke-width="1.5"/>
-            <text x="67" y="24" class="label">V₁</text>
-            <rect x="6" y="-38" width="28" height="18" rx="9" fill="var(--text-muted)" stroke="var(--border-strong)" stroke-width="1.5"/>
-            <path d="M6,-38 A14,14 0 0 1 34,-38" fill="none" stroke="var(--border-strong)" stroke-width="4"/>
-            <text x="10" y="-51" class="label">H₁</text>
-          </g>
-
-          <!-- traps and objectives -->
-          <g transform="translate(38 215)">
-            <path d="M-38,12 L0,-6 L0,30 Z" fill="url(#trapBeamL)" opacity=".85"/>
-            <circle cx="0" cy="12" r="7" fill="#505ff5" filter="url(#ent-glow)"/>
-            <path d="M1,12 q13,-10 24,0 q10,10 23,0" class="photon-wave"/>
-            <rect x="46" y="-10" width="42" height="44" rx="5" fill="rgba(226,232,240,.14)" stroke="var(--border-strong)" stroke-width="2"/>
-            <path d="M52,-6 C63,10 63,16 52,30M82,-6 C70,10 70,16 82,30" fill="none" stroke="#7450fa" stroke-width="2" opacity=".9"/>
-            <polygon points="90,2 138,12 90,24" fill="#ef4444" opacity=".88"/>
-            <rect x="134" y="8" width="18" height="8" rx="2" fill="var(--text-muted)" stroke="var(--border-strong)"/>
-            <text x="28" y="70" class="label" text-anchor="middle">trap 2</text>
-          </g>
-          <g transform="translate(644 215)">
-            <path d="M114,12 L76,-6 L76,30 Z" fill="url(#trapBeamR)" opacity=".85"/>
-            <circle cx="76" cy="12" r="7" fill="#505ff5" filter="url(#ent-glow)"/>
-            <path d="M75,12 q-13,-10 -24,0 q-10,10 -23,0" class="photon-wave"/>
-            <rect x="-12" y="-10" width="42" height="44" rx="5" fill="rgba(226,232,240,.14)" stroke="var(--border-strong)" stroke-width="2"/>
-            <path d="M-6,-6 C5,10 5,16 -6,30M24,-6 C12,10 12,16 24,30" fill="none" stroke="#7450fa" stroke-width="2" opacity=".9"/>
-            <polygon points="-14,2 -62,12 -14,24" fill="#ef4444" opacity=".88"/>
-            <rect x="-78" y="8" width="18" height="8" rx="2" fill="var(--text-muted)" stroke="var(--border-strong)"/>
-            <text x="38" y="70" class="label" text-anchor="middle">trap 1</text>
-          </g>
-
-          <!-- fibers and compensator -->
-          <path d="M190,247 C170,264 210,284 262,270 C305,258 346,239 405,222 C430,215 446,214 461,204" class="fiber-line"/>
-          <path d="M566,247 C535,247 502,232 461,204" class="fiber-line"/>
-          <ellipse cx="225" cy="265" rx="55" ry="16" class="fiber-loop"/>
-          <rect x="303" y="220" width="125" height="36" rx="5" fill="rgba(226,232,240,.12)" stroke="var(--border-strong)" stroke-width="3"/>
-          <rect x="310" y="226" width="111" height="24" fill="var(--text-muted)" opacity=".22"/>
-          <text x="214" y="217" class="label" text-anchor="middle">single-mode</text>
-          <text x="214" y="237" class="label" text-anchor="middle">fiber</text>
-          <text x="365" y="198" class="label" text-anchor="middle">polarization</text>
-          <text x="365" y="217" class="label" text-anchor="middle">compensator</text>
-
-          <!-- flying photons -->
-          <circle r="6" fill="#926a03" filter="url(#ent-glow)">
-            <animateMotion dur="4.6s" repeatCount="indefinite"><mpath href="#leftPhotonPath"/></animateMotion>
-            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.13;0.56;0.64;1" dur="4.6s" repeatCount="indefinite"/>
-          </circle>
-          <circle r="6" fill="#926a03" filter="url(#ent-glow)">
-            <animateMotion dur="4.6s" repeatCount="indefinite"><mpath href="#rightPhotonPath"/></animateMotion>
-            <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.13;0.56;0.64;1" dur="4.6s" repeatCount="indefinite"/>
-          </circle>
-          <g class="click-ring" opacity="0">
-            <circle cx="424" cy="40" r="17" fill="none" stroke="#18813e" stroke-width="3"/>
-            <circle cx="564" cy="40" r="17" fill="none" stroke="#18813e" stroke-width="3"/>
-          </g>
-
-          <!-- herald signals and final atom entanglement -->
-          <path d="M420,102 C326,84 194,92 80,222" fill="none" stroke="#18813e" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#ent-arrow)" class="bell-ok"/>
-          <path d="M434,102 C508,96 602,116 640,222" fill="none" stroke="#18813e" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#ent-arrow)" class="bell-ok"/>
-          <text x="360" y="64" fill="#18823e" font-family="JetBrains Mono,monospace" font-size="11" class="bell-ok">two detector clicks herald success</text>
-          <path d="M72,229 C202,142 510,142 648,229" fill="none" stroke="#18813e" stroke-width="3" stroke-linecap="round" opacity="0" class="bell-ok"/>
-          <text x="360" y="322" text-anchor="middle" fill="#18823e" font-family="JetBrains Mono,monospace" font-size="12" class="bell-ok">atoms left in a remote Bell state; photons are consumed by the measurement</text>
-
-          <!-- scale -->
-          <line x1="55" y1="334" x2="665" y2="334" stroke="var(--border-strong)" stroke-width="2"/>
-          <path d="M55,334 l12,-6 v12 zM665,334 l-12,-6 v12 z" fill="var(--text-secondary)"/>
-          <text x="360" y="345" text-anchor="middle" fill="var(--text-secondary)" font-size="17" font-family="Inter,system-ui,sans-serif">20 m optical link</text>
-        </svg>
+        <canvas id="entHeroCv" width="1440" height="760" role="img" aria-label="Two trapped atoms each emit a photon into a fiber. The photons meet at a 50:50 fiber beam splitter; a polarizing beam splitter in each output sends H and V light to four detectors. A coincidence H1+V2 or V1+H2 heralds the atoms in Psi-minus, H1+V1 or H2+V2 heralds Psi-plus, and two photons in one detector give no herald."></canvas>
       </div>
-      <div class="ent-hero-note"><strong>What the animation means:</strong> each atom emits a photon into a fiber; the BSM consumes the photons, and a two-click pattern heralds that the two distant atoms are entangled.</div>
+      <div class="ent-hero-note"><strong>What the animation shows:</strong> the two-photon link of Hofmann et al. (2012). Each atom emits a photon whose polarization is entangled with its spin; the photons interfere at the fiber beam splitter. Orthogonal polarizations in different ports (H₁V₂, V₁H₂) herald |Ψ⁻⟩, in the same port (H₁V₁, H₂V₂) herald |Ψ⁺⟩; two photons in one detector cannot be told apart, so at most half of the attempts where both photons arrive succeed.</div>
     </div>
   </div>
 </div>
@@ -576,10 +458,12 @@
   <a href="#bsm">04 Bell State Meas.</a>
   <a href="#challenges">05 Challenges</a>
   <a href="#approaches">06 Approaches</a>
-  <a href="#history">07 History</a>
-  <a href="#calculator">08 Rate Calculator</a>
+  <a href="#calculator">07 Rate Calculator</a>
+  <a href="#distillation">08 Distillation</a>
   <a href="#repeater">09 Repeater Chain</a>
   <a href="#landscape">10 Landscape</a>
+  <a href="#history">11 History</a>
+  <a href="#references">12 References</a>
 </nav>
 
 <div class="page-content">
@@ -595,7 +479,7 @@
 
   <div class="stat-strip">
     <div class="sc"><div class="sc-v">6,100</div><div class="sc-l">coherent Cs atom array reported in 2025</div></div>
-    <div class="sc"><div class="sc-v">~10⁷</div><div class="sc-l">Physical qubits for FTQC (Shor)</div></div>
+    <div class="sc"><div class="sc-v">&lt;10⁶</div><div class="sc-l">noisy qubits to factor RSA-2048 (Gidney 2025, preprint)</div></div>
     <div class="sc"><div class="sc-v">~15 μm</div><div class="sc-l">Max Rydberg blockade radius</div></div>
     <div class="sc"><div class="sc-v">∞</div><div class="sc-l">Photon range (with fiber)</div></div>
   </div>
@@ -604,7 +488,7 @@
     <div>
       <div class="theory">
         <h4>The single-array bottleneck</h4>
-        <p>The Rydberg blockade — the mechanism behind every neutral-atom two-qubit gate — operates over a range of 5–15 μm. This means that only atoms within a few micrometres of each other can be entangled locally. Single tweezer arrays have reached the several-thousand-atom scale, including the 6,100-atom Cs benchmark reported in 2025; pushing beyond ~10,000 useful, coherent atoms in one module remains a major engineering challenge. Fault-tolerant quantum computing for practical applications needs millions.</p>
+        <p>The Rydberg blockade — the mechanism behind every neutral-atom two-qubit gate — operates over a range of 5–15 μm. This means that only atoms within a few micrometres of each other can be entangled locally. Single tweezer arrays have reached the several-thousand-atom scale, including the 6,100-atom Cs benchmark reported in 2025; pushing beyond ~10,000 useful, coherent atoms in one module remains a major engineering challenge. Useful fault-tolerant algorithms still need far more: a 2025 resource estimate puts factoring a 2048-bit RSA key at fewer than a million noisy qubits running for under a week (Gidney, <a href="https://arxiv.org/abs/2505.15917" target="_blank" rel="noopener">arXiv:2505.15917</a>, preprint).</p>
         <p>The leading scaling route is <strong>modular architecture</strong>: build many smaller, higher-quality arrays and connect them with quantum links. The link between distant modules is naturally a <em>photonic interconnect</em>, because photons can travel macroscopic distances without the motional decoherence that affects material qubits.</p>
       </div>
       <div class="info-box">
@@ -628,79 +512,89 @@
     </div>
   </div>
 
-  <!-- Module scaling diagram -->
-  <div style="margin:1.5rem 0">
-    <svg viewBox="0 0 580 120" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <!-- Module scaling diagram: N modules of M atoms joined by heralded photonic links -->
+  <figure class="mod-fig" style="margin:1.5rem 0">
+    <svg viewBox="0 0 640 122" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four tweezer modules of M atoms each. Between neighbours, a photon from each module meets at a Bell-state measurement in the middle of the link; a green arc then marks the shared Bell pair.">
       <defs>
-        <filter id="mg"><feGaussianBlur stdDeviation="2" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="mg"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <style>.md-t{fill:#0a78aa;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em} .md-s{fill:var(--text-muted);font:500 9px 'JetBrains Mono',monospace} [data-theme="dark"] .md-t{fill:#38bdf8}</style>
       </defs>
-      <!-- Five modules -->
-      <g id="mods">
-        <!-- Mod 1 -->
-        <rect x="5" y="20" width="90" height="80" rx="8" fill="rgba(14,165,233,.08)" stroke="#0a78aa" stroke-width="1.5"/>
-        <text x="50" y="40" text-anchor="middle" fill="#0a78aa" font-size="8" font-weight="700" font-family="monospace">MODULE 1</text>
-        <circle cx="25" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="40" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="55" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="70" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="25" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="40" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="55" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="70" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <text x="50" y="93" text-anchor="middle" fill="var(--text-muted)" font-size="6.5" font-family="monospace">~1,000 qubits</text>
-        <!-- Mod 2 -->
-        <rect x="120" y="20" width="90" height="80" rx="8" fill="rgba(14,165,233,.08)" stroke="#0a78aa" stroke-width="1.5"/>
-        <text x="165" y="40" text-anchor="middle" fill="#0a78aa" font-size="8" font-weight="700" font-family="monospace">MODULE 2</text>
-        <circle cx="140" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="155" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="170" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="185" cy="55" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="140" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="155" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="170" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="185" cy="70" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <text x="165" y="93" text-anchor="middle" fill="var(--text-muted)" font-size="6.5" font-family="monospace">~1,000 qubits</text>
-        <!-- Mod 3 -->
-        <rect x="235" y="20" width="90" height="80" rx="8" fill="rgba(14,165,233,.08)" stroke="#0a78aa" stroke-width="1.5"/>
-        <text x="280" y="40" text-anchor="middle" fill="#0a78aa" font-size="8" font-weight="700" font-family="monospace">MODULE 3</text>
-        <circle cx="255" cy="62" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="270" cy="62" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="285" cy="62" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <circle cx="300" cy="62" r="4" fill="#0a78aa" filter="url(#mg)"/>
-        <text x="280" y="93" text-anchor="middle" fill="var(--text-muted)" font-size="6.5" font-family="monospace">~1,000 qubits</text>
-        <!-- More modules dots -->
-        <circle cx="370" cy="60" r="5" fill="var(--bg-card)" stroke="#0a78aa" stroke-width="1" opacity=".5"/>
-        <circle cx="390" cy="60" r="5" fill="var(--bg-card)" stroke="#0a78aa" stroke-width="1" opacity=".5"/>
-        <circle cx="410" cy="60" r="5" fill="var(--bg-card)" stroke="#0a78aa" stroke-width="1" opacity=".5"/>
-        <!-- Mod N -->
-        <rect x="450" y="20" width="120" height="80" rx="8" fill="rgba(74,222,128,.06)" stroke="#18813e" stroke-width="1.5"/>
-        <text x="510" y="40" text-anchor="middle" fill="#18823e" font-size="8" font-weight="700" font-family="monospace">MODULE N</text>
-        <text x="510" y="63" text-anchor="middle" fill="#18823e" font-size="11" font-weight="800" font-family="monospace">~10⁶</text>
-        <text x="510" y="78" text-anchor="middle" fill="var(--text-muted)" font-size="7.5" font-family="monospace">total qubits</text>
-        <text x="510" y="93" text-anchor="middle" fill="#18823e" font-size="7" font-family="monospace">→ FTQC</text>
-        <!-- Photonic links -->
-        <line x1="95" y1="60" x2="120" y2="60" stroke="#926a03" stroke-width="1.8" stroke-dasharray="4,2">
-          <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite"/>
-        </line>
-        <line x1="210" y1="60" x2="235" y2="60" stroke="#926a03" stroke-width="1.8" stroke-dasharray="4,2">
-          <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
-        </line>
-        <line x1="325" y1="60" x2="360" y2="60" stroke="#926a03" stroke-width="1.8" stroke-dasharray="4,2">
-          <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
-        </line>
-        <line x1="420" y1="60" x2="450" y2="60" stroke="#926a03" stroke-width="1.8" stroke-dasharray="4,2">
-          <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
-        </line>
-        <!-- Link labels -->
-        <text x="107" y="54" text-anchor="middle" fill="#926a03" font-size="6" font-family="monospace">🔗</text>
-        <text x="222" y="54" text-anchor="middle" fill="#926a03" font-size="6" font-family="monospace">🔗</text>
-        <text x="343" y="54" text-anchor="middle" fill="#926a03" font-size="6" font-family="monospace">🔗</text>
-        <text x="435" y="54" text-anchor="middle" fill="#926a03" font-size="6" font-family="monospace">🔗</text>
-      </g>
-      <text x="290" y="115" text-anchor="middle" fill="var(--text-muted)" font-size="7.5" font-family="monospace">Photonic links (🔗) connect modules — entanglement generated between modules heralds a shared Bell pair</text>
+        <rect x="20" y="22" width="100" height="92" rx="10" fill="rgba(14,165,233,.07)" stroke="#0a78aa" stroke-width="1.6"/>
+        <text x="70" y="40" text-anchor="middle" class="md-t">MODULE 1</text>
+        <circle cx="40" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="60" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="80" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="100" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="40" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="60" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="80" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="100" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="40" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="60" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="80" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="100" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <text x="70" y="108" text-anchor="middle" class="md-s">M atoms</text>
+        <rect x="170" y="22" width="100" height="92" rx="10" fill="rgba(14,165,233,.07)" stroke="#0a78aa" stroke-width="1.6"/>
+        <text x="220" y="40" text-anchor="middle" class="md-t">MODULE 2</text>
+        <circle cx="190" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="210" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="230" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="250" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="190" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="210" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="230" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="250" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="190" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="210" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="230" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="250" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <text x="220" y="108" text-anchor="middle" class="md-s">M atoms</text>
+        <rect x="320" y="22" width="100" height="92" rx="10" fill="rgba(14,165,233,.07)" stroke="#0a78aa" stroke-width="1.6"/>
+        <text x="370" y="40" text-anchor="middle" class="md-t">MODULE 3</text>
+        <circle cx="340" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="360" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="380" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="400" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="340" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="360" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="380" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="400" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="340" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="360" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="380" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="400" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <text x="370" y="108" text-anchor="middle" class="md-s">M atoms</text>
+        <rect x="520" y="22" width="100" height="92" rx="10" fill="rgba(14,165,233,.07)" stroke="#0a78aa" stroke-width="1.6"/>
+        <text x="570" y="40" text-anchor="middle" class="md-t">MODULE N</text>
+        <circle cx="540" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="560" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="580" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="600" cy="56" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="540" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="560" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="580" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="600" cy="72" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="540" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="560" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="580" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <circle cx="600" cy="88" r="4.2" fill="#0a78aa" filter="url(#mg)"/>
+        <text x="570" y="108" text-anchor="middle" class="md-s">M atoms</text>
+        <line x1="120" y1="72" x2="170" y2="72" stroke="#b07a10" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <rect x="140.0" y="67" width="10" height="10" transform="rotate(45 145.0 72)" fill="var(--bg-card)" stroke="#b07a10" stroke-width="1.4"/>
+        <circle r="3.6" fill="#f59e0b" filter="url(#mg)"><animate attributeName="cx" values="120;145.0;145.0" keyTimes="0;.45;1" dur="2.4s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.45;.5;1" dur="2.4s" begin="0s" repeatCount="indefinite"/><set attributeName="cy" to="72"/></circle>
+        <circle r="3.6" fill="#f59e0b" filter="url(#mg)"><animate attributeName="cx" values="170;145.0;145.0" keyTimes="0;.45;1" dur="2.4s" begin="0s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.45;.5;1" dur="2.4s" begin="0s" repeatCount="indefinite"/><set attributeName="cy" to="72"/></circle>
+        <path d="M114,68 Q145.0,40 176,68" fill="none" stroke="#16a34a" stroke-width="2"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.48;.55;.9;1" dur="2.4s" begin="0s" repeatCount="indefinite"/></path>
+        <line x1="270" y1="72" x2="320" y2="72" stroke="#b07a10" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <rect x="290.0" y="67" width="10" height="10" transform="rotate(45 295.0 72)" fill="var(--bg-card)" stroke="#b07a10" stroke-width="1.4"/>
+        <circle r="3.6" fill="#f59e0b" filter="url(#mg)"><animate attributeName="cx" values="270;295.0;295.0" keyTimes="0;.45;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.45;.5;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/><set attributeName="cy" to="72"/></circle>
+        <circle r="3.6" fill="#f59e0b" filter="url(#mg)"><animate attributeName="cx" values="320;295.0;295.0" keyTimes="0;.45;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.45;.5;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/><set attributeName="cy" to="72"/></circle>
+        <path d="M264,68 Q295.0,40 326,68" fill="none" stroke="#16a34a" stroke-width="2"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.48;.55;.9;1" dur="2.4s" begin="0.8s" repeatCount="indefinite"/></path>
+        <line x1="420" y1="72" x2="450" y2="72" stroke="#b07a10" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <text x="470.0" y="76" text-anchor="middle" class="md-s" style="font-size:16px">· · ·</text>
+        <line x1="490" y1="72" x2="520" y2="72" stroke="#b07a10" stroke-width="1.6" stroke-dasharray="4 3"/>
     </svg>
-  </div>
+    <figcaption style="font-size:.8rem;color:var(--text-muted);text-align:center;margin-top:.3rem;line-height:1.6">A photon from each neighbouring module meets the other at a Bell-state measurement (◆) in the middle of the link; a coincidence heralds a shared Bell pair (green arc).<br>N modules × M atoms each: the machine grows by adding modules and links, not by enlarging one array.</figcaption>
+  </figure>
 </section>
 
 <!-- ══════════════════════════════════════════════════════
@@ -712,37 +606,10 @@
   <p class="sec-desc">How two atoms that have never interacted become maximally entangled — one photon at a time.</p>
 
   <div class="proto-wrap">
-    <h4 style="font-size:.88rem;font-weight:700;color:var(--ent);margin:0 0 .75rem">Barrett-Kok / Two-Photon Heralded Entanglement Protocol</h4>
+    <h4 style="font-size:.88rem;font-weight:700;color:var(--ent);margin:0 0 .75rem">Two-photon heralded entanglement with polarization qubits (the scheme of Hofmann et al. 2012)</h4>
     <div class="proto-steps" id="proto-step-btns"></div>
-    <svg viewBox="0 0 520 160" width="100%" id="proto-svg" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="pg"><feGaussianBlur stdDeviation="2.5" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="pg2"><feGaussianBlur stdDeviation="1.5" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      </defs>
-      <!-- Static: Atom A and B boxes -->
-      <rect x="5" y="30" width="110" height="110" rx="8" fill="rgba(14,165,233,.06)" stroke="#0a78aa" stroke-width="1.3"/>
-      <text x="60" y="50" text-anchor="middle" fill="#0a78aa" font-size="8" font-weight="700" font-family="monospace">ATOM  A</text>
-      <rect x="405" y="30" width="110" height="110" rx="8" fill="rgba(129,140,248,.06)" stroke="#4f5ff5" stroke-width="1.3"/>
-      <text x="460" y="50" text-anchor="middle" fill="#505ff5" font-size="8" font-weight="700" font-family="monospace">ATOM  B</text>
-      <!-- BSM box (center) -->
-      <rect x="190" y="50" width="140" height="90" rx="8" fill="rgba(251,191,36,.05)" stroke="#926a03" stroke-width="1.2"/>
-      <text x="260" y="70" text-anchor="middle" fill="#926a03" font-size="8" font-weight="700" font-family="monospace">BSM  STATION</text>
-      <!-- Beamsplitter -->
-      <line x1="220" y1="85" x2="300" y2="135" stroke="#926a03" stroke-width="2.5" opacity=".8"/>
-      <!-- Detectors -->
-      <rect x="193" y="120" width="22" height="14" rx="4" fill="rgba(74,222,128,.12)" stroke="#18813e" stroke-width="1.3" id="pd1"/>
-      <rect x="305" y="120" width="22" height="14" rx="4" fill="rgba(74,222,128,.12)" stroke="#18813e" stroke-width="1.3" id="pd2"/>
-      <text x="204" y="146" text-anchor="middle" fill="var(--text-muted)" font-size="6.5" font-family="monospace">D₁</text>
-      <text x="316" y="146" text-anchor="middle" fill="var(--text-muted)" font-size="6.5" font-family="monospace">D₂</text>
-      <!-- Fiber lines -->
-      <line x1="115" y1="90" x2="190" y2="100" stroke="#0a78aa" stroke-width="1.5" stroke-dasharray="5,3" opacity=".5"/>
-      <line x1="405" y1="90" x2="330" y2="100" stroke="#4f5ff5" stroke-width="1.5" stroke-dasharray="5,3" opacity=".5"/>
-      <!-- Dynamic proto elements are drawn by JS -->
-      <g id="proto-dynamic"></g>
-    </svg>
-    <div class="proto-caption" id="proto-caption">Click a step or press Next to walk through the protocol.</div>
+    <canvas id="protoCv" width="2000" height="800" data-export-ready="true" role="img" aria-label="Animated step of the protocol: level diagrams of both atoms on the sides, the fiber beam splitter, polarizing beam splitters and four detectors in the middle, and the joint quantum state along the bottom. The text below the figure describes the step."></canvas>
+    <div class="proto-caption" id="proto-caption" aria-live="polite">Click a step or press Next to walk through the protocol.</div>
     <div class="proto-nav">
       <button class="proto-btn" id="proto-prev" onclick="protoNav(-1)">← Prev</button>
       <button class="proto-btn" id="proto-next" onclick="protoNav(1)">Next →</button>
@@ -754,17 +621,17 @@
       <h4>Success probability</h4>
       <p>Each attempt succeeds with probability:</p>
       <p>$$p_{\rm success} = \frac{\eta_A \cdot \eta_B}{2}$$</p>
-      <p>where $\eta_A, \eta_B$ are the total photon detection efficiencies (collection × fiber × detector). With $\eta \approx 5\%$, $p \approx 0.125\%$ — but at a repetition rate of 1 MHz, this yields ~1,250 Bell pairs per second. With cavities ($\eta \approx 50\%$), this reaches ~125,000 pairs/second.</p>
+      <p>where $\eta_A, \eta_B$ are the total photon detection efficiencies (collection × fiber × detector) and the ½ is the Bell-state measurement keeping only the two Ψ outcomes. Because both photons must arrive, the rate falls as $\eta^2$. For scale: in the first atom–atom experiment each node detected about one photon in a thousand ($\eta \approx 10^{-3}$; Hofmann et al. 2012), so a herald arrived roughly every two minutes (about 3,600 in 107 h of data). Illustrative numbers for a future link: $\eta = 5\%$ gives $p \approx 1.25\times10^{-3}$, or about 1,250 pairs/s at 1 MHz attempts; a cavity-level $\eta = 50\%$ gives about 125,000 pairs/s at the same attempt rate. The calculator in section 07 lets you vary all of these.</p>
     </div>
     <div class="theory">
       <h4>Why the protocol is heralded (not post-selected)</h4>
-      <p>A key feature: you <em>know</em> whether the protocol succeeded without measuring the atoms. The coincident photon detection at D₁ and D₂ is the herald signal — it tells you the atoms are entangled without revealing which state they're in. This is fundamentally different from post-selection, which would collapse the atomic state. Failed attempts (no coincidence) simply mean you try again, with the atoms reset.</p>
+      <p>A key feature: you <em>know</em> whether the protocol succeeded without measuring the atoms. A coincidence between two of the four detectors is the herald signal: it tells you the atoms are entangled, and in which Bell state, without revealing which atom is |↑⟩ and which is |↓⟩. This is fundamentally different from post-selection, which would collapse the atomic state. Failed attempts (no coincidence) simply mean you try again, with the atoms reset.</p>
     </div>
   </div>
 
   <div class="formula-box">
     $$|\Psi_{\rm after\ BSM}\rangle = \frac{1}{\sqrt{2}}\!\left(|{\uparrow}_A\, {\downarrow}_B\rangle \pm e^{i\theta}|{\downarrow}_A\, {\uparrow}_B\rangle\right) = |\Psi^\pm\rangle$$
-    <p style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0 0">A coincidence between detectors means the two photons had orthogonal polarizations, so the atoms are anti-correlated: they are left in $|\Psi^+\rangle$ or $|\Psi^-\rangle$ depending on which detector pair clicked. The phase $\theta$ can be tracked and corrected with single-qubit rotations. The state of the photons is irrelevant after detection — entanglement is established in the atoms.</p>
+    <p style="font-size:.78rem;color:var(--text-muted);margin:.5rem 0 0">A heralding coincidence means the two photons had orthogonal polarizations, so the atoms are anti-correlated: H₁V₂ or V₁H₂ leaves them in $|\Psi^-\rangle$, H₁V₁ or H₂V₂ in $|\Psi^+\rangle$ (Hofmann et al. 2012). The phase $\theta$ can be tracked and corrected with single-qubit rotations. The state of the photons is irrelevant after detection — entanglement is established in the atoms.</p>
   </div>
 </section>
 
@@ -780,9 +647,22 @@
     <div>
       <div class="theory">
         <h4>How it works: selection rules as the quantum interface</h4>
-        <p>When an atom in state $|\uparrow\rangle$ (e.g., $m_F = +1$) decays to the ground state, it must emit a $\sigma^+$ photon to conserve angular momentum. When in $|\downarrow\rangle$ ($m_F = -1$), it emits $\sigma^-$. Prepare the atom in a superposition, and the decay process creates an entangled atom-photon state:</p>
-        <p>$$|\Psi\rangle = \frac{1}{\sqrt{2}}\!\left(|\uparrow\rangle\otimes|{\sigma^+}\rangle + |\downarrow\rangle\otimes|{\sigma^-}\rangle\right)$$</p>
-        <p>This is a maximally entangled state between the atom spin and the photon polarization. The photon then travels to the BSM station — carrying quantum information about the atom's state without ever "measuring" it.</p>
+        <p>Optically pump the atom into $|F{=}1, m_F{=}0\rangle$, then excite it with a short π pulse to $|F'{=}0, m_{F'}{=}0\rangle$. That excited state has three ways down: to $m_F=-1$ by emitting $\sigma^+$ light, to $m_F=+1$ by emitting $\sigma^-$, or back to $m_F=0$ with π light, which is not emitted along the quantization axis and so is never collected. A lens on that axis therefore only ever sees the first two, and does not know which one happened:</p>
+        <figure class="ap-levels" aria-label="Level diagram: the excited state F prime equals 0 decays to m F equals minus 1 by emitting sigma plus, to plus 1 by emitting sigma minus, and to 0 by emitting pi light that is not collected.">
+          <svg viewBox="0 0 320 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <style>.ap-l{stroke:var(--text-secondary);stroke-width:2.2}.ap-t{fill:var(--text-secondary);font:600 12px 'JetBrains Mono',monospace}.ap-m{fill:var(--text-muted);font:500 10px 'JetBrains Mono',monospace}.ap-s{fill:#b45309;font:700 13px 'JetBrains Mono',monospace}[data-theme="dark"] .ap-s{fill:#fbbf24}.ap-a{stroke:#b45309;stroke-width:2}[data-theme="dark"] .ap-a{stroke:#fbbf24}</style>
+            <defs><marker id="apArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker></defs>
+            <line class="ap-l" x1="135" y1="24" x2="185" y2="24"/><text class="ap-t" x="195" y="28">F′=0, m=0</text>
+            <line class="ap-l" x1="55" y1="118" x2="105" y2="118"/><line class="ap-l" x1="135" y1="118" x2="185" y2="118"/><line class="ap-l" x1="215" y1="118" x2="265" y2="118"/>
+            <text class="ap-t" x="80" y="137" text-anchor="middle">|↓⟩ m=−1</text><text class="ap-m" x="160" y="137" text-anchor="middle">m=0</text><text class="ap-t" x="240" y="137" text-anchor="middle">|↑⟩ m=+1</text>
+            <line class="ap-a" x1="152" y1="30" x2="86" y2="110" marker-end="url(#apArr)"/><line class="ap-a" x1="168" y1="30" x2="234" y2="110" marker-end="url(#apArr)"/>
+            <line x1="160" y1="32" x2="160" y2="108" stroke="var(--text-muted)" stroke-width="1.3" stroke-dasharray="3 4"/>
+            <text class="ap-s" x="100" y="70" text-anchor="middle">σ⁺</text><text class="ap-s" x="222" y="70" text-anchor="middle">σ⁻</text><text class="ap-m" x="160" y="80" text-anchor="middle" style="font-size:9px">π</text>
+          </svg>
+          <figcaption>⁸⁷Rb, as in Volz et al. (2006): one excitation, two collected decay paths.</figcaption>
+        </figure>
+        <p>$$|\Psi\rangle = \frac{1}{\sqrt{2}}\!\left(|{\downarrow}\rangle\otimes|{\sigma^+}\rangle + |{\uparrow}\rangle\otimes|{\sigma^-}\rangle\right), \qquad |{\downarrow}\rangle = |m_F{=}{-1}\rangle,\ |{\uparrow}\rangle = |m_F{=}{+1}\rangle$$</p>
+        <p>This is a maximally entangled state between the atom spin and the photon polarization; Volz et al. measured a fidelity of 0.87 with a single trapped ⁸⁷Rb atom. The photon then travels to the BSM station, carrying quantum information about the atom without measuring it.</p>
       </div>
       <div class="theory">
         <h4>Time-bin encoding (more practical)</h4>
@@ -810,7 +690,7 @@
         </ul>
       </div>
       <div class="good-box">
-        ✓ <strong>Why ground-state cooling matters here:</strong> An atom at $\bar{n} \approx 0$ emits photons with a Doppler width $\Delta\nu_D \approx k v_{\rm zpf}/2\pi \approx$ a few kHz — much less than the natural linewidth. Ground-state-cooled atoms emit nearly Fourier-limited photons with close to unit indistinguishability.
+        ✓ <strong>Why ground-state cooling matters here:</strong> Zero-point motion alone gives a Doppler spread $k v_{\rm zpf}/2\pi$ with $v_{\rm zpf} = \sqrt{\hbar\omega/2m}$: about 19 kHz for ⁸⁷Rb at 780 nm in a 100 kHz trap, far below the 6 MHz natural linewidth. A hot atom spreads its photons over the thermal velocity distribution instead, so cooling toward $\bar n \approx 0$ keeps the two photons spectrally identical.
       </div>
     </div>
   </div>
@@ -829,25 +709,32 @@
       <div class="theory">
         <h4>Hong-Ou-Mandel (HOM) effect</h4>
         <p>When two ideal, indistinguishable photons enter a 50-50 beamsplitter from different input ports, quantum interference forces both photons to exit the same port — the perfect-HOM limit has no coincidence counts. This is the HOM effect (Hong, Ou &amp; Mandel 1987).</p>
-        <p>For the BSM to work, we need photons from atoms A and B to bunch when they're in the same polarization state and anti-bunch (leave separately) when in orthogonal states. The coincidence probability as a function of time delay $\tau$ between the two photons is:</p>
+        <p>The Bell-state measurement uses exactly this interference, applied to the joint polarization state: the antisymmetric $|\Psi^-\rangle$ always leaves by different ports, the symmetric states leave together. That only works if the two photons are identical in every other degree of freedom (arrival time, frequency, spatial mode), and the HOM dip is how that is checked. For two spontaneously emitted photons offset by a delay $\tau$, the probability of a coincidence behind the beam splitter is:</p>
         <p>$$P_{\rm coinc}(\tau) = \frac{1}{2}\!\left[1 - \mathcal{M}\cdot e^{-|\tau|/\tau_c}\right]$$</p>
-        <p>where $\mathcal{M}$ is the photon indistinguishability (0 = distinguishable, 1 = identical) and $\tau_c$ is the photon coherence time; for a spontaneously emitted photon with Lorentzian linewidth (FWHM) $\Delta\nu$, $\tau_c = 1/\Gamma = 1/(2\pi\Delta\nu)$. The dip at $\tau = 0$ is the HOM dip — deeper dip = more identical photons = higher entanglement fidelity.</p>
+        <p>where $\mathcal{M}$ is the overlap of everything except arrival time (0 = distinguishable, 1 = identical) and $\tau_c = 1/\Gamma = 1/(2\pi\Delta\nu)$ is the radiative lifetime of the emitting state ($\Delta\nu$ = natural linewidth, FWHM). Each photon is a wavepacket that switches on at emission and decays as $e^{-t/\tau_c}$; the factor $e^{-|\tau|/\tau_c}$ is the squared overlap of two such packets offset by $\tau$. The deeper the dip, the more identical the photons and the higher the possible entanglement fidelity.</p>
       </div>
     </div>
     <div>
       <div class="hom-wrap">
-        <h4>Interactive HOM Dip</h4>
+        <span class="amo-eyebrow">Interactive</span>
+        <h4>Two photons, one beam splitter</h4>
         <div class="hom-slider-row">
           <label for="hom-slider">Indistinguishability 𝓜</label>
-          <input type="range" id="hom-slider" min="0" max="100" value="90" step="1"
-            style="-webkit-appearance:none;flex:1;height:5px;border-radius:3px;background:linear-gradient(to right,var(--ent) var(--pct,90%),var(--bg-card) var(--pct,90%));cursor:pointer"
-            oninput="updateHOM(this.value)">
-          <span class="hom-val" id="hom-val">90%</span>
+          <input type="range" id="hom-slider" min="0" max="100" value="90" step="1">
+          <span class="hom-val" id="hom-val">0.90</span>
         </div>
-        <canvas id="hom-chart" height="160"></canvas>
-        <p style="font-size:.76rem;color:var(--text-muted);margin:.5rem 0 0;text-align:center">
-          Coincidence rate vs arrival-time delay τ between photons from atom A and atom B.
-          The HOM dip depth directly measures $\mathcal{M}$ and sets the maximum Bell state fidelity.
+        <div class="hom-slider-row">
+          <label for="hom-delay">Delay τ / τ<sub>c</sub></label>
+          <input type="range" id="hom-delay" min="-3" max="3" value="0.6" step="0.02">
+          <span class="hom-val" id="hom-delay-v">0.60</span>
+        </div>
+        <canvas id="hom-waves" data-export-ready="true" width="1040" height="320" aria-label="Intensity envelopes of the photon from atom A and the photon from atom B, offset by the delay; the shaded area shows how much the two wavepackets overlap."></canvas>
+        <div class="hom-read" id="hom-read" aria-live="polite"></div>
+        <div class="hom-chart"><canvas id="hom-chart" data-export-ready="true" aria-label="Coincidence probability versus delay, with the current delay marked."></canvas></div>
+        <p style="font-size:.76rem;color:var(--text-muted);margin:1rem 0 0">
+          Top: the two wavepackets (intensity $e^{-t/\tau_c}$ after emission) for the chosen delay; their overlap sets how strongly they interfere.
+          Bottom: the coincidence probability $\tfrac12[1 - \mathcal{M}e^{-|\tau|/\tau_c}]$; the dot is the current delay.
+          The heralded atom pair can be no better than $F = \tfrac12(1 + \mathcal{M}e^{-|\tau|/\tau_c})$.
         </p>
       </div>
     </div>
@@ -855,7 +742,7 @@
 
   <div class="theory" style="margin-top:.75rem">
     <h4>Linear optics BSM and its 50% limitation</h4>
-    <p>A linear optics Bell state measurement using only beamsplitters and phase shifters can at most distinguish two of the four Bell states $|\Phi^\pm\rangle$ and $|\Psi^\pm\rangle$ with certainty. The other two give ambiguous outcomes. This imposes a fundamental 50% efficiency ceiling on the BSM — meaning only half of all entanglement attempts that produce photons result in an unambiguous herald. The remaining 50% are discarded (not errors — just failures that are retried). Overcoming this requires either photon-number resolving detectors in specific configurations, or ancilla photons (which add complexity). In practice, the 50% BSM efficiency is accepted and compensated by increasing the repetition rate.</p>
+    <p>A Bell-state measurement built from beam splitters and polarizers identifies only two of the four Bell states (here $|\Psi^\pm\rangle$); the two $|\Phi^\pm\rangle$ outcomes put both photons into one detector and look the same. This imposes a 50% efficiency ceiling on the BSM — meaning only half of all entanglement attempts that produce photons result in an unambiguous herald. The remaining 50% are discarded (not errors — just failures that are retried). With beam splitters, phase shifters and detectors alone and no extra photons, 50% is the most any Bell-state analyzer can reach (Calsamiglia &amp; Lütkenhaus, <a href="https://doi.org/10.1007/s003400000484" target="_blank" rel="noopener"><em>Appl. Phys. B</em> 72, 67 (2001)</a>); adding ancilla photons can raise it, for example to 75% (Ewert &amp; van Loock, <a href="https://arxiv.org/abs/1403.4841" target="_blank" rel="noopener">arXiv:1403.4841</a>). In practice the 50% is accepted and made up for with a higher repetition rate.</p>
   </div>
 </section>
 
@@ -893,58 +780,15 @@
       <p>Atoms A and B emit photons at slightly different frequencies due to different trapping potentials, residual magnetic fields, and AC Stark shifts. Two photons with spectral overlap less than 1 produce a reduced HOM visibility. Requires active stabilisation: matched trap depths, common-mode field cancellation, optical cavities to narrow linewidth, or real-time spectral demultiplexing.</p>
     </div>
     <div class="theory">
-      <h4>5. The duty cycle problem</h4>
-      <p>Remote entanglement is generated probabilistically. While waiting for a successful BSM herald, the atoms must be held in the trap without performing any other operations. The duty cycle for entanglement generation is:</p>
-      <p>$$\text{duty cycle} = p_{\rm success} \times f_{\rm rep} \times \tau_{\rm attempt}$$</p>
-      <p>With $p \approx 0.1\%$ and $f_{\rm rep} = 1$ MHz, about 1 ms is spent per Bell pair — during which atoms in other modules sit idle, reducing overall computational throughput.</p>
+      <h4>5. Waiting for the herald</h4>
+      <p>Remote entanglement is generated probabilistically. While waiting for a herald, the communication atoms are busy and the qubits that need the pair must wait. Attempts are independent, so the mean time to one Bell pair is:</p>
+      <p>$$\langle t \rangle = \frac{1}{p_{\rm success}\, f_{\rm rep}}$$</p>
+      <p>With $p \approx 0.1\%$ and $f_{\rm rep} = 1$ MHz (illustrative), that is about 1 ms per Bell pair — hundreds of local Rydberg gate times, during which the computation that needs the pair is stalled. For long fibers $f_{\rm rep}$ itself is capped near $c/(nL)$ by the herald's return trip.</p>
     </div>
     <div class="theory">
       <h4>6. No native strong coupling to photons</h4>
       <p>Unlike NV centers (spin-selective emission) or quantum dots (Purcell-enhanced emission into a mode), neutral alkali atoms in free space are optically weak — the atom-photon cooperativity is $C = g^2/(\kappa\gamma) \ll 1$ without a cavity. This means each excitation has a low probability of producing a useful photon. Alkaline-earth atoms with narrow "clock" transitions have different challenges: long excited-state lifetimes mean slower photon production rates.</p>
     </div>
-  </div>
-
-  <div class="dist-card" id="distillation">
-    <h3>Fixing noisy pairs: entanglement distillation</h3>
-    <p>Heralded pairs arrive with fidelity below 1 (imperfect HOM visibility, dephasing during the wait, detector noise).
-      <strong>Entanglement distillation</strong> (also called purification) turns several noisy pairs into fewer, better ones
-      using only local operations and classical communication, directly on the physical qubits, with no error-correcting
-      code. In the recurrence protocol both nodes hold two pairs; each applies a CNOT from its half of pair 1 to its half
-      of pair 2 (a <em>bilateral</em> CNOT), measures its half of pair 2 in Z, and the two nodes compare the results over
-      the classical channel. Equal parities keep pair 1, now with higher fidelity; unequal parities discard it.</p>
-    <div class="two-col">
-      <svg class="dist-svg" viewBox="0 0 320 180" role="img" aria-labelledby="distT">
-        <title id="distT">Two noisy Bell pairs shared between node A and node B. Each node applies a CNOT from its qubit of pair 1 (control) to its qubit of pair 2 (target), measures the pair-2 qubit, and sends the outcome to the other node. Pair 1 is kept only if the outcomes agree.</title>
-        <text x="60" y="16" text-anchor="middle" class="ds-t">Node A</text><text x="260" y="16" text-anchor="middle" class="ds-t">Node B</text>
-        <g class="ds-ink" fill="none" stroke-width="1.5">
-          <path d="M60 45 C120 30 200 30 260 45" stroke-dasharray="5 4"/><path d="M60 110 C120 95 200 95 260 110" stroke-dasharray="5 4"/>
-          <line x1="60" y1="45" x2="60" y2="120"/><circle cx="60" cy="110" r="10"/><line x1="50" y1="110" x2="70" y2="110"/>
-          <line x1="260" y1="45" x2="260" y2="120"/><circle cx="260" cy="110" r="10"/><line x1="250" y1="110" x2="270" y2="110"/>
-          <line x1="60" y1="120" x2="60" y2="128"/><line x1="260" y1="120" x2="260" y2="128"/>
-          <line x1="110" y1="140" x2="210" y2="140" stroke-dasharray="2 3"/>
-        </g>
-        <circle cx="60" cy="45" r="5" class="ds-fill"/><circle cx="260" cy="45" r="5" class="ds-fill"/>
-        <text x="160" y="28" text-anchor="middle" class="ds-s">pair 1 (kept)</text><text x="160" y="93" text-anchor="middle" class="ds-s">pair 2 (sacrificed)</text>
-        <text x="60" y="143" text-anchor="middle" class="ds-s">measure Z → a</text><text x="260" y="143" text-anchor="middle" class="ds-s">measure Z → b</text>
-        <text x="160" y="165" text-anchor="middle" class="ds-s">compare a, b over the classical channel;</text><text x="160" y="177" text-anchor="middle" class="ds-s">keep pair 1 only if a = b</text>
-      </svg>
-      <div>
-        <div class="calc-field">
-          <label for="dist-f">Input fidelity F (Werner pairs): <span id="dist-f-v">0.80</span></label>
-          <input type="range" id="dist-f" min="51" max="99" value="80" step="1">
-        </div>
-        <div class="calc-field">
-          <label for="dist-n">Rounds: <span id="dist-n-v">3</span></label>
-          <input type="range" id="dist-n" min="1" max="6" value="3" step="1">
-        </div>
-        <div class="table-wrap-dist"><table class="dist-table"><thead><tr><th scope="col">Round</th><th scope="col">Fidelity</th><th scope="col">P(keep)</th><th scope="col">Raw pairs / output</th></tr></thead><tbody id="dist-body"></tbody></table></div>
-      </div>
-    </div>
-    <p style="font-size:.76rem;color:var(--text-muted);margin:.6rem 0 0">One round of the Bennett et al. (1996) recurrence for Werner states, with the pairs re-twirled to Werner form between rounds:
-      $F' = \dfrac{F^2 + \left(\frac{1-F}{3}\right)^2}{F^2 + \frac{2F(1-F)}{3} + 5\left(\frac{1-F}{3}\right)^2}$, kept with probability equal to the denominator; it only helps for F &gt; 1/2.
-      Perfect local gates are assumed (in practice local gate errors set a ceiling), and the Deutsch et al. (1996) variant converges faster.
-      Each round consumes two pairs per kept pair, so the raw-pair cost grows like ∏ 2/P(keep). Compare magic-state
-      <em>distillation</em> and <em>cultivation</em>, which need error correction: <a href="learn-quantum.html#magic">Learn Quantum → Magic States</a>.</p>
   </div>
 </section>
 
@@ -963,7 +807,7 @@
         <strong>High-NA Lens / Parabolic Mirror (Free Space)</strong>
         <span>The simplest approach — collect as many photons as possible with a large aperture</span>
       </div>
-      <span class="approach-badge">η ~ 2–15%</span>
+      <span class="approach-badge">η<sub>coll</sub> ~ 2–15%</span>
       <svg class="approach-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
     </div>
     <div class="approach-body">
@@ -971,14 +815,14 @@
       <ul>
         <li>No moving parts, no cavity alignment, integrates naturally with tweezer control optics.</li>
         <li>Collection efficiency limited by NA. For NA = 0.65: $\eta_{\rm coll} \approx 12\%$. Single-mode fiber coupling reduces this to ~6–8% total.</li>
-        <li><strong>Covey group (UIUC; formerly Caltech):</strong> Demonstrated single-photon collection from single Cs atoms in tweezers with improved fiber coupling efficiency. <strong>Lukin group:</strong> Working on free-space Rb photon collection in tweezer arrays.</li>
-        <li><strong>Key challenge:</strong> With $\eta \sim 8\%$, the two-photon BSM rate is $\eta^2/2 \approx 0.3\%$ — about 3,000 Bell pairs/second at 1 MHz repetition rate. Adequate for demonstrations; marginal for FTQC requirements.</li>
+        <li><strong>Weinfurter group (LMU):</strong> a high-NA objective collects photons from a single Rb atom in a dipole trap into single-mode fiber; this free-space setup is behind both Hofmann et al. (2012) and van Leent et al. (2022). End-to-end, each node detected roughly one photon per thousand attempts in 2012, because coupling, fiber and detector losses multiply the collection efficiency.</li>
+        <li><strong>Key challenge:</strong> With $\eta \sim 8\%$, the two-photon success probability is $\eta^2/2 \approx 0.3\%$ — about 3,000 Bell pairs/second if attempts could run at 1 MHz (illustrative). Adequate for demonstrations; marginal for linking FTQC modules.</li>
       </ul>
       <div class="spec-pills">
-        <span class="spec-pill">η <strong>2–15%</strong></span>
-        <span class="spec-pill">Rate <strong>~3 kHz (typical)</strong></span>
+        <span class="spec-pill">η<sub>coll</sub> <strong>2–15%</strong></span>
+        <span class="spec-pill">Rate <strong>~kHz at 1 MHz attempts (illustrative)</strong></span>
         <span class="spec-pill">Complexity <strong>Low</strong></span>
-        <span class="spec-pill">Groups <strong>Harvard, UIUC</strong></span>
+        <span class="spec-pill">Example <strong>LMU (Weinfurter)</strong></span>
       </div>
     </div>
   </div>
@@ -999,15 +843,15 @@
       <p>where $C = g^2/(\kappa\gamma)$ is the cooperativity. For $C = 10$: $\beta = 91\%$. The photon exits the cavity mirror and can be coupled directly into single-mode fiber with 60–80% efficiency, giving total $\eta \sim 55–72\%$.</p>
       <ul>
         <li><strong>Rempe group (MPQ):</strong> Pioneered this approach with Rb in macroscopic Fabry-Pérot cavities. 2012 (Ritter et al., Nature): an elementary quantum network linking single Rb atoms in two cavities 21 m apart. 2021 (Daiss et al., Science): photonic quantum-logic gate between two atoms in separate cavities linked by a 60 m fiber.</li>
-        <li><strong>Thompson group (Princeton/Caltech):</strong> Cs atoms in a 2D optical lattice coupled to a Fabry-Pérot cavity; cooperativity $C > 100$.</li>
-        <li><strong>Fiber Fabry-Pérot cavities (FFP):</strong> Micro-machined tips on optical fibers that form a cavity around a single atom. Miniature (100s μm long), compatible with tweezer arrays, scalable. Groups: Hunger (LMU), Vollmer, Schiller.</li>
-        <li><strong>Key challenge:</strong> Cavity alignment stability, acoustic/thermal vibration of cavity mirrors, and integration with the tweezer control optics all require careful engineering. The cavity finesse typically degrades near atomic density gradients.</li>
+        <li><strong>Nanophotonic cavities (Lukin and Vuletić groups, Harvard/MIT):</strong> a single Rb atom trapped next to a photonic-crystal cavity, strongly coupled to its mode (Tiecke et al., <em>Nature</em> 508, 241 (2014)).</li>
+        <li><strong>Fiber Fabry-Pérot cavities (FFP):</strong> Micro-machined tips on optical fibers that form a cavity around a single atom. Miniature (tens to hundreds of μm long) with small mode volumes, which helps reach high cooperativity; first used with cold atoms by the Reichel group (ENS Paris).</li>
+        <li><strong>Key challenge:</strong> Cavity alignment stability, acoustic/thermal vibration of cavity mirrors, and integration with the tweezer control optics all require careful engineering. Dielectric mirror surfaces close to the atoms can also collect charge and shift Rydberg levels, which complicates combining a cavity with Rydberg gates.</li>
       </ul>
       <div class="spec-pills">
         <span class="spec-pill">β <strong>50–95%</strong></span>
         <span class="spec-pill">η_total <strong>~55–75%</strong></span>
-        <span class="spec-pill">Rate <strong>~100 kHz–1 MHz</strong></span>
-        <span class="spec-pill">Groups <strong>MPQ, Caltech/MIT</strong></span>
+        <span class="spec-pill">Rate <strong>~10⁵/s at 1 MHz attempts (illustrative)</strong></span>
+        <span class="spec-pill">Groups <strong>MPQ, Harvard/MIT, ENS</strong></span>
       </div>
     </div>
   </div>
@@ -1026,16 +870,16 @@
       <p>Alkali atoms emit photons at 780–852 nm where standard SMF-28 fiber has 3–5 dB/km loss. At 1550 nm telecom C-band, loss is only 0.18–0.20 dB/km. Quantum frequency conversion (QFC) maps the atom's photon to telecom wavelengths while preserving all quantum information, including polarization and time-bin encoding.</p>
       <p>Implemented via:</p>
       <ul>
-        <li><strong>Periodically poled lithium niobate (PPLN) waveguides:</strong> Difference-frequency generation (DFG) with a strong pump laser. Rb 780 nm + pump 1450 nm → 1550 nm (telecom C-band). Demonstrated with $>$70% internal efficiency and photon indistinguishability preserved.</li>
-        <li><strong>Nanophotonic AlGaAs and GaP waveguides:</strong> Higher nonlinearity, smaller footprint, CMOS compatible. Emerging platform.</li>
-        <li><strong>Key demonstration:</strong> van Leent et al. (2022, Nature): Rb atoms in separate labs entangled over 33 km of fiber, with QFC from 780 to 1517 nm. First demonstration of neutral-atom remote entanglement over deployed fiber distance.</li>
-        <li><strong>Memory qubit + communication qubit architecture:</strong> In $^{171}$Yb and $^{87}$Sr, the nuclear spin $I = 1/2$ serves as the memory qubit (coherence time seconds to minutes), while the electron spin handles photon emission. QFC from Yb 399/556 nm to telecom is an active area.</li>
+        <li><strong>Periodically poled lithium niobate (PPLN) waveguides:</strong> Difference-frequency generation (DFG) with a strong pump laser. For Rb, a 1607 nm pump converts 780 nm photons to 1517 nm (van Leent et al. 2022). Demonstrated with $>$70% internal efficiency and photon indistinguishability preserved.</li>
+        <li><strong>Nanophotonic AlGaAs and GaP waveguides:</strong> Higher nonlinearity and smaller footprint. Emerging platform.</li>
+        <li><strong>Key demonstration:</strong> van Leent et al. (2022, Nature): two Rb atoms in buildings 400 m apart entangled through up to 33 km of telecom fiber (extra length on spools), with QFC from 780 to 1517 nm.</li>
+        <li><strong>Memory qubit + communication qubit architecture:</strong> In $^{171}$Yb ($I = 1/2$) and $^{87}$Sr ($I = 9/2$), the nuclear spin serves as the memory qubit (coherence time seconds to minutes), while an optical transition handles photon emission (see the next card). QFC from Yb 399/556 nm to telecom is an active area.</li>
       </ul>
       <div class="spec-pills">
         <span class="spec-pill">η_QFC <strong>60–92%</strong></span>
         <span class="spec-pill">Fiber loss at 1550 nm <strong>0.18 dB/km</strong></span>
-        <span class="spec-pill">L_max <strong>>100 km</strong></span>
-        <span class="spec-pill">Groups <strong>Weinfurter (LMU), Lukin, Covey</strong></span>
+        <span class="spec-pill">Demonstrated <strong>33 km (Rb)</strong></span>
+        <span class="spec-pill">Example <strong>Weinfurter (LMU)</strong></span>
       </div>
     </div>
   </div>
@@ -1053,14 +897,14 @@
     <div class="approach-body">
       <p>Alkaline-earth-like (AEL) atoms (¹⁷¹Yb, ⁸⁷Sr, ¹⁷³Yb) have a useful two-qubit architecture within a single atom. The <strong>nuclear spin</strong> ($I = 1/2$ for ¹⁷¹Yb) forms an ultra-long-lived memory qubit whose magnetic sensitivity is suppressed to the nuclear-magneton scale because the $^1S_0$ ground state has no electronic angular momentum. The <strong>electronic state</strong> interacts with photons via the $^3P_1$ or $^3P_2$ transitions and serves as the communication qubit.</p>
       <ul>
-        <li><strong>Protocol:</strong> (1) Entangle nuclear spin and electron spin via a local quantum gate. (2) Use electron spin to emit a photon entangled with itself. (3) BSM creates remote atom-atom entanglement between electron spins. (4) Entanglement swapping transfers this to the nuclear spins. (5) Nuclear spins are used for computation while communication repeats.</li>
-        <li><strong>Key advantage:</strong> Memory qubits are coherent for seconds while communication is happening (100s of μs latency). No need to halt computation during entanglement generation.</li>
-        <li><strong>Groups:</strong> Atom Computing (¹⁷¹Yb), Thompson group (Princeton, ¹⁷¹Yb), Covey group (UIUC, ¹⁷¹Yb), Kaufman group (JILA, ⁸⁸Sr and ¹⁷¹Yb), Ye group (JILA, ⁸⁷Sr).</li>
+        <li><strong>Protocol (schematic):</strong> (1) Drive an optical transition so the atom emits a photon whose polarization or time bin is entangled with its qubit state. (2) A heralded BSM entangles two such communication qubits in different modules. (3) A local gate swaps the link onto nuclear-spin memory qubits. (4) Memories hold the pair while the next link attempts run.</li>
+        <li><strong>Key advantage:</strong> Memory qubits are coherent for seconds while communication is happening (100s of μs latency), so link attempts and local computation can overlap.</li>
+        <li><strong>Groups:</strong> Atom Computing (¹⁷¹Yb), Thompson group (Princeton, ¹⁷¹Yb), Covey group (UIUC, ¹⁷¹Yb), Ye group (JILA, ⁸⁷Sr), among others.</li>
       </ul>
       <div class="spec-pills">
         <span class="spec-pill">Memory T₂ <strong>&gt;1 s</strong></span>
-        <span class="spec-pill">Comm qubit <strong>electron spin</strong></span>
-        <span class="spec-pill">Memory qubit <strong>nuclear spin I=½</strong></span>
+        <span class="spec-pill">Comm. <strong>optical transition</strong></span>
+        <span class="spec-pill">Memory qubit <strong>nuclear spin</strong></span>
         <span class="spec-pill">Atoms <strong>¹⁷¹Yb, ⁸⁷Sr</strong></span>
       </div>
       <div class="good-box" style="margin-top:.65rem">✓ <strong>Why this matters:</strong> The communication qubit can be "sacrificed" in the photon emission process (which partially destroys coherence) while the memory qubit stays pristine. After heralded success, entanglement is swapped back to the memory. This decoupling is unavailable to alkali atoms with a single qubit register.</div>
@@ -1082,13 +926,13 @@
       <p style="font-family:var(--font-mono);font-size:.83rem;color:var(--ent);text-align:center">|vacuum⟩ → |0⟩_ensemble|0⟩_photon + ε|1-excitation spin wave⟩|1-photon⟩ + O(ε²)</p>
       <p>Detecting the photon heralds the spin wave. Two such nodes interfere their photons at a BSM, creating entanglement between the ensembles. A read pulse then converts the spin wave deterministically into a photon — enabling entanglement swapping across repeater nodes.</p>
       <ul>
-        <li><strong>Key advantage over single-atom schemes:</strong> Enhanced emission rate (collective enhancement by $\sqrt{N}$) — probabilistic but with much higher rate per attempt.</li>
-        <li><strong>Experiments:</strong> Kuzmich group (Georgia Tech, 2004) — first atom-atom entanglement via photons using ensembles. Vuletic group (MIT) — pushed rates significantly. Numerous demonstrations of quantum memory using DLCZ-type ensembles in cold atom clouds.</li>
+        <li><strong>Key advantage over single-atom schemes:</strong> Collective enhancement — the stored excitation is read out into a well-defined spatial mode with an efficiency that grows with the ensemble's optical depth, so no cavity is needed for good collection.</li>
+        <li><strong>Experiments:</strong> Chou et al. (Kimble group, Caltech; <em>Nature</em> 438, 828 (2005)) heralded entanglement between two cold-atom ensembles about 3 m apart. Kuzmich's group (Georgia Tech) demonstrated matter–light state transfer (2004) and remote atomic qubits (2006). Many quantum-memory experiments followed.</li>
         <li><strong>Limitation for computing:</strong> Ensemble-based qubits are harder to use as computational qubits compared to single-atom registers. DLCZ is most relevant for quantum communication networks rather than modular quantum computing.</li>
       </ul>
       <div class="spec-pills">
         <span class="spec-pill">Proposal <strong>Duan, Lukin, Cirac, Zoller 2001</strong></span>
-        <span class="spec-pill">First experiment <strong>2004 (Kuzmich)</strong></span>
+        <span class="spec-pill">First remote ensembles <strong>2005 (Chou et al.)</strong></span>
         <span class="spec-pill">Best for <strong>quantum networks</strong></span>
       </div>
     </div>
@@ -1096,114 +940,10 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════
-     07 · HISTORY
-════════════════════════════════════════════════════════ -->
-<section class="ent-section" id="history">
-  <div class="sec-num">07</div>
-  <h2 class="sec-h2">Historical Milestones</h2>
-  <p class="sec-desc">From the EPR paradox to metropolitan quantum networks — a 90-year arc toward practical quantum interconnects.</p>
-
-  <div class="two-col">
-    <div>
-      <div class="hist-wrap">
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">1935</div>
-          <div class="hist-title">Einstein-Podolsky-Rosen (EPR) Paradox</div>
-          <div class="hist-body">Einstein, Podolsky, and Rosen argue that quantum mechanics is "incomplete" by pointing out that measuring one particle of an entangled pair instantly affects the other — spooky action at a distance. Bell (1964) provides the mathematical test; Aspect (1982) demonstrates violations experimentally with photons. <span class="hist-badge badge-th">Theory</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">1993</div>
-          <div class="hist-title">Quantum Teleportation Protocol (Bennett et al.)</div>
-          <div class="hist-body">Bennett and colleagues propose using a shared Bell pair + classical communication to transfer an arbitrary quantum state between two parties without physically transporting the qubit. Laid the theoretical foundation for all remote entanglement applications. <span class="hist-badge badge-th">Theory</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">1997</div>
-          <div class="hist-title">First quantum teleportation (Zeilinger group)</div>
-          <div class="hist-body">Bouwmeester et al. teleport polarization states between photons over 1 m. The Nobel Prize in Physics 2022 recognised Clauser, Aspect, and Zeilinger for this line of work.</div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">1999</div>
-          <div class="hist-title">Cabrillo et al. — Single-photon entanglement scheme</div>
-          <div class="hist-body">First proposal to entangle two distant atoms using detection of a <em>single</em> photon from a superposition of emissions. Success probability ∝ η (linear in efficiency — a significant theoretical improvement). <span class="hist-badge badge-th">Theory</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2001</div>
-          <div class="hist-title">DLCZ Quantum Repeater Protocol</div>
-          <div class="hist-body">Duan, Lukin, Cirac, and Zoller propose a practical quantum repeater using atomic ensembles. This landmark paper provided the first route to long-distance quantum communication, spawning hundreds of experiments worldwide. <span class="hist-badge badge-ens">Ensemble</span> <span class="hist-badge badge-th">Theory</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2004</div>
-          <div class="hist-title">First atom-atom entanglement via photons (Kuzmich group)</div>
-          <div class="hist-body">Matsukevich and Kuzmich (Georgia Tech) demonstrate DLCZ-type entanglement between two cold Rb atomic ensembles in the same lab, mediated by photon detection. First experimental realisation of matter-matter entanglement via photonic link. <span class="hist-badge badge-ens">Ensemble</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2007</div>
-          <div class="hist-title">Remote entanglement of single ions (Monroe group)</div>
-          <div class="hist-body">Moehring et al. (Monroe group, then at Michigan; Nature 449, 68) demonstrate heralded entanglement between two ¹⁷¹Yb⁺ ions in separate traps about 1 m apart. First entanglement between two individually addressable single qubits. <span class="hist-badge badge-ion">Trapped Ion</span></div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="hist-wrap">
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2012</div>
-          <div class="hist-title">Remote entanglement of single neutral atoms (Weinfurter and Rempe groups)</div>
-          <div class="hist-body">Hofmann et al. (Weinfurter group, LMU Munich; Science 337, 72) herald entanglement between two single Rb atoms in free-space dipole traps 20 m apart. The same year Ritter et al. (Rempe group, MPQ; Nature 484, 195) link single Rb atoms in two optical cavities 21 m apart. <span class="hist-badge badge-na">Neutral Atom</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2015</div>
-          <div class="hist-title">Loophole-free Bell test (Hensen et al., Delft)</div>
-          <div class="hist-body">The Hanson group uses NV center remote entanglement over 1.3 km to close all loopholes simultaneously in a Bell inequality test. (Nature 526, 682). The group later built a three-node NV network (Pompili et al. 2021) and teleported a qubit between non-neighbouring nodes (Hermans et al. 2022). <span class="hist-badge badge-nv">NV Center</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2020</div>
-          <div class="hist-title">High-rate remote entanglement of ions (Oxford)</div>
-          <div class="hist-body">Stephenson et al. (Lucas group, Oxford; PRL 124, 110501) entangle two ⁸⁸Sr⁺ ions in separate traps via a photonic Bell-state measurement at 182 pairs/s with 94% fidelity. <span class="hist-badge badge-ion">Trapped Ion</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2021</div>
-          <div class="hist-title">Photonic quantum gate between distant atoms (Rempe group)</div>
-          <div class="hist-body">Daiss et al. (MPQ, Science 2021) realise a quantum-logic gate between two Rb atoms each in separate cavity QED nodes, mediated by a shared photon reflected off each cavity. First demonstration of a remote two-qubit gate between neutral atoms. Bell state fidelity 79% limited by cavity losses. <span class="hist-badge badge-na">Neutral Atom</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2022</div>
-          <div class="hist-title">Rb atom entanglement over 33 km fiber (Weinfurter group)</div>
-          <div class="hist-body">van Leent et al. (LMU, Nature 2022) entangle two single Rb atoms separated by 33 km of deployed metropolitan fiber using quantum frequency conversion to 1517 nm. First neutral-atom entanglement over a practical-distance fiber link. <span class="hist-badge badge-na">Neutral Atom</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2022</div>
-          <div class="hist-title">Three-node quantum network (Delft)</div>
-          <div class="hist-body">Pompili et al. and Beukers et al. (Delft) demonstrate a three-node quantum network with NV center nodes, with entanglement swapping and teleportation across a two-hop chain — the first true quantum network with intermediate repeater node. <span class="hist-badge badge-nv">NV Center</span></div>
-        </div>
-        <div class="hist-item">
-          <div class="hist-dot"></div>
-          <div class="hist-year">2024+</div>
-          <div class="hist-title">Neutral atoms: race to tweezer-array interconnects</div>
-          <div class="hist-body">Multiple groups (Lukin/Harvard, Covey/UIUC, Kaufman/JILA, Ye/JILA, Thompson/Princeton) are pushing toward photonic interconnects for tweezer-array quantum computers. QuEra, Atom Computing, and Infleqtion have all identified remote entanglement as a key 2025–2028 milestone. <span class="hist-badge badge-na">Neutral Atom</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════
-     08 · RATE CALCULATOR
+     07 · RATE CALCULATOR
 ════════════════════════════════════════════════════════ -->
 <section class="ent-section" id="calculator">
-  <div class="sec-num">08</div>
+  <div class="sec-num">07</div>
   <h2 class="sec-h2">Entanglement Rate Calculator</h2>
   <p class="sec-desc">Estimate Bell pair generation rates for different hardware configurations.</p>
 
@@ -1242,7 +982,7 @@
           </div>
         </div>
         <div class="calc-field">
-          <label for="r-rep">Repetition rate</label>
+          <label for="r-rep">Attempt rate (laser repetition)</label>
           <input type="range" id="r-rep" min="0" max="4" value="2" step="0.1"
             oninput="updateRate(); setSliderFill(this,this.value/4)">
           <div class="range-row">
@@ -1254,11 +994,11 @@
       </div>
       <div>
         <div class="calc-field">
-          <label for="r-len">Fiber length</label>
-          <input type="range" id="r-len" min="0" max="50" value="2" step="0.5"
+          <label for="r-len">Fiber length per arm (node → station)</label>
+          <input type="range" id="r-len" min="0" max="50" value="0" step="0.5"
             oninput="updateRate(); setSliderFill(this,this.value/50)">
           <div class="range-row">
-            <span>0 m</span>
+            <span>10 m</span>
             <span id="r-len-v">10 m</span>
             <span>50 km</span>
           </div>
@@ -1268,8 +1008,8 @@
           <select id="r-wav" onchange="updateRate()">
             <option value="3">Rb 780 nm (3 dB/km)</option>
             <option value="2.5">Cs 852 nm (2.5 dB/km)</option>
-            <option value="0.35">Telecom O-band 1310 nm (0.35 dB/km)</option>
-            <option value="0.18" selected>Telecom C-band 1550 nm (0.18 dB/km)</option>
+            <option value="0.35">1310 nm after conversion (0.35 dB/km)</option>
+            <option value="0.18" selected>1550 nm after conversion (0.18 dB/km)</option>
           </select>
         </div>
         <div class="calc-field">
@@ -1280,7 +1020,7 @@
           </select>
         </div>
         <div class="calc-field">
-          <label for="r-pu">Cavity Purcell factor (1 = no cavity)</label>
+          <label for="r-pu">Cavity enhancement F (1 = no cavity; β = (F−1)/F)</label>
           <input type="range" id="r-pu" min="1" max="20" value="1" step="0.5"
             oninput="updateRate(); setSliderFill(this,(this.value-1)/19)">
           <div class="range-row">
@@ -1327,19 +1067,21 @@
       <div class="fid-bar-fill" id="r-bar" style="width:0%;background:#0ea5e9"></div>
     </div>
     <p style="font-size:.73rem;color:var(--text-muted);margin:.35rem 0 0;text-align:center" id="r-verdict"></p>
+    <p style="font-size:.72rem;color:var(--text-muted);margin:.35rem 0 0;text-align:center" id="r-cap"></p>
+    <p style="font-size:.7rem;color:var(--text-muted);margin:.35rem 0 0;text-align:center">Model: η = collection × fiber coupling × fiber transmission × detector, per photon. The 1310/1550 nm options assume the atom's photon is frequency-converted first; conversion loss is not included. With a cavity, collection = β × 0.85 outcoupling (illustrative). Dark counts, multi-photon events and HOM visibility are left out.</p>
   </div>
 
   <div class="bk-card" id="link-sim">
     <h4>Watch the link run: attempts, losses and heralds</h4>
     <p>A Monte Carlo of the link above, with the same η, scheme and repetition rate. In every attempt of the
       two-photon scheme both atoms emit a photon; each survives collection, fiber coupling, the fiber and its
-      detector with probability η, and when both arrive the beam-splitter measurement heralds a Bell pair half
-      the time (the other half the photons leave by the same port), so p = η²/2. In the single-photon scheme each
+      detector with probability η. When both arrive, the beam splitter and polarizing beam splitters herald a Bell pair half
+      the time (H₁V₂ or V₁H₂ for |Ψ⁻⟩, H₁V₁ or H₂V₂ for |Ψ⁺⟩); the other half both photons end up in the same detector and the attempt is discarded, so p = η²/2. In the single-photon scheme each
       atom is excited with probability ε = 0.05 and exactly one detector click heralds, p ≈ 2εη.
       <b>Slow motion</b> plays one attempt at a time so you can see where photons are lost; <b>Real time</b>
       runs attempts at the lab repetition rate (one second here is one second of lab time, up to 2×10⁵ attempts
       per frame) and compares the heralded fraction with the calculator.</p>
-    <canvas id="bkCanvas" width="1440" height="460" aria-label="Schematic of two atom nodes sending photons through fibers to a beam-splitter measurement station; lost photons fade out and successful heralds flash. The running tallies are listed below the figure."></canvas>
+    <canvas id="bkCanvas" width="1440" height="460" data-export-ready="true" aria-label="Schematic of two atom nodes sending photons through fibers to a 50:50 beam splitter, then (two-photon scheme) a polarizing beam splitter and two detectors on each output, or (single-photon scheme) one detector per output. Lost photons fade out; the detectors that click light up green for a herald and red otherwise. The running tallies are listed below the figure."></canvas>
     <div class="bk-ctrls" role="group" aria-label="Link simulation speed">
       <button type="button" id="bkSlow" aria-pressed="true">Slow motion</button>
       <button type="button" id="bkFast" aria-pressed="false">Real time</button>
@@ -1350,7 +1092,59 @@
   </div>
 
   <div class="info-box" style="margin-top:.75rem">
-    📌 <strong>FTQC requirement:</strong> For surface-code error correction in a modular architecture with physical error rate $p_{\rm link}$ and code distance $d$, the link needs to generate Bell pairs faster than the error-correction cycle time $\sim d \times t_{\rm gate}$. A typical requirement is ~100–1,000 Bell pairs/second per inter-module link. Cavity-enhanced approaches easily satisfy this; free-space approaches are marginal for longer fibers.
+    📌 <strong>FTQC requirement:</strong> For surface-code error correction in a modular architecture with physical error rate $p_{\rm link}$ and code distance $d$, the link needs to generate Bell pairs faster than the error-correction cycle time $\sim d \times t_{\rm gate}$. The rate actually needed depends on the code, the gate times and how many links run in parallel, so there is no single number; as a rough rule of thumb, rates of order 10³ pairs/s or more per link are what modular proposals aim for. Cavity-enhanced collection is the most direct way to get there, since the rate scales as η².
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     08 · ENTANGLEMENT DISTILLATION
+════════════════════════════════════════════════════════ -->
+<section class="ent-section" id="distillation">
+  <div class="sec-num">08</div>
+  <h2 class="sec-h2">Fixing Noisy Pairs: Entanglement Distillation</h2>
+  <p class="sec-desc">Real heralded pairs never have fidelity 1. Before pairs are chained or used for gates, several noisy ones can be traded for fewer, better ones.</p>
+
+  <div class="dist-card">
+    <h3>The recurrence protocol</h3>
+    <p>Heralded pairs arrive with fidelity below 1 (imperfect HOM visibility, dephasing during the wait, detector noise).
+      <strong>Entanglement distillation</strong> (also called purification) turns several noisy pairs into fewer, better ones
+      using only local operations and classical communication, directly on the physical qubits, with no error-correcting
+      code. In the recurrence protocol both nodes hold two pairs; each applies a CNOT from its half of pair 1 to its half
+      of pair 2 (a <em>bilateral</em> CNOT), measures its half of pair 2 in Z, and the two nodes compare the results over
+      the classical channel. Equal parities keep pair 1, now with higher fidelity; unequal parities discard it.</p>
+    <div class="two-col">
+      <svg class="dist-svg" viewBox="0 0 320 180" role="img" aria-labelledby="distT">
+        <title id="distT">Two noisy Bell pairs shared between node A and node B. Each node applies a CNOT from its qubit of pair 1 (control) to its qubit of pair 2 (target), measures the pair-2 qubit, and sends the outcome to the other node. Pair 1 is kept only if the outcomes agree.</title>
+        <text x="60" y="16" text-anchor="middle" class="ds-t">Node A</text><text x="260" y="16" text-anchor="middle" class="ds-t">Node B</text>
+        <g class="ds-ink" fill="none" stroke-width="1.5">
+          <path d="M60 45 C120 30 200 30 260 45" stroke-dasharray="5 4"/><path d="M60 110 C120 95 200 95 260 110" stroke-dasharray="5 4"/>
+          <line x1="60" y1="45" x2="60" y2="120"/><circle cx="60" cy="110" r="10"/><line x1="50" y1="110" x2="70" y2="110"/>
+          <line x1="260" y1="45" x2="260" y2="120"/><circle cx="260" cy="110" r="10"/><line x1="250" y1="110" x2="270" y2="110"/>
+          <line x1="60" y1="120" x2="60" y2="128"/><line x1="260" y1="120" x2="260" y2="128"/>
+          <line x1="110" y1="140" x2="210" y2="140" stroke-dasharray="2 3"/>
+        </g>
+        <circle cx="60" cy="45" r="5" class="ds-fill"/><circle cx="260" cy="45" r="5" class="ds-fill"/>
+        <text x="160" y="28" text-anchor="middle" class="ds-s">pair 1 (kept)</text><text x="160" y="93" text-anchor="middle" class="ds-s">pair 2 (sacrificed)</text>
+        <text x="60" y="143" text-anchor="middle" class="ds-s">measure Z → a</text><text x="260" y="143" text-anchor="middle" class="ds-s">measure Z → b</text>
+        <text x="160" y="165" text-anchor="middle" class="ds-s">compare a, b over the classical channel;</text><text x="160" y="177" text-anchor="middle" class="ds-s">keep pair 1 only if a = b</text>
+      </svg>
+      <div>
+        <div class="calc-field">
+          <label for="dist-f">Input fidelity F (Werner pairs): <span id="dist-f-v">0.80</span></label>
+          <input type="range" id="dist-f" min="51" max="99" value="80" step="1">
+        </div>
+        <div class="calc-field">
+          <label for="dist-n">Rounds: <span id="dist-n-v">3</span></label>
+          <input type="range" id="dist-n" min="1" max="6" value="3" step="1">
+        </div>
+        <div class="table-wrap-dist"><table class="dist-table"><thead><tr><th scope="col">Round</th><th scope="col">Fidelity</th><th scope="col">P(keep)</th><th scope="col">Raw pairs / output</th></tr></thead><tbody id="dist-body"></tbody></table></div>
+      </div>
+    </div>
+    <p style="font-size:.76rem;color:var(--text-muted);margin:.6rem 0 0">One round of the Bennett et al. (1996) recurrence for Werner states, with the pairs re-twirled to Werner form between rounds:
+      $F' = \dfrac{F^2 + \left(\frac{1-F}{3}\right)^2}{F^2 + \frac{2F(1-F)}{3} + 5\left(\frac{1-F}{3}\right)^2}$, kept with probability equal to the denominator; it only helps for F &gt; 1/2.
+      Perfect local gates are assumed (in practice local gate errors set a ceiling), and the Deutsch et al. (1996) variant converges faster.
+      Each round consumes two pairs per kept pair, so the raw-pair cost grows like ∏ 2/P(keep). Compare magic-state
+      <em>distillation</em> and <em>cultivation</em>, which need error correction: <a href="learn-quantum.html#magic">Learn Quantum → Magic States</a>.</p>
   </div>
 </section>
 
@@ -1433,7 +1227,7 @@
       <li><strong>Attempt time:</strong> $t = L_0/c_f + t_{\rm local}$ (photon to the station and the herald back, $c_f = c/1.47$). Each empty segment waits a geometric number of attempts.</li>
       <li><strong>Pairs are Werner states</strong>, $F = (3w+1)/4$. Storage: $w \to w\,e^{-2t/T_{\rm mem}}$ (two memories). Swap: $w = w_1 w_2\,w_{\rm swap}$, done as soon as two neighbouring pairs exist; classical signalling time for the swap results is not counted.</li>
       <li><strong>Repeaterless bound</strong> (Pirandola et al. 2017): a lossy channel of transmissivity η carries at most $-\log_2(1-\eta) \approx 1.44\,\eta$ ebits per use. Plotted with $\eta = \eta_{\rm node}\,10^{-\alpha D/10}$ at one use per $t_{\rm local}$.</li>
-      <li>No distillation, multiplexing or dark counts. Without distillation, fidelity falls with every swap; the <a href="#distillation">distillation card</a> above shows how pairs are cleaned up.</li>
+      <li>No distillation, multiplexing or dark counts. Without distillation, fidelity falls with every swap; the <a href="#distillation">distillation section</a> above shows how pairs are cleaned up.</li>
     </ul>
     <p style="margin-top:.6rem;font-size:.8rem">Sources: Briegel, Dür, Cirac &amp; Zoller, <a href="https://doi.org/10.1103/PhysRevLett.81.5932" target="_blank" rel="noopener"><em>PRL</em> 81, 5932 (1998)</a> ·
       Barrett &amp; Kok, <a href="https://doi.org/10.1103/PhysRevA.71.060310" target="_blank" rel="noopener"><em>PRA</em> 71, 060310 (2005)</a> ·
@@ -1454,20 +1248,21 @@
   <div class="landscape-row">
     <div>
       <div class="scale-card" style="margin-bottom:.75rem">
-        <div class="sc-title">Today (2025)</div>
-        <div class="sc-n">~3,000</div>
-        <div class="sc-desc">Physical qubits per module. No inter-module links. Rydberg gates within one array.</div>
+        <div class="sc-title">Today</div>
+        <div class="sc-n">~10³–10⁴</div>
+        <div class="sc-desc">Atoms per array (6,100 Cs atoms reported in 2025). Rydberg gates within one array; atom–atom photonic links shown only in physics experiments.</div>
       </div>
       <div class="scale-card" style="margin-bottom:.75rem;border-color:rgba(146,106,3,0.3);background:rgba(251,191,36,.07);">
-        <div class="sc-title" style="color:#835f03">2026–2028</div>
+        <div class="sc-title" style="color:#835f03">Next step (illustrative)</div>
         <div class="sc-n" style="color:#835f03">~10,000</div>
         <div class="sc-desc">First inter-module photonic links. 2–5 modules. Error-corrected logical qubits across modules.</div>
       </div>
       <div class="scale-card" style="border-color:rgba(24,129,62,0.3);background:rgba(74,222,128,.07);">
-        <div class="sc-title" style="color:#136732">2030+</div>
+        <div class="sc-title" style="color:#136732">Long term (illustrative)</div>
         <div class="sc-n" style="color:#136732">~10⁶</div>
         <div class="sc-desc">Many-module cluster. Photonic links as the "quantum bus". Fault-tolerant computation.</div>
       </div>
+      <p style="font-size:.72rem;color:var(--text-muted);margin:.5rem 0 0">The two lower cards sketch a plausible trajectory, not a forecast or any company's roadmap.</p>
     </div>
     <div>
       <div class="theory">
@@ -1480,14 +1275,12 @@
         <p>The layers are complementary. Fault-tolerant quantum computing requires both: logical qubits encoded across many physical qubits (using Rydberg gates within modules) and logical operations on qubits in different modules (using entanglement-based gate teleportation).</p>
       </div>
       <div class="theory">
-        <h4>Who's building this?</h4>
+        <h4>Who's working on it?</h4>
         <ul>
-          <li><strong>QuEra Computing:</strong> Roadmap explicitly includes inter-module photonic links by 2027–2028. The 2023 Harvard/MIT/QuEra 48 logical qubit paper acknowledged remote entanglement as the critical missing piece for large-scale FTQC.</li>
-          <li><strong>Atom Computing (acquired by Google):</strong> ¹⁷¹Yb architecture's nuclear-spin memory is specifically suited for photonic links with long coherence during communication.</li>
-          <li><strong>Infleqtion (formerly ColdQuanta):</strong> Cs-based systems; working on photonic interface integration.</li>
-          <li><strong>Pasqal:</strong> Rb-based systems; photonic links are a stated roadmap item for their fault-tolerant tier.</li>
-          <li><strong>IonQ:</strong> Trapped ions demonstrated inter-module entanglement (2016-present); serving as benchmark for neutral-atom teams.</li>
-          <li><strong>Academic leaders:</strong> Lukin (Harvard), Ye (JILA), Kaufman (JILA), Covey (UIUC), Thompson (Princeton), Rempe (MPQ), Weinfurter (LMU).</li>
+          <li><strong>Neutral-atom network experiments:</strong> Weinfurter (LMU, Rb atoms: Hofmann et al. 2012, van Leent et al. 2022 over 33 km) and Rempe (MPQ, atoms in cavities: Daiss et al. 2021).</li>
+          <li><strong>Tweezer arrays with photonic interfaces:</strong> Lukin (Harvard), Thompson (Princeton) and Covey (UIUC), among others, are coupling tweezer-held atoms to cavities or fibers.</li>
+          <li><strong>Companies:</strong> Atom Computing, QuEra, Pasqal and Infleqtion build neutral-atom processors. Atom Computing uses ¹⁷¹Yb nuclear-spin qubits, whose long coherence suits holding a qubit while link attempts run. In March 2026 Google Quantum AI announced a neutral-atom effort alongside its superconducting work, with a Boulder team led by Adam Kaufman (<a href="https://blog.google/innovation-and-ai/technology/research/neutral-atom-quantum-computers/" target="_blank" rel="noopener">Google</a>, <a href="https://www.colorado.edu/jila/2026/03/24/google-quantum-ai-engages-jila-fellow-adam-kaufman-lead-new-neutral-atom-quantum" target="_blank" rel="noopener">JILA</a>).</li>
+          <li><strong>The trapped-ion benchmark:</strong> Oxford's two-node ion network reached 182 heralded Bell pairs per second at 94% fidelity (Stephenson et al., <a href="https://doi.org/10.1103/PhysRevLett.124.110501" target="_blank" rel="noopener"><em>PRL</em> 124, 110501 (2020)</a>) and later ran a distributed quantum algorithm across the link (Main et al., <a href="https://arxiv.org/abs/2407.00835" target="_blank" rel="noopener">arXiv:2407.00835</a>, published in <em>Nature</em> 2025).</li>
         </ul>
       </div>
     </div>
@@ -1498,7 +1291,7 @@
       ✓ <strong>The optimistic case:</strong> Photonic interconnects between tweezer modules can be added modularly — start with 2 modules (a proof-of-principle), scale to 10 (early FTQC), then hundreds. Each module can be optimized locally before the link is added. The link is additive, not a redesign.
     </div>
     <div class="warn-box">
-      ⚠️ <strong>The honest challenge:</strong> Free-space collection efficiency at η ~ 5–10% gives Bell pair rates of 1–10 kHz — potentially too slow for large-scale FTQC without cavity enhancement. The cavity integration challenge (alignment stability, compatibility with tweezer control optics, scalability) is a genuine open problem as of 2025.
+      ⚠️ <strong>The honest challenge:</strong> Free-space collection with η ≈ 5–10% per node gives p = η²/2 ≈ 0.1–0.5%, so about 1–5 kHz even at an optimistic 1 MHz attempt rate — likely too slow for large-scale FTQC without cavity enhancement or multiplexing. The cavity integration challenge (alignment stability, compatibility with tweezer control optics, scalability) remains an open engineering problem.
     </div>
   </div>
 
@@ -1513,22 +1306,129 @@
 
 </section>
 
-  <!-- ══ REFERENCES ══ -->
-  <section style="margin-top:2rem">
-    <h2 class="section-title"><span class="accent">10</span> References &amp; Further Reading</h2>
-    <p style="color:var(--text-secondary);font-size:.9rem;margin-bottom:1.2rem;">
+<!-- ══════════════════════════════════════════════════════
+     11 · HISTORY
+════════════════════════════════════════════════════════ -->
+<section class="ent-section" id="history">
+  <div class="sec-num">11</div>
+  <h2 class="sec-h2">Historical Milestones</h2>
+  <p class="sec-desc">From the EPR paradox to metropolitan quantum networks — a 90-year arc toward practical quantum interconnects.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="hist-wrap">
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">1935</div>
+          <div class="hist-title">Einstein-Podolsky-Rosen (EPR) Paradox</div>
+          <div class="hist-body">Einstein, Podolsky, and Rosen argue that the perfect correlations of an entangled pair make quantum mechanics "incomplete" if no influence can travel faster than light. Bell (1964) provides the mathematical test; Aspect (1982) demonstrates violations experimentally with photons. <span class="hist-badge badge-th">Theory</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">1993</div>
+          <div class="hist-title">Quantum Teleportation Protocol (Bennett et al.)</div>
+          <div class="hist-body">Bennett and colleagues propose using a shared Bell pair + classical communication to transfer an arbitrary quantum state between two parties without physically transporting the qubit. Laid the theoretical foundation for all remote entanglement applications. <span class="hist-badge badge-th">Theory</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">1997</div>
+          <div class="hist-title">First quantum teleportation (Zeilinger group)</div>
+          <div class="hist-body">Bouwmeester et al. teleport polarization states between photons over 1 m. The Nobel Prize in Physics 2022 recognised Clauser, Aspect, and Zeilinger for this line of work.</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">1999</div>
+          <div class="hist-title">Cabrillo et al. — Single-photon entanglement scheme</div>
+          <div class="hist-body">First proposal to entangle two distant atoms using detection of a <em>single</em> photon from a superposition of emissions. Success probability ∝ η (linear in efficiency — a significant theoretical improvement). <span class="hist-badge badge-th">Theory</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2001</div>
+          <div class="hist-title">DLCZ Quantum Repeater Protocol</div>
+          <div class="hist-body">Duan, Lukin, Cirac, and Zoller propose a practical quantum repeater using atomic ensembles. This landmark paper provided the first route to long-distance quantum communication, spawning hundreds of experiments worldwide. <span class="hist-badge badge-ens">Ensemble</span> <span class="hist-badge badge-th">Theory</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2005</div>
+          <div class="hist-title">First heralded entanglement of remote atomic ensembles (Kimble group)</div>
+          <div class="hist-body">Chou et al. (Caltech; <em>Nature</em> 438, 828) detect one photon behind a beam splitter, heralding a single excitation shared between two cold-atom ensembles about 3 m apart: the DLCZ building block. Kuzmich's group (Georgia Tech) showed matter–light state transfer (2004) and entangled remote atomic qubits (2006). <span class="hist-badge badge-ens">Ensemble</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2007</div>
+          <div class="hist-title">Remote entanglement of single ions (Monroe group)</div>
+          <div class="hist-body">Moehring et al. (Monroe group, then at Michigan; Nature 449, 68) demonstrate heralded entanglement between two ¹⁷¹Yb⁺ ions in separate traps about 1 m apart. First entanglement between two individually addressable single qubits. <span class="hist-badge badge-ion">Trapped Ion</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="hist-wrap">
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2012</div>
+          <div class="hist-title">Remote entanglement of single neutral atoms (Weinfurter and Rempe groups)</div>
+          <div class="hist-body">Hofmann et al. (Weinfurter group, LMU Munich; Science 337, 72) herald entanglement between two single Rb atoms in free-space dipole traps 20 m apart. The same year Ritter et al. (Rempe group, MPQ; Nature 484, 195) link single Rb atoms in two optical cavities 21 m apart. <span class="hist-badge badge-na">Neutral Atom</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2015</div>
+          <div class="hist-title">Loophole-free Bell test (Hensen et al., Delft)</div>
+          <div class="hist-body">The Hanson group uses NV center remote entanglement over 1.3 km to close all loopholes simultaneously in a Bell inequality test. (Nature 526, 682). <span class="hist-badge badge-nv">NV Center</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2020</div>
+          <div class="hist-title">High-rate remote entanglement of ions (Oxford)</div>
+          <div class="hist-body">Stephenson et al. (Lucas group, Oxford; PRL 124, 110501) entangle two ⁸⁸Sr⁺ ions in separate traps via a photonic Bell-state measurement at 182 pairs/s with 94% fidelity. <span class="hist-badge badge-ion">Trapped Ion</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2021</div>
+          <div class="hist-title">Photonic quantum gate between distant atoms (Rempe group)</div>
+          <div class="hist-body">Daiss et al. (MPQ, Science 2021) realise a quantum-logic gate between two Rb atoms each in separate cavity QED nodes, mediated by a shared photon reflected off each cavity. First demonstration of a remote two-qubit gate between neutral atoms. <span class="hist-badge badge-na">Neutral Atom</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2021–22</div>
+          <div class="hist-title">Three-node quantum network (Delft)</div>
+          <div class="hist-body">Pompili et al. (<em>Science</em> 372, 259, 2021) build a three-node network of NV centers and distribute entanglement between the outer nodes by swapping at the middle one; Hermans et al. (<em>Nature</em> 605, 663, 2022) teleport a qubit between non-neighbouring nodes. <span class="hist-badge badge-nv">NV Center</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2022</div>
+          <div class="hist-title">Rb atoms entangled through 33 km of fiber (Weinfurter group)</div>
+          <div class="hist-body">van Leent et al. (LMU, <em>Nature</em> 607, 69) entangle two single Rb atoms in labs 400 m apart through up to 33 km of telecom fiber, using quantum frequency conversion to 1517 nm. <span class="hist-badge badge-na">Neutral Atom</span></div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-dot"></div>
+          <div class="hist-year">2024+</div>
+          <div class="hist-title">Neutral atoms: race to tweezer-array interconnects</div>
+          <div class="hist-body">Many groups (Lukin/Harvard, Covey/UIUC, Thompson/Princeton, Rempe/MPQ, Weinfurter/LMU and others) are pushing toward photonic interconnects for tweezer-array quantum computers. Modular, photonically linked processors are widely discussed as the route past one array. <span class="hist-badge badge-na">Neutral Atom</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     12 · REFERENCES
+════════════════════════════════════════════════════════ -->
+<section class="ent-section" id="references">
+  <div class="sec-num">12</div>
+  <h2 class="sec-h2">References &amp; Further Reading</h2>
+    <p class="sec-desc">
       Seminal theory papers, key experimental demonstrations, and review articles on remote entanglement and quantum networking.
     </p>
 
-    <h3 style="color:var(--ent);font-size:.95rem;margin:.75rem 0 .5rem">Foundational Theory</h3>
+    <h3 class="ref-h3">Foundational Theory</h3>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1038/nature07127" target="_blank" rel="noopener">Kimble (2008), <em>Nature 453</em> 1023 — "The quantum internet": the seminal vision paper defining protocols and requirements</a>
       <a class="read-link" href="https://doi.org/10.1038/35106500" target="_blank" rel="noopener">Duan, Lukin, Cirac &amp; Zoller (2001), <em>Nature 414</em> 413 — DLCZ protocol: quantum repeater using atomic ensembles and single photons</a>
-      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.71.060310" target="_blank" rel="noopener">Barrett &amp; Kok (2005), <em>PRA 71</em> 060310 — two-photon heralded protocol tolerant to photon loss; basis of most free-space schemes</a>
+      <a class="read-link" href="https://doi.org/10.1103/PhysRevA.71.060310" target="_blank" rel="noopener">Barrett &amp; Kok (2005), <em>PRA 71</em> 060310 — double-heralded two-photon protocol that is robust to photon loss; used in the Delft NV-centre experiments</a>
       <a class="read-link" href="https://doi.org/10.1126/science.aam9288" target="_blank" rel="noopener">Wehner, Elkouss &amp; Hanson (2018), <em>Science 362</em> — "Quantum internet: A vision for the road ahead": stage-by-stage roadmap</a>
     </div>
 
-    <h3 style="color:var(--ent);font-size:.95rem;margin:.75rem 0 .5rem">Key Experimental Demonstrations</h3>
+    <h3 class="ref-h3">Key Experimental Demonstrations</h3>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1038/nature06118" target="_blank" rel="noopener">Moehring et al. (2007), <em>Nature 449</em> 68 — first remote entanglement between two trapped ion qubits via photons</a>
       <a class="read-link" href="https://doi.org/10.1126/science.1221856" target="_blank" rel="noopener">Hofmann et al. (2012), <em>Science 337</em> 72 — heralded atom–atom entanglement between two labs 20 m apart</a>
@@ -1538,7 +1438,7 @@
       <a class="read-link" href="https://doi.org/10.1038/s41586-023-06481-y" target="_blank" rel="noopener">Evered et al. (2023), <em>Nature 622</em> — 99.5% fidelity Rydberg two-qubit gate; sets the bar for local gate quality needed before networking</a>
     </div>
 
-    <h3 style="color:var(--ent);font-size:.95rem;margin:.75rem 0 .5rem">Reviews &amp; Online Resources</h3>
+    <h3 class="ref-h3">Reviews &amp; Online Resources</h3>
     <div class="read-links">
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.83.33" target="_blank" rel="noopener">Sangouard et al. (2011), <em>Rev. Mod. Phys. 83</em> 33 — comprehensive review of quantum repeater architectures and performance</a>
       <a class="read-link" href="https://doi.org/10.1103/RevModPhys.95.045006" target="_blank" rel="noopener">Azuma et al. (2023), <em>Rev. Mod. Phys. 95</em> 045006 (arXiv:2212.10820) — quantum repeaters: from quantum networks to the quantum internet (review)</a>
@@ -1601,168 +1501,259 @@
     h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
   });
 
-  /* ─── Protocol step widget ─── */
+  /* ─── Protocol step widget: the two-photon polarization link of Hofmann et al. (2012) ───
+     Each ⁸⁷Rb atom: pump to |F=1, m_F=0⟩, π pulse to |F′=0, m_F′=0⟩, decay to m_F = ∓1 with σ± light
+     (Volz et al. 2006): (|↓⟩|σ⁺⟩ + |↑⟩|σ⁻⟩)/√2. Photons interfere on a 50:50 fiber BS; PBSs + 4 APDs.
+     H₁V₂ / V₁H₂ → |Ψ⁻⟩, H₁V₁ / H₂V₂ → |Ψ⁺⟩, Φ± → both photons in one detector (no herald). */
   const STEPS = [
-    {
-      label: '① Prepare Atoms',
-      desc: '<strong>Each atom is prepared in a superposition</strong> |+⟩ = (|↑⟩ + |↓⟩)/√2 using a π/2 pulse on the qubit transition. At this point the atoms are in an unentangled product state — no connection between A and B yet.',
-      draw: (g) => {
-        // Bloch-sphere-like indicator on each atom
-        addText(g, 45, 80, '|↑⟩+|↓⟩', '#0ea5e9', '9');
-        addText(g, 45, 93, '    √2   ', '#0ea5e9', '9');
-        addText(g, 460, 80, '|↑⟩+|↓⟩', '#818cf8', '9');
-        addText(g, 460, 93, '    √2   ', '#818cf8', '9');
-      }
-    },
-    {
-      label: '② Excite → Emit',
-      desc: '<strong>A π-pulse drives |↑⟩ → |e⟩</strong> (excited state). The atom emits a photon entangled with its spin: |↑,σ⁺⟩ + |↓,σ⁻⟩ (polarization encoding) or |↑,early⟩ + |↓,late⟩ (time-bin encoding). This is the atom-photon entangled state — the fundamental resource.',
-      draw: (g) => {
-        addCircle(g, 45, 90, 6, '#fbbf24');
-        addText(g, 50, 88, '→ photon', '#fbbf24', '8');
-        addCircle(g, 460, 90, 6, '#fbbf24');
-        addText(g, 447, 88, 'photon ←', '#fbbf24', '8');
-        // Photon dots mid-flight
-        addCircle(g, 160, 100, 5, '#fbbf24', 0.7);
-        addCircle(g, 370, 100, 5, '#fbbf24', 0.7);
-      }
-    },
-    {
-      label: '③ Photons → BSM',
-      desc: '<strong>Photons travel through fiber to the BSM station</strong> at the midpoint. Critically, both photons must arrive within the photon coherence time $\\tau_c = 1/(2\\pi\\Delta\\nu)$ for HOM interference to work. Active path-length stabilization (typically with reference laser) keeps the timing matched to &lt;1 ns.',
-      draw: (g) => {
-        addCircle(g, 215, 98, 5, '#fbbf24');
-        addCircle(g, 305, 98, 5, '#fbbf24');
-        addLine(g, 115, 90, 200, 100, '#0ea5e9', 2, '4,2');
-        addLine(g, 405, 90, 320, 100, '#818cf8', 2, '4,2');
-      }
-    },
-    {
-      label: '④ HOM + Coincidence',
-      desc: '<strong>Two-photon HOM interference at the beamsplitter</strong>: identical photons bunch together. Detecting one photon at D₁ AND one at D₂ (coincidence) heralds a successful BSM and projects the atoms into a Bell state. No coincidence = failed attempt (try again). Success rate: p = η_A × η_B / 2.',
-      draw: (g) => {
-        // Flash detectors
-        addRect(g, 193, 120, 22, 14, 'rgba(74,222,128,.6)', '#4ade80');
-        addRect(g, 305, 120, 22, 14, 'rgba(74,222,128,.6)', '#4ade80');
-        addText(g, 260, 105, 'CLICK!', '#4ade80', '10', 700);
-      }
-    },
-    {
-      label: '⑤ Heralded Bell Pair',
-      desc: '<strong>Classical signal announces success</strong>. The herald (which detector pair fired) tells both nodes which Bell state was created: |Φ⁺⟩ or |Φ⁻⟩. A single-qubit rotation corrects any phase. Both atoms are now in a maximally entangled Bell state — without ever having interacted. This Bell pair is the resource for gate teleportation between modules.',
-      draw: (g) => {
-        // Entanglement link
-        addLine(g, 115, 85, 405, 85, '#4ade80', 2.5, '5,2');
-        addCircle(g, 45, 90, 8, '#4ade80', 0.8);
-        addCircle(g, 460, 90, 8, '#4ade80', 0.8);
-        addText(g, 260, 78, '|Φ⁺⟩ SHARED', '#4ade80', '8.5', 700);
-        // Herald arrows
-        addLine(g, 205, 135, 115, 130, '#4ade80', 1.5, '4,2');
-        addLine(g, 315, 135, 405, 130, '#4ade80', 1.5, '4,2');
-        addText(g, 135, 148, 'herald', '#4ade80', '7');
-        addText(g, 385, 148, 'herald', '#4ade80', '7');
-      }
-    }
+    { label: '① Prepare',
+      desc: '<strong>Optical pumping puts each atom in the same state</strong>, |F=1, m<sub>F</sub>=0⟩ (call it |0⟩). The two atoms are in a product state |0⟩<sub>A</sub>|0⟩<sub>B</sub>: nothing connects them yet, and the qubit states |↓⟩ = m<sub>F</sub>=−1 and |↑⟩ = m<sub>F</sub>=+1 are empty.' },
+    { label: '② Excite → emit',
+      desc: '<strong>A short π pulse lifts each atom to |F′=0, m<sub>F′</sub>=0⟩.</strong> From there it can decay to |↓⟩ by emitting σ⁺ light or to |↑⟩ by emitting σ⁻ (decay back to m<sub>F</sub>=0 gives π light, which is not emitted along the collection axis). The atom ends up entangled with the polarization of the photon it sent into the fiber: (|↓⟩|σ⁺⟩ + |↑⟩|σ⁻⟩)/√2, the state measured by Volz et al. (2006).' },
+    { label: '③ Photons → station',
+      desc: '<strong>Both photons fly to the Bell-state measurement</strong> (in Hofmann et al. 2012, through 5 m and 30 m of fiber from labs 20 m apart). Fiber birefringence is undone with waveplates so σ⁺ → H and σ⁻ → V, and the photons must arrive with the same timing, frequency and spatial mode so that they are indistinguishable (section 04). Rewriting the four-qubit state shows why measuring the photons entangles the atoms: |Ψ⟩<sub>A</sub>|Ψ⟩<sub>B</sub> = ½ Σ<sub>β</sub> |β⟩<sub>atoms</sub>|β⟩<sub>photons</sub>, summed over the four Bell states β.' },
+    { label: '④ Interfere + detect',
+      desc: '<strong>Two-photon interference sorts the Bell states.</strong> Photons in |Ψ⁻⟩ always leave the 50:50 beam splitter by different ports and, after the PBSs, click H₁+V₂ or V₁+H₂. Photons in |Ψ⁺⟩ leave by the same port with orthogonal polarizations: H₁+V₁ or H₂+V₂. Photons in |Φ±⟩ end up in the same port with the same polarization, so both hit one detector, which cannot tell one photon from two. Only two of the four Bell states are identified: the 50% limit of linear optics.' },
+    { label: '⑤ Herald',
+      desc: '<strong>A coincidence is the herald.</strong> It tells both nodes, over a classical channel, that the atoms now share the same Bell state the photons were projected onto: (|↑↓⟩ − |↓↑⟩)/√2 for H₁V₂/V₁H₂, (|↑↓⟩ + |↓↑⟩)/√2 for H₁V₁/H₂V₂, and a local rotation can turn one into the other. Every attempt succeeds with probability η<sub>A</sub>η<sub>B</sub>/2. Hofmann et al. recorded 3,637 heralds in about 107 hours with fidelity ≈ 0.81 for both states.' },
   ];
-
-  let currentStep = 0;
-
-  function svgEl(tag, attrs) {
-    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
-    return el;
+  let currentStep = 0, stepT0 = null;
+  const pcv = document.getElementById('protoCv'), pctx = pcv ? pcv.getContext('2d') : null;
+  // wide: 1000 × 400, everything on one row. Phones: 480 × 640, level diagrams on top, nodes + station below, text 1.2× larger.
+  const PS = 2, PT = 2 * Math.PI;
+  let PW, PH, DY, FS, LEVX, NODE, PBS_, PBS0, PDET, XC, pnarrow = null;
+  function playout() {
+    const n = pcv ? (pcv.clientWidth || 1000) < 600 : false;
+    if (n === pnarrow) return false; pnarrow = n;
+    PW = n ? 480 : 1000; PH = n ? 640 : 400; DY = n ? 190 : 0; FS = n ? 1.2 : 1; XC = PW / 2;
+    NODE = n ? [{ x: 50, lab: 'atom A' }, { x: 430, lab: 'atom B' }] : [{ x: 120, lab: 'atom A' }, { x: 880, lab: 'atom B' }];
+    LEVX = n ? [120, 360] : [120, 880];
+    const dx = n ? 70 : 80;
+    PBS_ = [[XC - dx, 196 + DY], [XC + dx, 196 + DY]]; PBS0 = [XC, 286 + DY];
+    PDET = { H1: [XC - dx, 134 + DY], V1: [XC - dx - 68, 196 + DY], H2: [XC + dx, 134 + DY], V2: [XC + dx + 68, 196 + DY] };
+    if (pcv) { pcv.width = PW * PS; pcv.height = PH * PS; pcv.style.aspectRatio = PW + ' / ' + PH; }
+    return true;
   }
-  function addCircle(g, cx, cy, r, fill, opacity=1) {
-    g.appendChild(svgEl('circle', {cx,cy,r,fill,opacity,filter:'url(#pg)'}));
+  playout();
+  const PC = { ex: '192,132,252', pho: '255,214,102', H: '251,191,36', V: '56,189,248', ok: '52,211,153', bad: '248,113,113', dim: 'rgba(148,163,184,.45)', txt: 'rgba(226,232,240,.95)', mut: 'rgba(148,163,184,.85)' };
+  const pz = (x, a, b) => Math.max(0, Math.min(1, (x - a) / (b - a)));
+  const pl = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  function pglow(x, y, r, rgb, a) { const g = pctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.3, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`); pctx.fillStyle = g; pctx.beginPath(); pctx.arc(x, y, r, 0, PT); pctx.fill(); }
+  function ptext(s, x, y, col, size, w, al) { pctx.fillStyle = col; pctx.font = `${w || 500} ${(size || 13) * FS}px JetBrains Mono, monospace`; pctx.textAlign = al || 'center'; pctx.fillText(s, x, y); }
+  function parrow(x1, y1, x2, y2, col, w, dash) {
+    pctx.strokeStyle = col; pctx.fillStyle = col; pctx.lineWidth = w || 2; pctx.setLineDash(dash || []);
+    pctx.beginPath(); pctx.moveTo(x1, y1); pctx.lineTo(x2, y2); pctx.stroke(); pctx.setLineDash([]);
+    const a = Math.atan2(y2 - y1, x2 - x1); pctx.beginPath(); pctx.moveTo(x2, y2); pctx.lineTo(x2 - 9 * Math.cos(a - .4), y2 - 9 * Math.sin(a - .4)); pctx.lineTo(x2 - 9 * Math.cos(a + .4), y2 - 9 * Math.sin(a + .4)); pctx.fill();
   }
-  function addRect(g, x, y, w, h, fill, stroke) {
-    g.appendChild(svgEl('rect', {x,y,width:w,height:h,rx:4,fill,stroke,'stroke-width':1.5}));
+  // level diagram of one atom; pop: {m0, e, dn, up} occupation weights 0..1
+  function levels(cx, pop, opts) {
+    const y0 = 48, y1 = 156, xs = { dn: cx - 52, m0: cx, up: cx + 52 };
+    pctx.strokeStyle = 'rgba(203,213,225,.8)'; pctx.lineWidth = 2;
+    pctx.beginPath(); pctx.moveTo(cx - 22, y0); pctx.lineTo(cx + 22, y0); pctx.stroke();
+    for (const k of ['dn', 'm0', 'up']) { pctx.beginPath(); pctx.moveTo(xs[k] - 18, y1); pctx.lineTo(xs[k] + 18, y1); pctx.stroke(); }
+    ptext("F′=0", cx + 30, y0 + 4, PC.mut, 11, 500, 'left');
+    ptext('|↓⟩', xs.dn, y1 + 20, PC.txt, 13, 700); ptext('|0⟩', xs.m0, y1 + 20, PC.mut, 12, 600); ptext('|↑⟩', xs.up, y1 + 20, PC.txt, 13, 700);
+    ptext('m=−1', xs.dn, y1 + 35, PC.mut, 10); ptext('m=0', xs.m0, y1 + 35, PC.mut, 10); ptext('m=+1', xs.up, y1 + 35, PC.mut, 10);
+    if (opts && opts.decay) {
+      const a = opts.decay;
+      parrow(cx - 6, y0 + 6, xs.dn + 4, y1 - 8, `rgba(${PC.pho},${a})`, 2);
+      parrow(cx + 6, y0 + 6, xs.up - 4, y1 - 8, `rgba(${PC.pho},${a})`, 2);
+      parrow(cx, y0 + 8, cx, y1 - 10, `rgba(148,163,184,${0.35 * a})`, 1.2, [3, 4]);
+      ptext('σ⁺', (cx + xs.dn) / 2 - 16, (y0 + y1) / 2, `rgba(${PC.pho},${a})`, 13, 700);
+      ptext('σ⁻', (cx + xs.up) / 2 + 16, (y0 + y1) / 2, `rgba(${PC.pho},${a})`, 13, 700);
+    }
+    if (opts && opts.pump) parrow(cx - 4, y1 - 6, cx - 4, y0 + 8, `rgba(${PC.ex},${opts.pump})`, 3);
+    if (opts && opts.opt) { const a = opts.opt; parrow(xs.dn + 6, y1 - 12, cx - 8, y1 - 12, `rgba(${PC.ex},${a})`, 1.6, [4, 3]); parrow(xs.up - 6, y1 - 12, cx + 8, y1 - 12, `rgba(${PC.ex},${a})`, 1.6, [4, 3]); }
+    const dot = (x, y, w, col) => { if (w > 0.02) pglow(x, y, 7 + 5 * w, col, Math.min(1, 0.25 + w)); };
+    dot(cx, y0, pop.e || 0, PC.ex); dot(xs.m0, y1, pop.m0 || 0, '96,165,250'); dot(xs.dn, y1, pop.dn || 0, '96,165,250'); dot(xs.up, y1, pop.up || 0, '96,165,250');
   }
-  function addText(g, x, y, txt, fill, size='9', weight=400) {
-    const t = svgEl('text', {x, y, fill, 'font-size':size, 'font-family':'monospace', 'font-weight':weight, 'text-anchor':'middle'});
-    t.textContent = txt;
-    g.appendChild(t);
+  function fiberPt(side, t) {                                              // node → fiber BS input
+    const n = NODE[side], x0 = n.x + (side ? -40 : 40), x3 = PBS0[0] + (side ? 14 : -14), d1 = pnarrow ? 50 : 120, d2 = pnarrow ? 40 : 80;
+    const p0 = [x0, 286 + DY], p1 = [x0 + (side ? -d1 : d1), 330 + DY], p2 = [x3 + (side ? d2 : -d2), 330 + DY], p3 = [x3, PBS0[1] + 8], m = 1 - t;
+    return [m * m * m * p0[0] + 3 * m * m * t * p1[0] + 3 * m * t * t * p2[0] + t * t * t * p3[0], m * m * m * p0[1] + 3 * m * m * t * p1[1] + 3 * m * t * t * p2[1] + t * t * t * p3[1]];
   }
-  function addLine(g, x1, y1, x2, y2, stroke, sw=1.5, dash='') {
-    const l = svgEl('line', {x1,y1,x2,y2,stroke,'stroke-width':sw});
-    if (dash) l.setAttribute('stroke-dasharray', dash);
-    g.appendChild(l);
+  const portPt = (port, t) => pl([PBS0[0] + (port === 1 ? -10 : 10), PBS0[1] - 10], PBS_[port - 1], t);
+  function station(clicks, ta) {
+    pctx.strokeStyle = 'rgba(56,189,248,.35)'; pctx.lineWidth = 3;
+    for (const side of [0, 1]) { pctx.beginPath(); for (let i = 0; i <= 30; i++) { const q = fiberPt(side, i / 30); i ? pctx.lineTo(q[0], q[1]) : pctx.moveTo(q[0], q[1]); } pctx.stroke(); }
+    for (const port of [1, 2]) { const a = portPt(port, 0), b = portPt(port, 1); pctx.beginPath(); pctx.moveTo(a[0], a[1]); pctx.lineTo(b[0], b[1]); pctx.stroke(); }
+    pctx.strokeStyle = 'rgba(148,163,184,.3)'; pctx.lineWidth = 1.5;
+    for (const d in PDET) { const p = PBS_[+d[1] - 1]; pctx.beginPath(); pctx.moveTo(p[0], p[1]); pctx.lineTo(PDET[d][0], PDET[d][1]); pctx.stroke(); }
+    pctx.fillStyle = '#0f1b2d'; pctx.strokeStyle = 'rgba(125,211,252,.85)'; pctx.lineWidth = 1.5;
+    pctx.fillRect(PBS0[0] - 22, PBS0[1] - 12, 44, 24); pctx.strokeRect(PBS0[0] - 22, PBS0[1] - 12, 44, 24);
+    ptext('50:50 BS', PBS0[0], PBS0[1] + 30, PC.mut, 11, 600);
+    PBS_.forEach((p, i) => { pctx.fillStyle = '#0f1b2d'; pctx.strokeStyle = 'rgba(203,213,225,.75)'; pctx.fillRect(p[0] - 12, p[1] - 12, 24, 24); pctx.strokeRect(p[0] - 12, p[1] - 12, 24, 24); pctx.beginPath(); i ? (pctx.moveTo(p[0] - 12, p[1] - 12), pctx.lineTo(p[0] + 12, p[1] + 12)) : (pctx.moveTo(p[0] + 12, p[1] - 12), pctx.lineTo(p[0] - 12, p[1] + 12)); pctx.stroke(); ptext('PBS', p[0] + (i ? -26 : 26), p[1] + 30, PC.mut, 10, 600); });
+    const on = {}; (clicks || []).forEach(d => { on[d] = (on[d] || 0) + 1; });
+    for (const d in PDET) {
+      const [x, y] = PDET[d], pol = d[0] === 'H' ? PC.H : PC.V, c = on[d];
+      if (c) pglow(x, y, 26, pol, ta);
+      pctx.fillStyle = c ? `rgba(${pol},${0.3 + 0.6 * ta})` : '#0f1b2d'; pctx.strokeStyle = `rgba(${pol},.9)`; pctx.lineWidth = 1.5;
+      pctx.fillRect(x - 16, y - 12, 32, 24); pctx.strokeRect(x - 16, y - 12, 32, 24);
+      ptext(d[0] + (d[1] === '1' ? '₁' : '₂'), x, y + 5, c ? '#04070d' : `rgba(${pol},1)`, 13, 700);
+      if (c === 2) ptext('2 photons, 1 click', x, y - 20, `rgba(${PC.bad},${ta})`, 10, 700);
+    }
   }
-
+  function nodes(glowEx) {
+    NODE.forEach((n, i) => {
+      const y = 286 + DY, tw = pctx.createLinearGradient(n.x, y - 60, n.x, y + 60); tw.addColorStop(0, 'rgba(239,68,68,0)'); tw.addColorStop(.5, 'rgba(239,68,68,.25)'); tw.addColorStop(1, 'rgba(239,68,68,0)');
+      pctx.fillStyle = tw; pctx.fillRect(n.x - 10, y - 60, 20, 120);
+      if (glowEx) pglow(n.x, y, 30, PC.ex, glowEx);
+      pglow(n.x, y, 13, '96,165,250', 1);
+      pctx.strokeStyle = 'rgba(203,213,225,.7)'; pctx.lineWidth = 2; pctx.beginPath(); pctx.ellipse(n.x + (i ? -34 : 34), y, 5, 22, 0, 0, PT); pctx.stroke();
+      ptext(n.lab, n.x + (pnarrow ? (i ? -6 : 6) : 0), y + (pnarrow ? 64 : 84), PC.txt, 13, 700);
+    });
+  }
+  function photonsTo(u) { for (const s of [0, 1]) { const q = fiberPt(s, u); pglow(q[0], q[1], 10, PC.pho, 1); } }
+  function photonsOut(clicks, u) {                                          // u: 0..1 from BS to detectors
+    clicks.forEach((d, i) => { const off = clicks[0] === clicks[1] ? (i ? 4 : -4) : 0, port = +d[1];
+      if (u < .5) { const q = portPt(port, u / .5); pglow(q[0] + off, q[1], 10, PC.pho, 1); }
+      else { const q = pl(PBS_[port - 1], PDET[d], (u - .5) / .5); pglow(q[0] + off, q[1], 10, d[0] === 'H' ? PC.H : PC.V, 1); } });
+  }
+  const CASES = [{ clicks: ['H1', 'V2'], k: 'Ψ⁻', txt: 'photons in |Ψ⁻⟩ → different ports, orthogonal polarizations: herald |Ψ⁻⟩', ok: true },
+    { clicks: ['H1', 'V1'], k: 'Ψ⁺', txt: 'photons in |Ψ⁺⟩ → same port, orthogonal polarizations: herald |Ψ⁺⟩', ok: true },
+    { clicks: ['H2', 'H2'], k: 'Φ', txt: 'photons in |Φ±⟩ → both in one detector: one click, no herald', ok: false }];
+  function drawProto(t) {
+    if (!pctx) return;
+    pctx.setTransform(PS, 0, 0, PS, 0, 0); pctx.fillStyle = '#04070d'; pctx.fillRect(0, 0, PW, PH);
+    pctx.fillStyle = 'rgba(148,163,184,.06)'; for (let x = 12; x < PW; x += 24) for (let y = 12; y < PH; y += 24) pctx.fillRect(x, y, 1, 1);
+    const k = currentStep, L = 3.6, u = (t % L) / L;
+    let bottom = '', bcol = PC.txt, clicks = [], ta = 0;
+    if (k === 0) {
+      const f = pz(u, .1, .7);
+      LEVX.forEach(cx => levels(cx, { dn: (1 - f) / 2, up: (1 - f) / 2, m0: f }, { opt: Math.sin(Math.PI * Math.min(1, u * 1.4)) }));
+      nodes(0); station([], 0);
+      bottom = '|ψ⟩ = |0⟩ᴬ ⊗ |0⟩ᴮ        product state: no entanglement';
+    } else if (k === 1) {
+      const fe = pz(u, .05, .25), fd = pz(u, .3, .55);
+      LEVX.forEach(cx => levels(cx, { m0: 1 - fe, e: fe * (1 - fd), dn: fd / 2, up: fd / 2 }, { pump: u < .3 ? Math.sin(Math.PI * pz(u, 0, .3)) : 0, decay: fd }));
+      nodes(u < .3 ? Math.sin(Math.PI * pz(u, 0, .3)) : 0); station([], 0);
+      if (u > .45) photonsTo(pz(u, .45, 1) * 0.35);
+      bottom = '|Ψ⟩ = (|↓⟩|σ⁺⟩ + |↑⟩|σ⁻⟩)/√2   for each atom and its photon'; bcol = `rgba(${PC.pho},1)`;
+    } else if (k === 2) {
+      LEVX.forEach(cx => levels(cx, { dn: .5, up: .5 }, {}));
+      nodes(0); station([], 0); photonsTo(.35 + .65 * pz(u, 0, .85));
+      ptext('σ⁺ → H, σ⁻ → V (birefringence compensated)', XC, pnarrow ? 290 : 352, PC.mut, 11);
+      bottom = '|Ψ⟩ᴬ|Ψ⟩ᴮ = ½ ( |Ψ⁻⟩|Ψ⁻⟩ + |Ψ⁺⟩|Ψ⁺⟩ + |Φ⁻⟩|Φ⁻⟩ + |Φ⁺⟩|Φ⁺⟩ )   each term: atoms ⊗ photons'; bcol = `rgba(${PC.ex},1)`;
+    } else if (k === 3) {
+      const c = CASES[Math.floor(t / L) % 3];
+      LEVX.forEach(cx => levels(cx, { dn: .5, up: .5 }, {}));
+      nodes(0);
+      if (u > .55) { clicks = c.clicks; ta = 1 - pz(u, .9, 1) * .6; }
+      station(clicks, ta);
+      if (u < .3) photonsTo(.7 + .3 * pz(u, 0, .3)); else if (u <= .55) photonsOut(c.clicks, pz(u, .3, .55));
+      bottom = c.txt; bcol = `rgba(${c.ok ? PC.ok : PC.bad},1)`;
+    } else {
+      LEVX.forEach(cx => levels(cx, { dn: .5, up: .5 }, {}));
+      nodes(0); station(['H1', 'V2'], 1 - pz(u, .7, 1) * .5);
+      const h = pz(u, .05, .35);
+      pctx.setLineDash([6, 6]); pctx.strokeStyle = `rgba(${PC.ok},.9)`; pctx.lineWidth = 2;
+      const h0 = pnarrow ? [XC, 278] : [XC, 72];
+      NODE.forEach((n, i) => { const e = pl(h0, pnarrow ? [LEVX[i], 236] : [n.x, 250], h); pctx.beginPath(); pctx.moveTo(h0[0], h0[1]); pctx.lineTo(e[0], e[1]); pctx.stroke(); });
+      pctx.setLineDash([]);
+      ptext('H₁ + V₂ coincidence → herald', XC, pnarrow ? 296 : 62, `rgba(${PC.ok},1)`, 12, 700);
+      if (u > .35) {
+        const xa = NODE[0].x, xb = NODE[1].x, v = pz(u, .35, .6), x1 = xa + (xb - xa) * v, yw = 336 + DY;
+        pctx.strokeStyle = `rgba(${PC.ok},1)`; pctx.lineWidth = 3; pctx.shadowColor = `rgba(${PC.ok},1)`; pctx.shadowBlur = 10;
+        pctx.beginPath(); for (let x = xa; x <= x1; x += 3) { const y = yw + 4 * Math.sin((x - xa) / 10 - t * 5); x === xa ? pctx.moveTo(x, y) : pctx.lineTo(x, y); } pctx.stroke(); pctx.shadowBlur = 0;
+      }
+      bottom = 'atoms: |Ψ⁻⟩ = (|↑↓⟩ − |↓↑⟩)/√2      success per attempt: ηᴬηᴮ / 2'; bcol = `rgba(${PC.ok},1)`;
+    }
+    ptext(STEPS[k].label.replace(/^[①-⑤]\s*/, 'step ' + (k + 1) + ' · '), 16, 24, PC.mut, 12, 700, 'left');
+    // bottom state line: wrap at wide gaps first, then at spaces, to fit the canvas width
+    pctx.font = `700 ${13 * FS}px JetBrains Mono, monospace`;
+    const lines = [];
+    (pctx.measureText(bottom).width > PW - 24 ? bottom.split(/\s{3,}/) : [bottom]).forEach(seg => {
+      let ln = '';
+      for (const w of seg.split(' ')) { const tryL = ln ? ln + ' ' + w : w; if (ln && pctx.measureText(tryL).width > PW - 24) { lines.push(ln); ln = w; } else ln = tryL; }
+      lines.push(ln);
+    });
+    const bh = lines.length * 20 * FS + 10;
+    pctx.fillStyle = 'rgba(15,27,45,.9)'; pctx.fillRect(0, PH - bh, PW, bh);
+    lines.forEach((ln, i) => ptext(ln, PW / 2, PH - bh + (i + 1) * 20 * FS, bcol, 13, 700));
+  }
   function renderProtoStep(i) {
-    const g = document.getElementById('proto-dynamic');
-    while(g.firstChild) g.removeChild(g.firstChild);
-    STEPS[i].draw(g);
+    currentStep = i; stepT0 = null;
     document.getElementById('proto-caption').innerHTML = STEPS[i].desc;
-    document.querySelectorAll('.proto-step-btn').forEach((b,j) => b.classList.toggle('active', j===i));
+    document.querySelectorAll('.proto-step-btn').forEach((b, j) => { b.classList.toggle('active', j === i); b.setAttribute('aria-pressed', String(j === i)); });
     document.getElementById('proto-prev').disabled = (i === 0);
     document.getElementById('proto-next').disabled = (i === STEPS.length - 1);
+    if (protoStatic) drawProto(STILL[i]);
   }
-
-  function protoNav(dir) {
-    currentStep = Math.max(0, Math.min(STEPS.length-1, currentStep+dir));
-    renderProtoStep(currentStep);
-  }
-
-  // Build step buttons
+  function protoNav(dir) { renderProtoStep(Math.max(0, Math.min(STEPS.length - 1, currentStep + dir))); }
+  const STILL = [3.0, 2.9, 2.6, 3.2, 3.2];                                  // representative frames (s) per step
+  let protoStatic = false, protoClock = 0, protoLast = null;
   const btnWrap = document.getElementById('proto-step-btns');
   STEPS.forEach((s, i) => {
     const b = document.createElement('button');
-    b.className = 'proto-step-btn';
-    b.textContent = s.label;
-    b.onclick = () => { currentStep = i; renderProtoStep(i); };
+    b.type = 'button'; b.className = 'proto-step-btn'; b.textContent = s.label;
+    b.onclick = () => renderProtoStep(i);
     btnWrap.appendChild(b);
   });
   renderProtoStep(0);
-
-  /* ─── HOM Chart ─── */
-  let homChart = null;
-  function buildHOMData(M) {
-    const pts = [];
-    for (let t = -3; t <= 3; t += 0.05) {
-      pts.push({ x: t, y: 0.5 * (1 - M * Math.exp(-Math.abs(t))) });   // P = ½[1 − M e^{−|τ|/τ_c}]
-    }
-    return pts;
+  if (pcv) {
+    if (window.ResizeObserver) new ResizeObserver(() => { if (playout() && (protoStatic || !window.AMOMotion)) drawProto(STILL[currentStep]); }).observe(pcv);
+    const pframe = t => { const dt = protoLast === null ? 0 : Math.min(100, t - protoLast) / 1000; protoLast = t; if (stepT0 === null) { stepT0 = t; protoClock = 0; } protoClock += dt; drawProto(protoClock); };
+    if (window.AMOMotion) AMOMotion.loop([pcv], pframe, { anchors: [{ el: document.getElementById('proto-next'), where: 'afterend', inline: true }], onStatic: () => { protoStatic = true; drawProto(STILL[currentStep]); } });
+    else { const g = t => { pframe(t); requestAnimationFrame(g); }; requestAnimationFrame(g); }
+    window.addEventListener('amo:print', () => drawProto(STILL[currentStep]));
   }
 
+  /* ─── HOM: wavepackets + dip ─── P(τ) = ½[1 − M e^{−|τ|/τc}], F ≤ ½(1 + M e^{−|τ|/τc}) */
+  let homChart = null;
+  const homCss = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888';
+  function homParams() { return { M: +document.getElementById('hom-slider').value / 100, tau: +document.getElementById('hom-delay').value }; }
+  function drawWaves() {
+    const cv = document.getElementById('hom-waves'); if (!cv) return;
+    const { M, tau } = homParams(), g = cv.getContext('2d'), W = cv.width, H = cv.height, pad = 40, base = H - 70;
+    const X = t => pad + (t + 3.5) / 10 * (W - 2 * pad), Ya = I => base - I * (H - 90);
+    const ink = homCss('--text-secondary'), mut = homCss('--text-muted'), cA = '#0ea5e9', cB = '#8b5cf6';
+    g.clearRect(0, 0, W, H);
+    g.strokeStyle = mut; g.globalAlpha = .5; g.lineWidth = 1.5; g.beginPath(); g.moveTo(pad, base); g.lineTo(W - pad, base); g.stroke(); g.globalAlpha = 1;
+    const tA = 0, tB = tau, I = (t, t0) => t < t0 ? 0 : Math.exp(-(t - t0));
+    // overlap of amplitudes: √(I_A I_B)
+    g.fillStyle = 'rgba(16,185,129,.28)'; g.beginPath(); g.moveTo(X(-3.5), base);
+    for (let t = -3.5; t <= 6.5; t += 0.01) g.lineTo(X(t), Ya(Math.sqrt(I(t, tA) * I(t, tB))));
+    g.lineTo(X(6.5), base); g.closePath(); g.fill();
+    for (const [t0, col, lab] of [[tA, cA, 'photon from A'], [tB, cB, 'photon from B']]) {
+      g.strokeStyle = col; g.lineWidth = 3; g.beginPath(); g.moveTo(X(-3.5), base);
+      for (let t = -3.5; t <= 6.5; t += 0.01) g.lineTo(X(t), Ya(I(t, t0)));
+      g.stroke();
+      const ly = col === cA ? 30 : 60; g.fillStyle = col; g.fillRect(pad + 4, ly - 8, 28, 5); g.font = '600 20px Inter, sans-serif'; g.textAlign = 'left'; g.fillText(lab, pad + 40, ly);
+    }
+    g.fillStyle = ink; g.font = '20px Inter, sans-serif'; g.textAlign = 'center';
+    g.fillText('time / τc', W / 2, H - 8);
+    for (let t = -2; t <= 6; t += 2) { g.fillStyle = mut; g.fillText(String(t), X(t), base + 24); }
+    g.fillStyle = '#059669'; g.textAlign = 'right'; g.font = '600 20px Inter, sans-serif';
+    g.fillText(`packet overlap e^(−|τ|/τc) = ${Math.exp(-Math.abs(tau)).toFixed(2)}`, W - pad, 30);
+  }
+  function homData(M) { const pts = []; for (let t = -4; t <= 4.0001; t += 0.04) pts.push({ x: +t.toFixed(2), y: 0.5 * (1 - M * Math.exp(-Math.abs(t))) }); return pts; }
   function initHOMChart() {
-    const ctx = document.getElementById('hom-chart').getContext('2d');
-    homChart = new Chart(ctx, {
+    const { M, tau } = homParams(), tc = homCss('--text-secondary'), gc = homCss('--border-med');
+    homChart = new Chart(document.getElementById('hom-chart'), {
       type: 'line',
-      data: {
-        datasets: [{
-          data: buildHOMData(0.9),
-          borderColor: '#0ea5e9',
-          backgroundColor: 'rgba(14,165,233,0.08)',
-          borderWidth: 2.5,
-          fill: true,
-          tension: 0.4,
-          pointRadius: 0,
-        }]
-      },
-      options: {
-        animation: { duration: 300 },
+      data: { datasets: [
+        { label: 'P_coinc(τ)', data: homData(M), borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.10)', borderWidth: 2.5, fill: true, pointRadius: 0, tension: 0 },
+        { label: 'now', data: [{ x: tau, y: 0.5 * (1 - M * Math.exp(-Math.abs(tau))) }], borderColor: '#8b5cf6', backgroundColor: '#8b5cf6', pointRadius: 6, showLine: false },
+        { label: 'distinguishable', data: [{ x: -4, y: 0.5 }, { x: 4, y: 0.5 }], borderColor: gc, borderDash: [5, 4], borderWidth: 1.2, pointRadius: 0 } ] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
         plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: {
-          x: { type: 'linear', min: -3, max: 3, title: { display: true, text: 'Time delay τ / coherence time', color: '#8c8066', font: { size: 11 } }, grid: { color: '#0d2236' }, ticks: { color: '#8c8066', font: { size: 10 } } },
-          y: { min: 0, max: 0.55, title: { display: true, text: 'Coincidence rate P_coinc(τ)', color: '#8c8066', font: { size: 11 } }, grid: { color: '#0d2236' }, ticks: { color: '#8c8066', font: { size: 10 }, callback: v => v.toFixed(2) } }
-        }
-      }
+        scales: { x: { type: 'linear', min: -4, max: 4, title: { display: true, text: 'delay τ / τc', color: tc }, grid: { color: gc }, ticks: { color: tc } },
+                  y: { min: 0, max: 0.6, title: { display: true, text: 'P(coincidence)', color: tc }, grid: { color: gc }, ticks: { color: tc, stepSize: 0.1, callback: v => v.toFixed(1) } } } }
     });
   }
-
-  function updateHOM(val) {
-    const M = val / 100;
-    document.getElementById('hom-val').textContent = val + '%';
-    const sliderPct = val + '%';
-    const sl = document.getElementById('hom-slider');
-    sl.style.setProperty('--pct', sliderPct);
-    sl.style.background = `linear-gradient(to right, var(--ent) ${sliderPct}, #0d2236 ${sliderPct})`;
-    if (homChart) {
-      homChart.data.datasets[0].data = buildHOMData(M);
-      homChart.update();
-    }
+  function updateHOM() {
+    const { M, tau } = homParams(), ov = M * Math.exp(-Math.abs(tau)), P = 0.5 * (1 - ov);
+    document.getElementById('hom-val').textContent = M.toFixed(2);
+    document.getElementById('hom-delay-v').textContent = tau.toFixed(2);
+    document.getElementById('hom-read').innerHTML = `<span>P(coincidence) <b>${P.toFixed(3)}</b></span><span>dip visibility <b>${M.toFixed(2)}</b></span><span>max Bell fidelity <b>${(0.5 * (1 + ov)).toFixed(3)}</b></span>`;
+    drawWaves();
+    if (homChart) { homChart.data.datasets[0].data = homData(M); homChart.data.datasets[1].data = [{ x: tau, y: P }]; homChart.update('none'); }
   }
+  ['hom-slider', 'hom-delay'].forEach(id => document.getElementById(id).addEventListener('input', updateHOM));
+  new MutationObserver(() => { if (!homChart) return; const tc = homCss('--text-secondary'), gc = homCss('--border-med'); const o = homChart.options.scales;
+    o.x.ticks.color = o.y.ticks.color = o.x.title.color = o.y.title.color = tc; o.x.grid.color = o.y.grid.color = gc; homChart.data.datasets[2].borderColor = gc; homChart.update('none'); drawWaves(); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  window.addEventListener('amo:print', drawWaves);
 
   /* ─── Rate Calculator ─── */
   function setSliderFill(el, frac) {
@@ -1792,7 +1783,7 @@
     const fc     = +document.getElementById('r-fc').value / 100;
     const det    = +document.getElementById('r-det').value / 100;
     const repLog = +document.getElementById('r-rep').value;  // 0..4 → 100k..10M
-    const frep   = 1e5 * Math.pow(10, repLog);
+    const frep   = 1e5 * Math.pow(10, repLog / 2);
     const lenRaw = +document.getElementById('r-len').value;  // slider 0..50
     // Map 0→0.01 km, 50→50 km (log-ish)
     const L_km   = lenRaw === 0 ? 0.01 : lenRaw;
@@ -1816,9 +1807,14 @@
       const eps = 0.05;
       p_success = 2 * eps * eta_total;
     }
-    const rate = frep * p_success;
+    // each attempt waits for the photon to reach the station and the herald to come back: 2L/v, v ≈ c/1.47 in fiber
+    const tRound = 2 * L_km * 1e3 / 2.04e8, fMax = 1 / tRound, fEff = Math.min(frep, fMax);
+    const rate = fEff * p_success;
     const tpair = 1 / rate;
-    if (window.BKSim) BKSim.setLink({ eta: eta_total, p: p_success, frep, single: bsmFac !== 0.5, eps: 0.05, L_km });
+    if (window.BKSim) BKSim.setLink({ eta: eta_total, p: p_success, frep: fEff, single: bsmFac !== 0.5, eps: 0.05, L_km });
+    document.getElementById('r-cap').textContent = fEff < frep
+      ? `Attempts run at ${fmtRate(fEff)}, not ${frep >= 1e6 ? (frep/1e6).toFixed(1)+' MHz' : (frep/1e3).toFixed(0)+' kHz'}: each attempt waits 2L/v = ${fmtTime(tRound)} for the photon to reach the station and the herald to return (no multiplexing).`
+      : `Attempt rate ${frep >= 1e6 ? (frep/1e6).toFixed(1)+' MHz' : (frep/1e3).toFixed(0)+' kHz'} (the 2L/v = ${fmtTime(tRound)} herald round trip is not the limit here).`;
 
     // Update display values
     document.getElementById('r-na-v').textContent  = 'NA = ' + NA.toFixed(2);
@@ -1826,7 +1822,7 @@
     document.getElementById('r-det-v').textContent = (+document.getElementById('r-det').value) + '%';
     document.getElementById('r-rep-v').textContent = frep >= 1e6 ? (frep/1e6).toFixed(1)+' MHz' : (frep/1e3).toFixed(0)+' kHz';
     document.getElementById('r-len-v').textContent = L_km < 1 ? (L_km*1000).toFixed(0)+' m' : L_km.toFixed(1)+' km';
-    document.getElementById('r-pu-v').textContent  = purcell.toFixed(1) + '×';
+    document.getElementById('r-pu-v').textContent  = purcell === 1 ? '1× (no cavity)' : purcell.toFixed(1) + '× · β = ' + Math.round(beta * 100) + '%';
 
     document.getElementById('r-coll').textContent  = fmtPct(eta_coll);
     document.getElementById('r-trans').textContent = fmtPct(T);
@@ -1841,9 +1837,9 @@
     barEl.style.width = barPct + '%';
     barEl.style.background = rate >= 1000 ? '#4ade80' : rate >= 100 ? '#fbbf24' : '#f87171';
 
-    const verdict = rate >= 1000 ? '✓ Sufficient for modular FTQC (~1 kHz+ target)' :
-                    rate >= 100  ? '⚠ Marginal — adequate for small demonstrations' :
-                                   '✗ Too slow for practical applications. Consider cavity enhancement.';
+    const verdict = (rate >= 1000 ? '✓ Above ~1 kHz: in the range often discussed for linking modules' :
+                    rate >= 100  ? '⚠ 100 Hz–1 kHz: fine for demonstrations, slow for linking modules' :
+                                   '✗ Below 100 Hz: networking demos only; cavities or multiplexing would help') + ' (rough rule of thumb, not a published threshold)';
     document.getElementById('r-verdict').textContent = verdict;
   }
 
@@ -1901,20 +1897,45 @@
     const cv = document.getElementById('bkCanvas');
     if (!cv) return null;
     const ctx = window.AMOInk ? AMOInk.wrap(cv.getContext('2d')) : cv.getContext('2d');
-    const SC = cv.width / 720, W = 720, H = cv.height / SC, XA = 70, XB = W - 70, XC = W / 2, Y = 135;   // drawn in 720-wide units at 2× resolution
+    // drawn in logical units at 2× resolution: 720 × 230 on wide screens, 480 × 300 on phones (bigger text, flash line on top)
+    const SC = 2;
+    let W, H, XA, XB, XC, OY, BSY, POS, PB, narrow = null;
+    function layout() {
+      const n = (cv.clientWidth || 720) < 560;
+      if (n === narrow) return; narrow = n;
+      W = n ? 480 : 720; H = n ? 300 : 230; OY = n ? 62 : 0;
+      XA = n ? 44 : 70; XB = W - XA; XC = W / 2; BSY = 150 + OY;
+      POS = { H1: [XC - 70, 30 + OY], V1: [XC - 128, 84 + OY], H2: [XC + 70, 30 + OY], V2: [XC + 128, 84 + OY], D1: [XC - 70, 62 + OY], D2: [XC + 70, 62 + OY] };
+      PB = { 1: [XC - 70, 84 + OY], 2: [XC + 70, 84 + OY] };
+      cv.width = W * SC; cv.height = H * SC; cv.style.aspectRatio = W + ' / ' + H;
+    }
+    layout();
+    if (window.ResizeObserver) new ResizeObserver(() => { const was = narrow; layout(); if (was !== narrow) draw(lastT || 0); }).observe(cv);
     let link = { eta: 0.01, p: 5e-5, frep: 1e6, single: false, eps: 0.05, L_km: 0.01 };
     let mode = 'slow', tally, cur = null, lastT = null, flash = 0, flashText = '', fastLast = 0;
     function reset() {
       tally = { n: 0, a: 0, b: 0, both: 0, h: 0 };
       cur = null; flash = 0; render(); draw(lastT || 0);
     }
-    // one attempt: who emits, who arrives, does the BSM herald?
+    // one attempt: who emits, who arrives, which detectors click, does the BSM herald?
+    // two-photon: both arrive → |Ψ⁻⟩ (H1V2/V1H2) or |Ψ⁺⟩ (H1V1/H2V2) 1/4 each, |Φ±⟩ (both in one detector) 1/2
+    // single-photon: exactly one click at D1 or D2 heralds; two clicks are rejected
     function attempt() {
       const emitA = link.single ? Math.random() < link.eps : true;
       const emitB = link.single ? Math.random() < link.eps : true;
       const arrA = emitA && Math.random() < link.eta, arrB = emitB && Math.random() < link.eta;
-      const herald = link.single ? (arrA !== arrB) : (arrA && arrB && Math.random() < 0.5);
-      return { emitA, emitB, arrA, arrB, herald, lossA: 0.15 + 0.8 * Math.random(), lossB: 0.15 + 0.8 * Math.random() };
+      let herald = false, clicks = [], bell = '';
+      if (link.single) {
+        const n = (arrA ? 1 : 0) + (arrB ? 1 : 0);
+        clicks = n === 0 ? [] : n === 1 ? [Math.random() < .5 ? 'D1' : 'D2'] : [Math.random() < .5 ? 'D1' : 'D2', Math.random() < .5 ? 'D1' : 'D2'];
+        herald = n === 1; bell = herald ? (clicks[0] === 'D1' ? 'Ψ⁺' : 'Ψ⁻') : '';
+      } else if (arrA && arrB) {
+        const r = Math.random();
+        if (r < .25) { clicks = Math.random() < .5 ? ['H1', 'V2'] : ['V1', 'H2']; herald = true; bell = 'Ψ⁻'; }
+        else if (r < .5) { clicks = Math.random() < .5 ? ['H1', 'V1'] : ['H2', 'V2']; herald = true; bell = 'Ψ⁺'; }
+        else { const d = ['H1', 'V1', 'H2', 'V2'][Math.floor(Math.random() * 4)]; clicks = [d, d]; }
+      } else if (arrA || arrB) clicks = [['H1', 'V1', 'H2', 'V2'][Math.floor(Math.random() * 4)]];
+      return { emitA, emitB, arrA, arrB, herald, clicks, bell, lossA: 0.15 + 0.8 * Math.random(), lossB: 0.15 + 0.8 * Math.random() };
     }
     function count(r) {
       tally.n++; if (r.arrA) tally.a++; if (r.arrB) tally.b++; if (r.arrA && r.arrB) tally.both++; if (r.herald) tally.h++;
@@ -1929,54 +1950,71 @@
         `<div>heralded pairs<b>${fmtN(tally.h)}</b>${tally.h ? fmtRate(tally.h / t) + ' measured' : 'none yet'}</div>` +
         `<div>p per attempt<b>${tally.h ? pm.toExponential(2) + ' ± ' + err.toExponential(1) : '—'}</b>calculator ${link.p.toExponential(2)}</div>`;
     }
-    function photon(x0, x1, f, lostAt, emitted) {
+    function dot(x, y, col, a) { ctx.globalAlpha = a; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 6, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1; }
+    function photonIn(x0, f, lostAt, emitted) {                              // node → beam splitter (f 0..1)
       if (!emitted) return;
-      const lost = lostAt !== null && f > lostAt;
-      const x = x0 + (x1 - x0) * Math.min(f, lostAt !== null ? lostAt : 1);
-      ctx.globalAlpha = lost ? Math.max(0, 1 - (f - lostAt) * 4) : 1;
-      ctx.fillStyle = '#b45309'; ctx.beginPath(); ctx.arc(x, Y, 6, 0, 2 * Math.PI); ctx.fill();
-      if (lost) { ctx.fillStyle = '#e20b0b'; ctx.font = 'bold 13px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('✗ lost', x, Y - 14); }
-      ctx.globalAlpha = 1;
+      const lost = lostAt !== null && f > lostAt, x = x0 + (XC - x0) * Math.min(f, lostAt !== null ? lostAt : 1);
+      dot(x, BSY, '#b45309', lost ? Math.max(0, 1 - (f - lostAt) * 4) : 1);
+      if (lost && f - lostAt < .25) { ctx.fillStyle = '#e20b0b'; ctx.font = 'bold 13px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('✗ lost', x, BSY - 14); }
+    }
+    function photonOut(d, f, off) {                                          // beam splitter → detector (f 0..1)
+      const port = d[1], tgt = POS[d], start = [XC + (port === '1' ? -10 : 10), BSY - 10], mid = link.single ? tgt : PB[port];
+      const p = f < .5 || link.single ? [start[0] + (mid[0] - start[0]) * Math.min(1, f / (link.single ? 1 : .5)), start[1] + (mid[1] - start[1]) * Math.min(1, f / (link.single ? 1 : .5))]
+        : [mid[0] + (tgt[0] - mid[0]) * (f - .5) / .5, mid[1] + (tgt[1] - mid[1]) * (f - .5) / .5];
+      dot(p[0] + off, p[1], link.single || f < .5 ? '#b45309' : d[0] === 'H' ? '#926a03' : '#076ce7', 1);
     }
     function draw(t) {
       ctx.setTransform(SC, 0, 0, SC, 0, 0);
       ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = '#faf5e9'; ctx.fillRect(0, 0, W, H);
-      // fibers
-      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
-      ctx.beginPath(); ctx.moveTo(XA + 22, Y); ctx.lineTo(XC - 26, Y); ctx.moveTo(XC + 26, Y); ctx.lineTo(XB - 22, Y); ctx.stroke(); ctx.setLineDash([]);
+      // fibers in, fiber outputs to the detection stage
+      ctx.strokeStyle = '#8c8066'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+      ctx.beginPath(); ctx.moveTo(XA + 22, BSY); ctx.lineTo(XC - 22, BSY); ctx.moveTo(XC + 22, BSY); ctx.lineTo(XB - 22, BSY); ctx.stroke(); ctx.setLineDash([]);
+      ctx.lineWidth = 1.5; ctx.strokeStyle = '#8c8066';
+      for (const port of ['1', '2']) { const a = [XC + (port === '1' ? -10 : 10), BSY - 10], b = link.single ? [POS['D' + port][0], POS['D' + port][1] + 10] : PB[port]; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
       // nodes
       [[XA, 'Node A'], [XB, 'Node B']].forEach(([x, lab]) => {
-        ctx.strokeStyle = '#076ce7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, Y, 20, 0, 2 * Math.PI); ctx.stroke();
-        ctx.fillStyle = '#076ce7'; ctx.beginPath(); ctx.arc(x, Y, 6, 0, 2 * Math.PI); ctx.fill();
-        ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(lab, x, Y + 40);
+        ctx.strokeStyle = '#076ce7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, BSY, 20, 0, 2 * Math.PI); ctx.stroke();
+        ctx.fillStyle = '#076ce7'; ctx.beginPath(); ctx.arc(x, BSY, 6, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(lab, x, BSY + 40);
       });
-      // beam splitter + detectors
-      ctx.strokeStyle = '#5c503c'; ctx.lineWidth = 2; ctx.strokeRect(XC - 16, Y - 16, 32, 32);
-      ctx.beginPath(); ctx.moveTo(XC - 16, Y + 16); ctx.lineTo(XC + 16, Y - 16); ctx.stroke();
-      const on = flash > 0 && cur && cur.r.herald;
-      [[XC - 40, Y - 58, 'D1'], [XC + 40, Y - 58, 'D2']].forEach(([x, y, lab], i) => {
-        const click = on && (cur.r.single ? (i === (cur.r.arrA ? 0 : 1)) : true);
-        ctx.fillStyle = click ? '#1c805b' : 'rgba(92,80,60,0.15)'; ctx.fillRect(x - 14, y - 10, 28, 20);
-        ctx.fillStyle = '#5c503c'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(lab, x, y + 26);
+      // 50:50 beam splitter
+      ctx.fillStyle = '#faf5e9'; ctx.fillRect(XC - 16, BSY - 16, 32, 32); ctx.strokeStyle = '#5c503c'; ctx.lineWidth = 2; ctx.strokeRect(XC - 16, BSY - 16, 32, 32);
+      ctx.beginPath(); ctx.moveTo(XC - 16, BSY + 16); ctx.lineTo(XC + 16, BSY - 16); ctx.stroke();
+      ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('50:50 beam splitter', XC, BSY + 40);
+      // detection: PBS + four APDs (two-photon) or two detectors (single-photon)
+      const on = {}; if (flash > 0 && cur && cur.r.clicks) cur.r.clicks.forEach(d => { on[d] = (on[d] || 0) + 1; });
+      const dets = link.single ? ['D1', 'D2'] : ['H1', 'V1', 'H2', 'V2'];
+      if (!link.single) for (const port of ['1', '2']) {
+        const [x, y] = PB[port]; ctx.fillStyle = '#faf5e9'; ctx.fillRect(x - 10, y - 10, 20, 20); ctx.strokeStyle = '#5c503c'; ctx.lineWidth = 1.5; ctx.strokeRect(x - 10, y - 10, 20, 20);
+        ctx.beginPath(); port === '1' ? (ctx.moveTo(x + 10, y - 10), ctx.lineTo(x - 10, y + 10)) : (ctx.moveTo(x - 10, y - 10), ctx.lineTo(x + 10, y + 10)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(POS['H' + port][0], POS['H' + port][1] + 10); ctx.moveTo(x + (port === '1' ? -10 : 10), y); ctx.lineTo(POS['V' + port][0] + (port === '1' ? 14 : -14), y); ctx.stroke();
+      }
+      dets.forEach(d => {
+        const [x, y] = POS[d], c = on[d], col = d[0] === 'H' ? '#926a03' : d[0] === 'V' ? '#076ce7' : '#1c805b';
+        ctx.fillStyle = '#faf5e9'; ctx.fillRect(x - 14, y - 10, 28, 20); ctx.fillStyle = c ? (cur.r.herald ? '#1c805b' : '#e20b0b') : 'rgba(92,80,60,0.12)'; ctx.fillRect(x - 14, y - 10, 28, 20);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.strokeRect(x - 14, y - 10, 28, 20);
+        ctx.fillStyle = c ? '#faf5e9' : col; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(d[0] + (d[1] === '1' ? '₁' : '₂'), x, y + 4);
       });
-      ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText('beam-splitter measurement', XC, Y + 40);
-      ctx.fillText((link.single ? 'single-photon scheme' : 'two-photon scheme') + ' · fiber ' + (link.L_km < 1 ? (link.L_km * 1000).toFixed(0) + ' m' : link.L_km.toFixed(1) + ' km') + ' per arm (schematic)', XC, H - 12);
+      ctx.fillStyle = '#5c503c'; ctx.font = (narrow ? '13px' : '12px') + ' Inter, sans-serif'; ctx.textAlign = 'center';
+      const scheme = link.single ? 'single-photon scheme: one click heralds' : 'two-photon scheme: PBS in each port, four detectors';
+      const fib = 'fiber ' + (link.L_km < 1 ? (link.L_km * 1000).toFixed(0) + ' m' : link.L_km.toFixed(1) + ' km') + ' per arm (schematic)';
+      if (narrow) { ctx.fillText(scheme, XC, H - 30); ctx.fillText(fib, XC, H - 12); } else ctx.fillText(scheme + ' · ' + fib, XC, H - 12);
       if (mode === 'slow' && cur) {
-        const f = Math.min(1, (t - cur.t0) / 900);
-        photon(XA, XC, f, cur.r.arrA ? null : cur.r.lossA, cur.r.emitA);
-        photon(XB, XC, f, cur.r.arrB ? null : cur.r.lossB, cur.r.emitB);
+        const f = Math.min(1, (t - cur.t0) / 900), fi = Math.min(1, f / .62), fo = Math.max(0, (f - .62) / .38);
+        if (f < .62 || !cur.r.clicks.length) { photonIn(XA, fi, cur.r.arrA ? null : cur.r.lossA, cur.r.emitA); photonIn(XB, fi, cur.r.arrB ? null : cur.r.lossB, cur.r.emitB); }
+        else if (f < 1) cur.r.clicks.forEach((d, i) => photonOut(d, fo, cur.r.clicks.length === 2 && cur.r.clicks[0] === cur.r.clicks[1] ? (i ? 4 : -4) : 0));
       }
       if (flash > 0) {
         ctx.globalAlpha = Math.min(1, flash);
         ctx.fillStyle = flashText.startsWith('♥') ? '#1c805b' : '#8c8066';
-        ctx.font = 'bold 15px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(flashText, XC, 24);
+        const fl = flashText.split('\n'), fx = narrow ? XC : W - 16; ctx.textAlign = narrow ? 'center' : 'right';
+        ctx.font = 'bold 15px Inter, sans-serif'; ctx.fillText(fl[0], fx, 26);
+        if (fl[1]) { ctx.font = '13px Inter, sans-serif'; ctx.fillText(fl[1], fx, 46); }
         ctx.globalAlpha = 1;
       }
       if (mode === 'fast') {
-        ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
-        ctx.textAlign = 'left'; ctx.fillText('real time: ' + fmtN(fastLast) + ' attempts per frame', 12, 24);
+        ctx.fillStyle = '#5c503c'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = narrow ? 'center' : 'left'; ctx.fillText('real time: ' + fmtN(fastLast) + ' attempts per frame', narrow ? XC : 12, narrow ? 64 : 24);
       }
     }
     function frame(t) {
@@ -1989,15 +2027,15 @@
           cur.done = true;
           const r = cur.r;
           flash = 1;
-          flashText = r.herald ? '♥ herald: Bell pair' : (!r.emitA && !r.emitB) ? 'no excitation' :
-            (r.arrA && r.arrB) ? (link.single ? 'two clicks: rejected' : 'same port: no herald') : (link.single && !(r.arrA || r.arrB)) ? 'no click' : 'photon lost: try again';
+          flashText = r.herald ? '♥ herald\natoms now in |' + r.bell + '⟩' : (!r.emitA && !r.emitB) ? 'no excitation\nneither atom emitted' :
+            (r.arrA && r.arrB) ? (link.single ? 'no herald\ntwo clicks: rejected' : 'no herald\nboth photons in one detector') : (link.single && !(r.arrA || r.arrB)) ? 'no click\ntry again' : 'photon lost\ntry again';
         }
       } else {
         const k = Math.min(2e5, Math.max(1, Math.round(link.frep * dt / 1000)));
         let h = 0;
         for (let i = 0; i < k; i++) { const r = attempt(); count(r); if (r.herald) h++; }
         fastLast = k;
-        if (h) { flash = 1; flashText = '♥ ' + h + ' herald' + (h > 1 ? 's' : '') + ' this frame'; cur = { r: { herald: true, single: link.single, arrA: true } }; }
+        if (h) { flash = 1; flashText = '♥ ' + h + ' herald' + (h > 1 ? 's' : '') + ' this frame'; cur = { r: { herald: true, single: link.single, arrA: true, clicks: link.single ? ['D1'] : ['H1', 'V2'] } }; }
         render();
       }
       draw(t);
@@ -2025,7 +2063,7 @@
   /* ─── Init ─── */
   window.addEventListener('load', () => {
     initHOMChart();
-    updateHOM(90);
+    updateHOM();
     updateRate();
   });
 
@@ -2211,6 +2249,7 @@
     $('rpTally').innerHTML = rows.map(r => `<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
   }
   function frame(t) {
+    if (!S) return;                                                      // reduced motion calls this before init
     const dt = lastT === null ? 0 : Math.min(0.1, (t - lastT) / 1000); lastT = t;
     wall += dt;
     if (dt) S.advance(S.t + dt * warp * +$('rpSpeed').value, onEv, 20000);
@@ -2218,7 +2257,7 @@
   }
   if (window.AMOMotion) AMOMotion.loop([cv], frame, { anchors: [{ el: $('rpRestart'), where: 'beforebegin', inline: true }] });
   else { const loop = t => { frame(t); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
-  window.addEventListener('amo:print', () => { draw(); });
+  window.addEventListener('amo:print', () => { if (S) draw(); });
 
   /* ── settings ── */
   function labels() {
@@ -2255,7 +2294,7 @@
     rateSets.push({ label: 'repeaterless bound', data: bound, borderColor: mut, borderDash: [6, 4], borderWidth: 1.6, pointRadius: 0 });
     const fidSets = NS.map(N => ({ label: N === 1 ? 'direct' : `${N} seg.`, data: res[N].map((r, k) => ({ x: DS[k], y: r && r.n ? r.F : null })), borderColor: COL[N], backgroundColor: COL[N], borderWidth: N === P.N ? 3 : 1.6, pointRadius: N === P.N ? 4 : 2.5 }));
     const opts = (yLog, ytitle, ymin, ymax) => ({ responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
-      scales: { x: { type: 'logarithmic', min: 10, max: 1000, title: { display: true, text: 'distance A → B (km)', color: tc }, ticks: { color: tc, callback: v => [10, 20, 50, 100, 200, 500, 1000].includes(v) ? v : '' }, grid: { color: gc } },
+      scales: { x: { type: 'logarithmic', min: 10, max: 1000, title: { display: true, text: 'distance A → B (km)', color: tc }, ticks: { color: tc, maxRotation: 0, autoSkip: false, callback: v => [10, 20, 50, 100, 200, 500, 1000].includes(v) ? v : '' }, grid: { color: gc } },
                 y: Object.assign({ type: yLog ? 'logarithmic' : 'linear', min: yLog ? 1e-8 : undefined, title: { display: true, text: ytitle, color: tc }, ticks: { color: tc }, grid: { color: gc } }, ymin !== undefined ? { min: ymin, max: ymax } : {}) },
       plugins: { legend: { labels: { color: tc, boxWidth: 14 } }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${yLog ? fmtR(c.parsed.y) : c.parsed.y.toFixed(3)}` } } } });
     if (rateC) { rateC.data.datasets = rateSets; rateC.options = opts(true, 'end-to-end pairs per second'); rateC.update('none'); }
@@ -2289,6 +2328,156 @@
   new MutationObserver(() => { if (res) charts(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   labels(); restartAnim(); draw(); tallyOut(); setTimeout(sweep, 400);
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════
+   HERO · a two-photon heralded link, as in Hofmann et al., Science 337, 72 (2012)
+   Each atom emits a photon entangled with its spin; the photons meet at a 50:50 fiber
+   beam splitter; a PBS in each output port sends H and V to separate APDs.
+   Coincidences H1V2 / V1H2 herald |Ψ−⟩, H1V1 / H2V2 herald |Ψ+⟩; |Φ±⟩ put both photons
+   into one detector and cannot be told apart, so at most half of the arrivals herald.
+   Photon loss is shown far less often than in a real link (illustrative).
+   ═══════════════════════════════════════════════ */
+(function () {
+  const cv = document.getElementById('entHeroCv'); if (!cv) return;
+  const ctx = cv.getContext('2d'), S = cv.width / 720, W = 720, H = cv.height / S, TAU = 2 * Math.PI;
+  const A = [72, 300], B = [648, 300], BS = [360, 214], P1 = [250, 140], P2 = [470, 140];
+  const DET = { H1: [250, 72], V1: [176, 140], H2: [470, 72], V2: [544, 140] }, LOGIC = [360, 40];
+  const COL = { pho: '255,214,102', H: '251,191,36', V: '56,189,248', ok: '52,211,153', bad: '248,113,113', ex: '192,132,252' };
+  const fibA = t => bez([150, 300], [250, 302], [300, 250], [BS[0] - 14, BS[1] + 12], t);
+  const fibB = t => bez([570, 300], [470, 302], [420, 250], [BS[0] + 14, BS[1] + 12], t);
+  const outP = (port, t) => port === 1 ? bez([BS[0] - 12, BS[1] - 12], [320, 180], [280, 160], P1, t) : bez([BS[0] + 12, BS[1] - 12], [400, 180], [440, 160], P2, t);
+  function bez(p0, p1, p2, p3, t) { const m = 1 - t; return [m * m * m * p0[0] + 3 * m * m * t * p1[0] + 3 * m * t * t * p2[0] + t * t * t * p3[0], m * m * m * p0[1] + 3 * m * m * t * p1[1] + 3 * m * t * t * p2[1] + t * t * t * p3[1]]; }
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+
+  // one attempt: losses (illustrative 25% each), then a Bell outcome with probability 1/4 each
+  function attempt() {
+    const lostA = Math.random() < 0.25 ? 0.3 + 0.5 * Math.random() : null, lostB = Math.random() < 0.25 ? 0.3 + 0.5 * Math.random() : null;
+    if (lostA !== null || lostB !== null) return { lostA, lostB, clicks: [], herald: null };
+    const r = Math.floor(Math.random() * 4);
+    if (r === 0) return { clicks: Math.random() < .5 ? ['H1', 'V2'] : ['V1', 'H2'], herald: 'Ψ⁻' };
+    if (r === 1) return { clicks: Math.random() < .5 ? ['H1', 'V1'] : ['H2', 'V2'], herald: 'Ψ⁺' };
+    const d = ['H1', 'V1', 'H2', 'V2'][Math.floor(Math.random() * 4)];
+    return { clicks: [d, d], herald: null, bunched: true };
+  }
+  const STATIC = { clicks: ['H1', 'V2'], herald: 'Ψ⁻' };
+  let cur = attempt(), t0 = null, tally = { n: 0, h: 0 };
+  const CYCLE = 5.2;
+
+  function glow(x, y, r, rgb, a) { const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.3, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  let small = false;                                                       // phones: larger labels, no footer
+  function text(s, x, y, col, size, weight, align) { ctx.fillStyle = col; ctx.font = `${weight || 500} ${(size || 11) * (small ? 1.4 : 1)}px JetBrains Mono, monospace`; ctx.textAlign = align || 'center'; ctx.fillText(s, x, y); }
+  function path(fn, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); for (let i = 0; i <= 40; i++) { const p = fn(i / 40); i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); } ctx.stroke(); }
+  function detRoute(d) {                                                   // PBS centre → detector
+    const p = d[1] === '1' ? P1 : P2; return t => lerp(p, DET[d], t);
+  }
+
+  function draw(tt, R) {
+    small = (cv.clientWidth || 720) < 500;
+    ctx.setTransform(S, 0, 0, S, 0, 0);
+    ctx.fillStyle = '#04070d'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(148,163,184,.06)'; for (let x = 12; x < W; x += 24) for (let y = 12; y < H; y += 24) ctx.fillRect(x, y, 1, 1);
+    // BSM enclosure
+    ctx.setLineDash([4, 6]); ctx.strokeStyle = 'rgba(148,163,184,.35)'; ctx.lineWidth = 1.2;
+    ctx.strokeRect(150, 14, 420, 228); ctx.setLineDash([]);
+    if (!small) text('Bell-state measurement', 160, 232, 'rgba(203,213,225,.75)', 10, 600, 'left');
+    // fibers
+    path(fibA, 'rgba(56,189,248,.35)', 3); path(fibB, 'rgba(56,189,248,.35)', 3);
+    path(t => outP(1, t), 'rgba(56,189,248,.35)', 3); path(t => outP(2, t), 'rgba(56,189,248,.35)', 3);
+    for (const d of ['H1', 'V1', 'H2', 'V2']) { const p = d[1] === '1' ? P1 : P2; ctx.strokeStyle = 'rgba(148,163,184,.3)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(DET[d][0], DET[d][1]); ctx.stroke(); }
+    // coincidence wiring
+    ctx.strokeStyle = 'rgba(148,163,184,.18)'; ctx.lineWidth = 1;
+    for (const d in DET) { ctx.beginPath(); ctx.moveTo(DET[d][0], DET[d][1] - 12); ctx.lineTo(LOGIC[0], LOGIC[1] + 12); ctx.stroke(); }
+    // fiber beam splitter
+    ctx.fillStyle = '#0f1b2d'; ctx.strokeStyle = 'rgba(125,211,252,.8)'; ctx.lineWidth = 1.5;
+    ctx.fillRect(BS[0] - 22, BS[1] - 13, 44, 26); ctx.strokeRect(BS[0] - 22, BS[1] - 13, 44, 26);
+    ctx.strokeStyle = 'rgba(125,211,252,.8)'; ctx.beginPath(); ctx.moveTo(BS[0] - 14, BS[1] + 8); ctx.bezierCurveTo(BS[0] - 4, BS[1], BS[0] + 4, BS[1], BS[0] + 14, BS[1] - 8); ctx.moveTo(BS[0] + 14, BS[1] + 8); ctx.bezierCurveTo(BS[0] + 4, BS[1], BS[0] - 4, BS[1], BS[0] - 14, BS[1] - 8); ctx.stroke();
+    text('50:50 fiber BS', BS[0], BS[1] + 50, 'rgba(203,213,225,.85)', 10, 600);
+    // PBS cubes
+    for (const [p, lab] of [[P1, '1'], [P2, '2']]) {
+      ctx.fillStyle = '#0f1b2d'; ctx.strokeStyle = 'rgba(203,213,225,.75)'; ctx.lineWidth = 1.4;
+      ctx.fillRect(p[0] - 13, p[1] - 13, 26, 26); ctx.strokeRect(p[0] - 13, p[1] - 13, 26, 26);
+      ctx.beginPath(); lab === '1' ? (ctx.moveTo(p[0] + 13, p[1] - 13), ctx.lineTo(p[0] - 13, p[1] + 13)) : (ctx.moveTo(p[0] - 13, p[1] - 13), ctx.lineTo(p[0] + 13, p[1] + 13)); ctx.stroke();
+      text('PBS ' + lab, p[0] + (lab === '1' ? 30 : -30), p[1] + 30, 'rgba(203,213,225,.7)', 9, 600);
+    }
+    // detectors
+    const click = {}; const tc = 2.55;
+    if (tt >= tc) for (const d of R.clicks) click[d] = (click[d] || 0) + 1;
+    for (const d in DET) {
+      const [x, y] = DET[d], on = click[d], a = on ? Math.max(0.35, 1 - (tt - tc) / 2) : 0, pol = d[0] === 'H' ? COL.H : COL.V;
+      if (on) glow(x, y, 26, pol, a * 0.9);
+      ctx.fillStyle = on ? `rgba(${pol},${0.35 + 0.5 * a})` : '#0f1b2d'; ctx.strokeStyle = `rgba(${pol},.9)`; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - 15, y - 11, 30, 22, 5) : ctx.rect(x - 15, y - 11, 30, 22); ctx.fill(); ctx.stroke();
+      text(d[0] + (d[1] === '1' ? '₁' : '₂'), x, y + 4, on ? '#04070d' : `rgba(${pol},1)`, 11, 700);
+      if (on === 2 && !small) text('2 photons', x, y - 17, `rgba(${COL.bad},${a})`, 9, 700);
+    }
+    // coincidence logic box + verdict
+    ctx.fillStyle = '#0f1b2d'; ctx.strokeStyle = 'rgba(148,163,184,.55)'; ctx.lineWidth = 1.2;
+    ctx.fillRect(LOGIC[0] - 70, LOGIC[1] - 14, 140, 28); ctx.strokeRect(LOGIC[0] - 70, LOGIC[1] - 14, 140, 28);
+    let verdict = 'coincidence logic', vcol = 'rgba(203,213,225,.8)';
+    if (tt >= tc + 0.15) {
+      if (R.herald) { verdict = `${R.clicks.map(d => d[0] + (d[1] === '1' ? '₁' : '₂')).join('+')} → |${R.herald}⟩`; vcol = `rgba(${COL.ok},1)`; }
+      else if (R.bunched) { verdict = small ? 'no herald' : 'one detector: no herald'; vcol = `rgba(${COL.bad},1)`; }
+    }
+    if (R.lostA !== null && R.lostA !== undefined || R.lostB !== null && R.lostB !== undefined) { if (tt >= 1.8) { verdict = small ? 'photon lost' : 'photon lost: retry'; vcol = `rgba(${COL.bad},1)`; } }
+    text(verdict, LOGIC[0], LOGIC[1] + 4, vcol, 11, 700);
+    // atoms, tweezers, objectives
+    for (const [p, lab, dir] of [[A, 'atom A', 1], [B, 'atom B', -1]]) {
+      const tw = ctx.createLinearGradient(p[0], p[1] - 70, p[0], p[1] + 70);
+      tw.addColorStop(0, 'rgba(239,68,68,0)'); tw.addColorStop(0.5, 'rgba(239,68,68,.28)'); tw.addColorStop(1, 'rgba(239,68,68,0)');
+      ctx.fillStyle = tw; ctx.beginPath(); ctx.moveTo(p[0] - 14, p[1] - 70); ctx.quadraticCurveTo(p[0], p[1], p[0] - 14, p[1] + 70); ctx.lineTo(p[0] + 14, p[1] + 70); ctx.quadraticCurveTo(p[0], p[1], p[0] + 14, p[1] - 70); ctx.closePath(); ctx.fill();
+      const ex = Math.max(0, 1 - Math.abs(tt - 0.25) / 0.2);
+      if (ex > 0) glow(p[0], p[1], 30, COL.ex, ex);
+      glow(p[0], p[1], 14, '96,165,250', 1);
+      const lx = p[0] + dir * 46;
+      ctx.strokeStyle = 'rgba(56,189,248,.35)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(lx + dir * 8, p[1]); ctx.lineTo(dir > 0 ? 150 : 570, p[1]); ctx.stroke();
+      ctx.strokeStyle = 'rgba(203,213,225,.75)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(lx, p[1], 6, 26, 0, 0, TAU); ctx.stroke();
+      text(lab, p[0], p[1] + 58, 'rgba(226,232,240,.95)', 12, 700);
+      if (!small) text(dir > 0 ? 'trap 1' : 'trap 2', p[0], p[1] + 74, 'rgba(148,163,184,.8)', 9, 500);
+    }
+    // flying photons (violet = polarization entangled with its atom; H/V colour after its PBS)
+    const fly = (fn, lostAt, u) => { if (u <= 0) return; if (lostAt !== null && lostAt !== undefined && u > lostAt) { const q = fn(lostAt), a = 1 - (u - lostAt) * 5; if (a > 0) { glow(q[0], q[1], 9, COL.bad, a); text('✗', q[0], q[1] - 12, `rgba(${COL.bad},${a})`, 12, 700); } return; } const q = fn(Math.min(u, 1)); glow(q[0], q[1], 10, COL.pho, 1); };
+    const u1 = seg(tt, 0.45, 1.55);
+    if (u1 < 1) { fly(fibA, R.lostA, u1); fly(fibB, R.lostB, u1); }
+    if (R.clicks.length && tt >= 1.55 && tt < tc) {
+      const u2 = seg(tt, 1.6, 2.05), u3 = seg(tt, 2.05, tc);
+      R.clicks.forEach((d, i) => {
+        const port = +d[1], off = R.clicks[0] === R.clicks[1] ? (i ? 4 : -4) : 0;
+        if (u2 < 1) { const q = outP(port, u2); glow(q[0] + off, q[1], 10, COL.pho, 1); }
+        else { const q = detRoute(d)(u3), pol = d[0] === 'H' ? COL.H : COL.V; glow(q[0] + off, q[1], 10, pol, 1); }
+      });
+    }
+    // herald back to the nodes, then the shared Bell pair
+    if (R.herald && tt > 3.0) {
+      const u = seg(tt, 3.0, 3.6);
+      ctx.setLineDash([6, 6]); ctx.strokeStyle = `rgba(${COL.ok},.85)`; ctx.lineWidth = 2;
+      for (const p of [A, B]) { const end = lerp([LOGIC[0], LOGIC[1] + 14], [p[0], p[1] - 22], u); ctx.beginPath(); ctx.moveTo(LOGIC[0], LOGIC[1] + 14); ctx.lineTo(end[0], end[1]); ctx.stroke(); }
+      ctx.setLineDash([]);
+      if (tt > 3.6) {
+        const v = seg(tt, 3.6, 4.1), x1 = A[0] + (B[0] - A[0]) * v;
+        ctx.strokeStyle = `rgba(${COL.ok},1)`; ctx.lineWidth = 3; ctx.shadowColor = `rgba(${COL.ok},1)`; ctx.shadowBlur = 12;
+        ctx.beginPath(); for (let x = A[0]; x <= x1; x += 3) { const y = A[1] + 40 + 4 * Math.sin((x - A[0]) / 9 - tt * 6); x === A[0] ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke(); ctx.shadowBlur = 0;
+        if (v >= 1) text(`atoms share |${R.herald}⟩ · photons are gone`, W / 2, A[1] + 30, `rgba(${COL.ok},1)`, 12, 700);
+      }
+    }
+    // footer
+    if (!small) text(`attempts ${tally.n} · heralds ${tally.h} · losses shown far less often than in a real link`, W / 2, H - 10, 'rgba(148,163,184,.75)', 9, 500);
+  }
+
+  function frame(t) {
+    if (t0 === null) t0 = t;
+    let tt = (t - t0) / 1000;
+    if (tt > CYCLE) { cur = attempt(); t0 = t; tt = 0; }
+    if (tt >= 2.6 && !cur.counted) { cur.counted = true; tally.n++; if (cur.herald) tally.h++; }
+    draw(tt, cur);
+  }
+  const still = () => draw(4.6, STATIC);
+  if (window.AMOMotion) AMOMotion.loop([cv], frame, { anchors: [{ el: document.querySelector('.ent-hero-note'), where: 'beforebegin' }], onStatic: still });
+  else { const loop = t => { frame(t); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  window.addEventListener('amo:print', still);
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

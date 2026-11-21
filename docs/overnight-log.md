@@ -278,3 +278,10 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Every page with live figures:** main.js now builds a "Live on this page" chip strip in the hero from the `.amo-eyebrow` markers, plus a floating "N live figures" jump menu once the hero scrolls away. 15 pages get it automatically.
 - main.js v45 and styles.css v32 on all 36 HTML files (incl. 404.html).
 - Tests: formula tests OK 30 (new `test_showcase_links_resolve`); smoke 36 × 3, 0 new problems; contrast unchanged on home; print clean; 390 px checked.
+
+## 2026-11-21: Remote Entanglement figures, facts and flow ("much better … perfect sense … renders well"; "flow from top to bottom")
+- **Figures:** hero, module diagram, protocol stepper, atom–photon level diagram, HOM widget and link simulator all rebuilt around one detection scheme (Hofmann et al. 2012: 50:50 fiber BS, PBS per port, H₁V₂/V₁H₂ → Ψ⁻, H₁V₁/H₂V₂ → Ψ⁺). Phone layouts for the stepper and link sim; larger hero labels on phones.
+- **Physics fixes:** calculator attempt-rate slider bug (10× too high), herald round-trip cap 2L/v, per-arm fiber length, duty-cycle formula replaced by ⟨t⟩ = 1/(p f); ⁸⁷Sr I = 9/2; DFG pump; DLCZ history (Chou 2005); van Leent fiber description.
+- **Claims:** removed "Atom Computing (acquired by Google)", QuEra 2027–28 roadmap, ~10⁷ Shor stat; added Google 2026 neutral-atom announcement (blog + JILA), Oxford ion benchmark, Gidney 2025 (preprint).
+- **Flow:** distillation became §08 after the calculator; history moved after the landscape; references became §12 with styled link cards.
+- Tests: formula tests OK 31 (new `test_remote_entanglement_figures`); smoke remote-entanglement + home × 3 configs, 0 new problems; 390 px checked. Search index rebuilt. No main.js/styles.css change, so no cache bump.
