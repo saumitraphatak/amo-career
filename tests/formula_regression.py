@@ -799,32 +799,45 @@ def test_remote_entanglement_figures() -> None:
 
 
 def test_build_story_order() -> None:
-    """Build group (2026-11-21): ten story steps in the order a lab gets built, the same everywhere."""
+    """Nav stories (2026-11-21): every nav group is a numbered story (build a lab, run a first experiment,
+    build a quantum computer, start a career), in the same order and with the same titles everywhere."""
     import re
-    steps = [("atom-library", "Select an atomic species"), ("laser-planner", "Pick lasers for that atom"),
-             ("vacuum-systems", "Pump down to ultra-high vacuum"), ("laser-locking", "Lock the lasers to the atom"),
-             ("polarimetry", "Analyze the polarization"), ("mot-designer", "Design a MOT"),
-             ("tweezer-designer", "Assemble a tweezer array"), ("zernike", "Get rid of aberrations"),
-             ("cavity-qed", "Couple atoms to a cavity"), ("lab-techniques", "Run the lab day to day")]
+    stories = {
+        "build": ("BUILD", "Build", [("atom-library", "Select an atomic species"), ("laser-planner", "Pick lasers for that atom"),
+                  ("vacuum-systems", "Pump down to ultra-high vacuum"), ("laser-locking", "Lock the lasers to the atom"),
+                  ("polarimetry", "Analyze the polarization"), ("mot-designer", "Design a MOT"),
+                  ("tweezer-designer", "Assemble a tweezer array"), ("zernike", "Get rid of aberrations"),
+                  ("cavity-qed", "Couple atoms to a cavity"), ("lab-techniques", "Run the lab day to day")]),
+        "trapImageCool": ("TRAP", "Trap, Image &(?:amp;)? Cool", [("cooling-simulator", "Cool atoms with laser light"), ("absorption-imaging", "Image the atom cloud"), ("tof-calculator", "Measure the cloud’s temperature"), ("imaging-calculator", "See a single atom"), ("release-recapture", "Measure a single atom’s temperature"), ("laser-cooling", "Cool a single atom to its ground state"), ("virtual-lab", "Run a full experimental cycle"), ("lab-calculators", "Do the everyday lab math")]),
+        "quantum": ("QC", "Quantum", [("learn-quantum", "Learn how qubits work"), ("decoherence-lab", "Watch a qubit lose coherence"), ("dd-playground", "Protect qubits with decoupling pulses"), ("rydberg-calculator", "Entangle atoms with Rydberg blockade"), ("fidelity-budget", "Budget the gate errors"), ("rb-explorer", "Benchmark the gates"), ("atom-processor", "Run a circuit on moving atoms"), ("remote-entanglement", "Link processors with photons")]),
+        "career": ("CAREER", "Career", [("paper-syllabus", "Read the papers that built the field"), ("amo-groups", "Find a research group"), ("qc-landscape", "Map the quantum industry"), ("rb87-vs-yb171", "Compare neutral-atom qubits"), ("quantinuum-vs-ionq", "Compare trapped-ion companies"), ("google-vs-ibm", "Compare superconducting companies"), ("psiquantum-vs-xanadu", "Compare photonic companies")]),
+    }
     js = read("js/main.js")
-    build = js[js.index("  build: [\n"):js.index("  measure: [")]
-    assert re.findall(r"key: '([a-z-]+)',\s+step: (\d+),\s+label: '([^']+)'", build) == [(k, str(n), l) for n, (k, l) in enumerate(steps, 1)]
-    assert "function initBuildTrail()" in js and "initBuildTrail();\n  initCiteThisPage();" in js
+    names = list(stories)
+    for a, b in zip(names, names[1:] + ["learn"]):
+        block = js[js.index(f"  {a}: [\n"):js.index(f"  {b}: [\n")]
+        got = re.findall(r"key: '([a-z0-9-]+)',\s+step: (\d+),\s+label: '([^']+)'", block)
+        assert got == [(k, str(n), l) for n, (k, l) in enumerate(stories[a][2], 1)], (a, got)
+    assert "function initStoryTrail()" in js and "initStoryTrail();\n  initCiteThisPage();" in js
+    assert "{ name: 'Building a lab',               items: NAV.build }" in js
     home = read("home.html")
-    cards = []
+    cards = {}
     for blk in home.split('<a class="tool-card')[1:]:
-        num = re.search(r'tool-card-num">BUILD (\d\d)<', blk)
+        num = re.search(r'tool-card-num">([A-Z]+) (\d\d)<', blk)
         if num:
-            cards.append((re.search(r'href="pages/([a-z-]+)\.html"', blk).group(1), num.group(1), re.search(r'tool-card-name">([^<]+)<', blk).group(1)))
-    assert cards == [(k, f"{n:02d}", l) for n, (k, l) in enumerate(steps, 1)], cards
-    foot = home[home.index('footer-col-head">Build a lab'):]
-    foot = foot[:foot.index("</div>", foot.index("footer-links"))]
-    assert re.findall(r'pages/([a-z-]+)\.html', foot) == [k for k, _ in steps]
+            cards.setdefault(num.group(1), []).append((re.search(r'href="pages/([a-z0-9-]+)\.html"', blk).group(1), num.group(2),
+                                                     re.search(r'tool-card-name">([^<]+)<', blk).group(1)))
     sh = read("pages/start-here.html")
-    sec = sh[sh.index('id="build"'):sh.index("</section>", sh.index('id="build"'))]
-    assert re.findall(r'href="([a-z-]+)\.html"><span class="see-also-icon">[^<]*</span><div><span class="sm-num">(\d\d)</span><span class="see-also-name">([^<]+)<', sec) == [(k, f"{n:02d}", l) for n, (k, l) in enumerate(steps, 1)]
-    for n, (k, l) in enumerate(steps, 1):
-        assert f"Build {n:02d} · {l}" in read(f"pages/{k}.html"), k
+    for sid, (prefix, cat, steps) in zip(["build", "trap-image-cool", "quantum-computing", "career"], stories.values()):
+        want = [(k, f"{n:02d}", l) for n, (k, l) in enumerate(steps, 1)]
+        have = cards[prefix]
+        assert have == [w for w in want if w[0] in {h[0] for h in have}], (prefix, have)    # home may show a subset, in order
+        sec = sh[sh.index(f'id="{sid}"'):sh.index("</section>", sh.index(f'id="{sid}"'))]
+        assert re.findall(r'href="([a-z0-9-]+)\.html"><span class="see-also-icon">[^<]*</span><div><span class="sm-num">(\d\d)</span><span class="see-also-name">([^<]+)<', sec) == want, sid
+        for n, (k, l) in enumerate(steps, 1):
+            page = read(f"pages/{k}.html")
+            assert re.search(rf"{cat} {n:02d}( · | &middot; |</span>\s*<span class=\"page-tag\">){re.escape(l)}\s*<", page), (k, l)
+    assert len(cards["CAREER"]) == 3 and len(cards["QC"]) == 8 and len(cards["TRAP"]) == 8 and len(cards["BUILD"]) == 10
 
 
 def test_cavity_photon_race() -> None:

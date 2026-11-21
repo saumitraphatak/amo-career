@@ -45,3 +45,4 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 
 ## 2026-11-21: Build section is now "Build a lab, step by step"
 Ten story-titled steps in build order (species → lasers → vacuum → locking → polarization → MOT → tweezers → aberrations → cavity → operations); each card names the tool under the step. Order must match `NAV.build` (`test_build_story_order`).
+Later the same day the other three sections became stories too: "Run your first experiment" (8), "Build a quantum computer" (8), "Start a career" (7), each matching its NAV array.

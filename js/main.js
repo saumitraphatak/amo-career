@@ -383,36 +383,37 @@ const NAV = {
     { key: 'cavity-qed',       step: 9,  label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
     { key: 'lab-techniques',   step: 10, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
   ],
-  measure: [
-    { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#2c4a63', href: 'pages/imaging-calculator.html' },
-    { key: 'release-recapture',  label: 'Single-atom Temperature',  kind: 'Simulator', icon: '🎯', color: '#3f5d3f', href: 'pages/release-recapture.html'  },
-    { key: 'tof-calculator',     label: 'MOT Temperature',     kind: 'Calculator', icon: '🌡️', color: '#a13c1c', href: 'pages/tof-calculator.html'     },
-    { key: 'lab-calculators',     label: 'Quick Lab Console',      kind: 'Calculator', icon: '🧮', color: '#2c4a63', href: 'pages/lab-calculators.html'    },
-    { key: 'absorption-imaging', label: 'Absorption Imaging Lab',       kind: 'Imaging lab', icon: '🌑', color: '#3f5d3f', href: 'pages/absorption-imaging.html'  },
+  // Trap, Image & Cool continues the story with a first experiment: cool and image a cloud, then one atom, then run the cycle.
+  trapImageCool: [
+    { key: 'cooling-simulator',  step: 1,  label: 'Cool atoms with laser light',          tool: 'Laser Cooling Simulator', kind: 'Simulator', icon: '❄️', color: '#a13c1c', href: 'pages/cooling-simulator.html' },
+    { key: 'absorption-imaging', step: 2,  label: 'Image the atom cloud',                 tool: 'Absorption Imaging Lab',  kind: 'Imaging lab', icon: '🌑', color: '#2c4a63', href: 'pages/absorption-imaging.html' },
+    { key: 'tof-calculator',     step: 3,  label: 'Measure the cloud’s temperature',      tool: 'MOT Temperature',         kind: 'Calculator', icon: '🌡️', color: '#3f5d3f', href: 'pages/tof-calculator.html' },
+    { key: 'imaging-calculator', step: 4,  label: 'See a single atom',                    tool: 'Single-atom Imaging',     kind: 'Calculator', icon: '📷', color: '#a13c1c', href: 'pages/imaging-calculator.html' },
+    { key: 'release-recapture',  step: 5,  label: 'Measure a single atom’s temperature',  tool: 'Single-atom Temperature', kind: 'Simulator', icon: '🎯', color: '#2c4a63', href: 'pages/release-recapture.html' },
+    { key: 'laser-cooling',      step: 6,  label: 'Cool a single atom to its ground state', tool: 'Single-atom Cooling',     kind: 'Deep dive', icon: '🧊', color: '#3f5d3f', href: 'pages/laser-cooling.html' },
+    { key: 'virtual-lab',        step: 7,  label: 'Run a full experimental cycle',        tool: 'Virtual Tweezer Lab',     kind: 'Simulator', icon: '🧩', color: '#a13c1c', href: 'pages/virtual-lab.html' },
+    { key: 'lab-calculators',    step: 8,  label: 'Do the everyday lab math',             tool: 'Quick Lab Console',       kind: 'Calculator', icon: '🧮', color: '#2c4a63', href: 'pages/lab-calculators.html' },
   ],
-  cooling: [
-    { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '🧊', color: '#a13c1c', href: 'pages/laser-cooling.html' },
-    { key: 'cooling-simulator', label: 'Laser Cooling Simulator',   kind: 'Simulator', icon: '❄️', color: '#2c4a63', href: 'pages/cooling-simulator.html' },
-    { key: 'virtual-lab',       label: 'Virtual Tweezer Lab',      kind: 'Simulator', icon: '🧩', color: '#a13c1c', href: 'pages/virtual-lab.html' },
-  ],
+  // Quantum Computing turns the trapped atoms into a processor: qubits, coherence, gates, errors, circuits, then links.
   quantum: [
-    { key: 'decoherence-lab',    label: 'Decoherence Lab',       kind: 'Deep dive', icon: '🌀', color: '#a13c1c', href: 'pages/decoherence-lab.html' },
-    { key: 'learn-quantum',      label: 'Quantum Computing Learning Path',              kind: 'Learning path', icon: '🔵', color: '#2c4a63', href: 'pages/learn-quantum.html' },
-    { key: 'rydberg-calculator', label: 'Rydberg Blockade Lab',  kind: 'Calculator', icon: '🔮', color: '#3f5d3f', href: 'pages/rydberg-calculator.html' },
-    { key: 'fidelity-budget',    label: 'Rydberg Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#a13c1c', href: 'pages/fidelity-budget.html' },
-    { key: 'rb-explorer',        label: 'Randomized Benchmarking',     kind: 'Deep dive', icon: '📈', color: '#2c4a63', href: 'pages/rb-explorer.html' },
-    { key: 'dd-playground',      label: 'Dynamical Decoupling', kind: 'Simulator', icon: '🛡️', color: '#3f5d3f', href: 'pages/dd-playground.html' },
-    { key: 'remote-entanglement', label: 'Remote Entanglement', kind: 'Deep dive', icon: '🔗', color: '#a13c1c', href: 'pages/remote-entanglement.html' },
-    { key: 'atom-processor',     label: 'Zoned Atom Processor',  kind: 'Simulator', icon: '🎛️', color: '#2c4a63', href: 'pages/atom-processor.html' },
+    { key: 'learn-quantum',       step: 1,  label: 'Learn how qubits work',                tool: 'Quantum Computing Learning Path', kind: 'Learning path', icon: '🔵', color: '#a13c1c', href: 'pages/learn-quantum.html' },
+    { key: 'decoherence-lab',     step: 2,  label: 'Watch a qubit lose coherence',         tool: 'Decoherence Lab',                 kind: 'Deep dive', icon: '🌀', color: '#2c4a63', href: 'pages/decoherence-lab.html' },
+    { key: 'dd-playground',       step: 3,  label: 'Protect qubits with decoupling pulses',    tool: 'Dynamical Decoupling',            kind: 'Simulator', icon: '🛡️', color: '#3f5d3f', href: 'pages/dd-playground.html' },
+    { key: 'rydberg-calculator',  step: 4,  label: 'Entangle atoms with Rydberg blockade', tool: 'Rydberg Blockade Lab',            kind: 'Calculator', icon: '🔮', color: '#a13c1c', href: 'pages/rydberg-calculator.html' },
+    { key: 'fidelity-budget',     step: 5,  label: 'Budget the gate errors',               tool: 'Rydberg Gate Error Budget',       kind: 'Calculator', icon: '📊', color: '#2c4a63', href: 'pages/fidelity-budget.html' },
+    { key: 'rb-explorer',         step: 6,  label: 'Benchmark the gates',                  tool: 'Randomized Benchmarking',         kind: 'Deep dive', icon: '📈', color: '#3f5d3f', href: 'pages/rb-explorer.html' },
+    { key: 'atom-processor',      step: 7,  label: 'Run a circuit on moving atoms',        tool: 'Zoned Atom Processor',            kind: 'Simulator', icon: '🎛️', color: '#a13c1c', href: 'pages/atom-processor.html' },
+    { key: 'remote-entanglement', step: 8,  label: 'Link processors with photons',         tool: 'Remote Entanglement',             kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/remote-entanglement.html' },
   ],
+  // Career & Literature: read the field, find a group, map the industry, compare the platforms.
   career: [
-    { key: 'amo-groups',     label: 'AMO Group Finder',        kind: 'Career map', icon: '🌍', color: '#3f5d3f', href: 'pages/amo-groups.html' },
-    { key: 'paper-syllabus', label: 'AMO Paper Roadmap',           kind: 'Syllabus', icon: '📚', color: '#3f5d3f', href: 'pages/paper-syllabus.html' },
-    { key: 'qc-landscape',   label: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#2c4a63', href: 'pages/qc-landscape.html' },
-    { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#a13c1c', href: 'pages/rb87-vs-yb171.html' },
-    { key: 'quantinuum-vs-ionq', label: 'Quantinuum vs IonQ', kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/quantinuum-vs-ionq.html' },
-    { key: 'google-vs-ibm', label: 'Google vs IBM', kind: 'Deep dive', icon: '🖥️', color: '#a13c1c', href: 'pages/google-vs-ibm.html' },
-    { key: 'psiquantum-vs-xanadu', label: 'PsiQuantum vs Xanadu', kind: 'Deep dive', icon: '💡', color: '#3f5d3f', href: 'pages/psiquantum-vs-xanadu.html' },
+    { key: 'paper-syllabus',       step: 1,  label: 'Read the papers that built the field', tool: 'AMO Paper Roadmap',         kind: 'Syllabus', icon: '📚', color: '#a13c1c', href: 'pages/paper-syllabus.html' },
+    { key: 'amo-groups',           step: 2,  label: 'Find a research group',                tool: 'AMO Group Finder',          kind: 'Career map', icon: '🌍', color: '#2c4a63', href: 'pages/amo-groups.html' },
+    { key: 'qc-landscape',         step: 3,  label: 'Map the quantum industry',             tool: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#3f5d3f', href: 'pages/qc-landscape.html' },
+    { key: 'rb87-vs-yb171',        step: 4,  label: 'Compare neutral-atom qubits',          tool: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#a13c1c', href: 'pages/rb87-vs-yb171.html' },
+    { key: 'quantinuum-vs-ionq',   step: 5,  label: 'Compare trapped-ion companies',        tool: 'Quantinuum vs IonQ',        kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/quantinuum-vs-ionq.html' },
+    { key: 'google-vs-ibm',        step: 6,  label: 'Compare superconducting companies',    tool: 'Google vs IBM',             kind: 'Deep dive', icon: '🖥️', color: '#3f5d3f', href: 'pages/google-vs-ibm.html' },
+    { key: 'psiquantum-vs-xanadu', step: 7,  label: 'Compare photonic companies',           tool: 'PsiQuantum vs Xanadu',      kind: 'Deep dive', icon: '💡', color: '#a13c1c', href: 'pages/psiquantum-vs-xanadu.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -433,7 +434,9 @@ const NAV = {
   ],
 };
 
-NAV.trapImageCool = [...NAV.measure, ...NAV.cooling];
+const MEASURE_KEYS = ['imaging-calculator', 'release-recapture', 'tof-calculator', 'lab-calculators', 'absorption-imaging'];
+NAV.measure = NAV.trapImageCool.filter(t => MEASURE_KEYS.includes(t.key));        // older two-way split, still used by search
+NAV.cooling = NAV.trapImageCool.filter(t => !MEASURE_KEYS.includes(t.key));
 NAV.tools = [...new Map([
   ...NAV.build,
   ...NAV.trapImageCool,
@@ -508,9 +511,9 @@ function renderNav({ active = '', root = '' } = {}) {
         <div class="nav-links" role="menubar">
           <a class="nav-btn" href="${root}pages/start-here.html">Start Here</a>
           ${dropdown('Build', NAV.build, 'Build an AMO lab, step by step', 580)}
-          ${dropdown('Trap, Image & Cool', NAV.trapImageCool, 'Trap atoms, measure signals, and model cooling', 620)}
-          ${dropdown('Quantum Computing', NAV.quantum, 'Neutral-atom QC concepts, gates, and platforms', 560)}
-          ${dropdown('Career & Literature', NAV.career, 'Groups, papers, and industry orientation', 520)}
+          ${dropdown('Trap, Image & Cool', NAV.trapImageCool, 'Run your first experiment, step by step', 660)}
+          ${dropdown('Quantum Computing', NAV.quantum, 'Turn trapped atoms into a quantum computer', 640)}
+          ${dropdown('Career & Literature', NAV.career, 'Take it into a career', 640)}
           <a class="nav-btn" href="${root}home.html#about">About</a>
         </div>
 
@@ -537,9 +540,9 @@ function renderNav({ active = '', root = '' } = {}) {
         <a class="nav-mobile-link" href="${root}home.html#paths"><span>🧩</span> Guided Paths (home)</a>
       </div>
       ${mobileSection('Build a lab, step by step', NAV.build)}
-      ${mobileSection('Trap, Image & Cool', NAV.trapImageCool)}
-      ${mobileSection('Quantum Computing', NAV.quantum)}
-      ${mobileSection('Career & Literature', NAV.career)}
+      ${mobileSection('Run a first experiment', NAV.trapImageCool)}
+      ${mobileSection('Build a quantum computer', NAV.quantum)}
+      ${mobileSection('Start a career', NAV.career)}
       <div class="nav-mobile-section">
         <button class="nav-mobile-link nav-mobile-search" id="global-search-btn-mobile" type="button">
           <span>⌕</span> Search AMO Toolkit
@@ -1423,26 +1426,37 @@ function getPageMeta() {
    tool/guide page (anything using the .page-wrap template).
    ───────────────────────────────────────────────────── */
 /* ─────────────────────────────────────────────────────
-   BUILD TRAIL — on each Build page, where this step sits in the
-   ten-step story of building a lab, with the previous and next step.
+   STORY TRAIL — each nav group is one story told in steps (build a lab →
+   run a first experiment → build a quantum computer → start a career).
+   At the end of every step page: where it sits, every step linked, and the
+   previous / next step; the last step of a story opens the next story.
    ───────────────────────────────────────────────────── */
-function initBuildTrail() {
+const STORIES = [
+  { name: 'Building a lab',               items: NAV.build },
+  { name: 'Running a first experiment',   items: NAV.trapImageCool },
+  { name: 'Building a quantum computer',  items: NAV.quantum },
+  { name: 'Starting a career',            items: NAV.career },
+];
+function initStoryTrail() {
   if (!location.pathname.includes('/pages/')) return;
-  const i = NAV.build.findIndex(t => t.key === currentPageKey());
+  const key = currentPageKey(), si = STORIES.findIndex(st => st.items.some(t => t.key === key));
   const container = getPageContainer();
-  if (i < 0 || !container || document.querySelector('.build-trail')) return;
+  if (si < 0 || !container || document.querySelector('.build-trail')) return;
+  const story = STORIES[si], list = story.items, i = list.findIndex(t => t.key === key);
   const href = t => t.href.replace(/^pages\//, '');
-  const prev = NAV.build[i - 1], next = NAV.build[i + 1], cur = NAV.build[i];
+  const prev = list[i - 1], next = list[i + 1], cur = list[i], nextStory = STORIES[si + 1];
   const nav = document.createElement('nav');
   nav.className = 'build-trail';
-  nav.setAttribute('aria-label', 'Building a lab, step by step');
+  nav.setAttribute('aria-label', story.name + ', step by step');
+  nav.style.setProperty('--bt-n', list.length);
   nav.innerHTML = `
-    <div class="bt-head"><span class="bt-eyebrow">Building a lab · step ${cur.step} of ${NAV.build.length}</span><span class="bt-cur">${cur.label}</span></div>
-    <ol class="bt-steps">${NAV.build.map((t, j) => `<li><a href="${href(t)}" class="${j < i ? 'done' : j === i ? 'here' : ''}" ${j === i ? 'aria-current="step"' : ''} title="${t.step}. ${t.label}"><span>${t.step}</span><em>${t.label}</em></a></li>`).join('')}</ol>
+    <div class="bt-head"><span class="bt-eyebrow">${story.name} · step ${cur.step} of ${list.length}</span><span class="bt-cur">${cur.label}</span></div>
+    <ol class="bt-steps">${list.map((t, j) => `<li><a href="${href(t)}" class="${j < i ? 'done' : j === i ? 'here' : ''}" ${j === i ? 'aria-current="step"' : ''} title="${t.step}. ${t.label}"><span>${t.step}</span><em>${t.label}</em></a></li>`).join('')}</ol>
     <div class="bt-links">
       ${prev ? `<a class="bt-prev" href="${href(prev)}"><small>← Step ${prev.step}</small>${prev.label}</a>` : '<span></span>'}
       ${next ? `<a class="bt-next" href="${href(next)}"><small>Step ${next.step} →</small>${next.label}</a>`
-             : `<a class="bt-next" href="${location.pathname.includes('/pages/') ? '' : 'pages/'}imaging-calculator.html"><small>Lab built →</small>Now trap, image &amp; cool atoms</a>`}
+        : nextStory ? `<a class="bt-next" href="${href(nextStory.items[0])}"><small>Next story: ${nextStory.name} →</small>${nextStory.items[0].label}</a>`
+        : `<a class="bt-next" href="start-here.html"><small>The end →</small>Back to the site map</a>`}
     </div>`;
   container.appendChild(nav);
 }
@@ -1589,7 +1603,7 @@ function initPathConceptMap() {
   // Measure & Cool → Quantum → Career) so the radial layout reads the
   // same way the tool grid and footer already do.
   const categoryOrder = [
-    ...NAV.build, ...NAV.measure, ...NAV.cooling, ...NAV.quantum, ...NAV.career,
+    ...NAV.build, ...NAV.trapImageCool, ...NAV.quantum, ...NAV.career,
   ];
   const nodeHrefs = [...new Set(paths.flatMap(p => p.steps))];
   nodeHrefs.sort((a, b) => {
@@ -2700,7 +2714,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
-  initBuildTrail();
+  initStoryTrail();
   initCiteThisPage();
   initErrorReportWidget();
   initPathConceptMap();

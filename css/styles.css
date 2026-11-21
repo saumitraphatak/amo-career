@@ -426,6 +426,9 @@ code, .mono {
   transform: translateY(0);
 }
 
+/* the rightmost menu opens leftwards so a wide story menu stays on screen */
+.nav-links .nav-item:last-of-type .nav-drop { left: auto; right: 0; transform-origin: top right; }
+
 .nav-drop-section {
   padding: var(--sp-2) var(--sp-2) var(--sp-1);
   font-size: 0.675rem;
@@ -3869,7 +3872,7 @@ main p, main li { overflow-wrap: break-word; }
 }
 .tool-card-live .live-dot { width: .45rem; height: .45rem; }
 
-/* ── Build trail: where a Build page sits in the ten-step story (main.js initBuildTrail) ── */
+/* ── Story trail: where a page sits in its nav group's story (main.js initStoryTrail) ── */
 .build-trail {
   margin: var(--sp-8) 0 var(--sp-5);
   padding: var(--sp-5);
@@ -3880,13 +3883,13 @@ main p, main li { overflow-wrap: break-word; }
 .build-trail .bt-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem .8rem; margin-bottom: var(--sp-4); }
 .build-trail .bt-eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); }
 .build-trail .bt-cur { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-.build-trail .bt-steps { list-style: none; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 0; margin: 0 0 var(--sp-4); padding: 0; }
+.build-trail .bt-steps { list-style: none; display: grid; grid-template-columns: repeat(var(--bt-n, 10), minmax(0, 1fr)); gap: 0; margin: 0 0 var(--sp-4); padding: 0; }
 .build-trail .bt-steps li { position: relative; display: flex; justify-content: center; }
 .build-trail .bt-steps li + li::before { content: ''; position: absolute; top: 13px; right: 50%; width: 100%; height: 2px; background: color-mix(in srgb, var(--text-muted) 30%, transparent); }
 .build-trail .bt-steps li:has(a.done, a.here) + li::before { background: var(--c-atom); }
 .build-trail .bt-steps a { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: .3rem; text-decoration: none; color: var(--text-muted); text-align: center; }
 .build-trail .bt-steps a span { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 .72rem/1 'JetBrains Mono', monospace; background: var(--bg-surface); border: 2px solid color-mix(in srgb, var(--text-muted) 40%, transparent); }
-.build-trail .bt-steps a em { font-style: normal; font-size: .66rem; line-height: 1.25; max-width: 7.5em; }
+.build-trail .bt-steps a em { font-style: normal; font-size: .66rem; line-height: 1.25; max-width: 9.5em; word-break: normal; overflow-wrap: normal; hyphens: manual; }
 .build-trail .bt-steps a.done span { border-color: var(--c-atom); color: var(--c-atom); }
 .build-trail .bt-steps a.here span { background: var(--c-atom); border-color: var(--c-atom); color: var(--bg-surface); }
 .build-trail .bt-steps a.here em { color: var(--text-primary); font-weight: 700; }

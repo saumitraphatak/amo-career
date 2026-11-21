@@ -108,7 +108,7 @@ amo-career/
 
 ## The NAV Object — Single Source of Truth
 
-All navigation is driven by the `NAV` object at the top of `js/main.js`. It is now organized into **workflow categories** (not a single flat tool list) so the nav and homepage can group tools by "job to be done" rather than alphabetically. **Build is a ten-step story (2026-11-21):** each `NAV.build` entry has `step`, a sentence-case `label` that is the step ("Design a MOT") and `tool`, the page's own name ("MOT Designer"). The order is the order a lab gets built; the nav shows step numbers, the subtitle shows the tool name, and `initBuildTrail()` adds a step-N-of-10 trail with previous/next links to each Build page. Reordering means updating, together: `NAV.build`, the BUILD cards and footer column in `home.html`, the `#build` section of `start-here.html`, and the ten page eyebrows (`test_build_story_order` checks all of them).
+All navigation is driven by the `NAV` object at the top of `js/main.js`. It is now organized into **workflow categories** (not a single flat tool list) so the nav and homepage can group tools by "job to be done" rather than alphabetically. **Every nav group is a numbered story (2026-11-21):** Build (`NAV.build`, building a lab, 10 steps) → Trap, Image & Cool (`NAV.trapImageCool`, a first experiment, 8) → Quantum Computing (`NAV.quantum`, building a quantum computer, 8) → Career & Literature (`NAV.career`, starting a career, 7). Each entry has `step`, a sentence-case `label` that is the step ("Design a MOT") and `tool`, the page's own name ("MOT Designer"). The nav shows step numbers with the tool name underneath; `initStoryTrail()` (driven by `STORIES`) adds a step-N-of-M trail with previous/next links to each page, and the last step of one story opens the next. `NAV.measure`/`NAV.cooling` are now derived from `NAV.trapImageCool`. Changing a story means updating, together: the NAV array, the numbered cards and footer columns in `home.html`, the matching `start-here.html` section, and the page eyebrows (`test_build_story_order` checks all four stories).
 
 **To add a new tool: add one entry to the right category array** (`build`, `measure`, `cooling`, `quantum`, or `career`). `NAV.tools` is auto-derived — nothing else needs to change.
 
@@ -129,34 +129,37 @@ const NAV = {
     { key: 'cavity-qed',       step: 9,  label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
     { key: 'lab-techniques',   step: 10, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
   ],
-  measure: [
-    { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#2c4a63', href: 'pages/imaging-calculator.html' },
-    { key: 'release-recapture',  label: 'Single-atom Temperature',  kind: 'Simulator', icon: '🎯', color: '#3f5d3f', href: 'pages/release-recapture.html'  },
-    { key: 'tof-calculator',     label: 'MOT Temperature',     kind: 'Calculator', icon: '🌡️', color: '#a13c1c', href: 'pages/tof-calculator.html'     },
-    { key: 'lab-calculators',     label: 'Quick Lab Console',      kind: 'Calculator', icon: '🧮', color: '#2c4a63', href: 'pages/lab-calculators.html'    },
-    { key: 'absorption-imaging', label: 'Absorption Imaging Lab',       kind: 'Imaging lab', icon: '🌑', color: '#3f5d3f', href: 'pages/absorption-imaging.html'  },
+  // Trap, Image & Cool continues the story with a first experiment: cool and image a cloud, then one atom, then run the cycle.
+  trapImageCool: [
+    { key: 'cooling-simulator',  step: 1,  label: 'Cool atoms with laser light',          tool: 'Laser Cooling Simulator', kind: 'Simulator', icon: '❄️', color: '#a13c1c', href: 'pages/cooling-simulator.html' },
+    { key: 'absorption-imaging', step: 2,  label: 'Image the atom cloud',                 tool: 'Absorption Imaging Lab',  kind: 'Imaging lab', icon: '🌑', color: '#2c4a63', href: 'pages/absorption-imaging.html' },
+    { key: 'tof-calculator',     step: 3,  label: 'Measure the cloud’s temperature',      tool: 'MOT Temperature',         kind: 'Calculator', icon: '🌡️', color: '#3f5d3f', href: 'pages/tof-calculator.html' },
+    { key: 'imaging-calculator', step: 4,  label: 'See a single atom',                    tool: 'Single-atom Imaging',     kind: 'Calculator', icon: '📷', color: '#a13c1c', href: 'pages/imaging-calculator.html' },
+    { key: 'release-recapture',  step: 5,  label: 'Measure a single atom’s temperature',  tool: 'Single-atom Temperature', kind: 'Simulator', icon: '🎯', color: '#2c4a63', href: 'pages/release-recapture.html' },
+    { key: 'laser-cooling',      step: 6,  label: 'Cool a single atom to its ground state', tool: 'Single-atom Cooling',     kind: 'Deep dive', icon: '🧊', color: '#3f5d3f', href: 'pages/laser-cooling.html' },
+    { key: 'virtual-lab',        step: 7,  label: 'Run a full experimental cycle',        tool: 'Virtual Tweezer Lab',     kind: 'Simulator', icon: '🧩', color: '#a13c1c', href: 'pages/virtual-lab.html' },
+    { key: 'lab-calculators',    step: 8,  label: 'Do the everyday lab math',             tool: 'Quick Lab Console',       kind: 'Calculator', icon: '🧮', color: '#2c4a63', href: 'pages/lab-calculators.html' },
   ],
-  cooling: [
-    { key: 'laser-cooling',      label: 'Single-atom Cooling',     kind: 'Deep dive', icon: '🧊', color: '#a13c1c', href: 'pages/laser-cooling.html' },
-    { key: 'cooling-simulator', label: 'Laser Cooling Simulator',   kind: 'Simulator', icon: '❄️', color: '#2c4a63', href: 'pages/cooling-simulator.html' },
-  ],
+  // Quantum Computing turns the trapped atoms into a processor: qubits, coherence, gates, errors, circuits, then links.
   quantum: [
-    { key: 'decoherence-lab',    label: 'Decoherence Lab',       kind: 'Deep dive', icon: '🌀', color: '#a13c1c', href: 'pages/decoherence-lab.html' },
-    { key: 'learn-quantum',      label: 'Quantum Computing Learning Path',              kind: 'Learning path', icon: '🔵', color: '#2c4a63', href: 'pages/learn-quantum.html' },
-    { key: 'rydberg-calculator', label: 'Rydberg Blockade Lab',  kind: 'Calculator', icon: '🔮', color: '#3f5d3f', href: 'pages/rydberg-calculator.html' },
-    { key: 'fidelity-budget',    label: 'Rydberg Gate Error Budget', kind: 'Calculator', icon: '📊', color: '#a13c1c', href: 'pages/fidelity-budget.html' },
-    { key: 'rb-explorer',        label: 'Randomized Benchmarking',     kind: 'Deep dive', icon: '📈', color: '#2c4a63', href: 'pages/rb-explorer.html' },
-    { key: 'dd-playground',      label: 'Dynamical Decoupling', kind: 'Simulator', icon: '🛡️', color: '#3f5d3f', href: 'pages/dd-playground.html' },
-    { key: 'remote-entanglement', label: 'Remote Entanglement', kind: 'Deep dive', icon: '🔗', color: '#a13c1c', href: 'pages/remote-entanglement.html' },
+    { key: 'learn-quantum',       step: 1,  label: 'Learn how qubits work',                tool: 'Quantum Computing Learning Path', kind: 'Learning path', icon: '🔵', color: '#a13c1c', href: 'pages/learn-quantum.html' },
+    { key: 'decoherence-lab',     step: 2,  label: 'Watch a qubit lose coherence',         tool: 'Decoherence Lab',                 kind: 'Deep dive', icon: '🌀', color: '#2c4a63', href: 'pages/decoherence-lab.html' },
+    { key: 'dd-playground',       step: 3,  label: 'Protect qubits with decoupling pulses',    tool: 'Dynamical Decoupling',            kind: 'Simulator', icon: '🛡️', color: '#3f5d3f', href: 'pages/dd-playground.html' },
+    { key: 'rydberg-calculator',  step: 4,  label: 'Entangle atoms with Rydberg blockade', tool: 'Rydberg Blockade Lab',            kind: 'Calculator', icon: '🔮', color: '#a13c1c', href: 'pages/rydberg-calculator.html' },
+    { key: 'fidelity-budget',     step: 5,  label: 'Budget the gate errors',               tool: 'Rydberg Gate Error Budget',       kind: 'Calculator', icon: '📊', color: '#2c4a63', href: 'pages/fidelity-budget.html' },
+    { key: 'rb-explorer',         step: 6,  label: 'Benchmark the gates',                  tool: 'Randomized Benchmarking',         kind: 'Deep dive', icon: '📈', color: '#3f5d3f', href: 'pages/rb-explorer.html' },
+    { key: 'atom-processor',      step: 7,  label: 'Run a circuit on moving atoms',        tool: 'Zoned Atom Processor',            kind: 'Simulator', icon: '🎛️', color: '#a13c1c', href: 'pages/atom-processor.html' },
+    { key: 'remote-entanglement', step: 8,  label: 'Link processors with photons',         tool: 'Remote Entanglement',             kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/remote-entanglement.html' },
   ],
+  // Career & Literature: read the field, find a group, map the industry, compare the platforms.
   career: [
-    { key: 'amo-groups',     label: 'AMO Group Finder',        kind: 'Career map', icon: '🌍', color: '#3f5d3f', href: 'pages/amo-groups.html' },
-    { key: 'paper-syllabus', label: 'AMO Paper Roadmap',           kind: 'Syllabus', icon: '📚', color: '#3f5d3f', href: 'pages/paper-syllabus.html' },
-    { key: 'qc-landscape',   label: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#2c4a63', href: 'pages/qc-landscape.html' },
-    { key: 'rb87-vs-yb171',  label: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#a13c1c', href: 'pages/rb87-vs-yb171.html' },
-    { key: 'quantinuum-vs-ionq', label: 'Quantinuum vs IonQ', kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/quantinuum-vs-ionq.html' },
-    { key: 'google-vs-ibm', label: 'Google vs IBM', kind: 'Deep dive', icon: '🖥️', color: '#a13c1c', href: 'pages/google-vs-ibm.html' },
-    { key: 'psiquantum-vs-xanadu', label: 'PsiQuantum vs Xanadu', kind: 'Deep dive', icon: '💡', color: '#3f5d3f', href: 'pages/psiquantum-vs-xanadu.html' },
+    { key: 'paper-syllabus',       step: 1,  label: 'Read the papers that built the field', tool: 'AMO Paper Roadmap',         kind: 'Syllabus', icon: '📚', color: '#a13c1c', href: 'pages/paper-syllabus.html' },
+    { key: 'amo-groups',           step: 2,  label: 'Find a research group',                tool: 'AMO Group Finder',          kind: 'Career map', icon: '🌍', color: '#2c4a63', href: 'pages/amo-groups.html' },
+    { key: 'qc-landscape',         step: 3,  label: 'Map the quantum industry',             tool: 'Quantum Industry Map',      kind: 'Landscape', icon: '💻', color: '#3f5d3f', href: 'pages/qc-landscape.html' },
+    { key: 'rb87-vs-yb171',        step: 4,  label: 'Compare neutral-atom qubits',          tool: 'Rb vs Yb Qubit Comparison', kind: 'Deep dive', icon: '⚖️', color: '#a13c1c', href: 'pages/rb87-vs-yb171.html' },
+    { key: 'quantinuum-vs-ionq',   step: 5,  label: 'Compare trapped-ion companies',        tool: 'Quantinuum vs IonQ',        kind: 'Deep dive', icon: '🔗', color: '#2c4a63', href: 'pages/quantinuum-vs-ionq.html' },
+    { key: 'google-vs-ibm',        step: 6,  label: 'Compare superconducting companies',    tool: 'Google vs IBM',             kind: 'Deep dive', icon: '🖥️', color: '#3f5d3f', href: 'pages/google-vs-ibm.html' },
+    { key: 'psiquantum-vs-xanadu', step: 7,  label: 'Compare photonic companies',           tool: 'PsiQuantum vs Xanadu',      kind: 'Deep dive', icon: '💡', color: '#a13c1c', href: 'pages/psiquantum-vs-xanadu.html' },
   ],
   learn: [
     { key: 'bloch-sphere',       label: 'Bloch Sphere',          icon: '🔵',  href: 'pages/learn-quantum.html#bloch'        },
@@ -215,7 +218,7 @@ Every page (except home.html) calls this at the end of `<body>`:
 </script>
 ```
 
-**Cache busting:** The `?v=N` suffix forces browsers to reload files after changes. As of 2026-11-21 the live values are `main.js?v=46` and `styles.css?v=33` on all 36 HTML files (home, 404 and the 34 pages) — the `v=13` in the templates and sed lines in this file is illustrative, so grep for the live value before bumping. Page-local scripts carry their own `?v=N` and are bumped only where referenced: `hero3d.js?v=2` (home.html), `orbit3d.js?v=2` (learn-quantum, decoherence-lab, dd-playground, tweezer-designer, mot-designer, amo-groups, qc-landscape, paper-syllabus), `globe3d.js?v=2` (amo-groups, qc-landscape), `syllabus3d.js?v=2` (paper-syllabus), `tweezer3d.js?v=1` (tweezer-designer), `collection3d.js?v=1` (imaging-calculator), `cavity3d.js?v=1` (cavity-qed), `sitemap3d.js?v=2` (start-here), `cloud3d.js?v=1` (release-recapture, tof-calculator), `rydberg3d.js?v=1` (rydberg-calculator), `surface3d.js?v=1` (zernike), `atom-explorer.js?v=1` (atom-library), `motion.js?v=2` (learn-quantum, dd-playground, decoherence-lab, rb87-vs-yb171, mot-designer, zernike, cooling-simulator, laser-locking, imaging-calculator, vacuum-systems, lab-techniques, laser-cooling, rydberg-calculator, remote-entanglement, cavity-qed, fidelity-budget), `canvas-ink.js?v=2` (atom-library, zernike, cooling-simulator, rb-explorer, laser-locking, fidelity-budget, imaging-calculator, vacuum-systems, lab-calculators, lab-techniques, laser-cooling, rydberg-calculator). Comparison pages: `versus.js?v=2` (all four vs pages), `vs-ions.js?v=1`, `vs-lattice.js?v=2`, `vs-photons.js?v=1`, `vs-erasure.js?v=1` (one each), and `orbit3d.js?v=2` on quantinuum-vs-ionq. `orbit3d.js?v=2` is now also on imaging-calculator, cavity-qed, start-here, release-recapture, tof-calculator, rydberg-calculator and zernike. **Increment to `v=14` (then `v=15`, etc.) whenever you make significant changes to `main.js` or `styles.css`** so users don't get stale cached files. Use sed to update all pages at once — **include `404.html`, it has been missed before and drifted out of sync**:
+**Cache busting:** The `?v=N` suffix forces browsers to reload files after changes. As of 2026-11-21 the live values are `main.js?v=47` and `styles.css?v=34` on all 36 HTML files (home, 404 and the 34 pages) — the `v=13` in the templates and sed lines in this file is illustrative, so grep for the live value before bumping. Page-local scripts carry their own `?v=N` and are bumped only where referenced: `hero3d.js?v=2` (home.html), `orbit3d.js?v=2` (learn-quantum, decoherence-lab, dd-playground, tweezer-designer, mot-designer, amo-groups, qc-landscape, paper-syllabus), `globe3d.js?v=2` (amo-groups, qc-landscape), `syllabus3d.js?v=2` (paper-syllabus), `tweezer3d.js?v=1` (tweezer-designer), `collection3d.js?v=1` (imaging-calculator), `cavity3d.js?v=1` (cavity-qed), `sitemap3d.js?v=2` (start-here), `cloud3d.js?v=1` (release-recapture, tof-calculator), `rydberg3d.js?v=1` (rydberg-calculator), `surface3d.js?v=1` (zernike), `atom-explorer.js?v=1` (atom-library), `motion.js?v=2` (learn-quantum, dd-playground, decoherence-lab, rb87-vs-yb171, mot-designer, zernike, cooling-simulator, laser-locking, imaging-calculator, vacuum-systems, lab-techniques, laser-cooling, rydberg-calculator, remote-entanglement, cavity-qed, fidelity-budget), `canvas-ink.js?v=2` (atom-library, zernike, cooling-simulator, rb-explorer, laser-locking, fidelity-budget, imaging-calculator, vacuum-systems, lab-calculators, lab-techniques, laser-cooling, rydberg-calculator). Comparison pages: `versus.js?v=2` (all four vs pages), `vs-ions.js?v=1`, `vs-lattice.js?v=2`, `vs-photons.js?v=1`, `vs-erasure.js?v=1` (one each), and `orbit3d.js?v=2` on quantinuum-vs-ionq. `orbit3d.js?v=2` is now also on imaging-calculator, cavity-qed, start-here, release-recapture, tof-calculator, rydberg-calculator and zernike. **Increment to `v=14` (then `v=15`, etc.) whenever you make significant changes to `main.js` or `styles.css`** so users don't get stale cached files. Use sed to update all pages at once — **include `404.html`, it has been missed before and drifted out of sync**:
 ```bash
 sed -i '' 's/main\.js?v=13/main.js?v=14/g' pages/*.html home.html 404.html
 sed -i '' 's/styles\.css?v=13/styles.css?v=14/g' pages/*.html home.html 404.html
@@ -323,7 +326,7 @@ Always grep-verify after bumping: `grep -roh 'main\.js?v=[0-9]*' pages/*.html ho
 
 Notes on the current template (this evolved since the guide was first written):
 - The hero is `.page-hero-2col` — a text column (`.page-hero-text`) plus an optional animated SVG illustration column (`.page-hero-anim`). The old single-column `.page-hero-inner` / `.page-eyebrow` / two `.page-tag` spans / `.page-title` pattern is deprecated; do not copy it into new pages.
-- The eyebrow is now **one** pill (`.page-hero-eyebrow`) reading `"{icon} {Category} {NN} · {Tool Name}"` (e.g. `"🧲 Build 03 · MOT Designer"`), where `{Category}` is the NAV category (Build/Measure/Cooling/Quantum/Career) and `{NN}` is that tool's position within the category. **Build pages are the exception** (since 2026-11-21): their eyebrow carries the story step, not the tool name, e.g. `"🧲 Build 06 · Design a MOT"`, while the `<h1>` keeps the tool name.
+- The eyebrow is now **one** pill (`.page-hero-eyebrow`) reading `"{icon} {Category} {NN} · {Tool Name}"` (e.g. `"🧲 Build 03 · MOT Designer"`), where `{Category}` is the NAV category (Build/Measure/Cooling/Quantum/Career) and `{NN}` is that tool's position within the category. **Since 2026-11-21 the eyebrow carries the story step, not the tool name** (e.g. `"🧲 Build 06 · Design a MOT"`, `"🔗 Quantum 08 · Link processors with photons"`), while the `<h1>` keeps the tool name.
 - The `<h1>` uses a `.grad-text` span for a two-color gradient highlight on part of the title, not a numbered `<span class="accent">01</span>` prefix — the numbered `.accent` prefix is used for **section titles inside** `.page-content`, not the page `<h1>` itself.
 - Title tag and all social meta now say **"— AMO Toolkit"**, not "— AMO Career" (site rebrand; the repo/folder name `amo-career` did not change, only on-site branding and the custom domain `amotoolkit.com`).
 
