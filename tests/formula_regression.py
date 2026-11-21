@@ -290,12 +290,12 @@ def test_hand_typed_counts_match_content() -> None:
     # Quantum Industry Map: one ↗ link per company / lab card
     qc = read("pages/qc-landscape.html")
     n_co = qc.count(" ↗</a></h4>")
-    assert_contains("pages/qc-landscape.html", f"{n_co} Companies &amp; Labs")
-    assert_contains("pages/qc-landscape.html", f"{n_co} companies &amp; labs")
+    assert_contains("pages/qc-landscape.html", f'<span data-count="{n_co}">{n_co}</span></div>\n        <div class="stat-label">Companies &amp; labs</div>')
+    assert_contains("pages/qc-landscape.html", f'<a class="company-pill" href="#company-globe">{n_co} companies &amp; labs</a>')
     # platform families = the deep-dive tabs
     n_plat = len(re.findall(r'<div class="tab-panel[^"]*" data-tab="\w+" data-group="platforms"', qc))
     assert n_plat == 6, n_plat
-    assert_contains("pages/qc-landscape.html", f'<span class="company-pill">{n_plat} Platforms</span>')
+    assert_contains("pages/qc-landscape.html", f'<a class="company-pill" href="#snapshot">{n_plat} platforms side by side</a>')
     assert_contains("home.html", f'<span class="chip">{n_plat} platforms</span>')
     # home hero no-JS fallback = NAV.tools length (main.js updates it at runtime)
     nav = read("js/main.js")
@@ -861,6 +861,39 @@ def test_group_finder_rebuild() -> None:
     assert 'role="dialog" aria-modal="true"' in page and "if (e.key === 'Escape') closePanel();" in page
 
 
+def test_industry_map_rebuild() -> None:
+    """Quantum Industry Map (2026-11-21): durable material first, news last; sourced headline numbers;
+    no duplicate qubit-count chart; corrected platform facts."""
+    import re
+    page = read("pages/qc-landscape.html")
+    assert page.count("<!--") == page.count("-->")                      # an unclosed comment once hid four sections
+    order = ["divincenzo", "analog-digital", "snapshot", "comparison", "company-globe", "platform-deep-dives",
+             "nisq", "roadmap", "neutral-roadmap", "flash-points", "investment", "career", "references"]
+    pos = [page.index(f'id="{i}"') for i in order]
+    assert pos == sorted(pos)
+    for n, i in enumerate(order, 1):
+        sec = page[page.index(f'id="{i}"'):]
+        assert sec.index(f'<span class="sec-n">{n:02d}</span>') < 160, i
+    for href in ["#divincenzo", "#snapshot", "#company-globe", "#roadmap", "#flash-points", "#career", "#nisq"]:
+        assert f'href="{href}"' in page, href
+    # headline numbers carry their source
+    for src in ["Manetsch et al., <em>Nature</em> 2025", "Quantinuum Helios, <em>Nature</em> 2026", "Harvard/QuEra, <em>Nature</em> 2026"]:
+        assert src in page, src
+    # removed: duplicate log-scale race chart, a projected bar, unsourced or wrong claims
+    for bad in ["qubitRaceCanvas", "PsiQ (proj)", "Estimated timeline to cryptographically relevant QC: 2035–2040",
+                "millisecond-to-hour", "Oxford–Delft–Eindhoven", "T₂* &gt; 10 ms", "Largest neutral-atom funding round ever",
+                "Series B (2023)", "Berkeley-based.", "Sr-88 clock-transition", "the most complex fault-tolerant operation on any platform to date",
+                "D-Wave's 7,000+", "Qubit count: 32–56", "Updated to <strong", "&gt;<span class=\"money\">$20B</span>"]:
+        assert bad not in page, bad
+    for good in ["arxiv.org/abs/2411.11822", "arxiv.org/abs/2604.25987", "Listed on the NYSE since Feb 2026",
+                 "financing led by Google and SoftBank (Feb 2025)", "Veldhorst et al.", "Abobeih et al.", "Stolk et al.",
+                 "type:'logarithmic', min:10, max:10000"]:
+        assert good in page, good
+    # flash points newest first
+    badges = re.findall(r'<div class="flash-badge"[^>]*>([^<]+)</div>', page)
+    assert badges[:2] == ["Jun 2026", "Nov 2025"], badges
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -967,6 +1000,7 @@ def main() -> None:
         test_remote_entanglement_figures,
         test_build_story_order,
         test_group_finder_rebuild,
+        test_industry_map_rebuild,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

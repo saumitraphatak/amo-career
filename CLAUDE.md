@@ -566,7 +566,7 @@ The animated canvases (MZI, live Rabi sphere + trace, Bell, Grover, Rydberg arra
 - **`rb87-vs-yb171.html`** — Side-by-side platform comparison (Rb87 alkali vs Yb171 alkaline-earth-like) for choosing a qubit species; lives under the `career` NAV category as a "deep dive"
 - Clebsch-Gordan coefficients live inside **`lab-calculators.html`**
 - PDH error-signal material lives inside **`laser-locking.html`**
-- **`qc-landscape.html`** — Company profiles (IonQ, Quantinuum, IBM, Google, PsiQuantum, etc.), job roles, skills mapping for AMO physicists, roadmaps. The "Where the Hardware Is Built" globe (before Platform Deep Dives) has one entry per deep-dive company card in an inline `SITES` array; add/remove an entry whenever a company card is added/removed.
+- **`qc-landscape.html`** — Company profiles (IonQ, Quantinuum, IBM, Google, PsiQuantum, etc.), job roles, skills mapping for AMO physicists, roadmaps. Since 2026-11-21 the 13 numbered sections run durable → news: 01 DiVincenzo · 02 analog vs digital · 03 snapshot table · 04 comparison (radar + log-scale qubit counts + fidelities) · 05 company globe · 06 deep dives · 07 where the field stands · 08 FT timeline · 09 neutral-atom milestones · 10 flash points (newest first) · 11 investment · 12 AMO → industry · 13 references. Section ids are linked from the hero pills and the "How this page is laid out" panel; the stats strip carries a source line per number. `test_industry_map_rebuild` checks the order and the corrected facts. The "Where the Hardware Is Built" globe (before Platform Deep Dives) has one entry per deep-dive company card in an inline `SITES` array; add/remove an entry whenever a company card is added/removed.
 
 ---
 
