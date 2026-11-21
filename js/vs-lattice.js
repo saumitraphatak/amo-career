@@ -205,7 +205,7 @@
       '.lat-roll{font:inherit;font-size:.78rem;font-weight:600;color:var(--text-primary);background:transparent;border:1px solid var(--border-med);border-radius:999px;padding:5px 14px;cursor:pointer;white-space:nowrap}',
       '.lat-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}@media(max-width:760px){.lat-row{grid-template-columns:1fr}.lat-top{flex-direction:column}}',
       '.lat-panel{border:1px solid var(--border);border-radius:12px;padding:.8rem;background:color-mix(in srgb,var(--c) 4%,transparent)}',
-      '.lat-h b{display:block;color:var(--c);font-size:.95rem}.lat-h span{font-size:.74rem;color:var(--text-muted)}',
+      '.lat-h b{display:block;color:color-mix(in srgb,var(--c) 50%,var(--text-primary));font-size:.95rem}.lat-h span{font-size:.74rem;color:var(--text-muted)}',
       '.lat-svg{display:block;width:100%;height:auto;max-height:300px;margin:.4rem 0}',
       '.lat-e{stroke:color-mix(in srgb,var(--text-muted) 55%,transparent);stroke-width:3;stroke-linecap:round;transition:stroke .2s,stroke-width .2s}',
       '.lat-e.nb{stroke:var(--c);stroke-width:5}',
@@ -220,7 +220,7 @@
       '@keyframes lat-pop{from{r:6}to{r:10}}',
       '.lat-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;text-align:center}',
       '.lat-stats b{display:block;font-family:var(--font-mono);font-size:1.15rem;color:var(--text-primary)}.lat-stats span{font-size:.68rem;color:var(--text-muted)}',
-      '.lat-msg{min-height:2.6em;margin-top:.5rem;font-size:.8rem;color:var(--text-secondary)}.lat-msg b{color:var(--c)}',
+      '.lat-msg{min-height:2.6em;margin-top:.5rem;font-size:.8rem;color:var(--text-secondary)}.lat-msg b{color:color-mix(in srgb,var(--c) 50%,var(--text-primary))}',
       '.lat-note{font-size:.74rem;color:var(--text-muted);margin:.8rem 0 0;line-height:1.55}',
       '@media (prefers-reduced-motion: reduce){.lat-e,.lat-q{transition:none!important;animation:none!important}}'
     ].join('\n');

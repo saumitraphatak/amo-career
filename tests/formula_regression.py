@@ -939,6 +939,37 @@ def test_paper_roadmap_rebuild() -> None:
     assert 'class="paper-tag tag-preprint"' in page
 
 
+def test_career_comparisons_rebuild() -> None:
+    """Career comparison pages (2026-11-21): standard hero, an at-a-glance scoreboard built from the comparison
+    table, and facts that were wrong (a valuation quoted in A$ as US$, Sr numbers attributed to Yb, IPO terms)."""
+    import re
+    vs = read("js/versus.js")
+    assert "V.glance = function" in vs and "parseEdges(opts.table" in vs
+    for page in ("rb87-vs-yb171", "quantinuum-vs-ionq", "google-vs-ibm", "psiquantum-vs-xanadu"):
+        html = read(f"pages/{page}.html")
+        assert html.count("<!--") == html.count("-->"), page
+        assert 'class="page-hero-eyebrow"' in html and "<h1 style=" not in html, page
+        h1 = re.search(r"<h1>(.*?)</h1>", html, re.S).group(1)
+        assert not re.search(r"\s,", h1), page                                   # the old "IonQ , Trapped-Ion…" comma
+        assert 'id="vs-glance-mount"' in html and "AMOVersus.glance(mount" in html and "versus.js?v=3" in html, page
+        assert 'class="vs-checked"' in html, page
+        ov = html.index('id="overview"')
+        assert ov < html.index('id="vs-glance-mount"') < html.index("</section>", ov), page
+    rb = read("pages/rb87-vs-yb171.html")
+    assert "arXiv:2411.11822" in rb and "24 entangled logical qubits" in rb          # Yb logical qubits exist (preprint)
+    assert "&gt;40 s storage/memory claimed" not in rb and "Phoenix 1180" not in rb   # 42 s T2 echo was 87Sr (Barnes 2022)
+    assert "Barnes et al." in rb and "10.1038/s41467-022-29977-z" in rb
+    assert "48 logical qubits (color code)" not in rb and "Berkeley-based startup" not in rb
+    q = read("pages/quantinuum-vs-ionq.html")
+    assert "26.5M shares" not in q and "28M shares at" in q
+    assert q.index('id="roadmaps"') < q.index('id="business"') < q.index('id="companies"')
+    g = read("pages/google-vs-ibm.html")
+    assert "114-year-old" not in g and "over five years" in g
+    ps = read("pages/psiquantum-vs-xanadu.html")
+    assert "May 2026 private round" not in ps and "usd: 10.5" not in ps and "Series E, Sep 2025" in ps
+    assert "<span class=\"money\">$10.5B</span> valuation" not in ps
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1047,6 +1078,7 @@ def main() -> None:
         test_group_finder_rebuild,
         test_industry_map_rebuild,
         test_paper_roadmap_rebuild,
+        test_career_comparisons_rebuild,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

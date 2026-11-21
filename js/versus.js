@@ -13,6 +13,9 @@
        ("if it scales", "pending review", "if realized") count half and are
        drawn hatched. Readers pick which categories matter to them.
 
+   AMOVersus.glance(mountEl, opts) "At a glance" — one card per category of the
+       same table, placed early on the page (answer first).
+
    AMOVersus.race(mountEl, opts)  "Race replay" — the two Section-03
        timelines on one shared time axis, with a scrubbable playhead.
        Roadmap/target items are drawn hollow and dashed.
@@ -130,7 +133,7 @@
       fill.style.background = pull < 0 ? 'var(--vs-a)' : 'var(--vs-b)';
       var v = box.querySelector('.vs-verdict');
       if (Math.abs(sa - sb) < 0.75) v.innerHTML = 'Across these categories it’s <b>roughly even</b> (' + fmt(sa) + ' vs ' + fmt(sb) + ', ' + ev.length + ' even or different).';
-      else { var w = sa > sb ? A : B; v.innerHTML = 'Across these categories the table leans <b style="color:' + w.color + '">' + esc(w.name) + '</b> (' + fmt(Math.max(sa, sb)) + ' vs ' + fmt(Math.min(sa, sb)) + ', ' + ev.length + ' even or different).'; }
+      else { var w = sa > sb ? A : B; v.innerHTML = 'Across these categories the table leans <b style="color:color-mix(in srgb,' + w.color + ' 50%,var(--text-primary))">' + esc(w.name) + '</b> (' + fmt(Math.max(sa, sb)) + ' vs ' + fmt(Math.min(sa, sb)) + ', ' + ev.length + ' even or different).'; }
       box.querySelector('.vs-list.a').innerHTML = listHTML(a, esc(A.name) + ' edge');
       box.querySelector('.vs-list.b').innerHTML = listHTML(b, esc(B.name) + ' edge');
       box.querySelector('.vs-list.even').innerHTML = listHTML(ev, 'Even / different');
@@ -267,10 +270,69 @@
     return { lanes: lanes, setT: setT };
   };
 
+  /* ═════════ At a glance ═════════
+     AMOVersus.glance(mountEl, {table, sides, tableHref})  One card per category of the
+     Full Head-to-Head table: who the page's own Edge calls favour, as a split bar.
+     Placed early on the page so a reader gets the answer first; every card jumps
+     to its rows in the table. Same parsing (and the same half-weight for
+     conditional calls) as the tug of war, so the two can never disagree. */
+  V.glance = function (mount, opts) {
+    if (!mount || !opts.table) return null;
+    var sides = opts.sides, A = sides[0], B = sides[1], rows = V.parseEdges(opts.table, sides);
+    if (!rows.length) return null;
+    var cats = []; rows.forEach(function (r) { if (cats.indexOf(r.cat) < 0) cats.push(r.cat); });
+    function w(r) { return r.cond ? 0.5 : 1; }
+    function fmt(x) { return (Math.round(x * 2) / 2).toString().replace('.5', '½'); }
+    var box = el('div', 'vs-glance no-math');
+    box.style.setProperty('--vs-a', A.color); box.style.setProperty('--vs-b', B.color);
+    var tot = { a: 0, b: 0, e: 0 };
+    var cards = cats.map(function (c, ci) {
+      var rs = rows.filter(function (r) { return r.cat === c; });
+      var a = 0, b = 0, e = 0;
+      rs.forEach(function (r) { if (r.who === A.key) a += w(r); else if (r.who === B.key) b += w(r); else e += 1; });
+      tot.a += a; tot.b += b; tot.e += e;
+      var lead = Math.abs(a - b) < 0.75 ? null : (a > b ? A : B);
+      var n = a + b + e || 1;
+      return '<button type="button" class="vs-gl-card' + (lead ? '' : ' even') + '" data-i="' + ci + '"' + (lead ? ' style="--lead:' + lead.color + '"' : '') + '>' +
+        '<span class="vs-gl-cat">' + esc(c) + '</span>' +
+        '<span class="vs-gl-who">' + (lead ? esc(lead.name) + ' leads' : 'Even or different') + '</span>' +
+        '<span class="vs-gl-bar" aria-hidden="true"><i class="a" style="width:' + (100 * a / n) + '%"></i><i class="e" style="width:' + (100 * e / n) + '%"></i><i class="b" style="width:' + (100 * b / n) + '%"></i></span>' +
+        '<span class="vs-gl-n">' + esc(A.name) + ' ' + fmt(a) + ' · ' + esc(B.name) + ' ' + fmt(b) + (e ? ' · even ' + e : '') + ' <span class="vs-gl-rows">(' + rs.length + ' row' + (rs.length > 1 ? 's' : '') + ')</span></span>' +
+      '</button>';
+    });
+    var verdict = Math.abs(tot.a - tot.b) < 0.75 ? 'Over the whole table the calls are <b>roughly even</b>'
+      : 'Over the whole table the calls lean <b>' + esc(tot.a > tot.b ? A.name : B.name) + '</b>';
+    box.innerHTML =
+      '<div class="vs-gl-head"><h3>' + esc(opts.title || 'Who leads where, at a glance') + '</h3>' +
+      '<p>' + verdict + ' (' + esc(A.name) + ' ' + fmt(tot.a) + ', ' + esc(B.name) + ' ' + fmt(tot.b) + ', ' + tot.e + ' even or different), but the categories matter more than the total. ' +
+      'Each card counts the <em>Edge</em> calls in one block of the <a href="' + (opts.tableHref || '#comparison') + '">full comparison table</a>; click one to see its rows.</p></div>' +
+      '<div class="vs-gl-grid">' + cards.join('') + '</div>' +
+      '<p class="vs-note">Conditional calls (“if it scales”, “pending review”) count half. Rows are not equally important: read the rows before quoting a winner.</p>';
+    box.querySelectorAll('.vs-gl-card').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var c = cats[+btn.dataset.i], first = rows.filter(function (r) { return r.cat === c; })[0];
+        if (first) flash(first.tr);
+      });
+    });
+    mount.appendChild(box);
+    return { rows: rows, totals: tot };
+  };
+
   /* shared styles (page accent colours come from --vs-a / --vs-b and inline styles) */
   if (!document.getElementById('versus-style')) {
     var st = document.createElement('style'); st.id = 'versus-style';
     st.textContent = [
+      '.vs-glance{border:1px solid var(--border);border-radius:var(--r-lg);background:var(--bg-card);padding:var(--sp-5);margin:var(--sp-6) 0 0}',
+      '.vs-gl-head h3{margin:0 0 .3rem;font-size:1.08rem}.vs-gl-head p{margin:0;color:var(--text-secondary);font-size:.86rem;line-height:1.6;max-width:78ch}',
+      '.vs-gl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.6rem;margin-top:.9rem}',
+      '.vs-gl-card{font:inherit;text-align:left;display:flex;flex-direction:column;gap:.3rem;padding:.65rem .75rem;border-radius:10px;cursor:pointer;color:var(--text-primary);background:color-mix(in srgb,var(--lead,var(--text-muted)) 7%,transparent);border:1px solid color-mix(in srgb,var(--lead,var(--text-muted)) 35%,transparent);border-top:3px solid var(--lead,var(--border-med));transition:background .2s,transform .2s var(--ease-out,ease)}',
+      '.vs-gl-card:hover{background:color-mix(in srgb,var(--lead,var(--text-muted)) 13%,transparent);transform:translateY(-1px)}',
+      '.vs-gl-card.even{border-top-style:dashed}',
+      '.vs-gl-cat{font-family:var(--font-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}',
+      '.vs-gl-who{font-size:.92rem;font-weight:700;color:var(--text-primary)}',
+      '.vs-gl-bar{display:flex;height:7px;border-radius:999px;overflow:hidden;background:color-mix(in srgb,var(--text-muted) 14%,transparent)}',
+      '.vs-gl-bar i{display:block;height:100%}.vs-gl-bar i.a{background:var(--vs-a)}.vs-gl-bar i.b{background:var(--vs-b)}.vs-gl-bar i.e{background:color-mix(in srgb,var(--text-muted) 40%,transparent)}',
+      '.vs-gl-n{font-size:.74rem;color:var(--text-secondary)}.vs-gl-rows{color:var(--text-muted)}',
       '.vs-tug,.vs-race{border:1px solid var(--border);border-radius:var(--r-lg);background:var(--bg-card);padding:var(--sp-5);margin:0 0 var(--sp-6)}',
       '.vs-tug-head h3,.vs-race h3{margin:0 0 .3rem;font-size:1.08rem}',
       '.vs-tug-head p,.vs-race-top p{margin:0;color:var(--text-secondary);font-size:.86rem;line-height:1.6;max-width:70ch}',
@@ -280,7 +342,7 @@
       '.vs-rope{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1rem}',
       '.vs-rope-side{display:flex;flex-direction:column;align-items:center;min-width:5.5rem}',
       '.vs-rope-side .vs-rope-name{font-size:.8rem;font-weight:700}',
-      '.vs-rope-side.a .vs-rope-name{color:var(--vs-a)}.vs-rope-side.b .vs-rope-name{color:var(--vs-b)}',
+      '.vs-rope-side.a .vs-rope-name{color:color-mix(in srgb,var(--vs-a) 50%,var(--text-primary))}.vs-rope-side.b .vs-rope-name{color:color-mix(in srgb,var(--vs-b) 50%,var(--text-primary))}',
       '.vs-rope-n{font-family:var(--font-mono);font-size:1.6rem;font-weight:800;line-height:1.1;color:var(--text-primary)}',
       '.vs-rope-track{position:relative;height:14px;border-radius:999px;background:repeating-linear-gradient(115deg,color-mix(in srgb,var(--text-muted) 22%,transparent) 0 6px,color-mix(in srgb,var(--text-muted) 10%,transparent) 6px 12px)}',
       '.vs-rope-fill{position:absolute;top:0;bottom:0;border-radius:999px;opacity:.85;transition:left .7s var(--ease-out,ease),width .7s var(--ease-out,ease),background .3s}',
@@ -290,7 +352,7 @@
       '.vs-tug-lists{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem}',
       '@media(max-width:760px){.vs-tug-lists{grid-template-columns:1fr}.vs-rope{gap:.5rem}.vs-rope-side{min-width:4rem}}',
       '.vs-list-h{font-family:var(--font-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:.35rem}',
-      '.vs-list.a .vs-list-h{color:var(--vs-a)}.vs-list.b .vs-list-h{color:var(--vs-b)}',
+      '.vs-list.a .vs-list-h{color:color-mix(in srgb,var(--vs-a) 50%,var(--text-primary))}.vs-list.b .vs-list-h{color:color-mix(in srgb,var(--vs-b) 50%,var(--text-primary))}',
       '.vs-list-empty{color:var(--text-muted);font-size:.8rem}',
       '.vs-row{display:block;width:100%;text-align:left;font:inherit;background:transparent;border:1px solid var(--border);border-radius:8px;padding:.35rem .55rem;margin-bottom:.3rem;color:var(--text-primary);cursor:pointer;transition:background .2s,border-color .2s}',
       '.vs-row:hover{background:var(--bg-card-hover);border-color:var(--border-med)}',

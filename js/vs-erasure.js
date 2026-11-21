@@ -129,7 +129,7 @@
       '.era-bar i{display:block;width:22px;height:12px;border-radius:3px;background:color-mix(in srgb,var(--text-muted) 18%,transparent);transition:background .3s}',
       '.era-bar i.e{background:var(--era-flag)}.era-bar i.t{background:#ef4444}.era-bar i.over{outline:1px dashed #ef4444;outline-offset:1px}',
       '.era-limit{display:block;width:2px;height:20px;background:var(--text-primary);margin:0 3px}',
-      '.era-v{font-family:var(--font-mono);font-size:.76rem;color:var(--text-secondary)}.era-v .ok{color:#16a34a;font-weight:700}.era-v .no{color:#ef4444;font-weight:700}',
+      '.era-v{font-family:var(--font-mono);font-size:.76rem;color:var(--text-secondary)}.era-v .ok{color:color-mix(in srgb,#16a34a 60%,var(--text-primary));font-weight:700}.era-v .no{color:color-mix(in srgb,#ef4444 60%,var(--text-primary));font-weight:700}',
       '.era-note{font-size:.74rem;color:var(--text-muted);margin:.9rem 0 0;line-height:1.55}',
       '.era-k{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}.era-k.flag{background:var(--era-flag)}.era-k.hid{background:#ef4444}',
       '@media (prefers-reduced-motion: reduce){.era-err.fresh{animation:none}}'

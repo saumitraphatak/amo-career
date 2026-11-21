@@ -315,3 +315,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **New:** 01 Choose how to read (working track buttons with counts, search across all stages, hide-read toggle, progress, copy/download the list) → 02 stages (tab counts follow the filters) → 03 time tower. Ticks persist per browser; track and search persist in the URL.
 - Also: atom-library's Chomaz citation said RMP (it is Rep. Prog. Phys.).
 - main.js v49 on all 36 HTML files. Tests: OK 35 (new `test_paper_roadmap_rebuild`); smoke clean; contrast unchanged; dark, light and 390 px, filters, ticks, download, URL restore and tower reveal checked in a browser. Search index rebuilt.
+
+## 2026-11-21: the four Career comparison pages ("do the same for other remaining pages of Career and literature")
+- **All four (Rb vs Yb, Quantinuum vs IonQ, Google vs IBM, PsiQuantum vs Xanadu):** standard hero (one eyebrow pill instead of three, h1 without the dangling ", … Showdown" comma, one description, a dated "numbers checked" line); new "Who leads where, at a glance" scoreboard at the end of section 01, built by `AMOVersus.glance` from the same Edge column as the tug of war; side-colour text in the shared widgets now passes contrast in both themes.
+- **Facts fixed:** PsiQuantum "$10.5B, May 2026" was the Sep 2025 round in A$ (now $7B); Rb vs Yb attributed Atom Computing's ⁸⁷Sr 42 s T₂ echo to Yb and said Yb had no logical qubits (24 / 28 logical, arXiv:2411.11822); Quantinuum's IPO terms (28M shares at $60, ~$1.68B); IBM's $10B is over five years.
+- Quantinuum vs IonQ: Roadmaps now before Business & Markets.
+- `versus.js` v3, `vs-lattice.js` v3, `vs-erasure.js` v2 (page-local, no sitewide bump). Tests: OK 36 (new `test_career_comparisons_rebuild`); smoke 4 × 3 clean; contrast clean on all four in both themes; print check clean; glance cards checked at 390 px.

@@ -81,3 +81,8 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 ## 2026-11-13: physics audit (convention slips)
 - **¹⁷¹Yb nuclear Zeeman slope was 3.4× too large** (2.59 kHz/G). With μ = +0.49 μ_N it is 0.75 kHz/G, so the crossover with the Rb clock qubit's 1150 Hz/G²·B₀ is B₀ ≈ 0.65 G, not 2.26 G, and at 1 G Yb is the *less* field-sensitive qubit (0.75 vs 1.15 Hz per mG). All mentions, SVG label and table updated.
 - Erasure-code logical error ∝ p^d (corrects d − 1 erasures), consistent with the "d = 5 erasure ≈ d = 9 Pauli" line; Rb |1,0⟩ pumping uses π light on F=1→F′=1; 850 nm is 31 THz from D2; 556 nm MOT is near its Doppler limit, not sub-Doppler.
+
+## 2026-11-21: career-page pass ("do the same for the other Career pages")
+- Standard hero (eyebrow pill, clean h1 without the dangling ", Neutral Atom Qubit Showdown", one description, a "numbers checked" line); "At a glance" scoreboard at the end of section 01 (`AMOVersus.glance`).
+- **Facts fixed:** the ">40 s nuclear-spin coherence" was quoted as a Yb171 company claim, but it is Atom Computing's earlier ⁸⁷Sr register (Barnes et al., Nat. Commun. 13, 2022: T₂* = 21(7) s, T₂ echo = 42(6) s); "Phoenix" was that Sr machine, not the 2023 1,225-site Yb array. Yb171 logical qubits were "not yet demonstrated": Microsoft + Atom Computing entangled 24 logical qubits and ran Bernstein–Vazirani on 28 (Reichardt et al., arXiv:2411.11822, preprint). Bluvstein 2024's 48 logical qubits were [[8,3,2]] codes, not "color code". Atom Computing card now says HQ Berkeley, main R&D Boulder (as on qc-landscape).
+- Tug-of-war and erasure-lab inks now pass contrast in both themes (`versus.js` v3, `vs-erasure.js` v2).

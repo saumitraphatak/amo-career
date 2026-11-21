@@ -35,7 +35,7 @@ interchangeable would be the single easiest way for this page to mislead a reade
   Borealis's 216 modes) stated plainly rather than glossed over, since "universal" (Aurora) and "216 modes" (Borealis,
   non-universal Gaussian boson sampling) are answering different questions and conflating them would overstate
   Aurora's scale.
-- PsiQuantum's valuation history is dated precisely across two rounds ($7B, Sep 2025; $10.5B, May 2026) rather than
+- (Superseded 2026-11-21, see below: the "$10.5B, May 2026" round was the Sep 2025 round in A$.) PsiQuantum's valuation history was dated across two rounds rather than
   using a single ambiguous figure — cross-checked against a dedicated funding-tracking source (Sacra) rather than
   taken from a single news article's headline number.
 - Xanadu's transition to a public company (SPAC merger with Crane Harbor Acquisition Corp., $3B pre-money valuation
@@ -100,3 +100,7 @@ Four additive, same-month funding/partnership items, one per company per topic:
 - Xanadu: a multi-year GlobalFoundries manufacturing partnership (Oct 6 2026, 300mm Malta NY fab, SNSPDs + SiN photonics) and a $10M DARPA Quantum Benchmarking Initiative extension (Oct 20 2026) — added as two timeline entries, two Business-section bullets, and a new Ecosystem company-card. Noted in both companies' GlobalFoundries cards that the two companies now share a manufacturing partner (PsiQuantum's existing card already named GlobalFoundries; this wasn't previously cross-referenced).
 Noticed, not pursued: this page's PsiQuantum section still doesn't mention the Sept-2026 CHIPS Act $100M award that qc-landscape.html's PsiQuantum flash-card already carries — a pre-existing cross-page gap from before this rotation's window, left for a future cross-page-consistency pass rather than folded into today's science-content scope.
 All four facts independently re-verified against primary/near-primary sources (company press releases, SEC filing context) before writing.
+
+## 2026-11-21: career-page pass ("do the same for the other Career pages")
+- Standard hero, "numbers checked" line, "At a glance" scoreboard at the end of section 01.
+- **Fact fixed:** there was no "May 2026, $1.5B at $10.5B" round. That is the September 2025 Series E ($1B at a $7B valuation) in Australian dollars (A$1.5B, A$10.5B; e.g. SmartCompany, 11 Sep 2025); Sacra's text repeats it with a 2026 date while its own header still says $7B, and no news report of a 2026 round exists. All six places now say $7B (Sep 2025); the timeline and funding chart use the verified $100M CHIPS R&D award (finalized Sep 2026) instead.

@@ -100,3 +100,7 @@ The Science paper (DOI 10.1126/science.aee7961) is "Magic state cultivation on a
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Timeline years mix the lane colour with the text colour so they read in both themes.
+
+## 2026-11-21: career-page pass ("do the same for the other Career pages")
+- Standard hero, "numbers checked" line, "At a glance" scoreboard at the end of section 01.
+- **Facts fixed:** IBM's June 2, 2026 announcement is "more than $10B over the next five years", not a cumulative commitment; "114-year-old" became "founded in 1911". Lattice-lab labels now pass contrast (`vs-lattice.js` v3).
