@@ -285,3 +285,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Claims:** removed "Atom Computing (acquired by Google)", QuEra 2027–28 roadmap, ~10⁷ Shor stat; added Google 2026 neutral-atom announcement (blog + JILA), Oxford ion benchmark, Gidney 2025 (preprint).
 - **Flow:** distillation became §08 after the calculator; history moved after the landscape; references became §12 with styled link cards.
 - Tests: formula tests OK 31 (new `test_remote_entanglement_figures`); smoke remote-entanglement + home × 3 configs, 0 new problems; 390 px checked. Search index rebuilt. No main.js/styles.css change, so no cache bump.
+
+## 2026-11-21: Build reads as the story of building a lab ("names should be indicative of a story … like building a lab")
+- **Ten steps, in build order:** 01 Select an atomic species · 02 Pick lasers for that atom · 03 Pump down to ultra-high vacuum · 04 Lock the lasers to the atom · 05 Analyze the polarization · 06 Design a MOT · 07 Assemble a tweezer array · 08 Get rid of aberrations · 09 Couple atoms to a cavity · 10 Run the lab day to day. Vacuum moved up to 03, tweezers up to 07, the operations handbook to the end.
+- **Everywhere at once:** `NAV.build` (new `step` and `tool` fields; nav shows numbered steps with the tool name underneath, desktop and mobile), home BUILD cards (step titles, renumbered, reordered, CTA names the tool) and footer column, start-here `#build`, and the ten page eyebrows. Page `<h1>`s keep the tool names. Search still finds the old tool names.
+- **New build trail** (`initBuildTrail`) at the end of each Build page: "Building a lab · step N of 10", a ten-dot progress line with every step linked, and previous/next cards; step 10 hands off to Trap, Image & Cool.
+- main.js v46, styles.css v33 on all 36 HTML files. Tests: OK 32 (new `test_build_story_order`); smoke 36 × 3, 0 new problems; dark, light and 390 px checked.

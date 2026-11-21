@@ -42,3 +42,6 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 
 ## 2026-11-14: citation check + contrast pass
 - Light theme: sky-blue page colour darkened to #0369a1 (was 2:1 on cream).
+
+## 2026-11-21: Build section is now "Build a lab, step by step"
+Ten story-titled steps in build order (species → lasers → vacuum → locking → polarization → MOT → tweezers → aberrations → cavity → operations); each card names the tool under the step. Order must match `NAV.build` (`test_build_story_order`).

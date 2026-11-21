@@ -368,17 +368,20 @@ function initThemeToggle() {
    NAV DATA
    ───────────────────────────────────────────────────── */
 const NAV = {
+  // Build reads as one story, in the order a lab actually gets built: choose the atom, get its lasers,
+  // pump down, lock, set polarizations, catch atoms in a MOT, trap them in tweezers, clean up the optics,
+  // add a cavity, then keep it all running. `label` is the step; `tool` is the page's own name.
   build: [
-    { key: 'atom-library',   label: 'Atomic Species Selector',                kind: 'Reference', icon: '⚛️', color: '#a13c1c', href: 'pages/atom-library.html'   },
-    { key: 'laser-planner',  label: 'Laser System Planner',        kind: 'Design tool', icon: '💡', color: '#2c4a63', href: 'pages/laser-planner.html'  },
-    { key: 'mot-designer',   label: 'MOT Designer',                         kind: 'Calculator', icon: '🧲', color: '#3f5d3f', href: 'pages/mot-designer.html'   },
-    { key: 'laser-locking',  label: 'Laser Locking Guide',   kind: 'Guide', icon: '🔐', color: '#a13c1c', href: 'pages/laser-locking.html'  },
-    { key: 'lab-techniques', label: 'AMO Lab Operations Handbook',      kind: 'Guide', icon: '🔬', color: '#2c4a63', href: 'pages/lab-techniques.html' },
-    { key: 'polarimetry',    label: 'Polarimetry Simulator', kind: 'Simulator', icon: '🔭', color: '#3f5d3f', href: 'pages/polarimetry.html'    },
-    { key: 'zernike',        label: 'Zernike Wavefront Lab', kind: 'Simulator', icon: '🌊', color: '#a13c1c', href: 'pages/zernike.html'      },
-    { key: 'cavity-qed',     label: 'Cavity QED Coupling Lab',       kind: 'Calculator', icon: '💎', color: '#2c4a63', href: 'pages/cavity-qed.html'   },
-    { key: 'vacuum-systems',    label: 'Vacuum Systems Guide',        kind: 'Guide',      icon: '⚗️', color: '#3f5d3f', href: 'pages/vacuum-systems.html'    },
-    { key: 'tweezer-designer', label: 'Tweezer Array Design Lab', kind: 'Design lab', icon: '🔦', color: '#a13c1c', href: 'pages/tweezer-designer.html' },
+    { key: 'atom-library',     step: 1,  label: 'Select an atomic species',       tool: 'Atomic Species Selector',     kind: 'Reference',   icon: '⚛️', color: '#a13c1c', href: 'pages/atom-library.html'     },
+    { key: 'laser-planner',    step: 2,  label: 'Pick lasers for that atom',      tool: 'Laser System Planner',        kind: 'Design tool', icon: '💡', color: '#2c4a63', href: 'pages/laser-planner.html'    },
+    { key: 'vacuum-systems',   step: 3,  label: 'Pump down to ultra-high vacuum', tool: 'Vacuum Systems Guide',        kind: 'Guide',       icon: '⚗️', color: '#3f5d3f', href: 'pages/vacuum-systems.html'   },
+    { key: 'laser-locking',    step: 4,  label: 'Lock the lasers to the atom',    tool: 'Laser Locking Guide',         kind: 'Guide',       icon: '🔐', color: '#a13c1c', href: 'pages/laser-locking.html'    },
+    { key: 'polarimetry',      step: 5,  label: 'Analyze the polarization',       tool: 'Polarimetry Simulator',       kind: 'Simulator',   icon: '🔭', color: '#2c4a63', href: 'pages/polarimetry.html'      },
+    { key: 'mot-designer',     step: 6,  label: 'Design a MOT',                   tool: 'MOT Designer',                kind: 'Calculator',  icon: '🧲', color: '#3f5d3f', href: 'pages/mot-designer.html'     },
+    { key: 'tweezer-designer', step: 7,  label: 'Assemble a tweezer array',       tool: 'Tweezer Array Design Lab',    kind: 'Design lab',  icon: '🔦', color: '#a13c1c', href: 'pages/tweezer-designer.html' },
+    { key: 'zernike',          step: 8,  label: 'Get rid of aberrations',         tool: 'Zernike Wavefront Lab',       kind: 'Simulator',   icon: '🌊', color: '#2c4a63', href: 'pages/zernike.html'          },
+    { key: 'cavity-qed',       step: 9,  label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
+    { key: 'lab-techniques',   step: 10, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
   ],
   measure: [
     { key: 'imaging-calculator', label: 'Single-atom Imaging',  kind: 'Calculator', icon: '📷', color: '#2c4a63', href: 'pages/imaging-calculator.html' },
@@ -451,19 +454,19 @@ function renderNav({ active = '', root = '' } = {}) {
   const groupIsActive = group => group.some(t => t.key === active);
   const itemHTML = t => `
     <a class="nav-drop-item" href="${root}${t.href}" ${t.key && active === t.key ? 'aria-current="page"' : ''}>
-      <span class="nav-drop-dot" style="background:${t.color || '#38bdf8'}"></span>
+      ${t.step ? `<span class="nav-step-n" style="--step-c:${t.color}">${t.step}</span>` : `<span class="nav-drop-dot" style="background:${t.color || '#38bdf8'}"></span>`}
       <span style="display:flex;flex-direction:column;gap:.08rem;min-width:0">
         <span>${t.label}</span>
-        ${t.kind ? `<small style="color:var(--text-muted);font-size:.68rem;letter-spacing:.02em">${t.kind}</small>` : ''}
+        ${t.tool || t.kind ? `<small style="color:var(--text-muted);font-size:.68rem;letter-spacing:.02em">${t.tool || t.kind}</small>` : ''}
       </span>
     </a>
   `;
   const mobileItemHTML = t => `
     <a class="nav-mobile-link" href="${root}${t.href}">
-      <span class="nav-drop-dot" style="background:${t.color || '#38bdf8'};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>
+      ${t.step ? `<span class="nav-step-n" style="--step-c:${t.color}">${t.step}</span>` : `<span class="nav-drop-dot" style="background:${t.color || '#38bdf8'};width:8px;height:8px;border-radius:50%;flex-shrink:0"></span>`}
       <span style="display:flex;flex-direction:column;gap:.05rem;min-width:0">
         <span>${t.label}</span>
-        ${t.kind ? `<small style="color:var(--text-muted);font-size:.68rem;letter-spacing:.02em">${t.kind}</small>` : ''}
+        ${t.tool || t.kind ? `<small style="color:var(--text-muted);font-size:.68rem;letter-spacing:.02em">${t.tool || t.kind}</small>` : ''}
       </span>
     </a>
   `;
@@ -504,7 +507,7 @@ function renderNav({ active = '', root = '' } = {}) {
 
         <div class="nav-links" role="menubar">
           <a class="nav-btn" href="${root}pages/start-here.html">Start Here</a>
-          ${dropdown('Build', NAV.build, 'Design and assemble an AMO experiment', 560)}
+          ${dropdown('Build', NAV.build, 'Build an AMO lab, step by step', 580)}
           ${dropdown('Trap, Image & Cool', NAV.trapImageCool, 'Trap atoms, measure signals, and model cooling', 620)}
           ${dropdown('Quantum Computing', NAV.quantum, 'Neutral-atom QC concepts, gates, and platforms', 560)}
           ${dropdown('Career & Literature', NAV.career, 'Groups, papers, and industry orientation', 520)}
@@ -533,7 +536,7 @@ function renderNav({ active = '', root = '' } = {}) {
         <a class="nav-mobile-link" href="${root}home.html#intent-paths"><span>🧭</span> I am trying to...</a>
         <a class="nav-mobile-link" href="${root}home.html#paths"><span>🧩</span> Guided Paths (home)</a>
       </div>
-      ${mobileSection('Build', NAV.build)}
+      ${mobileSection('Build a lab, step by step', NAV.build)}
       ${mobileSection('Trap, Image & Cool', NAV.trapImageCool)}
       ${mobileSection('Quantum Computing', NAV.quantum)}
       ${mobileSection('Career & Literature', NAV.career)}
@@ -800,7 +803,7 @@ function getSearchEntries(root = '') {
       title: item.label,
       icon: item.icon || '•',
       href,
-      keywords: `${item.label} ${SEARCH_KEYWORDS[key] || ''}`.toLowerCase(),
+      keywords: `${item.label} ${item.tool || ''} ${SEARCH_KEYWORDS[key] || ''}`.toLowerCase(),
       color: item.color || '#38bdf8',
     });
   });
@@ -1419,6 +1422,31 @@ function getPageMeta() {
    CITE THIS PAGE — plain-text + BibTeX citation, on every
    tool/guide page (anything using the .page-wrap template).
    ───────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────
+   BUILD TRAIL — on each Build page, where this step sits in the
+   ten-step story of building a lab, with the previous and next step.
+   ───────────────────────────────────────────────────── */
+function initBuildTrail() {
+  if (!location.pathname.includes('/pages/')) return;
+  const i = NAV.build.findIndex(t => t.key === currentPageKey());
+  const container = getPageContainer();
+  if (i < 0 || !container || document.querySelector('.build-trail')) return;
+  const href = t => t.href.replace(/^pages\//, '');
+  const prev = NAV.build[i - 1], next = NAV.build[i + 1], cur = NAV.build[i];
+  const nav = document.createElement('nav');
+  nav.className = 'build-trail';
+  nav.setAttribute('aria-label', 'Building a lab, step by step');
+  nav.innerHTML = `
+    <div class="bt-head"><span class="bt-eyebrow">Building a lab · step ${cur.step} of ${NAV.build.length}</span><span class="bt-cur">${cur.label}</span></div>
+    <ol class="bt-steps">${NAV.build.map((t, j) => `<li><a href="${href(t)}" class="${j < i ? 'done' : j === i ? 'here' : ''}" ${j === i ? 'aria-current="step"' : ''} title="${t.step}. ${t.label}"><span>${t.step}</span><em>${t.label}</em></a></li>`).join('')}</ol>
+    <div class="bt-links">
+      ${prev ? `<a class="bt-prev" href="${href(prev)}"><small>← Step ${prev.step}</small>${prev.label}</a>` : '<span></span>'}
+      ${next ? `<a class="bt-next" href="${href(next)}"><small>Step ${next.step} →</small>${next.label}</a>`
+             : `<a class="bt-next" href="${location.pathname.includes('/pages/') ? '' : 'pages/'}imaging-calculator.html"><small>Lab built →</small>Now trap, image &amp; cool atoms</a>`}
+    </div>`;
+  container.appendChild(nav);
+}
+
 function initCiteThisPage() {
   if (!document.querySelector('.page-wrap')) return;
   const container = getPageContainer();
@@ -2091,7 +2119,7 @@ function initRelatedToolsPanel() {
       <span class="see-also-icon">${item.icon || '•'}</span>
       <div>
         <div class="see-also-name">${item.label}</div>
-        <div class="see-also-desc">${item.kind || 'AMO Toolkit page'}</div>
+        <div class="see-also-desc">${item.tool || item.kind || 'AMO Toolkit page'}</div>
       </div>
     </a>
   `).join('');
@@ -2672,6 +2700,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
+  initBuildTrail();
   initCiteThisPage();
   initErrorReportWidget();
   initPathConceptMap();

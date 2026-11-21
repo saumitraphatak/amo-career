@@ -426,7 +426,7 @@ window.AMO_SECTION_INDEX = [
   {"p":"rydberg-calculator","t":"Rydberg Blockade Lab","s":"s-rydberg-blockade-lab"},
   {"p":"start-here","t":"The whole site at a glance","s":"s-the-whole-site-at-a-glance"},
   {"p":"start-here","t":"Recommended sequences","s":"s-recommended-sequences"},
-  {"p":"start-here","t":"Build the apparatus","s":"s-build-the-apparatus"},
+  {"p":"start-here","t":"Build a lab, step by step","s":"s-build-a-lab-step-by-step"},
   {"p":"start-here","t":"Trap, image & cool","s":"s-trap-image-cool"},
   {"p":"start-here","t":"Quantum computing","s":"s-quantum-computing"},
   {"p":"start-here","t":"Career & literature","s":"s-career-literature"},

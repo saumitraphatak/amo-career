@@ -798,6 +798,35 @@ def test_remote_entanglement_figures() -> None:
         assert sec.index(f'<div class="sec-num">{n:02d}</div>') < 200, i
 
 
+def test_build_story_order() -> None:
+    """Build group (2026-11-21): ten story steps in the order a lab gets built, the same everywhere."""
+    import re
+    steps = [("atom-library", "Select an atomic species"), ("laser-planner", "Pick lasers for that atom"),
+             ("vacuum-systems", "Pump down to ultra-high vacuum"), ("laser-locking", "Lock the lasers to the atom"),
+             ("polarimetry", "Analyze the polarization"), ("mot-designer", "Design a MOT"),
+             ("tweezer-designer", "Assemble a tweezer array"), ("zernike", "Get rid of aberrations"),
+             ("cavity-qed", "Couple atoms to a cavity"), ("lab-techniques", "Run the lab day to day")]
+    js = read("js/main.js")
+    build = js[js.index("  build: [\n"):js.index("  measure: [")]
+    assert re.findall(r"key: '([a-z-]+)',\s+step: (\d+),\s+label: '([^']+)'", build) == [(k, str(n), l) for n, (k, l) in enumerate(steps, 1)]
+    assert "function initBuildTrail()" in js and "initBuildTrail();\n  initCiteThisPage();" in js
+    home = read("home.html")
+    cards = []
+    for blk in home.split('<a class="tool-card')[1:]:
+        num = re.search(r'tool-card-num">BUILD (\d\d)<', blk)
+        if num:
+            cards.append((re.search(r'href="pages/([a-z-]+)\.html"', blk).group(1), num.group(1), re.search(r'tool-card-name">([^<]+)<', blk).group(1)))
+    assert cards == [(k, f"{n:02d}", l) for n, (k, l) in enumerate(steps, 1)], cards
+    foot = home[home.index('footer-col-head">Build a lab'):]
+    foot = foot[:foot.index("</div>", foot.index("footer-links"))]
+    assert re.findall(r'pages/([a-z-]+)\.html', foot) == [k for k, _ in steps]
+    sh = read("pages/start-here.html")
+    sec = sh[sh.index('id="build"'):sh.index("</section>", sh.index('id="build"'))]
+    assert re.findall(r'href="([a-z-]+)\.html"><span class="see-also-icon">[^<]*</span><div><span class="sm-num">(\d\d)</span><span class="see-also-name">([^<]+)<', sec) == [(k, f"{n:02d}", l) for n, (k, l) in enumerate(steps, 1)]
+    for n, (k, l) in enumerate(steps, 1):
+        assert f"Build {n:02d} · {l}" in read(f"pages/{k}.html"), k
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -902,6 +931,7 @@ def main() -> None:
         test_atom_processor_compiler,
         test_repeater_chain,
         test_remote_entanglement_figures,
+        test_build_story_order,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,
