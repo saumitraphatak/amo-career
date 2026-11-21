@@ -1546,31 +1546,26 @@ function initErrorReportWidget() {
 
 function initPaperToolBridge() {
   if (currentPageKey() !== 'paper-syllabus') return;
-  const cards = document.querySelectorAll('.paper-card');
+  const cards = document.querySelectorAll('.paper-card[data-tools]');
   if (!cards.length || document.querySelector('.paper-tool-bridge')) return;
-  const root = '../';
-  const bridges = [
-    { re: /ashkin|dipole trap|optical tweez|schlosser|kaufman/i, links: [['Trap tools', 'pages/lab-calculators.html'], ['Tweezer thermometry', 'pages/release-recapture.html']] },
-    { re: /raab|mot|magneto-optical/i, links: [['MOT designer', 'pages/mot-designer.html'], ['Cooling overview', 'pages/laser-cooling.html']] },
-    { re: /dalibard|cohen|tannoudji|chu|phillips|cooling|sisyphus|gray molasses|sideband/i, links: [['Laser cooling', 'pages/laser-cooling.html'], ['Cooling simulator', 'pages/cooling-simulator.html']] },
-    { re: /rydberg|jaksch|saffman|evered|blockade|förster|foerster/i, links: [['Rydberg calculator', 'pages/rydberg-calculator.html'], ['Fidelity budget', 'pages/fidelity-budget.html']] },
-    { re: /ytterbium|yb|strontium|sr|jenkins|clock/i, links: [['Rb vs Yb', 'pages/rb87-vs-yb171.html'], ['Atom library', 'pages/atom-library.html']] },
-    { re: /kaufman|ni|molecule|molecular|polar molecule/i, links: [['Atom library', 'pages/atom-library.html'], ['AMO groups', 'pages/amo-groups.html']] },
-    { re: /manetsch|logical|fault|neutral atom|quantum processor|quera|harvard/i, links: [['QC landscape', 'pages/qc-landscape.html'], ['Rb vs Yb', 'pages/rb87-vs-yb171.html']] },
-    { re: /cavity|strong coupling|cooperativity/i, links: [['Cavity QED', 'pages/cavity-qed.html'], ['Lab techniques', 'pages/lab-techniques.html']] },
-    { re: /bose-einstein|condensation|feshbach|dilute atomic vapor/i, links: [['TOF thermometry (BEC threshold)', 'pages/tof-calculator.html'], ['Analog simulation', 'pages/learn-quantum.html#analog-sim']] },
-    { re: /optical lattice|quantum simulation|hubbard/i, links: [['Analog simulation', 'pages/learn-quantum.html#analog-sim'], ['QC landscape', 'pages/qc-landscape.html']] },
-  ];
+  // Each card names its tools explicitly (data-tools="mot-designer,learn-quantum#qec");
+  // labels come from the nav so the bridge uses the same story titles as the menus.
+  const ANCHORS = {
+    'learn-quantum#analog-sim': 'Simulate many-body physics with atoms',
+    'learn-quantum#qec': 'Correct quantum errors',
+  };
   cards.forEach(card => {
-    const text = card.textContent;
-    const match = bridges.find(b => b.re.test(text));
-    if (!match) return;
+    const links = card.dataset.tools.split(',').map(k => k.trim()).filter(Boolean).map(k => {
+      const [key, hash] = k.split('#');
+      const item = navItemByKey(key);
+      if (!item) return '';
+      const label = ANCHORS[k] || item.label;
+      return `<a href="../${item.href}${hash ? '#' + hash : ''}" title="${escapeHtml(item.tool)}">${escapeHtml(label)}</a>`;
+    }).filter(Boolean);
+    if (!links.length) return;
     const box = document.createElement('div');
     box.className = 'paper-tool-bridge';
-    box.innerHTML = `
-      <span>Paper-to-tool bridge:</span>
-      ${match.links.map(([label, href]) => `<a href="${root}${href.replace(/^pages\//, 'pages/')}">${label}</a>`).join('')}
-    `;
+    box.innerHTML = `<span>Try it in the toolkit:</span>${links.join('')}`;
     card.querySelector('.paper-body')?.appendChild(box);
   });
 }
@@ -1973,7 +1968,7 @@ const PAGE_PLAYBOOKS = {
   'remote-entanglement': ['Map networking tradeoffs', 'Follow photon collection, Bell-state measurement, loss, and rate bottlenecks for remote links.', 'Use rates as order-of-magnitude design estimates.'],
   'atom-processor': ['See a circuit run on moving atoms', 'Compile GHZ, Grover, Bernstein–Vazirani or random circuits onto storage, entangling and readout zones, compare qubit placements, and sample noisy shots.', 'Geometry is schematic and only one AOD row is modelled; treat times and fidelities as relative comparisons.'],
   'amo-groups': ['Find research fits', 'Filter groups by research area, atom, region and technique, and keep a list you can export or share.', 'Use this as a discovery map; verify current openings and project direction on group pages.'],
-  'paper-syllabus': ['Read with purpose', 'Follow staged paper lists and use paper-to-tool bridges to connect literature to calculators.', 'Prefer primary papers for claims and reviews for orientation.'],
+  'paper-syllabus': ['Read with purpose', 'Pick a reading track, tick papers off as you go, and follow each paper\'s toolkit links to put its physics to work.', 'Prefer primary papers for claims and reviews for orientation.'],
   'qc-landscape': ['Translate AMO skills to industry', 'Compare hardware platforms, company claims, job roles, and roadmap maturity.', 'Separate demonstrated hardware from roadmap language.'],
   'rb87-vs-yb171': ['Compare qubit species', 'Use side-by-side evidence for Rb and Yb choices across cooling, gates, imaging, clocks, and scaling.', 'Check whether a benchmark is Rb, Yb, Cs, or architecture-level before reusing it.'],
   'quantinuum-vs-ionq': ['Compare trapped-ion companies', 'Use side-by-side evidence for Quantinuum and IonQ across architecture, fidelity, logical qubits, and roadmaps.', 'Separate peer-reviewed, full-system numbers from preprint, component-level, or company-roadmap claims.'],

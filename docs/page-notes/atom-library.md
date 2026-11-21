@@ -68,7 +68,7 @@ The decorative pulse on the atom selector tiles ran forever (a `requestAnimation
 - **Data fixes:**
   - ⁴⁰K ground-state hyperfine splitting was "—" in the table (the comparison data already had it). It is now 1.286 GHz = |A|(I+½) with A = −285.73 MHz, I = 4 (Arimondo, Inguscio & Violino, Rev. Mod. Phys. 49, 31 (1977); consistent with arXiv:2609.02572, preprint).
   - The group heading "²³Na & ¹⁹K" became "²³Na & K" (19 is K's Z, not a mass number).
-- **Magnetic moments** (not in the table, added to the explorer): ≈1 μ_B for the alkali ²S₁/₂ ground state, 0 for ¹S₀ Sr/Yb (J = 0), ≈7 μ_B for Er and ≈10 μ_B for Dy (see Chomaz et al., RMP 2023, already cited on the page).
+- **Magnetic moments** (not in the table, added to the explorer): ≈1 μ_B for the alkali ²S₁/₂ ground state, 0 for ¹S₀ Sr/Yb (J = 0), ≈7 μ_B for Er and ≈10 μ_B for Dy (see Chomaz et al., Rep. Prog. Phys. 2023, already cited on the page).
 - **Removed:** the decorative tile glow, since the tiles are gone.
 - **Checked:**
   - Playwright in dark and light at 1280 and dark at 390 px: select by tile, chip and table cell; isotope pills; every lens; compare with the isotope picker; `#Cs-133` deep link; no page errors; no horizontal overflow; screenshots reviewed.

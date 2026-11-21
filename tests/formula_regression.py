@@ -94,7 +94,7 @@ def test_site_ux_features_present() -> None:
     assert_contains("js/main.js", "function exportCanvasSVG")
     assert_contains("js/main.js", "function renderRecentTools")
     assert_contains("js/main.js", "function initPaperToolBridge")
-    assert_contains("js/main.js", "Paper-to-tool bridge")
+    assert_contains("js/main.js", "Try it in the toolkit:")
     assert_contains("home.html", "I am trying to...")
     assert_contains("home.html", 'id="recent-tools"')
     assert_contains("css/styles.css", ".source-tag.peer-reviewed")
@@ -894,6 +894,51 @@ def test_industry_map_rebuild() -> None:
     assert badges[:2] == ["Jun 2026", "Nov 2025"], badges
 
 
+def test_paper_roadmap_rebuild() -> None:
+    """AMO Paper Roadmap (2026-11-21): no duplicate papers, explicit per-paper tracks and tool links,
+    stage counts that match the stage intros, and the standard hero."""
+    import re
+    page = read("pages/paper-syllabus.html")
+    main_js = read("js/main.js")
+    assert page.count("<!--") == page.count("-->")
+    assert page.count("<div") == page.count("</div>")
+    cards = re.findall(r'<div class="paper-card" id="paper-(\d\d)" data-tracks="([etnj]+)" data-tools="([^"]+)">', page)
+    assert len(cards) == 55 and [int(c[0]) for c in cards] == list(range(1, 56))
+    nums = re.findall(r'<div class="paper-num">(\d+)</div>', page)
+    assert [int(n) for n in nums] == list(range(1, 56))
+    links = re.findall(r'class="paper-doi" href="([^"]+)"', page)
+    assert len(links) == 55 and len(set(l.lower() for l in links)) == 55          # #43 and #51 were once the same review
+    titles = [re.sub(r"<[^>]+>", "", t).strip().lower() for t in re.findall(r'<div class="paper-title">(.*?)</div>', page)]
+    assert len(set(titles)) == 55
+    assert "annurev-conmatphys-031119-050605" in page                              # Kjaergaard et al. replaced the duplicate
+    # stage sizes match what the intros promise
+    sizes = {}
+    for key in ("undergrad", "grad1", "gradAdv", "postdoc"):
+        a = page.index(f'data-group="stages" data-tab="{key}">')
+        b = page.find('<div class="tab-panel', a + 10)
+        sizes[key] = page[a:b if b > 0 else len(page)].count('class="paper-card"')
+    assert sizes == {"undergrad": 10, "grad1": 18, "gradAdv": 17, "postdoc": 10}, sizes
+    assert "These 17 papers" in page and "These 10 papers" in page
+    # every tool key resolves to a nav item (or a known learn-quantum anchor)
+    keys = set(re.findall(r"key: '([a-z0-9-]+)'", main_js))
+    for _, _, tools in cards:
+        for t in tools.split(","):
+            k, _, anchor = t.partition("#")
+            assert k in keys, t
+            if anchor:
+                assert f'id="{anchor}"' in read(f"pages/{k}.html"), t
+    for t in "etnj":                                                                 # every track has a real reading list
+        assert sum(t in c[1] for c in cards) >= 10, t
+    # stage 3 topics are no longer mislabelled (the QEC topic once held a dipolar review and two simulators)
+    qec = page[page.index("Quantum error correction — The long game"):]
+    qec = qec[:qec.index("</div>\n\n    </div>") if "</div>\n\n    </div>" in qec else len(qec)]
+    assert "Surface Codes" in qec and "Dipolar" not in qec[:3000] and "Spin Liquids" not in qec[:3000]
+    assert 'class="page-hero-eyebrow"' in page and 'class="page-eyebrow"' not in page and 'class="grad-text"' in page
+    assert 'id="ps-search"' in page and "amo-papers-read" in page and 'data-track="j"' in page
+    assert "card.dataset.tools" in main_js and "/ni/" not in main_js[main_js.index("function initPaperToolBridge"):][:2000]
+    assert 'class="paper-tag tag-preprint"' in page
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1001,6 +1046,7 @@ def main() -> None:
         test_build_story_order,
         test_group_finder_rebuild,
         test_industry_map_rebuild,
+        test_paper_roadmap_rebuild,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,
