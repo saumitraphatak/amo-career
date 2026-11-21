@@ -840,6 +840,27 @@ def test_build_story_order() -> None:
     assert len(cards["CAREER"]) == 3 and len(cards["QC"]) == 8 and len(cards["TRAP"]) == 8 and len(cards["BUILD"]) == 10
 
 
+def test_group_finder_rebuild() -> None:
+    """AMO Group Finder (2026-11-21): one finder (areas → filters → list + globe → names → watchlist),
+    no unverifiable hiring claims, standard hero, watchlist linked to the directory, a list kept in the browser."""
+    page = read("pages/amo-groups.html")
+    for bad in ["hire:", "PhD-friendly", "Postdoc-heavy", "International Hiring", "Typically hires international",
+                "page-eyebrow", "Highest-Priority Shortlists", "100+</span>", "curation-note"]:
+        assert bad not in page, bad
+    assert '<div class="page-hero-eyebrow"' in page and "🌍 Career 02 · Find a research group" in page
+    for sec in ['id="areas"', 'id="finder"', 'id="shortlists"', 'id="watchlist"']:
+        assert sec in page, sec
+    order = [page.index(x) for x in ['id="areas"', 'id="finder"', 'id="shortlists"', 'id="watchlist"']]
+    assert order == sorted(order)
+    # every stored-state access is guarded, and the page works without it
+    assert "try { starred = new Set(JSON.parse(localStorage.getItem(STAR_KEY)" in page and "try { localStorage.setItem(STAR_KEY" in page
+    # watchlist ↔ directory links use only the first person of "A / B" entries
+    assert "words(name.split(' / ')[0])" in page
+    # only checked statuses are shown
+    assert page.count("status:'") == 1 and "status:'Emeritus professor'" in page
+    assert 'role="dialog" aria-modal="true"' in page and "if (e.key === 'Escape') closePanel();" in page
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -945,6 +966,7 @@ def main() -> None:
         test_repeater_chain,
         test_remote_entanglement_figures,
         test_build_story_order,
+        test_group_finder_rebuild,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

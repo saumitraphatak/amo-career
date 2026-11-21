@@ -43,271 +43,206 @@
 
   <style>
     .page-wrap { --page-color:#3f5d3f; --page-bg:rgba(63, 93, 63,0.08); --page-border:rgba(63, 93, 63,0.2); }
-
-    /* Filter bar */
-    .filter-bar { display:flex; flex-wrap:wrap; gap:var(--sp-2); align-items:center; margin-bottom:var(--sp-4); }
-    .filter-label { font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-right:var(--sp-1); }
-    .filter-btn { padding:5px 14px; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-size:.8125rem; font-weight:600; cursor:pointer; transition:all var(--t); display:flex; align-items:center; gap:6px; }
-    .filter-btn .dot { width:8px; height:8px; border-radius:50%; }
-    .filter-btn:hover { background:var(--bg-card); color:var(--text-primary); }
-    .filter-btn.active { background:var(--bg-card); border-color:currentColor; }
-    .filter-matrix {
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:var(--sp-3);
-      margin:0 0 var(--sp-5);
-    }
-    .filter-group {
-      border:1px solid var(--border);
-      border-radius:var(--r-lg);
-      background:color-mix(in srgb, var(--bg-card) 42%, transparent);
-      padding:var(--sp-3);
-    }
-    .filter-group-title {
-      margin:0 0 10px;
-      color:var(--text-muted);
-      font-size:.7rem;
-      font-weight:800;
-      letter-spacing:.1em;
-      text-transform:uppercase;
-    }
-    .mini-filter-row { display:flex; flex-wrap:wrap; gap:7px; }
-    .mini-filter-btn,
-    .path-btn {
-      border:1px solid var(--border);
-      border-radius:999px;
-      background:rgba(2,6,23,.06);
-      color:var(--text-secondary);
-      cursor:pointer;
-      font-size:.76rem;
-      font-weight:700;
-      padding:6px 11px;
-      transition:all var(--t);
-    }
-    .mini-filter-btn:hover,
-    .path-btn:hover {
-      border-color:rgba(24,129,62,0.36);
-      color:var(--text-primary);
-      background:rgba(74,222,128,.08);
-    }
-    .mini-filter-btn.active,
-    .path-btn.active {
-      border-color:rgba(24,129,62,0.72);
-      color:#0c672c;
-      background:rgba(74,222,128,.12);
-    }
-    .path-tree {
-      position:relative;
-      display:grid;
-      grid-template-columns:180px 1fr;
-      gap:var(--sp-3);
-      align-items:center;
-      margin:0 0 var(--sp-4);
-      padding:var(--sp-4);
-      border:1px solid rgba(125,211,252,.16);
-      border-radius:var(--r-lg);
-      background:
-        radial-gradient(circle at 0% 50%, rgba(125,211,252,.12), transparent 28%),
-        color-mix(in srgb, var(--bg-card) 42%, transparent);
-    }
-    .path-tree-label {
-      color:var(--text-primary);
-      font-size:.88rem;
-      font-weight:800;
-    }
-    .path-tree-label span {
-      display:block;
-      margin-top:3px;
-      color:var(--text-muted);
-      font-size:.72rem;
-      font-weight:600;
-      line-height:1.4;
-    }
-    .path-tree-buttons { display:flex; flex-wrap:wrap; gap:8px; }
-    @media(max-width:760px) {
-      .filter-matrix { grid-template-columns:1fr; }
-      .path-tree { grid-template-columns:1fr; }
-    }
-
-    /* Group info panel */
-    #group-panel { display:none; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-5); margin-bottom:var(--sp-5); position:relative; }
-    #group-panel.visible { display:block; }
-    .gp-close { position:absolute; top:var(--sp-3); right:var(--sp-3); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.25rem; line-height:1; }
-    .gp-close:hover { color:var(--text-primary); }
-    .gp-header { display:flex; gap:var(--sp-4); align-items:flex-start; margin-bottom:var(--sp-4); }
-    .gp-tag-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; margin-top:5px; }
-    .gp-name { font-size:1.125rem; font-weight:700; color:var(--text-primary); margin:0 0 2px; }
-    .gp-pi   { font-size:.875rem; color:var(--text-secondary); }
-    .gp-inst { font-size:.8125rem; color:var(--text-muted); margin-top:2px; }
-    .gp-body { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-4); }
-    @media(max-width:620px){ .gp-body { grid-template-columns:1fr; } }
-    .gp-row  { display:flex; flex-direction:column; gap:3px; }
-    .gp-key  { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); }
-    .gp-val  { font-size:.875rem; color:var(--text-secondary); }
-    .gp-atoms { display:flex; flex-wrap:wrap; gap:4px; }
-    .atom-chip { padding:2px 9px; border-radius:999px; font-size:.75rem; font-weight:700; background:rgba(74,222,128,0.1); color:#18813e; border:1px solid rgba(74,222,128,0.25); }
-    .hire-yes { color:#1c805b; font-weight:600; }
-    .hire-no  { color:var(--text-muted); }
-    .gp-paper { margin-top:var(--sp-3); padding:var(--sp-3) var(--sp-4); background:rgba(0,0,0,0.15); border-radius:var(--r); font-size:.8125rem; }
-    .gp-paper-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:4px; }
-    .gp-paper a { color:#4f5ff5; text-decoration:none; }
-    .gp-paper a:hover { text-decoration:underline; }
-
-    /* Group grid */
-    .group-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:var(--sp-3); }
-    .group-card {
-      display:block;
-      background:var(--bg-card);
-      border:1px solid var(--border);
-      border-radius:var(--r-lg);
-      padding:var(--sp-4);
-      color:inherit;
-      cursor:pointer;
-      text-decoration:none;
-      transition:border-color var(--t), background var(--t), transform var(--t), box-shadow var(--t);
-    }
-    .group-card:hover { border-color:rgba(24,129,62,0.3); background:var(--bg-card-hover); transform:translateY(-2px); }
-    .group-card.is-highlighted {
-      border-color:rgba(24,129,62,0.8);
-      box-shadow:0 0 0 3px rgba(74,222,128,.14), 0 18px 50px rgba(0,0,0,.22);
-      background:linear-gradient(135deg, rgba(74,222,128,.14), color-mix(in srgb, var(--bg-card) 82%, transparent));
-    }
-    .gc-head { display:flex; align-items:center; gap:var(--sp-2); margin-bottom:6px; }
-    .gc-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-    .gc-name { font-size:.875rem; font-weight:700; color:var(--text-primary); }
-    .gc-inst { font-size:.8rem; color:var(--text-muted); margin-bottom:4px; }
-    .gc-focus{ font-size:.8125rem; color:var(--text-secondary); line-height:1.5; }
-    .gc-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
-    .gc-chip {
-      border:1px solid rgba(148,163,184,.16);
-      border-radius:999px;
-      color:var(--text-muted);
-      font-size:.68rem;
-      font-weight:800;
-      letter-spacing:.02em;
-      padding:2px 7px;
-    }
-    .gc-link {
-      display:inline-flex;
-      align-items:center;
-      gap:5px;
-      margin-top:10px;
-      color:#0477af;
-      font-size:.78rem;
-      font-weight:700;
-      text-decoration:underline;
-      text-decoration-color:rgba(4,119,175,0.4);
-      text-underline-offset:3px;
-    }
-
-    /* Search */
-    .search-row { display:flex; gap:var(--sp-3); margin-bottom:var(--sp-4); align-items:center; }
-    #group-search { flex:1; padding:9px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); color:var(--text-primary); font-size:.875rem; outline:none; transition:border-color var(--t); }
-    #group-search:focus { border-color:rgba(24,129,62,0.4); }
-    #group-search::placeholder { color:var(--text-muted); }
-    .result-count { font-size:.8125rem; color:var(--text-muted); white-space:nowrap; }
-    .watchlist-intro {
-      display:grid;
-      grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr);
-      gap:var(--sp-4);
-      align-items:start;
-      margin:var(--sp-4) 0;
-      padding:var(--sp-4);
-      border:1px solid rgba(125,211,252,.16);
-      border-radius:var(--r-lg);
-      background:linear-gradient(135deg, rgba(14,165,233,.08), color-mix(in srgb, var(--bg-card) 58%, transparent));
-    }
-    .watchlist-intro p { margin:0; color:var(--text-secondary); line-height:1.65; }
-    .watchlist-note {
-      color:var(--text-muted);
-      font-size:.82rem;
-      line-height:1.55;
-      border-left:3px solid rgba(4,119,175,0.38);
-      padding-left:var(--sp-3);
-    }
-    .curation-note {
-      margin:0 0 var(--sp-5);
-      padding:var(--sp-3) var(--sp-4);
-      border:1px solid rgba(251,191,36,.2);
-      border-radius:var(--r-lg);
-      background:linear-gradient(135deg, rgba(251,191,36,.08), color-mix(in srgb, var(--bg-card) 48%, transparent));
-      color:var(--text-secondary);
-      font-size:.86rem;
-      line-height:1.6;
-    }
-    .curation-note strong { color:#7b6402; }
-    .watchlist-controls { display:flex; gap:var(--sp-3); margin:0 0 var(--sp-4); align-items:center; }
-    #watchlist-search { flex:1; padding:9px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r); color:var(--text-primary); font-size:.875rem; outline:none; }
-    .watchlist-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4); }
-    .watchlist-section {
-      border:1px solid var(--border);
-      border-radius:var(--r-lg);
-      background:color-mix(in srgb, var(--bg-card) 48%, transparent);
-      overflow:hidden;
-    }
-    .watchlist-section h3 {
-      display:flex;
-      justify-content:space-between;
-      gap:var(--sp-3);
-      margin:0;
-      padding:var(--sp-3) var(--sp-4);
-      border-bottom:1px solid var(--border);
-      color:var(--text-primary);
-      font-size:.95rem;
-    }
-    .watchlist-section h3 span { color:var(--text-muted); font-size:.72rem; font-weight:700; }
-    .watchlist-list { display:grid; gap:1px; background:rgba(148,163,184,.08); }
-    .watchlist-item {
-      display:grid;
-      gap:4px;
-      padding:var(--sp-3) var(--sp-4);
-      background:color-mix(in srgb, var(--bg-card) 58%, transparent);
-    }
-    .watchlist-name { color:var(--text-primary); font-weight:800; font-size:.86rem; }
-    .watchlist-meta { color:var(--text-muted); font-size:.76rem; }
-    .watchlist-focus { color:var(--text-secondary); font-size:.79rem; line-height:1.45; }
-    .shortlist-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4); margin-top:var(--sp-5); }
-    .shortlist-card {
-      border:1px solid rgba(74,222,128,.18);
-      border-radius:var(--r-lg);
-      padding:var(--sp-4);
-      background:linear-gradient(135deg, rgba(74,222,128,.08), color-mix(in srgb, var(--bg-card) 64%, transparent));
-    }
-    .shortlist-card h3 { margin:0 0 var(--sp-3); color:var(--text-primary); font-size:.95rem; }
-    .shortlist-card ul { margin:0; padding-left:1.1rem; color:var(--text-secondary); line-height:1.7; font-size:.82rem; }
-    @media(max-width:900px) {
-      .watchlist-intro, .watchlist-grid, .shortlist-grid { grid-template-columns:1fr; }
-    }
-  
-    /* ── 3D globe of the directory (js/globe3d.js) ── */
-    .groups-globe { position:relative; margin:var(--sp-5) 0; border:1px solid var(--border); border-radius:var(--r-lg);
-      background:radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--c-atom) 6%, transparent), transparent 70%); padding:var(--sp-3) var(--sp-3) var(--sp-2); }
-    .groups-globe[hidden] { display:none; }
-    #groups-globe-cvs { display:block; width:100%; height:470px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
-    @media(max-width:620px){ #groups-globe-cvs { height:340px; } }
-    .groups-globe-bar { display:flex; flex-wrap:wrap; gap:.4rem 1rem; align-items:center; justify-content:space-between; font-size:.76rem; color:var(--text-secondary); padding:0 var(--sp-2); }
-    .groups-globe-bar strong { color:var(--text-primary); }
-    .groups-globe-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
-    .groups-globe-pause:hover { color:var(--text-primary); }
-    .groups-globe-pause[hidden] { display:none; }
-  
     /* this page had no .container, so text sat flush against the window edge and stretched on wide screens */
     .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 var(--sp-6); }
     .page-content { max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: var(--sp-6); padding-right: var(--sp-6); }
     @media (max-width: 768px) { .page-hero-inner, .page-content { padding-left: var(--sp-4); padding-right: var(--sp-4); } }
-  
-    /* the dark wash only suits the dark theme; on cream it turned the filter pills grey-on-grey */
-    [data-theme="dark"] .mini-filter-btn, [data-theme="dark"] .path-btn { background: rgba(2,6,23,.24); }
 
-    /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
+    /* ── hero ── */
+    .ag-stats { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:var(--sp-4); }
+    .ag-stats span { display:inline-flex; align-items:baseline; gap:.35rem; padding:.3rem .75rem; border-radius:999px; border:1px solid var(--border); background:color-mix(in srgb, var(--bg-card) 70%, transparent); font-size:.8rem; color:var(--text-secondary); }
+    .ag-stats b { font-family:var(--font-mono); font-size:.95rem; color:var(--text-primary); }
+    .ag-curation { margin:var(--sp-3) 0 0; font-size:.8rem; color:var(--text-muted); max-width:62ch; line-height:1.55; }
+
+    .ag-sec { margin:0 0 var(--sp-8); scroll-margin-top:84px; }
+    .ag-lead { margin:-.25rem 0 var(--sp-4); color:var(--text-secondary); font-size:.9rem; line-height:1.6; max-width:80ch; }
+    .ag-foot { margin:var(--sp-3) 0 0; color:var(--text-muted); font-size:.76rem; line-height:1.5; }
+
+    /* ── 01 · area cards ── */
+    .ag-areas { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:var(--sp-3); }
+    .ag-area { --c:#94a3b8; position:relative; display:flex; flex-direction:column; gap:.35rem; text-align:left; padding:var(--sp-4); border-radius:var(--r-lg);
+      border:1px solid var(--border); background:linear-gradient(160deg, color-mix(in srgb, var(--c) 12%, transparent), color-mix(in srgb, var(--bg-card) 85%, transparent) 60%);
+      color:var(--text-secondary); font:inherit; cursor:pointer; transition:border-color var(--t), transform var(--t), box-shadow var(--t); }
+    .ag-area:hover { border-color:color-mix(in srgb, var(--c) 60%, transparent); transform:translateY(-2px); }
+    .ag-area[aria-pressed="true"] { border-color:var(--c); box-shadow:0 0 0 2px color-mix(in srgb, var(--c) 35%, transparent); }
+    .ag-area-top { display:flex; align-items:center; gap:.5rem; }
+    .ag-area-dot { width:10px; height:10px; border-radius:50%; background:var(--c); flex-shrink:0; }
+    .ag-area-name { font-weight:700; color:var(--text-primary); font-size:.95rem; }
+    .ag-area-n { margin-left:auto; font-family:var(--font-mono); font-size:1.25rem; font-weight:700; color:var(--text-primary); }
+    .ag-area-desc { font-size:.8rem; line-height:1.5; }
+    .ag-area-atoms { font-size:.72rem; color:var(--text-muted); font-family:var(--font-mono); }
+    @media (max-width:1000px) { .ag-areas { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+    @media (max-width:480px) { .ag-areas { grid-template-columns:1fr; } }
+
+    /* ── 02 · toolbar ── */
+    .ag-toolbar { display:grid; gap:var(--sp-3); padding:var(--sp-4); margin:0 0 var(--sp-4); border:1px solid var(--border); border-radius:var(--r-lg); background:color-mix(in srgb, var(--bg-card) 75%, transparent); }
+    .ag-search { position:relative; }
+    .ag-search svg { position:absolute; left:12px; top:50%; width:16px; height:16px; transform:translateY(-50%); color:var(--text-muted); }
+    #group-search { width:100%; box-sizing:border-box; padding:10px 14px 10px 36px; background:var(--bg-surface, var(--bg-card)); border:1px solid var(--border-med, var(--border)); border-radius:var(--r); color:var(--text-primary); font:inherit; font-size:.9rem; outline:none; }
+    #group-search:focus { border-color:#18813e; box-shadow:0 0 0 3px rgba(74,222,128,.15); }
+    #group-search::placeholder { color:var(--text-muted); }
+    .ag-selects { display:flex; flex-wrap:wrap; gap:.5rem .9rem; }
+    .ag-selects label { display:inline-flex; align-items:center; gap:.4rem; font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+    .ag-selects select { font:inherit; font-size:.82rem; font-weight:500; letter-spacing:0; text-transform:none; color:var(--text-primary); background:var(--bg-card); border:1px solid var(--border-med, var(--border)); border-radius:8px; padding:5px 8px; max-width:15rem; }
+    .ag-selects select.is-set { border-color:#18813e; box-shadow:0 0 0 2px rgba(74,222,128,.15); }
+    .ag-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .ag-chip { --c:#94a3b8; display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font:inherit; font-size:.78rem; font-weight:600; cursor:pointer; }
+    .ag-chip i { width:8px; height:8px; border-radius:50%; background:var(--c); }
+    .ag-chip small { font-family:var(--font-mono); color:var(--text-muted); font-size:.72rem; }
+    .ag-chip:hover { color:var(--text-primary); border-color:color-mix(in srgb, var(--c) 55%, transparent); }
+    .ag-chip[aria-pressed="true"] { color:var(--text-primary); border-color:var(--c); background:color-mix(in srgb, var(--c) 14%, transparent); }
+    .ag-chip:disabled { opacity:.4; cursor:default; }
+    .ag-status { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .8rem; }
+    .result-count { font-size:.85rem; font-weight:700; color:var(--text-primary); }
+    .ag-active { font-size:.78rem; color:var(--text-muted); }
+    .ag-mini { font:inherit; font-size:.76rem; font-weight:600; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med, var(--border)); border-radius:999px; padding:4px 11px; cursor:pointer; }
+    .ag-mini:hover { color:var(--text-primary); border-color:#18813e; }
+    .ag-mini[aria-pressed="true"] { color:var(--text-primary); border-color:#b45309; background:rgba(251,191,36,.12); }
+    .ag-mini b { font-family:var(--font-mono); }
+    .ag-mini-quiet { border-color:transparent; color:var(--text-muted); }
+    .ag-status #ag-mine-btn { margin-left:auto; }
+
+    /* ── 02 · results + sticky map ── */
+    .ag-layout { display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:var(--sp-5); align-items:start; }
+    .ag-side { position:sticky; top:84px; display:grid; gap:var(--sp-3); }
+    .ag-side > .amo-eyebrow { justify-self:start; }
+    @media (max-width:1060px) {
+      .ag-layout { grid-template-columns:1fr; }
+      .ag-side { position:static; order:-1; }
+    }
+    .ag-country { display:flex; align-items:baseline; gap:.6rem; margin:var(--sp-5) 0 var(--sp-2); font-size:.78rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); }
+    .ag-country:first-child { margin-top:0; }
+    .ag-country span { font-family:var(--font-mono); letter-spacing:0; }
+    .ag-country::after { content:''; flex:1; height:1px; background:var(--border); }
+    .group-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(255px, 1fr)); gap:var(--sp-3); }
+    .group-card { --c:#94a3b8; position:relative; display:flex; flex-direction:column; gap:4px; padding:var(--sp-3) var(--sp-4) var(--sp-4); border-radius:var(--r-lg);
+      background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--c); cursor:pointer; transition:border-color var(--t), background var(--t), transform var(--t), box-shadow var(--t); }
+    .group-card:hover { background:var(--bg-card-hover); transform:translateY(-2px); }
+    .group-card.is-highlighted { box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 40%, transparent); }
+    .gc-head { display:flex; align-items:flex-start; gap:.4rem; }
+    .gc-open { flex:1; text-align:left; font:inherit; font-size:.92rem; font-weight:700; color:var(--text-primary); background:none; border:0; padding:0; cursor:pointer; line-height:1.3; }
+    .gc-open:focus-visible { outline:2px solid #18813e; outline-offset:3px; border-radius:4px; }
+    .gc-star { flex-shrink:0; font-size:1.05rem; line-height:1; color:var(--text-muted); background:none; border:0; padding:2px 4px; cursor:pointer; border-radius:6px; }
+    .gc-star:hover { color:#b45309; }
+    .gc-star[aria-pressed="true"] { color:#d97706; }
+    .gc-pi { font-size:.8rem; color:var(--text-secondary); }
+    .gc-inst { font-size:.76rem; color:var(--text-muted); }
+    .gc-focus { font-size:.8rem; color:var(--text-secondary); line-height:1.5; margin-top:2px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .gc-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:auto; padding-top:8px; }
+    .gc-chip { border:1px solid var(--border); border-radius:999px; color:var(--text-muted); font-size:.68rem; font-weight:700; padding:1px 7px; }
+    .gc-chip.area { color:var(--text-secondary); border-color:color-mix(in srgb, var(--c) 50%, transparent); }
+    .gc-badge { font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#92400e; background:rgba(251,191,36,.14); border-radius:4px; padding:1px 6px; align-self:flex-start; }
+    .ag-empty { padding:var(--sp-6); text-align:center; border:1px dashed var(--border-med, var(--border)); border-radius:var(--r-lg); color:var(--text-secondary); }
+    .ag-empty[hidden], .ag-alsowl[hidden] { display:none; }
+    .ag-alsowl { margin-top:var(--sp-5); padding:var(--sp-4); border-radius:var(--r-lg); border:1px solid var(--border); background:color-mix(in srgb, var(--bg-card) 55%, transparent); }
+    .ag-alsowl h3 { margin:0 0 var(--sp-2); font-size:.9rem; color:var(--text-primary); }
+    .ag-alsowl ul { margin:0; padding:0; list-style:none; display:grid; gap:6px; }
+    .ag-alsowl li { font-size:.8rem; color:var(--text-secondary); }
+    .ag-alsowl li b { color:var(--text-primary); }
+
+    /* globe */
+    .groups-globe { position:relative; border:1px solid var(--border); border-radius:var(--r-lg);
+      background:radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--c-atom) 6%, transparent), transparent 70%); padding:var(--sp-2) var(--sp-2) var(--sp-2); }
+    .groups-globe[hidden] { display:none; }
+    #groups-globe-cvs { display:block; width:100%; height:340px; max-height:none !important; /* beat the global Chart.js canvas cap */ }
+    @media (max-width:1060px) { #groups-globe-cvs { height:380px; } }
+    @media (max-width:620px) { #groups-globe-cvs { height:300px; } }
+    .groups-globe-bar { display:flex; flex-wrap:wrap; gap:.4rem 1rem; align-items:center; justify-content:space-between; font-size:.72rem; color:var(--text-secondary); padding:0 var(--sp-2); line-height:1.45; }
+    .groups-globe-bar strong { color:var(--text-primary); }
+    .groups-globe-pause { font:inherit; font-size:.72rem; color:var(--text-secondary); background:transparent; border:1px solid var(--border-med); border-radius:999px; padding:2px 10px; cursor:pointer; }
+    .groups-globe-pause:hover { color:var(--text-primary); }
+    .groups-globe-pause[hidden] { display:none; }
+
+    /* my list */
+    .ag-mine { padding:var(--sp-3) var(--sp-4); border-radius:var(--r-lg); border:1px solid rgba(217,119,6,.35); background:linear-gradient(160deg, rgba(251,191,36,.08), color-mix(in srgb, var(--bg-card) 80%, transparent) 60%); }
+    .ag-mine-head { display:flex; justify-content:space-between; align-items:baseline; font-size:.9rem; color:var(--text-primary); }
+    .ag-mine-head span { font-size:.74rem; color:var(--text-muted); }
+    .ag-mine-hint { margin:.35rem 0 0; font-size:.76rem; color:var(--text-muted); line-height:1.5; }
+    .ag-mine-list { margin:.5rem 0 0; padding-left:1.2rem; display:grid; gap:4px; max-height:220px; overflow:auto; }
+    .ag-mine-list li { font-size:.8rem; color:var(--text-secondary); }
+    .ag-mine-list button { font:inherit; background:none; border:0; padding:0; color:var(--text-primary); cursor:pointer; text-align:left; }
+    .ag-mine-list button:hover { text-decoration:underline; }
+    .ag-mine-list .rm { color:var(--text-muted); margin-left:.3rem; }
+    .ag-mine-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:.6rem; }
+    .ag-mine-actions[hidden] { display:none; }
+
+    /* ── 03 · names to know ── */
+    .shortlist-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4); }
+    .shortlist-card { border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-4); background:color-mix(in srgb, var(--bg-card) 70%, transparent); }
+    .shortlist-card h3 { display:flex; align-items:center; gap:.5rem; margin:0 0 var(--sp-3); color:var(--text-primary); font-size:.95rem; }
+    .shortlist-card h3 i { width:10px; height:10px; border-radius:50%; }
+    .shortlist-card ul { margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px; }
+    .sl-name { --c:transparent; display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:.8rem; color:var(--text-secondary); background:var(--bg-card); border:1px solid var(--border); border-radius:999px; padding:4px 10px; cursor:pointer; }
+    .sl-name i { width:7px; height:7px; border-radius:50%; background:var(--c); border:1px solid var(--text-muted); }
+    .sl-name.in i { border-color:var(--c); }
+    .sl-name small { color:var(--text-muted); }
+    .sl-name:hover { color:var(--text-primary); border-color:#18813e; }
+    @media(max-width:900px) { .shortlist-grid { grid-template-columns:1fr; } }
+
+    /* ── 04 · watchlist ── */
+    .watchlist-grid { display:grid; gap:var(--sp-3); }
+    .watchlist-section { border:1px solid var(--border); border-radius:var(--r-lg); background:color-mix(in srgb, var(--bg-card) 55%, transparent); overflow:hidden; }
+    .watchlist-section > summary { display:flex; justify-content:space-between; align-items:center; gap:var(--sp-3); padding:var(--sp-3) var(--sp-4); cursor:pointer; color:var(--text-primary); font-weight:700; font-size:.92rem; list-style:none; }
+    .watchlist-section > summary::-webkit-details-marker { display:none; }
+    .watchlist-section > summary::after { content:'▾'; color:var(--text-muted); transition:transform var(--t); }
+    .watchlist-section:not([open]) > summary::after { transform:rotate(-90deg); }
+    .watchlist-section > summary span { margin-left:auto; color:var(--text-muted); font-size:.74rem; font-weight:700; font-family:var(--font-mono); }
+    .watchlist-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:1px; background:var(--border); border-top:1px solid var(--border); }
+    .watchlist-item { display:grid; gap:2px; padding:var(--sp-2) var(--sp-3); background:var(--bg-card); }
+    .watchlist-name { color:var(--text-primary); font-weight:700; font-size:.8rem; }
+    .watchlist-meta { color:var(--text-muted); font-size:.72rem; }
+    .watchlist-focus { color:var(--text-secondary); font-size:.74rem; line-height:1.4; }
+    .ag-wl-note { grid-column:1/-1; margin:0; color:var(--text-muted); font-size:.78rem; }
+    @media(max-width:520px) { .watchlist-list { grid-template-columns:1fr; } }
+
+    /* ── profile drawer ── */
+    .ag-backdrop { position:fixed; inset:0; background:rgba(2,6,23,.45); z-index:1190; }
+    .ag-backdrop[hidden] { display:none; }
+    .ag-drawer { --c:#94a3b8; position:fixed; top:0; right:0; bottom:0; width:min(460px, 100vw); z-index:1200; overflow-y:auto; background:var(--bg-surface, var(--bg-card)); border-left:1px solid var(--border-strong, var(--border)); box-shadow:-20px 0 60px rgba(0,0,0,.3); padding:var(--sp-5); box-sizing:border-box; animation:ag-in .22s var(--ease-out, ease-out); }
+    .ag-drawer[hidden] { display:none; }
+    @keyframes ag-in { from { transform:translateX(24px); opacity:0; } to { transform:none; opacity:1; } }
+    @media (prefers-reduced-motion: reduce) { .ag-drawer { animation:none; } }
+    @media (max-width:620px) { .ag-drawer { top:auto; left:0; width:100vw; max-height:88vh; border-left:0; border-top:1px solid var(--border-strong, var(--border)); border-radius:16px 16px 0 0; } }
+    .gp-close { position:absolute; top:var(--sp-3); right:var(--sp-3); background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-muted); cursor:pointer; font-size:1rem; line-height:1; padding:6px 9px; }
+    .gp-close:hover { color:var(--text-primary); }
+    .gp-area { display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-secondary); }
+    .gp-area i { width:9px; height:9px; border-radius:50%; background:var(--c); }
+    .gp-name { margin:.4rem 2.5rem .2rem 0; font-size:1.35rem; line-height:1.25; color:var(--text-primary); }
+    .gp-pi { font-size:.92rem; color:var(--text-secondary); }
+    .gp-inst { font-size:.84rem; color:var(--text-muted); margin-top:2px; }
+    .gp-actions { display:flex; flex-wrap:wrap; gap:6px; margin:var(--sp-3) 0 var(--sp-4); }
+    .gp-actions a, .gp-actions button { display:inline-flex; align-items:center; gap:5px; font:inherit; font-size:.8rem; font-weight:600; text-decoration:none; padding:6px 12px; border-radius:999px; border:1px solid var(--border-med, var(--border)); color:var(--text-primary); background:var(--bg-card); cursor:pointer; }
+    .gp-actions .primary { background:#18813e; border-color:#18813e; color:#fff; }
+    .gp-actions button[aria-pressed="true"] { border-color:#d97706; color:#b45309; }
+    .gp-block { margin:0 0 var(--sp-4); }
+    .gp-key { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); margin-bottom:5px; }
+    .gp-val { font-size:.9rem; color:var(--text-secondary); line-height:1.6; }
+    .gp-atoms { display:flex; flex-wrap:wrap; gap:5px; }
+    .atom-chip { padding:2px 9px; border-radius:999px; font-size:.76rem; font-weight:700; background:rgba(74,222,128,0.1); color:#18813e; border:1px solid rgba(74,222,128,0.25); }
+    .gp-paper a { color:#4f5ff5; font-size:.88rem; text-decoration:none; }
+    .gp-paper a:hover { text-decoration:underline; }
+    .gp-similar { display:grid; gap:6px; }
+    .gp-similar button { --c:#94a3b8; display:flex; align-items:center; gap:8px; text-align:left; font:inherit; font-size:.82rem; color:var(--text-secondary); background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:7px 10px; cursor:pointer; }
+    .gp-similar button i { width:8px; height:8px; border-radius:50%; background:var(--c); flex-shrink:0; }
+    .gp-similar button b { color:var(--text-primary); }
+    .gp-similar button:hover { border-color:var(--c); }
+    .gp-tip { margin-top:var(--sp-4); padding:var(--sp-3); border-radius:10px; background:color-mix(in srgb, var(--bg-card) 70%, transparent); border:1px solid var(--border); font-size:.8rem; color:var(--text-secondary); line-height:1.55; }
+
+    @media print {
+      .ag-toolbar, .ag-side, .ag-drawer, .ag-backdrop, .gc-star { display:none !important; }
+      .ag-layout { grid-template-columns:1fr; }
+      .watchlist-section > *:not(summary) { display:grid !important; }
+      .gc-focus { -webkit-line-clamp:unset; }
+    }
+    /* dark-ink overrides: light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
       [data-theme="dark"] .page-wrap { --page-color: #86c58f; }
-      [data-theme="dark"] .mini-filter-btn.active, [data-theme="dark"] .path-btn.active { color: #4ade80; }
+      [data-theme="dark"] .page-hero-eyebrow { color:#86efac !important; }
       [data-theme="dark"] .atom-chip { color: #4ade80; }
-      [data-theme="dark"] .hire-yes { color: #34d399; }
       [data-theme="dark"] .gp-paper a { color: #a5b4fc; }
-      [data-theme="dark"] .gc-link { color: #38bdf8; }
-      [data-theme="dark"] .curation-note strong { color: #a88903; }
+      [data-theme="dark"] .gc-badge { color:#fcd34d; }
+      [data-theme="dark"] .gc-star[aria-pressed="true"], [data-theme="dark"] .gp-actions button[aria-pressed="true"] { color:#fbbf24; }
+      [data-theme="dark"] .gp-actions .primary { background:#15803d; }
     }
   </style>
 </head>
@@ -318,15 +253,19 @@
   <div class="page-hero">
     <div class="page-hero-inner page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-eyebrow">
-          <span class="page-tag">🌍 Career 02</span>
-          <span class="page-tag">Find a research group</span>
-        </div>
-        <h1 class="page-title"><span class="accent">100+</span> AMO Research Groups Worldwide</h1>
-        <p class="page-subtitle">
-          A searchable directory plus a broader global watchlist of leading atomic, molecular, and optical physics groups —
-          organized by research focus, region, atoms used, technique, and career relevance.
+        <div class="page-hero-eyebrow" style="background:rgba(63,93,63,0.08);border-color:rgba(63,93,63,0.22);color:#2f6a37;">🌍 Career 02 · Find a research group</div>
+        <h1>AMO Group <span class="grad-text" style="--ga:#4ade80;--gb:#38bdf8;">Finder</span></h1>
+        <p class="page-hero-desc">
+          Where to do a PhD or a postdoc in atomic, molecular and optical physics: a mapped directory of groups you can
+          filter by research area, atom, region and technique, a globe that follows every filter, and a list you can keep.
         </p>
+        <div class="ag-stats" aria-label="What is on this page">
+          <span><b id="ag-stat-groups">98</b> mapped groups</span>
+          <span><b id="ag-stat-countries">19</b> countries</span>
+          <span><b id="ag-stat-areas">8</b> research areas</span>
+          <span><b id="ag-stat-watch">+</b> more names on a watchlist</span>
+        </div>
+        <p class="ag-curation">A curated map, not a ranking. People move and retire, and openings change every year: check the group page and recent papers before you write.</p>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
         <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -335,11 +274,9 @@
    reliably animate raw SVG geometry attributes via CSS keyframes. */
 @keyframes ag-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.4);opacity:1}}
 @keyframes ag-link{0%,100%{opacity:.1}50%{opacity:.5}}
-@keyframes ag-travel{0%{offset-distance:0%;opacity:1}100%{offset-distance:100%;opacity:0}}
 .ag-node{animation:ag-pulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 .ag-link{animation:ag-link 2s ease-in-out infinite}
 </style>
-<!-- Network links -->
 <line x1="60" y1="50" x2="150" y2="82" stroke="#18813e" stroke-width=".8" class="ag-link"/>
 <line x1="60" y1="50" x2="220" y2="40" stroke="#18813e" stroke-width=".8" class="ag-link" style="animation-delay:-.3s"/>
 <line x1="150" y1="82" x2="220" y2="40" stroke="#18813e" stroke-width=".8" class="ag-link" style="animation-delay:-.6s"/>
@@ -351,17 +288,9 @@
 <line x1="40" y1="110" x2="150" y2="82" stroke="#18813e" stroke-width=".8" class="ag-link" style="animation-delay:-1.5s"/>
 <line x1="270" y1="70" x2="220" y2="40" stroke="#18813e" stroke-width=".8" class="ag-link" style="animation-delay:-.7s"/>
 <line x1="270" y1="70" x2="250" y2="120" stroke="#18813e" stroke-width=".8" class="ag-link" style="animation-delay:-1.1s"/>
-<!-- Traveling signal dots -->
-<circle r="3" fill="#18823e" opacity=".8" filter="url(#agf)">
-  <animateMotion dur="1.8s" repeatCount="indefinite" path="M60,50 L150,82"/>
-</circle>
-<circle r="2.5" fill="#18823e" opacity=".7" filter="url(#agf)">
-  <animateMotion dur="2.2s" repeatCount="indefinite" begin="-0.6s" path="M220,40 L100,130"/>
-</circle>
-<circle r="2.5" fill="#18823e" opacity=".7" filter="url(#agf)">
-  <animateMotion dur="1.6s" repeatCount="indefinite" begin="-1.1s" path="M150,82 L250,120"/>
-</circle>
-<!-- Research group nodes -->
+<circle r="3" fill="#18823e" opacity=".8" filter="url(#agf)"><animateMotion dur="1.8s" repeatCount="indefinite" path="M60,50 L150,82"/></circle>
+<circle r="2.5" fill="#18823e" opacity=".7" filter="url(#agf)"><animateMotion dur="2.2s" repeatCount="indefinite" begin="-0.6s" path="M220,40 L100,130"/></circle>
+<circle r="2.5" fill="#18823e" opacity=".7" filter="url(#agf)"><animateMotion dur="1.6s" repeatCount="indefinite" begin="-1.1s" path="M150,82 L250,120"/></circle>
 <circle cx="60" cy="50" r="5" fill="#18823e" class="ag-node" filter="url(#agf)"/>
 <text x="60" y="38" text-anchor="middle" font-size="7" fill="#18823e" opacity=".7">MIT</text>
 <circle cx="150" cy="82" r="8" fill="#18823e" class="ag-node" style="animation-delay:-.4s" filter="url(#agf)"/>
@@ -376,143 +305,102 @@
 <text x="28" y="122" text-anchor="middle" font-size="6.5" fill="#18823e" opacity=".6">NIST</text>
 <circle cx="270" cy="70" r="4" fill="#18823e" class="ag-node" style="animation-delay:-.9s" filter="url(#agf)"/>
 <text x="270" y="58" text-anchor="middle" font-size="6.5" fill="#18823e" opacity=".6">Princeton</text>
-<defs>
-  <filter id="agf"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
+<defs><filter id="agf"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
 </svg>
       </div>
     </div>
   </div>
 
   <div class="page-content">
-    <div class="curation-note">
-      <strong>How to read this page:</strong> this is not a strict ranking. It is a curated shortlist and map based on
-      field relevance, scientific quality, reputation, and alignment with cold-atom, tweezer, molecule, clock,
-      quantum-gas, atom-interferometry, and AMO quantum-science directions.
-    </div>
 
-    <h2 class="section-title"><span class="accent">01</span> Filter &amp; Search</h2>
-    <div class="filter-bar">
-      <span class="filter-label">Show:</span>
-      <button class="filter-btn active" data-tag="all"><span class="dot" style="background:#94a3b8"></span>All groups</button>
-      <button class="filter-btn" data-tag="rydberg"><span class="dot" style="background:#818cf8"></span>Rydberg / QC</button>
-      <button class="filter-btn" data-tag="sim"><span class="dot" style="background:#34d399"></span>Quantum Simulation</button>
-      <button class="filter-btn" data-tag="clocks"><span class="dot" style="background:#fbbf24"></span>Clocks / Metrology</button>
-      <button class="filter-btn" data-tag="bec"><span class="dot" style="background:#60a5fa"></span>BEC / Fermions</button>
-      <button class="filter-btn" data-tag="molecules"><span class="dot" style="background:#2dd4bf"></span>Molecules</button>
-      <button class="filter-btn" data-tag="cavity"><span class="dot" style="background:#c084fc"></span>Cavity QED</button>
-      <button class="filter-btn" data-tag="dipolar"><span class="dot" style="background:#f472b6"></span>Dipolar</button>
-      <button class="filter-btn" data-tag="ions"><span class="dot" style="background:#fb923c"></span>Ions</button>
-    </div>
+    <!-- ══ 01 · AREAS ══ -->
+    <section class="ag-sec" id="areas" aria-labelledby="areas-h">
+      <h2 class="section-title" id="areas-h"><span class="accent">01</span> Start from a research area</h2>
+      <p class="ag-lead">Eight areas cover the directory. Pick one to see its groups on the map and in the list below; pick it again to clear it.</p>
+      <div class="ag-areas" id="ag-areas"></div>
+    </section>
 
-    <div class="path-tree" aria-label="Guided exploration paths">
-      <div class="path-tree-label">I am looking for…
-        <span>Choose a path to set several filters at once.</span>
-      </div>
-      <div class="path-tree-buttons">
-        <button class="path-btn" data-preset="neutral-qc">Neutral-atom QC</button>
-        <button class="path-btn" data-preset="molecules">Molecule assembly</button>
-        <button class="path-btn" data-preset="clocks">Clock / metrology groups</button>
-        <button class="path-btn" data-preset="fermions">Fermi gases</button>
-        <button class="path-btn" data-preset="theory">Theory groups</button>
-        <button class="path-btn" data-preset="reset">Reset</button>
-      </div>
-    </div>
+    <!-- ══ 02 · FINDER ══ -->
+    <section class="ag-sec" id="finder" aria-labelledby="finder-h">
+      <h2 class="section-title" id="finder-h"><span class="accent">02</span> Find groups</h2>
 
-    <div class="filter-matrix" aria-label="Additional filters">
-      <div class="filter-group">
-        <div class="filter-group-title">Atom / platform</div>
-        <div class="mini-filter-row">
-          <button class="mini-filter-btn active" data-filter="atom" data-value="all">All</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Rb">Rb</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Cs">Cs</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Li">Li</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Sr">Sr</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Yb">Yb</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Dy">Dy</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="Er">Er</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="molecules">Molecules</button>
-          <button class="mini-filter-btn" data-filter="atom" data-value="ions">Ions</button>
+      <div class="ag-toolbar" role="search">
+        <div class="ag-search">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="group-search" type="search" autocomplete="off" placeholder="Search by PI, institution, atom or topic (also searches the watchlist)" aria-label="Search groups and the watchlist">
+        </div>
+        <div class="ag-selects">
+          <label>Atom <select id="f-atom" data-filter="atom"></select></label>
+          <label>Region <select id="f-region" data-filter="region"></select></label>
+          <label>Technique <select id="f-technique" data-filter="technique"></select></label>
+          <label>Type <select id="f-kind" data-filter="kind"></select></label>
+          <label>Sort <select id="f-sort"></select></label>
+        </div>
+        <div class="ag-chips" id="ag-chips" aria-label="Research area"></div>
+        <div class="ag-status">
+          <span class="result-count" id="result-count" aria-live="polite">98 groups</span>
+          <span class="ag-active" id="ag-active"></span>
+          <button type="button" class="ag-mini" id="ag-mine-btn" aria-pressed="false">★ My list <b id="ag-mine-n">0</b></button>
+          <button type="button" class="ag-mini" id="ag-clear" hidden>Clear filters</button>
         </div>
       </div>
-      <div class="filter-group">
-        <div class="filter-group-title">Region</div>
-        <div class="mini-filter-row">
-          <button class="mini-filter-btn active" data-filter="region" data-value="all">All</button>
-          <button class="mini-filter-btn" data-filter="region" data-value="US">US</button>
-          <button class="mini-filter-btn" data-filter="region" data-value="Europe">Europe</button>
-          <button class="mini-filter-btn" data-filter="region" data-value="Asia">Asia</button>
-          <button class="mini-filter-btn" data-filter="region" data-value="Australia">Australia</button>
-          <button class="mini-filter-btn" data-filter="region" data-value="Canada">Canada</button>
-          <button class="mini-filter-btn" data-filter="region" data-value="South America">South America</button>
+
+      <div class="ag-layout">
+        <div class="ag-results">
+          <div id="group-grid"></div>
+          <div class="ag-empty" id="ag-empty" hidden>
+            <p>No mapped group matches all of these filters.</p>
+            <button type="button" class="ag-mini" id="ag-empty-clear">Clear filters</button>
+          </div>
+          <div class="ag-alsowl" id="ag-alsowl" hidden></div>
         </div>
+        <aside class="ag-side" aria-label="Map and your list">
+          <span class="amo-eyebrow">Interactive</span>
+          <div class="groups-globe" id="groups-globe" hidden>
+            <canvas id="groups-globe-cvs" data-export-ready="true" aria-label="Globe of the mapped groups: one marker per group (clustered by campus), coloured by research area, following every filter. The same groups are listed beside it."></canvas>
+            <div class="groups-globe-bar">
+              <span><strong id="groups-globe-count">98 groups</strong> on the globe · colours are the research areas · click a marker for details (keyboard: <kbd>]</kbd> / <kbd>[</kbd> step through markers, Enter opens)</span>
+              <button type="button" class="groups-globe-pause" id="groups-globe-pause" aria-pressed="false">❚❚ Stop spinning</button>
+            </div>
+          </div>
+          <div class="ag-mine" id="ag-mine">
+            <div class="ag-mine-head"><strong>My list</strong><span id="ag-mine-count">empty</span></div>
+            <p class="ag-mine-hint" id="ag-mine-hint">Star a group (☆) to keep it here while you compare. The list stays in this browser.</p>
+            <ol class="ag-mine-list" id="ag-mine-list"></ol>
+            <div class="ag-mine-actions" id="ag-mine-actions" hidden>
+              <button type="button" class="ag-mini" id="ag-mine-copy">Copy as text</button>
+              <button type="button" class="ag-mini" id="ag-mine-csv">Download CSV</button>
+              <button type="button" class="ag-mini" id="ag-mine-share">Copy link to this list</button>
+              <button type="button" class="ag-mini ag-mini-quiet" id="ag-mine-empty">Empty the list</button>
+            </div>
+          </div>
+        </aside>
       </div>
-      <div class="filter-group">
-        <div class="filter-group-title">Career mode</div>
-        <div class="mini-filter-row">
-          <button class="mini-filter-btn active" data-filter="career" data-value="all">All</button>
-          <button class="mini-filter-btn" data-filter="career" data-value="phd">PhD-friendly</button>
-          <button class="mini-filter-btn" data-filter="career" data-value="postdoc">Postdoc-heavy</button>
-          <button class="mini-filter-btn" data-filter="career" data-value="theory">Theory</button>
-          <button class="mini-filter-btn" data-filter="career" data-value="experimental">Experimental</button>
-        </div>
-      </div>
-      <div class="filter-group">
-        <div class="filter-group-title">Technique</div>
-        <div class="mini-filter-row">
-          <button class="mini-filter-btn active" data-filter="technique" data-value="all">All</button>
-          <button class="mini-filter-btn" data-filter="technique" data-value="tweezer">Tweezer</button>
-          <button class="mini-filter-btn" data-filter="technique" data-value="lattice">Lattice</button>
-          <button class="mini-filter-btn" data-filter="technique" data-value="microscope">Microscope</button>
-          <button class="mini-filter-btn" data-filter="technique" data-value="cavity">Cavity</button>
-          <button class="mini-filter-btn" data-filter="technique" data-value="clock">Clock</button>
-          <button class="mini-filter-btn" data-filter="technique" data-value="molecule-assembly">Molecule assembly</button>
-        </div>
-      </div>
-    </div>
+      <p class="ag-foot">Technique tags are read from each group's focus line, so they are a guide, not a complete description. The representative paper is one well-known result, not necessarily the group's latest.</p>
+    </section>
 
-    <div class="groups-globe" id="groups-globe" hidden>
-      <canvas id="groups-globe-cvs" data-export-ready="true" aria-label="Globe of the Featured Directory: one marker per group (clustered by campus), coloured by research area. The same groups are listed below."></canvas>
-      <div class="groups-globe-bar">
-        <span><strong id="groups-globe-count">98 groups</strong> on the globe · colours match the filter buttons · click a marker for details (keyboard: <kbd>]</kbd> / <kbd>[</kbd> step through the markers, Enter opens)</span>
-        <button type="button" class="groups-globe-pause" id="groups-globe-pause" aria-pressed="false">❚❚ Stop spinning</button>
-      </div>
-    </div>
+    <!-- ══ 03 · NAMES TO KNOW ══ -->
+    <section class="ag-sec" id="shortlists" aria-labelledby="short-h">
+      <h2 class="section-title" id="short-h"><span class="accent">03</span> Names to know, by subfield</h2>
+      <p class="ag-lead">Curated starting points for four of the busiest subfields. Names with a coloured dot are in the directory and open their profile; the others are on the watchlist below.</p>
+      <div class="shortlist-grid" id="shortlist-grid"></div>
+    </section>
 
-    <div id="group-panel">
-      <button class="gp-close" onclick="closePanel()">✕</button>
-      <div id="panel-content"></div>
-    </div>
-
-    <h2 class="section-title" style="margin-top:var(--sp-6)"><span class="accent">02</span> Featured Directory</h2>
-    <div class="search-row">
-      <input id="group-search" type="text" placeholder="Search by PI, institution, atom, or focus…" oninput="filterGroups()">
-      <span class="result-count" id="result-count"></span>
-    </div>
-    <div class="group-grid" id="group-grid"></div>
-
-    <h2 class="section-title" style="margin-top:var(--sp-7)"><span class="accent">03</span> Global Watchlist</h2>
-    <div class="watchlist-intro">
-      <p>
-        The mapped directory above is the link-checked, structured set. This watchlist is broader:
-        cold atoms, optical tweezers, Rydberg arrays, quantum gases, cold molecules, optical clocks,
-        atom interferometry, ions, and AMO-adjacent theory ecosystems.
-      </p>
-      <div class="watchlist-note">
-        Not a strict ranking. Use this as a field map: search by PI, institution, country, platform, or technique,
-        then follow up through group pages, recent papers, and department listings.
-      </div>
-    </div>
-    <div class="watchlist-controls">
-      <input id="watchlist-search" type="text" placeholder="Search the broader watchlist by PI, institution, country, or topic…" oninput="renderWatchlist()">
-      <span class="result-count" id="watchlist-count"></span>
-    </div>
-    <div class="watchlist-grid" id="watchlist-grid"></div>
-
-    <h2 class="section-title" style="margin-top:var(--sp-7)"><span class="accent">04</span> Highest-Priority Shortlists</h2>
-    <div class="shortlist-grid" id="shortlist-grid"></div>
+    <!-- ══ 04 · WATCHLIST ══ -->
+    <section class="ag-sec" id="watchlist" aria-labelledby="watch-h">
+      <h2 class="section-title" id="watch-h"><span class="accent">04</span> The wider watchlist</h2>
+      <p class="ag-lead" id="watch-lead">More people worth knowing across cold atoms, tweezers, quantum gases, molecules, clocks, interferometry, ions and AMO theory. These entries are names and topics only, so follow up through group pages and recent papers. The search box above filters this list too.</p>
+      <div class="watchlist-grid" id="watchlist-grid"></div>
+    </section>
 
   </div>
+
+  <!-- group profile drawer -->
+  <div class="ag-backdrop" id="ag-backdrop" hidden></div>
+  <aside class="ag-drawer" id="group-panel" role="dialog" aria-modal="true" aria-labelledby="gp-title" hidden>
+    <button type="button" class="gp-close" id="gp-close" aria-label="Close profile">✕</button>
+    <div id="panel-content"></div>
+  </aside>
 </main>
 
 <section class="see-also">
@@ -557,162 +445,162 @@
 /* ─────────────────────────────────────────────────────
    GROUP DATA
    tag: rydberg | sim | clocks | bec | molecules | cavity | dipolar | ions
-   hire: true = typically takes international students/postdocs
+   status: optional note shown as a badge (only where checked against an institutional page)
    ───────────────────────────────────────────────────── */
 const GROUPS = [
   /* ── USA: East ── */
-  { name:'Lukin Lab', pi:'Mikhail Lukin', inst:'Harvard University', country:'USA', lat:42.374, lon:-71.117, atoms:['Rb','Cs'], tag:'rydberg', focus:'Rydberg tweezer arrays, quantum networks, solid-state spin defects', paper:'Evered et al., Nature 622, 268 (2023)', doi:'10.1038/s41586-023-06481-y', hire:true },
-  { name:'Greiner Lab', pi:'Markus Greiner', inst:'Harvard University', country:'USA', lat:42.373, lon:-71.116, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscope, Fermi-Hubbard model, quantum thermodynamics', paper:'Bakr et al., Nature 462, 74 (2009)', doi:'10.1038/nature08482', hire:true },
-  { name:'Ni Lab', pi:'Kang-Kuen Ni', inst:'Harvard University', country:'USA', lat:42.375, lon:-71.118, atoms:['Na','Cs','K','Rb'], tag:'molecules', focus:'Ultracold polar molecules (KRb, NaCs), molecular tweezers, reaction control', paper:'Liu et al., Science 360, 900 (2018)', doi:'10.1126/science.aar7797', hire:true },
-  { name:'Vuletic Lab', pi:'Vladan Vuletić', inst:'MIT', country:'USA', lat:42.360, lon:-71.094, atoms:['Rb','Yb','Cs'], tag:'cavity', focus:'Cavity QED, spin squeezing, optical atomic clocks, quantum metrology', paper:'Pedrozo-Peñafiel et al., Nature 588, 414 (2020)', doi:'10.1038/s41586-020-3006-1', hire:true },
-  { name:'Ketterle Lab', pi:'Wolfgang Ketterle', inst:'MIT', country:'USA', lat:42.361, lon:-71.095, atoms:['Na','Li'], tag:'bec', focus:'BEC, optical lattices, low-dimensional quantum gases, spinor condensates', paper:'Davis et al., PRL 75, 3969 (1995)', doi:'10.1103/PhysRevLett.75.3969', hire:true },
-  { name:'Zwierlein Lab', pi:'Martin Zwierlein', inst:'MIT', country:'USA', lat:42.362, lon:-71.096, atoms:['Li','Na'], tag:'bec', focus:'Fermionic superfluidity, BEC-BCS crossover, quantum gas microscope for fermions', paper:'Mukherjee et al., PRL 122, 203402 (2019)', doi:'10.1103/PhysRevLett.122.203402', hire:true },
-  { name:'Thompson Lab', pi:'Jeff D. Thompson', inst:'Princeton University', country:'USA', lat:40.344, lon:-74.651, atoms:['Yb'], tag:'rydberg', focus:'Yb tweezer arrays, alkaline-earth Rydberg atoms, nanophotonics, erasure conversion for neutral-atom QC', paper:'Saskin et al., PRL 122, 143002 (2019)', doi:'10.1103/PhysRevLett.122.143002', hire:true },
-  { name:'Bakr Lab', pi:'Waseem Bakr', inst:'Princeton University', country:'USA', lat:40.344, lon:-74.654, atoms:['Li'], tag:'sim', focus:'Quantum gas microscope for fermions, Fermi-Hubbard physics, disorder', paper:'Brown et al., Science 363, 379 (2019)', doi:'10.1126/science.aat4134', hire:true },
-  { name:'Chin Lab', pi:'Cheng Chin', inst:'University of Chicago', country:'USA', lat:41.789, lon:-87.600, atoms:['Cs'], tag:'bec', focus:'Feshbach resonances, Efimov physics, superfluid-insulator transition, optical lattice', paper:'Clark et al., Nature 551, 356 (2017)', doi:'10.1038/nature24272', hire:true },
-  { name:'DeMarco Lab', pi:'Brian DeMarco', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.102, lon:-88.228, atoms:['Rb'], tag:'sim', focus:'Fermi-Hubbard model, disorder, many-body localization, quantum simulation', paper:'Kondov et al., PRL 114, 083002 (2015)', doi:'10.1103/PhysRevLett.114.083002', hire:true },
-  { name:'Gadway Lab', pi:'Bryce Gadway', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.103, lon:-88.229, atoms:['Rb'], tag:'sim', focus:'Synthetic dimensions, quasicrystals, momentum-space lattices', hire:true },
-  { name:'Spielman Lab', pi:'Ian Spielman', inst:'NIST / Univ. Maryland', country:'USA', lat:39.131, lon:-77.222, atoms:['Rb'], tag:'sim', focus:'Artificial gauge fields, synthetic spin-orbit coupling, topological band structures', paper:'Lin et al., Nature 462, 628 (2009)', doi:'10.1038/nature08609', hire:true },
-  { name:'Porto Lab', pi:'James Porto', inst:'NIST / Univ. Maryland', country:'USA', lat:38.985, lon:-76.943, atoms:['Rb'], tag:'sim', focus:'Optical lattices, Hubbard physics, quantum thermometry, lattice gauge theories', paper:'Anderlini et al., Nature 448, 452 (2007)', doi:'10.1038/nature06011', hire:true },
-  { name:'Hulet Lab', pi:'Randall Hulet', inst:'Rice University', country:'USA', lat:29.717, lon:-95.403, atoms:['Li'], tag:'bec', focus:'BEC-BCS crossover, Fermi-Hubbard model, quantum magnetism with fermions', paper:'Hart et al., Nature 519, 211 (2015)', doi:'10.1038/nature14223', hire:true },
-  { name:'Killian Lab', pi:'Tom Killian', inst:'Rice University', country:'USA', lat:29.716, lon:-95.402, atoms:['Sr'], tag:'clocks', focus:'Ultracold plasmas, Rydberg atoms in plasmas, strontium BEC', paper:'Martinez de Escobar et al., PRL 103, 200402 (2009)', doi:'10.1103/PhysRevLett.103.200402', hire:true },
-  { name:'Stamper-Kurn Lab', pi:'Dan Stamper-Kurn', inst:'UC Berkeley', country:'USA', lat:37.872, lon:-122.259, atoms:['Rb'], tag:'cavity', focus:'Spinor BEC, cavity optomechanics, quantum gas microscope, orbital magnetism', paper:'Sadler et al., Nature 443, 312 (2006)', doi:'10.1038/nature05094', hire:true },
-  { name:'Lev Lab', pi:'Benjamin Lev', inst:'Stanford University', country:'USA', lat:37.427, lon:-122.170, atoms:['Dy','Er'], tag:'dipolar', focus:'Dipolar quantum gases, quantum droplets, Er/Dy mixtures, exotic superfluid phases', paper:'Lu et al., PRL 107, 190401 (2011)', doi:'10.1103/PhysRevLett.107.190401', hire:true },
-  { name:'Kasevich Lab', pi:'Mark Kasevich', inst:'Stanford University', country:'USA', lat:37.428, lon:-122.171, atoms:['Rb','Sr'], tag:'clocks', focus:'Atom interferometry, inertial sensing, gravitational wave detection, Sr lattice clock', paper:'Kovachy et al., Nature 528, 530 (2015)', doi:'10.1038/nature16155', hire:true },
-  { name:'Gross Lab', pi:'Christian Gross', inst:'Univ. Tübingen (formerly MPQ Garching)', country:'Germany', lat:48.534, lon:9.056, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscope, quantum simulation, strongly correlated systems', paper:'Boll et al., Science 353, 1257 (2016)', doi:'10.1126/science.aag1635', hire:true },
-  { name:'Endres Lab', pi:'Manuel Endres', inst:'Caltech', country:'USA', lat:34.137, lon:-118.125, atoms:['Sr','Cs'], tag:'rydberg', focus:'Sr and Cs tweezer arrays, Rydberg entanglement, quantum error correction, neutral-atom QC', paper:'Manetsch et al., Nature 647, 60 (2025)', doi:'10.1038/s41586-025-09641-4', hire:true },
-  { name:'Hood Lab', pi:'Jonathan D. Hood', inst:'Purdue University', country:'USA', lat:40.4237, lon:-86.9212, atoms:['Li','Cs'], tag:'molecules', focus:'Li-Cs molecule assembly, optical tweezers, single-atom cooling and imaging', paper:'Blodgett et al., PRL 131, 083001 (2023)', doi:'10.1103/PhysRevLett.131.083001', hire:true },
-  { name:'Ye Lab', pi:'Jun Ye', inst:'JILA / Univ. Colorado', country:'USA', lat:40.010, lon:-105.243, atoms:['Sr','OH'], tag:'clocks', focus:'Sr optical lattice clock, polar molecules, precision spectroscopy, quantum chemistry', paper:'Bothwell et al., Nature 602, 420 (2022)', doi:'10.1038/s41586-021-04349-7', hire:true },
-  { name:'Kaufman Lab', pi:'Adam Kaufman', inst:'JILA / Univ. Colorado', country:'USA', lat:40.011, lon:-105.244, atoms:['Sr','Yb'], tag:'rydberg', focus:'Alkaline-earth tweezer arrays, optical-clock qubits, Rydberg gates, quantum simulation and metrology', paper:'Norcia et al., Science 366, 93 (2019)', doi:'10.1126/science.aay0644', hire:true },
-  { name:'Rey Lab', pi:'Ana Maria Rey', inst:'JILA / Univ. Colorado', country:'USA', lat:40.012, lon:-105.242, atoms:[], tag:'sim', focus:'Theory: SU(N) Hubbard model, molecular collisions, metrological squeezing, dipolar physics', paper:'Perlin et al., PRL 125, 223401 (2020)', doi:'10.1103/PhysRevLett.125.223401', hire:true },
-  { name:'Monroe Lab', pi:'Christopher Monroe', inst:'Duke University (formerly Univ. Maryland / JQI)', country:'USA', lat:36.003, lon:-78.938, atoms:['Yb+'], tag:'ions', focus:'Trapped Yb⁺ ion QC, programmable quantum simulation, quantum networks', paper:'Kim et al., Nature 465, 590 (2010)', doi:'10.1038/nature09071', hire:true },
-  { name:'Gupta Lab', pi:'Subhadeep Gupta', inst:'Univ. Washington', country:'USA', lat:47.654, lon:-122.308, atoms:['Li','Yb'], tag:'bec', focus:'Li–Yb quantum mixtures, Yb BEC atom interferometry, Feshbach resonances, heteronuclear molecules', paper:'Hansen et al., PRA 84, 011606(R) (2011)', doi:'10.1103/PhysRevA.84.011606', hire:true },
+  { name:'Lukin Lab', pi:'Mikhail Lukin', inst:'Harvard University', country:'USA', lat:42.374, lon:-71.117, atoms:['Rb','Cs'], tag:'rydberg', focus:'Rydberg tweezer arrays, quantum networks, solid-state spin defects', paper:'Evered et al., Nature 622, 268 (2023)', doi:'10.1038/s41586-023-06481-y' },
+  { name:'Greiner Lab', pi:'Markus Greiner', inst:'Harvard University', country:'USA', lat:42.373, lon:-71.116, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscope, Fermi-Hubbard model, quantum thermodynamics', paper:'Bakr et al., Nature 462, 74 (2009)', doi:'10.1038/nature08482' },
+  { name:'Ni Lab', pi:'Kang-Kuen Ni', inst:'Harvard University', country:'USA', lat:42.375, lon:-71.118, atoms:['Na','Cs','K','Rb'], tag:'molecules', focus:'Ultracold polar molecules (KRb, NaCs), molecular tweezers, reaction control', paper:'Liu et al., Science 360, 900 (2018)', doi:'10.1126/science.aar7797' },
+  { name:'Vuletic Lab', pi:'Vladan Vuletić', inst:'MIT', country:'USA', lat:42.360, lon:-71.094, atoms:['Rb','Yb','Cs'], tag:'cavity', focus:'Cavity QED, spin squeezing, optical atomic clocks, quantum metrology', paper:'Pedrozo-Peñafiel et al., Nature 588, 414 (2020)', doi:'10.1038/s41586-020-3006-1' },
+  { name:'Ketterle Lab', pi:'Wolfgang Ketterle', inst:'MIT', country:'USA', lat:42.361, lon:-71.095, atoms:['Na','Li'], tag:'bec', focus:'BEC, optical lattices, low-dimensional quantum gases, spinor condensates', paper:'Davis et al., PRL 75, 3969 (1995)', doi:'10.1103/PhysRevLett.75.3969' },
+  { name:'Zwierlein Lab', pi:'Martin Zwierlein', inst:'MIT', country:'USA', lat:42.362, lon:-71.096, atoms:['Li','Na'], tag:'bec', focus:'Fermionic superfluidity, BEC-BCS crossover, quantum gas microscope for fermions', paper:'Mukherjee et al., PRL 122, 203402 (2019)', doi:'10.1103/PhysRevLett.122.203402' },
+  { name:'Thompson Lab', pi:'Jeff D. Thompson', inst:'Princeton University', country:'USA', lat:40.344, lon:-74.651, atoms:['Yb'], tag:'rydberg', focus:'Yb tweezer arrays, alkaline-earth Rydberg atoms, nanophotonics, erasure conversion for neutral-atom QC', paper:'Saskin et al., PRL 122, 143002 (2019)', doi:'10.1103/PhysRevLett.122.143002' },
+  { name:'Bakr Lab', pi:'Waseem Bakr', inst:'Princeton University', country:'USA', lat:40.344, lon:-74.654, atoms:['Li'], tag:'sim', focus:'Quantum gas microscope for fermions, Fermi-Hubbard physics, disorder', paper:'Brown et al., Science 363, 379 (2019)', doi:'10.1126/science.aat4134' },
+  { name:'Chin Lab', pi:'Cheng Chin', inst:'University of Chicago', country:'USA', lat:41.789, lon:-87.600, atoms:['Cs'], tag:'bec', focus:'Feshbach resonances, Efimov physics, superfluid-insulator transition, optical lattice', paper:'Clark et al., Nature 551, 356 (2017)', doi:'10.1038/nature24272' },
+  { name:'DeMarco Lab', pi:'Brian DeMarco', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.102, lon:-88.228, atoms:['Rb'], tag:'sim', focus:'Fermi-Hubbard model, disorder, many-body localization, quantum simulation', paper:'Kondov et al., PRL 114, 083002 (2015)', doi:'10.1103/PhysRevLett.114.083002' },
+  { name:'Gadway Lab', pi:'Bryce Gadway', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.103, lon:-88.229, atoms:['Rb'], tag:'sim', focus:'Synthetic dimensions, quasicrystals, momentum-space lattices' },
+  { name:'Spielman Lab', pi:'Ian Spielman', inst:'NIST / Univ. Maryland', country:'USA', lat:39.131, lon:-77.222, atoms:['Rb'], tag:'sim', focus:'Artificial gauge fields, synthetic spin-orbit coupling, topological band structures', paper:'Lin et al., Nature 462, 628 (2009)', doi:'10.1038/nature08609' },
+  { name:'Porto Lab', pi:'James Porto', inst:'NIST / Univ. Maryland', country:'USA', lat:38.985, lon:-76.943, atoms:['Rb'], tag:'sim', focus:'Optical lattices, Hubbard physics, quantum thermometry, lattice gauge theories', paper:'Anderlini et al., Nature 448, 452 (2007)', doi:'10.1038/nature06011' },
+  { name:'Hulet Lab', pi:'Randall Hulet', inst:'Rice University', country:'USA', lat:29.717, lon:-95.403, atoms:['Li'], tag:'bec', focus:'BEC-BCS crossover, Fermi-Hubbard model, quantum magnetism with fermions', paper:'Hart et al., Nature 519, 211 (2015)', doi:'10.1038/nature14223' },
+  { name:'Killian Lab', pi:'Tom Killian', inst:'Rice University', country:'USA', lat:29.716, lon:-95.402, atoms:['Sr'], tag:'clocks', focus:'Ultracold plasmas, Rydberg atoms in plasmas, strontium BEC', paper:'Martinez de Escobar et al., PRL 103, 200402 (2009)', doi:'10.1103/PhysRevLett.103.200402' },
+  { name:'Stamper-Kurn Lab', pi:'Dan Stamper-Kurn', inst:'UC Berkeley', country:'USA', lat:37.872, lon:-122.259, atoms:['Rb'], tag:'cavity', focus:'Spinor BEC, cavity optomechanics, quantum gas microscope, orbital magnetism', paper:'Sadler et al., Nature 443, 312 (2006)', doi:'10.1038/nature05094' },
+  { name:'Lev Lab', pi:'Benjamin Lev', inst:'Stanford University', country:'USA', lat:37.427, lon:-122.170, atoms:['Dy','Er'], tag:'dipolar', focus:'Dipolar quantum gases, quantum droplets, Er/Dy mixtures, exotic superfluid phases', paper:'Lu et al., PRL 107, 190401 (2011)', doi:'10.1103/PhysRevLett.107.190401' },
+  { name:'Kasevich Lab', pi:'Mark Kasevich', inst:'Stanford University', country:'USA', lat:37.428, lon:-122.171, atoms:['Rb','Sr'], tag:'clocks', focus:'Atom interferometry, inertial sensing, gravitational wave detection, Sr lattice clock', paper:'Kovachy et al., Nature 528, 530 (2015)', doi:'10.1038/nature16155' },
+  { name:'Gross Lab', pi:'Christian Gross', inst:'Univ. Tübingen (formerly MPQ Garching)', country:'Germany', lat:48.534, lon:9.056, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscope, quantum simulation, strongly correlated systems', paper:'Boll et al., Science 353, 1257 (2016)', doi:'10.1126/science.aag1635' },
+  { name:'Endres Lab', pi:'Manuel Endres', inst:'Caltech', country:'USA', lat:34.137, lon:-118.125, atoms:['Sr','Cs'], tag:'rydberg', focus:'Sr and Cs tweezer arrays, Rydberg entanglement, quantum error correction, neutral-atom QC', paper:'Manetsch et al., Nature 647, 60 (2025)', doi:'10.1038/s41586-025-09641-4' },
+  { name:'Hood Lab', pi:'Jonathan D. Hood', inst:'Purdue University', country:'USA', lat:40.4237, lon:-86.9212, atoms:['Li','Cs'], tag:'molecules', focus:'Li-Cs molecule assembly, optical tweezers, single-atom cooling and imaging', paper:'Blodgett et al., PRL 131, 083001 (2023)', doi:'10.1103/PhysRevLett.131.083001' },
+  { name:'Ye Lab', pi:'Jun Ye', inst:'JILA / Univ. Colorado', country:'USA', lat:40.010, lon:-105.243, atoms:['Sr','OH'], tag:'clocks', focus:'Sr optical lattice clock, polar molecules, precision spectroscopy, quantum chemistry', paper:'Bothwell et al., Nature 602, 420 (2022)', doi:'10.1038/s41586-021-04349-7' },
+  { name:'Kaufman Lab', pi:'Adam Kaufman', inst:'JILA / Univ. Colorado', country:'USA', lat:40.011, lon:-105.244, atoms:['Sr','Yb'], tag:'rydberg', focus:'Alkaline-earth tweezer arrays, optical-clock qubits, Rydberg gates, quantum simulation and metrology', paper:'Norcia et al., Science 366, 93 (2019)', doi:'10.1126/science.aay0644' },
+  { name:'Rey Lab', pi:'Ana Maria Rey', inst:'JILA / Univ. Colorado', country:'USA', lat:40.012, lon:-105.242, atoms:[], tag:'sim', focus:'Theory: SU(N) Hubbard model, molecular collisions, metrological squeezing, dipolar physics', paper:'Perlin et al., PRL 125, 223401 (2020)', doi:'10.1103/PhysRevLett.125.223401' },
+  { name:'Monroe Lab', pi:'Christopher Monroe', inst:'Duke University (formerly Univ. Maryland / JQI)', country:'USA', lat:36.003, lon:-78.938, atoms:['Yb+'], tag:'ions', focus:'Trapped Yb⁺ ion QC, programmable quantum simulation, quantum networks', paper:'Kim et al., Nature 465, 590 (2010)', doi:'10.1038/nature09071' },
+  { name:'Gupta Lab', pi:'Subhadeep Gupta', inst:'Univ. Washington', country:'USA', lat:47.654, lon:-122.308, atoms:['Li','Yb'], tag:'bec', focus:'Li–Yb quantum mixtures, Yb BEC atom interferometry, Feshbach resonances, heteronuclear molecules', paper:'Hansen et al., PRA 84, 011606(R) (2011)', doi:'10.1103/PhysRevA.84.011606' },
 
   /* ── Germany ── */
-  { name:'Bloch Lab', pi:'Immanuel Bloch', inst:'MPQ / LMU Munich', country:'Germany', lat:48.154, lon:11.565, atoms:['Rb','Sr'], tag:'sim', focus:'Quantum gas microscope, Hubbard model, quantum simulation, optical lattice clocks', paper:'Greiner et al., Nature 415, 39 (2002)', doi:'10.1038/415039a', hire:true },
-  { name:'Rempe Lab', pi:'Gerhard Rempe', inst:'MPQ Munich', country:'Germany', lat:48.153, lon:11.564, atoms:['Cs','Rb'], tag:'cavity', focus:'Cavity QED, atom-photon quantum interface, deterministic single-photon sources, quantum repeaters', paper:'Reiserer et al., Nature 508, 237 (2014)', doi:'10.1038/nature13177', hire:true },
-  { name:'Pfau Lab', pi:'Tilman Pfau', inst:'Univ. Stuttgart', country:'Germany', lat:48.745, lon:9.107, atoms:['Dy','Cr','Rb'], tag:'dipolar', focus:'Dipolar quantum gases, quantum droplets, supersolid phases, Rydberg-dressed interactions', paper:'Böttcher et al., PRX 9, 011051 (2019)', doi:'10.1103/PhysRevX.9.011051', hire:true },
-  { name:'Sengstock Lab', pi:'Klaus Sengstock', inst:'Univ. Hamburg', country:'Germany', lat:53.568, lon:9.973, atoms:['K','Rb'], tag:'sim', focus:'Artificial gauge fields, spinor BEC, non-equilibrium dynamics, frustrated lattice models', paper:'Tarnowski et al., Nature Comm. 10, 1728 (2019)', doi:'10.1038/s41467-019-09668-y', hire:true },
-  { name:'Weidemüller Lab', pi:'Matthias Weidemüller', inst:'Univ. Heidelberg', country:'Germany', lat:49.417, lon:8.675, atoms:['Rb','Li','Cs'], tag:'rydberg', focus:'Rydberg gases and spin models, Li–Cs mixtures and Efimov physics, cold chemistry', paper:'Pires et al., PRL 112, 250404 (2014)', doi:'10.1103/PhysRevLett.112.250404', hire:true },
+  { name:'Bloch Lab', pi:'Immanuel Bloch', inst:'MPQ / LMU Munich', country:'Germany', lat:48.154, lon:11.565, atoms:['Rb','Sr'], tag:'sim', focus:'Quantum gas microscope, Hubbard model, quantum simulation, optical lattice clocks', paper:'Greiner et al., Nature 415, 39 (2002)', doi:'10.1038/415039a' },
+  { name:'Rempe Lab', pi:'Gerhard Rempe', inst:'MPQ Munich', country:'Germany', lat:48.153, lon:11.564, atoms:['Cs','Rb'], tag:'cavity', focus:'Cavity QED, atom-photon quantum interface, deterministic single-photon sources, quantum repeaters', paper:'Reiserer et al., Nature 508, 237 (2014)', doi:'10.1038/nature13177' },
+  { name:'Pfau Lab', pi:'Tilman Pfau', inst:'Univ. Stuttgart', country:'Germany', lat:48.745, lon:9.107, atoms:['Dy','Cr','Rb'], tag:'dipolar', focus:'Dipolar quantum gases, quantum droplets, supersolid phases, Rydberg-dressed interactions', paper:'Böttcher et al., PRX 9, 011051 (2019)', doi:'10.1103/PhysRevX.9.011051' },
+  { name:'Sengstock Lab', pi:'Klaus Sengstock', inst:'Univ. Hamburg', country:'Germany', lat:53.568, lon:9.973, atoms:['K','Rb'], tag:'sim', focus:'Artificial gauge fields, spinor BEC, non-equilibrium dynamics, frustrated lattice models', paper:'Tarnowski et al., Nature Comm. 10, 1728 (2019)', doi:'10.1038/s41467-019-09668-y' },
+  { name:'Weidemüller Lab', pi:'Matthias Weidemüller', inst:'Univ. Heidelberg', country:'Germany', lat:49.417, lon:8.675, atoms:['Rb','Li','Cs'], tag:'rydberg', focus:'Rydberg gases and spin models, Li–Cs mixtures and Efimov physics, cold chemistry', paper:'Pires et al., PRL 112, 250404 (2014)', doi:'10.1103/PhysRevLett.112.250404' },
 
   /* ── Austria ── */
-  { name:'Blatt / Roos Group', pi:'Rainer Blatt & Christian Roos', inst:'Univ. Innsbruck / IQOQI', country:'Austria', lat:47.264, lon:11.394, atoms:['Ca+'], tag:'ions', focus:'Trapped-ion QC, quantum simulation with ions, quantum error correction, metrolog', paper:'Schindler et al., Science 332, 1059 (2011)', doi:'10.1126/science.1203329', hire:true },
-  { name:'Grimm Lab', pi:'Rudolf Grimm', inst:'Univ. Innsbruck', country:'Austria', lat:47.265, lon:11.395, atoms:['Cs','Li'], tag:'bec', focus:'Feshbach physics, Efimov trimers, ultracold mixtures, dipolar Cs BEC', paper:'Berninger et al., PRL 107, 120401 (2011)', doi:'10.1103/PhysRevLett.107.120401', hire:true },
-  { name:'Ferlaino Lab', pi:'Francesca Ferlaino', inst:'Univ. Innsbruck', country:'Austria', lat:47.266, lon:11.396, atoms:['Er','Dy'], tag:'dipolar', focus:'Dipolar Er/Dy mixtures, supersolid phase, quantum droplets, Feshbach resonances', paper:'Chomaz et al., Nature Physics 14, 442 (2018)', doi:'10.1038/s41567-018-0054-7', hire:true },
+  { name:'Blatt / Roos Group', pi:'Rainer Blatt & Christian Roos', inst:'Univ. Innsbruck / IQOQI', country:'Austria', lat:47.264, lon:11.394, atoms:['Ca+'], tag:'ions', focus:'Trapped-ion QC, quantum simulation with ions, quantum error correction, metrolog', paper:'Schindler et al., Science 332, 1059 (2011)', doi:'10.1126/science.1203329' },
+  { name:'Grimm Lab', pi:'Rudolf Grimm', inst:'Univ. Innsbruck', country:'Austria', lat:47.265, lon:11.395, atoms:['Cs','Li'], tag:'bec', focus:'Feshbach physics, Efimov trimers, ultracold mixtures, dipolar Cs BEC', paper:'Berninger et al., PRL 107, 120401 (2011)', doi:'10.1103/PhysRevLett.107.120401' },
+  { name:'Ferlaino Lab', pi:'Francesca Ferlaino', inst:'Univ. Innsbruck', country:'Austria', lat:47.266, lon:11.396, atoms:['Er','Dy'], tag:'dipolar', focus:'Dipolar Er/Dy mixtures, supersolid phase, quantum droplets, Feshbach resonances', paper:'Chomaz et al., Nature Physics 14, 442 (2018)', doi:'10.1038/s41567-018-0054-7' },
 
   /* ── France ── */
-  { name:'Browaeys / Lahaye Lab', pi:'Antoine Browaeys & Thierry Lahaye', inst:'Institut d\'Optique, Palaiseau', country:'France', lat:48.710, lon:2.177, atoms:['Rb','Dy'], tag:'rydberg', focus:'Rydberg tweezer arrays, quantum simulation, dipolar atoms, Ising model engineering', paper:'Scholl et al., Nature 595, 233 (2021)', doi:'10.1038/s41586-021-03585-1', hire:true },
-  { name:'Aspect / Boiron Lab', pi:'Alain Aspect & Denis Boiron', inst:'Institut d\'Optique, Palaiseau', country:'France', lat:48.711, lon:2.178, atoms:['He*','Rb'], tag:'bec', focus:'He* BEC, atom-atom correlations, Hong-Ou-Mandel for atoms, atom laser, quantum optics', paper:'Jaskula et al., PRL 109, 220401 (2012)', doi:'10.1103/PhysRevLett.109.220401', hire:true },
-  { name:'Dalibard / Beugnon Lab', pi:'Jean Dalibard & Jérôme Beugnon', inst:'ENS Paris', country:'France', lat:48.845, lon:2.344, atoms:['Rb'], tag:'sim', focus:'2D Bose gas, Berezinskii-KT transition, topological defects, quantum turbulence', paper:'Chomaz et al., Nat. Commun. 6, 6162 (2015)', doi:'10.1038/ncomms7162', hire:true },
-  { name:'Reichel Lab', pi:'Jakob Reichel', inst:'ENS Paris', country:'France', lat:48.846, lon:2.345, atoms:['Rb'], tag:'cavity', focus:'Atom chips, fiber cavity QED, compact atomic clocks, multiparticle entanglement', paper:'Colombe et al., Nature 450, 272 (2007)', doi:'10.1038/nature06331', hire:true },
+  { name:'Browaeys / Lahaye Lab', pi:'Antoine Browaeys & Thierry Lahaye', inst:'Institut d\'Optique, Palaiseau', country:'France', lat:48.710, lon:2.177, atoms:['Rb','Dy'], tag:'rydberg', focus:'Rydberg tweezer arrays, quantum simulation, dipolar atoms, Ising model engineering', paper:'Scholl et al., Nature 595, 233 (2021)', doi:'10.1038/s41586-021-03585-1' },
+  { name:'Aspect / Boiron Lab', pi:'Alain Aspect & Denis Boiron', inst:'Institut d\'Optique, Palaiseau', country:'France', lat:48.711, lon:2.178, atoms:['He*','Rb'], tag:'bec', focus:'He* BEC, atom-atom correlations, Hong-Ou-Mandel for atoms, atom laser, quantum optics', paper:'Jaskula et al., PRL 109, 220401 (2012)', doi:'10.1103/PhysRevLett.109.220401' },
+  { name:'Dalibard / Beugnon Lab', pi:'Jean Dalibard & Jérôme Beugnon', inst:'ENS Paris', country:'France', lat:48.845, lon:2.344, atoms:['Rb'], tag:'sim', focus:'2D Bose gas, Berezinskii-KT transition, topological defects, quantum turbulence', paper:'Chomaz et al., Nat. Commun. 6, 6162 (2015)', doi:'10.1038/ncomms7162' },
+  { name:'Reichel Lab', pi:'Jakob Reichel', inst:'ENS Paris', country:'France', lat:48.846, lon:2.345, atoms:['Rb'], tag:'cavity', focus:'Atom chips, fiber cavity QED, compact atomic clocks, multiparticle entanglement', paper:'Colombe et al., Nature 450, 272 (2007)', doi:'10.1038/nature06331' },
 
   /* ── Switzerland ── */
-  { name:'Esslinger Lab', pi:'Tilman Esslinger', inst:'ETH Zurich', country:'Switzerland', lat:47.377, lon:8.548, atoms:['K','Li'], tag:'sim', focus:'Fermi-Hubbard model, quantum simulation, optical lattice, non-equilibrium dynamics', paper:'Tarruell et al., Nature 483, 302 (2012)', doi:'10.1038/nature10871', hire:true },
-  { name:'Treutlein Lab', pi:'Philipp Treutlein', inst:'Univ. Basel', country:'Switzerland', lat:47.560, lon:7.588, atoms:['Rb'], tag:'cavity', focus:'Atom chips, hybrid atom-mechanical systems, entangled atomic ensembles, quantum sensing', paper:'Riedel et al., Nature 464, 1170 (2010)', doi:'10.1038/nature08988', hire:true },
+  { name:'Esslinger Lab', pi:'Tilman Esslinger', inst:'ETH Zurich', country:'Switzerland', lat:47.377, lon:8.548, atoms:['K','Li'], tag:'sim', focus:'Fermi-Hubbard model, quantum simulation, optical lattice, non-equilibrium dynamics', paper:'Tarruell et al., Nature 483, 302 (2012)', doi:'10.1038/nature10871' },
+  { name:'Treutlein Lab', pi:'Philipp Treutlein', inst:'Univ. Basel', country:'Switzerland', lat:47.560, lon:7.588, atoms:['Rb'], tag:'cavity', focus:'Atom chips, hybrid atom-mechanical systems, entangled atomic ensembles, quantum sensing', paper:'Riedel et al., Nature 464, 1170 (2010)', doi:'10.1038/nature08988' },
 
   /* ── UK ── */
-  { name:'Foot Group', pi:'Christopher Foot', inst:'University of Oxford', country:'UK', lat:51.752, lon:-1.255, atoms:['Rb'], tag:'sim', focus:'Optical lattices, atom interferometry, superfluid vortices, ultracold mixture physics', paper:'Hodby et al., PRL 88, 010405 (2001)', doi:'10.1103/PhysRevLett.88.010405', hire:true },
-  { name:'Cornish Group', pi:'Simon Cornish', inst:'Durham University', country:'UK', lat:54.766, lon:-1.574, atoms:['Cs','Rb'], tag:'molecules', focus:'Ultracold Cs molecules (Cs₂, RbCs), tweezer assembly of bialkali molecules, STIRAP', paper:'Gregory et al., Nature Physics 17, 1149 (2021)', doi:'10.1038/s41567-021-01328-7', hire:true },
-  { name:'Adams Group', pi:'Charles Adams', inst:'Durham University', country:'UK', lat:54.767, lon:-1.573, atoms:['Rb'], tag:'rydberg', focus:'Rydberg atoms, quantum nonlinear optics, microwave-to-optical transduction, EIT', paper:'Pritchard et al., PRL 105, 193603 (2010)', doi:'10.1103/PhysRevLett.105.193603', hire:true },
-  { name:'Hinds Group', pi:'Ed Hinds', inst:'Imperial College London', country:'UK', lat:51.499, lon:-0.174, atoms:['Rb','CaF'], tag:'molecules', focus:'Laser-cooled molecules (CaF, YbF), eEDM measurements, atom chips, precision tests of SM', paper:'Tarbutt et al., New J. Phys. 17, 015007 (2015)', doi:'10.1088/1367-2630/17/1/015007', hire:true },
+  { name:'Foot Group', pi:'Christopher Foot', inst:'University of Oxford', country:'UK', lat:51.752, lon:-1.255, atoms:['Rb'], tag:'sim', focus:'Optical lattices, atom interferometry, superfluid vortices, ultracold mixture physics', paper:'Hodby et al., PRL 88, 010405 (2001)', doi:'10.1103/PhysRevLett.88.010405' },
+  { name:'Cornish Group', pi:'Simon Cornish', inst:'Durham University', country:'UK', lat:54.766, lon:-1.574, atoms:['Cs','Rb'], tag:'molecules', focus:'Ultracold Cs molecules (Cs₂, RbCs), tweezer assembly of bialkali molecules, STIRAP', paper:'Gregory et al., Nature Physics 17, 1149 (2021)', doi:'10.1038/s41567-021-01328-7' },
+  { name:'Adams Group', pi:'Charles Adams', inst:'Durham University', country:'UK', lat:54.767, lon:-1.573, atoms:['Rb'], tag:'rydberg', focus:'Rydberg atoms, quantum nonlinear optics, microwave-to-optical transduction, EIT', paper:'Pritchard et al., PRL 105, 193603 (2010)', doi:'10.1103/PhysRevLett.105.193603' },
+  { name:'Hinds Group', pi:'Ed Hinds', inst:'Imperial College London', status:'Emeritus professor', country:'UK', lat:51.499, lon:-0.174, atoms:['Rb','CaF'], tag:'molecules', focus:'Laser-cooled molecules (CaF, YbF), eEDM measurements, atom chips, precision tests of SM', paper:'Tarbutt et al., New J. Phys. 17, 015007 (2015)', doi:'10.1088/1367-2630/17/1/015007' },
 
   /* ── Netherlands ── */
-  { name:'Walraven Group', pi:'Jook Walraven', inst:'Univ. Amsterdam', country:'Netherlands', lat:52.356, lon:4.956, atoms:['H','Rb'], tag:'bec', focus:'BEC of hydrogen, quantum reflection, Casimir-Polder interaction, precision hydrogen spectroscopy', hire:false },
+  { name:'Walraven Group', pi:'Jook Walraven', inst:'Univ. Amsterdam', country:'Netherlands', lat:52.356, lon:4.956, atoms:['H','Rb'], tag:'bec', focus:'BEC of hydrogen, quantum reflection, Casimir-Polder interaction, precision hydrogen spectroscopy' },
 
   /* ── Israel ── */
-  { name:'Firstenberg Group', pi:'Ofer Firstenberg', inst:'Weizmann Institute', country:'Israel', lat:31.904, lon:34.811, atoms:['Rb'], tag:'rydberg', focus:'Rydberg EIT, photon-photon interactions via Rydberg blockade, quantum nonlinear optics', paper:'Firstenberg et al., Nature 502, 71 (2013)', doi:'10.1038/nature12512', hire:true },
-  { name:'Sagi Group', pi:'Yoav Sagi', inst:'Technion', country:'Israel', lat:32.778, lon:35.023, atoms:['K'], tag:'bec', focus:'Fermi gas spectroscopy, BEC-BCS crossover, Tan contact, strongly interacting fermions', paper:'Shkedrov et al., PRL 121, 093402 (2018)', doi:'10.1103/PhysRevLett.121.093402', hire:true },
-  { name:'Steinhauer Group', pi:'Jeff Steinhauer', inst:'Technion', country:'Israel', lat:32.779, lon:35.024, atoms:['Rb'], tag:'bec', focus:'Analog gravity in BEC, Hawking radiation from sonic black holes, quantum correlations', paper:'Steinhauer, Nature Physics 12, 959 (2016)', doi:'10.1038/nphys3863', hire:true },
+  { name:'Firstenberg Group', pi:'Ofer Firstenberg', inst:'Weizmann Institute', country:'Israel', lat:31.904, lon:34.811, atoms:['Rb'], tag:'rydberg', focus:'Rydberg EIT, photon-photon interactions via Rydberg blockade, quantum nonlinear optics', paper:'Firstenberg et al., Nature 502, 71 (2013)', doi:'10.1038/nature12512' },
+  { name:'Sagi Group', pi:'Yoav Sagi', inst:'Technion', country:'Israel', lat:32.778, lon:35.023, atoms:['K'], tag:'bec', focus:'Fermi gas spectroscopy, BEC-BCS crossover, Tan contact, strongly interacting fermions', paper:'Shkedrov et al., PRL 121, 093402 (2018)', doi:'10.1103/PhysRevLett.121.093402' },
+  { name:'Steinhauer Group', pi:'Jeff Steinhauer', inst:'Technion', country:'Israel', lat:32.779, lon:35.024, atoms:['Rb'], tag:'bec', focus:'Analog gravity in BEC, Hawking radiation from sonic black holes, quantum correlations', paper:'Steinhauer, Nature Physics 12, 959 (2016)', doi:'10.1038/nphys3863' },
 
   /* ── Japan ── */
-  { name:'Takahashi Lab', pi:'Yoshiro Takahashi', inst:'Kyoto University', country:'Japan', lat:35.028, lon:135.781, atoms:['Yb'], tag:'sim', focus:'Yb quantum simulation, SU(N) Hubbard model, orbital magnetism, two-orbital physics', paper:'Ozawa et al., PRL 121, 225303 (2018)', doi:'10.1103/PhysRevLett.121.225303', hire:true },
-  { name:'Katori Lab', pi:'Hidetoshi Katori', inst:'Univ. Tokyo', country:'Japan', lat:35.714, lon:139.761, atoms:['Sr','Yb'], tag:'clocks', focus:'Optical lattice clocks (inventor of magic wavelength), Sr and Hg clocks, relativistic geodesy', paper:'Katori, Nature Photonics 5, 203 (2011)', doi:'10.1038/nphoton.2011.45', hire:true },
-  { name:'Ohmori Lab', pi:'Kenji Ohmori', inst:'IMS Okazaki', country:'Japan', lat:34.973, lon:137.175, atoms:['Rb'], tag:'rydberg', focus:'Rydberg many-body dynamics, ultrafast quantum control, optical-clock-referenced Rydberg spectroscopy', paper:'Takei et al., Nature Comm. 7, 13449 (2016)', doi:'10.1038/ncomms13449', hire:true },
+  { name:'Takahashi Lab', pi:'Yoshiro Takahashi', inst:'Kyoto University', country:'Japan', lat:35.028, lon:135.781, atoms:['Yb'], tag:'sim', focus:'Yb quantum simulation, SU(N) Hubbard model, orbital magnetism, two-orbital physics', paper:'Ozawa et al., PRL 121, 225303 (2018)', doi:'10.1103/PhysRevLett.121.225303' },
+  { name:'Katori Lab', pi:'Hidetoshi Katori', inst:'Univ. Tokyo', country:'Japan', lat:35.714, lon:139.761, atoms:['Sr','Yb'], tag:'clocks', focus:'Optical lattice clocks (inventor of magic wavelength), Sr and Hg clocks, relativistic geodesy', paper:'Katori, Nature Photonics 5, 203 (2011)', doi:'10.1038/nphoton.2011.45' },
+  { name:'Ohmori Lab', pi:'Kenji Ohmori', inst:'IMS Okazaki', country:'Japan', lat:34.973, lon:137.175, atoms:['Rb'], tag:'rydberg', focus:'Rydberg many-body dynamics, ultrafast quantum control, optical-clock-referenced Rydberg spectroscopy', paper:'Takei et al., Nature Comm. 7, 13449 (2016)', doi:'10.1038/ncomms13449' },
 
   /* ── China ── */
-  { name:'Pan Lab', pi:'Jian-Wei Pan', inst:'USTC Hefei', country:'China', lat:31.837, lon:117.226, atoms:['Rb','Sr'], tag:'rydberg', focus:'Photonic QC, Rydberg tweezer arrays, quantum communication, boson sampling', paper:'Zhong et al., Science 370, 1460 (2020)', doi:'10.1126/science.abe8770', hire:true },
-  { name:'Zhu Group', pi:'Shi-Liang Zhu', inst:'SCNU Guangzhou', country:'China', lat:23.131, lon:113.370, atoms:['Rb'], tag:'sim', focus:'Quantum simulation of topological matter, synthetic gauge fields, quantum Hall physics', hire:true },
+  { name:'Pan Lab', pi:'Jian-Wei Pan', inst:'USTC Hefei', country:'China', lat:31.837, lon:117.226, atoms:['Rb','Sr'], tag:'rydberg', focus:'Photonic QC, Rydberg tweezer arrays, quantum communication, boson sampling', paper:'Zhong et al., Science 370, 1460 (2020)', doi:'10.1126/science.abe8770' },
+  { name:'Zhu Group', pi:'Shi-Liang Zhu', inst:'SCNU Guangzhou', country:'China', lat:23.131, lon:113.370, atoms:['Rb'], tag:'sim', focus:'Quantum simulation of topological matter, synthetic gauge fields, quantum Hall physics' },
 
   /* ── Singapore ── */
-  { name:'Lan Lab', pi:'Shau-Yu Lan', inst:'Nanyang Tech. Univ.', country:'Singapore', lat:1.348, lon:103.682, atoms:['Rb'], tag:'clocks', focus:'Atom interferometry, compact atomic clocks, quantum sensing, gravimetry', hire:true },
+  { name:'Lan Lab', pi:'Shau-Yu Lan', inst:'Nanyang Tech. Univ.', country:'Singapore', lat:1.348, lon:103.682, atoms:['Rb'], tag:'clocks', focus:'Atom interferometry, compact atomic clocks, quantum sensing, gravimetry' },
 
   /* ── Australia ── */
-  { name:'UQ BEC Laboratory', pi:'Tyler Neely & Halina Rubinsztein-Dunlop', inst:'Univ. Queensland', country:'Australia', lat:-27.497, lon:153.013, atoms:['Rb'], tag:'sim', focus:'BEC, quantum vortex dynamics, 2D quantum turbulence, atom optics, optical tweezers', paper:'Rubinsztein-Dunlop et al., J. Opt. 19, 013001 (2017)', doi:'10.1088/2040-8978/19/1/013001', hire:true },
+  { name:'UQ BEC Laboratory', pi:'Tyler Neely & Halina Rubinsztein-Dunlop', inst:'Univ. Queensland', country:'Australia', lat:-27.497, lon:153.013, atoms:['Rb'], tag:'sim', focus:'BEC, quantum vortex dynamics, 2D quantum turbulence, atom optics, optical tweezers', paper:'Rubinsztein-Dunlop et al., J. Opt. 19, 013001 (2017)', doi:'10.1088/2040-8978/19/1/013001' },
 
   /* ── India ── */
-  { name:'Rangwala Lab', pi:'Sadiq A. Rangwala', inst:'RRI Bangalore', country:'India', lat:13.003, lon:77.571, atoms:['Rb','Ca+'], tag:'ions', focus:'Hybrid ion-atom traps, cold reactive collisions, atom-ion interactions, laser-cooled Ca⁺', paper:'Ravi et al., Nat. Commun. 3, 1126 (2012)', doi:'10.1038/ncomms2131', hire:true },
+  { name:'Rangwala Lab', pi:'Sadiq A. Rangwala', inst:'RRI Bangalore', country:'India', lat:13.003, lon:77.571, atoms:['Rb','Ca+'], tag:'ions', focus:'Hybrid ion-atom traps, cold reactive collisions, atom-ion interactions, laser-cooled Ca⁺', paper:'Ravi et al., Nat. Commun. 3, 1126 (2012)', doi:'10.1038/ncomms2131' },
 
   /* ── Canada ── */
-  { name:'Thywissen Lab', pi:'Joseph Thywissen', inst:'Univ. Toronto', country:'Canada', lat:43.663, lon:-79.397, atoms:['K','Rb'], tag:'bec', focus:'Fermi-Hubbard model, spin dynamics, quantum gas microscope, few-body physics', paper:'Luciuk et al., Nature Physics 12, 599 (2016)', doi:'10.1038/nphys3670', hire:true },
-  { name:'Steinberg Lab', pi:'Aephraim Steinberg', inst:'Univ. Toronto', country:'Canada', lat:43.662, lon:-79.396, atoms:['Rb'], tag:'sim', focus:'Foundations of quantum mechanics with ultracold atoms and quantum optics, weak measurement, tunneling time', hire:true },
-  { name:'LeBlanc Lab', pi:'Lindsay LeBlanc', inst:'Univ. Alberta', country:'Canada', lat:53.523, lon:-113.526, atoms:['Rb','K'], tag:'sim', focus:'Dual-species Rb-K quantum gases, synthetic spin-orbit coupling, non-equilibrium many-body dynamics', hire:true },
-  { name:'Madison Lab', pi:'Kirk Madison', inst:'Univ. British Columbia', country:'Canada', lat:49.261, lon:-123.246, atoms:['Rb','Li'], tag:'sim', focus:'Ultracold atom/molecule collisions, precision atomic sensors, quantum pressure metrology', hire:true },
-  { name:'Hauke Theory Group', pi:'Philipp Hauke', inst:'Univ. Trento', country:'Italy', lat:46.064, lon:11.121, atoms:[], tag:'sim', focus:'Theory: quantum simulation of lattice gauge theories, tensor networks, AMO-HEP connection', hire:true },
+  { name:'Thywissen Lab', pi:'Joseph Thywissen', inst:'Univ. Toronto', country:'Canada', lat:43.663, lon:-79.397, atoms:['K','Rb'], tag:'bec', focus:'Fermi-Hubbard model, spin dynamics, quantum gas microscope, few-body physics', paper:'Luciuk et al., Nature Physics 12, 599 (2016)', doi:'10.1038/nphys3670' },
+  { name:'Steinberg Lab', pi:'Aephraim Steinberg', inst:'Univ. Toronto', country:'Canada', lat:43.662, lon:-79.396, atoms:['Rb'], tag:'sim', focus:'Foundations of quantum mechanics with ultracold atoms and quantum optics, weak measurement, tunneling time' },
+  { name:'LeBlanc Lab', pi:'Lindsay LeBlanc', inst:'Univ. Alberta', country:'Canada', lat:53.523, lon:-113.526, atoms:['Rb','K'], tag:'sim', focus:'Dual-species Rb-K quantum gases, synthetic spin-orbit coupling, non-equilibrium many-body dynamics' },
+  { name:'Madison Lab', pi:'Kirk Madison', inst:'Univ. British Columbia', country:'Canada', lat:49.261, lon:-123.246, atoms:['Rb','Li'], tag:'sim', focus:'Ultracold atom/molecule collisions, precision atomic sensors, quantum pressure metrology' },
+  { name:'Hauke Theory Group', pi:'Philipp Hauke', inst:'Univ. Trento', country:'Italy', lat:46.064, lon:11.121, atoms:[], tag:'sim', focus:'Theory: quantum simulation of lattice gauge theories, tensor networks, AMO-HEP connection' },
 
   /* ── USA: More East / Midwest / West ── */
-  { name:'Simon Lab', pi:'Jonathan Simon', inst:'Stanford University (formerly Univ. Chicago)', country:'USA', lat:37.428, lon:-122.172, atoms:['Rb'], tag:'cavity', focus:'Photonic and cold-atom quantum matter, synthetic photonic materials, topological photon fluids', hire:true },
-  { name:'DeMille Group', pi:'David DeMille', inst:'University of Chicago', country:'USA', lat:41.788, lon:-87.601, atoms:['SrF','TlF'], tag:'molecules', focus:'Laser-cooled polar molecules, electron EDM searches, precision tests of fundamental symmetries', paper:'Shuman et al., Nature 467, 820 (2010)', doi:'10.1038/nature09443', hire:true },
-  { name:'Regal Lab', pi:'Cindy Regal', inst:'JILA / Univ. Colorado', country:'USA', lat:40.009, lon:-105.245, atoms:['Rb'], tag:'cavity', focus:'Optical tweezer arrays, hybrid quantum systems, single-phonon control in mechanical oscillators', hire:true },
-  { name:'J.K. Thompson Lab', pi:'James K. Thompson', inst:'JILA / Univ. Colorado', country:'USA', lat:40.013, lon:-105.241, atoms:['Rb'], tag:'cavity', focus:'Cavity QED, spin squeezing beyond the standard quantum limit, superradiant lasers', hire:true },
-  { name:'Schleier-Smith Lab', pi:'Monika Schleier-Smith', inst:'Stanford University', country:'USA', lat:37.426, lon:-122.174, atoms:['Rb'], tag:'cavity', focus:'Cavity-mediated interactions among laser-cooled atoms for quantum simulation and metrology', hire:true },
-  { name:'Weiss Lab', pi:'David Weiss', inst:'Penn State University', country:'USA', lat:40.798, lon:-77.860, atoms:['Cs'], tag:'rydberg', focus:'Optical tweezer arrays for neutral-atom quantum computing, 1D Bose gases, electron EDM tests', hire:true },
-  { name:'Covey Lab', pi:'Jacob Covey', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.105, lon:-88.227, atoms:['Yb'], tag:'rydberg', focus:'Alkaline-earth atom tweezer arrays for distributed quantum computing and atomic-array clocks', hire:true },
-  { name:'Cheuk Lab', pi:'Lawrence Cheuk', inst:'Princeton University', country:'USA', lat:40.345, lon:-74.653, atoms:['CaF'], tag:'molecules', focus:'Laser-cooled molecules trapped in optical tweezer arrays for quantum simulation and information', hire:true },
-  { name:'Loh Lab', pi:'Huanqian Loh', inst:'Duke University', country:'USA', lat:36.002, lon:-78.938, atoms:['Rb','Cs'], tag:'rydberg', focus:'Tweezer-trapped atom arrays as building blocks for quantum computing, simulation, and sensing', hire:true },
-  { name:'Brown Lab', pi:'Kenneth Brown', inst:'Duke University', country:'USA', lat:36.000, lon:-78.940, atoms:['Ca+','Yb+'], tag:'ions', focus:'Trapped-ion quantum computing, quantum error correction, ion-trap architecture design', hire:true },
-  { name:'Hutzler Lab', pi:'Nick Hutzler', inst:'Caltech', country:'USA', lat:34.139, lon:-118.124, atoms:['YbOH'], tag:'molecules', focus:'Laser-cooled polyatomic molecules for precision tests of fundamental symmetries and new-physics searches', hire:true },
-  { name:'Weld Group', pi:'David Weld', inst:'UC Santa Barbara', country:'USA', lat:34.414, lon:-119.849, atoms:['Li','Sr'], tag:'sim', focus:'Floquet engineering, quantum quasicrystals, non-equilibrium dynamics in quantum degenerate gases', hire:true },
-  { name:'Müller Group', pi:'Holger Müller', inst:'UC Berkeley', country:'USA', lat:37.874, lon:-122.257, atoms:['Cs'], tag:'clocks', focus:'Atom interferometry for tests of gravity and the equivalence principle, precision measurement of constants', hire:true },
-  { name:'Campbell Lab', pi:'Gretchen Campbell', inst:'NIST / JQI, Univ. Maryland', country:'USA', lat:38.988, lon:-76.941, atoms:['Na','Sr'], tag:'bec', focus:'Atomtronics, superfluid circuits, quantum sensing with ring-trapped Bose-Einstein condensates', hire:true },
-  { name:'Odom Lab', pi:'Brian Odom', inst:'Northwestern University', country:'USA', lat:42.057, lon:-87.675, atoms:['ions'], tag:'ions', focus:'Sympathetically-cooled trapped molecular ions, precision spectroscopy, tests of fundamental constants', hire:true },
+  { name:'Simon Lab', pi:'Jonathan Simon', inst:'Stanford University (formerly Univ. Chicago)', country:'USA', lat:37.428, lon:-122.172, atoms:['Rb'], tag:'cavity', focus:'Photonic and cold-atom quantum matter, synthetic photonic materials, topological photon fluids' },
+  { name:'DeMille Group', pi:'David DeMille', inst:'University of Chicago', country:'USA', lat:41.788, lon:-87.601, atoms:['SrF','TlF'], tag:'molecules', focus:'Laser-cooled polar molecules, electron EDM searches, precision tests of fundamental symmetries', paper:'Shuman et al., Nature 467, 820 (2010)', doi:'10.1038/nature09443' },
+  { name:'Regal Lab', pi:'Cindy Regal', inst:'JILA / Univ. Colorado', country:'USA', lat:40.009, lon:-105.245, atoms:['Rb'], tag:'cavity', focus:'Optical tweezer arrays, hybrid quantum systems, single-phonon control in mechanical oscillators' },
+  { name:'J.K. Thompson Lab', pi:'James K. Thompson', inst:'JILA / Univ. Colorado', country:'USA', lat:40.013, lon:-105.241, atoms:['Rb'], tag:'cavity', focus:'Cavity QED, spin squeezing beyond the standard quantum limit, superradiant lasers' },
+  { name:'Schleier-Smith Lab', pi:'Monika Schleier-Smith', inst:'Stanford University', country:'USA', lat:37.426, lon:-122.174, atoms:['Rb'], tag:'cavity', focus:'Cavity-mediated interactions among laser-cooled atoms for quantum simulation and metrology' },
+  { name:'Weiss Lab', pi:'David Weiss', inst:'Penn State University', country:'USA', lat:40.798, lon:-77.860, atoms:['Cs'], tag:'rydberg', focus:'Optical tweezer arrays for neutral-atom quantum computing, 1D Bose gases, electron EDM tests' },
+  { name:'Covey Lab', pi:'Jacob Covey', inst:'Univ. Illinois Urbana-Champaign', country:'USA', lat:40.105, lon:-88.227, atoms:['Yb'], tag:'rydberg', focus:'Alkaline-earth atom tweezer arrays for distributed quantum computing and atomic-array clocks' },
+  { name:'Cheuk Lab', pi:'Lawrence Cheuk', inst:'Princeton University', country:'USA', lat:40.345, lon:-74.653, atoms:['CaF'], tag:'molecules', focus:'Laser-cooled molecules trapped in optical tweezer arrays for quantum simulation and information' },
+  { name:'Loh Lab', pi:'Huanqian Loh', inst:'Duke University', country:'USA', lat:36.002, lon:-78.938, atoms:['Rb','Cs'], tag:'rydberg', focus:'Tweezer-trapped atom arrays as building blocks for quantum computing, simulation, and sensing' },
+  { name:'Brown Lab', pi:'Kenneth Brown', inst:'Duke University', country:'USA', lat:36.000, lon:-78.940, atoms:['Ca+','Yb+'], tag:'ions', focus:'Trapped-ion quantum computing, quantum error correction, ion-trap architecture design' },
+  { name:'Hutzler Lab', pi:'Nick Hutzler', inst:'Caltech', country:'USA', lat:34.139, lon:-118.124, atoms:['YbOH'], tag:'molecules', focus:'Laser-cooled polyatomic molecules for precision tests of fundamental symmetries and new-physics searches' },
+  { name:'Weld Group', pi:'David Weld', inst:'UC Santa Barbara', country:'USA', lat:34.414, lon:-119.849, atoms:['Li','Sr'], tag:'sim', focus:'Floquet engineering, quantum quasicrystals, non-equilibrium dynamics in quantum degenerate gases' },
+  { name:'Müller Group', pi:'Holger Müller', inst:'UC Berkeley', country:'USA', lat:37.874, lon:-122.257, atoms:['Cs'], tag:'clocks', focus:'Atom interferometry for tests of gravity and the equivalence principle, precision measurement of constants' },
+  { name:'Campbell Lab', pi:'Gretchen Campbell', inst:'NIST / JQI, Univ. Maryland', country:'USA', lat:38.988, lon:-76.941, atoms:['Na','Sr'], tag:'bec', focus:'Atomtronics, superfluid circuits, quantum sensing with ring-trapped Bose-Einstein condensates' },
+  { name:'Odom Lab', pi:'Brian Odom', inst:'Northwestern University', country:'USA', lat:42.057, lon:-87.675, atoms:['ions'], tag:'ions', focus:'Sympathetically-cooled trapped molecular ions, precision spectroscopy, tests of fundamental constants' },
 
   /* ── Germany: theory & additional groups ── */
-  { name:'Cirac Theory Division', pi:'Ignacio Cirac', inst:'MPQ Munich', country:'Germany', lat:48.155, lon:11.567, atoms:[], tag:'sim', focus:'Theory: quantum information science, tensor networks, AMO platforms for quantum computing', hire:true },
-  { name:'Oberthaler Lab', pi:'Markus Oberthaler', inst:'Univ. Heidelberg', country:'Germany', lat:49.400, lon:8.673, atoms:['Rb'], tag:'bec', focus:'Bose-Einstein condensates, matter-wave interferometry, quantum-enhanced metrology, entanglement generation', hire:true },
-  { name:'Jochim Lab', pi:'Selim Jochim', inst:'Univ. Heidelberg', country:'Germany', lat:49.399, lon:8.675, atoms:['Li'], tag:'bec', focus:'Few-body Fermi systems, deterministic single-atom preparation, quantum simulation with mesoscopic ensembles', hire:true },
-  { name:'Hemmerich Lab', pi:'Andreas Hemmerich', inst:'Univ. Hamburg', country:'Germany', lat:53.567, lon:9.975, atoms:['Rb'], tag:'sim', focus:'Driven optical lattices, non-equilibrium quantum gases, cavity-mediated self-organization', hire:true },
+  { name:'Cirac Theory Division', pi:'Ignacio Cirac', inst:'MPQ Munich', country:'Germany', lat:48.155, lon:11.567, atoms:[], tag:'sim', focus:'Theory: quantum information science, tensor networks, AMO platforms for quantum computing' },
+  { name:'Oberthaler Lab', pi:'Markus Oberthaler', inst:'Univ. Heidelberg', country:'Germany', lat:49.400, lon:8.673, atoms:['Rb'], tag:'bec', focus:'Bose-Einstein condensates, matter-wave interferometry, quantum-enhanced metrology, entanglement generation' },
+  { name:'Jochim Lab', pi:'Selim Jochim', inst:'Univ. Heidelberg', country:'Germany', lat:49.399, lon:8.675, atoms:['Li'], tag:'bec', focus:'Few-body Fermi systems, deterministic single-atom preparation, quantum simulation with mesoscopic ensembles' },
+  { name:'Hemmerich Lab', pi:'Andreas Hemmerich', inst:'Univ. Hamburg', country:'Germany', lat:53.567, lon:9.975, atoms:['Rb'], tag:'sim', focus:'Driven optical lattices, non-equilibrium quantum gases, cavity-mediated self-organization' },
 
   /* ── Austria: theory & additional groups ── */
-  { name:'Zoller Theory Group', pi:'Peter Zoller', inst:'Univ. Innsbruck / IQOQI', country:'Austria', lat:47.263, lon:11.393, atoms:[], tag:'sim', focus:'Theory: AMO quantum information, quantum simulation architectures, open quantum systems', hire:true },
-  { name:'Nägerl Lab', pi:'Hanns-Christoph Nägerl', inst:'Univ. Innsbruck', country:'Austria', lat:47.267, lon:11.397, atoms:['Cs'], tag:'molecules', focus:'Ultracold molecule formation, low-dimensional quantum gases, precision molecular spectroscopy', hire:true },
-  { name:'Bernien Lab', pi:'Hannes Bernien', inst:'Univ. Innsbruck', country:'Austria', lat:47.262, lon:11.392, atoms:['Rb','Cs'], tag:'rydberg', focus:'Large-scale optical tweezer arrays, dual-species Rydberg entanglement, quantum simulation atom-by-atom', hire:true },
+  { name:'Zoller Theory Group', pi:'Peter Zoller', inst:'Univ. Innsbruck / IQOQI', country:'Austria', lat:47.263, lon:11.393, atoms:[], tag:'sim', focus:'Theory: AMO quantum information, quantum simulation architectures, open quantum systems' },
+  { name:'Nägerl Lab', pi:'Hanns-Christoph Nägerl', inst:'Univ. Innsbruck', country:'Austria', lat:47.267, lon:11.397, atoms:['Cs'], tag:'molecules', focus:'Ultracold molecule formation, low-dimensional quantum gases, precision molecular spectroscopy' },
+  { name:'Bernien Lab', pi:'Hannes Bernien', inst:'Univ. Innsbruck', country:'Austria', lat:47.262, lon:11.392, atoms:['Rb','Cs'], tag:'rydberg', focus:'Large-scale optical tweezer arrays, dual-species Rydberg entanglement, quantum simulation atom-by-atom' },
 
   /* ── France: additional groups ── */
-  { name:'Salomon / Yefsah Lab', pi:'Christophe Salomon & Tarik Yefsah', inst:'ENS Paris', country:'France', lat:48.847, lon:2.343, atoms:['Li'], tag:'bec', focus:'Ultracold Fermi gases, precision atomic clocks, tests of fundamental physics in space (ACES/PHARAO)', hire:true },
+  { name:'Salomon / Yefsah Lab', pi:'Christophe Salomon & Tarik Yefsah', inst:'ENS Paris', country:'France', lat:48.847, lon:2.343, atoms:['Li'], tag:'bec', focus:'Ultracold Fermi gases, precision atomic clocks, tests of fundamental physics in space (ACES/PHARAO)' },
 
   /* ── UK: additional groups ── */
-  { name:'Hadzibabic Lab', pi:'Zoran Hadzibabic', inst:'Univ. Cambridge', country:'UK', lat:52.205, lon:0.115, atoms:['Rb'], tag:'bec', focus:'Homogeneous Bose gases in a box trap, 2D superfluidity, far-from-equilibrium quantum dynamics', hire:true },
-  { name:'Schneider Lab', pi:'Ulrich Schneider', inst:'Univ. Cambridge', country:'UK', lat:52.203, lon:0.114, atoms:['K'], tag:'sim', focus:'Quantum gas microscopy, Hubbard physics, engineered disorder and many-body localization', hire:true },
-  { name:'Kuhr Lab', pi:'Stefan Kuhr', inst:'Univ. Strathclyde', country:'UK', lat:55.862, lon:-4.243, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscopy, single-atom-resolved imaging of optical lattices', hire:true },
+  { name:'Hadzibabic Lab', pi:'Zoran Hadzibabic', inst:'Univ. Cambridge', country:'UK', lat:52.205, lon:0.115, atoms:['Rb'], tag:'bec', focus:'Homogeneous Bose gases in a box trap, 2D superfluidity, far-from-equilibrium quantum dynamics' },
+  { name:'Schneider Lab', pi:'Ulrich Schneider', inst:'Univ. Cambridge', country:'UK', lat:52.203, lon:0.114, atoms:['K'], tag:'sim', focus:'Quantum gas microscopy, Hubbard physics, engineered disorder and many-body localization' },
+  { name:'Kuhr Lab', pi:'Stefan Kuhr', inst:'Univ. Strathclyde', country:'UK', lat:55.862, lon:-4.243, atoms:['Rb'], tag:'sim', focus:'Quantum gas microscopy, single-atom-resolved imaging of optical lattices' },
 
   /* ── Spain ── */
-  { name:'Tarruell Lab', pi:'Leticia Tarruell', inst:'ICFO Barcelona', country:'Spain', lat:41.276, lon:1.989, atoms:['K','Sr'], tag:'sim', focus:'Ultracold quantum-gas microscopy of strontium (QUIONE), engineered quantum matter, atom-light interfaces', hire:true },
+  { name:'Tarruell Lab', pi:'Leticia Tarruell', inst:'ICFO Barcelona', country:'Spain', lat:41.276, lon:1.989, atoms:['K','Sr'], tag:'sim', focus:'Ultracold quantum-gas microscopy of strontium (QUIONE), engineered quantum matter, atom-light interfaces' },
 
   /* ── Netherlands: additional groups ── */
-  { name:'Schreck Lab', pi:'Florian Schreck', inst:'Univ. Amsterdam', country:'Netherlands', lat:52.355, lon:4.955, atoms:['Sr'], tag:'clocks', focus:'Strontium quantum gases, optical lattice clocks, compact ultracold-atom technology for space and metrology', hire:true },
+  { name:'Schreck Lab', pi:'Florian Schreck', inst:'Univ. Amsterdam', country:'Netherlands', lat:52.355, lon:4.955, atoms:['Sr'], tag:'clocks', focus:'Strontium quantum gases, optical lattice clocks, compact ultracold-atom technology for space and metrology' },
 
   /* ── Italy ── */
-  { name:'Tino Lab', pi:'Guglielmo Tino', inst:'Univ. Florence / LENS', country:'Italy', lat:43.770, lon:11.256, atoms:['Sr'], tag:'clocks', focus:'Atom interferometry, precision tests of gravity, strontium optical clocks for geodesy', hire:true },
+  { name:'Tino Lab', pi:'Guglielmo Tino', inst:'Univ. Florence / LENS', country:'Italy', lat:43.770, lon:11.256, atoms:['Sr'], tag:'clocks', focus:'Atom interferometry, precision tests of gravity, strontium optical clocks for geodesy' },
 
   /* ── Denmark ── */
-  { name:'Sherson Lab', pi:'Jacob Sherson', inst:'Aarhus University', country:'Denmark', lat:56.163, lon:10.204, atoms:['Rb'], tag:'sim', focus:'Quantum control of ultracold atoms, citizen-science-guided optimization (ScienceAtHome), hybrid intelligence', hire:true },
-  { name:'Polzik Lab', pi:'Eugene Polzik', inst:'Niels Bohr Institute, Copenhagen', country:'Denmark', lat:55.699, lon:12.563, atoms:['Cs'], tag:'cavity', focus:'Quantum optics with atomic ensembles, quantum memory, teleportation between light and matter', hire:true },
+  { name:'Sherson Lab', pi:'Jacob Sherson', inst:'Aarhus University', country:'Denmark', lat:56.163, lon:10.204, atoms:['Rb'], tag:'sim', focus:'Quantum control of ultracold atoms, citizen-science-guided optimization (ScienceAtHome), hybrid intelligence' },
+  { name:'Polzik Lab', pi:'Eugene Polzik', inst:'Niels Bohr Institute, Copenhagen', country:'Denmark', lat:55.699, lon:12.563, atoms:['Cs'], tag:'cavity', focus:'Quantum optics with atomic ensembles, quantum memory, teleportation between light and matter' },
 
   /* ── Israel: additional groups ── */
-  { name:'Ozeri Lab', pi:'Roee Ozeri', inst:'Weizmann Institute', country:'Israel', lat:31.906, lon:34.809, atoms:['Sr+'], tag:'ions', focus:'Trapped-ion quantum information and sensing, ion-atom hybrid systems, decoherence-free quantum control', hire:true },
-  { name:'Davidson Lab', pi:'Nir Davidson', inst:'Weizmann Institute', country:'Israel', lat:31.903, lon:34.812, atoms:['Rb'], tag:'bec', focus:'Cold-atom nonlinear dynamics, optical trapping architectures, atom-based quantum simulators', hire:true },
+  { name:'Ozeri Lab', pi:'Roee Ozeri', inst:'Weizmann Institute', country:'Israel', lat:31.906, lon:34.809, atoms:['Sr+'], tag:'ions', focus:'Trapped-ion quantum information and sensing, ion-atom hybrid systems, decoherence-free quantum control' },
+  { name:'Davidson Lab', pi:'Nir Davidson', inst:'Weizmann Institute', country:'Israel', lat:31.903, lon:34.812, atoms:['Rb'], tag:'bec', focus:'Cold-atom nonlinear dynamics, optical trapping architectures, atom-based quantum simulators' },
 
   /* ── Singapore: additional groups ── */
-  { name:'Li Lab', pi:'Wenhui Li', inst:'CQT / Nat. Univ. Singapore', country:'Singapore', lat:1.297, lon:103.776, atoms:['Rb'], tag:'rydberg', focus:'Ultracold Rydberg gases, Rydberg-atom microwave sensing, dipole-dipole interaction physics', hire:true },
+  { name:'Li Lab', pi:'Wenhui Li', inst:'CQT / Nat. Univ. Singapore', country:'Singapore', lat:1.297, lon:103.776, atoms:['Rb'], tag:'rydberg', focus:'Ultracold Rydberg gases, Rydberg-atom microwave sensing, dipole-dipole interaction physics' },
 
   /* ── South Korea ── */
-  { name:'Ahn Lab', pi:'Jaewook Ahn', inst:'KAIST', country:'South Korea', lat:36.372, lon:127.361, atoms:['Rb'], tag:'rydberg', focus:'Rydberg-atom graphs for combinatorial optimization, ultrafast quantum control, atom-based quantum computing', hire:true },
+  { name:'Ahn Lab', pi:'Jaewook Ahn', inst:'KAIST', country:'South Korea', lat:36.372, lon:127.361, atoms:['Rb'], tag:'rydberg', focus:'Rydberg-atom graphs for combinatorial optimization, ultrafast quantum control, atom-based quantum computing' },
 
   /* ── Australia: additional groups ── */
-  { name:'Truscott Group', pi:'Andrew Truscott', inst:'Australian National University', country:'Australia', lat:-35.278, lon:149.119, atoms:['He*'], tag:'bec', focus:'Metastable helium Bose-Einstein condensates, atom-optics quantum correlation experiments', hire:true },
+  { name:'Truscott Group', pi:'Andrew Truscott', inst:'Australian National University', country:'Australia', lat:-35.278, lon:149.119, atoms:['He*'], tag:'bec', focus:'Metastable helium Bose-Einstein condensates, atom-optics quantum correlation experiments' },
 
   /* ── Brazil ── */
-  { name:'Bagnato Group', pi:'Vanderlei Bagnato', inst:'USP São Carlos', country:'Brazil', lat:-22.018, lon:-47.891, atoms:['Rb'], tag:'bec', focus:'Bose-Einstein condensation, quantum turbulence in atomic superfluids, ultracold-atom precision sensors', hire:true },
+  { name:'Bagnato Group', pi:'Vanderlei Bagnato', inst:'USP São Carlos', country:'Brazil', lat:-22.018, lon:-47.891, atoms:['Rb'], tag:'bec', focus:'Bose-Einstein condensation, quantum turbulence in atomic superfluids, ultracold-atom precision sensors' },
 ];
 
 /* ─── Tag → color mapping ─── */
@@ -944,7 +832,7 @@ const WATCHLIST_SECTIONS = [
     ],
   },
   {
-    title: 'Additional Strong Groups To Watch',
+    title: 'Asia, Oceania, Israel and elsewhere',
     entries: [
       'Ben van Linden van den Heuvell / W. Vassen lineage — Amsterdam, Netherlands — Metastable helium; cold atoms',
       'Servaas Kokkelmans — Eindhoven, Netherlands — Ultracold-collision theory',
@@ -998,20 +886,34 @@ const SUBFIELD_SHORTLISTS = [
   ['Optical clocks / precision AMO', ['Jun Ye — JILA / CU Boulder', 'Hidetoshi Katori — University of Tokyo / RIKEN', 'Guglielmo Tino — Florence', 'Mark Kasevich — Stanford', 'Holger Mueller — UC Berkeley', 'Gretchen Campbell — NIST / UMD']],
 ];
 
-function labUrl(g) {
-  return g.website || GROUP_WEBSITES[g.name] || '#';
-}
-
-/* ─── Active filter ─── */
-let activeTag = 'all';
-const activeFilters = { atom:'all', region:'all', career:'all', technique:'all' };
+/* ─────────────────────────────────────────────────────
+   FINDER (2026-11-21 rebuild)
+   One state object drives everything: area cards, toolbar, result list,
+   globe, "my list", the watchlist and the URL (so a filtered view or a
+   starred list can be shared as a link).
+   ───────────────────────────────────────────────────── */
+const AREA_ORDER = ['rydberg', 'sim', 'bec', 'molecules', 'cavity', 'clocks', 'dipolar', 'ions'];
+const AREA_DESC = {
+  rydberg:   'Tweezer arrays and Rydberg interactions: neutral-atom qubits, gates and error correction.',
+  sim:       'Atoms in lattices and arrays emulating many-body models: Hubbard physics, magnetism, gauge fields.',
+  bec:       'Degenerate Bose and Fermi gases: superfluidity, Feshbach physics, few- and many-body effects.',
+  molecules: 'Ultracold molecules, assembled from atoms or laser-cooled directly: dipolar physics, chemistry, precision tests.',
+  cavity:    'Atoms coupled to optical cavities and ensembles: light–matter interfaces, networks, squeezing.',
+  clocks:    'Optical clocks, atom interferometry and precision measurement.',
+  dipolar:   'Magnetic lanthanides (Dy, Er): quantum droplets, supersolids, long-range interactions.',
+  ions:      'Trapped-ion qubits, quantum simulation and networks.',
+};
+const REGION_ORDER = ['US', 'Canada', 'Europe', 'Asia', 'Australia', 'South America'];
+const ATOM_OPTIONS = ['Rb', 'Cs', 'Li', 'Na', 'K', 'Sr', 'Yb', 'Dy', 'Er', 'molecules', 'ions'];
+const TECH_LABELS = { tweezer:'Tweezer arrays', lattice:'Optical lattices', microscope:'Quantum gas microscope', cavity:'Cavity / photonic interface', clock:'Clocks & interferometry', 'molecule-assembly':'Molecule assembly' };
+const STATE = { area:'all', atom:'all', region:'all', technique:'all', kind:'all', sort:'region', q:'', mine:false };
+const STAR_KEY = 'amo-groups-starred';
 
 function escapeHTML(value) {
-  return String(value ?? '').replace(/[&<>"']/g, ch => ({
-    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
-  }[ch]));
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
 }
-
+const norm = s => String(s).replace(/ü/g, 'ue').replace(/ö/g, 'oe').replace(/ä/g, 'ae').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function labUrl(g) { return g.website || GROUP_WEBSITES[g.name] || ''; }
 function regionOf(g) {
   if (g.country === 'USA') return 'US';
   if (g.country === 'Canada') return 'Canada';
@@ -1021,17 +923,7 @@ function regionOf(g) {
   if (g.country === 'Brazil') return 'South America';
   return g.country;
 }
-
-function careerModes(g) {
-  const modes = [];
-  const text = `${g.name} ${g.pi} ${g.inst} ${g.focus} ${g.tag}`.toLowerCase();
-  if (g.hire) modes.push('phd');
-  if (g.hire && /cavity|clock|molecule|rydberg|dipolar|fermion|feshbach|metrology|precision|qed/.test(text)) modes.push('postdoc');
-  if (g.atoms.length === 0 || text.includes('theory:')) modes.push('theory');
-  if (g.atoms.length > 0 && !text.includes('theory:')) modes.push('experimental');
-  return modes;
-}
-
+const isTheory = g => g.atoms.length === 0 || /theory:/i.test(g.focus);
 function techniques(g) {
   const text = `${g.name} ${g.inst} ${g.focus} ${g.tag}`.toLowerCase();
   const values = [];
@@ -1043,82 +935,296 @@ function techniques(g) {
   if (/molecule|stirap|assembly|chemistry|reaction/.test(text)) values.push('molecule-assembly');
   return values;
 }
-
 function atomMatches(g, atom) {
   if (atom === 'all') return true;
   if (atom === 'molecules') return g.tag === 'molecules' || /molecule|chemistry|reaction|stirap/i.test(g.focus);
   if (atom === 'ions') return g.tag === 'ions' || g.atoms.some(a => a.includes('+'));
-  return g.atoms.some(a => a.replace('+','') === atom);
+  return g.atoms.some(a => a.replace('+', '') === atom);
+}
+const HAY = GROUPS.map(g => norm(`${g.name} ${g.pi} ${g.inst} ${g.country} ${g.focus} ${g.atoms.join(' ')} ${TAG_LABELS[g.tag]}`));
+function groupMatches(g, s, skip) {
+  if (skip !== 'area' && s.area !== 'all' && g.tag !== s.area) return false;
+  if (skip !== 'atom' && !atomMatches(g, s.atom)) return false;
+  if (skip !== 'region' && s.region !== 'all' && regionOf(g) !== s.region) return false;
+  if (skip !== 'technique' && s.technique !== 'all' && !techniques(g).includes(s.technique)) return false;
+  if (skip !== 'kind' && s.kind !== 'all' && (s.kind === 'theory') !== isTheory(g)) return false;
+  if (s.mine && !starred.has(g.name)) return false;
+  if (s.q) { const h = HAY[GROUPS.indexOf(g)]; if (!norm(s.q).split(/\s+/).every(w => h.includes(w))) return false; }
+  return true;
 }
 
-function groupMatches(g, query='') {
-  if (activeTag !== 'all' && g.tag !== activeTag) return false;
-  if (!atomMatches(g, activeFilters.atom)) return false;
-  if (activeFilters.region !== 'all' && regionOf(g) !== activeFilters.region) return false;
-  if (activeFilters.career !== 'all' && !careerModes(g).includes(activeFilters.career)) return false;
-  if (activeFilters.technique !== 'all' && !techniques(g).includes(activeFilters.technique)) return false;
-  if (!query) return true;
-  return (
-    g.pi.toLowerCase().includes(query) ||
-    g.inst.toLowerCase().includes(query) ||
-    g.focus.toLowerCase().includes(query) ||
-    g.atoms.some(a => a.toLowerCase().includes(query)) ||
-    g.country.toLowerCase().includes(query) ||
-    g.name.toLowerCase().includes(query) ||
-    TAG_LABELS[g.tag].toLowerCase().includes(query)
-  );
+/* people: first + last name tokens, used to link watchlist and shortlist names to directory groups */
+const PEOPLE = [];
+const STOP = new Set(['university', 'univ', 'universite', 'universitat', 'institute', 'institut', 'college', 'national', 'school', 'state', 'formerly', 'center', 'centre', 'california', 'technology']);
+const words = s => norm(s).replace(/[^a-z\s-]/g, ' ').split(/[\s-]+/).filter(Boolean);
+const placeWords = s => new Set(words(s).filter(w => w.length >= 4 && !STOP.has(w)));
+GROUPS.forEach((g, i) => g.pi.split(/\s*&\s*/).forEach(p => {
+  const t = words(p);
+  if (t.length >= 2) PEOPLE.push({ first: t[0], last: t[t.length - 1], place: placeWords(g.inst + ' ' + g.country), idx: i });
+}));
+// a name (its first person, before any ' / ') links to a directory group when first and last name both appear, or (for nicknames such as
+// Randy/Randall or Trey/James) when the surname matches one directory PI and the institutions share a word
+function directoryIndexFor(name, inst) {
+  const toks = new Set(words(name.split(' / ')[0]));                 // "A / B ecosystem": only A decides
+  let hit = PEOPLE.find(p => toks.has(p.first) && toks.has(p.last));
+  if (!hit && inst) {
+    const same = PEOPLE.filter(p => toks.has(p.last)), place = placeWords(inst);
+    if (same.length === 1 && [...place].some(w => same[0].place.has(w))) hit = same[0];
+  }
+  return hit ? hit.idx : -1;
+}
+const WATCH = WATCHLIST_SECTIONS.map(sec => ({ title: sec.title, items: sec.entries.map(e => {
+  const parts = e.split(' — ');
+  const item = { name: parts[0] || e, inst: parts[1] || '', focus: parts.slice(2).join(' — '), text: norm(e) };
+  item.idx = directoryIndexFor(item.name, item.inst);
+  return item;
+}) }));
+const WATCH_TOTAL = WATCH.reduce((n, s) => n + s.items.length, 0);
+const WATCH_EXTRA = WATCH.reduce((n, s) => n + s.items.filter(it => it.idx < 0).length, 0);
+
+/* ── my list (browser storage only; never required for the page to work) ── */
+let starred = new Set();
+try { starred = new Set(JSON.parse(localStorage.getItem(STAR_KEY) || '[]').filter(n => GROUPS.some(g => g.name === n))); } catch (e) {}
+function saveStars() { try { localStorage.setItem(STAR_KEY, JSON.stringify([...starred])); } catch (e) {} }
+function toggleStar(name) {
+  starred.has(name) ? starred.delete(name) : starred.add(name);
+  saveStars(); renderMine(); render(false);
+  document.querySelectorAll(`[data-star="${CSS.escape(name)}"]`).forEach(b => b.setAttribute('aria-pressed', String(starred.has(name))));
 }
 
-function updateFilterButtons() {
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tag === activeTag);
+/* ── URL state ── */
+const URL_KEYS = { area:'area', atom:'atom', region:'region', technique:'tech', kind:'type', sort:'sort', q:'q' };
+function readUrl() {
+  const p = new URLSearchParams(location.search);
+  for (const [k, u] of Object.entries(URL_KEYS)) if (p.has(u)) STATE[k] = p.get(u);
+  if (p.get('mine') === '1') STATE.mine = true;
+  if (p.has('list')) { p.get('list').split('|').filter(n => GROUPS.some(g => g.name === n)).forEach(n => starred.add(n)); saveStars(); }
+  return p.get('g');
+}
+function writeUrl() {
+  const p = new URLSearchParams(location.search);
+  for (const [k, u] of Object.entries(URL_KEYS)) {
+    const def = k === 'sort' ? 'region' : k === 'q' ? '' : 'all';
+    STATE[k] && STATE[k] !== def ? p.set(u, STATE[k]) : p.delete(u);
+  }
+  STATE.mine ? p.set('mine', '1') : p.delete('mine');
+  p.delete('list');
+  const g = document.getElementById('group-panel').hidden ? null : document.getElementById('group-panel').dataset.name;
+  g ? p.set('g', g) : p.delete('g');
+  const qs = p.toString();
+  history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+}
+
+/* ── controls ── */
+function fillSelect(id, opts) {
+  const el = document.getElementById(id);
+  el.innerHTML = opts.map(([v, l]) => `<option value="${escapeHTML(v)}">${escapeHTML(l)}</option>`).join('');
+}
+function initControls() {
+  const count = fn => GROUPS.filter(fn).length;
+  fillSelect('f-atom', [['all', 'Any atom']].concat(ATOM_OPTIONS.map(a => [a, `${a === 'molecules' ? 'Molecules' : a === 'ions' ? 'Ions' : a} (${count(g => atomMatches(g, a))})`])));
+  fillSelect('f-region', [['all', 'Anywhere']].concat(REGION_ORDER.map(r => [r, `${r} (${count(g => regionOf(g) === r)})`])));
+  fillSelect('f-technique', [['all', 'Any technique']].concat(Object.entries(TECH_LABELS).map(([k, l]) => [k, `${l} (${count(g => techniques(g).includes(k))})`])));
+  fillSelect('f-kind', [['all', 'Experiment & theory'], ['experiment', `Experiment (${count(g => !isTheory(g))})`], ['theory', `Theory (${count(isTheory)})`]]);
+  fillSelect('f-sort', [['region', 'By country'], ['inst', 'Institution A–Z'], ['pi', 'PI surname A–Z']]);
+  document.querySelectorAll('.ag-selects select[data-filter]').forEach(el => el.addEventListener('change', () => { STATE[el.dataset.filter] = el.value; render(true); }));
+  document.getElementById('f-sort').addEventListener('change', e => { STATE.sort = e.target.value; render(false); });
+  let t; document.getElementById('group-search').addEventListener('input', e => { clearTimeout(t); t = setTimeout(() => { STATE.q = e.target.value.trim(); render(true); }, 120); });
+  const clear = () => { Object.assign(STATE, { area:'all', atom:'all', region:'all', technique:'all', kind:'all', q:'', mine:false }); document.getElementById('group-search').value = ''; render(true); };
+  document.getElementById('ag-clear').addEventListener('click', clear);
+  document.getElementById('ag-empty-clear').addEventListener('click', clear);
+  document.getElementById('ag-mine-btn').addEventListener('click', () => { STATE.mine = !STATE.mine; render(true); });
+  // area cards and chips
+  const areaN = tag => GROUPS.filter(g => g.tag === tag).length;
+  document.getElementById('ag-areas').innerHTML = AREA_ORDER.map(tag => {
+    const atoms = {}; GROUPS.filter(g => g.tag === tag).forEach(g => g.atoms.forEach(a => atoms[a] = (atoms[a] || 0) + 1));
+    const top = Object.entries(atoms).sort((a, b) => b[1] - a[1]).slice(0, 5).map(a => a[0]).join(' · ');
+    return `<button type="button" class="ag-area" data-area="${tag}" aria-pressed="false" style="--c:${TAG_COLORS[tag]}">
+      <span class="ag-area-top"><i class="ag-area-dot"></i><span class="ag-area-name">${TAG_LABELS[tag]}</span><span class="ag-area-n">${areaN(tag)}</span></span>
+      <span class="ag-area-desc">${AREA_DESC[tag]}</span>
+      ${top ? `<span class="ag-area-atoms">${top}</span>` : ''}
+    </button>`;
+  }).join('');
+  document.querySelectorAll('.ag-area').forEach(b => b.addEventListener('click', () => {
+    STATE.area = STATE.area === b.dataset.area ? 'all' : b.dataset.area; render(true);
+    document.getElementById('finder').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  }));
+  document.getElementById('ag-chips').innerHTML = `<button type="button" class="ag-chip" data-area="all" aria-pressed="true"><i></i>All areas <small></small></button>` +
+    AREA_ORDER.map(tag => `<button type="button" class="ag-chip" data-area="${tag}" aria-pressed="false" style="--c:${TAG_COLORS[tag]}"><i></i>${TAG_LABELS[tag]} <small></small></button>`).join('');
+  document.querySelectorAll('.ag-chip').forEach(b => b.addEventListener('click', () => { STATE.area = b.dataset.area; render(true); }));
+  // my list actions
+  document.getElementById('ag-mine-copy').addEventListener('click', e => copyText(mineRows().map(r => r.join(' — ')).join('\n'), e.target));
+  document.getElementById('ag-mine-csv').addEventListener('click', () => {
+    const rows = [['Group', 'PI', 'Institution', 'Country', 'Area', 'Website']].concat(mineRows());
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'amo-groups-my-list.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
-  document.querySelectorAll('.mini-filter-btn').forEach(btn => {
-    btn.classList.toggle('active', activeFilters[btn.dataset.filter] === btn.dataset.value);
+  document.getElementById('ag-mine-share').addEventListener('click', e => {
+    const p = new URLSearchParams(); p.set('list', [...starred].join('|')); p.set('mine', '1');
+    copyText(location.origin + location.pathname + '?' + p.toString(), e.target);
   });
+  document.getElementById('ag-mine-empty').addEventListener('click', () => { starred.clear(); saveStars(); STATE.mine = false; renderMine(); render(true); });
+}
+function copyText(text, btn) {
+  const done = ok => { const o = btn.textContent; btn.textContent = ok ? 'Copied ✓' : 'Copy failed'; setTimeout(() => btn.textContent = o, 1400); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => done(true), () => done(false)); else done(false);
+}
+function mineRows() {
+  return GROUPS.filter(g => starred.has(g.name)).map(g => [g.name, g.pi, g.inst, g.country, TAG_LABELS[g.tag], labUrl(g) || '']);
 }
 
-function applyFilters() {
-  const q = document.getElementById('group-search').value.trim().toLowerCase();
-  const filtered = GROUPS.filter(g => groupMatches(g, q));
-  buildGrid(filtered);
-  document.getElementById('result-count').textContent = `${filtered.length} group${filtered.length!==1?'s':''}`;
-  updateGlobe(filtered, true);
-  updateFilterButtons();
+/* ── render ── */
+let lastFiltered = GROUPS;
+function sortGroups(list) {
+  const surname = g => norm(g.pi.split(/\s*&\s*/)[0]).split(/\s+/).pop();
+  const by = {
+    region: (a, b) => REGION_ORDER.indexOf(regionOf(a)) - REGION_ORDER.indexOf(regionOf(b)) || a.country.localeCompare(b.country) || a.inst.localeCompare(b.inst) || surname(a).localeCompare(surname(b)),
+    inst: (a, b) => a.inst.localeCompare(b.inst) || surname(a).localeCompare(surname(b)),
+    pi: (a, b) => surname(a).localeCompare(surname(b)),
+  }[STATE.sort] || (() => 0);
+  return list.slice().sort(by);
+}
+function cardHTML(g) {
+  const idx = GROUPS.indexOf(g), on = starred.has(g.name);
+  return `<article class="group-card" id="group-card-${idx}" data-idx="${idx}" style="--c:${TAG_COLORS[g.tag]}">
+    <div class="gc-head"><button type="button" class="gc-open" data-open="${idx}">${escapeHTML(g.name)}</button>
+      <button type="button" class="gc-star" data-star="${escapeHTML(g.name)}" aria-pressed="${on}" aria-label="Keep ${escapeHTML(g.name)} in my list" title="Keep in my list">${on ? '★' : '☆'}</button></div>
+    <div class="gc-pi">${escapeHTML(g.pi)}</div>
+    <div class="gc-inst">${escapeHTML(g.inst)} · ${escapeHTML(g.country)}</div>
+    ${g.status ? `<span class="gc-badge">${escapeHTML(g.status)}</span>` : ''}
+    <div class="gc-focus">${escapeHTML(g.focus)}</div>
+    <div class="gc-meta"><span class="gc-chip area">${TAG_LABELS[g.tag]}</span><span class="gc-chip">${g.atoms.length ? escapeHTML(g.atoms.join(', ')) : 'Theory'}</span></div>
+  </article>`;
+}
+function render(scrollUrl) {
+  const s = STATE, filtered = GROUPS.filter(g => groupMatches(g, s));
+  lastFiltered = filtered;
+  const grid = document.getElementById('group-grid');
+  const sorted = sortGroups(filtered);
+  if (s.sort === 'region') {
+    const byC = []; sorted.forEach(g => { const last = byC[byC.length - 1]; if (last && last.c === g.country) last.list.push(g); else byC.push({ c: g.country, list: [g] }); });
+    grid.innerHTML = byC.map(b => `<h3 class="ag-country">${escapeHTML(b.c)} <span>${b.list.length}</span></h3><div class="group-grid">${b.list.map(cardHTML).join('')}</div>`).join('');
+  } else grid.innerHTML = `<div class="group-grid">${sorted.map(cardHTML).join('')}</div>`;
+  document.getElementById('ag-empty').hidden = filtered.length > 0;
+  document.getElementById('result-count').textContent = `${filtered.length} of ${GROUPS.length} groups`;
+  // controls reflect state
+  document.querySelectorAll('.ag-selects select[data-filter]').forEach(el => { el.value = s[el.dataset.filter]; el.classList.toggle('is-set', el.value !== 'all'); });
+  document.getElementById('f-sort').value = s.sort;
+  if (document.getElementById('group-search').value.trim() !== s.q) document.getElementById('group-search').value = s.q;
+  document.querySelectorAll('.ag-area').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.area === s.area)));
+  document.querySelectorAll('.ag-chip').forEach(b => {
+    const n = b.dataset.area === 'all' ? GROUPS.filter(g => groupMatches(g, s, 'area')).length : GROUPS.filter(g => g.tag === b.dataset.area && groupMatches(g, s, 'area')).length;
+    b.querySelector('small').textContent = n; b.setAttribute('aria-pressed', String(b.dataset.area === s.area));
+    b.disabled = n === 0 && b.dataset.area !== s.area;
+  });
+  const active = [s.area !== 'all' && TAG_LABELS[s.area], s.atom !== 'all' && s.atom, s.region !== 'all' && s.region, s.technique !== 'all' && TECH_LABELS[s.technique], s.kind !== 'all' && (s.kind === 'theory' ? 'Theory' : 'Experiment'), s.q && `“${s.q}”`, s.mine && 'my list'].filter(Boolean);
+  document.getElementById('ag-active').textContent = active.length ? 'Showing: ' + active.join(' · ') : '';
+  document.getElementById('ag-clear').hidden = !active.length;
+  document.getElementById('ag-mine-btn').setAttribute('aria-pressed', String(s.mine));
+  // watchlist matches for a search
+  const also = document.getElementById('ag-alsowl');
+  if (s.q) {
+    const words = norm(s.q).split(/\s+/);
+    const hits = WATCH.flatMap(sec => sec.items).filter(it => it.idx < 0 && words.every(w => it.text.includes(w)));
+    also.hidden = !hits.length;
+    also.innerHTML = hits.length ? `<h3>Also on the watchlist (${hits.length})</h3><ul>${hits.slice(0, 12).map(it => `<li><b>${escapeHTML(it.name)}</b> · ${escapeHTML(it.inst)} · ${escapeHTML(it.focus)}</li>`).join('')}</ul>${hits.length > 12 ? `<p class="ag-foot">…and ${hits.length - 12} more in section 04.</p>` : ''}` : '';
+  } else also.hidden = true;
+  updateGlobe(filtered, scrollUrl);
+  renderWatchlist();
+  if (scrollUrl !== undefined) writeUrl();
+}
+function renderMine() {
+  const list = GROUPS.filter(g => starred.has(g.name));
+  document.getElementById('ag-mine-n').textContent = list.length;
+  document.getElementById('ag-mine-count').textContent = list.length ? `${list.length} group${list.length > 1 ? 's' : ''}` : 'empty';
+  document.getElementById('ag-mine-hint').hidden = list.length > 0;
+  document.getElementById('ag-mine-actions').hidden = !list.length;
+  document.getElementById('ag-mine-list').innerHTML = list.map(g => `<li><button type="button" data-open="${GROUPS.indexOf(g)}">${escapeHTML(g.name)}</button> <span class="gc-inst">${escapeHTML(g.inst)}</span><button type="button" class="rm" data-star="${escapeHTML(g.name)}" aria-label="Remove ${escapeHTML(g.name)} from my list">✕</button></li>`).join('');
 }
 
-function setPreset(preset) {
-  activeTag = 'all';
-  Object.assign(activeFilters, { atom:'all', region:'all', career:'all', technique:'all' });
-  if (preset === 'neutral-qc') {
-    Object.assign(activeFilters, { technique:'tweezer', career:'experimental' });
-    activeTag = 'rydberg';
-  }
-  if (preset === 'molecules') Object.assign(activeFilters, { atom:'molecules', technique:'molecule-assembly', career:'experimental' });
-  if (preset === 'clocks') {
-    Object.assign(activeFilters, { technique:'clock' });
-    activeTag = 'clocks';
-  }
-  if (preset === 'fermions') {
-    Object.assign(activeFilters, { atom:'Li', technique:'microscope' });
-    activeTag = 'bec';
-  }
-  if (preset === 'theory') Object.assign(activeFilters, { career:'theory' });
-  document.getElementById('group-search').value = '';
-  document.querySelectorAll('.path-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.preset === preset && preset !== 'reset'));
-  applyFilters();
+/* ── watchlist & shortlists ── */
+function renderWatchlist() {
+  const words = STATE.q ? norm(STATE.q).split(/\s+/) : [];
+  const grid = document.getElementById('watchlist-grid');
+  let shown = 0;
+  const html = WATCH.map((sec, k) => {
+    const items = sec.items.filter(it => it.idx < 0 && words.every(w => it.text.includes(w)));
+    shown += items.length;
+    if (!items.length) return '';
+    return `<details class="watchlist-section"${k === 0 || words.length ? ' open' : ''}><summary>${escapeHTML(sec.title)} <span>${items.length}</span></summary>
+      <div class="watchlist-list">${items.map(it => `<article class="watchlist-item"><div class="watchlist-name">${escapeHTML(it.name)}</div><div class="watchlist-meta">${escapeHTML(it.inst)}</div><div class="watchlist-focus">${escapeHTML(it.focus)}</div></article>`).join('')}</div></details>`;
+  }).join('');
+  const dup = WATCH_TOTAL - WATCH_EXTRA;
+  grid.innerHTML = (html || `<p class="ag-wl-note">No watchlist name matches “${escapeHTML(STATE.q)}”.</p>`) +
+    `<p class="ag-wl-note">${words.length ? `${shown} matching name${shown === 1 ? '' : 's'}. ` : ''}${dup} of the ${WATCH_TOTAL} watchlist entries are already in the directory and are listed there instead.</p>`;
+}
+function renderShortlists() {
+  document.getElementById('shortlist-grid').innerHTML = SUBFIELD_SHORTLISTS.map(([title, items]) => {
+    const names = items.map(item => {
+      const [who, where] = item.split(' — '), idx = directoryIndexFor(who, where);
+      return idx >= 0
+        ? `<li><button type="button" class="sl-name in" data-open="${idx}" style="--c:${TAG_COLORS[GROUPS[idx].tag]}"><i></i>${escapeHTML(who)} <small>${escapeHTML(where || '')}</small></button></li>`
+        : `<li><button type="button" class="sl-name" data-search="${escapeHTML(who.split(' / ')[0])}"><i></i>${escapeHTML(who)} <small>${escapeHTML(where || '')}</small></button></li>`;
+    }).join('');
+    return `<section class="shortlist-card"><h3>${escapeHTML(title)}</h3><ul>${names}</ul></section>`;
+  }).join('');
 }
 
-/* ── 3D globe (js/globe3d.js): same data and filters as the directory ── */
+/* ── profile drawer ── */
+let lastOpener = null;
+function similarTo(g) {
+  const score = h => (h.tag === g.tag ? 3 : 0) + h.atoms.filter(a => g.atoms.includes(a)).length + techniques(h).filter(t => techniques(g).includes(t)).length * 0.5 + (regionOf(h) === regionOf(g) ? 0.25 : 0);
+  return GROUPS.filter(h => h !== g).map(h => [score(h), h]).filter(x => x[0] >= 3.5).sort((a, b) => b[0] - a[0]).slice(0, 4).map(x => x[1]);
+}
+function showPanel(idx, opener) {
+  const g = GROUPS[idx], col = TAG_COLORS[g.tag] || '#94a3b8', url = labUrl(g), on = starred.has(g.name);
+  const panel = document.getElementById('group-panel');
+  lastOpener = opener || document.activeElement;
+  panel.style.setProperty('--c', col);
+  panel.dataset.name = g.name;
+  const search = 'https://www.google.com/search?q=' + encodeURIComponent(`${g.pi} ${g.inst} group`);
+  const sims = similarTo(g);
+  document.getElementById('panel-content').innerHTML = `
+    <div class="gp-area"><i></i>${TAG_LABELS[g.tag]}</div>
+    <h2 class="gp-name" id="gp-title">${escapeHTML(g.name)}</h2>
+    <div class="gp-pi">${escapeHTML(g.pi)}</div>
+    <div class="gp-inst">${escapeHTML(g.inst)} · ${escapeHTML(g.country)}</div>
+    ${g.status ? `<p class="gc-badge" style="margin:.5rem 0 0">${escapeHTML(g.status)}</p>` : ''}
+    <div class="gp-actions">
+      ${url ? `<a class="primary" href="${escapeHTML(url)}" target="_blank" rel="noopener">Group website ↗</a>` : `<a class="primary" href="${search}" target="_blank" rel="noopener">Find the group page ↗</a>`}
+      <button type="button" data-star="${escapeHTML(g.name)}" aria-pressed="${on}">${on ? '★ In my list' : '☆ Keep in my list'}</button>
+      ${groupsGlobe ? `<button type="button" id="gp-globe">◎ Show on globe</button>` : ''}
+    </div>
+    <div class="gp-block"><div class="gp-key">Research focus</div><div class="gp-val">${escapeHTML(g.focus)}</div></div>
+    <div class="gp-block"><div class="gp-key">Atoms</div><div class="gp-atoms">${g.atoms.length ? g.atoms.map(a => `<span class="atom-chip">${escapeHTML(a)}</span>`).join('') : '<span class="gp-val">Theory group</span>'}</div></div>
+    ${techniques(g).length ? `<div class="gp-block"><div class="gp-key">Techniques (from the focus line)</div><div class="gp-val">${techniques(g).map(t => TECH_LABELS[t]).join(' · ')}</div></div>` : ''}
+    ${g.paper ? `<div class="gp-block gp-paper"><div class="gp-key">A representative paper</div><a href="https://doi.org/${escapeHTML(g.doi)}" target="_blank" rel="noopener">${escapeHTML(g.paper)} ↗</a></div>` : ''}
+    ${sims.length ? `<div class="gp-block"><div class="gp-key">Similar groups</div><div class="gp-similar">${sims.map(h => `<button type="button" data-open="${GROUPS.indexOf(h)}" style="--c:${TAG_COLORS[h.tag]}"><i></i><span><b>${escapeHTML(h.name)}</b> · ${escapeHTML(h.inst)}</span></button>`).join('')}</div></div>` : ''}
+    <div class="gp-tip"><b>Before you write:</b> read two or three of the group's recent papers, check the group page and the department for open positions, and if you can, talk to a current student or postdoc.</div>`;
+  panel.hidden = false; document.getElementById('ag-backdrop').hidden = false;
+  document.getElementById('gp-close').focus();
+  const gb = document.getElementById('gp-globe');
+  if (gb) gb.addEventListener('click', () => { closePanel(); groupsGlobe.focusOn(g.lat, g.lon); document.getElementById('groups-globe').scrollIntoView({ block: 'nearest' }); });
+  document.querySelectorAll('.group-card.is-highlighted').forEach(el => el.classList.remove('is-highlighted'));
+  const card = document.getElementById(`group-card-${idx}`);
+  if (card) card.classList.add('is-highlighted');
+  writeUrl();
+}
+function closePanel() {
+  const panel = document.getElementById('group-panel');
+  if (panel.hidden) return;
+  panel.hidden = true; document.getElementById('ag-backdrop').hidden = true;
+  writeUrl();
+  if (lastOpener && document.contains(lastOpener)) lastOpener.focus();
+}
+
+/* ── 3D globe (js/globe3d.js): same data and filters as the list ── */
 let groupsGlobe = null;
 function updateGlobe(groups, focus) {
-  if (!groupsGlobe) return;
-  groupsGlobe.setPoints(groups.map(g => ({
-    lat: g.lat, lon: g.lon, color: TAG_COLORS[g.tag] || '#94a3b8',
-    title: g.name, sub: `${g.pi} · ${g.inst}`, idx: GROUPS.indexOf(g)
-  })), { focus });
   const c = document.getElementById('groups-globe-count');
   if (c) c.textContent = `${groups.length} group${groups.length !== 1 ? 's' : ''}`;
+  if (!groupsGlobe) return;
+  groupsGlobe.setPoints(groups.map(g => ({ lat: g.lat, lon: g.lon, color: TAG_COLORS[g.tag] || '#94a3b8', title: g.name, sub: `${g.pi} · ${g.inst}`, idx: GROUPS.indexOf(g) })), { focus: !!focus });
 }
 function initGlobe() {
   const wrap = document.getElementById('groups-globe'), cvs = document.getElementById('groups-globe-cvs');
@@ -1134,165 +1240,39 @@ function initGlobe() {
       return list.length + (list.length === 1 ? ' group · ' : ' groups · ') + (insts.length === 1 ? insts[0] : insts.slice(0, 2).join(' / ') + (insts.length > 2 ? ' …' : ''));
     }
   });
-  if (!groupsGlobe) { wrap.hidden = true; return; }
-  updateGlobe(GROUPS, false);
+  if (!groupsGlobe) { wrap.hidden = true; }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  buildGrid(GROUPS);
+  const openName = readUrl();
+  document.getElementById('ag-stat-groups').textContent = GROUPS.length;
+  document.getElementById('ag-stat-countries').textContent = new Set(GROUPS.map(g => g.country)).size;
+  document.getElementById('ag-stat-areas').textContent = AREA_ORDER.length;
+  document.getElementById('ag-stat-watch').textContent = WATCH_EXTRA;
+  initControls();
   initGlobe();
-  renderWatchlist();
   renderShortlists();
-  document.getElementById('result-count').textContent = `${GROUPS.length} groups`;
-
-  // Filter buttons
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeTag = btn.dataset.tag;
-      document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
-      applyFilters();
-    });
+  renderMine();
+  render();
+  // one delegated handler for every "open profile", "star" and shortlist button
+  document.addEventListener('click', e => {
+    const star = e.target.closest('[data-star]');
+    if (star) { e.stopPropagation(); toggleStar(star.dataset.star); if (!document.getElementById('group-panel').hidden && star.closest('#group-panel')) star.textContent = starred.has(star.dataset.star) ? '★ In my list' : '☆ Keep in my list'; return; }
+    const open = e.target.closest('[data-open]');
+    if (open) { showPanel(+open.dataset.open, open); return; }
+    const sl = e.target.closest('[data-search]');
+    if (sl) { STATE.q = sl.dataset.search; render(true); document.getElementById('watchlist').scrollIntoView({ block: 'start' }); return; }
+    const card = e.target.closest('.group-card');
+    if (card && !e.target.closest('a,button')) showPanel(+card.dataset.idx, card.querySelector('.gc-open'));
   });
-
-  document.querySelectorAll('.mini-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFilters[btn.dataset.filter] = btn.dataset.value;
-      document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
-      applyFilters();
-    });
-  });
-
-  document.querySelectorAll('.path-btn').forEach(btn => {
-    btn.addEventListener('click', () => setPreset(btn.dataset.preset));
-  });
+  document.getElementById('gp-close').addEventListener('click', closePanel);
+  document.getElementById('ag-backdrop').addEventListener('click', closePanel);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+  if (openName) { const i = GROUPS.findIndex(g => g.name === openName); if (i >= 0) showPanel(i); }
 });
-
-function showPanel(idx) {
-  const g = GROUPS[idx];
-  const col = TAG_COLORS[g.tag] || '#5c503c';
-  document.getElementById('panel-content').innerHTML = `
-    <div class="gp-header">
-      <div class="gp-tag-dot" style="background:${col}"></div>
-      <div>
-        <div class="gp-name">${g.name}</div>
-        <div class="gp-pi">PI: ${g.pi}</div>
-        <div class="gp-inst">${g.inst} · ${g.country}</div>
-      </div>
-      <div style="margin-left:auto;padding:4px 12px;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(0,0,0,0.2);color:${col}">${TAG_LABELS[g.tag]||g.tag}</div>
-    </div>
-    <div class="gp-body">
-      <div class="gp-row">
-        <div class="gp-key">Research Focus</div>
-        <div class="gp-val">${g.focus}</div>
-      </div>
-      <div class="gp-row">
-        <div class="gp-key">Atom(s) Used</div>
-        <div class="gp-atoms">${g.atoms.length ? g.atoms.map(a=>`<span class="atom-chip">${a}</span>`).join('') : '<span style="color:var(--text-muted)">Theory (no experiment)</span>'}</div>
-      </div>
-      <div class="gp-row">
-        <div class="gp-key">International Hiring</div>
-        <div class="${g.hire?'hire-yes':'hire-no'}">${g.hire ? '✓ Typically hires international students & postdocs' : 'Primarily domestic hiring'}</div>
-      </div>
-      <div class="gp-row">
-        <div class="gp-key">Country</div>
-        <div class="gp-val">${g.country}</div>
-      </div>
-    </div>
-    ${g.paper ? `<div class="gp-paper">
-      <div class="gp-paper-label">Flagship / Representative Paper</div>
-      <a href="https://doi.org/${g.doi}" target="_blank" rel="noopener">${g.paper} →</a>
-    </div>` : ''}
-    <a class="gc-link" style="margin-top:var(--sp-3)" href="${labUrl(g)}" target="_blank" rel="noopener">Visit lab website ↗</a>
-  `;
-  document.getElementById('group-panel').classList.add('visible');
-  document.getElementById('group-panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
-  document.querySelectorAll('.group-card.is-highlighted').forEach(el => el.classList.remove('is-highlighted'));
-  const card = document.getElementById(`group-card-${idx}`);
-  if (card) {
-    card.classList.add('is-highlighted');
-    window.setTimeout(() => card.classList.remove('is-highlighted'), 2600);
-  }
-}
-
-function closePanel() {
-  document.getElementById('group-panel').classList.remove('visible');
-}
-
-function buildGrid(groups) {
-  document.getElementById('group-grid').innerHTML = groups.map(g => {
-    const col = TAG_COLORS[g.tag] || '#5c503c';
-    const idx = GROUPS.indexOf(g);
-    const url = labUrl(g);
-    const atomList = g.atoms.length ? g.atoms.join(', ') : 'Theory';
-    const techniqueList = techniques(g).slice(0, 2).map(t => t.replace('-', ' '));
-    return `<div class="group-card" id="group-card-${idx}" role="button" tabindex="0" title="Open full profile for ${escapeHTML(g.name)}"
-        onclick="showPanel(${idx})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPanel(${idx});}">
-      <div class="gc-head"><div class="gc-dot" style="background:${col}"></div><div class="gc-name">${g.name}</div></div>
-      <div class="gc-inst">${g.inst} · ${g.country}</div>
-      <div class="gc-focus">${g.focus}</div>
-      <div class="gc-meta">
-        <span class="gc-chip">${atomList}</span>
-        <span class="gc-chip">${regionOf(g)}</span>
-        <span class="gc-chip">${TAG_LABELS[g.tag]}</span>
-        ${techniqueList.map(t => `<span class="gc-chip">${t}</span>`).join('')}
-      </div>
-      <a class="gc-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Visit lab website ↗</a>
-    </div>`;
-  }).join('');
-}
-
-function parseWatchlistEntry(entry) {
-  const parts = entry.split(' — ');
-  return {
-    name: parts[0] || entry,
-    inst: parts[1] || '',
-    focus: parts.slice(2).join(' — ') || '',
-    text: entry.toLowerCase(),
-  };
-}
-
-function renderWatchlist() {
-  const q = (document.getElementById('watchlist-search')?.value || '').trim().toLowerCase();
-  const grid = document.getElementById('watchlist-grid');
-  const count = document.getElementById('watchlist-count');
-  if (!grid) return;
-  let shown = 0;
-  grid.innerHTML = WATCHLIST_SECTIONS.map(section => {
-    const items = section.entries
-      .map(parseWatchlistEntry)
-      .filter(item => !q || item.text.includes(q));
-    shown += items.length;
-    if (!items.length) return '';
-    return `<section class="watchlist-section">
-      <h3>${escapeHTML(section.title)} <span>${items.length}</span></h3>
-      <div class="watchlist-list">
-        ${items.map(item => `<article class="watchlist-item">
-          <div class="watchlist-name">${escapeHTML(item.name)}</div>
-          <div class="watchlist-meta">${escapeHTML(item.inst)}</div>
-          <div class="watchlist-focus">${escapeHTML(item.focus)}</div>
-        </article>`).join('')}
-      </div>
-    </section>`;
-  }).join('');
-  if (count) count.textContent = `${shown} watchlist entr${shown === 1 ? 'y' : 'ies'}`;
-}
-
-function renderShortlists() {
-  const grid = document.getElementById('shortlist-grid');
-  if (!grid) return;
-  grid.innerHTML = SUBFIELD_SHORTLISTS.map(([title, items]) => `<section class="shortlist-card">
-    <h3>${escapeHTML(title)}</h3>
-    <ul>${items.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ul>
-  </section>`).join('');
-}
-
-function filterGroups() {
-  document.querySelectorAll('.path-btn').forEach(b => b.classList.remove('active'));
-  applyFilters();
-}
 </script>
 
-<script src="../js/main.js?v=47"></script>
+<script src="../js/main.js?v=48"></script>
 <script>renderNav({ active: 'amo-groups', root: '../' });</script>
 <div id="amo-nav-ready" hidden></div>
 </body>
