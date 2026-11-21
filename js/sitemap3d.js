@@ -27,10 +27,10 @@
   var AMO3D = window.AMO3D = window.AMO3D || {};
 
   var CATS = [
-    { id: 'build',             name: 'Build',               dark: '#fbbf24', light: '#b45309', at: [1.25, 0, 0.3] },
-    { id: 'trap-image-cool',   name: 'Trap, Image & Cool',  dark: '#34d399', light: '#047857', at: [0, 1.25, -0.3] },
-    { id: 'quantum-computing', name: 'Quantum Computing',   dark: '#a78bfa', light: '#6d28d9', at: [-1.25, 0, 0.3] },
-    { id: 'career',            name: 'Career & Literature', dark: '#f472b6', light: '#be185d', at: [0, -1.25, -0.3] }
+    { id: 'build',             name: 'Build a lab',               dark: '#fbbf24', light: '#b45309', at: [1.25, 0, 0.3] },
+    { id: 'trap-image-cool',   name: 'First experiment',  dark: '#34d399', light: '#047857', at: [0, 1.25, -0.3] },
+    { id: 'quantum-computing', name: 'Quantum computer',   dark: '#a78bfa', light: '#6d28d9', at: [-1.25, 0, 0.3] },
+    { id: 'career',            name: 'Career', dark: '#f472b6', light: '#be185d', at: [0, -1.25, -0.3] }
   ];
   var PATH_COLORS = ['#38bdf8', '#f97316', '#22c55e', '#e879f9', '#facc15', '#f43f5e'];
 

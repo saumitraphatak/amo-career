@@ -46,8 +46,28 @@
     .page-wrap { --page-color:#38bdf8; --page-bg:rgba(56,189,248,0.08); --page-border:rgba(56,189,248,0.22); }
     .sm-section { margin: var(--sp-12) 0; }
     .sm-section-head { margin-bottom: var(--sp-5); }
-    .sm-section-head h2 { font-size: 1.3rem; margin: 0 0 .3rem; }
+    .sm-section-head h2:not(.section-title) { font-size: 1.3rem; margin: 0 0 .3rem; }
     .sm-section-head p { color: var(--text-secondary); font-size: .92rem; margin: 0; }
+    .sh-stats { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:var(--sp-4); }
+    .sh-stats span { display:inline-flex; align-items:baseline; gap:.35rem; padding:.3rem .75rem; border-radius:999px; border:1px solid var(--border); background:color-mix(in srgb, var(--bg-card) 70%, transparent); font-size:.8rem; color:var(--text-secondary); }
+    .sh-stats b { font-family:var(--font-mono); font-size:.95rem; color:var(--text-primary); }
+    .sm-first { margin-top: 0; }
+    .sm-lead { margin:-.25rem 0 var(--sp-5); color:var(--text-secondary); font-size:.92rem; line-height:1.65; max-width:80ch; }
+    .sh-stories { display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:var(--sp-4); margin-bottom:var(--sp-6); }
+    .sh-story { --c: var(--k); display:flex; flex-direction:column; gap:.35rem; padding:var(--sp-4) var(--sp-5); border-radius:var(--r-lg); text-decoration:none; color:var(--text-primary);
+      background:linear-gradient(160deg, color-mix(in srgb, var(--c) 10%, var(--bg-card)), var(--bg-card)); border:1px solid color-mix(in srgb, var(--c) 30%, var(--border)); border-top:3px solid var(--c);
+      transition:transform .25s var(--ease-out, ease), border-color .25s, box-shadow .25s; }
+    .sh-story:hover { transform:translateY(-2px); border-color:var(--c); box-shadow:0 10px 30px color-mix(in srgb, var(--c) 18%, transparent); }
+    [data-theme="dark"] .sh-story { --c: var(--kd); }
+    .sh-story-k { font-family:var(--font-mono); font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:color-mix(in srgb, var(--c) 72%, var(--text-primary)); }
+    :root:not([data-theme="dark"]) .page-hero-eyebrow { color:#024e78; }
+    .sh-story strong { font-size:1.08rem; letter-spacing:-.01em; }
+    .sh-story-d { font-size:.84rem; color:var(--text-secondary); line-height:1.5; }
+    .sh-story-dots { display:flex; gap:4px; margin-top:.35rem; }
+    .sh-story-dots i { flex:1; height:5px; border-radius:3px; background:color-mix(in srgb, var(--c) 55%, transparent); }
+    .sh-story-ends { font-size:.76rem; color:var(--text-muted); line-height:1.5; }
+    .sh-story-ends b { color:var(--text-secondary); font-weight:600; }
+    .sm-section .section-title { margin-bottom:.35rem; }
     .sm-intro { max-width: 760px; color: var(--text-secondary); line-height: 1.75; margin-bottom: var(--sp-10); }
     .sm-toc { display: flex; flex-wrap: wrap; gap: .5rem; margin: var(--sp-6) 0 var(--sp-10); }
     .sm-toc a {
@@ -83,41 +103,63 @@
 <main class="page-wrap" id="main-content">
   <div class="page-hero" style="--page-color:#38bdf8;--page-bg:rgba(56,189,248,0.08);--page-border:rgba(56,189,248,0.22);">
     <div class="container">
-      <div class="page-hero-eyebrow">🗺️ Site Map</div>
-      <h1>Where should you start?</h1>
+      <div class="page-hero-eyebrow">🗺️ Start here · The whole site in one place</div>
+      <h1>Where should you <span class="grad-text" style="--ga:#38bdf8;--gb:#a78bfa;">start?</span></h1>
       <p class="page-hero-desc">
-        AMO Toolkit has one purpose per page. This is the single map of all of them, in the same
-        four categories as the top nav, each in a sensible reading order, plus the full step-by-step
-        version of the six workflow paths introduced on the home page.
+        Every page on AMO Toolkit, told as four stories: build a lab, run a first experiment, build a quantum
+        computer, start a career. Each story is numbered in the order you would need its pages, and six guided
+        paths cut across the stories for the jobs people most often arrive with.
       </p>
+      <div class="sh-stats" aria-label="What is on this site">
+        <span><b id="sh-stat-pages">33</b> tools and guides</span>
+        <span><b id="sh-stat-stories">4</b> stories</span>
+        <span><b id="sh-stat-paths">6</b> guided paths</span>
+      </div>
     </div>
   </div>
 
   <div class="page-content">
     <div class="container">
 
-      <p class="sm-intro">
-        If you only bookmark one page besides the tools you use every day, make it this one. Every
-        other listing on the site &mdash; the home page's featured grid, the intent cards, the nav
-        dropdowns &mdash; is a different lens on the same 32 pages. This page is the lens with no
-        redundancy: one category, one order, one line per page.
-      </p>
-
-      <div class="sm-toc" aria-label="Jump to section">
-        <a href="#paths">Recommended Sequences</a>
-        <a href="#build">Build</a>
-        <a href="#trap-image-cool">Trap, Image &amp; Cool</a>
-        <a href="#quantum-computing">Quantum Computing</a>
-        <a href="#career">Career &amp; Literature</a>
-      </div>
-
-
+      <section class="sm-section sm-first" id="stories" aria-labelledby="stories-h">
+        <h2 class="section-title" id="stories-h"><span class="accent">01</span> Pick a story</h2>
+        <p class="sm-lead">Each story is a numbered sequence; open the one closest to what you are doing and start at step 1, or jump to the step you are on. The same numbers are in the top menus and in a trail at the bottom of every page.</p>
+        <div class="sh-stories">
+          <a class="sh-story" href="#build" data-story="build" style="--k:#b45309;--kd:#fbbf24;">
+            <span class="sh-story-k">Story 1</span>
+            <strong>Build a lab, step by step</strong>
+            <span class="sh-story-d">From an empty room to a working tweezer experiment.</span>
+            <span class="sh-story-dots" aria-hidden="true"></span>
+            <span class="sh-story-ends"></span>
+          </a>
+          <a class="sh-story" href="#trap-image-cool" data-story="trap-image-cool" style="--k:#047857;--kd:#34d399;">
+            <span class="sh-story-k">Story 2</span>
+            <strong>Run your first experiment</strong>
+            <span class="sh-story-d">From a cold cloud to one atom in its ground state.</span>
+            <span class="sh-story-dots" aria-hidden="true"></span>
+            <span class="sh-story-ends"></span>
+          </a>
+          <a class="sh-story" href="#quantum-computing" data-story="quantum-computing" style="--k:#6d28d9;--kd:#a78bfa;">
+            <span class="sh-story-k">Story 3</span>
+            <strong>Build a quantum computer</strong>
+            <span class="sh-story-d">From what a qubit is to linking processors.</span>
+            <span class="sh-story-dots" aria-hidden="true"></span>
+            <span class="sh-story-ends"></span>
+          </a>
+          <a class="sh-story" href="#career" data-story="career" style="--k:#be185d;--kd:#f472b6;">
+            <span class="sh-story-k">Story 4</span>
+            <strong>Start a career</strong>
+            <span class="sh-story-d">Papers, groups, the industry and its platforms.</span>
+            <span class="sh-story-dots" aria-hidden="true"></span>
+            <span class="sh-story-ends"></span>
+          </a>
+        </div>
       <!-- 3D constellation (js/sitemap3d.js) — built from the lists on this page -->
       <section class="const3d" id="constellation" hidden aria-labelledby="const3d-title">
         <div class="const3d-top">
           <div>
             <h2 id="const3d-title">The whole site at a glance</h2>
-            <p>Every page below as a star, grouped by category and threaded in reading order. Pick a path to light up its steps. Drag to turn it; click a page to open it. From the keyboard: arrow keys turn it, <kbd>]</kbd> and <kbd>[</kbd> step through the pages (or the chosen path), Enter opens one.</p>
+            <p>Every page as a star, one cluster per story, threaded in step order. Pick a path to light up its steps. Drag to turn it; click a page to open it. From the keyboard: arrow keys turn it, <kbd>]</kbd> and <kbd>[</kbd> step through the pages (or the chosen path), Enter opens one.</p>
           </div>
           <button type="button" class="const3d-pause" id="const3d-pause" aria-pressed="false">❚❚ Stop turning</button>
         </div>
@@ -126,14 +168,15 @@
         </div>
         <div class="const3d-chips" id="const3d-chips" role="group" aria-label="Highlight a guided path"></div>
       </section>
+      </section>
 
       <!-- ══════════════════════════════════════════
            RECOMMENDED SEQUENCES (full detail)
            ══════════════════════════════════════════ -->
-      <section class="sm-section" id="paths">
+      <section class="sm-section" id="paths" aria-labelledby="paths-h">
         <div class="sm-section-head">
-          <h2>Recommended sequences</h2>
-          <p>Pick the workflow closest to your actual problem. Each path is a sensible order through pages you'd otherwise have to piece together yourself.</p>
+          <h2 class="section-title" id="paths-h"><span class="accent">02</span> Or follow a guided path</h2>
+          <p>Six short routes across the stories for the jobs people most often arrive with, four pages each. Pick a path in the map above to light it up.</p>
         </div>
 
         <div class="paths-grid">
@@ -143,7 +186,7 @@
             <div class="path-title">Build a MOT or tweezer setup</div>
             <div class="path-who">For new lab members and experiment builders</div>
             <div class="path-steps">
-              <a class="path-step" href="atom-library.html"><span class="path-step-n">1</span><span>Choose species constants in the Atomic Species Selector</span><span class="path-step-arrow">›</span></a>
+              <a class="path-step" href="atom-library.html"><span class="path-step-n">1</span><span>Select the atomic species and its constants</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="laser-planner.html"><span class="path-step-n">2</span><span>Plan required wavelengths and beam branches</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="mot-designer.html"><span class="path-step-n">3</span><span>Estimate MOT gradients, detunings, and capture</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="lab-techniques.html"><span class="path-step-n">4</span><span>Use lab techniques for optics, AOMs, RF, and alignment</span><span class="path-step-arrow">›</span></a>
@@ -155,7 +198,7 @@
             <div class="path-title">Stabilize and deliver lasers</div>
             <div class="path-who">For debugging locks, fibers, and polarization</div>
             <div class="path-steps">
-              <a class="path-step" href="laser-planner.html"><span class="path-step-n">1</span><span>Start with the laser system planner</span><span class="path-step-arrow">›</span></a>
+              <a class="path-step" href="laser-planner.html"><span class="path-step-n">1</span><span>Pick the lasers for your atom</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="laser-locking.html"><span class="path-step-n">2</span><span>Choose SAS, beat-note, or PDH locking</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="polarimetry.html"><span class="path-step-n">3</span><span>Verify polarization with Stokes/Poincare tools</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="zernike.html"><span class="path-step-n">4</span><span>Diagnose wavefronts, SLM phase, and aberrations</span><span class="path-step-arrow">›</span></a>
@@ -203,7 +246,7 @@
             <div class="path-title">Prepare for AMO career moves</div>
             <div class="path-who">For undergrads, grad students, postdocs, and industry interviews</div>
             <div class="path-steps">
-              <a class="path-step" href="paper-syllabus.html"><span class="path-step-n">1</span><span>Read the staged AMO paper syllabus</span><span class="path-step-arrow">›</span></a>
+              <a class="path-step" href="paper-syllabus.html"><span class="path-step-n">1</span><span>Read the papers that built the field, by career stage</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="amo-groups.html"><span class="path-step-n">2</span><span>Find groups by topic, species, and technique</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="qc-landscape.html"><span class="path-step-n">3</span><span>Map AMO skills onto QC hardware platforms</span><span class="path-step-arrow">›</span></a>
               <a class="path-step" href="rb87-vs-yb171.html"><span class="path-step-n">4</span><span>Use platform comparisons for interview depth</span><span class="path-step-arrow">›</span></a>
@@ -216,9 +259,9 @@
       <!-- ══════════════════════════════════════════
            BUILD
            ══════════════════════════════════════════ -->
-      <section class="sm-section" id="build">
+      <section class="sm-section" id="build" aria-labelledby="build-h">
         <div class="sm-section-head">
-          <h2>Build a lab, step by step</h2>
+          <h2 class="section-title" id="build-h"><span class="accent">03</span> Build a lab, step by step</h2>
           <p>Ten steps from an empty room to a working tweezer experiment, in the order a real build goes: choose the atom, get its lasers and a vacuum, catch atoms in a MOT, trap them one by one in tweezers, sharpen the optics, add a cavity, and keep it all running.</p>
         </div>
         <div class="see-also-grid">
@@ -238,9 +281,9 @@
       <!-- ══════════════════════════════════════════
            TRAP, IMAGE & COOL
            ══════════════════════════════════════════ -->
-      <section class="sm-section" id="trap-image-cool">
+      <section class="sm-section" id="trap-image-cool" aria-labelledby="trap-image-cool-h">
         <div class="sm-section-head">
-          <h2>Run your first experiment</h2>
+          <h2 class="section-title" id="trap-image-cool-h"><span class="accent">04</span> Run your first experiment</h2>
           <p>Eight steps from a cold cloud to a single atom in its motional ground state: cool with light, image the cloud and take its temperature, see one atom and measure its temperature, cool it further, run the whole cycle, and keep the everyday lab math at hand.</p>
         </div>
         <div class="see-also-grid">
@@ -258,9 +301,9 @@
       <!-- ══════════════════════════════════════════
            QUANTUM COMPUTING
            ══════════════════════════════════════════ -->
-      <section class="sm-section" id="quantum-computing">
+      <section class="sm-section" id="quantum-computing" aria-labelledby="quantum-computing-h">
         <div class="sm-section-head">
-          <h2>Build a quantum computer</h2>
+          <h2 class="section-title" id="quantum-computing-h"><span class="accent">05</span> Build a quantum computer</h2>
           <p>From what a qubit is to linking processors with photons: watch coherence decay and protect it, entangle atoms with Rydberg blockade, budget and benchmark the gates, run a circuit on moving atoms, then connect modules.</p>
         </div>
         <div class="see-also-grid">
@@ -278,9 +321,9 @@
       <!-- ══════════════════════════════════════════
            CAREER & LITERATURE
            ══════════════════════════════════════════ -->
-      <section class="sm-section" id="career">
+      <section class="sm-section" id="career" aria-labelledby="career-h">
         <div class="sm-section-head">
-          <h2>Start a career</h2>
+          <h2 class="section-title" id="career-h"><span class="accent">06</span> Start a career</h2>
           <p>Read the papers that built the field, find a group to join, map the industry, then compare the hardware platforms companies are betting on.</p>
         </div>
         <div class="see-also-grid">
@@ -302,8 +345,25 @@
 <script>renderNav({ active: 'start-here', root: '../' });</script>
 <div id="amo-nav-ready" hidden></div>
 <script src="../js/orbit3d.js?v=2"></script>
-<script src="../js/sitemap3d.js?v=2"></script>
+<script src="../js/sitemap3d.js?v=3"></script>
 <script>
+/* Story cards and hero counts read the four lists below, so they cannot drift from them. */
+(function () {
+  var total = 0;
+  document.querySelectorAll('.sh-story').forEach(function (card) {
+    var sec = document.getElementById(card.dataset.story); if (!sec) return;
+    var steps = Array.prototype.slice.call(sec.querySelectorAll('.see-also-card'));
+    total += steps.length;
+    var name = function (a) { var n = a.querySelector('.see-also-name'); return n ? n.textContent.trim() : ''; };
+    card.querySelector('.sh-story-k').textContent += ' · ' + steps.length + ' steps';
+    card.querySelector('.sh-story-dots').innerHTML = steps.map(function () { return '<i></i>'; }).join('');
+    if (steps.length) card.querySelector('.sh-story-ends').innerHTML = 'Starts: <b>' + name(steps[0]) + '</b><br>Ends: <b>' + name(steps[steps.length - 1]) + '</b>';
+  });
+  var set = function (id, v) { var e = document.getElementById(id); if (e && v) e.textContent = v; };
+  set('sh-stat-pages', total);
+  set('sh-stat-stories', document.querySelectorAll('.sh-story').length);
+  set('sh-stat-paths', document.querySelectorAll('.path-card').length);
+})();
 (function () {
   var wrap = document.getElementById('constellation'), cvs = document.getElementById('const3d-cvs');
   if (!wrap || !cvs || !window.AMO3D || !AMO3D.siteConstellation) return;

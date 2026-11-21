@@ -46,3 +46,9 @@ A new panel "The whole site at a glance" (`#constellation`, from `js/sitemap3d.j
 ## 2026-11-21: Build section is now "Build a lab, step by step"
 Ten story-titled steps in build order (species → lasers → vacuum → locking → polarization → MOT → tweezers → aberrations → cavity → operations); each card names the tool under the step. Order must match `NAV.build` (`test_build_story_order`).
 Later the same day the other three sections became stories too: "Run your first experiment" (8), "Build a quantum computer" (8), "Start a career" (7), each matching its NAV array.
+
+## 2026-11-21: answer first ("is this an updated page?" → revamp)
+- The lists had the story titles, but the top did not: the intro said "the same 32 pages" (34 since virtual-lab and atom-processor), two intro paragraphs said the same thing, and nothing useful appeared above the fold.
+- Now: hero with live counts (tools and guides, stories, guided paths, read from the lists) → 01 Pick a story (four story cards: step count, a dot per step, first and last step, all filled from the lists) with the 3D constellation under them → 02 guided paths → 03–06 the four numbered lists (markup unchanged; `test_build_story_order` still checks it).
+- Constellation cluster labels are the story names (`sitemap3d.js` v3). Three path-step texts that used old tool names now use the story titles.
+- New `test_start_here_rebuild`. Note: `.grad-text` (the h1 gradient word in the CLAUDE.md template) has no CSS anywhere, so it renders as plain text on every page that uses it.

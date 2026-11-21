@@ -970,6 +970,24 @@ def test_career_comparisons_rebuild() -> None:
     assert "<span class=\"money\">$10.5B</span> valuation" not in ps
 
 
+def test_start_here_rebuild() -> None:
+    """Start Here (2026-11-21): no hand-typed page count (it said 32 when there were 34), four story cards
+    that link to the four numbered lists, guided paths second, numbered section titles."""
+    import re
+    sh = read("pages/start-here.html")
+    assert "same 32 pages" not in sh and 'class="sm-intro"' not in sh
+    assert sh.count('class="sh-story"') == 4
+    for sid in ("build", "trap-image-cool", "quantum-computing", "career"):
+        assert f'href="#{sid}" data-story="{sid}"' in sh, sid
+    order = ["stories", "constellation", "paths", "build", "trap-image-cool", "quantum-computing", "career"]
+    pos = [sh.index(f'id="{i}"') for i in order]
+    assert pos == sorted(pos)
+    assert re.findall(r'<span class="accent">(\d\d)</span>', sh) == ["01", "02", "03", "04", "05", "06"]
+    assert "sh-stat-pages" in sh and "querySelectorAll('.see-also-card')" in sh
+    assert sh.count("<section") == sh.count("</section>") and sh.count("<div") == sh.count("</div>")
+    assert "sitemap3d.js?v=3" in sh and "name: 'Build a lab'" in read("js/sitemap3d.js")
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1079,6 +1097,7 @@ def main() -> None:
         test_industry_map_rebuild,
         test_paper_roadmap_rebuild,
         test_career_comparisons_rebuild,
+        test_start_here_rebuild,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

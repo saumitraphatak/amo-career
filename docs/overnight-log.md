@@ -321,3 +321,8 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - **Facts fixed:** PsiQuantum "$10.5B, May 2026" was the Sep 2025 round in A$ (now $7B); Rb vs Yb attributed Atom Computing's ⁸⁷Sr 42 s T₂ echo to Yb and said Yb had no logical qubits (24 / 28 logical, arXiv:2411.11822); Quantinuum's IPO terms (28M shares at $60, ~$1.68B); IBM's $10B is over five years.
 - Quantinuum vs IonQ: Roadmaps now before Business & Markets.
 - `versus.js` v3, `vs-lattice.js` v3, `vs-erasure.js` v2 (page-local, no sitewide bump). Tests: OK 36 (new `test_career_comparisons_rebuild`); smoke 4 × 3 clean; contrast clean on all four in both themes; print check clean; glance cards checked at 390 px.
+
+## 2026-11-21: Start Here revamped ("is this an updated page?")
+- Its lists already used the story titles, but the top still said "the same 32 pages" and spent the first screen on two intro paragraphs. Now: live counts in the hero, "01 Pick a story" with four story cards (filled from the lists) and the 3D map, then guided paths, then the four numbered lists. Constellation labels are the story names (`sitemap3d.js` v3).
+- Tests: OK 37 (new `test_start_here_rebuild`); smoke clean; contrast clean in both themes; dark, light and 390 px checked.
+- Found on the way: `.grad-text` (h1 gradient word) has no CSS, so it is plain text site-wide. Not changed.
