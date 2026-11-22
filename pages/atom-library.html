@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="canonical" href="https://amotoolkit.com/pages/atom-library.html">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Atomic Species Selector — AMO Toolkit">
@@ -717,7 +717,7 @@
                       Being revisited for molecule formation: NaLi, NaK, NaRb, NaCs.
                     </p>
                     <div class="atom-detail-label mt-4">Key spectral lines</div>
-                    <span class="lines-code">D1: 589.756 nm  |  D2: 588.995 nm  |  Γ/2π = 9.80 MHz</span>
+                    <span class="lines-code">D1: 589.756 nm  |  D2: 589.158 nm  |  Γ/2π = 9.80 MHz</span>
                     <div class="atom-detail-label mt-4">Qubit transition</div>
                     <p class="atom-detail-val">|F=1⟩ ↔ |F=2⟩ hyperfine qubit (1772 MHz)</p>
                   </div>
@@ -748,7 +748,7 @@
                     <div class="atom-detail-label mt-4">Key spectral lines</div>
                     <span class="lines-code">D1: 770.108 nm  |  D2: 766.701 nm  |  Γ/2π = 6.04 MHz</span>
                     <div class="atom-detail-label mt-4">Qubit transition</div>
-                    <p class="atom-detail-val">K-39: |1,−1⟩ ↔ |2,2⟩ clock-like transition</p>
+                    <p class="atom-detail-val">K-39: |1,0⟩ ↔ |2,0⟩ clock transition (or |1,−1⟩ ↔ |2,+1⟩ at its magic field)</p>
                   </div>
                   <div>
                     <div class="atom-detail-label">Data sheets</div>
@@ -942,7 +942,7 @@ Narrow: 583 nm (intercombination line)</span>
               <div class="group-card"><a class="group-name" href="https://greiner.physics.harvard.edu" target="_blank" rel="noopener">🔗 Greiner Lab</a><div class="group-inst">Harvard</div><div class="group-focus">Quantum simulation, Hubbard model, quantum gas microscope</div></div>
               <div class="group-card"><a class="group-name" href="https://qpal.physics.wisc.edu" target="_blank" rel="noopener">🔗 Saffman Lab</a><div class="group-inst">Wisconsin</div><div class="group-focus">Rydberg two-qubit gates, trapped-atom qubits</div></div>
               <div class="group-card"><a class="group-name" href="https://jila.colorado.edu/kaufman" target="_blank" rel="noopener">🔗 Kaufman Lab</a><div class="group-inst">Colorado / JILA</div><div class="group-focus">Tweezer arrays, quantum optics with atoms</div></div>
-              <div class="group-card"><a class="group-name" href="https://bernienlab.com" target="_blank" rel="noopener">🔗 Bernien Lab</a><div class="group-inst">UChicago</div><div class="group-focus">Programmable quantum matter, Rydberg arrays</div></div>
+              <div class="group-card"><a class="group-name" href="https://bernienlab.com" target="_blank" rel="noopener">🔗 Bernien Lab</a><div class="group-inst">University of Innsbruck / IQOQI (formerly UChicago)</div><div class="group-focus">Programmable quantum matter, Rydberg arrays</div></div>
               <div class="group-card"><a class="group-name" href="https://sites.psu.edu/dsweiss/" target="_blank" rel="noopener">🔗 Weiss Lab</a><div class="group-inst">Penn State</div><div class="group-focus">Neutral atom qubits, quantum computing</div></div>
             </div>
               </div>
@@ -1094,7 +1094,7 @@ Narrow: 583 nm (intercombination line)</span>
                 <td>11</td><td>23</td>
                 <td><span class="badge badge-boson">Boson</span></td>
                 <td><span class="badge badge-alkali">Alkali</span></td>
-                <td>589.0</td><td>9.80</td><td>235</td><td>2.40</td>
+                <td>589.2</td><td>9.80</td><td>235</td><td>2.40</td>
                 <td>3/2</td><td>1.772</td>
                 <td class="tbl-note">Early BEC (Ketterle 1995, Nobel 2001)</td>
               </tr>
@@ -1226,13 +1226,13 @@ Narrow: 583 nm (intercombination line)</span>
           <div class="chart-card">
             <div class="chart-title">Doppler Temperature T_D (μK), broad cooling line</div>
             <div class="chart-wrap">
-              <canvas id="chart-td"></canvas>
+              <canvas id="chart-td" role="img" aria-label="Chart td interactive visualization"></canvas>
             </div>
           </div>
           <div class="chart-card">
             <div class="chart-title">Natural Linewidth Γ/2π (MHz), broad cooling line</div>
             <div class="chart-wrap">
-              <canvas id="chart-gamma"></canvas>
+              <canvas id="chart-gamma" role="img" aria-label="Chart gamma interactive visualization"></canvas>
             </div>
           </div>
         </div>
@@ -1441,7 +1441,7 @@ Narrow: 583 nm (intercombination line)</span>
     const SPEC_DATA = {
       '⁶Li':  { col:'#fb923c', term:'Li',  ground:'2S₁/₂', D1lam:670.992, D1G:5.87, D1HF:0.026,  D2lam:670.977, D2G:5.87, D2HF:0,      groundHF:0.228,  gF:[1,2],   sym:'⁶Li (Fermion)' },
       '⁷Li':  { col:'#fb923c', term:'Li',  ground:'2S₁/₂', D1lam:670.992, D1G:5.87, D1HF:0.092,  D2lam:670.977, D2G:5.87, D2HF:0,      groundHF:0.803,  gF:[1,2],   sym:'⁷Li (Boson)'   },
-      '²³Na': { col:'#fbbf24', term:'Na',  ground:'3S₁/₂', D1lam:589.756, D1G:9.79, D1HF:0.189,  D2lam:588.995, D2G:9.80, D2HF:0.058,  groundHF:1.772,  gF:[1,2],   sym:'²³Na' },
+      '²³Na': { col:'#fbbf24', term:'Na',  ground:'3S₁/₂', D1lam:589.756, D1G:9.79, D1HF:0.189,  D2lam:589.158, D2G:9.80, D2HF:0.058,  groundHF:1.772,  gF:[1,2],   sym:'²³Na' },
       '³⁹K':  { col:'#a78bfa', term:'K',   ground:'4S₁/₂', D1lam:770.108, D1G:5.96, D1HF:0.056,  D2lam:766.701, D2G:6.04, D2HF:0.058,  groundHF:0.462,  gF:[1,2],   sym:'³⁹K' },
       '⁴⁰K':  { col:'#a78bfa', term:'K',   ground:'4S₁/₂', D1lam:770.108, D1G:5.96, D1HF:0.155,  D2lam:766.701, D2G:6.04, D2HF:0.17,   groundHF:1.286,  gF:[9,7],   sym:'⁴⁰K (Fermion)' },
       '⁴¹K':  { col:'#a78bfa', term:'K',   ground:'4S₁/₂', D1lam:770.108, D1G:5.96, D1HF:0.254,  D2lam:766.701, D2G:6.04, D2HF:0.034,  groundHF:0.254,  gF:[1,2],   sym:'⁴¹K' },
@@ -1751,7 +1751,7 @@ Narrow: 583 nm (intercombination line)</span>
 
     function buildTaskPanel(sA, sB, da, db, task, cA, cB) {
       const taskCol = task === 'rydberg' ? '#818cf8' : task === 'clocks' ? '#fbbf24' : '#34d399';
-      let html = `<table class="cmp-table"><thead><tr>
+      let html = `<div class="table-scroll"><table class="cmp-table"><thead><tr>
         <th scope="col" style="text-align:left">Parameter</th>
         <th scope="col" style="color:${cA}">${sA}</th>
         <th scope="col" style="color:${cB}">${sB}</th>
@@ -1769,7 +1769,7 @@ Narrow: 583 nm (intercombination line)</span>
           <td class="cmp-cell-${clsB}">${fb}</td>
         </tr>`;
       }
-      html += `</tbody></table>`;
+      html += `</tbody></table></div>`;
       html += `<div class="cmp-verdict">${getVerdict(sA, sB, da, db, task, cA, cB)}</div>`;
       return html;
     }
@@ -1791,7 +1791,7 @@ Narrow: 583 nm (intercombination line)</span>
       document.getElementById('cmp-head-b').style.borderColor = cB + '55';
 
       // Overview table
-      let html = `<table class="cmp-table"><thead><tr>
+      let html = `<div class="table-scroll"><table class="cmp-table"><thead><tr>
         <th scope="col" style="text-align:left">Parameter</th>
         <th scope="col" style="color:${cA}">${sA}</th>
         <th scope="col" style="color:${cB}">${sB}</th>
@@ -1804,7 +1804,7 @@ Narrow: 583 nm (intercombination line)</span>
           <td class="cmp-cell-${clsB}">${row.fmt(vb, db)}</td>
         </tr>`;
       }
-      html += `</tbody></table>
+      html += `</tbody></table></div>
         <p style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">
           <span style="color:#197352">■</span> advantage &nbsp;
           <span style="color:var(--text-muted)">■</span> disadvantage (for directional parameters)

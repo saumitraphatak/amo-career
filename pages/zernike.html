@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <meta name="description" content="Interactive Zernike wavefront lab: optical aberrations, Strehl ratio, SLM phase masks, far-field Fourier optics, and hologram design in AMO experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/zernike.html">
@@ -83,7 +83,7 @@
 
     /* Canvas containers */
     .canvas-wrap {
-      background: var(--bg-surface); border: 1px solid #1e293b;
+      background: var(--bg-surface); border: 1px solid var(--border);
       border-radius: 10px; padding: .75rem; text-align: center;
     }
     .canvas-wrap h5 {
@@ -107,7 +107,7 @@
 
     /* Controls */
     .ctrl-panel {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 10px; padding: 1.1rem;
     }
     .ctrl-panel h5 { font-size: .9rem; font-weight: 700; color: var(--text-primary);
@@ -176,7 +176,7 @@
     /* LG table */
     .lg-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .5rem; }
     .lg-table th { background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
-      padding: .5rem .8rem; border: 1px solid #1e293b; text-align: left; }
+      padding: .5rem .8rem; border: 1px solid var(--border); text-align: left; }
     .lg-table td { padding: .5rem .8rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
 
     /* SLM controls horizontal */
@@ -506,12 +506,12 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
           <div>
             <div class="canvas-wrap">
               <h5>Z_n^m (OSA, units λ)</h5>
-              <canvas class="zernike-canvas" id="singleCanvas"></canvas>
+              <canvas class="zernike-canvas" id="singleCanvas" role="img" aria-label="Single Canvas interactive visualization"></canvas>
               <div class="canvas-info" id="singleInfo">RdBu: blue=min, white=0, red=max</div>
             </div>
             <div class="canvas-wrap" id="radialWrap" style="margin-top:.75rem;">
               <h5>Radial cross-section (θ = 0 for m ≥ 0; θ = π/2|m| for m &lt; 0)</h5>
-              <canvas id="radialChart" height="130"></canvas>
+              <canvas id="radialChart" height="130" role="img" aria-label="Radial Chart interactive visualization"></canvas>
             </div>
           </div>
         </div>
@@ -564,12 +564,12 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
             <div class="two-col" style="gap:.75rem;">
               <div class="canvas-wrap">
                 <h5>Wavefront W(ρ,θ) (λ)</h5>
-                <canvas class="zernike-canvas" id="wfCanvas"></canvas>
+                <canvas class="zernike-canvas" id="wfCanvas" role="img" aria-label="Wf Canvas interactive visualization"></canvas>
                 <div class="canvas-info">RdBu colormap</div>
               </div>
               <div class="canvas-wrap">
                 <h5>PSF = |FT{P}|²</h5>
-                <canvas class="zernike-canvas" id="psfCanvas"></canvas>
+                <canvas class="zernike-canvas" id="psfCanvas" role="img" aria-label="Psf Canvas interactive visualization"></canvas>
                 <div class="canvas-info">Inferno · field ±16 λ/D</div>
               </div>
             </div>
@@ -667,17 +667,17 @@ $$R_n^{|m|}(\rho) = \sum_{s=0}^{(n-|m|)/2} \frac{(-1)^s\,(n-s)!\;\rho^{n-2s}}{s!
         <div class="three-col" style="gap:.75rem;">
           <div class="canvas-wrap">
             <h5>Input intensity |E_in|²</h5>
-            <canvas class="zernike-canvas" id="slmInCanvas"></canvas>
+            <canvas class="zernike-canvas" id="slmInCanvas" role="img" aria-label="Slm In Canvas interactive visualization"></canvas>
             <div class="canvas-info">Inferno colormap</div>
           </div>
           <div class="canvas-wrap">
             <h5>SLM phase φ (mod 2π)</h5>
-            <canvas class="zernike-canvas" id="slmPhaseCanvas"></canvas>
+            <canvas class="zernike-canvas" id="slmPhaseCanvas" role="img" aria-label="Slm Phase Canvas interactive visualization"></canvas>
             <div class="canvas-info">HSV cyclic: 0→2π = red→red</div>
           </div>
           <div class="canvas-wrap">
             <h5>Far-field intensity |FT{E}|²</h5>
-            <canvas class="zernike-canvas" id="slmFFCanvas"></canvas>
+            <canvas class="zernike-canvas" id="slmFFCanvas" role="img" aria-label="Slm FFCanvas interactive visualization"></canvas>
             <div class="canvas-info">Inferno · field ±16 λ/D</div>
           </div>
         </div>
@@ -764,17 +764,17 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
         <div class="three-col" style="gap:.75rem;margin-bottom:1rem;">
           <div class="canvas-wrap">
             <h5>Target intensity</h5>
-            <canvas class="zernike-canvas" id="gsTargetCanvas"></canvas>
+            <canvas class="zernike-canvas" id="gsTargetCanvas" role="img" aria-label="Gs Target Canvas interactive visualization"></canvas>
             <div class="canvas-info">Desired tweezer pattern</div>
           </div>
           <div class="canvas-wrap">
             <h5>SLM phase φ (mod 2π)</h5>
-            <canvas class="zernike-canvas" id="gsPhaseCanvas"></canvas>
+            <canvas class="zernike-canvas" id="gsPhaseCanvas" role="img" aria-label="Gs Phase Canvas interactive visualization"></canvas>
             <div class="canvas-info">Computed phase hologram</div>
           </div>
           <div class="canvas-wrap">
             <h5>Reconstructed far-field</h5>
-            <canvas class="zernike-canvas" id="gsOutputCanvas"></canvas>
+            <canvas class="zernike-canvas" id="gsOutputCanvas" role="img" aria-label="Gs Output Canvas interactive visualization"></canvas>
             <div class="canvas-info">|FT{A·e^{iφ}}|² at each iteration (A = Gaussian input beam)</div>
           </div>
         </div>
@@ -782,7 +782,7 @@ Blazed grating $l\cdot\theta + k\cdot x$: shifts donut off-axis, separates OAM o
         <!-- Convergence chart -->
         <div class="chart-card" style="max-width:500px;">
           <h5>Convergence: normalised RMSE vs iteration</h5>
-          <canvas id="gsConvChart" height="160"></canvas>
+          <canvas id="gsConvChart" height="160" role="img" aria-label="Gs Conv Chart interactive visualization"></canvas>
         </div>
 
         <div class="theory-box" style="margin-top:1.5rem;">

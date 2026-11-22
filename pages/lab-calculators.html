@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <meta name="description" content="Essential calculators for AMO physics labs: photon recoil, trap depth, scattering rate, beam waist, and more, for tweezer and ultracold atom experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/lab-calculators.html">
@@ -51,7 +51,7 @@
 
     .calc-card {
       background: var(--bg-card);
-      border: 1px solid #1e293b;
+      border: 1px solid var(--border);
       border-radius: 10px;
       padding: 1.2rem 1.4rem;
       margin-bottom: .75rem;
@@ -106,13 +106,13 @@
     }
     .sec-sub { color: var(--text-muted); font-size: .88rem; margin: 0 0 1.1rem .85rem; }
 
-    .divider { border: none; border-top: 1px solid #1e293b; margin: 1.5rem 0; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 
     /* ── CG calculator (tab 5) ───────────────────────────────────── */
     .cg-tab .field-row label { min-width: unset; width: 50px; }
     .input-grid-cg { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
     @media(max-width:600px) { .input-grid-cg { grid-template-columns: 1fr; } }
-    .inp-card { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: 1rem 1.1rem; }
+    .inp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
     .inp-card h4 { font-size: .87rem; font-weight: 600; color: var(--text-secondary); margin: 0 0 .7rem 0; }
     .computed-M { font-size: .9rem; color: #7450fa; font-family: var(--font-mono); margin-top: .4rem; font-weight: 600; }
     .cg-result {
@@ -128,7 +128,7 @@
     .sym-details { margin-top: .75rem; }
     .sym-details summary { cursor: pointer; font-size: .85rem; color: var(--c-cg); font-weight: 600; margin-bottom: .5rem; }
     .sym-details[open] summary { color: #bf0adb; }
-    .cg-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #1e293b; margin-top: .75rem; }
+    .cg-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-top: .75rem; }
     table.cgt { width: 100%; border-collapse: collapse; font-size: .85rem; }
     table.cgt th { background: var(--bg-card); color: #7450fa; padding: .5rem .7rem; text-align: center; border-bottom: 2px solid #312e81; font-family: var(--font-mono); white-space: nowrap; }
     table.cgt th:first-child { text-align: left; }
@@ -417,7 +417,7 @@ $$w_0 = \frac{\lambda f}{\pi w_{\rm in}} \quad \text{[Gaussian]} \qquad d_{\rm A
         <h3 style="font-size:1rem;font-weight:700;color:var(--text-primary);margin:0 0 .3rem 0;">Gaussian Beam Profile</h3>
         <p style="font-size:.83rem;color:var(--text-muted);margin:0 0 .75rem 0;">Side-view of beam propagation from the waist. Uses λ and w₀ from the Rayleigh Range inputs above.</p>
         <div style="background:var(--bg-surface);border:1px solid #1e293b;border-radius:10px;padding:.75rem;text-align:center;">
-          <canvas id="gbCanvas" width="560" height="120" style="width:100%;border-radius:6px;"></canvas>
+          <canvas id="gbCanvas" width="560" height="120" style="width:100%;border-radius:6px;" role="img" aria-label="Gb Canvas interactive visualization"></canvas>
           <div id="gbInfo" style="font-family:var(--font-mono);font-size:.77rem;color:var(--text-muted);margin-top:.35rem;"></div>
         </div>
 
@@ -654,7 +654,7 @@ $$z_R = \frac{\pi w_0^2}{\lambda}$$</div>
               <div class="sub">η = k x_zpf. Resolved sideband cooling requires η ≪ 1. x_zpf = √(ħ/2mω) is the zero-point motion.</div>
               <div class="formula-box">
 $$x_{\rm zpf} = \sqrt{\frac{\hbar}{2m\omega_{\rm trap}}} \qquad \eta = k\cos\theta\cdot x_{\rm zpf}$$
-$$\langle n\rangle_{\rm min} \approx \left(\frac{\Gamma}{2\omega}\right)^2 \quad \text{[RSB cooling limit]}$$</div>
+$$\langle n\rangle_{\rm min} \approx \frac{1}{4}\left(\frac{\Gamma}{\omega}\right)^2\!\left(\alpha + \frac{1}{4}\right) \quad \text{[RSB cooling limit; } (\Gamma/4\omega)^2 \text{ without recoil]}$$</div>
               <div class="field-row"><label for="ld_lam">Probe wavelength λ (nm)</label><input type="number" id="ld_lam" value="852" min="400" max="2000" step="1" oninput="calcLD()"><span class="unit">nm</span></div>
               <div class="field-row"><label for="ld_A">Atomic mass A (amu)</label><input type="number" id="ld_A" value="133" min="1" max="250" step="1" oninput="calcLD()"><span class="unit">amu</span></div>
               <div class="field-row"><label for="ld_f">Trap frequency f_trap (kHz)</label><input type="number" id="ld_f" value="100" min="0.01" max="5000" step="1" oninput="calcLD()"><span class="unit">kHz</span></div>
@@ -840,7 +840,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
               <div id="eom_res" class="result-row" style="flex-direction:column;gap:.3rem;align-items:flex-start"></div>
 
               <div style="margin-top:.75rem">
-                <canvas id="eom_canvas" width="480" height="140" style="width:100%;border-radius:6px;background:var(--bg-surface);border:1px solid #1e293b;"></canvas>
+                <canvas id="eom_canvas" width="480" height="140" style="width:100%;border-radius:6px;background:var(--bg-surface);border:1px solid #1e293b;" role="img" aria-label="Eom canvas interactive visualization"></canvas>
                 <div style="font-size:.73rem;color:var(--text-muted);margin-top:.3rem;text-align:center" id="eom_canv_label">Spectrum — carrier + sidebands (height ∝ field amplitude)</div>
               </div>
             </div>
@@ -904,7 +904,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
             <div class="calc-card" style="margin-top:.75rem">
               <h4>EOM Half-Wave Voltage V<sub>π</sub></h4>
               <div class="sub">Converts RF power to modulation index β = π V_RF / V_π. Useful for comparing specs across EOMs.</div>
-              <div class="formula-box">$$\beta = \frac{\pi V_{\rm RF}}{V_\pi} = \pi\sqrt{\frac{2 R P_{\rm RF}}{1}}\cdot\frac{1}{V_\pi}$$</div>
+              <div class="formula-box">$$\beta = \frac{\pi V_{\rm RF}}{V_\pi} = \frac{\pi\sqrt{2 R P_{\rm RF}}}{V_\pi}$$</div>
               <div class="field-row">
                 <label for="eomv_Vpi"><span class="tip" data-tip="Half-wave voltage of the EOM crystal. Typical: 100–400 V for bulk crystal at 1 GHz; 1–5 V for resonant waveguide EOMs">V_π of EOM (V)</span></label>
                 <input type="number" id="eomv_Vpi" value="200" min="0.1" max="1000" step="1" oninput="calcEOMvpi()">
@@ -1062,9 +1062,11 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
     </div>
   </div>
 </section>
-<footer style="text-align:center; padding:2rem; color:var(--text-muted); font-size:.82rem; border-top:1px solid #1a2236; margin-top:1rem;">
-    AMO Toolkit · Quick-reference calculators for experimental AMO physics · Results computed in your browser
-  </footer>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">AMO Toolkit · Quick-reference calculators for experimental AMO physics · Results computed in your browser</p>
+  </div>
+</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
@@ -1139,7 +1141,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const zR    = Math.PI * w_foc**2 / lam_m;
       setRes('fib_res2', [
         ['Focused 1/e² waist', (w_foc*1e6).toFixed(3) + ' µm'],
-        ['Rayleigh range z_R', (zR*1e3).toFixed(2) + ' mm'],
+        ['Rayleigh range z_R', zR >= 1e-3 ? (zR*1e3).toFixed(2) + ' mm' : (zR*1e6).toFixed(2) + ' µm'],
       ]);
     }
 
@@ -1691,7 +1693,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       return sign + '√(' + P + '/' + Q + ')';
     }
     function fmtJ(x) { const n2 = Math.round(2*x); const sign = n2 < 0 ? '-' : ''; const a = Math.abs(n2); return sign + (a % 2 === 0 ? String(a/2) : a + '/2'); }
-    function mRange(j) { const out = []; for (let m2 = Math.round(-2*j); m2 <= Math.round(2*j); m2++) out.push(m2/2); return out; }
+    function mRange(j) { const out = []; for (let m2 = Math.round(-2*j); m2 <= Math.round(2*j); m2 += 2) out.push(m2/2); return out; }
     function allowedJ(j1, j2) { const out = []; let J = Math.abs(j1-j2); while (J <= j1+j2+1e-9) { out.push(Math.round(J*2)/2); J += 1.0; } return out; }
     function cg(j1, m1, j2, m2, J, M) { const val = cgFloat(j1, m1, j2, m2, J, M); return { exact: exactStr(val), val }; }
 
@@ -1741,7 +1743,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const j2 = parseFloat(document.getElementById('t_j2').value)||0;
       const J  = parseFloat(document.getElementById('t_J').value);
       const m1s = mRange(j1); const m2s = mRange(j2);
-      let html = '<table class="cgt"><thead><tr><th scope="col">m₁ \\ m₂</th>';
+      let html = '<div class="table-scroll"><table class="cgt"><thead><tr><th scope="col">m₁ \\ m₂</th>';
       for (const m2 of m2s) html += `<th scope="col">${fmtJ(m2)}</th>`;
       html += '</tr></thead><tbody>';
       for (const m1 of m1s) {
@@ -1754,7 +1756,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
         }
         html += '</tr>';
       }
-      html += '</tbody></table>';
+      html += '</tbody></table></div>';
       document.getElementById('cg_table_container').innerHTML = html;
       const Jlist = allowedJ(j1, j2);
       const total_dim = (2*j1+1)*(2*j2+1);
@@ -1983,7 +1985,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       '87':  { amu: 87,  lam_nm: 780.241 },
       '133': { amu: 133, lam_nm: 852.347 },
       '7':   { amu: 7,   lam_nm: 670.977 },
-      '23':  { amu: 23,  lam_nm: 588.995 },
+      '23':  { amu: 23,  lam_nm: 589.158 },
       '88':  { amu: 88,  lam_nm: 461.0   },
       '171': { amu: 171, lam_nm: 398.9   },
     };

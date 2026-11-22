@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <meta name="description" content="Interactive Doppler and sub-Doppler laser cooling simulator for ultracold atom experiments. Visualise atom trajectories and temperature evolution in real time.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/cooling-simulator.html">
@@ -58,7 +58,7 @@
 
     /* Temperature ladder */
     .ladder-wrap {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 12px; padding: 1.5rem;
     }
 
@@ -81,7 +81,7 @@
 
     /* Chart cards */
     .chart-card {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 10px; padding: 1.1rem;
     }
     .chart-card h5 {
@@ -99,7 +99,7 @@
     .comp-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
     .comp-table th {
       background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
-      padding: .6rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
+      padding: .6rem .9rem; border-bottom: 1px solid var(--border); text-align: left;
     }
     .comp-table td { padding: .55rem .9rem; border-bottom: 1px solid #0f1e35; color: var(--text-secondary); vertical-align: top; }
     .comp-table tr:hover td { background: var(--bg-card); }
@@ -111,7 +111,7 @@
     /* Atom guide cards */
     .atom-guide { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .9rem; }
     .atom-card {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 10px; padding: 1rem 1.1rem;
       border-top: 3px solid var(--c-cool);
     }
@@ -359,7 +359,7 @@
     <div class="section-sub">From room temperature to motional ground state, 9 orders of magnitude</div>
 
     <div class="ladder-wrap">
-      <canvas id="ladderChart" height="260"></canvas>
+      <canvas id="ladderChart" height="260" role="img" aria-label="Ladder Chart interactive visualization"></canvas>
     </div>
 
     <div class="theory-box" style="margin-top: 1.25rem;">
@@ -423,14 +423,14 @@
                   oninput="updateForce()">
               </div>
             </div>
-            <canvas id="forceChart" height="220"></canvas>
+            <canvas id="forceChart" height="220" role="img" aria-label="Force Chart interactive visualization"></canvas>
             <div class="sb-label">α (damping) = <span id="alphaVal">—</span></div>
           </div>
 
           <!-- T_Doppler vs detuning -->
           <div class="chart-card">
             <h5>T_Doppler vs Detuning</h5>
-            <canvas id="tdopChart" height="220"></canvas>
+            <canvas id="tdopChart" height="220" role="img" aria-label="Tdop Chart interactive visualization"></canvas>
             <div class="sb-label">Minimum T_D = ℏΓ/(2k_B) at δ = −Γ/2</div>
           </div>
         </div>
@@ -540,7 +540,7 @@
             <!-- Sisyphus potential chart -->
             <div class="chart-card">
               <h5>Sisyphus Potential (lin⊥lin)</h5>
-              <canvas id="sisChart" height="200"></canvas>
+              <canvas id="sisChart" height="200" role="img" aria-label="Sis Chart interactive visualization"></canvas>
               <div class="sb-label">Sublevel energies U±(x) and optical pumping at crests</div>
             </div>
 
@@ -649,7 +649,7 @@
                     oninput="updateSideband()">
                 </div>
               </div>
-              <canvas id="sbChart" height="210"></canvas>
+              <canvas id="sbChart" height="210" role="img" aria-label="Sb Chart interactive visualization"></canvas>
               <div class="sb-label">RSB/BSB asymmetry ≈ ⟨n⟩/(⟨n⟩+1), thermometry probe</div>
             </div>
 
@@ -668,7 +668,7 @@
                     oninput="updateCoolEvo()">
                 </div>
               </div>
-              <canvas id="evoChart" height="210"></canvas>
+              <canvas id="evoChart" height="210" role="img" aria-label="Evo Chart interactive visualization"></canvas>
               <div class="sb-label">⟨n⟩(t) = ⟨n⟩_ss + (n₀ − ⟨n⟩_ss)e^{−Γ_cool t}</div>
             </div>
           </div>
@@ -763,7 +763,7 @@
         <!-- Comparison bar chart -->
         <div class="chart-card">
           <h5>Temperature Scale Comparison (log₁₀ T / K)</h5>
-          <canvas id="compChart" height="260"></canvas>
+          <canvas id="compChart" height="260" role="img" aria-label="Comp Chart interactive visualization"></canvas>
         </div>
 
         <div class="three-col" style="margin-top: 1.25rem;">
@@ -879,7 +879,7 @@ result = qt.mesolve(H, rho0, tlist, c_ops,
           <li><span class="ref-num">[8]</span> I. Diedrich et al., "Laser cooling to the zero-point energy of motion," <em>Phys. Rev. Lett.</em> 62, 403 (1989). First sideband cooling.</li>
           <li><span class="ref-num">[9]</span> A. M. Kaufman et al., "Cooling a single atom in an optical tweezer to its quantum ground state," <em>Phys. Rev. X</em> 2, 041014 (2012).</li>
           <li><span class="ref-num">[10]</span> J. D. Thompson et al., "Coherence and Raman sideband cooling of a single atom in an optical tweezer," <em>Phys. Rev. Lett.</em> 110, 133001 (2013).</li>
-          <li><span class="ref-num">[11]</span> A. J. Park et al., "Cavity-enhanced optical lattice clock," <em>Phys. Rev. X</em> 10, 021078 (2020). EIT cooling in neutral atoms.</li>
+          <li><span class="ref-num">[11]</span> G. Morigi, J. Eschner, and C. H. Keitel, "Ground state laser cooling using electromagnetically induced transparency," <em>Phys. Rev. Lett.</em> 85, 4458 (2000).</li>
           <li><span class="ref-num">[12]</span> B. J. Lester et al., "Rapid production of uniformly filled atomic arrays," <em>Phys. Rev. Lett.</em> 115, 073003 (2015).</li>
         </ul>
       </div>

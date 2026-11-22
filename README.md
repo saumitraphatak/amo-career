@@ -1,6 +1,6 @@
 # AMO Toolkit
 
-A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 31 interactive research tools and guides organized by workflow (Build, Measure, Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, and a 14-topic quantum fundamentals section. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
+A comprehensive career resource for Atomic, Molecular & Optical (AMO) physicists — 35 interactive research tools and guides organized by workflow (Build, Trap/Image/Cool, Quantum, Career), lab technique and vacuum/laser-system guides, quantum computing context, a 15-topic quantum fundamentals section, and a 14-week course. Built by a Purdue Physics PhD researcher in the Hood Lab (ultracold atoms, optical tweezers).
 
 **Live site:** https://amotoolkit.com/
 
@@ -15,10 +15,12 @@ Organized by workflow — build the apparatus, measure what it does, cool and tr
 | **Atomic Species Selector** | Properties of 15 laser-coolable atoms — linewidth, I_sat, T_Doppler, recoil scale, US research groups |
 | **Laser System Planner** | Pick a species, get required laser beams, wavelengths, block diagram, nonlinear-optics needs |
 | **MOT Designer** | MOT damping/spring constants, detuning optimization curve, 5-species comparison, MOT-to-experiment cooling cascade |
+| **Experiment Control Systems** | Hardware-timed TTL, DAC, ADC, DDS, and AWG signals, shot delays, pulse shaping, ARTIQ/labscript/NI DAQ |
 | **Laser Locking Guide** | SAS, PDH, beat-note offset locking — error signal derivation, cavity finesse, linewidth |
 | **AMO Lab Operations Handbook** | 8 core experimental techniques with deep-dive accordions (MOT, tweezers, evaporation, imaging, lattices) |
 | **Polarimetry Simulator** | Stokes parameters, QWP rotation analysis, degree of polarization |
 | **Zernike Wavefront Lab** | Wavefront aberration visualizer — OSA/ANSI Zernike terms, Strehl ratio, SLM phase patterns |
+| **Automating the Experiment** | Power-servo feedback/feedforward simulator, beam-pointing stabilization, optimizers, ML & AI agents |
 | **Cavity QED Coupling Lab** | Atom-cavity coupling rates, finesse, strong/weak/bad-cavity regime classifier |
 | **Vacuum Systems Guide** | Pressure regimes, pumping chain, bake-out, materials, gauges, practical checklist |
 | **Tweezer Array Design Lab** | Single-tweezer trap physics, trap-parameter calculator, array geometry, species reference |
@@ -29,14 +31,16 @@ Organized by workflow — build the apparatus, measure what it does, cool and tr
 | **Absorption Imaging Lab** | Beer-Lambert optical density imaging, species reference, practical considerations |
 | **Single-atom Cooling** | Laser cooling deep dive — narrative companion to the cooling simulator |
 | **Laser Cooling Simulator** | Doppler and Sisyphus cooling animation — force vs velocity, damping, momentum diffusion, sub-Doppler mechanisms |
+| **Virtual Tweezer Lab** | Full tweezer-array shot on a simulated camera — load, image, rearrange, verify, entangle, readout, Monte Carlo |
 | **Rydberg Blockade Lab** | n-scaling: lifetime τ ~ n³, C₆ ~ n¹¹, blockade radius R_b vs principal quantum number |
 | **Rydberg Gate Error Budget** | 8-error Rydberg two-qubit gate budget; fidelity meter; SOTA comparison (Evered 2023: 99.5%) |
 | **Randomized Benchmarking** | Gate-fidelity characterization — Clifford twirling, decay model, interleaved RB, SOTA results |
 | **Dynamical Decoupling** | π-pulse sequences as spectral filters extending qubit coherence (T₂, T₂*) |
+| **Zoned Atom Processor** | Quantum circuit compiler + AOD shuttling animation over an exact state vector and noisy Pauli-trajectory shots |
 | **Remote Entanglement** | Photon-mediated entanglement between separate qubit/tweezer modules |
 | **Decoherence Lab** | Live Bloch-sphere + detector-signal simulations of T1, T2*, and T2 for a driven two-level atom, built on Steck's optical Bloch equations |
-| **AMO Group Finder** | Directory of 100+ AMO research groups, mapped and prioritized for grad/postdoc applications |
-| **AMO Paper Roadmap** | 53 papers organized by career stage, from undergrad entry to postdoc |
+| **AMO Group Finder** | Directory of 98 mapped AMO research groups plus 141-entry watchlist for grad/postdoc applications |
+| **AMO Paper Roadmap** | 55 papers organized by career stage, from undergrad entry to postdoc |
 | **Quantum Industry Map** | Company profiles, hardware platforms, job roles, career roadmaps |
 | **Rb vs Yb Qubit Comparison** | Side-by-side platform comparison for choosing a neutral-atom qubit species |
 | **Quantinuum vs IonQ** | Trapped-ion quantum computing company comparison — architecture, ion species, gate fidelity, logical qubits, roadmaps |
@@ -45,9 +49,9 @@ Organized by workflow — build the apparatus, measure what it does, cool and tr
 
 ---
 
-## Learn Quantum (14 Topics)
+## Learn Quantum (15 Topics)
 
-Bloch Sphere · Quantum Gates · Superposition · Measurement · Entanglement · Rydberg Atoms · Two-Qubit Gates · Rabi Oscillations · Decoherence · Hyperfine Qubits · Optical Pumping · Error Correction · Quantum Algorithms · Analog Simulation
+Bloch Sphere · Quantum Gates · Superposition · Measurement · Entanglement · Rydberg Atoms · Two-Qubit Gates · Rabi Oscillations · Decoherence · Hyperfine Qubits · Optical Pumping · Error Correction · Magic States · Quantum Algorithms · Analog Simulation
 
 ---
 
@@ -68,7 +72,7 @@ Bloch Sphere · Quantum Gates · Superposition · Measurement · Entanglement ·
 - **HTML5 / CSS3 / Vanilla JS** — zero dependencies, zero build step
 - **Chart.js** (via CDN) — all interactive plots and simulator charts
 - **KaTeX** (via CDN) — LaTeX math rendering (`$$...$$` display, `$...$` inline)
-- **Google Fonts** — Inter (body) + JetBrains Mono (equations/code)
+- **Google Fonts** — Source Serif 4 (body) + JetBrains Mono (equations/code)
 
 No npm. No webpack. No React. Open `home.html` in a browser and it works.
 
@@ -113,20 +117,20 @@ amo-career/
 │   └── main.js             # renderNav(), global search, canvas animation, scroll reveal, accordions, tabs
 ├── tests/
 │   └── formula_regression.py
-└── pages/                  # 32 tool and content pages, grouped by NAV workflow category
-    ├── atom-library.html, laser-planner.html, mot-designer.html, laser-locking.html,
-    │   lab-techniques.html, polarimetry.html, zernike.html, cavity-qed.html,
-    │   vacuum-systems.html, tweezer-designer.html          # Build
-    ├── imaging-calculator.html, release-recapture.html, tof-calculator.html,
-    │   lab-calculators.html, absorption-imaging.html       # Measure
-    ├── laser-cooling.html, cooling-simulator.html          # Cool
-    ├── decoherence-lab.html, learn-quantum.html, rydberg-calculator.html,
-    │   fidelity-budget.html, rb-explorer.html, dd-playground.html,
-    │   remote-entanglement.html                            # Quantum
-    ├── amo-groups.html, paper-syllabus.html, qc-landscape.html,
+└── pages/                  # 37 tool and content pages, grouped by NAV workflow category
+    ├── atom-library.html, laser-planner.html, vacuum-systems.html, laser-locking.html,
+    │   polarimetry.html, mot-designer.html, control-systems.html, tweezer-designer.html,
+    │   zernike.html, automation.html, cavity-qed.html, lab-techniques.html          # Build
+    ├── cooling-simulator.html, absorption-imaging.html, tof-calculator.html,
+    │   imaging-calculator.html, release-recapture.html, laser-cooling.html,
+    │   virtual-lab.html, lab-calculators.html                                       # Trap, Image & Cool
+    ├── learn-quantum.html, decoherence-lab.html, dd-playground.html,
+    │   rydberg-calculator.html, fidelity-budget.html, rb-explorer.html,
+    │   atom-processor.html, remote-entanglement.html                                # Quantum Computing
+    ├── paper-syllabus.html, amo-groups.html, qc-landscape.html,
     │   rb87-vs-yb171.html, quantinuum-vs-ionq.html, google-vs-ibm.html,
-    │   psiquantum-vs-xanadu.html                           # Career
-    └── start-here.html                                     # Site map / navigation (not a NAV tool)
+    │   psiquantum-vs-xanadu.html                                                    # Career & Literature
+    └── start-here.html, teach.html                                                  # Site map & 14-week course
 ```
 
 ---

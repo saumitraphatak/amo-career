@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <meta name="description" content="Single-atom fluorescence imaging SNR calculator: scattering rate, collection efficiency, noise budget, and detection fidelity for optical tweezer experiments.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/imaging-calculator.html">
@@ -59,7 +59,7 @@
     @media(max-width:640px) { .prop-grid { grid-template-columns: 1fr; } }
 
     .prop-card {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 10px; padding: .9rem 1.1rem; transition: border-color .2s;
     }
     .prop-card-label {
@@ -75,7 +75,7 @@
 
     /* ─── SNR meter bar ──────────────────────────── */
     .snr-meter-wrap {
-      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 12px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
       padding: 1.1rem 1.25rem; margin-bottom: .75rem;
     }
     .snr-meter-header {
@@ -102,7 +102,7 @@
     /* ─── Fidelity badge ─────────────────────────── */
     .fidelity-badge {
       text-align: center; padding: 1rem; border-radius: 10px;
-      border: 1px solid #1e293b; background: var(--bg-card);
+      border: 1px solid var(--border); background: var(--bg-card);
     }
     .fidelity-num {
       font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700; color: var(--c-img);
@@ -112,7 +112,7 @@
 
     /* ─── Controls ───────────────────────────────── */
     .ctrl-panel {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 12px; padding: 1.25rem;
     }
     .ctrl-panel h5 {
@@ -139,7 +139,7 @@
 
     /* ─── Theory boxes ───────────────────────────── */
     .theory-box {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-left: 4px solid var(--c-img); border-radius: 10px;
       padding: 1rem 1.3rem; margin-bottom: 1rem;
     }
@@ -155,7 +155,7 @@
 
     /* ─── Chart card ─────────────────────────────── */
     .chart-card {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 12px; padding: 1rem 1.25rem;
     }
     .chart-card h5 {
@@ -171,7 +171,7 @@
     }
 
     /* ─── Section divider ────────────────────────── */
-    .section-divider { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .section-divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 
     /* ─── Noise row table ────────────────────────── */
     .noise-table {
@@ -180,9 +180,9 @@
     .noise-table th {
       font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
       color: var(--text-muted); padding: .5rem .75rem; text-align: left;
-      border-bottom: 1px solid #1e293b;
+      border-bottom: 1px solid var(--border);
     }
-    .noise-table td { padding: .55rem .75rem; border-bottom: 1px solid #111827; }
+    .noise-table td { padding: .55rem .75rem; border-bottom: 1px solid var(--border); }
     .noise-table td:nth-child(2) { font-family: var(--font-mono); color: var(--c-img); }
     .noise-table td:nth-child(3) { font-family: var(--font-mono); color: var(--text-secondary); }
     .noise-bar-cell { width: 35%; }
@@ -193,7 +193,7 @@
     .read-links { display: flex; flex-direction: column; gap: .5rem; margin-top: .75rem; }
     .read-link {
       display: flex; align-items: center; gap: .6rem;
-      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 8px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
       padding: .55rem .85rem; font-size: .82rem; color: var(--text-secondary);
       text-decoration: none; transition: border-color .15s, color .15s;
     }
@@ -761,7 +761,7 @@ $s = I/I_{\rm sat}$, $\Gamma$ = natural linewidth, $\Delta$ = laser detuning</di
     </h2>
     <div class="chart-card">
       <h5>SNR as a function of imaging duration</h5>
-      <canvas id="snrChart" height="260"></canvas>
+      <canvas id="snrChart" height="260" role="img" aria-label="Snr Chart interactive visualization"></canvas>
       <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem;font-size:.75rem;color:var(--text-muted)">
         <span style="display:flex;align-items:center;gap:.4rem">
           <span style="width:20px;height:3px;background:#34d399;display:inline-block"></span>
@@ -1016,7 +1016,7 @@ $\mathcal{F} \approx \Phi\!\left(\tfrac{\rm SNR}{2}\right)$. With unequal widths
       </div>
 
       <!-- Histogram chart -->
-      <canvas id="histogramChart" height="280"></canvas>
+      <canvas id="histogramChart" height="280" role="img" aria-label="Histogram Chart interactive visualization"></canvas>
       <div style="display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.65rem;font-size:.75rem;color:var(--text-muted);">
         <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:18px;height:3px;background:#60a5fa;display:inline-block;border-radius:2px;"></span>Dark peak (no atom)</span>
         <span style="display:flex;align-items:center;gap:.35rem;"><span style="width:18px;height:3px;background:#34d399;display:inline-block;border-radius:2px;"></span>Bright peak (atom)</span>

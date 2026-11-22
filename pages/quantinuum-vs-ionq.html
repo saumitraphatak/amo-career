@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css?v=39">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
@@ -138,13 +138,13 @@
     .ionq-box strong { color: #1447b8; }
 
     /* ── chart box ──────────────────────────────────── */
-    .chart-box { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .chart-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
     .chart-caption { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0 0; font-style: italic; }
 
     /* ── comparison table ───────────────────────────── */
-    .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #1e293b; }
+    .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
     .cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
-    .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid #1e293b; white-space: nowrap; font-size: .8rem; }
+    .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; font-size: .8rem; }
     .cmp th.qtm-h  { background: rgba(139,92,246,0.12); color: #6425c9; }
     .cmp th.ionq-h { background: rgba(59,130,246,0.12); color: #1447b8; }
     .cmp th.cat-h  { background: var(--bg-card); color: var(--text-muted); }
@@ -160,7 +160,7 @@
     .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: .9rem; margin: 1.2rem 0; }
     @media(max-width:700px) { .stat-row { grid-template-columns: 1fr 1fr; } }
 
-    .stat-card-sm { background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px; padding: .9rem 1rem; text-align: center; }
+    .stat-card-sm { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1rem; text-align: center; }
     .stat-card-sm .stat-num { font-size: 1.3rem; font-weight: 800; }
     .stat-card-sm .stat-label { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
     .stat-card-sm.qtm  { border-color: rgba(139,92,246,0.25); }
@@ -169,7 +169,7 @@
 
     /* ── paper card ─────────────────────────────────── */
     .paper-card {
-      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
       padding: .9rem 1.1rem; margin-bottom: .6rem; transition: border-color .18s;
     }
     .paper-card:hover { border-color: rgba(14,116,144,0.35); }
@@ -184,7 +184,7 @@
 
     /* ── company card ───────────────────────────────── */
     .company-card {
-      background: var(--bg-card); border: 1px solid #1e293b; border-radius: 10px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
       padding: 1rem 1.2rem; margin-bottom: .65rem; transition: border-color .18s;
     }
     .company-card:hover { border-color: rgba(14,116,144,0.35); }
@@ -517,7 +517,7 @@
     </div>
 
     <div class="chart-box" style="margin-top:1.5rem;">
-      <canvas id="scaleChart" height="240"></canvas>
+      <canvas id="scaleChart" height="240" role="img" aria-label="Scale Chart interactive visualization"></canvas>
       <p class="chart-caption">Demonstrated physical qubit counts for current, purchasable systems only (log scale). Roadmap targets (Sol, Apollo, Superion 10K) are shown separately in Section 07.</p>
     </div>
   </section>
@@ -541,7 +541,7 @@ $$\varepsilon_{2Q}^{\rm IonQ\,EQC\,(pair)} < 1\times10^{-4} \;\Rightarrow\; \mat
 Number of sequential two-qubit gates a circuit can run before the accumulated error reaches order unity scales roughly as $N_{\rm gates} \sim 1/\varepsilon_{2Q}$: about 1,270 gates at Helios's peer-reviewed rate, versus &gt;10,000 gates at IonQ's preprint component-level rate — <em>if</em> that pair-level number holds up across a full multi-qubit system.</div>
 
     <div class="chart-box">
-      <canvas id="fidelityChart" height="300"></canvas>
+      <canvas id="fidelityChart" height="300" role="img" aria-label="Fidelity Chart interactive visualization"></canvas>
       <p class="chart-caption">Two-qubit gate fidelity by system and publication status. Dashed line marks the ~99.9% fidelity generally considered a practical threshold for useful near-term circuits.</p>
     </div>
 
@@ -583,7 +583,7 @@ Number of sequential two-qubit gates a circuit can run before the accumulated er
 $$p_L \sim A\left(\frac{p}{p_{\rm th}}\right)^{\lfloor (d+1)/2 \rfloor}$$
 Logical error rate $p_L$ falls roughly exponentially with code distance $d$, provided the physical error rate $p$ is below
 the code's threshold $p_{\rm th}$ (surface-code threshold is roughly 0.5–1%, well below both companies' physical 2Q error
-rates of order <span class="money">$10</span>^{-3}$–<span class="money">$10</span>^{-4}$). This is why both companies are already in the "sub-threshold" regime and are now
+rates of order $10^{-3}$–$10^{-4}$). This is why both companies are already in the "sub-threshold" regime and are now
 racing on <em>qubit overhead</em> — how many physical qubits it takes to reach a useful logical error rate — rather than
 racing to merely cross the threshold at all.</div>
 
@@ -801,7 +801,7 @@ racing to merely cross the threshold at all.</div>
     <p class="section-sub">Both companies publish detailed, aggressive multi-year roadmaps. None of the future years below are demonstrated results.</p>
 
     <div class="chart-box">
-      <canvas id="roadmapChart" height="260"></canvas>
+      <canvas id="roadmapChart" height="260" role="img" aria-label="Roadmap Chart interactive visualization"></canvas>
       <p class="chart-caption">Company-published logical-qubit roadmap targets by year, log scale. IonQ publishes year-by-year figures through 2030; Quantinuum's Apollo target is a single 2029 milestone reported only as an order-of-magnitude ("hundreds" of logical qubits). Every point on this chart is a company projection, not a measurement.</p>
     </div>
 
@@ -1106,8 +1106,10 @@ racing to merely cross the threshold at all.</div>
     </div>
   </div>
 </section>
-<footer style="text-align:center;padding:2rem;color:var(--text-muted);font-size:.82rem;border-top:1px solid #1a2236;margin-top:1rem;">
-  AMO Toolkit · Quantinuum vs IonQ Comparison · Data ≈ September 2026 · Saumitra Phatak, Purdue Physics PhD
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">AMO Toolkit · Quantinuum vs IonQ Comparison · Data ≈ September 2026 · Saumitra Phatak, Purdue Physics PhD</p>
+  </div>
 </footer>
 
 <!-- KaTeX -->

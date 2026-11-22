@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <meta name="description" content="Guide to laser frequency stabilization in AMO physics: Doppler-free spectroscopy, PDH locking, offset locking, and transfer cavity methods.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/laser-locking.html">
@@ -98,7 +98,7 @@
 
     /* Calculator controls */
     .calc-card {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 10px; padding: 1.2rem;
     }
     .calc-card h5 { font-size: .9rem; font-weight: 700; color: var(--text-primary);
@@ -121,7 +121,7 @@
 
     /* Chart cards */
     .chart-card {
-      background: var(--bg-card); border: 1px solid #1e293b;
+      background: var(--bg-card); border: 1px solid var(--border);
       border-radius: 10px; padding: 1rem; margin-top: 1rem;
     }
     .chart-card h5 { font-size: .82rem; font-weight: 600; color: var(--text-muted);
@@ -131,7 +131,7 @@
     .sum-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
     .sum-table th {
       background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
-      padding: .6rem .9rem; border-bottom: 1px solid #1e293b; text-align: left;
+      padding: .6rem .9rem; border-bottom: 1px solid var(--border); text-align: left;
     }
     .sum-table td {
       padding: .55rem .9rem; border-bottom: 1px solid #0f1e35;
@@ -162,7 +162,7 @@
 
     /* Practical notes accordion */
     .prac-toggle {
-      background: var(--bg-surface); border: 1px solid #1e293b; border-radius: 8px;
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px;
       padding: .6rem 1rem; cursor: pointer; width: 100%; text-align: left;
       color: var(--text-muted); font-size: .85rem; margin-top: .75rem;
     }
@@ -174,7 +174,7 @@
     /* Slope table */
     .slope-table { width: 100%; border-collapse: collapse; font-size: .83rem; margin-top: .75rem; }
     .slope-table th { background: var(--bg-surface); color: var(--text-muted); font-weight: 600;
-      padding: .5rem .8rem; border: 1px solid #1e293b; text-align: left; }
+      padding: .5rem .8rem; border: 1px solid var(--border); text-align: left; }
     .slope-table td { padding: .5rem .8rem; border: 1px solid #0f1e35; color: var(--text-secondary); }
   
     /* PDH phasor explainer */
@@ -615,11 +615,11 @@ Probe seen by same atom at $v^*$: $\nu_{\rm probe} = \nu_{\rm laser} + \nu_a v^*
           <div>
             <div class="chart-card">
               <h5>SAS Transmission (Doppler + Lamb dip)</h5>
-              <canvas id="sasChart1" height="180"></canvas>
+              <canvas id="sasChart1" height="180" role="img" aria-label="Sas Chart1 interactive visualization"></canvas>
             </div>
             <div class="chart-card">
               <h5>FM Error Signal dS/dν</h5>
-              <canvas id="sasChart2" height="140"></canvas>
+              <canvas id="sasChart2" height="140" role="img" aria-label="Sas Chart2 interactive visualization"></canvas>
             </div>
           </div>
         </div>
@@ -872,22 +872,22 @@ OPLL: $\dfrac{d}{dt}[\varphi_{\rm beat} - \varphi_{\rm ref}] = 0 \;\Rightarrow\;
         <div class="three-col">
           <div class="theory-box">
             <h4>Vescent D2-125</h4>
-            <p>All-in-one laser locking module. Accepts PD input (SAS or beat), provides servo outputs
-            for current + PZT. Built-in lock-in and frequency discriminator. Beat input: 10 MHz–4.5 GHz.
-            Servo BW: up to 10 MHz. Widely used in AMO labs as a single-box solution.</p>
+            <p>Laser servo controller for SAS, PDH, and general dispersive locks. Accepts an error
+            or PD input, provides fast current + slow PZT feedback (servo BW up to ~10 MHz), and
+            includes built-in ramp/lock-in circuitry. Widely used in AMO labs as a single-box servo.</p>
           </div>
           <div class="theory-box">
             <h4>Toptica FALC 110</h4>
-            <p>Fast analog laser controller. Bandwidth: DC–10 MHz (current), DC–1 MHz (PZT). Accepts
-            any external error signal, used when you generate your own discriminator or PDH error.
+            <p>Fast analog laser controller. Bandwidth: DC–10 MHz (current), ~10–30 kHz (PZT / auxiliary).
+            Accepts any external error signal, used when you generate your own discriminator or PDH error.
             High dynamic range, differential inputs reduce RF pickup. Standard in high-finesse PDH
             setups and OPLLs.</p>
           </div>
           <div class="theory-box">
-            <h4>Vescent D2-105 / D2-135</h4>
-            <p>D2-105: SAS servo only (no beat-note input). D2-135: adds fast modulation input for PDH.
-            For beat-note locking, pair with an external frequency discriminator (Mini-Circuits FM
-            discriminator or custom DDS + mixer board).</p>
+            <h4>Vescent D2-135 / D2-105</h4>
+            <p>D2-135: Offset Phase Lock Servo dedicated to beat-note / OPLL locking (10 MHz–9.5 GHz
+            with external fast PD). D2-105: ultra-low-noise Laser Controller (current and temperature
+            driver, not a frequency-locking servo).</p>
           </div>
         </div>
 
@@ -1041,11 +1041,11 @@ Discriminator slope: $K = 8\sqrt{P_{\rm carrier}\cdot P_{\rm sideband}}/\delta\n
           <div>
             <div class="chart-card">
               <h5>Cavity Reflection (Airy Dip)</h5>
-              <canvas id="pdhChart1" height="170"></canvas>
+              <canvas id="pdhChart1" height="170" role="img" aria-label="Pdh Chart1 interactive visualization"></canvas>
             </div>
             <div class="chart-card">
               <h5>PDH Error Signal Im[r(ω)]</h5>
-              <canvas id="pdhChart2" height="150"></canvas>
+              <canvas id="pdhChart2" height="150" role="img" aria-label="Pdh Chart2 interactive visualization"></canvas>
             </div>
           </div>
         </div>
@@ -1406,7 +1406,7 @@ $$\delta\nu_{\rm cav} = \frac{c}{2L\mathcal{F}}, \qquad \frac{\delta\nu}{\nu} = 
             <li><strong>852 nm Cs D₂:</strong> SAS-locked in Cs vapour cell → primary absolute reference.</li>
             <li><strong>685 nm Cs E₂ (6S→5D₅/₂):</strong> PDH-locked to ULE cavity (L = 77.5 mm, 𝒻 ≈ 1.5×10⁴). FSR ≈ 1.93 GHz, δν_cav ≈ 130 kHz, laser linewidth ≈ 1 kHz. Thermal drift ≈ 2.5 kHz per 10 mK.</li>
             <li><strong>671 nm Li D₁:</strong> SAS-locked in heated Li vapour cell.</li>
-            <li><strong>671 nm Li D₂:</strong> Beat-note locked to Li D₁ (Vescent D2-125), offset set by RF synthesiser.</li>
+            <li><strong>671 nm Li D₂:</strong> Beat-note locked to Li D₁ (Vescent D2-135), offset set by RF synthesiser.</li>
           </ul>
         </div>
       </div>
@@ -1504,7 +1504,7 @@ const c_l = 299792458, kB = 1.380649e-23, amu = 1.66053906e-27, ln2 = Math.LN2;
 const ATOMS = {
   Cs: { lam: 852.347e-9, Gamma: 5.234e6, A: 133, Isat: 1.10 },
   Rb: { lam: 780.241e-9, Gamma: 6.065e6, A: 87,  Isat: 1.67 },
-  Na: { lam: 589.000e-9, Gamma: 9.795e6, A: 23,  Isat: 6.26 },
+  Na: { lam: 589.158e-9, Gamma: 9.795e6, A: 23,  Isat: 6.26 },
   Li: { lam: 670.977e-9, Gamma: 5.874e6, A: 6,   Isat: 2.54 },
   K:  { lam: 766.700e-9, Gamma: 6.035e6, A: 40,  Isat: 1.75 },
 };

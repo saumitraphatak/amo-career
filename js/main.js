@@ -616,6 +616,10 @@ function renderNav({ active = '', root = '' } = {}) {
   initGlobalSearch(root);
   initThemeToggle();
   applyTheme(getStoredTheme());
+
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register(`${root}sw.js`).catch(() => {});
+  }
 }
 
 
@@ -1084,13 +1088,20 @@ function initDerivationToggles() {
 function initShareableCalculatorParams() {
   const calculatorPath = /calculator|designer|recapture|fidelity-budget|lab-calculators|cooling-simulator/.test(location.pathname);
   if (!calculatorPath) return;
-  const controls = Array.from(document.querySelectorAll('.ctrl-panel input[id], .ctrl-panel select[id], .calc-card input[id], .calc-card select[id]'))
-    .filter(el => !['button', 'submit', 'reset'].includes(el.type));
+  const controls = Array.from(document.querySelectorAll('.ctrl-panel input[id], .ctrl-panel select[id], .calc-card input[id], .calc-card select[id], .calc-panel input[id], .calc-panel select[id], .sim-card input[id], .sim-card select[id]'))
+    .filter(el => !['button', 'submit', 'reset'].includes(el.type))
+    .filter(el => !['tempAddIn', 'trajSlider'].includes(el.id));
   if (!controls.length) return;
 
   const params = new URLSearchParams(location.search);
+  // Apply <select> controls before <input> sliders so species-change handlers
+  // (which reset default wavelength) do not overwrite explicit URL params.
+  const ordered = [
+    ...controls.filter(el => el.tagName === 'SELECT'),
+    ...controls.filter(el => el.tagName !== 'SELECT'),
+  ];
   let applied = false;
-  controls.forEach(el => {
+  ordered.forEach(el => {
     if (!params.has(el.id)) return;
     el.value = params.get(el.id);
     el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1139,8 +1150,106 @@ function initShareableCalculatorParams() {
   }
 }
 
-function isToolLikePage() {
-  return /calculator|designer|recapture|fidelity-budget|cooling-simulator|polarimetry|cavity-qed|lab-techniques|laser-cooling|tof|imaging|rydberg/.test(location.pathname);
+function initCrossToolHandoff() {
+  const key = currentPageKey();
+  const val = id => document.getElementById(id)?.value;
+  const SP_TO_RR = { Rb87: 'Rb', Cs133: 'Cs', Li6: 'Li', Na23: 'Na' };
+  const RR_TO_SP = { Rb: 'Rb87', Cs: 'Cs133', Li: 'Li6', Na: 'Na23' };
+  const IMG_SPECIES = new Set(['Rb87', 'Cs133', 'Li6', 'Li7', 'Na23', 'K39']);
+  const buildQS = obj => {
+    const p = new URLSearchParams();
+    Object.entries(obj).forEach(([k, v]) => { if (v !== undefined && v !== null && v !== '') p.set(k, v); });
+    const s = p.toString();
+    return s ? '?' + s : '';
+  };
+
+  const configs = {
+    'tweezer-designer': {
+      anchor: () => document.querySelector('#trap-calculator .twz-grid'),
+      links: [
+        {
+          label: 'Send NA & species to Single-atom Imaging →',
+          href: () => {
+            const sp = val('sp-sel');
+            return 'imaging-calculator.html' + buildQS({
+              speciesSel: IMG_SPECIES.has(sp) ? sp : undefined,
+              naSlide: val('na-s'),
+            });
+          },
+        },
+        {
+          label: 'Send trap & waist to Release & Recapture →',
+          href: () => {
+            const sp = val('sp-sel');
+            const w0 = parseFloat(document.getElementById('o-w0')?.textContent);
+            return 'release-recapture.html' + buildQS({
+              speciesSel: SP_TO_RR[sp],
+              lambdaIn: val('wl-s'),
+              powerIn: val('pw-s'),
+              waistIn: Number.isFinite(w0) ? w0.toFixed(2) : undefined,
+            });
+          },
+        },
+      ],
+    },
+    'imaging-calculator': {
+      anchor: () => document.querySelector('.ctrl-panel'),
+      links: [
+        {
+          label: 'Send NA & species to Tweezer Designer →',
+          href: () => {
+            const sp = val('speciesSel');
+            return 'tweezer-designer.html' + buildQS({
+              'sp-sel': sp === 'K40' ? 'K39' : sp,
+              'na-s': val('naSlide'),
+            });
+          },
+        },
+        {
+          label: 'Send species to Release & Recapture →',
+          href: () => 'release-recapture.html' + buildQS({ speciesSel: SP_TO_RR[val('speciesSel')] }),
+        },
+      ],
+    },
+    'release-recapture': {
+      anchor: () => document.querySelector('.sim-card'),
+      links: [
+        {
+          label: 'Send trap & wavelength to Tweezer Designer →',
+          href: () => 'tweezer-designer.html' + buildQS({
+            'sp-sel': RR_TO_SP[val('speciesSel')],
+            'wl-s': val('lambdaIn'),
+            'pw-s': val('powerIn'),
+          }),
+        },
+        {
+          label: 'Send species to Single-atom Imaging →',
+          href: () => 'imaging-calculator.html' + buildQS({ speciesSel: RR_TO_SP[val('speciesSel')] }),
+        },
+      ],
+    },
+  };
+
+  const cfg = configs[key];
+  const anchor = cfg?.anchor();
+  if (!cfg || !anchor || document.querySelector('.cross-tool-handoff')) return;
+
+  const bar = document.createElement('div');
+  bar.className = 'share-url-card cross-tool-handoff';
+  bar.innerHTML = `
+    <span>Carry these parameters to a connected tool:</span>
+    <span style="display:flex;flex-wrap:wrap;gap:.5rem">
+      ${cfg.links.map((l, idx) => `<a class="mini-action" href="${l.href()}" data-handoff-idx="${idx}">${l.label}</a>`).join('')}
+    </span>
+  `;
+  anchor.after(bar);
+
+  bar.addEventListener('click', e => {
+    const a = e.target.closest('a[data-handoff-idx]');
+    if (!a) return;
+    const link = cfg.links[Number(a.dataset.handoffIdx)];
+    if (link) a.href = link.href();
+  });
 }
 
 function getPageContainer() {
@@ -1148,12 +1257,6 @@ function getPageContainer() {
     || document.querySelector('.page-content')
     || document.querySelector('main .container')
     || document.querySelector('main');
-}
-
-function getPageControls() {
-  return Array.from(document.querySelectorAll('main input[id], main select[id], main textarea[id], .page-content input[id], .page-content select[id], .page-content textarea[id]'))
-    .filter(el => !['button', 'submit', 'reset', 'hidden'].includes(el.type))
-    .filter(el => !el.closest('.global-search, .nav, .nav-mobile-overlay, .lab-notebook-panel'));
 }
 
 function currentPageKey() {
@@ -1167,275 +1270,7 @@ function escapeHtml(str) {
   }[ch]));
 }
 
-function hasCalculatorState() {
-  const controls = getPageControls()
-    .filter(el => !el.closest('.source-confidence-panel, .assumption-panel'));
-  const outputs = document.querySelectorAll('.result-value, .metric-value, .output-value, .kpi-value, .calc-output, canvas');
-  return controls.length > 0 || outputs.length > 0;
-}
 
-const ASSUMPTION_DEFS = {
-  'two-level atom': 'Treats the atom as an effective closed transition. Breaks down when hyperfine branching, dark states, or optical pumping dominate.',
-  'low saturation': 'Uses weak-excitation or near-linear scattering estimates. At high saturation, power broadening and multilevel dynamics matter.',
-  'Gaussian beam': 'Assumes an ideal TEM00 beam. Aberrations, clipping, and mode mismatch change intensity and trap frequencies.',
-  'harmonic approximation': 'Expands the trap near the bottom. It is accurate for cold atoms but not for hot tails near the trap edge.',
-  'far-detuned trap': 'Assumes the trap light mostly produces conservative AC Stark shifts. Near resonances, scattering and vector/tensor shifts require care.',
-  'classical thermometry': 'Uses classical phase-space sampling. Near the motional ground state, sideband thermometry is more direct.',
-  'independent loading': 'Each tweezer loads one atom or none, independently of its neighbours. Real loading can be correlated and depend on trap depth across the array.',
-  'Poisson photon counts': 'Treats camera counts as pure Poisson. EMCCD excess noise, read noise and atom heating during imaging widen real histograms.',
-  'illustrative loss defaults': 'Move loss, move time and vacuum lifetime are teaching defaults, not measured values. Replace them with your own apparatus numbers.',
-  'one AOD row': 'Moves use a single AOD row that keeps atoms in order. Real crossed 2D AODs and multi-row layouts give the compiler more freedom.',
-  'Pauli noise model': 'Errors are independent random Paulis after gates and moves. Leakage, atom loss, crosstalk and coherent errors are not modelled.',
-  'schematic geometry': 'Zone sizes, spacings and the blockade circle are drawn for clarity, not to scale; transport times scale with these distances.',
-  'Lamb-Dicke approximation': 'Assumes recoil is small compared with the trap length scale. Check eta^2(2n+1) << 1.',
-  'ballistic expansion': 'Assumes interactions and trap forces are negligible after release. Dense clouds or imperfect switch-off can violate this.',
-  'independent noise': 'Adds photon, camera, and background noise independently. Technical correlations can make real histograms wider.',
-  'Rydberg scaling estimate': 'Uses scaling laws or simplified C6 estimates. Near Förster resonances, pair-state calculations are required.',
-  'independent error budget': 'Adds gate error channels as if they are separable. Coherent errors can interfere and require full simulation.',
-};
-
-const PAGE_ASSUMPTIONS = {
-  'imaging-calculator': ['two-level atom', 'low saturation', 'independent noise'],
-  'release-recapture': ['classical thermometry', 'Gaussian beam', 'ballistic expansion', 'harmonic approximation'],
-  'tof-calculator': ['classical thermometry', 'ballistic expansion'],
-  'lab-calculators': ['Gaussian beam', 'far-detuned trap', 'harmonic approximation', 'two-level atom'],
-  'mot-designer': ['two-level atom', 'low saturation'],
-  'rydberg-calculator': ['Rydberg scaling estimate', 'independent error budget'],
-  'fidelity-budget': ['independent error budget', 'Rydberg scaling estimate', 'Lamb-Dicke approximation'],
-  'laser-cooling': ['Lamb-Dicke approximation', 'two-level atom', 'low saturation'],
-  'cooling-simulator': ['two-level atom', 'low saturation', 'classical thermometry'],
-  'virtual-lab': ['independent loading', 'Poisson photon counts', 'illustrative loss defaults'],
-  'atom-processor': ['one AOD row', 'Pauli noise model', 'schematic geometry'],
-  'polarimetry': ['independent noise'],
-  'cavity-qed': ['Gaussian beam', 'two-level atom'],
-};
-
-function initAssumptionBadges() {
-  if (!isToolLikePage()) return;
-  const assumptions = PAGE_ASSUMPTIONS[currentPageKey()];
-  if (!assumptions?.length) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.assumption-panel')) return;
-  const panel = document.createElement('section');
-  panel.className = 'assumption-panel workflow-panel';
-  panel.innerHTML = `
-    <div class="workflow-panel-head compact">
-      <div>
-        <div class="eyebrow">Assumption Badges</div>
-        <h2>Know when the formula breaks</h2>
-      </div>
-      <p class="assumption-explain" aria-live="polite">Click a badge to see the failure mode.</p>
-    </div>
-    <div class="assumption-badges">
-      ${assumptions.map(a => `<button class="assumption-badge" type="button" data-assumption="${a}">${a}</button>`).join('')}
-    </div>
-  `;
-  const afterIntro = document.querySelector('.source-confidence-panel') || document.querySelector('.page-playbook-panel');
-  if (afterIntro) afterIntro.after(panel);
-  else container.prepend(panel);
-  const explain = panel.querySelector('.assumption-explain');
-  panel.addEventListener('click', e => {
-    const badge = e.target.closest('[data-assumption]');
-    if (!badge) return;
-    panel.querySelectorAll('.assumption-badge').forEach(b => b.classList.toggle('active', b === badge));
-    explain.textContent = ASSUMPTION_DEFS[badge.dataset.assumption] || 'This is a user-adjustable modeling choice; check the page text before treating the output as a measurement.';
-  });
-}
-
-const SOURCE_PROFILES = {
-  'qc-landscape': [
-    ['peer-reviewed', 'Use peer-reviewed papers for demonstrated fidelities, logical-qubit experiments, and algorithms.'],
-    ['company roadmap', 'Treat future dates and product claims as roadmap claims, not independent physics results.'],
-    ['rough estimate', 'Cross-platform tables compress many hardware-specific definitions into approximate comparisons.'],
-  ],
-  'rb87-vs-yb171': [
-    ['peer-reviewed', 'Atomic constants, gate demonstrations, and clock/tweezer results should trace to papers or data tables.'],
-    ['rough estimate', 'Architecture-level comparisons depend strongly on assumptions about cooling, loading, and error correction.'],
-  ],
-  'quantinuum-vs-ionq': [
-    ['peer-reviewed', 'Full-system gate fidelities should trace to journal papers, not press releases.'],
-    ['preprint', 'IonQ\'s headline EQC fidelity and qLDPC logical-qubit results are arXiv preprints, not yet peer-reviewed.'],
-    ['company roadmap', 'Multi-year qubit-count and fault-tolerance targets are projections, not demonstrated results.'],
-  ],
-  'google-vs-ibm': [
-    ['peer-reviewed', 'Advantage/utility claims and fidelity figures should trace to Nature or arXiv papers, including rebuttal papers.'],
-    ['company roadmap', 'Named future chips (Kookaburra, Cockatoo, Starling) and revenue targets are projections, not demonstrated results.'],
-  ],
-  'psiquantum-vs-xanadu': [
-    ['peer-reviewed', 'Component and system-level fidelities should trace to journal papers.'],
-    ['company roadmap', 'Million-qubit and 2029 fault-tolerance targets are company projections, not demonstrated results.'],
-  ],
-  'paper-syllabus': [
-    ['peer-reviewed', 'Primary source for each card is the linked paper or review.'],
-    ['textbook', 'Use textbooks/reviews for standard derivations and definitions.'],
-  ],
-  defaultTool: [
-    ['textbook', 'Core formulas follow standard AMO optics, laser-cooling, and quantum-optics references.'],
-    ['peer-reviewed', 'Benchmark numbers and experimentally demonstrated regimes should be checked against papers.'],
-    ['rough estimate', 'Calculator outputs are design estimates unless the page explicitly models the full apparatus.'],
-    ['user-adjustable assumption', 'Inputs like waist, power, collection efficiency, and background are experiment-dependent.'],
-  ],
-  defaultPage: [
-    ['textbook', 'Introductory explanations use standard AMO and quantum-information conventions.'],
-    ['peer-reviewed', 'Specific scientific claims should be traceable to the linked papers or references on the page.'],
-  ],
-};
-
-function initSourceConfidencePanels() {
-  if (!location.pathname.includes('/pages/')) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.source-confidence-panel')) return;
-  const key = currentPageKey();
-  const sources = SOURCE_PROFILES[key] || (isToolLikePage() ? SOURCE_PROFILES.defaultTool : SOURCE_PROFILES.defaultPage);
-  const tagClass = tag => String(tag).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const panel = document.createElement('details');
-  panel.className = 'source-confidence-panel workflow-panel';
-  panel.innerHTML = `
-    <summary>
-      <span>
-        <span class="eyebrow">Sources and Confidence</span>
-        <strong>How to read this page</strong>
-      </span>
-      <span class="source-summary-hint">expand</span>
-    </summary>
-    <div class="source-confidence-grid">
-      ${sources.map(([tag, body]) => `
-        <div class="source-confidence-card">
-          <span class="source-tag ${tagClass(tag)}">${tag}</span>
-          <p>${body}</p>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  const afterAssumptions = document.querySelector('.assumption-panel') || document.querySelector('.expert-mode-panel') || document.querySelector('.page-playbook-panel');
-  if (afterAssumptions) afterAssumptions.after(panel);
-  else container.prepend(panel);
-}
-
-function initLabNotebook() {
-  if (!isToolLikePage()) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.lab-notebook-panel')) return;
-  if (!hasCalculatorState()) return;
-  const panel = document.createElement('section');
-  panel.className = 'lab-notebook-panel workflow-panel';
-  panel.innerHTML = `
-    <div class="workflow-panel-head">
-      <div>
-        <div class="eyebrow">Lab Notebook Mode</div>
-        <h2>Save this calculation locally</h2>
-        <p>Snapshots stay in this browser via localStorage. Export Markdown for your notebook or JSON for scripts.</p>
-      </div>
-      <div class="notebook-count" aria-live="polite"></div>
-    </div>
-    <textarea id="labNotebookNotes" rows="3" placeholder="Notes: apparatus, assumptions, why this setting matters..."></textarea>
-    <div class="notebook-actions">
-      <button class="mini-action" type="button" data-save-notebook>Save snapshot</button>
-      <button class="mini-action" type="button" data-export-notebook-md>Export Markdown</button>
-      <button class="mini-action" type="button" data-export-notebook-json>Export JSON</button>
-      <button class="mini-action muted" type="button" data-clear-notebook>Clear local snapshots</button>
-    </div>
-  `;
-  const afterSources = document.querySelector('.source-confidence-panel') || document.querySelector('.assumption-panel') || document.querySelector('.page-playbook-panel');
-  if (afterSources) afterSources.after(panel);
-  else container.prepend(panel);
-
-  const key = 'amo_lab_notebook_v1';
-  const count = panel.querySelector('.notebook-count');
-  const read = () => {
-    try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (_) { return []; }
-  };
-  const write = items => localStorage.setItem(key, JSON.stringify(items));
-  const updateCount = () => { count.textContent = `${read().length} saved snapshots`; };
-  const collectOutputs = () => Array.from(document.querySelectorAll('.result-value, .metric-value, .output-value, .kpi-value, td, .info-banner'))
-    .slice(0, 40)
-    .map(el => el.textContent.trim().replace(/\s+/g, ' '))
-    .filter(Boolean);
-  const snapshot = () => ({
-    title: document.querySelector('h1')?.textContent.trim() || currentPageKey(),
-    page: location.pathname.split('/').pop(),
-    url: location.href,
-    savedAt: new Date().toISOString(),
-    controls: Object.fromEntries(getPageControls().map(el => [el.id, el.type === 'checkbox' ? el.checked : el.value])),
-    outputs: collectOutputs(),
-    notes: panel.querySelector('#labNotebookNotes').value.trim(),
-  });
-  const toMarkdown = items => items.map(item => [
-    `# ${item.title}`,
-    `- Saved: ${item.savedAt}`,
-    `- Page: ${item.url}`,
-    item.notes ? `- Notes: ${item.notes}` : '',
-    '',
-    '## Inputs',
-    ...Object.entries(item.controls).map(([k, v]) => `- ${k}: ${v}`),
-    '',
-    '## Outputs',
-    ...item.outputs.map(v => `- ${v}`),
-  ].filter(Boolean).join('\n')).join('\n\n---\n\n');
-  panel.addEventListener('click', e => {
-    if (e.target.matches('[data-save-notebook]')) {
-      const items = read();
-      items.unshift(snapshot());
-      write(items.slice(0, 50));
-      panel.querySelector('#labNotebookNotes').value = '';
-      updateCount();
-    }
-    if (e.target.matches('[data-export-notebook-md]')) {
-      downloadText('amo-lab-notebook.md', toMarkdown(read()), 'text/markdown');
-    }
-    if (e.target.matches('[data-export-notebook-json]')) {
-      downloadText('amo-lab-notebook.json', JSON.stringify(read(), null, 2), 'application/json');
-    }
-    if (e.target.matches('[data-clear-notebook]')) {
-      write([]);
-      updateCount();
-    }
-  });
-  updateCount();
-}
-
-function initExpertModeToggles() {
-  const densePages = /laser-cooling|rydberg-calculator|imaging-calculator|fidelity-budget|polarimetry/.test(location.pathname);
-  if (!densePages) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.expert-mode-panel')) return;
-  const mode = localStorage.getItem('amo_density_mode') || 'working';
-  const panel = document.createElement('section');
-  panel.className = 'expert-mode-panel workflow-panel';
-  panel.innerHTML = `
-    <div class="workflow-panel-head compact">
-      <div>
-        <div class="eyebrow">Reading Depth</div>
-        <h2>Beginner / Working / Expert</h2>
-      </div>
-      <div class="mode-toggle" role="group" aria-label="Reading depth">
-        <button type="button" data-mode="beginner">Beginner</button>
-        <button type="button" data-mode="working">Working</button>
-        <button type="button" data-mode="expert">Expert</button>
-      </div>
-    </div>
-    <p class="mode-copy" aria-live="polite"></p>
-  `;
-  const afterPlaybook = document.querySelector('.page-playbook-panel');
-  if (afterPlaybook) afterPlaybook.after(panel);
-  else container.prepend(panel);
-  const copy = panel.querySelector('.mode-copy');
-  const apply = next => {
-    document.body.dataset.depthMode = next;
-    localStorage.setItem('amo_density_mode', next);
-    panel.querySelectorAll('[data-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === next));
-    copy.textContent = {
-      beginner: 'Read for intuition first: formula boxes and derivation blocks are hidden so pictures, meaning, and common failure modes lead.',
-      working: 'Use the page as a lab tool: equations, knobs, and operational examples are emphasized.',
-      expert: 'Read with assumptions in mind: derivations, edge cases, and model limits are the main thing to check.',
-    }[next];
-  };
-  panel.addEventListener('click', e => {
-    const btn = e.target.closest('[data-mode]');
-    if (btn) apply(btn.dataset.mode);
-  });
-  apply(mode);
-}
 
 /* ─────────────────────────────────────────────────────
    Shared page-identity helper used by Cite This Page and
@@ -1886,6 +1721,14 @@ const QUANTUM_QUIZ = [
     q: 'What platform has been used to simulate the transverse-field Ising model near J/h = 1?',
     options: ['Trapped-ion crystals only', 'Rydberg atom arrays', 'Superconducting qubits exclusively', 'Photonic circuits'], correct: 1,
     explain: 'Groups including QuEra and Harvard have used Rydberg atom arrays to realize this quantum phase transition.' },
+  { id: 'magic-1', topic: 'Magic States', anchor: '#magic',
+    q: 'Why does a fault-tolerant quantum computer need magic states (like |T⟩) in addition to Clifford gates?',
+    options: ['Clifford gates cannot create entanglement', 'Clifford circuits alone are efficiently classically simulable (Gottesman-Knill theorem)', 'Magic states eliminate all SPAM errors', 'Clifford gates only work on trapped ions'], correct: 1,
+    explain: 'By the Gottesman-Knill theorem, Clifford gates plus Pauli measurements are classically simulable; injecting a non-Clifford magic state (such as |T⟩) via gate teleportation unlocks universal quantum computation.' },
+  { id: 'magic-2', topic: 'Magic States', anchor: '#magic',
+    q: 'What is the purpose of magic-state distillation (or magic-state cultivation)?',
+    options: ['To convert many noisy non-Clifford states into fewer higher-fidelity magic states', 'To cool neutral atoms to their motional ground state', 'To measure T₁ and T₂ simultaneously', 'To replace all two-qubit gates with single-qubit rotations'], correct: 0,
+    explain: 'Because non-Clifford gates like T are not transversal in the 2D surface code, noisy magic states are purified via distillation or prepared with low error via cultivation before being injected into the circuit.' },
 ];
 
 function initQuantumQuiz() {
@@ -1928,7 +1771,7 @@ function initQuantumQuiz() {
           </div>
           <div class="notebook-count">${mastered}/${QUANTUM_QUIZ.length} mastered</div>
         </div>
-        <p style="margin-bottom:var(--sp-4)">${SESSION_SIZE} questions pulled from all 14 topics below, weighted toward whatever you've missed before. Progress is saved in this browser.</p>
+        <p style="margin-bottom:var(--sp-4)">${SESSION_SIZE} questions pulled from all 15 topics below, weighted toward whatever you've missed before. Progress is saved in this browser.</p>
         <button class="mini-action" type="button" data-quiz-start>Start quiz (${SESSION_SIZE} questions)</button>
       </section>
     `;
@@ -2089,56 +1932,7 @@ const RELATED_TOOLS = {
   'psiquantum-vs-xanadu': ['qc-landscape', 'google-vs-ibm', 'quantinuum-vs-ionq'],
 };
 
-const REFERENCE_TRAILS = {
-  'atom-library': [
-    ['data sheet', 'Steck alkali data sheets and NIST ASD anchor the alkali transition constants.'],
-    ['review', 'Use species-specific cold-atom reviews for scattering, cooling, and clock-transition context.'],
-  ],
-  'laser-planner': [
-    ['lab practice', 'Beam lists follow common AMO laser architectures for alkali and alkaline-earth experiments.'],
-    ['vendor/data sheet', 'Final diode, SHG, fiber, and AOM choices should be checked against current vendor specifications.'],
-  ],
-  'amo-groups': [
-    ['live web', 'Group membership, openings, and topics change; use the directory as a starting map.'],
-    ['career context', 'Filter tags summarize public group descriptions rather than ranking scientific quality.'],
-  ],
-  'paper-syllabus': [
-    ['primary literature', 'Paper cards point to the original paper or review when possible.'],
-    ['reading path', 'Ordering is pedagogical: entry points first, then mechanism and frontier papers.'],
-  ],
-  'laser-cooling': [
-    ['review', 'Cooling limits and mechanisms should be checked against laser-cooling reviews and primary tweezer papers.'],
-    ['theory model', 'The unified cooling language follows effective Hamiltonian, optical pumping, and Lamb-Dicke approximations.'],
-  ],
-  'qc-landscape': [
-    ['peer-reviewed', 'Demonstrated fidelities and logical-qubit claims should trace to papers.'],
-    ['roadmap', 'Company roadmaps and projected qubit counts are not experimental demonstrations.'],
-  ],
-  'rb87-vs-yb171': [
-    ['peer-reviewed', 'Species comparisons rely on cited clock, tweezer, gate, and imaging benchmarks.'],
-    ['scope note', 'Some array-scale benchmarks are Cs or architecture-level context, not Rb/Yb measurements.'],
-  ],
-  'quantinuum-vs-ionq': [
-    ['peer-reviewed', 'Fidelity and error-correction claims should trace to journal papers where available.'],
-    ['scope note', 'Component-level demos (single ion pair) are marked separately from full-system results.'],
-  ],
-  'google-vs-ibm': [
-    ['peer-reviewed', 'Advantage and utility claims should trace to Nature papers, alongside their published rebuttals.'],
-    ['scope note', 'Willow ships as two differently-tuned chips; figures are marked QEC-tuned or RCS-tuned throughout.'],
-  ],
-  'psiquantum-vs-xanadu': [
-    ['peer-reviewed', 'Fidelity and quantum-advantage claims should trace to journal papers where available.'],
-    ['scope note', 'PsiQuantum figures are component-level and conditional on photon detection unless marked otherwise.'],
-  ],
-  defaultTool: [
-    ['textbook', 'Core equations use standard AMO, optics, and quantum-optics conventions.'],
-    ['peer-reviewed', 'Experimental benchmark numbers should be traced to the page references or source confidence panel.'],
-  ],
-  defaultPage: [
-    ['curated source', 'This page is a guide or map; verify time-sensitive details from linked primary sources.'],
-    ['context note', 'Use the page for orientation, not as a substitute for current papers or group websites.'],
-  ],
-};
+
 
 function navItemByKey(key) {
   return [...NAV.tools, ...NAV.learn].find(item => item.key === key);
@@ -2224,35 +2018,7 @@ function initPagePlaybookPanel() {
   if (hero) hero.after(panel); else container.prepend(panel);
 }
 
-function initReferenceTrailPanel() {
-  if (!location.pathname.includes('/pages/')) return;
-  const container = getPageContainer();
-  if (!container || document.querySelector('.reference-trail-panel')) return;
-  const key = currentPageKey();
-  const refs = REFERENCE_TRAILS[key] || (isToolLikePage() ? REFERENCE_TRAILS.defaultTool : REFERENCE_TRAILS.defaultPage);
-  const panel = document.createElement('section');
-  panel.className = 'reference-trail-panel workflow-panel';
-  panel.innerHTML = `
-    <div class="workflow-panel-head compact">
-      <div>
-        <div class="eyebrow">References and Source Trail</div>
-        <h2>What the page is grounded in</h2>
-      </div>
-    </div>
-    <div class="source-confidence-grid">
-      ${refs.map(([tag, body]) => `
-        <div class="source-confidence-card">
-          <span class="source-tag ${String(tag).toLowerCase().replace(/[^a-z0-9]+/g, '-')}">${tag}</span>
-          <p>${body}</p>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  const explicitRefs = Array.from(container.querySelectorAll('h2,h3,strong')).find(el => /references|further reading|key references/i.test(el.textContent));
-  const anchor = explicitRefs?.closest('section, .content-section, .section-block, .tool-section');
-  if (anchor) anchor.before(panel);
-  else container.appendChild(panel);
-}
+
 
 function initRelatedToolsPanel() {
   if (!location.pathname.includes('/pages/')) return;
@@ -2844,6 +2610,7 @@ document.addEventListener('DOMContentLoaded', () => {
   AMOSections.init();
   initRelatedToolsPanel();
   initShareableCalculatorParams();
+  initCrossToolHandoff();
   initPaperToolBridge();
   initExportButtons();
   initCopyOnClick();
