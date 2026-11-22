@@ -6,7 +6,7 @@ const CORE_ASSETS = [
   './404.html',
   './manifest.json',
   './favicon.svg',
-  './css/styles.css?v=40',
+  './css/styles.css?v=41',
   './js/main.js?v=57',
 ];
 
