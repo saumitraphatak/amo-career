@@ -879,7 +879,7 @@ code, .mono {
   border: 1px solid rgba(34,25,15,0.128);
   border-radius: var(--r-sm);
   font-size: 0.7rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);   /* --text-muted on the chip tint was 4.45:1 */
   font-weight: 500;
 }
 
@@ -1662,7 +1662,7 @@ code, .mono {
   border-left: 3px solid color-mix(in srgb, var(--ink-rust) 40%, transparent);
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   padding: var(--sp-4) var(--sp-5);
-  color: #896e02;
+  color: #6e5600;   /* #896e02 was 3.97:1 on cream */
   font-size: 0.9rem;
 }
 
@@ -1807,7 +1807,7 @@ code, .mono {
   font-weight: 600;
 }
 
-.badge-boson  { background: color-mix(in srgb, var(--c-atom) 10%, transparent);  color: var(--c-atom); border: 1px solid color-mix(in srgb, var(--c-atom) 20%, transparent);  }
+.badge-boson  { background: color-mix(in srgb, var(--c-atom) 10%, transparent);  color: color-mix(in srgb, var(--c-atom) 75%, var(--text-primary)); border: 1px solid color-mix(in srgb, var(--c-atom) 20%, transparent);  }
 .badge-fermion{ background: color-mix(in srgb, var(--ink-rust) 10%, transparent); color: var(--c-lock); border: 1px solid color-mix(in srgb, var(--ink-rust) 20%, transparent); }
 .badge-alkali { background: rgba(192,132,252,0.1); color: var(--c-learn); border: 1px solid rgba(192,132,252,0.2); }
 .badge-ae     { background: color-mix(in srgb, var(--ink-green) 10%, transparent);  color: var(--c-lab); border: 1px solid color-mix(in srgb, var(--ink-green) 20%, transparent);  }
@@ -2174,7 +2174,7 @@ body.search-open { overflow: hidden; }
   margin: var(--sp-4) 0;
   color: var(--text-secondary);
 }
-.common-mistake strong { color: #896e02; }
+.common-mistake strong { color: #6e5600; }
 .intuition-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2245,7 +2245,7 @@ body.search-open { overflow: hidden; }
 }
 .workflow-panel-head.compact { align-items: center; }
 .notebook-count {
-  color: #11823a;
+  color: #0b6a2c;
   font-size: .82rem;
   font-weight: 800;
   white-space: nowrap;
@@ -2293,7 +2293,7 @@ body.search-open { overflow: hidden; }
 .assumption-badge {
   border: 1px solid color-mix(in srgb, var(--ink-rust) 24%, transparent);
   background: color-mix(in srgb, var(--ink-rust) 8%, transparent);
-  color: #896e02;
+  color: #6e5600;
   border-radius: var(--r-sm);
   padding: .45rem .7rem;
   font-size: .78rem;
@@ -2404,6 +2404,17 @@ body[data-depth-mode="beginner"] canvas {
   word-break: break-word;
   margin: 0 0 var(--sp-2);
 }
+
+/* cite panel: which-to-cite guide, two-column blocks, thesis drawer (2026-11-21) */
+.cite-intro { margin: 0 0 var(--sp-3); max-width: 80ch; }
+.cite-which { list-style: disc; margin: 0 0 var(--sp-5); padding-left: 1.1rem; color: var(--text-secondary); font-size: .9rem; line-height: 1.65; max-width: 90ch; }
+.cite-which li { margin-bottom: .3rem; }
+.cite-which strong { color: var(--text-primary); }
+.cite-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-4); align-items: start; }
+.cite-more { margin-top: var(--sp-5); border-top: 1px solid var(--border); padding-top: var(--sp-4); }
+.cite-more > summary { cursor: pointer; font-weight: 700; font-size: .9rem; color: var(--text-primary); margin-bottom: var(--sp-3); }
+.cite-thanks { margin: var(--sp-5) 0 0; font-size: .84rem; color: var(--text-muted); }
+@media print { .cite-more:not([open]) > .cite-grid { display: grid; } }
 
 /* ─── Quantum Quiz ───────────────────────────────── */
 .quiz-panel { scroll-margin-top: 96px; }
@@ -3906,3 +3917,58 @@ main p, main li { overflow-wrap: break-word; }
 }
 @media (max-width: 420px) { .build-trail .bt-links { grid-template-columns: 1fr; } .build-trail .bt-next { text-align: left; } }
 @media print { .build-trail { display: none !important; } }
+
+/* ════════════════════════════════════════════════════════════════
+   Site-wide styling pass (2026-11-21)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Gradient word in page titles. Pages pass --ga / --gb (often colours
+   tuned for the dark theme); both ends are mixed toward the theme's text
+   colour so the word stays readable on cream and on navy (large text, ≥ 3:1).
+   This class was used in the h1 template on 22 pages but never defined. */
+.grad-text {
+  --gmix: 50%;
+  --gi-a: color-mix(in srgb, var(--ga, var(--page-color, #38bdf8)) var(--gmix), var(--text-primary));
+  --gi-b: color-mix(in srgb, var(--gb, var(--ga, var(--page-color, #818cf8))) var(--gmix), var(--text-primary));
+  background: linear-gradient(100deg, var(--gi-a) 0%, var(--gi-b) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--gi-a);               /* fallback colour for tools that ignore the gradient */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+[data-theme="dark"] .grad-text { --gmix: 80%; }
+@media print, (forced-colors: active) {
+  .grad-text { background: none; -webkit-text-fill-color: currentColor; color: inherit; }
+}
+
+/* Reading lists ("Further reading" link chips). Styled only on learn-quantum
+   until now, so on 11 other pages the links ran together as one paragraph. */
+.read-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+.read-link {
+  display: inline-flex; align-items: center; gap: .35rem;
+  background: var(--bg-surface); border: 1px solid var(--border-med); border-radius: 6px;
+  padding: .28rem .65rem; font-size: .77rem; line-height: 1.45; color: #0459b4;
+  text-decoration: none; transition: border-color .15s, color .15s;
+}
+a.read-link:hover { border-color: #076be7; color: #034a93; }
+span.read-link { color: var(--text-secondary); }
+.read-link .rl-icon, .rl-icon { font-size: .9rem; }
+@media screen {
+  [data-theme="dark"] .read-link { color: #60a5fa; }
+  [data-theme="dark"] a.read-link:hover { color: #93c5fd; }
+  [data-theme="dark"] span.read-link { color: var(--text-secondary); }
+}
+
+/* small labels used without a definition */
+.concept-box-label { font-family: var(--font-mono); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: .45rem; }
+.section-lead { color: var(--text-secondary); line-height: 1.7; max-width: 80ch; }
+
+/* dark-theme partners for the light inks fixed above */
+@media screen {
+  [data-theme="dark"] .warn-box,
+  [data-theme="dark"] .common-mistake strong,
+  [data-theme="dark"] .assumption-badge { color: #fcd34d; }
+  [data-theme="dark"] .notebook-count { color: #4ade80; }
+}

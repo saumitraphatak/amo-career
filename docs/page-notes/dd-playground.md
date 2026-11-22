@@ -81,3 +81,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Light-theme accent darkened again to #166534.
+
+## 2026-11-21: standard hero
+- The boxed, page-local hero is gone: standard `.page-hero` (eyebrow pill, h1 with a `.grad-text` word, `.page-hero-desc`) outside the content container, content wrapped in `.page-content > .container`, so the "how to use this page" note now sits below the hero. The hero figure was a Rydberg dipole-dipole sketch; it now shows free decay versus CPMG refocusing with π pulses.

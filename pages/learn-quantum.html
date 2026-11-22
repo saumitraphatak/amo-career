@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Quantum Computing Learning Path","description":"Curated quantum computing learning path from an AMO physics perspective, qubits, gates, error correction, and neutral-atom hardware.","url":"https://amotoolkit.com/pages/learn-quantum.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Quantum Computing Learning Path","item":"https://amotoolkit.com/pages/learn-quantum.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=34">
+  <link rel="stylesheet" href="../css/styles.css?v=35">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -2112,7 +2112,7 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=49"></script>
+<script src="../js/main.js?v=50"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/motion.js?v=2"></script>
 <script>
@@ -2742,8 +2742,9 @@ function updateMeas() {
   // Probability labels + values
   document.getElementById('meas0Lbl').textContent = 'P(' + label0 + ')';
   document.getElementById('meas1Lbl').textContent = 'P(' + label1 + ')';
-  document.getElementById('meas0Lbl').style.color = col0;
-  document.getElementById('meas1Lbl').style.color = col1;
+  // the plot colours are tuned for the canvas; mix toward the text colour so the labels pass contrast in both themes
+  document.getElementById('meas0Lbl').style.color = 'color-mix(in srgb, ' + col0 + ' 62%, var(--text-primary))';
+  document.getElementById('meas1Lbl').style.color = 'color-mix(in srgb, ' + col1 + ' 62%, var(--text-primary))';
   document.getElementById('measP0').textContent = (P0 * 100).toFixed(1) + '%';
   document.getElementById('measP1').textContent = (P1 * 100).toFixed(1) + '%';
 

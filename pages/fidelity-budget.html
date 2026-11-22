@@ -24,7 +24,7 @@
   <meta name="description" content="Rydberg two-qubit gate fidelity budget: spontaneous emission, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, and Rabi inhomogeneity.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/fidelity-budget.html">
-  <link rel="stylesheet" href="../css/styles.css?v=34">
+  <link rel="stylesheet" href="../css/styles.css?v=35">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -221,6 +221,10 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Rydberg Gate Error Budget","description":"Rydberg two-qubit gate fidelity budget: spontaneous emission, Doppler dephasing, laser phase noise, blockade leakage, SPAM, atom loss, and Rabi inhomogeneity.","url":"https://amotoolkit.com/pages/fidelity-budget.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Rydberg Gate Error Budget","item":"https://amotoolkit.com/pages/fidelity-budget.html"}]}</script>
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <style>/* styling pass 2026-11-21: theme-aware status inks */
+    :root { --fid-good:#15803d; --fid-mid:#7a5900; --fid-bad:#b91c1c; }
+    [data-theme="dark"] { --fid-good:#4ade80; --fid-mid:#fbbf24; --fid-bad:#f87171; }
+  </style>
 </head>
 <body>
 <div id="nav-root"></div>
@@ -579,7 +583,7 @@
       </div>
       <div class="sota-card">
         <div class="sota-label">Your simulation</div>
-        <div class="sota-val" id="yourFid" style="color:#b40909">—</div>
+        <div class="sota-val" id="yourFid">—</div>
         <div class="sota-desc" id="yourFidNote">Set parameters above to compute.</div>
       </div>
     </div>
@@ -784,7 +788,7 @@ Atom loss: $\varepsilon_{\rm loss} = t_{\rm gate}/\tau_{\rm trap}$ ($\tau_{\rm t
 
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=49"></script>
+<script src="../js/main.js?v=50"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
 <script src="../js/motion.js?v=2"></script>
 <script>
@@ -866,6 +870,10 @@ function setTgateFromOmega() {
   document.getElementById('tgateLbl').textContent = Math.pow(10, sl.value / 10).toFixed(2);
 }
 
+/* fidelity colour readable in both themes (the bright inks were 2.5:1 on cream) */
+function fidInk(f) {   // a CSS variable, so the colour follows a theme switch
+  return f >= 0.999 ? 'var(--fid-good)' : f >= 0.99 ? 'var(--fid-mid)' : 'var(--fid-bad)';
+}
 function compute() {
   const key    = document.getElementById('speciesSel').value;
   const atom   = ATOMS[key];
@@ -939,7 +947,7 @@ function compute() {
   const fidPct    = (fidelity * 100).toFixed(3) + '%';
   const fidEl     = document.getElementById('fidDisplay');
   fidEl.textContent = fidPct;
-  fidEl.style.color = fidelity >= 0.999 ? '#4ade80' : fidelity >= 0.99 ? '#fbbf24' : '#f87171';
+  fidEl.style.color = fidInk(fidelity);
 
   const barPct    = Math.max(0, (fidelity - 0.90) / 0.10 * 100);
   const fidBar    = document.getElementById('fidBar');
@@ -970,8 +978,7 @@ function compute() {
 
   // SOTA comparison panel
   document.getElementById('yourFid').textContent = fidPct;
-  document.getElementById('yourFid').style.color =
-    fidelity >= 0.999 ? '#4ade80' : fidelity >= 0.99 ? '#fbbf24' : '#f87171';
+  document.getElementById('yourFid').style.color = fidInk(fidelity);
   document.getElementById('yourFidNote').textContent =
     totalErr > 0 ? `Dominant: ${domName} (${(domVal/totalErr*100).toFixed(0)}% of error)` : 'every source set to zero';
 

@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Vacuum Systems Guide","description":"Complete guide to ultra-high vacuum systems for AMO physics experiments.","url":"https://amotoolkit.com/pages/vacuum-systems.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Vacuum Systems Guide","item":"https://amotoolkit.com/pages/vacuum-systems.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=34">
+  <link rel="stylesheet" href="../css/styles.css?v=35">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -278,6 +278,14 @@
       [data-theme="dark"] .warn-banner { color: #fbbf24; }
       [data-theme="dark"] .danger-banner { color: #f95050; }
     }
+  </style>
+  <style>/* styling pass 2026-11-21: contrast */
+    .regime-badge { filter:none; }
+    :root:not([data-theme="dark"]) .regime-badge[style*="#4f5ff5"] { color:#3442c9 !important; }
+  </style>
+  <style>/* styling pass 2026-11-21: theme-aware status inks */
+    .regime-label-display { color: var(--ri, var(--text-primary)); }
+    [data-theme="dark"] .regime-label-display { color: var(--rc, var(--text-primary)); }
   </style>
 </head>
 <body>
@@ -1224,7 +1232,7 @@
 <!-- ──────── SCRIPTS ──────── -->
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=49"></script>
+<script src="../js/main.js?v=50"></script>
 <script src="../js/motion.js?v=2"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
 <script>
@@ -1334,12 +1342,12 @@
   }
 
   const REGIMES = [
-    { min: 3,   label: 'Atmosphere',       color: '#f87171', bg: 'rgba(248,113,113,.12)' },
-    { min: 0,   label: 'Low Vacuum',       color: '#fb923c', bg: 'rgba(251,146,60,.12)' },
-    { min: -3,  label: 'Medium Vacuum',    color: '#fbbf24', bg: 'rgba(251,191,36,.12)' },
-    { min: -6,  label: 'High Vacuum',      color: '#34d399', bg: 'rgba(52,211,153,.12)' },
-    { min: -9,  label: 'Ultra-High Vacuum',color: '#22d3ee', bg: 'rgba(34,211,238,.12)' },
-    { min: -12, label: 'Extreme High Vacuum',color: '#818cf8', bg: 'rgba(129,140,248,.12)' },
+    { min: 3,   label: 'Atmosphere',       color: '#f87171', ink: '#b91c1c', bg: 'rgba(248,113,113,.12)' },
+    { min: 0,   label: 'Low Vacuum',       color: '#fb923c', ink: '#9a3f03', bg: 'rgba(251,146,60,.12)' },
+    { min: -3,  label: 'Medium Vacuum',    color: '#fbbf24', ink: '#6e5600', bg: 'rgba(251,191,36,.12)' },
+    { min: -6,  label: 'High Vacuum',      color: '#34d399', ink: '#0f6b48', bg: 'rgba(52,211,153,.12)' },
+    { min: -9,  label: 'Ultra-High Vacuum',color: '#22d3ee', ink: '#0b6475', bg: 'rgba(34,211,238,.12)' },
+    { min: -12, label: 'Extreme High Vacuum',color: '#818cf8', ink: '#3f3fc9', bg: 'rgba(129,140,248,.12)' },
   ];
 
   /* Molecule positions (fixed random set, scaled by density) */
@@ -1412,7 +1420,7 @@
 
     const label = document.getElementById('regime-label');
     label.textContent = regime.label;
-    label.style.color      = regime.color;
+    label.style.setProperty('--rc', regime.color); label.style.setProperty('--ri', regime.ink);  // theme picks the ink (bright inks were 2.5:1 on cream)
     label.style.background = regime.bg;
 
     /* Canvas molecule count: log-map [atm=10^5 → 75 dots, UHV=10^-10 → 0] */

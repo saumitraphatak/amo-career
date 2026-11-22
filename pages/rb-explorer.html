@@ -24,7 +24,7 @@
   <meta name="description" content="Interactive Randomized Benchmarking (RB) Explorer, SPAM cancellation, Clifford group, RB decay model, interleaved RB, 2Q benchmarking, and neutral atom results.">
   <meta name="author" content="Saumitra Phatak">
   <link rel="canonical" href="https://amotoolkit.com/pages/rb-explorer.html">
-  <link rel="stylesheet" href="../css/styles.css?v=34">
+  <link rel="stylesheet" href="../css/styles.css?v=35">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -37,7 +37,7 @@
     /* ── Page accent ─────────────────────────────── */
     :root { --accent: #2c4a63; --accent-dim: rgba(44,74,99,0.12); --accent-border: rgba(44,74,99,0.25); }
 
-    .page-wrap { padding-top: 64px; max-width: 1040px; margin: 0 auto; padding-left: 1.25rem; padding-right: 1.25rem; padding-bottom: 4rem; }
+    .page-wrap { padding-bottom: 4rem; }
 
     /* ── Sticky topic nav ────────────────────────── */
     .topic-nav {
@@ -58,18 +58,6 @@
     .tnav-link:hover { color: var(--accent); background: var(--accent-dim); }
     .tnav-link.active { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-border); }
 
-    /* ── Page hero ───────────────────────────────── */
-    .page-hero {
-      margin-bottom: 2.5rem; padding: 2rem 2.25rem;
-      background: linear-gradient(135deg, rgba(192,132,252,0.07) 0%, color-mix(in srgb, var(--bg-card) 90%, transparent) 60%);
-      border: 1px solid var(--accent-border); border-radius: 14px;
-    }
-    .page-hero-label {
-      font-size: .72rem; font-weight: 700; letter-spacing: .14em;
-      text-transform: uppercase; color: var(--accent); margin-bottom: .5rem;
-    }
-    .page-hero h1 { font-size: 2rem; font-weight: 800; color: var(--text-primary); margin: 0 0 .6rem; line-height: 1.2; }
-    .page-hero p  { font-size: .95rem; color: var(--text-secondary); max-width: 700px; line-height: 1.75; margin: 0; }
 
     /* ── Section titles ──────────────────────────── */
     .rb-section { margin-bottom: 4rem; scroll-margin-top: 120px; }
@@ -245,6 +233,7 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Randomized Benchmarking","description":"Interactive Randomized Benchmarking (RB) Explorer: SPAM cancellation, Clifford group, RB decay model, interleaved RB, 2Q benchmarking, and neutral atom results.","url":"https://amotoolkit.com/pages/rb-explorer.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Quantum","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Randomized Benchmarking","item":"https://amotoolkit.com/pages/rb-explorer.html"}]}</script>
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <style>[data-theme="dark"] .page-hero-eyebrow { color:#d8b4fe !important; }</style>
 </head>
 <body>
 <div id="nav-root"></div>
@@ -252,11 +241,12 @@
 <main class="page-wrap" id="main-content">
 
   <!-- ── Page Hero ───────────────────────────────── -->
-  <div class="page-hero page-hero-2col">
+  <div class="page-hero">
+   <div class="container page-hero-2col">
     <div class="page-hero-text">
-      <div class="page-hero-label">📈 Quantum 06 · Benchmark the gates</div>
-      <h1>Randomized Benchmarking</h1>
-      <p>
+      <div class="page-hero-eyebrow" style="background:rgba(153,55,250,0.08);border-color:rgba(153,55,250,0.25);color:#7a1fd6;">📈 Quantum 06 · Benchmark the gates</div>
+      <h1>Randomized <span class="grad-text" style="--ga:#c084fc;--gb:#38bdf8;">Benchmarking</span></h1>
+      <p class="page-hero-desc">
         A thorough interactive reference for RB, from the SPAM problem and Clifford twirling, through the
         decay model and IRB, to practical design choices and state-of-the-art neutral atom results.
         Includes working calculators for standard RB and interleaved RB.
@@ -315,8 +305,10 @@
 <text x="155" y="153" text-anchor="middle" font-size="8" fill="#9938fa" opacity=".45" font-family="JetBrains Mono,monospace">Clifford sequence length</text>
 </svg>
     </div>
+   </div>
   </div>
 
+  <div class="page-content"><div class="container">
   <!-- ── Sticky topic nav ─────────────────────────── -->
   <nav class="topic-nav" id="topicNav">
     <div class="topic-nav-inner">
@@ -739,8 +731,7 @@
           <span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);">
             Live RB Simulation
           </span>
-          <button id="rbSimBtn" onclick="toggleRBSim()" style="background:rgba(192,132,252,0.1);border:1px solid rgba(153,55,250,0.3);
-            color:#8c1ef9;padding:.3rem .9rem;border-radius:6px;font-size:.78rem;cursor:pointer;">▶ Run</button>
+          <button id="rbSimBtn" onclick="toggleRBSim()" style="background:rgba(192,132,252,0.1);border:1px solid rgba(153,55,250,0.3); color:#8c1ef9;padding:.3rem .9rem;border-radius:6px;font-size:.78rem;cursor:pointer;">▶ Run</button>
           <span id="rbSimStatus" style="font-family:var(--font-mono);font-size:.72rem;color:var(--text-muted);"></span>
         </div>
         <canvas id="rbAnimCanvas" width="600" height="100"
@@ -1204,6 +1195,7 @@
     </div>
   </section>
 
+  </div></div><!-- /page-content -->
 </main><!-- end .page-wrap -->
 
 <!-- ── Footer ──────────────────────────────────── -->
@@ -1241,7 +1233,7 @@
 </footer>
 
 <!-- ── Scripts ──────────────────────────────────── -->
-<script src="../js/main.js?v=49"></script>
+<script src="../js/main.js?v=50"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
 <script>
   renderNav({ active: 'rb-explorer', root: '../' });

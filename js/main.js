@@ -1461,18 +1461,52 @@ function initStoryTrail() {
   container.appendChild(nav);
 }
 
+/* The author's own scholarly work. Pages built on one of these papers list it in
+   CITE_RESEARCH so readers who use its results cite the paper, not only the page. */
+const CITE_THESIS = {
+  plain: 'Phatak, S. S. (2026). Cooling Lithium and Cesium Single Atoms in Optical Tweezers [Doctoral dissertation, Purdue University]. https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018',
+  bibtex: '@phdthesis{phatak2026thesis,\n  author = {Phatak, Saumitra S.},\n  title  = {Cooling Lithium and Cesium Single Atoms in Optical Tweezers},\n  school = {Purdue University},\n  year   = {2026},\n  url    = {https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018}\n}',
+};
+const CITE_PAPERS = {
+  'phatak2024cooling': {
+    short: 'Phatak et al., Phys. Rev. A 110, 043116 (2024)',
+    plain: 'Phatak, S. S., Blodgett, K. N., Peana, D., Chen, M. R., & Hood, J. D. (2024). A generalized theory for optical cooling of a trapped atom with spin. Physical Review A, 110, 043116. https://doi.org/10.1103/PhysRevA.110.043116',
+    bibtex: '@article{phatak2024cooling,\n  author  = {Phatak, Saumitra S. and Blodgett, Karl N. and Peana, David and Chen, Meng Raymond and Hood, Jonathan D.},\n  title   = {A generalized theory for optical cooling of a trapped atom with spin},\n  journal = {Physical Review A},\n  volume  = {110},\n  pages   = {043116},\n  year    = {2024},\n  doi     = {10.1103/PhysRevA.110.043116}\n}',
+  },
+};
+const CITE_RESEARCH = { 'laser-cooling': ['phatak2024cooling'], 'cooling-simulator': ['phatak2024cooling'] };
+
 function initCiteThisPage() {
   if (!document.querySelector('.page-wrap')) return;
   const container = getPageContainer();
   if (!container || document.querySelector('.cite-panel')) return;
 
   const { url, title } = getPageMeta();
-  const year = new Date().getFullYear();
-  const accessed = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  const slug = currentPageKey().replace(/[^a-z0-9]/gi, '');
+  const now = new Date();
+  const year = now.getFullYear();
+  const accessed = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const isoDate = now.toISOString().slice(0, 10);
+  const key = currentPageKey();
+  const slug = key.replace(/[^a-z0-9]/gi, '');
 
-  const plain = `Phatak, S. (${year}). ${title}. AMO Toolkit. Retrieved ${accessed}, from ${url}`;
-  const bibtex = `@misc{phatak${year}${slug},\n  author       = {Phatak, Saumitra},\n  title        = {${title}},\n  year         = {${year}},\n  howpublished = {\\url{${url}}},\n  note         = {AMO Toolkit}\n}`;
+  const texts = {
+    'page-plain': `Phatak, S. S. (${year}). ${title}. AMO Toolkit. Retrieved ${accessed}, from ${url}`,
+    'page-bibtex': `@misc{phatak${year}${slug},\n  author       = {Phatak, Saumitra S.},\n  title        = {${title}},\n  year         = {${year}},\n  howpublished = {\\url{${url}}},\n  urldate      = {${isoDate}},\n  note         = {AMO Toolkit}\n}`,
+    'thesis-plain': CITE_THESIS.plain,
+    'thesis-bibtex': CITE_THESIS.bibtex,
+  };
+  const papers = (CITE_RESEARCH[key] || []).map(id => CITE_PAPERS[id]).filter(Boolean);
+  papers.forEach((pp, i) => { texts[`paper${i}-plain`] = pp.plain; texts[`paper${i}-bibtex`] = pp.bibtex; });
+
+  const block = (label, id, btn) => `
+    <div class="cite-block">
+      <div class="cite-block-label">${label}</div>
+      <pre class="cite-pre">${escapeHtml(texts[id])}</pre>
+      <button class="mini-action" type="button" data-copy-cite="${id}">${btn}</button>
+    </div>`;
+  const research = papers.length
+    ? `<strong>Results from my doctoral research.</strong> This page is built on ${papers.map(pp => escapeHtml(pp.short)).join(' and ')}; if you use its results or derivations, please cite the paper (and the thesis where it helps).`
+    : `<strong>Results from my doctoral research.</strong> For scientific results, derivations or material that originate in my PhD work, please also cite my thesis or the published paper.`;
 
   const panel = document.createElement('section');
   panel.className = 'cite-panel workflow-panel';
@@ -1483,29 +1517,40 @@ function initCiteThisPage() {
         <h2>Reference this tool or guide</h2>
       </div>
     </div>
-    <p style="margin-bottom:var(--sp-4)">If a formula, number, or figure from this page ended up in a thesis, paper, or lab notebook, here is a ready-made citation.</p>
-    <div class="cite-block">
-      <div class="cite-block-label">Plain text</div>
-      <pre class="cite-pre">${escapeHtml(plain)}</pre>
-      <button class="mini-action" type="button" data-copy-cite="plain">Copy citation</button>
+    <p class="cite-intro">If you use AMO Toolkit in your research, please consider citing the relevant page. If a formula, numerical result, figure, explanation or calculator from this page finds its way into your thesis, paper, presentation or lab notebook, the citations below are ready to copy.</p>
+    <ul class="cite-which">
+      <li><strong>This page,</strong> for its explanations, calculators, figures and worked numbers.</li>
+      <li><strong>The original source,</strong> for any measured value or published result the page quotes; it is linked where it appears. Acknowledge the page too if it helped.</li>
+      <li>${research}</li>
+    </ul>
+    <div class="cite-grid">
+      ${block('This page · plain text', 'page-plain', 'Copy citation')}
+      ${block('This page · BibTeX', 'page-bibtex', 'Copy BibTeX')}
     </div>
-    <div class="cite-block" style="margin-top:var(--sp-4)">
-      <div class="cite-block-label">BibTeX</div>
-      <pre class="cite-pre">${escapeHtml(bibtex)}</pre>
-      <button class="mini-action" type="button" data-copy-cite="bibtex">Copy BibTeX</button>
-    </div>
+    <details class="cite-more"${papers.length ? ' open' : ''}>
+      <summary>${papers.length ? 'The paper behind this page, and my thesis' : 'My thesis'}</summary>
+      <div class="cite-grid">
+        ${papers.map((pp, i) => block(escapeHtml(pp.short) + ' · plain text', `paper${i}-plain`, 'Copy citation') + block(escapeHtml(pp.short) + ' · BibTeX', `paper${i}-bibtex`, 'Copy BibTeX')).join('')}
+        ${block('PhD thesis (Purdue, 2026) · plain text', 'thesis-plain', 'Copy citation')}
+        ${block('PhD thesis (Purdue, 2026) · BibTeX', 'thesis-bibtex', 'Copy BibTeX')}
+      </div>
+    </details>
+    <p class="cite-thanks">Thank you for acknowledging the work that goes into keeping these resources free.</p>
   `;
   container.appendChild(panel);
 
   panel.addEventListener('click', e => {
     const btn = e.target.closest('[data-copy-cite]');
-    if (!btn || !navigator.clipboard) return;
-    const text = btn.dataset.copyCite === 'plain' ? plain : bibtex;
-    navigator.clipboard.writeText(text).then(() => {
+    if (!btn) return;
+    const text = texts[btn.dataset.copyCite];
+    if (!text) return;
+    const done = ok => {
       const original = btn.textContent;
-      btn.textContent = 'Copied ✓';
+      btn.textContent = ok ? 'Copied ✓' : 'Select and copy';
       setTimeout(() => { btn.textContent = original; }, 1400);
-    }).catch(() => {});
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => done(true), () => done(false));
+    else done(false);
   });
 }
 
@@ -2083,7 +2128,9 @@ function initPagePlaybookPanel() {
     <p><span class="pp-k">Use it for</span>${play[1]}</p>
     <p><span class="pp-k">Read with care</span>${play[2]}</p>
   `;
-  container.prepend(panel);
+  // pages whose hero sits inside the content container keep the hero first
+  const hero = container.querySelector(':scope > .page-hero');
+  if (hero) hero.after(panel); else container.prepend(panel);
 }
 
 function initReferenceTrailPanel() {

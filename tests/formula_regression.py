@@ -988,6 +988,32 @@ def test_start_here_rebuild() -> None:
     assert "sitemap3d.js?v=3" in sh and "name: 'Build a lab'" in read("js/sitemap3d.js")
 
 
+def test_styling_pass_2026_11() -> None:
+    """Site-wide styling pass (2026-11-21): classes the templates rely on are defined, every page uses the
+    standard hero, and the cite panel separates page / original source / thesis."""
+    import re, glob, os
+    css = read("css/styles.css")
+    for cls in (".grad-text", ".read-links", ".read-link", ".concept-box-label", ".section-lead", ".cite-which", ".cite-more"):
+        assert re.search(re.escape(cls) + r"\s*[{,]", css), cls
+    assert "background-clip: text" in css[css.index(".grad-text {"):][:900]
+    assert ".common-mistake strong { color: #6e5600; }" in css and "color: #896e02" not in css
+    for f in sorted(glob.glob(os.path.join(ROOT, "pages", "*.html"))):
+        html = open(f, encoding="utf-8").read()
+        name = os.path.basename(f)
+        assert 'class="page-hero-eyebrow"' in html, name
+        assert html.count("<div") == html.count("</div>"), name
+        local = "".join(re.findall(r"<style[^>]*>(.*?)</style>", html, re.S))
+        if name in ("dd-playground.html", "rb-explorer.html"):                      # were boxed, non-standard heroes
+            assert not re.search(r"(^|\n)\s*\.page-hero\s*\{", local), name
+    js = read("js/main.js")
+    cite = js[js.index("function initCiteThisPage"):][:6000]
+    assert "please consider citing the relevant page" in cite and "The original source" in cite and "doctoral research" in cite
+    assert "Cooling Lithium and Cesium Single Atoms in Optical Tweezers" in js and "10.1103/PhysRevA.110.043116" in js
+    for k in re.findall(r"'([a-z0-9-]+)': \['phatak", js):
+        assert os.path.exists(os.path.join(ROOT, "pages", k + ".html")), k
+    assert "hero.after(panel)" in js                                               # playbook never lands above a hero
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1098,6 +1124,7 @@ def main() -> None:
         test_paper_roadmap_rebuild,
         test_career_comparisons_rebuild,
         test_start_here_rebuild,
+        test_styling_pass_2026_11,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

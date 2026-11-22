@@ -68,3 +68,6 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Emerson, Alicki & Życzkowski → J. Opt. B 7, S347; Proctor et al. → Nature Physics 18, 75; Knill, Laflamme & Zurek → Science 279, 342 (all Crossref).
+
+## 2026-11-21: standard hero
+- The boxed, page-local hero is gone: standard `.page-hero` (eyebrow pill, h1 with a `.grad-text` word, `.page-hero-desc`) outside the content container, content wrapped in `.page-content > .container`, so the "how to use this page" note now sits below the hero. Content is no longer limited to 1040 px.
