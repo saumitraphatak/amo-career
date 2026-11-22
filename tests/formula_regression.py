@@ -1079,11 +1079,33 @@ def test_teach_page() -> None:
         assert f'href="{k}.html"' in html and (ROOT / "pages" / f"{k}.html").exists(), k
     n_prob = html.count('<li><span class="te-tag ')
     assert f"<span><b>{n_prob}</b> problems</span>" in html and f"<span><b>{len(week_of)}</b> interactive pages</span>" in html
-    assert re.findall(r'<span class="accent">(\d\d)</span>', html) == ["01", "02", "03", "04", "05"]
+    assert re.findall(r'<span class="accent">(\d\d)</span>', html) == ["01", "02", "03", "04", "05", "06"]
     assert "teach.html#ps-${key}" in js and "pages/teach.html\">Teach</a>" in js and "byHref.set('teach:overview'" in js
     assert 'href="pages/teach.html"' in read("home.html") and 'href="teach.html"' in read("pages/start-here.html")
     assert "subject=AMO%20Toolkit%20course%3A%20solutions%20request" in html
     assert html.count("<div") == html.count("</div>") and html.count("<details") == html.count("</details>")
+
+
+def test_notebooks() -> None:
+    """Python notebooks (2026-11-22): every notebook is valid nbformat 4 for a real page, was built with its
+    page-check cell passing, is listed in main.js NOTEBOOKS and on the Teach page, and its spec is kept."""
+    import json, re
+    nb_dir = ROOT / "notebooks"
+    keys = sorted(p.stem for p in nb_dir.glob("*.ipynb"))
+    assert len(keys) >= 19, keys
+    js = read("js/main.js")
+    block = js[js.index("const NOTEBOOKS = new Set(["):js.index("]);", js.index("const NOTEBOOKS = new Set(["))]
+    assert sorted(re.findall(r"'([a-z0-9-]+)'", block)) == keys
+    teach = read("pages/teach.html")
+    assert f"<b>{len(keys)}</b> Python notebooks" in teach
+    for k in keys:
+        nb = json.loads((nb_dir / f"{k}.ipynb").read_text())
+        assert nb["nbformat"] == 4 and nb["metadata"]["amo_toolkit"]["page"] == k, k
+        assert (ROOT / "pages" / f"{k}.html").exists(), k
+        out = "".join("".join(o.get("text", [])) for c in nb["cells"] if c["cell_type"] == "code" for o in c["outputs"])
+        assert "All values match the page." in out and "MISMATCH" not in out, k
+        assert f"../notebooks/{k}.ipynb" in teach and (nb_dir / "_build" / "specs" / f"{k.replace('-', '_')}.py").exists(), k
+    assert "NOTEBOOKS.has(key)" in js and (nb_dir / "README.md").exists() and (nb_dir / "requirements.txt").exists()
 
 
 def test_cavity_photon_race() -> None:
@@ -1200,6 +1222,7 @@ def main() -> None:
         test_control_systems_page,
         test_automation_page,
         test_teach_page,
+        test_notebooks,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

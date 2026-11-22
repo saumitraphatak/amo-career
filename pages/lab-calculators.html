@@ -1068,7 +1068,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=53"></script>
+<script src="../js/main.js?v=54"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
 <script src="../js/motion.js?v=2"></script>
   <script>
@@ -1408,7 +1408,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       setRes('tf_res', [
         ['Radial ω_r/2π', (fr/1e3).toFixed(2) + ' kHz'],
         ['Axial ω_z/2π',  fz.toFixed(1) + ' Hz  =  ' + (fz/1e3).toFixed(4) + ' kHz'],
-        ['Rayleigh range z_R', (zR*1e3).toFixed(2) + ' mm'],
+        ['Rayleigh range z_R', zR >= 1e-3 ? (zR*1e3).toFixed(2) + ' mm' : (zR*1e6).toFixed(2) + ' µm'],
       ]);
     }
 
@@ -1423,7 +1423,7 @@ In Python: <code>sympy.physics.wigner.wigner_3j(j1, j2, j3, m1, m2, m3)</code></
       const eta    = k * x_zpf * Math.cos(theta);
       const regime = eta < 0.3 ? '✅ Lamb–Dicke (η≪1)' : '⚠️ Beyond Lamb–Dicke';
       setRes('ld_res', [
-        ['x_zpf (zero-point motion)', (x_zpf*1e12).toFixed(2) + ' pm'],
+        ['x_zpf (zero-point motion)', x_zpf >= 1e-9 ? (x_zpf*1e9).toFixed(2) + ' nm' : (x_zpf*1e12).toFixed(2) + ' pm'],
         ['Lamb–Dicke parameter η', eta.toFixed(4)],
         ['Regime', regime],
       ]);

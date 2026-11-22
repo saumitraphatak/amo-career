@@ -2165,6 +2165,30 @@ const COURSE_WEEK = {
   'paper-syllabus': 14,
 };
 
+// Pages with a Python notebook in notebooks/<key>.ipynb that reproduces their calculator (built and checked by notebooks/_build).
+const NOTEBOOKS = new Set([
+  'absorption-imaging',
+  'automation',
+  'cavity-qed',
+  'control-systems',
+  'cooling-simulator',
+  'dd-playground',
+  'fidelity-budget',
+  'imaging-calculator',
+  'lab-calculators',
+  'laser-cooling',
+  'laser-locking',
+  'mot-designer',
+  'rb-explorer',
+  'release-recapture',
+  'remote-entanglement',
+  'rydberg-calculator',
+  'tof-calculator',
+  'tweezer-designer',
+  'vacuum-systems',
+]);
+const COLAB_BASE = 'https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/';
+
 function initPagePlaybookPanel() {
   if (!location.pathname.includes('/pages/')) return;
   const key = currentPageKey();
@@ -2181,6 +2205,7 @@ function initPagePlaybookPanel() {
     <p><span class="pp-k">Use it for</span>${play[1]}</p>
     <p><span class="pp-k">Read with care</span>${play[2]}</p>
     ${COURSE_WEEK[key] ? `<p><span class="pp-k">Teach with it</span><a href="teach.html#ps-${key}">Problems for this page, week ${COURSE_WEEK[key]} of the course →</a></p>` : ''}
+    ${NOTEBOOKS.has(key) ? `<p><span class="pp-k">In Python</span><a href="${COLAB_BASE}${key}.ipynb" target="_blank" rel="noopener">Open the notebook in Colab</a> · <a href="../notebooks/${key}.ipynb" download>download .ipynb</a></p>` : ''}
   `;
   // pages whose hero sits inside the content container keep the hero first
   const hero = container.querySelector(':scope > .page-hero');

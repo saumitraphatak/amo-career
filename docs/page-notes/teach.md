@@ -8,3 +8,4 @@
 - **Not published:** solutions. The mailto uses the address already in the site's "Found a problem?" panel.
 - **Linking:** `COURSE_WEEK` in main.js adds "Teach with it → week N" to each page's playbook note; nav "Teach" (desktop and mobile), home paths intro and footer, Start Here hero; search entry.
 - `test_teach_page` pins the week structure, the COURSE_WEEK map, the counts and the links.
+- 2026-11-22: §05 Python notebooks (table by week, Colab and download links); solutions moved to §06; hero shows the notebook count.

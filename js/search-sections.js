@@ -528,6 +528,7 @@ window.AMO_SECTION_INDEX = [
   {"p":"teach","t":"Error budget for a real result","s":"s-error-budget-for-a-real-result"},
   {"p":"teach","t":"Optimise a virtual stage","s":"s-optimise-a-virtual-stage"},
   {"p":"teach","t":"Teach a topic","s":"s-teach-a-topic"},
+  {"p":"teach","t":"Python notebooks","s":"s-python-notebooks"},
   {"p":"teach","t":"Solutions, adaptations and feedback","s":"s-solutions-adaptations-and-feedback"},
   {"p":"teach","t":"Solutions are available on request","s":"s-solutions-are-available-on-request"},
   {"p":"tof-calculator","t":"Atom & Temperature","s":"s-atom-temperature"},

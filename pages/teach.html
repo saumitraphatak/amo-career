@@ -113,6 +113,13 @@
     .te-weights span { font-size: .8rem; color: var(--text-secondary); }
     .te-request { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--sp-5); align-items: start; }
     @media (max-width: 760px) { .te-request { grid-template-columns: 1fr; } }
+    .te-nb-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); }
+    .te-nb { width: 100%; border-collapse: collapse; font-size: .85rem; min-width: 460px; }
+    .te-nb th { text-align: left; font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-card); padding: .55rem .8rem; border-bottom: 1px solid var(--border-med); }
+    .te-nb td { padding: .5rem .8rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .te-nb tr:last-child td { border-bottom: 0; }
+    .te-nb td:first-child { font-family: var(--font-mono); color: var(--te-ink); width: 4rem; }
+    .te-nb a { color: color-mix(in srgb, var(--te) 60%, var(--text-primary)); }
     [data-theme="dark"] .page-hero-eyebrow { color: #c7d2fe !important; }
     @media print {
       .te-tools, .te-ps-link, .te-ps-head a, .te-request .te-btn { display: none !important; }
@@ -139,7 +146,7 @@
           Use it whole, take single weeks, or work through it on your own.
         </p>
         <div class="te-stats">
-          <span><b>14</b> weeks</span><span><b>28</b> lectures</span><span><b>29</b> interactive pages</span><span><b>86</b> problems</span><span><b>6</b> final projects</span>
+          <span><b>14</b> weeks</span><span><b>28</b> lectures</span><span><b>29</b> interactive pages</span><span><b>86</b> problems</span><span><b>6</b> final projects</span><span><b>19</b> Python notebooks</span>
         </div>
       </div>
       <div class="page-hero-anim" aria-hidden="true">
@@ -339,7 +346,7 @@
 <details class="te-set" id="ps-week-05">
 <summary><span class="te-wk-n">Week 05</span> Laser cooling and the MOT <span class="te-count">6 problems</span></summary>
 <div class="te-ps" id="ps-cooling-simulator"><div class="te-ps-head"><h4>❄️ Laser Cooling Simulator</h4><a href="cooling-simulator.html">Open the page →</a></div><ol class="te-probs">
-<li><span class="te-tag t">Use the tool</span> In the Doppler tab at s₀ = 0.1, vary δ/Γ and find where the damping (the slope of F(v) at v = 0) is largest. Show that it peaks at |δ| = Γ/2√3, not at the δ = −Γ/2 that minimises the Doppler temperature, and explain why the two differ.</li>
+<li><span class="te-tag t">Use the tool</span> In the Doppler tab at s₀ = 0.1, vary δ/Γ and find where the damping (the slope of F(v) at v = 0) is largest. Show that it peaks near |δ| = (Γ/2)√((1 + s₀)/3), which tends to Γ/2√3 at low intensity, not at the δ = −Γ/2 that minimises the Doppler temperature, and explain why the two differ.</li>
 <li><span class="te-tag t">Use the tool</span> In the sideband tab with η = 0.15 and Γ/ω = 0.05, cool from ⟨n⟩ = 20. Then raise Γ/ω to 0.5 and repeat. Explain why the final ⟨n⟩ gets worse.</li>
 <li><span class="te-tag d">Design</span> Lithium's excited-state hyperfine structure is unresolved, so ordinary sub-Doppler cooling works poorly. Use the comparison tab to choose a cooling route for ⁶Li and for ¹³³Cs, and explain the difference.</li>
 </ol></div>
@@ -494,8 +501,41 @@
       </section>
 
       <!-- ══ 05 ══ -->
+      <section class="te-sec" id="notebooks" aria-labelledby="notebooks-h">
+        <h2 class="section-title" id="notebooks-h"><span class="accent">05</span> Python notebooks</h2>
+        <p class="te-lead">19 Jupyter notebooks reproduce the site's calculators in Python with the same constants and formulas, add a scan or a plot the page does not show, and end by checking their numbers against the live page. They suit the "By hand" problems, the "Build a calculator" project, and students who would rather work in code. Each needs only numpy, scipy and matplotlib.</p>
+        <div class="te-nb-wrap">
+          <table class="te-nb">
+            <thead><tr><th>Week</th><th>Page</th><th>Notebook</th></tr></thead>
+            <tbody>
+            <tr><td>03</td><td><a href="laser-locking.html">🔐 Laser Locking Guide</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/laser-locking.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/laser-locking.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>04</td><td><a href="lab-calculators.html">🧮 Quick Lab Console</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/lab-calculators.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/lab-calculators.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>04</td><td><a href="vacuum-systems.html">⚗️ Vacuum Systems Guide</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/vacuum-systems.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/vacuum-systems.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>05</td><td><a href="cooling-simulator.html">❄️ Laser Cooling Simulator</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/cooling-simulator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/cooling-simulator.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>05</td><td><a href="mot-designer.html">🧲 MOT Designer</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/mot-designer.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/mot-designer.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>06</td><td><a href="absorption-imaging.html">🌑 Absorption Imaging Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/absorption-imaging.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/absorption-imaging.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>06</td><td><a href="tof-calculator.html">🌡️ MOT Temperature</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/tof-calculator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/tof-calculator.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>07</td><td><a href="control-systems.html">🎛️ Experiment Control Systems</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/control-systems.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/control-systems.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>08</td><td><a href="tweezer-designer.html">🔦 Tweezer Array Design Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/tweezer-designer.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/tweezer-designer.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>09</td><td><a href="imaging-calculator.html">📷 Single-atom Imaging</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/imaging-calculator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/imaging-calculator.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>09</td><td><a href="release-recapture.html">🎯 Single-atom Temperature</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/release-recapture.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/release-recapture.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>10</td><td><a href="laser-cooling.html">🧊 Single-atom Cooling</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/laser-cooling.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/laser-cooling.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>11</td><td><a href="dd-playground.html">🛡️ Dynamical Decoupling</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/dd-playground.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/dd-playground.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>12</td><td><a href="fidelity-budget.html">📊 Rydberg Gate Error Budget</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/fidelity-budget.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/fidelity-budget.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>12</td><td><a href="rydberg-calculator.html">🔮 Rydberg Blockade Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/rydberg-calculator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/rydberg-calculator.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>13</td><td><a href="automation.html">🤖 Automating the Experiment</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/automation.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/automation.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>13</td><td><a href="rb-explorer.html">📈 Randomized Benchmarking</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/rb-explorer.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/rb-explorer.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>14</td><td><a href="cavity-qed.html">💎 Cavity QED Coupling Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/cavity-qed.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/cavity-qed.ipynb" download>.ipynb</a></td></tr>
+            <tr><td>14</td><td><a href="remote-entanglement.html">🔗 Remote Entanglement</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/remote-entanglement.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/remote-entanglement.ipynb" download>.ipynb</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="te-note">All notebooks, with a README, are in the <a href="https://github.com/saumitraphatak/amo-career/tree/main/notebooks" target="_blank" rel="noopener">notebooks folder on GitHub</a>. Every page that has one links to it from its "how to use this page" note.</div>
+      </section>
+
+      <!-- ══ 06 ══ -->
       <section class="te-sec" id="solutions" aria-labelledby="solutions-h">
-        <h2 class="section-title" id="solutions-h"><span class="accent">05</span> Solutions, adaptations and feedback</h2>
+        <h2 class="section-title" id="solutions-h"><span class="accent">06</span> Solutions, adaptations and feedback</h2>
         <div class="te-request">
           <div class="te-card"><span class="k">For instructors</span><h3>Solutions are available on request</h3><p>Worked solutions are not posted, so the problems stay usable as homework. If you teach a course, write with your name, institution, course and the weeks you need, and the solutions will be sent to you.</p><p><a class="te-btn" href="mailto:saumitraphatak@gmail.com?subject=AMO%20Toolkit%20course%3A%20solutions%20request&amp;body=Name%3A%0AInstitution%20and%20department%3A%0ACourse%20and%20term%3A%0AWeeks%20or%20problem%20sets%20needed%3A%0AA%20link%20to%20your%20faculty%20or%20course%20page%3A%0A">Request solutions by email</a></p></div>
           <div class="te-card"><span class="k">Using and adapting</span><ul>
@@ -546,7 +586,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=53"></script>
+<script src="../js/main.js?v=54"></script>
 <script>
   renderNav({ active: 'teach', root: '../' });
 </script>
