@@ -516,6 +516,7 @@ function renderNav({ active = '', root = '' } = {}) {
           ${dropdown('Trap, Image & Cool', NAV.trapImageCool, 'Run your first experiment, step by step', 660)}
           ${dropdown('Quantum Computing', NAV.quantum, 'Turn trapped atoms into a quantum computer', 640)}
           ${dropdown('Career & Literature', NAV.career, 'Take it into a career', 640)}
+          <a class="nav-btn" href="${root}pages/teach.html">Teach</a>
           <a class="nav-btn" href="${root}home.html#about">About</a>
         </div>
 
@@ -538,6 +539,7 @@ function renderNav({ active = '', root = '' } = {}) {
       <div class="nav-mobile-section">
         <div class="nav-mobile-section-title">Start Here</div>
         <a class="nav-mobile-link" href="${root}pages/start-here.html"><span>🗺️</span> Site Map &amp; Start Here</a>
+        <a class="nav-mobile-link" href="${root}pages/teach.html"><span>🎓</span> Teach with AMO Toolkit</a>
         <a class="nav-mobile-link" href="${root}home.html#intent-paths"><span>🧭</span> I am trying to...</a>
         <a class="nav-mobile-link" href="${root}home.html#paths"><span>🧩</span> Guided Paths (home)</a>
       </div>
@@ -787,6 +789,7 @@ const SEARCH_KEYWORDS = {
   'quantum-algorithms': 'quantum algorithms Deutsch-Jozsa Grover Shor VQE',
   'analog-sim': 'analog simulation Hubbard model Ising Hamiltonian BEC-BCS crossover',
   'start-here': 'site map directory start here where to begin guided paths recommended order navigation overview',
+  'teach': 'teach course syllabus lectures semester 14 weeks problem sets homework exercises instructors solutions final projects curriculum',
 };
 
 function getSearchEntries(root = '') {
@@ -822,6 +825,15 @@ function getSearchEntries(root = '') {
     href: `${root}pages/laser-cooling.html`,
     color: '#a13c1c',
     keywords: SEARCH_KEYWORDS['laser-cooling'].toLowerCase(),
+  });
+
+  byHref.set('teach:overview', {
+    key: 'teach',
+    title: 'Teach with AMO Toolkit',
+    icon: '🎓',
+    href: `${root}pages/teach.html`,
+    color: '#3d3f8f',
+    keywords: SEARCH_KEYWORDS['teach'].toLowerCase(),
   });
 
   byHref.set('start-here:overview', {
@@ -2120,6 +2132,39 @@ function navItemByKey(key) {
   return [...NAV.tools, ...NAV.learn].find(item => item.key === key);
 }
 
+// Week of the course on pages/teach.html that uses each page (its problems sit at teach.html#ps-<key>).
+const COURSE_WEEK = {
+  'learn-quantum': 1,
+  'atom-library': 1,
+  'laser-planner': 2,
+  'polarimetry': 2,
+  'laser-locking': 3,
+  'vacuum-systems': 4,
+  'lab-techniques': 4,
+  'lab-calculators': 4,
+  'cooling-simulator': 5,
+  'mot-designer': 5,
+  'absorption-imaging': 6,
+  'tof-calculator': 6,
+  'control-systems': 7,
+  'tweezer-designer': 8,
+  'zernike': 8,
+  'imaging-calculator': 9,
+  'release-recapture': 9,
+  'laser-cooling': 10,
+  'virtual-lab': 10,
+  'decoherence-lab': 11,
+  'dd-playground': 11,
+  'rydberg-calculator': 12,
+  'fidelity-budget': 12,
+  'rb-explorer': 13,
+  'atom-processor': 13,
+  'automation': 13,
+  'cavity-qed': 14,
+  'remote-entanglement': 14,
+  'paper-syllabus': 14,
+};
+
 function initPagePlaybookPanel() {
   if (!location.pathname.includes('/pages/')) return;
   const key = currentPageKey();
@@ -2135,6 +2180,7 @@ function initPagePlaybookPanel() {
     <p class="pp-lead">${play[0]}</p>
     <p><span class="pp-k">Use it for</span>${play[1]}</p>
     <p><span class="pp-k">Read with care</span>${play[2]}</p>
+    ${COURSE_WEEK[key] ? `<p><span class="pp-k">Teach with it</span><a href="teach.html#ps-${key}">Problems for this page, week ${COURSE_WEEK[key]} of the course →</a></p>` : ''}
   `;
   // pages whose hero sits inside the content container keep the hero first
   const hero = container.querySelector(':scope > .page-hero');

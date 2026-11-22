@@ -1061,6 +1061,31 @@ def test_automation_page() -> None:
     assert "'automation': [" in js and "key: 'automation',       step: 10" in js
 
 
+def test_teach_page() -> None:
+    """Teach with AMO Toolkit (2026-11-22): 14 weeks, every listed page has a problem set at #ps-<key>,
+    main.js's COURSE_WEEK matches the page, counts in the hero are the real counts, and it is linked site-wide."""
+    import re
+    html = read("pages/teach.html")
+    js = read("js/main.js")
+    weeks = re.findall(r'<details class="te-set" id="ps-week-(\d\d)">(.*?)</details>', html, re.S)
+    assert [w for w, _ in weeks] == [f"{i:02d}" for i in range(1, 15)]
+    week_of = {k: int(w) for w, body in weeks for k in re.findall(r'<div class="te-ps" id="ps-([a-z0-9-]+)">', body)}
+    block = js[js.index("const COURSE_WEEK = {"):js.index("};", js.index("const COURSE_WEEK = {"))]
+    assert dict((k, int(v)) for k, v in re.findall(r"'([a-z0-9-]+)': (\d+)", block)) == week_of
+    nav_keys = set(re.findall(r"key: '([a-z0-9-]+)',\s+step: \d+", js))
+    story_pages = nav_keys - {"amo-groups", "qc-landscape", "rb87-vs-yb171", "quantinuum-vs-ionq", "google-vs-ibm", "psiquantum-vs-xanadu"}
+    assert story_pages == set(week_of), story_pages ^ set(week_of)
+    for k in week_of:
+        assert f'href="{k}.html"' in html and (ROOT / "pages" / f"{k}.html").exists(), k
+    n_prob = html.count('<li><span class="te-tag ')
+    assert f"<span><b>{n_prob}</b> problems</span>" in html and f"<span><b>{len(week_of)}</b> interactive pages</span>" in html
+    assert re.findall(r'<span class="accent">(\d\d)</span>', html) == ["01", "02", "03", "04", "05"]
+    assert "teach.html#ps-${key}" in js and "pages/teach.html\">Teach</a>" in js and "byHref.set('teach:overview'" in js
+    assert 'href="pages/teach.html"' in read("home.html") and 'href="teach.html"' in read("pages/start-here.html")
+    assert "subject=AMO%20Toolkit%20course%3A%20solutions%20request" in html
+    assert html.count("<div") == html.count("</div>") and html.count("<details") == html.count("</details>")
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1174,6 +1199,7 @@ def main() -> None:
         test_styling_pass_2026_11,
         test_control_systems_page,
         test_automation_page,
+        test_teach_page,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,
