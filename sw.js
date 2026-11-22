@@ -7,7 +7,7 @@ const CORE_ASSETS = [
   './manifest.json',
   './favicon.svg',
   './css/styles.css?v=40',
-  './js/main.js?v=56',
+  './js/main.js?v=57',
 ];
 
 self.addEventListener('install', event => {

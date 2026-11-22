@@ -523,11 +523,6 @@ function renderNav({ active = '', root = '' } = {}) {
 
         <div class="nav-right">
           <button class="nav-theme-toggle" data-theme-toggle type="button" aria-pressed="false" aria-label="Switch to dark theme">🌙</button>
-          <button class="nav-search-btn" id="global-search-btn" type="button" aria-label="Search AMO Toolkit">
-            <span>Search</span>
-            <kbd>/</kbd>
-          </button>
-          <a class="nav-cta" href="${root}home.html#paths">Guided Paths</a>
         </div>
 
         <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">

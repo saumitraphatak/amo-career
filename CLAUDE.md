@@ -677,6 +677,7 @@ Text in eq: \text{any text}  \rm{roman font}
 - Interactive parts appear as their output at the page's default settings (stat chips, SVG figures, canvas snapshots) with an "Interactive on the website" box linking back. Links point to `https://amotoolkit.com/pages/...`.
 - Chapter titles, "In this chapter" goals, prerequisites, bridges and summaries come from `book/_build/textbook-meta.json` (keyed by page). They are claims in a book students keep, so check each against its page before changing it (the 2026-11-22 audit corrected eight).
 - **The book is generated, not hand-written.** After changing pages, regenerate it (Node + Playwright + sharp, KaTeX, pypdf; Lora and Inter installed for the PDF): `node book/_build/extract.js . /tmp/raw && node book/_build/build.js . /tmp/raw book && node book/_build/polish.js book`. For CSS-only changes, `node book/_build/polish.js book --reprint`. See `book/_build/README.md`. `test_book` checks chapters, images, contents page numbers and the site links.
+- The desktop nav bar has no Search button or "Guided Paths" button (removed 2026-11-22 to declutter it): search opens with the `/` key on desktop and from the mobile menu; Guided Paths stay on the home page and in the mobile menu.
 - Linked from the desktop nav ("Book", after "Teach"; buttons slightly tighter below 1400 px so the bar fits at 1280 px), the mobile menu, the home hero, Guided Paths intro and footer, Start Here, Teach §01 and site search.
 
 ## Service worker and cross-tool handoff (2026-11-22)
