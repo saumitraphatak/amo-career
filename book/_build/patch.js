@@ -8,6 +8,8 @@ for (let i = 0; i < parts.length; i += 2) {
     .replace(/\$10\^\{-3\}\$–\$10\^\{-4\}\$/g, () => { n.money = (n.money || 0) + 1; return katex.renderToString('10^{-3}') + '–' + katex.renderToString('10^{-4}'); })
     .replace(/<p>\d{1,2}<\/p>(?=<h[2-4])/g, () => { n.secnum = (n.secnum || 0) + 1; return ''; })
     .replace(/<p>(?:Open (?:now ↓|chapter →|it →)|Jump ↓|Try it →)<\/p>/g, () => { n.ui = (n.ui || 0) + 1; return ''; })
+    .replace(/\s*·\s*Open chapter →/g, () => { n.ui = (n.ui || 0) + 1; return ''; })
+    .replace(/<p>\s*⟲\s*<\/p>/g, () => { n.reset = (n.reset || 0) + 1; return ''; })
     .replace(/<p>(\d{1,2})<\/p><p>/g, (m, d) => { n.step = (n.step || 0) + 1; return `<p><b class="stepn">${+d}.</b> `; })
     .replace(/<li><p>(\d{1,2})<\/p><p>/g, (m, d) => { n.step = (n.step || 0) + 1; return `<li><p><b class="stepn">${d}.</b> `; });
 }
