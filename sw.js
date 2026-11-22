@@ -6,7 +6,7 @@ const CORE_ASSETS = [
   './404.html',
   './manifest.json',
   './favicon.svg',
-  './css/styles.css?v=39',
+  './css/styles.css?v=40',
   './js/main.js?v=56',
 ];
 
@@ -35,6 +35,9 @@ self.addEventListener('fetch', event => {
   const isSameOrigin = url.origin === self.location.origin;
   const isCdnAsset = /^(cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(url.hostname);
   if (!isSameOrigin && !isCdnAsset) return;
+  // Leave large downloads (the book PDF, notebooks) and range requests to the network:
+  // caching them would fill the visitor's storage, and a 206 partial response can't be cached.
+  if (req.headers.has('range') || /\.(pdf|ipynb|zip)$/i.test(url.pathname)) return;
 
   // Network-first for HTML pages so updates arrive immediately when online,
   // with cache fallback for offline lab use.
@@ -42,13 +45,16 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(req)
         .then(res => {
-          if (res && res.ok) {
+          if (res && res.status === 200) {
             const copy = res.clone();
             caches.open(CACHE_NAME).then(c => c.put(req, copy));
           }
           return res;
         })
-        .catch(() => caches.match(req).then(m => m || caches.match('./home.html')))
+        .catch(() => caches.match(req).then(m => m || (req.mode === 'navigate'
+          // Redirect rather than serve home.html under another URL: its relative CSS/JS paths only resolve at the root.
+          ? Response.redirect(new URL('./home.html', self.location).href, 302)
+          : Response.error())))
     );
     return;
   }
@@ -58,7 +64,7 @@ self.addEventListener('fetch', event => {
     caches.match(req).then(cached => {
       const net = fetch(req)
         .then(res => {
-          if (res && (res.ok || res.type === 'opaque')) {
+          if (res && (res.status === 200 || res.type === 'opaque')) {
             const copy = res.clone();
             caches.open(CACHE_NAME).then(c => c.put(req, copy));
           }

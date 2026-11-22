@@ -4,8 +4,11 @@ const { chromium } = require('playwright');
 const http = require('http'), fs = require('fs'), path = require('path');
 const [dir0, out0, only] = process.argv.slice(2);
 const dir = path.resolve(dir0), outDir = path.resolve(out0);
-const KATEX = '/opt/npm-tools/node_modules/katex/dist';
-const CHART = path.resolve(__dirname, '../vendor/chart.umd.js');
+// Dependencies: Playwright, KaTeX and Chart.js (npm), resolved from node_modules; override with KATEX_DIST / CHARTJS_UMD.
+const tryResolve = (...ids) => { for (const id of ids) { try { return require.resolve(id); } catch (e) {} } return null; };
+const KATEX = process.env.KATEX_DIST || path.dirname(tryResolve('katex/dist/katex.min.js', '/opt/npm-tools/node_modules/katex/dist/katex.min.js') || '.');
+const CHART = process.env.CHARTJS_UMD || tryResolve('chart.js/dist/chart.umd.js', 'chart.js/dist/chart.umd.min.js') || path.resolve(__dirname, '../vendor/chart.umd.js');
+if (!fs.existsSync(path.join(KATEX, 'katex.min.js')) || !fs.existsSync(CHART)) { console.error('Need KaTeX and Chart.js: npm i katex chart.js (or set KATEX_DIST / CHARTJS_UMD)'); process.exit(2); }
 fs.mkdirSync(outDir, { recursive: true });
 const T = { '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json' };
 const srv = http.createServer((q, r) => {
@@ -121,7 +124,7 @@ function extractInPage(origin) {
     if (el.tagName === 'CANVAS') return canvasOut(el);
     if (!visible(el)) return '';
     const tag = el.tagName, cls = typeof el.className === 'string' ? el.className : (el.className && el.className.baseVal) || '';
-    if (/(^|\s|-|_)(empty|no-?match|progress|toolbar|filters?|search|ticks?|sort|pager|pagination|copy-list|readlist)(\s|-|_|$)/i.test(cls)) return '';
+    if (/(^|\s|-|_)(empty|no-?match|progress|toolbar|filters?|search|ticks?|sort|pager|pagination|copy-list|readlist|share-url-card|cross-tool-handoff)(\s|-|_|$)/i.test(cls)) return '';
     if (/^H[1-6]$/.test(tag)) {
       const t = inline(el).trim(); if (!t) return '';
       const lvl = Math.min(5, Math.max(2, +tag[1]));

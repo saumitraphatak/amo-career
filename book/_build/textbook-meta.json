@@ -35,7 +35,7 @@
   "laser-locking": {
     "title": "Laser Frequency Stabilization",
     "prereqs": ["Ch. 1", "Ch. 2"],
-    "bridge": "Free-running diode lasers drift by tens of megahertz per minute—far wider than a typical 5–6 MHz atomic linewidth—so active frequency locking is required before atoms can be cooled or imaged.",
+    "bridge": "Free-running diode lasers can drift by many megahertz over minutes—far wider than a typical 5–6 MHz atomic linewidth—so active frequency locking is required before atoms can be cooled or imaged.",
     "goals": [
       "Generate dispersive error signals using saturated absorption spectroscopy (SAS), Pound-Drever-Hall (PDH) cavity locking, and RF beat-note offset locks.",
       "Match servo loop bandwidths (current vs. PZT channels) to laser frequency noise spectra.",
@@ -59,7 +59,7 @@
     "prereqs": ["Ch. 1", "Ch. 4", "Ch. 5"],
     "bridge": "Combining red-detuned σ⁺/σ⁻ laser beams (Chapters 4–5) with a quadrupole magnetic field gradient creates the magneto-optical trap (MOT)—the workhorse source of cold atoms for almost every AMO experiment.",
     "goals": [
-      "Derive the scattering force, velocity damping coefficient, and restoring spring constant of a 3D MOT from the two-level optical Bloch equations.",
+      "Compute the scattering force, velocity damping coefficient, restoring spring constant and capture velocity of a MOT from the two-level scattering-rate model, and know where that model stops being accurate.",
       "Choose beam waist, detuning, saturation parameter, and magnetic gradient to maximize capture velocity and atom number.",
       "Understand density limits from radiation trapping and light-assisted collisions, and plan the transition to sub-Doppler cooling."
     ],
@@ -255,9 +255,9 @@
   "rydberg-calculator": {
     "title": "Rydberg Blockade Physics",
     "prereqs": ["Ch. 1", "Ch. 8", "Ch. 21"],
-    "bridge": "Exciting trapped neutral atoms to high principal quantum numbers (n ~ 50–100) inflates their electric polarizability by ~n¹¹, creating strong van der Waals interactions over micron separations.",
+    "bridge": "Exciting trapped neutral atoms to high principal quantum numbers (n ~ 50–100) makes them enormous and easily polarized: the van der Waals coefficient grows roughly as n*¹¹, so two atoms a few microns apart interact strongly.",
     "goals": [
-      "Compute the van der Waals coefficient C₆ ∝ n¹¹, radiative/BBR lifetime τ ∝ n³, and blockade radius R_b = (C₆/Ω)^(1/6).",
+      "Estimate quantum defects and n*, the van der Waals coefficient (C₆ ∝ n*¹¹ within a series), the radiative lifetime of low-l states (τ ∝ n*³) and the blockade radius R_b = (C₆/ħΩ)^(1/6).",
       "Verify the strong-blockade condition V(R) ≫ Ω required to suppress doubly excited |rr⟩ population during two-qubit gates.",
       "Compare single-photon UV and two-photon excitation schemes across alkali and alkaline-earth-like qubits."
     ],
@@ -269,7 +269,7 @@
     "bridge": "A Rydberg CZ gate takes only a few hundred nanoseconds, yet spontaneous decay, finite blockade strength, Doppler shifts, and laser phase noise each nibble away at its fidelity.",
     "goals": [
       "Decompose two-qubit CZ infidelity into Rydberg lifetime decay, finite-blockade leakage, Doppler dephasing, and laser intensity/phase noise.",
-      "Understand time-optimal Rydberg gate pulses (such as the Levine-Pichler protocol) that minimize integrated Rydberg population.",
+      "Run the two-pulse CZ gate of Levine et al. (2019) with finite blockade and Rydberg decay, and compare it with time-optimal pulses that spend less time in the Rydberg state.",
       "Identify the dominant error lever to optimize when pushing gate fidelity from 99% toward 99.9%."
     ],
     "summary": "An itemized error budget turns fidelity engineering from guesswork into targeted upgrades. Once a gate is built, we need a SPAM-insensitive protocol to measure its true error rate in the lab."
@@ -277,7 +277,7 @@
   "rb-explorer": {
     "title": "Randomized Benchmarking",
     "prereqs": ["Ch. 21", "Ch. 25"],
-    "bridge": "In neutral-atom arrays, state-preparation and measurement (SPAM) errors (~0.5–2%) are often larger than the gate errors (~0.1–0.5%) we want to measure—making direct single-gate tomography unreliable.",
+    "bridge": "In neutral-atom arrays, state-preparation and measurement (SPAM) errors (typically 0.5–2% per shot) are often comparable to or larger than the gate errors we want to measure—making direct single-gate tomography unreliable.",
     "goals": [
       "Explain how Clifford twirling converts general gate-independent noise into an exponential decay F(m) = A p^m + B that separates gate error from SPAM.",
       "Extract error per Clifford r_C and isolate individual target gates (such as CZ) using Interleaved Randomized Benchmarking (IRB).",
@@ -349,7 +349,7 @@
       "Evaluate published logical-qubit and two-qubit gate milestones from Harvard/QuEra (⁸⁷Rb) and JILA/Princeton/Atom Computing (¹⁷¹Yb).",
       "Assess how species choice shapes mid-circuit readout, shuttling, and photonic networking architectures."
     ],
-    "summary": "⁸⁷Rb leads in mature logical-processor demonstrations while ¹⁷¹Yb offers exceptional nuclear-spin coherence and erasure-check capabilities. Next, we examine the analogous architectural split in trapped ions."
+    "summary": "⁸⁷Rb has the longest record of published logical-processor demonstrations; ¹⁷¹Yb adds nuclear-spin coherence and erasure conversion, with logical-qubit results of its own (Microsoft and Atom Computing). Next, we examine the analogous architectural split in trapped ions."
   },
   "quantinuum-vs-ionq": {
     "title": "Trapped-Ion Architectures: Quantinuum vs. IonQ",
@@ -367,7 +367,7 @@
     "prereqs": ["Ch. 21", "Ch. 31"],
     "bridge": "Superconducting transmon processors operate at nanosecond gate speeds inside dilution refrigerators, with Google Quantum AI and IBM pursuing contrasting error-correction and modularity strategies.",
     "goals": [
-      "Contrast Google's 2D surface-code focus (Willow, below-threshold QEC) with IBM's heavy-hex/Nighthawk and qLDPC (gross-code) roadmap.",
+      "Contrast Google's 2D surface-code focus (Willow, below-threshold QEC) with IBM's move from heavy-hex lattices to the square-lattice Nighthawk and its qLDPC (gross-code) roadmap.",
       "Interpret headline quantum-advantage and utility claims alongside subsequent classical-simulation benchmarks.",
       "Identify the cryogenic wiring, coherence, and wafer-yield bottlenecks facing large-scale superconducting systems."
     ],

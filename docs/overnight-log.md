@@ -361,3 +361,8 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - Generated from the live pages by `book/_build/` (extract → build → polish; two PDF passes so the contents carry page numbers). Interactive widgets appear as their default-setting output with links back to the website.
 - Found while extracting: `\( … \)` TeX on lab-calculators, rydberg-calculator and tof-calculator was never rendered (the site's auto-render only knows `$` and `$$`); now `$ … $`.
 - Linked from nav ("Book"), mobile menu, home (hero, Guided Paths, footer), Start Here, Teach §01, search. main.js v56, styles.css v39 on all 39 HTML files (and in sw.js). Tests: OK 43 (new `test_book`).
+
+## 2026-11-22: Site audit after the November additions ("do a thorough audit of the website")
+- Report: `docs/site-audit-2026-11-22.md`. Full render of 39 pages + the book in three configurations with real KaTeX and Chart.js, link/anchor resolution, contrast, the cross-tool handoff, the service worker offline, counts across docs.
+- Fixed: raw TeX on six pages; prose inside display math (psiquantum-vs-xanadu); dark-mode contrast of the home automation card; Tweezer Designer slider steps (1064 nm and 1.5 mW were rounded); service worker no longer caches the book PDF/notebooks or partial responses and redirects offline navigations instead of breaking them; ~3.9 KB of dead CSS from the deleted panels; stale CLAUDE.md lines. Book regenerated (410 pages, on top of the chapter-goal redesign committed meanwhile as 4b79564): handoff bar skipped, SVG ids namespaced, GA4 tag, build scripts portable.
+- styles.css v40 on all 39 HTML files and in sw.js. Tests: OK 44 (new `test_service_worker`); smoke 39 × 3 clean.

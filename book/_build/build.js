@@ -1,10 +1,10 @@
 // Assemble "Building with Atoms" from extracted pages: node build.js <siteDir> <rawDir> <outDir>
 const fs = require('fs'), path = require('path');
-const sharp = require('/opt/npm-tools/node_modules/sharp');
+const sharp = (() => { try { return require('sharp'); } catch (e) { return require('/opt/npm-tools/node_modules/sharp'); } })();
 const { chromium } = require('playwright');
 const [site0, raw0, out0] = process.argv.slice(2);
 const site = path.resolve(site0), rawDir = path.resolve(raw0), out = path.resolve(out0);
-const KATEX = '/opt/npm-tools/node_modules/katex/dist';
+const KATEX = process.env.KATEX_DIST || (() => { for (const id of ['katex/dist/katex.min.js', '/opt/npm-tools/node_modules/katex/dist/katex.min.js']) { try { return path.dirname(require.resolve(id)); } catch (e) {} } return '/opt/npm-tools/node_modules/katex/dist'; })();
 const SITE = 'https://amotoolkit.com/';
 const EDITION = 'Edition 1 · November 2026';
 const BOOK_URL = SITE + 'book/';
@@ -222,7 +222,13 @@ function appendices() {
   sections.push(appendices());
   const tocSide = PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
     `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a>`;
-  const draft = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  const draft = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<!-- Google tag (gtag.js), same as every site page -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-QY3G6MDXBD');</script>
+<!-- reopen in the reader's chosen theme (the toggle below stores it) -->
+<script>try{if(localStorage.getItem('amo-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Building with Atoms — a training kit for experimental AMO and neutral-atom researchers</title>
 <meta name="description" content="Building with Atoms: the whole of AMO Toolkit as one book. Lasers, vacuum, locking, MOTs, control systems, optical tweezers, automation, cavity QED, imaging, cooling, qubits, Rydberg gates, benchmarking, networks and careers, with links to every interactive tool. Read online or download the PDF.">
 <link rel="canonical" href="${BOOK_URL}">

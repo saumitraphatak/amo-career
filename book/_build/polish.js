@@ -51,6 +51,20 @@ function transform() {
       const c = document.createElement('p'); c.className = 'snap'; c.textContent = 'Snapshot of an interactive figure at its default settings. On the website it responds to the controls.'; f.after(c);
       const w = +img.dataset.w, hh = +img.dataset.h; if (w && hh) { img.width = Math.round(w / 2); img.height = Math.round(hh / 2); }
     });
+    // ids inside inlined SVG figures (arrow markers, gradients) are unique per page on the site but collide
+    // once every page is in one document; namespace them per figure and rewrite the references.
+    body.querySelectorAll('svg').forEach((svg, si) => {
+      const ids = [...svg.querySelectorAll('[id]')].map(e => e.id); if (!ids.length) return;
+      const map = Object.fromEntries(ids.map(id => [id, `${key}-f${si}-${id}`]));
+      svg.querySelectorAll('[id]').forEach(e => { e.id = map[e.id]; });
+      const fix = v => v.replace(/url\(\s*['"]?#([^'")\s]+)['"]?\s*\)/g, (m, id) => map[id] ? `url(#${map[id]})` : m);
+      svg.querySelectorAll('*').forEach(e => { for (const at of [...e.attributes]) {
+        if (/^(xlink:)?href$/.test(at.name) && at.value.startsWith('#') && map[at.value.slice(1)]) e.setAttribute(at.name, '#' + map[at.value.slice(1)]);
+        else if (at.value.includes('url(')) e.setAttribute(at.name, fix(at.value));
+      } });
+    });
+    // long formulas scroll sideways on screen instead of widening the page
+    body.querySelectorAll('.katex').forEach(k => { const h = k.querySelector('.katex-html'); if (h && h.textContent.length > 70) k.classList.add('katex-wide'); });
     // repeated identical paragraphs
     let prevT = '';
     body.querySelectorAll(':scope > p').forEach(p => { const t = p.textContent.trim(); if (t && t === prevT) p.remove(); prevT = t; });

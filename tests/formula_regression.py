@@ -117,7 +117,7 @@ def test_rb_yb_panel_fact_boundaries() -> None:
 def test_cavity_qed_conventions() -> None:
     assert_contains("pages/cavity-qed.html", "g_0 = \\xi\\sqrt{\\frac{3\\pi\\Gamma c^3}{2\\omega^2 V}}")
     assert_contains("pages/cavity-qed.html", "const g0_rad  = xi * Math.sqrt(3 * _PI * Gam_rad * _c**3 / (2 * omega**2 * V_mode));")
-    assert_contains("pages/cavity-qed.html", "F &gt; \\mathrm{FSR}/(2g₀)")
+    assert_contains("pages/cavity-qed.html", "$F > \\mathrm{FSR}/(2g_0)$")
     assert_contains("pages/cavity-qed.html", "\\mathcal{F} > \\frac{\\pi c}{2 L g_0}")
     assert_not_contains("pages/cavity-qed.html", "Math.sqrt(3 * Gam_rad")
 
@@ -1130,6 +1130,22 @@ def test_book() -> None:
     assert (book / "_build" / "extract.js").exists() and (book / "katex" / "katex.min.css").exists()
 
 
+def test_service_worker() -> None:
+    """sw.js (2026-11-22): precaches the same CSS/JS versions the pages load, never caches the book PDF,
+    notebooks or partial responses, and redirects offline navigations to home.html instead of serving it
+    under another URL (its relative paths only resolve at the root)."""
+    import re
+    sw = read("sw.js")
+    html = read("home.html")
+    for asset in ("css/styles.css", "js/main.js"):
+        page_v = re.search(re.escape(asset) + r"\?v=(\d+)", html).group(1)
+        assert f"./{asset}?v={page_v}" in sw, (asset, page_v)
+    assert "req.headers.has('range')" in sw and "pdf|ipynb" in sw
+    assert "res.status === 200" in sw and "res.ok" not in sw
+    assert "Response.redirect(new URL('./home.html', self.location)" in sw
+    assert "navigator.serviceWorker.register(`${root}sw.js`)" in read("js/main.js")
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1246,6 +1262,7 @@ def main() -> None:
         test_teach_page,
         test_notebooks,
         test_book,
+        test_service_worker,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

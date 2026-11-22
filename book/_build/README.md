@@ -18,7 +18,8 @@ The book is generated from the live pages, so it stays in step with the site.
 4. `node book/_build/polish.js book --reprint` re-runs only the clean-up and the two PDF passes on the existing
    `index.html` (about 3–4 minutes), for CSS or wording changes that do not need a fresh extraction.
 
-Requirements: Node with Playwright and sharp, KaTeX (fonts and CSS copied to `katex/`), Python with pypdf, and
-the Lora and Inter fonts installed for the PDF. Regenerate the whole book after changing pages:
+Requirements: Node with `npm i playwright sharp katex chart.js` (KaTeX and Chart.js are served to the pages
+locally because the build blocks the network; set `KATEX_DIST` or `CHARTJS_UMD` to use other copies), Python
+with pypdf, and the Lora and Inter fonts installed for the PDF. Regenerate the whole book after changing pages:
 
     node book/_build/extract.js . /tmp/raw && node book/_build/build.js . /tmp/raw book && node book/_build/polish.js book

@@ -50,3 +50,6 @@ Section 01 gained "Diameter or radius? The focal spot the formulas assume" (`.fo
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Barredo 2016 title; Endres 2016 is Lukin/Greiner/Vuletić; Norcia 2019 description no longer claims ⁸⁷Sr nuclear-spin qubits.
+
+## 2026-11-22: site audit
+- Wavelength slider step 5 → 1 nm and power slider min/step 1 → 0.5 mW: 1064 nm and the species' own tweezer wavelengths (Cs 938 nm) were unreachable and were rounded when another tool handed them over (release-recapture sends 1064 nm, 1.5 mW).
