@@ -45,86 +45,379 @@
 
   <style>
     /* ── Teach page ── */
-    :root { --te: #3d3f8f; --te-ink: #34367a; --te-bg: rgba(61,63,143,0.07); --te-border: rgba(61,63,143,0.24);
-            --te-t: #0369a1; --te-h: #047857; --te-d: #92400e; }
-    [data-theme="dark"] { --te: #a5b4fc; --te-ink: #c7d2fe; --te-bg: rgba(165,180,252,0.07); --te-border: rgba(165,180,252,0.22);
-            --te-t: #7dd3fc; --te-h: #34d399; --te-d: #fbbf24; }
-    .te-sec { margin: 0 0 var(--sp-12); scroll-margin-top: 90px; }
-    .te-sec > .section-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 .25rem; border-left: 3px solid var(--te); padding-left: .75rem; }
-    .te-lead { color: var(--text-secondary); font-size: .92rem; line-height: 1.7; margin: 0 0 var(--sp-5) .85rem; max-width: 82ch; }
+    :root {
+      --te: #3d3f8f; --te-ink: #34367a; --te-bg: rgba(61,63,143,0.07); --te-border: rgba(61,63,143,0.24);
+      --te-t: #0369a1; --te-h: #047857; --te-d: #92400e;
+      --te-p1: #b4431e; --te-p2: #2b5b84; --te-p3: #2f6e49;
+      --te-demo-bg: rgba(61,63,143,0.06);
+      --te-colab: #92400e; --te-colab-bg: rgba(217,119,6,0.09); --te-colab-bd: rgba(217,119,6,0.32);
+    }
+    [data-theme="dark"] {
+      --te: #a5b4fc; --te-ink: #c7d2fe; --te-bg: rgba(165,180,252,0.08); --te-border: rgba(165,180,252,0.24);
+      --te-t: #7dd3fc; --te-h: #34d399; --te-d: #fbbf24;
+      --te-p1: #e07a5f; --te-p2: #60a5fa; --te-p3: #4ade80;
+      --te-demo-bg: rgba(165,180,252,0.07);
+      --te-colab: #fbbf24; --te-colab-bg: rgba(251,191,36,0.1); --te-colab-bd: rgba(251,191,36,0.3);
+    }
+
+    /* Hero polish */
+    .te-hero { position: relative; overflow: hidden; }
+    .te-hero::after {
+      content: ""; position: absolute; inset: -40% -10% auto auto; width: 520px; height: 520px;
+      background: radial-gradient(circle, color-mix(in srgb, var(--te) 16%, transparent) 0%, transparent 68%);
+      pointer-events: none; z-index: 0;
+    }
+    .te-hero > .container { position: relative; z-index: 1; }
+    .te-stats { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: var(--sp-4); }
+    .te-stats span {
+      display: inline-flex; align-items: baseline; gap: .35rem;
+      padding: .32rem .75rem; border-radius: 999px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+      font-size: .79rem; color: var(--text-secondary);
+      backdrop-filter: blur(6px);
+    }
+    .te-stats b { font-family: var(--font-mono); font-size: .92rem; color: var(--text-primary); }
+    .te-hero-actions { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: var(--sp-4); }
+    .te-cta-primary {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .5rem 1.05rem; border-radius: 999px; font-size: .84rem; font-weight: 600;
+      background: var(--te); color: #fff; text-decoration: none; border: 1px solid var(--te);
+      cursor: pointer; font-family: inherit; transition: transform .15s, box-shadow .15s, filter .15s;
+    }
+    [data-theme="dark"] .te-cta-primary { color: #0b1020; }
+    .te-cta-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px color-mix(in srgb, var(--te) 28%, transparent); filter: brightness(1.05); }
+    .te-cta-ghost {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .5rem .95rem; border-radius: 999px; font-size: .84rem; font-weight: 600;
+      background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+      color: var(--text-primary); text-decoration: none; border: 1px solid var(--border-med);
+      cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s, transform .15s;
+    }
+    .te-cta-ghost:hover { border-color: var(--te); background: var(--te-bg); transform: translateY(-1px); }
+
+    /* Hero SVG roadmap */
+    .te-hero-svg-wrap {
+      background: color-mix(in srgb, var(--bg-card) 75%, transparent);
+      border: 1px solid var(--border); border-radius: var(--r-xl, 16px);
+      padding: .75rem .75rem .55rem; backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] .te-hero-svg-wrap { box-shadow: 0 14px 36px rgba(0,0,0,0.28); }
+    .te-svg-node { cursor: pointer; transition: transform .18s ease, opacity .18s ease; transform-box: fill-box; transform-origin: center; }
+    .te-svg-node:hover { transform: translateY(-2.5px) scale(1.07); }
+    .te-svg-pulse { stroke-dasharray: 6 6; animation: te-flow 22s linear infinite; }
+    @keyframes te-flow { to { stroke-dashoffset: -120; } }
+    @media (prefers-reduced-motion: reduce) { .te-svg-pulse { animation: none; } }
+
+    /* Sticky section jump bar */
+    .topic-nav {
+      position: sticky; top: 64px; z-index: 30;
+      background: color-mix(in srgb, var(--bg-base, var(--bg-primary)) 86%, transparent);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--sp-8);
+    }
+    .topic-nav-inner {
+      display: flex; align-items: center; gap: .35rem; overflow-x: auto;
+      padding: .55rem 0; scrollbar-width: none;
+    }
+    .topic-nav-inner::-webkit-scrollbar { display: none; }
+    .topic-nav a {
+      flex: 0 0 auto; font-size: .8rem; font-weight: 500; color: var(--text-secondary);
+      text-decoration: none; padding: .34rem .72rem; border-radius: 999px;
+      border: 1px solid transparent; transition: color .15s, background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .topic-nav a .tn-num { font-family: var(--font-mono); font-size: .72rem; color: var(--te-ink); margin-right: .3rem; opacity: .85; }
+    .topic-nav a:hover { color: var(--text-primary); background: var(--te-bg); }
+    .topic-nav a.active { color: var(--text-primary); background: var(--te-bg); border-color: var(--te-border); font-weight: 600; }
+    .topic-nav-prog {
+      margin-left: auto; flex: 0 0 auto; font-family: var(--font-mono); font-size: .72rem;
+      color: var(--te-ink); padding: .26rem .65rem; border-radius: 999px;
+      background: var(--te-bg); border: 1px solid var(--te-border); white-space: nowrap;
+    }
+
+    /* Sections & Cards */
+    .te-sec { margin: 0 0 var(--sp-12); scroll-margin-top: 122px; }
+    .te-sec > .section-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 .35rem; border-left: 3px solid var(--te); padding-left: .8rem; }
+    .te-lead { color: var(--text-secondary); font-size: .93rem; line-height: 1.72; margin: 0 0 var(--sp-5) .9rem; max-width: 82ch; }
     .te-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
     @media (max-width: 900px) { .te-grid3 { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 680px) { .te-grid3 { grid-template-columns: 1fr; } }
-    .te-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-5); }
-    .te-card h3 { margin: 0 0 .45rem; font-size: 1rem; color: var(--text-primary); }
+    .te-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: var(--sp-4) var(--sp-5); position: relative;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .te-card:hover { transform: translateY(-2px); border-color: var(--te-border); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    [data-theme="dark"] .te-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.24); }
+    .te-card.te-accent-top { border-top: 3px solid var(--c, var(--te)); }
+    .te-card-icon { font-size: 1.25rem; line-height: 1; margin-bottom: .45rem; display: inline-block; }
+    .te-card h3 { margin: 0 0 .45rem; font-size: 1.02rem; color: var(--text-primary); }
     .te-card p, .te-card li { color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
     .te-card p { margin: 0 0 .5rem; } .te-card p:last-child { margin-bottom: 0; }
-    .te-card ul { list-style: disc; margin: .3rem 0 0; padding-left: 1.1rem; }
+    .te-card ul { list-style: disc; margin: .3rem 0 0; padding-left: 1.15rem; }
     .te-card .k { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--te-ink); display: block; margin-bottom: .3rem; }
-    .te-stats { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: var(--sp-4); }
-    .te-stats span { display: inline-flex; align-items: baseline; gap: .35rem; padding: .3rem .75rem; border-radius: 999px; border: 1px solid var(--border); background: color-mix(in srgb, var(--bg-card) 70%, transparent); font-size: .8rem; color: var(--text-secondary); }
-    .te-stats b { font-family: var(--font-mono); font-size: .95rem; color: var(--text-primary); }
-    .te-tag { display: inline-block; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: .1rem .45rem; border-radius: 5px; border: 1px solid currentColor; vertical-align: 1px; margin-right: .2rem; }
-    .te-tag.t { color: var(--te-t); } .te-tag.h { color: var(--te-h); } .te-tag.d { color: var(--te-d); }
 
-    .te-phases { display: flex; gap: 4px; margin: 0 0 var(--sp-4); }
-    .te-phases span { padding: .4rem .7rem; border-radius: 8px; font-size: .76rem; color: var(--text-primary); background: color-mix(in srgb, var(--c) 16%, transparent); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
-    @media (max-width: 680px) { .te-phases { flex-direction: column; } }
+    /* Weekly rhythm strip */
+    .te-rhythm {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem;
+      margin: var(--sp-5) 0 var(--sp-4);
+    }
+    @media (max-width: 780px) { .te-rhythm { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .te-rhythm { grid-template-columns: 1fr; } }
+    .te-rhythm-step {
+      background: color-mix(in srgb, var(--bg-card) 65%, var(--te-bg));
+      border: 1px solid var(--border); border-radius: var(--r);
+      padding: .75rem .9rem; position: relative;
+    }
+    .te-rhythm-num { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; color: var(--te-ink); text-transform: uppercase; letter-spacing: .06em; }
+    .te-rhythm-title { font-size: .88rem; font-weight: 700; color: var(--text-primary); margin: .2rem 0 .2rem; }
+    .te-rhythm-desc { font-size: .78rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+
+    .te-tag { display: inline-block; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: .12rem .48rem; border-radius: 5px; border: 1px solid currentColor; vertical-align: 1px; margin-right: .25rem; }
+    .te-tag.t { color: var(--te-t); background: color-mix(in srgb, var(--te-t) 8%, transparent); }
+    .te-tag.h { color: var(--te-h); background: color-mix(in srgb, var(--te-h) 8%, transparent); }
+    .te-tag.d { color: var(--te-d); background: color-mix(in srgb, var(--te-d) 8%, transparent); }
+
+    /* Progress & Course Toolbar */
+    .te-progress-bar-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: .85rem 1.05rem; margin: 0 0 var(--sp-4);
+      display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.1rem;
+    }
+    .te-prog-info { flex: 1 1 240px; min-width: 200px; }
+    .te-prog-head { display: flex; justify-content: space-between; align-items: baseline; font-size: .8rem; margin-bottom: .35rem; }
+    .te-prog-head strong { color: var(--text-primary); }
+    .te-prog-head span { font-family: var(--font-mono); font-size: .74rem; color: var(--te-ink); }
+    .te-prog-track { height: 7px; border-radius: 999px; background: var(--border); overflow: hidden; }
+    .te-prog-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--te-p1), var(--te-p2), var(--te-p3)); transition: width .25s ease; }
+    .te-prog-actions { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+
+    /* Interactive Phase Filters & Search */
+    .te-phases { display: flex; gap: 6px; margin: 0 0 .7rem; flex-wrap: wrap; }
+    .te-phase-btn {
+      font: inherit; text-align: left; cursor: pointer;
+      padding: .5rem .8rem; border-radius: 10px; font-size: .78rem; font-weight: 600;
+      color: var(--text-primary);
+      background: color-mix(in srgb, var(--c) 12%, var(--bg-card));
+      border: 1px solid color-mix(in srgb, var(--c) 38%, transparent);
+      transition: transform .15s, background .15s, border-color .15s, box-shadow .15s;
+      display: inline-flex; align-items: center; gap: .45rem;
+    }
+    .te-phase-btn:hover { transform: translateY(-1px); background: color-mix(in srgb, var(--c) 20%, var(--bg-card)); }
+    .te-phase-btn.active {
+      background: color-mix(in srgb, var(--c) 24%, var(--bg-card));
+      border-color: var(--c);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 22%, transparent);
+    }
+    .te-phase-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+    .te-filter-row { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; margin: 0 0 var(--sp-4); }
+    .te-search {
+      flex: 1 1 220px; max-width: 340px;
+      font: inherit; font-size: .84rem; padding: .42rem .85rem;
+      border-radius: 999px; border: 1px solid var(--border-med);
+      background: var(--bg-card); color: var(--text-primary);
+      outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    .te-search:focus { border-color: var(--te); box-shadow: 0 0 0 3px var(--te-bg); }
+    .te-search::placeholder { color: var(--text-muted); }
+    .te-match-count { font-family: var(--font-mono); font-size: .75rem; color: var(--text-muted); margin-left: auto; }
+
+    /* Week cards */
     .te-weeks { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
     @media (max-width: 820px) { .te-weeks { grid-template-columns: 1fr; } }
-    .te-week-card { background: var(--bg-card); border: 1px solid var(--border); border-top: 3px solid var(--c); border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-5); display: flex; flex-direction: column; scroll-margin-top: 90px; }
-    .te-wk-top { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
-    .te-wk-n { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--te-ink); }
+    .te-week-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-top: 3px solid var(--c); border-radius: var(--r-lg);
+      padding: var(--sp-4) var(--sp-5); display: flex; flex-direction: column;
+      scroll-margin-top: 122px; position: relative;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .te-week-card:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.07); border-color: color-mix(in srgb, var(--c) 50%, var(--border)); }
+    [data-theme="dark"] .te-week-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.28); }
+    .te-week-card.te-done { background: color-mix(in srgb, var(--c) 6%, var(--bg-card)); border-color: color-mix(in srgb, var(--c) 45%, var(--border)); }
+    .te-week-card.te-hidden { display: none; }
+    .te-wk-top { display: flex; justify-content: space-between; gap: .5rem; align-items: center; flex-wrap: wrap; }
+    .te-wk-left { display: inline-flex; align-items: center; gap: .45rem; }
+    .te-wk-n { font-family: var(--font-mono); font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--te-ink); }
+    .te-wk-badge {
+      font-family: var(--font-mono); font-size: .64rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+      padding: .1rem .45rem; border-radius: 999px;
+      background: color-mix(in srgb, var(--te-d) 14%, transparent); color: var(--te-d);
+      border: 1px solid color-mix(in srgb, var(--te-d) 40%, transparent);
+    }
+    .te-wk-right { display: inline-flex; align-items: center; gap: .5rem; margin-left: auto; }
     .te-wk-phase { font-size: .72rem; color: var(--text-muted); text-align: right; }
-    .te-week-card h3 { margin: .3rem 0 .5rem; font-size: 1.02rem; color: var(--text-primary); }
-    .te-lect { display: grid; grid-template-columns: max-content 1fr; gap: .3rem .7rem; margin: 0 0 .7rem; font-size: .84rem; line-height: 1.55; }
-    .te-lect dt { font-weight: 700; color: var(--text-primary); font-size: .76rem; padding-top: .1rem; }
+    .te-wk-check {
+      width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-med);
+      background: transparent; color: transparent; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; font-size: .72rem;
+      transition: background .15s, border-color .15s, color .15s, transform .15s; flex-shrink: 0;
+    }
+    .te-wk-check:hover { border-color: var(--c); transform: scale(1.08); }
+    .te-week-card.te-done .te-wk-check { background: var(--c); border-color: var(--c); color: #fff; }
+    .te-week-card h3 { margin: .45rem 0 .6rem; font-size: 1.05rem; color: var(--text-primary); line-height: 1.3; }
+    .te-lect { display: grid; grid-template-columns: max-content 1fr; gap: .38rem .75rem; margin: 0 0 .8rem; font-size: .84rem; line-height: 1.56; }
+    .te-lect dt { font-weight: 700; color: var(--text-primary); font-size: .75rem; padding-top: .12rem; white-space: nowrap; }
     .te-lect dd { margin: 0; color: var(--text-secondary); }
-    .te-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .7rem; }
-    .te-chip { font-size: .76rem; padding: .22rem .6rem; border-radius: 999px; border: 1px solid var(--te-border); background: var(--te-bg); color: var(--text-primary); text-decoration: none; }
-    .te-chip:hover { border-color: var(--te); }
-    .te-ps-link { margin-top: auto; font-size: .82rem; font-weight: 600; color: color-mix(in srgb, var(--te) 60%, var(--text-primary)); text-decoration: none; }
+    /* Highlight the 3rd dt/dd ("In class") as a distinct live-demo callout */
+    .te-lect dt:nth-of-type(3) {
+      color: var(--te-ink); background: var(--te-demo-bg);
+      padding: .35rem .55rem; border-radius: 7px 0 0 7px; border-left: 2px solid var(--c);
+      align-self: stretch; display: flex; align-items: flex-start;
+    }
+    .te-lect dd:nth-of-type(3) {
+      background: var(--te-demo-bg); color: var(--text-primary);
+      padding: .35rem .65rem .35rem .45rem; border-radius: 0 7px 7px 0;
+      margin-left: -.75rem; padding-left: .75rem;
+    }
+    .te-chips { display: flex; flex-wrap: wrap; gap: .38rem; margin-bottom: .75rem; }
+    .te-chip {
+      font-size: .76rem; padding: .26rem .65rem; border-radius: 999px;
+      border: 1px solid var(--te-border); background: var(--te-bg); color: var(--text-primary);
+      text-decoration: none; transition: transform .14s, border-color .14s, background .14s;
+    }
+    .te-chip:hover { border-color: var(--te); background: color-mix(in srgb, var(--te) 16%, transparent); transform: translateY(-1px); }
+    .te-ps-link {
+      margin-top: auto; padding-top: .55rem; border-top: 1px dashed var(--border);
+      font-size: .82rem; font-weight: 600; color: color-mix(in srgb, var(--te) 70%, var(--text-primary));
+      text-decoration: none; display: inline-flex; align-items: center; justify-content: space-between;
+    }
     .te-ps-link:hover { text-decoration: underline; }
 
-    .te-tools { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 var(--sp-4); align-items: center; }
-    .te-btn { font: inherit; font-size: .8rem; padding: .3rem .9rem; border-radius: 999px; border: 1px solid var(--te); background: var(--te-bg); color: var(--text-primary); cursor: pointer; text-decoration: none; display: inline-block; }
-    .te-btn:hover { background: color-mix(in srgb, var(--te) 18%, transparent); }
-    .te-key { font-size: .8rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: .35rem .8rem; }
-    .te-set { border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg-card); margin-bottom: .6rem; scroll-margin-top: 90px; }
-    .te-set > summary { cursor: pointer; padding: .8rem 1rem; font-weight: 700; color: var(--text-primary); font-size: .95rem; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .7rem; }
+    /* Problem sets workbench */
+    .te-tools { display: flex; flex-wrap: wrap; gap: .45rem; margin: 0 0 var(--sp-4); align-items: center; }
+    .te-btn {
+      font: inherit; font-size: .79rem; font-weight: 500; padding: .34rem .85rem;
+      border-radius: 999px; border: 1px solid var(--te-border); background: var(--te-bg);
+      color: var(--text-primary); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: .35rem;
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    .te-btn:hover { background: color-mix(in srgb, var(--te) 18%, transparent); border-color: var(--te); }
+    .te-btn.active { background: var(--te); color: #fff; border-color: var(--te); font-weight: 600; }
+    [data-theme="dark"] .te-btn.active { color: #0b1020; }
+    .te-type-filters { display: flex; flex-wrap: wrap; gap: .38rem; align-items: center; }
+    .te-set {
+      border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg-card);
+      margin-bottom: .65rem; scroll-margin-top: 122px; overflow: hidden;
+      transition: border-color .15s;
+    }
+    .te-set[open] { border-color: var(--te-border); }
+    .te-set.te-hidden { display: none; }
+    .te-set > summary {
+      cursor: pointer; padding: .85rem 1.05rem; font-weight: 700; color: var(--text-primary);
+      font-size: .95rem; list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .7rem;
+      transition: background .15s;
+    }
+    .te-set > summary:hover { background: var(--te-bg); }
     .te-set > summary::-webkit-details-marker { display: none; }
-    .te-set > summary::before { content: "▸"; color: var(--te); transition: transform .15s; display: inline-block; }
+    .te-set > summary::before { content: "▸"; color: var(--te); transition: transform .15s; display: inline-block; font-size: .9rem; }
     .te-set[open] > summary::before { transform: rotate(90deg); }
     .te-count { margin-left: auto; font-family: var(--font-mono); font-size: .72rem; font-weight: 500; color: var(--text-muted); }
-    .te-ps { padding: .2rem 1rem .8rem; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
+    .te-ps { padding: .25rem 1.1rem .9rem; border-top: 1px solid var(--border); scroll-margin-top: 122px; }
+    .te-ps.te-hidden { display: none; }
     .te-ps:target { background: var(--te-bg); }
-    .te-ps-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .3rem 1rem; margin: .7rem 0 .4rem; }
-    .te-ps-head h4 { margin: 0; font-size: .92rem; color: var(--text-primary); }
-    .te-ps-head a { font-size: .8rem; color: color-mix(in srgb, var(--te) 60%, var(--text-primary)); }
-    .te-probs { margin: 0; padding-left: 1.6rem; display: grid; gap: .5rem; list-style: decimal; }
+    .te-ps-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .3rem 1rem; margin: .75rem 0 .5rem; }
+    .te-ps-head h4 { margin: 0; font-size: .94rem; color: var(--text-primary); }
+    .te-ps-head a { font-size: .8rem; font-weight: 600; color: color-mix(in srgb, var(--te) 70%, var(--text-primary)); text-decoration: none; }
+    .te-ps-head a:hover { text-decoration: underline; }
+    .te-probs { margin: 0; padding-left: 1.65rem; display: grid; gap: .55rem; list-style: decimal; }
     .te-probs li::marker { color: var(--te-ink); font-family: var(--font-mono); font-size: .8rem; }
-    .te-probs li { color: var(--text-secondary); font-size: .88rem; line-height: 1.65; }
-    .te-note { border-left: 3px solid var(--te); background: var(--te-bg); border-radius: 0 var(--r) var(--r) 0; padding: .75rem 1rem; margin: var(--sp-4) 0; color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
+    .te-probs li { color: var(--text-secondary); font-size: .88rem; line-height: 1.66; padding: .25rem .4rem; border-radius: 6px; transition: background .15s, opacity .15s; }
+    .te-probs li.te-hidden { display: none; }
+    .te-probs li.te-prob-done { opacity: .62; }
+    .te-prob-chk {
+      float: right; margin: .1rem 0 .2rem .6rem;
+      width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--border-med);
+      background: transparent; color: transparent; cursor: pointer; font-size: .68rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .te-prob-chk:hover { border-color: var(--te); }
+    .te-probs li.te-prob-done .te-prob-chk { background: var(--te-h); border-color: var(--te-h); color: #fff; }
+
+    .te-note { border-left: 3px solid var(--te); background: var(--te-bg); border-radius: 0 var(--r) var(--r) 0; padding: .85rem 1.05rem; margin: var(--sp-4) 0; color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
     .te-note strong { color: var(--text-primary); }
-    .te-weights { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin: 0 0 var(--sp-4); }
-    @media (max-width: 680px) { .te-weights { grid-template-columns: 1fr 1fr; } }
-    .te-weights div { border: 1px solid var(--border); border-radius: var(--r); background: var(--bg-card); padding: .6rem .8rem; }
-    .te-weights b { display: block; font-family: var(--font-mono); font-size: 1.25rem; color: var(--text-primary); }
-    .te-weights span { font-size: .8rem; color: var(--text-secondary); }
-    .te-request { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--sp-5); align-items: start; }
-    @media (max-width: 760px) { .te-request { grid-template-columns: 1fr; } }
-    .te-nb-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); }
-    .te-nb { width: 100%; border-collapse: collapse; font-size: .85rem; min-width: 460px; }
-    .te-nb th { text-align: left; font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-card); padding: .55rem .8rem; border-bottom: 1px solid var(--border-med); }
-    .te-nb td { padding: .5rem .8rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+
+    /* Interactive Assessment Weight Builder */
+    .te-weight-presets { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin: 0 0 .7rem; }
+    .te-weight-total { margin-left: auto; font-family: var(--font-mono); font-size: .76rem; font-weight: 600; color: var(--te-h); }
+    .te-weight-total.warn { color: var(--te-d); }
+    .te-weight-bar {
+      display: flex; height: 12px; border-radius: 999px; overflow: hidden;
+      background: var(--border); margin: 0 0 .85rem; gap: 2px;
+    }
+    .te-weight-seg { height: 100%; transition: width .22s ease; }
+    .te-weights { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: 0 0 var(--sp-5); }
+    @media (max-width: 720px) { .te-weights { grid-template-columns: 1fr 1fr; } }
+    .te-weights > div {
+      border: 1px solid var(--border); border-top: 3px solid var(--wc, var(--te));
+      border-radius: var(--r); background: var(--bg-card); padding: .75rem .9rem;
+      display: flex; flex-direction: column; gap: .2rem;
+    }
+    .te-w-row { display: flex; align-items: center; justify-content: space-between; gap: .4rem; }
+    .te-weights b { display: block; font-family: var(--font-mono); font-size: 1.35rem; color: var(--text-primary); }
+    .te-weights span { font-size: .8rem; color: var(--text-secondary); line-height: 1.4; }
+    .te-w-step { display: inline-flex; gap: 3px; }
+    .te-w-step button {
+      width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--border-med);
+      background: var(--bg-base, transparent); color: var(--text-primary); cursor: pointer;
+      font-family: var(--font-mono); font-size: .8rem; line-height: 1; padding: 0;
+    }
+    .te-w-step button:hover { border-color: var(--te); background: var(--te-bg); }
+
+    /* Notebooks table */
+    .te-nb-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg-card); }
+    .te-nb { width: 100%; border-collapse: collapse; font-size: .86rem; min-width: 480px; }
+    .te-nb th { text-align: left; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); background: color-mix(in srgb, var(--te-bg) 55%, var(--bg-card)); padding: .65rem .9rem; border-bottom: 1px solid var(--border-med); }
+    .te-nb td { padding: .58rem .9rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: middle; }
+    .te-nb tbody tr { transition: background .12s; }
+    .te-nb tbody tr:hover { background: var(--te-bg); }
+    .te-nb tbody tr.te-hidden { display: none; }
     .te-nb tr:last-child td { border-bottom: 0; }
-    .te-nb td:first-child { font-family: var(--font-mono); color: var(--te-ink); width: 4rem; }
-    .te-nb a { color: color-mix(in srgb, var(--te) 60%, var(--text-primary)); }
+    .te-nb td:first-child { font-family: var(--font-mono); font-weight: 600; color: var(--te-ink); width: 4.5rem; }
+    .te-nb td:nth-child(2) a { color: var(--text-primary); font-weight: 500; text-decoration: none; }
+    .te-nb td:nth-child(2) a:hover { color: var(--te-ink); text-decoration: underline; }
+    .te-nb-actions { display: inline-flex; gap: .4rem; align-items: center; }
+    .te-nb-pill {
+      display: inline-flex; align-items: center; gap: .25rem;
+      font-family: var(--font-mono); font-size: .73rem; font-weight: 600;
+      padding: .2rem .58rem; border-radius: 999px; text-decoration: none;
+      border: 1px solid var(--border-med); color: var(--text-primary); background: transparent;
+      transition: transform .12s, background .12s, border-color .12s;
+    }
+    .te-nb-pill:hover { transform: translateY(-1px); border-color: var(--te); background: var(--te-bg); }
+    .te-nb-pill.colab { color: var(--te-colab); background: var(--te-colab-bg); border-color: var(--te-colab-bd); }
+    .te-nb-pill.colab:hover { filter: brightness(1.06); }
+
+    /* Solutions & Adaptations */
+    .te-request { display: grid; grid-template-columns: 1.25fr 1fr; gap: var(--sp-5); align-items: stretch; }
+    @media (max-width: 760px) { .te-request { grid-template-columns: 1fr; } }
+    .te-request-primary {
+      background: linear-gradient(155deg, color-mix(in srgb, var(--te) 10%, var(--bg-card)), var(--bg-card));
+      border: 1px solid var(--te-border);
+    }
+
+    /* Toast */
+    .te-toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 90;
+      background: var(--text-primary); color: var(--bg-base, #fff);
+      padding: .65rem 1.05rem; border-radius: 999px; font-size: .82rem; font-weight: 600;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+      opacity: 0; transform: translateY(10px); pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .te-toast.show { opacity: 1; transform: translateY(0); }
+
     [data-theme="dark"] .page-hero-eyebrow { color: #c7d2fe !important; }
     @media print {
-      .te-tools, .te-ps-link, .te-ps-head a, .te-request .te-btn { display: none !important; }
+      .topic-nav, .te-hero-actions, .te-progress-bar-card, .te-filter-row, .te-tools, .te-weight-presets, .te-w-step, .te-wk-check, .te-prob-chk, .te-ps-link, .te-ps-head a, .te-request .te-cta-primary, .te-toast { display: none !important; }
       .te-set { break-inside: auto; } .te-ps { break-inside: avoid; }
       .te-set > summary::before { display: none; }
+      .te-week-card, .te-set, .te-ps, .te-probs li, .te-nb tbody tr { display: block !important; }
+      .te-nb tbody tr { display: table-row !important; }
     }
   </style>
 </head>
@@ -134,10 +427,10 @@
 <main class="page-wrap" id="main-content">
 
   <!-- ══════════════════ HERO ══════════════════ -->
-  <div class="page-hero" style="--page-color:#3d3f8f;--page-bg:rgba(61,63,143,0.06);--page-border:rgba(61,63,143,0.2);">
+  <div class="page-hero te-hero" style="--page-color:#3d3f8f;--page-bg:rgba(61,63,143,0.06);--page-border:rgba(61,63,143,0.2);">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(61,63,143,0.08);border-color:rgba(61,63,143,0.24);color:#34367a;">🎓 For instructors · Teach with AMO Toolkit</div>
+        <div class="page-hero-eyebrow" style="background:rgba(61,63,143,0.08);border-color:rgba(61,63,143,0.24);color:#34367a;">🎓 For instructors &amp; self-learners · 14-week syllabus</div>
         <h1>Teach with <span class="grad-text" style="--ga:#a5b4fc;--gb:#f0abfc;">AMO Toolkit</span></h1>
         <p class="page-hero-desc">
           A one-semester course in experimental AMO physics and neutral-atom quantum computing, built on the pages of
@@ -148,12 +441,65 @@
         <div class="te-stats">
           <span><b>14</b> weeks</span><span><b>28</b> lectures</span><span><b>29</b> interactive pages</span><span><b>86</b> problems</span><span><b>6</b> final projects</span><span><b>19</b> Python notebooks</span>
         </div>
+        <div class="te-hero-actions">
+          <a class="te-cta-primary" href="#weeks">Explore 14-week plan ↓</a>
+          <a class="te-cta-ghost" href="#problems">Browse 86 problems</a>
+          <button type="button" class="te-cta-ghost" id="te-copy-hero">📋 Copy Markdown syllabus</button>
+          <a class="te-cta-ghost" href="../book/">📖 Companion textbook →</a>
+        </div>
       </div>
-      <div class="page-hero-anim" aria-hidden="true">
-        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="30" width="32" height="40" rx="6" fill="#a13c1c" opacity="0.35"/><text x="30" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">01</text><rect x="54" y="30" width="32" height="40" rx="6" fill="#a13c1c" opacity="0.39"/><text x="70" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">02</text><rect x="94" y="30" width="32" height="40" rx="6" fill="#a13c1c" opacity="0.44"/><text x="110" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">03</text><rect x="134" y="30" width="32" height="40" rx="6" fill="#a13c1c" opacity="0.48"/><text x="150" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">04</text><rect x="174" y="30" width="32" height="40" rx="6" fill="#2c4a63" opacity="0.53"/><text x="190" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">05</text><rect x="214" y="30" width="32" height="40" rx="6" fill="#2c4a63" opacity="0.57"/><text x="230" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">06</text><rect x="254" y="30" width="32" height="40" rx="6" fill="#2c4a63" opacity="0.62"/><text x="270" y="55" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">07</text><rect x="14" y="82" width="32" height="40" rx="6" fill="#2c4a63" opacity="0.67"/><text x="30" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">08</text><rect x="54" y="82" width="32" height="40" rx="6" fill="#2c4a63" opacity="0.71"/><text x="70" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">09</text><rect x="94" y="82" width="32" height="40" rx="6" fill="#2c4a63" opacity="0.75"/><text x="110" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">10</text><rect x="134" y="82" width="32" height="40" rx="6" fill="#3f5d3f" opacity="0.80"/><text x="150" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">11</text><rect x="174" y="82" width="32" height="40" rx="6" fill="#3f5d3f" opacity="0.84"/><text x="190" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">12</text><rect x="214" y="82" width="32" height="40" rx="6" fill="#3f5d3f" opacity="0.89"/><text x="230" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">13</text><rect x="254" y="82" width="32" height="40" rx="6" fill="#3f5d3f" opacity="0.93"/><text x="270" y="107" text-anchor="middle" font-family="monospace" font-size="11" fill="#fff">14</text><text x="150" y="156" text-anchor="middle" font-family="monospace" font-size="8" fill="#7a8aa3">14 weeks · 2 lectures each · problem set every week</text></svg>
+      <div class="page-hero-anim">
+        <div class="te-hero-svg-wrap">
+          <svg viewBox="0 0 320 185" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive 14-week course roadmap across three phases">
+            <defs>
+              <linearGradient id="teArc" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#e07a5f"/>
+                <stop offset="50%" stop-color="#60a5fa"/>
+                <stop offset="100%" stop-color="#4ade80"/>
+              </linearGradient>
+            </defs>
+            <!-- Phase labels -->
+            <text x="16" y="18" font-family="monospace" font-size="8.5" font-weight="700" fill="#e07a5f">PHASE 1 · BUILD (W1–4)</text>
+            <text x="182" y="18" font-family="monospace" font-size="8.5" font-weight="700" fill="#60a5fa">PHASE 2 · TRAP (W5–10)</text>
+            <text x="142" y="156" font-family="monospace" font-size="8.5" font-weight="700" fill="#4ade80">PHASE 3 · QUANTUM (W11–14)</text>
+            <!-- Animated connecting path -->
+            <path d="M 32 52 L 284 52 C 304 52, 304 108, 284 108 L 32 108" fill="none" stroke="url(#teArc)" stroke-width="2" opacity="0.32"/>
+            <path class="te-svg-pulse" d="M 32 52 L 284 52 C 304 52, 304 108, 284 108 L 32 108" fill="none" stroke="url(#teArc)" stroke-width="2" opacity="0.85"/>
+            <!-- Row 1: Weeks 01–07 -->
+            <g class="te-svg-node" data-jump="#week-01"><title>Week 01: Atoms, light &amp; two-level system</title><rect x="16" y="32" width="32" height="38" rx="7" fill="#b4431e" opacity="0.82"/><text x="32" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">01</text></g>
+            <g class="te-svg-node" data-jump="#week-02"><title>Week 02: Lasers &amp; polarisation</title><rect x="58" y="32" width="32" height="38" rx="7" fill="#b4431e" opacity="0.86"/><text x="74" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">02</text></g>
+            <g class="te-svg-node" data-jump="#week-03"><title>Week 03: Locking lasers</title><rect x="100" y="32" width="32" height="38" rx="7" fill="#b4431e" opacity="0.90"/><text x="116" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">03</text></g>
+            <g class="te-svg-node" data-jump="#week-04"><title>Week 04: Vacuum &amp; lab bench</title><rect x="142" y="32" width="32" height="38" rx="7" fill="#b4431e" opacity="0.95"/><text x="158" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">04</text></g>
+            <g class="te-svg-node" data-jump="#week-05"><title>Week 05: Laser cooling &amp; MOT</title><rect x="184" y="32" width="32" height="38" rx="7" fill="#2b5b84" opacity="0.84"/><text x="200" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">05</text></g>
+            <g class="te-svg-node" data-jump="#week-06"><title>Week 06: Imaging clouds &amp; temperature</title><rect x="226" y="32" width="32" height="38" rx="7" fill="#2b5b84" opacity="0.90"/><text x="242" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">06</text></g>
+            <g class="te-svg-node" data-jump="#week-07"><title>Week 07: Control systems · Midterm</title><rect x="268" y="32" width="32" height="38" rx="7" fill="#2b5b84" stroke="#fbbf24" stroke-width="1.8"/><text x="284" y="55" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">07</text><text x="284" y="81" text-anchor="middle" font-family="monospace" font-size="7" font-weight="700" fill="#fbbf24">MIDTERM</text></g>
+            <!-- Row 2: Weeks 08–14 -->
+            <g class="te-svg-node" data-jump="#week-08"><title>Week 08: Optical tweezers &amp; wavefronts</title><rect x="16" y="92" width="32" height="38" rx="7" fill="#2b5b84" opacity="0.88"/><text x="32" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">08</text></g>
+            <g class="te-svg-node" data-jump="#week-09"><title>Week 09: Seeing &amp; measuring single atoms</title><rect x="58" y="92" width="32" height="38" rx="7" fill="#2b5b84" opacity="0.92"/><text x="74" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">09</text></g>
+            <g class="te-svg-node" data-jump="#week-10"><title>Week 10: Ground-state cooling &amp; full cycle</title><rect x="100" y="92" width="32" height="38" rx="7" fill="#2b5b84" opacity="0.96"/><text x="116" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">10</text></g>
+            <g class="te-svg-node" data-jump="#week-11"><title>Week 11: Coherence &amp; dynamical decoupling</title><rect x="142" y="92" width="32" height="38" rx="7" fill="#2f6e49" opacity="0.85"/><text x="158" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">11</text></g>
+            <g class="te-svg-node" data-jump="#week-12"><title>Week 12: Rydberg atoms &amp; two-qubit gates</title><rect x="184" y="92" width="32" height="38" rx="7" fill="#2f6e49" opacity="0.90"/><text x="200" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">12</text></g>
+            <g class="te-svg-node" data-jump="#week-13"><title>Week 13: Benchmarking, processors &amp; automation</title><rect x="226" y="92" width="32" height="38" rx="7" fill="#2f6e49" opacity="0.95"/><text x="242" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">13</text></g>
+            <g class="te-svg-node" data-jump="#week-14"><title>Week 14: Cavity QED, networks &amp; final projects</title><rect x="268" y="92" width="32" height="38" rx="7" fill="#2f6e49" stroke="#a5b4fc" stroke-width="1.8"/><text x="284" y="115" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#fff">14</text><text x="284" y="142" text-anchor="middle" font-family="monospace" font-size="7" font-weight="700" fill="#a5b4fc">PROJECTS</text></g>
+            <text x="160" y="176" text-anchor="middle" font-family="monospace" font-size="8" fill="#7a8aa3">click any week to jump · 2 lectures + live demo + problem set</text>
+          </svg>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- ══════════════════ STICKY SECTION NAV ══════════════════ -->
+  <nav class="topic-nav" aria-label="Course sections">
+    <div class="container topic-nav-inner">
+      <a href="#how" class="active"><span class="tn-num">01</span>How it works</a>
+      <a href="#weeks"><span class="tn-num">02</span>14 Weeks</a>
+      <a href="#problems"><span class="tn-num">03</span>Problem sets</a>
+      <a href="#assessment"><span class="tn-num">04</span>Assessment</a>
+      <a href="#notebooks"><span class="tn-num">05</span>Notebooks</a>
+      <a href="#solutions"><span class="tn-num">06</span>Solutions</a>
+      <span class="topic-nav-prog" id="te-nav-prog" title="Saved locally in your browser">0/14 wks · 0/86 probs</span>
+    </div>
+  </nav>
 
   <div class="page-content">
     <div class="container">
@@ -163,9 +509,15 @@
         <h2 class="section-title" id="how-h"><span class="accent">01</span> How the course works</h2>
         <p class="te-lead">The course follows the site's three stories in order: build a lab, run a first experiment with single atoms, then turn the atoms into qubits and link them with light. Students meet each piece of physics first in a lecture and then in a page they can push on.</p>
         <div class="te-grid3">
-          <div class="te-card"><span class="k">Who it is for</span><h3>Senior undergraduates and new graduate students</h3><p>Prerequisites: undergraduate quantum mechanics and electromagnetism, and enough Python to read a short script. No lab experience is assumed. A first-year student joining an AMO group can also follow it alone, one week at a time.</p></div>
-          <div class="te-card"><span class="k">Each week</span><h3>Two lectures, the pages, one demonstration</h3><p>Lecture 1 sets up the physics; Lecture 2 turns it into the engineering decision a lab actually makes. The listed pages are the demonstrations and the homework. The "in class" line suggests a live demonstration that works on a projector in a few minutes.</p></div>
-          <div class="te-card"><span class="k">Each problem set</span><h3>Three kinds of problem</h3><p><span class="te-tag t">Use the tool</span> find a number or a behaviour with the page. <span class="te-tag h">By hand</span> derive or check it from a formula, so the tool is never a black box. <span class="te-tag d">Design</span> make a decision a lab would make and defend it.</p></div>
+          <div class="te-card te-accent-top" style="--c:var(--te-p1)"><span class="te-card-icon" aria-hidden="true">🎓</span><span class="k">Who it is for</span><h3>Senior undergraduates and new graduate students</h3><p>Prerequisites: undergraduate quantum mechanics and electromagnetism, and enough Python to read a short script. No lab experience is assumed. A first-year student joining an AMO group can also follow it alone, one week at a time.</p></div>
+          <div class="te-card te-accent-top" style="--c:var(--te-p2)"><span class="te-card-icon" aria-hidden="true">🧪</span><span class="k">Each week</span><h3>Two lectures, the pages, one demonstration</h3><p>Lecture 1 sets up the physics; Lecture 2 turns it into the engineering decision a lab actually makes. The listed pages are the demonstrations and the homework. The "in class" line suggests a live demonstration that works on a projector in a few minutes.</p></div>
+          <div class="te-card te-accent-top" style="--c:var(--te-p3)"><span class="te-card-icon" aria-hidden="true">🧭</span><span class="k">Each problem set</span><h3>Three kinds of problem</h3><p><span class="te-tag t">Use the tool</span> find a number or a behaviour with the page. <span class="te-tag h">By hand</span> derive or check it from a formula, so the tool is never a black box. <span class="te-tag d">Design</span> make a decision a lab would make and defend it.</p></div>
+        </div>
+        <div class="te-rhythm" aria-label="Typical weekly cadence">
+          <div class="te-rhythm-step"><div class="te-rhythm-num">Step 1 · Tue</div><div class="te-rhythm-title">Physics lecture</div><p class="te-rhythm-desc">Core equations, scales, and limiting regimes.</p></div>
+          <div class="te-rhythm-step"><div class="te-rhythm-num">Step 2 · Thu</div><div class="te-rhythm-title">Lab-decision lecture</div><p class="te-rhythm-desc">Hardware trade-offs, noise budgets, and species choices.</p></div>
+          <div class="te-rhythm-step"><div class="te-rhythm-num">Step 3 · 5 min</div><div class="te-rhythm-title">Live projector demo</div><p class="te-rhythm-desc">Push sliders live on the toolkit page in front of the class.</p></div>
+          <div class="te-rhythm-step"><div class="te-rhythm-num">Step 4 · HW</div><div class="te-rhythm-title">3-part problem set</div><p class="te-rhythm-desc">Tool exploration, analytical check, and lab design defense.</p></div>
         </div>
         <div class="te-note"><strong>Where to read more.</strong> Each week maps onto a stage of the <a href="paper-syllabus.html">paper roadmap</a>, and every page ends with its own references. Pair the course with a standard text (Foot's <em>Atomic Physics</em> or Metcalf &amp; van der Straten's <em>Laser Cooling and Trapping</em>) for the derivations the pages summarise. Every page, with these problems at the end of its chapter, is also collected in one downloadable book, <a href="../book/"><em>Building with Atoms</em></a>, which students can keep offline.</div>
       </section>
@@ -174,105 +526,124 @@
       <section class="te-sec" id="weeks" aria-labelledby="weeks-h">
         <h2 class="section-title" id="weeks-h"><span class="accent">02</span> The fourteen weeks</h2>
         <p class="te-lead">Weeks 1–4 build the apparatus, weeks 5–10 trap, image and cool single atoms, and weeks 11–14 turn them into qubits, gates and networks. Week 7 is a natural midterm; week 14 ends with project presentations.</p>
-<div class="te-phases" aria-hidden="true">
-<span style="--c:#a13c1c;flex:4">Weeks 1–4 · Atoms, light and the lab</span>
-<span style="--c:#2c4a63;flex:6">Weeks 5–10 · Trap, image and cool single atoms</span>
-<span style="--c:#3f5d3f;flex:4">Weeks 11–14 · From atoms to qubits, gates and networks</span>
-</div>
+
+        <div class="te-progress-bar-card">
+          <div class="te-prog-info">
+            <div class="te-prog-head"><strong>Semester tracker</strong><span id="te-prog-label">0 of 14 weeks · 0 of 86 problems</span></div>
+            <div class="te-prog-track"><div class="te-prog-fill" id="te-prog-fill"></div></div>
+          </div>
+          <div class="te-prog-actions">
+            <button type="button" class="te-btn" id="te-copy-md">📋 Copy syllabus (Markdown)</button>
+            <button type="button" class="te-btn" id="te-reset-prog" title="Clear local progress checkboxes">Reset tracker</button>
+          </div>
+        </div>
+
+        <div class="te-phases" role="group" aria-label="Filter weeks by course phase">
+          <button type="button" class="te-phase-btn active" data-phase="all" style="--c:var(--te);flex:1.2"><span class="te-phase-dot"></span>All 14 weeks</button>
+          <button type="button" class="te-phase-btn" data-phase="1" style="--c:#a13c1c;flex:3"><span class="te-phase-dot"></span>Weeks 1–4 · Atoms, light and the lab</button>
+          <button type="button" class="te-phase-btn" data-phase="2" style="--c:#2c4a63;flex:4"><span class="te-phase-dot"></span>Weeks 5–10 · Trap, image and cool single atoms</button>
+          <button type="button" class="te-phase-btn" data-phase="3" style="--c:#3f5d3f;flex:3"><span class="te-phase-dot"></span>Weeks 11–14 · Qubits, gates and networks</button>
+        </div>
+
+        <div class="te-filter-row">
+          <input type="search" class="te-search" id="te-week-search" placeholder="Filter weeks by topic, technique, or tool (e.g. MOT, PDH, Rydberg)…" aria-label="Filter weeks">
+          <span class="te-match-count" id="te-week-count">Showing 14 of 14 weeks</span>
+        </div>
+
 <div class="te-weeks">
-<article class="te-week-card" style="--c:#a13c1c" id="week-01">
-  <div class="te-wk-top"><span class="te-wk-n">Week 01</span><span class="te-wk-phase">Atoms, light and the lab</span></div>
+<article class="te-week-card" style="--c:#a13c1c" data-phase="1" id="week-01">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 01</span></span><span class="te-wk-right"><span class="te-wk-phase">Atoms, light and the lab</span><button type="button" class="te-wk-check" data-wk="01" aria-label="Mark Week 01 complete" title="Mark Week 01 complete">✓</button></span></div>
   <h3>Atoms, light and the two-level system</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Two-level atom, Rabi oscillations, the Bloch sphere, detuning and the generalised Rabi frequency.</dd><dt>Lecture 2</dt><dd>Choosing an atom: linewidths, recoil, hyperfine structure, bosons and fermions, what each species is good for.</dd><dt>In class</dt><dd>Drive Rabi oscillations live while changing the detuning; watch the Bloch vector tilt and the contrast drop.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="learn-quantum.html">🔵 Learn how qubits work</a><a class="te-chip" href="atom-library.html">⚛️ Select an atomic species</a></div>
   <a class="te-ps-link" href="#ps-week-01">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#a13c1c" id="week-02">
-  <div class="te-wk-top"><span class="te-wk-n">Week 02</span><span class="te-wk-phase">Atoms, light and the lab</span></div>
+<article class="te-week-card" style="--c:#a13c1c" data-phase="1" id="week-02">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 02</span></span><span class="te-wk-right"><span class="te-wk-phase">Atoms, light and the lab</span><button type="button" class="te-wk-check" data-wk="02" aria-label="Mark Week 02 complete" title="Mark Week 02 complete">✓</button></span></div>
   <h3>Lasers and polarisation</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Which lasers an experiment needs and why: cooling, repump, imaging, trap and Rydberg light; AOM and fibre schemes.</dd><dt>Lecture 2</dt><dd>Jones vectors, wave plates, Stokes parameters; circular light and the quantisation axis.</dd><dt>In class</dt><dd>Rotate a quarter-wave plate in the polarimetry simulator and follow the state round the Poincaré sphere.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="laser-planner.html">💡 Pick lasers for that atom</a><a class="te-chip" href="polarimetry.html">🔭 Analyze the polarization</a></div>
   <a class="te-ps-link" href="#ps-week-02">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#a13c1c" id="week-03">
-  <div class="te-wk-top"><span class="te-wk-n">Week 03</span><span class="te-wk-phase">Atoms, light and the lab</span></div>
+<article class="te-week-card" style="--c:#a13c1c" data-phase="1" id="week-03">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 03</span></span><span class="te-wk-right"><span class="te-wk-phase">Atoms, light and the lab</span><button type="button" class="te-wk-check" data-wk="03" aria-label="Mark Week 03 complete" title="Mark Week 03 complete">✓</button></span></div>
   <h3>Locking lasers to atoms and cavities</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Saturated absorption, error signals, PID servos and what limits them.</dd><dt>Lecture 2</dt><dd>Offset locks with beat notes, Pound–Drever–Hall locking to a cavity, ultrastable references.</dd><dt>In class</dt><dd>Perturb a free-running laser, then close each lock in turn and compare how it recovers.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="laser-locking.html">🔐 Lock the lasers to the atom</a></div>
   <a class="te-ps-link" href="#ps-week-03">Problem set: 3 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#a13c1c" id="week-04">
-  <div class="te-wk-top"><span class="te-wk-n">Week 04</span><span class="te-wk-phase">Atoms, light and the lab</span></div>
+<article class="te-week-card" style="--c:#a13c1c" data-phase="1" id="week-04">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 04</span></span><span class="te-wk-right"><span class="te-wk-phase">Atoms, light and the lab</span><button type="button" class="te-wk-check" data-wk="04" aria-label="Mark Week 04 complete" title="Mark Week 04 complete">✓</button></span></div>
   <h3>Vacuum and the lab bench</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Why ultra-high vacuum: background collisions, pumping chains, conductance, bake-out.</dd><dt>Lecture 2</dt><dd>Everyday optics and RF: fibre coupling, AOMs, dBm budgets, Zeeman shifts, Clebsch–Gordan coefficients.</dd><dt>In class</dt><dd>Work a real fibre-coupling and AOM double-pass layout with the calculators open on the projector.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="vacuum-systems.html">⚗️ Pump down to ultra-high vacuum</a><a class="te-chip" href="lab-techniques.html">🔬 Run the lab day to day</a><a class="te-chip" href="lab-calculators.html">🧮 Do the everyday lab math</a></div>
   <a class="te-ps-link" href="#ps-week-04">Problem set: 9 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#2c4a63" id="week-05">
-  <div class="te-wk-top"><span class="te-wk-n">Week 05</span><span class="te-wk-phase">Trap, image and cool single atoms</span></div>
+<article class="te-week-card" style="--c:#2c4a63" data-phase="2" id="week-05">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 05</span></span><span class="te-wk-right"><span class="te-wk-phase">Trap, image and cool single atoms</span><button type="button" class="te-wk-check" data-wk="05" aria-label="Mark Week 05 complete" title="Mark Week 05 complete">✓</button></span></div>
   <h3>Laser cooling and the MOT</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Radiation pressure, optical molasses, the Doppler limit; sub-Doppler and gray-molasses cooling.</dd><dt>Lecture 2</dt><dd>The magneto-optical trap: capture velocity, detuning and gradient trade-offs, species differences.</dd><dt>In class</dt><dd>Sweep the MOT detuning and show the capture velocity and temperature pulling in opposite directions.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="cooling-simulator.html">❄️ Cool atoms with laser light</a><a class="te-chip" href="mot-designer.html">🧲 Design a MOT</a></div>
   <a class="te-ps-link" href="#ps-week-05">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#2c4a63" id="week-06">
-  <div class="te-wk-top"><span class="te-wk-n">Week 06</span><span class="te-wk-phase">Trap, image and cool single atoms</span></div>
+<article class="te-week-card" style="--c:#2c4a63" data-phase="2" id="week-06">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 06</span></span><span class="te-wk-right"><span class="te-wk-phase">Trap, image and cool single atoms</span><button type="button" class="te-wk-check" data-wk="06" aria-label="Mark Week 06 complete" title="Mark Week 06 complete">✓</button></span></div>
   <h3>Imaging clouds and measuring temperature</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Absorption imaging: Beer–Lambert, optical depth, saturation and atom-number calibration.</dd><dt>Lecture 2</dt><dd>Time of flight: ballistic expansion, fitting a temperature, the recoil and Doppler scales.</dd><dt>In class</dt><dd>Fit a temperature from simulated time-of-flight points entered by the class.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="absorption-imaging.html">🌑 Image the atom cloud</a><a class="te-chip" href="tof-calculator.html">🌡️ Measure the cloud’s temperature</a></div>
   <a class="te-ps-link" href="#ps-week-06">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#2c4a63" id="week-07">
-  <div class="te-wk-top"><span class="te-wk-n">Week 07</span><span class="te-wk-phase">Trap, image and cool single atoms</span></div>
+<article class="te-week-card" style="--c:#2c4a63" data-phase="2" id="week-07">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 07</span><span class="te-wk-badge">Midterm</span></span><span class="te-wk-right"><span class="te-wk-phase">Trap, image and cool single atoms</span><button type="button" class="te-wk-check" data-wk="07" aria-label="Mark Week 07 complete" title="Mark Week 07 complete">✓</button></span></div>
   <h3>Controlling the experiment</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Hardware timing, TTL/DAC/ADC/DDS/AWG signals, real device delays, pulse shapes and their spectra.</dd><dt>Lecture 2</dt><dd>ARTIQ, labscript and NI systems; writing a shot in Python; git for a shared experiment. Midterm review.</dd><dt>In class</dt><dd>Toggle real versus compensated delays in the shot diagram; then compare square and Blackman pulse spectra.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="control-systems.html">🎛️ Control the experiment</a></div>
   <a class="te-ps-link" href="#ps-week-07">Problem set: 3 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#2c4a63" id="week-08">
-  <div class="te-wk-top"><span class="te-wk-n">Week 08</span><span class="te-wk-phase">Trap, image and cool single atoms</span></div>
+<article class="te-week-card" style="--c:#2c4a63" data-phase="2" id="week-08">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 08</span></span><span class="te-wk-right"><span class="te-wk-phase">Trap, image and cool single atoms</span><button type="button" class="te-wk-check" data-wk="08" aria-label="Mark Week 08 complete" title="Mark Week 08 complete">✓</button></span></div>
   <h3>Optical tweezers and wavefronts</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Dipole potentials, trap depth and frequencies, photon scattering from trap light, array geometry.</dd><dt>Lecture 2</dt><dd>Aberrations and Zernike modes, Strehl ratio, SLM holograms and the Gerchberg–Saxton algorithm.</dd><dt>In class</dt><dd>Change the objective NA and watch depth, trap frequencies and the Lamb–Dicke parameter move together.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="tweezer-designer.html">🔦 Assemble a tweezer array</a><a class="te-chip" href="zernike.html">🌊 Get rid of aberrations</a></div>
   <a class="te-ps-link" href="#ps-week-08">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#2c4a63" id="week-09">
-  <div class="te-wk-top"><span class="te-wk-n">Week 09</span><span class="te-wk-phase">Trap, image and cool single atoms</span></div>
+<article class="te-week-card" style="--c:#2c4a63" data-phase="2" id="week-09">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 09</span></span><span class="te-wk-right"><span class="te-wk-phase">Trap, image and cool single atoms</span><button type="button" class="te-wk-check" data-wk="09" aria-label="Mark Week 09 complete" title="Mark Week 09 complete">✓</button></span></div>
   <h3>Seeing and measuring single atoms</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Fluorescence imaging of one atom: scattering rate, collection efficiency, camera noise, detection fidelity.</dd><dt>Lecture 2</dt><dd>Release and recapture: measuring a single atom's temperature from a survival curve.</dd><dt>In class</dt><dd>Move the threshold across the bright and dark histograms and watch the two error rates trade.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="imaging-calculator.html">📷 See a single atom</a><a class="te-chip" href="release-recapture.html">🎯 Measure a single atom’s temperature</a></div>
   <a class="te-ps-link" href="#ps-week-09">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#2c4a63" id="week-10">
-  <div class="te-wk-top"><span class="te-wk-n">Week 10</span><span class="te-wk-phase">Trap, image and cool single atoms</span></div>
+<article class="te-week-card" style="--c:#2c4a63" data-phase="2" id="week-10">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 10</span></span><span class="te-wk-right"><span class="te-wk-phase">Trap, image and cool single atoms</span><button type="button" class="te-wk-check" data-wk="10" aria-label="Mark Week 10 complete" title="Mark Week 10 complete">✓</button></span></div>
   <h3>Ground-state cooling and the full cycle</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Lamb–Dicke regime, resolved and unresolved sideband cooling, Raman and gray-molasses schemes.</dd><dt>Lecture 2</dt><dd>A whole experimental cycle: loading, imaging, rearrangement and the exponential wall of large arrays.</dd><dt>In class</dt><dd>Run 1,000 virtual shots and sweep the target array size to show the success probability collapse.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="laser-cooling.html">🧊 Cool a single atom to its ground state</a><a class="te-chip" href="virtual-lab.html">🧩 Run a full experimental cycle</a></div>
   <a class="te-ps-link" href="#ps-week-10">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#3f5d3f" id="week-11">
-  <div class="te-wk-top"><span class="te-wk-n">Week 11</span><span class="te-wk-phase">From atoms to qubits, gates and networks</span></div>
+<article class="te-week-card" style="--c:#3f5d3f" data-phase="3" id="week-11">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 11</span></span><span class="te-wk-right"><span class="te-wk-phase">From atoms to qubits, gates and networks</span><button type="button" class="te-wk-check" data-wk="11" aria-label="Mark Week 11 complete" title="Mark Week 11 complete">✓</button></span></div>
   <h3>Coherence and dynamical decoupling</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>T₁, T₂* and T₂; dephasing versus dissipation; how each is measured.</dd><dt>Lecture 2</dt><dd>Spin echo, CPMG and XY sequences; filter functions and noise spectroscopy.</dd><dt>In class</dt><dd>Compare a Ramsey decay and an echo decay for the same noise, then add CPMG pulses.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="decoherence-lab.html">🌀 Watch a qubit lose coherence</a><a class="te-chip" href="dd-playground.html">🛡️ Protect qubits with decoupling pulses</a></div>
   <a class="te-ps-link" href="#ps-week-11">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#3f5d3f" id="week-12">
-  <div class="te-wk-top"><span class="te-wk-n">Week 12</span><span class="te-wk-phase">From atoms to qubits, gates and networks</span></div>
+<article class="te-week-card" style="--c:#3f5d3f" data-phase="3" id="week-12">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 12</span></span><span class="te-wk-right"><span class="te-wk-phase">From atoms to qubits, gates and networks</span><button type="button" class="te-wk-check" data-wk="12" aria-label="Mark Week 12 complete" title="Mark Week 12 complete">✓</button></span></div>
   <h3>Rydberg atoms and two-qubit gates</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Rydberg scaling laws, van der Waals interactions, the blockade radius and array geometry.</dd><dt>Lecture 2</dt><dd>CZ gates and their error budget: decay, Doppler dephasing, laser noise, blockade leakage, SPAM.</dd><dt>In class</dt><dd>Raise n and the Rabi frequency in turn and watch which line of the error budget dominates.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="rydberg-calculator.html">🔮 Entangle atoms with Rydberg blockade</a><a class="te-chip" href="fidelity-budget.html">📊 Budget the gate errors</a></div>
   <a class="te-ps-link" href="#ps-week-12">Problem set: 6 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#3f5d3f" id="week-13">
-  <div class="te-wk-top"><span class="te-wk-n">Week 13</span><span class="te-wk-phase">From atoms to qubits, gates and networks</span></div>
+<article class="te-week-card" style="--c:#3f5d3f" data-phase="3" id="week-13">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 13</span></span><span class="te-wk-right"><span class="te-wk-phase">From atoms to qubits, gates and networks</span><button type="button" class="te-wk-check" data-wk="13" aria-label="Mark Week 13 complete" title="Mark Week 13 complete">✓</button></span></div>
   <h3>Benchmarking, processors and automation</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Randomized and interleaved benchmarking; zoned architectures and atom transport.</dd><dt>Lecture 2</dt><dd>Running a lab as a system: feedback and feedforward, calibration loops, optimisers, machine learning and AI agents.</dd><dt>In class</dt><dd>Push the power-servo bandwidth until the loop oscillates, then add feedforward.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="rb-explorer.html">📈 Benchmark the gates</a><a class="te-chip" href="atom-processor.html">🎛️ Run a circuit on moving atoms</a><a class="te-chip" href="automation.html">🤖 Automate the experiment</a></div>
   <a class="te-ps-link" href="#ps-week-13">Problem set: 9 problems →</a>
 </article>
-<article class="te-week-card" style="--c:#3f5d3f" id="week-14">
-  <div class="te-wk-top"><span class="te-wk-n">Week 14</span><span class="te-wk-phase">From atoms to qubits, gates and networks</span></div>
+<article class="te-week-card" style="--c:#3f5d3f" data-phase="3" id="week-14">
+  <div class="te-wk-top"><span class="te-wk-left"><span class="te-wk-n">Week 14</span><span class="te-wk-badge">Projects</span></span><span class="te-wk-right"><span class="te-wk-phase">From atoms to qubits, gates and networks</span><button type="button" class="te-wk-check" data-wk="14" aria-label="Mark Week 14 complete" title="Mark Week 14 complete">✓</button></span></div>
   <h3>Light–matter interfaces, networks and the field</h3>
   <dl class="te-lect"><dt>Lecture 1</dt><dd>Cavity QED: coupling rates, cooperativity, Purcell enhancement; atom–photon entanglement and remote links.</dd><dt>Lecture 2</dt><dd>Where the field is going: reading the literature, platforms and companies. Final project presentations.</dd><dt>In class</dt><dd>Fire 2,000 photons in the cavity-QED race in each coupling regime and compare the escape fractions.</dd></dl>
   <div class="te-chips"><a class="te-chip" href="cavity-qed.html">💎 Couple atoms to a cavity</a><a class="te-chip" href="remote-entanglement.html">🔗 Link processors with photons</a><a class="te-chip" href="paper-syllabus.html">📚 Read the papers that built the field</a></div>
@@ -284,12 +655,19 @@
       <!-- ══ 03 ══ -->
       <section class="te-sec" id="problems" aria-labelledby="problems-h">
         <h2 class="section-title" id="problems-h"><span class="accent">03</span> Problem sets</h2>
-        <p class="te-lead">One set per week, with problems for every page that week uses. Most take 20–40 minutes each. Open a week, or expand them all to print a full set.</p>
+        <p class="te-lead">One set per week, with problems for every page that week uses. Most take 20–40 minutes each. Filter by problem style, search by keyword, check off problems as you solve them, or expand all to print a full packet.</p>
         <div class="te-tools">
+          <div class="te-type-filters" role="group" aria-label="Filter problems by type">
+            <button type="button" class="te-btn active" data-ptype="all" id="te-ft-all">All (86)</button>
+            <button type="button" class="te-btn" data-ptype="t" id="te-ft-t">Use the tool</button>
+            <button type="button" class="te-btn" data-ptype="h" id="te-ft-h">By hand</button>
+            <button type="button" class="te-btn" data-ptype="d" id="te-ft-d">Design</button>
+          </div>
+          <input type="search" class="te-search" id="te-prob-search" placeholder="Search 86 problems (e.g. finesse, Strehl, CZ)…" aria-label="Search problems">
           <button type="button" class="te-btn" id="te-open">Expand all</button>
           <button type="button" class="te-btn" id="te-close">Collapse all</button>
-          <button type="button" class="te-btn" id="te-print">Print the problem sets</button>
-          <span class="te-key"><span><span class="te-tag t">Use the tool</span></span><span><span class="te-tag h">By hand</span></span><span><span class="te-tag d">Design</span></span></span>
+          <button type="button" class="te-btn" id="te-print">🖨️ Print</button>
+          <span class="te-match-count" id="te-prob-count">86 problems</span>
         </div>
 <details class="te-set" id="ps-week-01">
 <summary><span class="te-wk-n">Week 01</span> Atoms, light and the two-level system <span class="te-count">6 problems</span></summary>
@@ -483,20 +861,37 @@
       <!-- ══ 04 ══ -->
       <section class="te-sec" id="assessment" aria-labelledby="assessment-h">
         <h2 class="section-title" id="assessment-h"><span class="accent">04</span> Assessment and final projects</h2>
-        <p class="te-lead">A suggested weighting, which works well when the problem sets are short and the project carries the real design work.</p>
-        <div class="te-weights">
-          <div><b>40%</b><span>Weekly problem sets</span></div>
-          <div><b>20%</b><span>Midterm (weeks 1–7)</span></div>
-          <div><b>30%</b><span>Final project</span></div>
-          <div><b>10%</b><span>Paper summaries and participation</span></div>
+        <p class="te-lead">A suggested weighting, which works well when the problem sets are short and the project carries the real design work. Pick a preset or tune the weights to match your syllabus — the Markdown syllabus export reflects your weights automatically.</p>
+
+        <div class="te-weight-presets" role="group" aria-label="Grading weight presets">
+          <button type="button" class="te-btn active" data-preset="40,20,30,10">Standard (40/20/30/10)</button>
+          <button type="button" class="te-btn" data-preset="25,15,50,10">Project-heavy (25/15/50/10)</button>
+          <button type="button" class="te-btn" data-preset="50,10,30,10">Lab-first (50/10/30/10)</button>
+          <button type="button" class="te-btn" data-preset="60,0,40,0">Self-study (60/0/40/0)</button>
+          <span class="te-weight-total" id="te-weight-total">Total: 100%</span>
         </div>
+
+        <div class="te-weight-bar" aria-hidden="true">
+          <div class="te-weight-seg" id="te-ws-0" style="width:40%;background:var(--te-p1)"></div>
+          <div class="te-weight-seg" id="te-ws-1" style="width:20%;background:var(--te-p2)"></div>
+          <div class="te-weight-seg" id="te-ws-2" style="width:30%;background:var(--te-p3)"></div>
+          <div class="te-weight-seg" id="te-ws-3" style="width:10%;background:var(--te)"></div>
+        </div>
+
+        <div class="te-weights">
+          <div style="--wc:var(--te-p1)"><div class="te-w-row"><b id="te-wv-0">40%</b><span class="te-w-step"><button type="button" data-wi="0" data-wd="-5" aria-label="Decrease problem sets weight">−</button><button type="button" data-wi="0" data-wd="5" aria-label="Increase problem sets weight">+</button></span></div><span>Weekly problem sets</span></div>
+          <div style="--wc:var(--te-p2)"><div class="te-w-row"><b id="te-wv-1">20%</b><span class="te-w-step"><button type="button" data-wi="1" data-wd="-5" aria-label="Decrease midterm weight">−</button><button type="button" data-wi="1" data-wd="5" aria-label="Increase midterm weight">+</button></span></div><span>Midterm (weeks 1–7)</span></div>
+          <div style="--wc:var(--te-p3)"><div class="te-w-row"><b id="te-wv-2">30%</b><span class="te-w-step"><button type="button" data-wi="2" data-wd="-5" aria-label="Decrease final project weight">−</button><button type="button" data-wi="2" data-wd="5" aria-label="Increase final project weight">+</button></span></div><span>Final project</span></div>
+          <div style="--wc:var(--te)"><div class="te-w-row"><b id="te-wv-3">10%</b><span class="te-w-step"><button type="button" data-wi="3" data-wd="-5" aria-label="Decrease participation weight">−</button><button type="button" data-wi="3" data-wd="5" aria-label="Increase participation weight">+</button></span></div><span>Paper summaries and participation</span></div>
+        </div>
+
         <div class="te-grid3">
-<div class="te-card"><h3>Design a lab</h3><p>Choose an atom and an application. Use the Build pages in order to produce a design document: lasers, vacuum, MOT, control system, tweezer array and an error budget, with every number traced to a page or a source.</p></div>
-<div class="te-card"><h3>Reproduce a figure</h3><p>Pick a figure from a paper in the roadmap and reproduce it, first with the matching page and then in your own Python code. Explain every place where the two disagree.</p></div>
-<div class="te-card"><h3>Build a calculator</h3><p>Write a short, tested Python module that reproduces one calculator on this site, with a notebook that checks it against two published numbers.</p></div>
-<div class="te-card"><h3>Error budget for a real result</h3><p>Take a published two-qubit gate fidelity and rebuild its error budget with the fidelity-budget page. Which terms do the authors' numbers imply, and what is left unexplained?</p></div>
-<div class="te-card"><h3>Optimise a virtual stage</h3><p>Use the virtual lab or the automation page's simulators as a stand-in experiment. Run a full optimisation workflow, with noise estimates, reference points and a validated result.</p></div>
-<div class="te-card"><h3>Teach a topic</h3><p>Prepare a 15-minute lecture on one week's topic using the pages as live demonstrations, with three problems of your own and their solutions.</p></div>
+<div class="te-card te-accent-top" style="--c:var(--te-p1)"><span class="te-card-icon" aria-hidden="true">🏗️</span><span class="k">Project 1 · Capstone design</span><h3>Design a lab</h3><p>Choose an atom and an application. Use the Build pages in order to produce a design document: lasers, vacuum, MOT, control system, tweezer array and an error budget, with every number traced to a page or a source.</p></div>
+<div class="te-card te-accent-top" style="--c:var(--te-p2)"><span class="te-card-icon" aria-hidden="true">📄</span><span class="k">Project 2 · Replication</span><h3>Reproduce a figure</h3><p>Pick a figure from a paper in the roadmap and reproduce it, first with the matching page and then in your own Python code. Explain every place where the two disagree.</p></div>
+<div class="te-card te-accent-top" style="--c:var(--te-p2)"><span class="te-card-icon" aria-hidden="true">🐍</span><span class="k">Project 3 · Software</span><h3>Build a calculator</h3><p>Write a short, tested Python module that reproduces one calculator on this site, with a notebook that checks it against two published numbers.</p></div>
+<div class="te-card te-accent-top" style="--c:var(--te-p3)"><span class="te-card-icon" aria-hidden="true">📊</span><span class="k">Project 4 · Error analysis</span><h3>Error budget for a real result</h3><p>Take a published two-qubit gate fidelity and rebuild its error budget with the fidelity-budget page. Which terms do the authors' numbers imply, and what is left unexplained?</p></div>
+<div class="te-card te-accent-top" style="--c:var(--te-p3)"><span class="te-card-icon" aria-hidden="true">🤖</span><span class="k">Project 5 · Automation</span><h3>Optimise a virtual stage</h3><p>Use the virtual lab or the automation page's simulators as a stand-in experiment. Run a full optimisation workflow, with noise estimates, reference points and a validated result.</p></div>
+<div class="te-card te-accent-top" style="--c:var(--te)"><span class="te-card-icon" aria-hidden="true">🎤</span><span class="k">Project 6 · Pedagogy</span><h3>Teach a topic</h3><p>Prepare a 15-minute lecture on one week's topic using the pages as live demonstrations, with three problems of your own and their solutions.</p></div>
         </div>
       </section>
 
@@ -504,29 +899,41 @@
       <section class="te-sec" id="notebooks" aria-labelledby="notebooks-h">
         <h2 class="section-title" id="notebooks-h"><span class="accent">05</span> Python notebooks</h2>
         <p class="te-lead">19 Jupyter notebooks reproduce the site's calculators in Python with the same constants and formulas, add a scan or a plot the page does not show, and end by checking their numbers against the live page. They suit the "By hand" problems, the "Build a calculator" project, and students who would rather work in code. Each needs only numpy, scipy and matplotlib.</p>
+
+        <div class="te-filter-row">
+          <div class="te-type-filters" role="group" aria-label="Filter notebooks by phase">
+            <button type="button" class="te-btn active" data-nbphase="all">All (19)</button>
+            <button type="button" class="te-btn" data-nbphase="1">Build (W3–4)</button>
+            <button type="button" class="te-btn" data-nbphase="2">Trap &amp; Cool (W5–10)</button>
+            <button type="button" class="te-btn" data-nbphase="3">Quantum (W11–14)</button>
+          </div>
+          <input type="search" class="te-search" id="te-nb-search" placeholder="Filter notebooks…" aria-label="Filter notebooks">
+          <span class="te-match-count" id="te-nb-count">19 notebooks</span>
+        </div>
+
         <div class="te-nb-wrap">
           <table class="te-nb">
             <thead><tr><th>Week</th><th>Page</th><th>Notebook</th></tr></thead>
             <tbody>
-            <tr><td>03</td><td><a href="laser-locking.html">🔐 Laser Locking Guide</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/laser-locking.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/laser-locking.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>04</td><td><a href="lab-calculators.html">🧮 Quick Lab Console</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/lab-calculators.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/lab-calculators.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>04</td><td><a href="vacuum-systems.html">⚗️ Vacuum Systems Guide</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/vacuum-systems.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/vacuum-systems.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>05</td><td><a href="cooling-simulator.html">❄️ Laser Cooling Simulator</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/cooling-simulator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/cooling-simulator.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>05</td><td><a href="mot-designer.html">🧲 MOT Designer</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/mot-designer.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/mot-designer.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>06</td><td><a href="absorption-imaging.html">🌑 Absorption Imaging Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/absorption-imaging.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/absorption-imaging.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>06</td><td><a href="tof-calculator.html">🌡️ MOT Temperature</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/tof-calculator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/tof-calculator.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>07</td><td><a href="control-systems.html">🎛️ Experiment Control Systems</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/control-systems.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/control-systems.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>08</td><td><a href="tweezer-designer.html">🔦 Tweezer Array Design Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/tweezer-designer.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/tweezer-designer.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>09</td><td><a href="imaging-calculator.html">📷 Single-atom Imaging</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/imaging-calculator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/imaging-calculator.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>09</td><td><a href="release-recapture.html">🎯 Single-atom Temperature</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/release-recapture.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/release-recapture.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>10</td><td><a href="laser-cooling.html">🧊 Single-atom Cooling</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/laser-cooling.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/laser-cooling.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>11</td><td><a href="dd-playground.html">🛡️ Dynamical Decoupling</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/dd-playground.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/dd-playground.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>12</td><td><a href="fidelity-budget.html">📊 Rydberg Gate Error Budget</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/fidelity-budget.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/fidelity-budget.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>12</td><td><a href="rydberg-calculator.html">🔮 Rydberg Blockade Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/rydberg-calculator.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/rydberg-calculator.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>13</td><td><a href="automation.html">🤖 Automating the Experiment</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/automation.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/automation.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>13</td><td><a href="rb-explorer.html">📈 Randomized Benchmarking</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/rb-explorer.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/rb-explorer.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>14</td><td><a href="cavity-qed.html">💎 Cavity QED Coupling Lab</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/cavity-qed.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/cavity-qed.ipynb" download>.ipynb</a></td></tr>
-            <tr><td>14</td><td><a href="remote-entanglement.html">🔗 Remote Entanglement</a></td><td><a href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/remote-entanglement.ipynb" target="_blank" rel="noopener">Colab</a> · <a href="../notebooks/remote-entanglement.ipynb" download>.ipynb</a></td></tr>
+            <tr data-nbphase="1"><td>03</td><td><a href="laser-locking.html">🔐 Laser Locking Guide</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/laser-locking.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/laser-locking.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="1"><td>04</td><td><a href="lab-calculators.html">🧮 Quick Lab Console</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/lab-calculators.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/lab-calculators.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="1"><td>04</td><td><a href="vacuum-systems.html">⚗️ Vacuum Systems Guide</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/vacuum-systems.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/vacuum-systems.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>05</td><td><a href="cooling-simulator.html">❄️ Laser Cooling Simulator</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/cooling-simulator.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/cooling-simulator.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>05</td><td><a href="mot-designer.html">🧲 MOT Designer</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/mot-designer.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/mot-designer.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>06</td><td><a href="absorption-imaging.html">🌑 Absorption Imaging Lab</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/absorption-imaging.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/absorption-imaging.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>06</td><td><a href="tof-calculator.html">🌡️ MOT Temperature</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/tof-calculator.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/tof-calculator.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>07</td><td><a href="control-systems.html">🎛️ Experiment Control Systems</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/control-systems.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/control-systems.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>08</td><td><a href="tweezer-designer.html">🔦 Tweezer Array Design Lab</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/tweezer-designer.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/tweezer-designer.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>09</td><td><a href="imaging-calculator.html">📷 Single-atom Imaging</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/imaging-calculator.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/imaging-calculator.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>09</td><td><a href="release-recapture.html">🎯 Single-atom Temperature</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/release-recapture.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/release-recapture.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="2"><td>10</td><td><a href="laser-cooling.html">🧊 Single-atom Cooling</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/laser-cooling.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/laser-cooling.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>11</td><td><a href="dd-playground.html">🛡️ Dynamical Decoupling</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/dd-playground.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/dd-playground.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>12</td><td><a href="fidelity-budget.html">📊 Rydberg Gate Error Budget</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/fidelity-budget.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/fidelity-budget.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>12</td><td><a href="rydberg-calculator.html">🔮 Rydberg Blockade Lab</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/rydberg-calculator.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/rydberg-calculator.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>13</td><td><a href="automation.html">🤖 Automating the Experiment</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/automation.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/automation.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>13</td><td><a href="rb-explorer.html">📈 Randomized Benchmarking</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/rb-explorer.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/rb-explorer.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>14</td><td><a href="cavity-qed.html">💎 Cavity QED Coupling Lab</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/cavity-qed.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/cavity-qed.ipynb" download>.ipynb ↓</a></span></td></tr>
+            <tr data-nbphase="3"><td>14</td><td><a href="remote-entanglement.html">🔗 Remote Entanglement</a></td><td><span class="te-nb-actions"><a class="te-nb-pill colab" href="https://colab.research.google.com/github/saumitraphatak/amo-career/blob/main/notebooks/remote-entanglement.ipynb" target="_blank" rel="noopener">Colab ↗</a><a class="te-nb-pill" href="../notebooks/remote-entanglement.ipynb" download>.ipynb ↓</a></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -537,8 +944,8 @@
       <section class="te-sec" id="solutions" aria-labelledby="solutions-h">
         <h2 class="section-title" id="solutions-h"><span class="accent">06</span> Solutions, adaptations and feedback</h2>
         <div class="te-request">
-          <div class="te-card"><span class="k">For instructors</span><h3>Solutions are available on request</h3><p>Worked solutions are not posted, so the problems stay usable as homework. If you teach a course, write with your name, institution, course and the weeks you need, and the solutions will be sent to you.</p><p><a class="te-btn" href="mailto:saumitraphatak@gmail.com?subject=AMO%20Toolkit%20course%3A%20solutions%20request&amp;body=Name%3A%0AInstitution%20and%20department%3A%0ACourse%20and%20term%3A%0AWeeks%20or%20problem%20sets%20needed%3A%0AA%20link%20to%20your%20faculty%20or%20course%20page%3A%0A">Request solutions by email</a></p></div>
-          <div class="te-card"><span class="k">Using and adapting</span><ul>
+          <div class="te-card te-request-primary"><span class="te-card-icon" aria-hidden="true">🔑</span><span class="k">For instructors</span><h3>Solutions are available on request</h3><p>Worked solutions are not posted, so the problems stay usable as homework. If you teach a course, write with your name, institution, course and the weeks you need, and the solutions will be sent to you.</p><p style="margin-top:.85rem"><a class="te-cta-primary" href="mailto:saumitraphatak@gmail.com?subject=AMO%20Toolkit%20course%3A%20solutions%20request&amp;body=Name%3A%0AInstitution%20and%20department%3A%0ACourse%20and%20term%3A%0AWeeks%20or%20problem%20sets%20needed%3A%0AA%20link%20to%20your%20faculty%20or%20course%20page%3A%0A">✉ Request solutions by email</a></p></div>
+          <div class="te-card"><span class="te-card-icon" aria-hidden="true">🛠️</span><span class="k">Using and adapting</span><ul>
             <li>Use any week, problem or project in your own course; please credit AMO Toolkit and link to this page.</li>
             <li>Found an error, or have a problem that worked well in your class? Use the "Found a problem?" panel at the foot of any page.</li>
             <li>Students working alone: check your answers against the "By hand" problems, which are built to agree with the tools.</li>
@@ -549,6 +956,8 @@
     </div><!-- /.container -->
   </div><!-- /.page-content -->
 </main><!-- /.page-wrap -->
+
+<div class="te-toast" id="te-toast" role="status" aria-live="polite"></div>
 
 <section class="see-also">
   <div class="container">
@@ -586,14 +995,217 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=57"></script>
+<script src="../js/main.js?v=56"></script>
 <script>
   renderNav({ active: 'teach', root: '../' });
 </script>
 <div id="amo-nav-ready" hidden></div>
 <script>
 (function () {
+  var STORAGE_KEY = 'amo_teach_progress_v1';
+  var state = { weeks: {}, probs: {}, weights: [40, 20, 30, 10] };
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (saved && typeof saved === 'object') {
+      if (saved.weeks) state.weeks = saved.weeks;
+      if (saved.probs) state.probs = saved.probs;
+      if (Array.isArray(saved.weights) && saved.weights.length === 4) state.weights = saved.weights;
+    }
+  } catch (e) {}
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  var toastEl = document.getElementById('te-toast');
+  var toastTimer = null;
+  function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2400);
+  }
+
+  // ── Hero SVG clickable week nodes ──
+  document.querySelectorAll('.te-svg-node[data-jump]').forEach(function (node) {
+    node.addEventListener('click', function () {
+      var target = document.querySelector(node.getAttribute('data-jump'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ── Sticky section nav active highlighting ──
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.topic-nav a[href^="#"]'));
+  var sections = navLinks.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if ('IntersectionObserver' in window && sections.length) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = '#' + entry.target.id;
+          navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+
+  // ── Weeks: phase filter + keyword search + completion toggles ──
+  var weekCards = Array.prototype.slice.call(document.querySelectorAll('.te-week-card'));
+  var phaseBtns = Array.prototype.slice.call(document.querySelectorAll('.te-phase-btn'));
+  var weekSearch = document.getElementById('te-week-search');
+  var weekCountEl = document.getElementById('te-week-count');
+  var activePhase = 'all';
+
+  function filterWeeks() {
+    var q = (weekSearch ? weekSearch.value : '').trim().toLowerCase();
+    var shown = 0;
+    weekCards.forEach(function (card) {
+      var pMatch = activePhase === 'all' || card.getAttribute('data-phase') === activePhase;
+      var qMatch = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+      var vis = pMatch && qMatch;
+      card.classList.toggle('te-hidden', !vis);
+      if (vis) shown++;
+    });
+    if (weekCountEl) weekCountEl.textContent = 'Showing ' + shown + ' of ' + weekCards.length + ' weeks';
+  }
+  phaseBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activePhase = btn.getAttribute('data-phase');
+      phaseBtns.forEach(function (b) { b.classList.toggle('active', b === btn); });
+      filterWeeks();
+    });
+  });
+  if (weekSearch) weekSearch.addEventListener('input', filterWeeks);
+
+  // ── Problem sets: expand/collapse/hash/print + filter + search + checkboxes ──
   var sets = Array.prototype.slice.call(document.querySelectorAll('.te-set'));
+  var allProbItems = [];
+  var typeCounts = { t: 0, h: 0, d: 0 };
+
+  sets.forEach(function (setEl) {
+    var psBlocks = Array.prototype.slice.call(setEl.querySelectorAll('.te-ps'));
+    psBlocks.forEach(function (psEl) {
+      var psId = psEl.id;
+      var items = Array.prototype.slice.call(psEl.querySelectorAll('.te-probs > li'));
+      items.forEach(function (li, idx) {
+        var tag = li.querySelector('.te-tag');
+        var ptype = tag ? (tag.classList.contains('t') ? 't' : tag.classList.contains('h') ? 'h' : 'd') : 't';
+        typeCounts[ptype]++;
+        var pid = psId + '-' + (idx + 1);
+        li.setAttribute('data-ptype', ptype);
+        li.setAttribute('data-pid', pid);
+
+        var chk = document.createElement('button');
+        chk.type = 'button';
+        chk.className = 'te-prob-chk';
+        chk.setAttribute('aria-label', 'Mark problem complete');
+        chk.title = 'Mark problem complete';
+        chk.textContent = '✓';
+        li.insertBefore(chk, li.firstChild);
+
+        if (state.probs[pid]) li.classList.add('te-prob-done');
+        chk.addEventListener('click', function () {
+          var done = !li.classList.contains('te-prob-done');
+          li.classList.toggle('te-prob-done', done);
+          if (done) state.probs[pid] = 1; else delete state.probs[pid];
+          saveState();
+          updateProgress();
+        });
+        allProbItems.push(li);
+      });
+    });
+  });
+
+  var ftT = document.getElementById('te-ft-t');
+  var ftH = document.getElementById('te-ft-h');
+  var ftD = document.getElementById('te-ft-d');
+  if (ftT) ftT.textContent = 'Use the tool (' + typeCounts.t + ')';
+  if (ftH) ftH.textContent = 'By hand (' + typeCounts.h + ')';
+  if (ftD) ftD.textContent = 'Design (' + typeCounts.d + ')';
+
+  var activePType = 'all';
+  var probTypeBtns = Array.prototype.slice.call(document.querySelectorAll('[data-ptype]'));
+  var probSearch = document.getElementById('te-prob-search');
+  var probCountEl = document.getElementById('te-prob-count');
+
+  function filterProblems() {
+    var q = (probSearch ? probSearch.value : '').trim().toLowerCase();
+    var filtering = activePType !== 'all' || q.length > 0;
+    var totalShown = 0;
+
+    sets.forEach(function (setEl) {
+      var setShown = 0;
+      setEl.querySelectorAll('.te-ps').forEach(function (psEl) {
+        var psShown = 0;
+        var psTitle = (psEl.querySelector('h4') ? psEl.querySelector('h4').textContent : '').toLowerCase();
+        psEl.querySelectorAll('.te-probs > li').forEach(function (li) {
+          var tMatch = activePType === 'all' || li.getAttribute('data-ptype') === activePType;
+          var qMatch = !q || li.textContent.toLowerCase().indexOf(q) !== -1 || psTitle.indexOf(q) !== -1;
+          var vis = tMatch && qMatch;
+          li.classList.toggle('te-hidden', !vis);
+          if (vis) { psShown++; setShown++; totalShown++; }
+        });
+        psEl.classList.toggle('te-hidden', psShown === 0);
+      });
+      setEl.classList.toggle('te-hidden', setShown === 0);
+      if (filtering && setShown > 0) setEl.open = true;
+    });
+    if (probCountEl) probCountEl.textContent = totalShown + ' of ' + allProbItems.length + ' problems';
+  }
+
+  probTypeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activePType = btn.getAttribute('data-ptype');
+      probTypeBtns.forEach(function (b) { b.classList.toggle('active', b === btn); });
+      filterProblems();
+    });
+  });
+  if (probSearch) probSearch.addEventListener('input', filterProblems);
+
+  // ── Progress meter (weeks + problems) ──
+  var progLabel = document.getElementById('te-prog-label');
+  var progFill = document.getElementById('te-prog-fill');
+  var navProg = document.getElementById('te-nav-prog');
+
+  function updateProgress() {
+    var doneWeeks = 0;
+    weekCards.forEach(function (card) {
+      var wk = card.id.replace('week-', '');
+      var isDone = !!state.weeks[wk];
+      card.classList.toggle('te-done', isDone);
+      if (isDone) doneWeeks++;
+    });
+    var doneProbs = Object.keys(state.probs).length;
+    var pct = Math.round(((doneWeeks / 14) * 0.5 + (doneProbs / Math.max(1, allProbItems.length)) * 0.5) * 100);
+    if (progLabel) progLabel.textContent = doneWeeks + ' of 14 weeks · ' + doneProbs + ' of ' + allProbItems.length + ' problems';
+    if (progFill) progFill.style.width = pct + '%';
+    if (navProg) navProg.textContent = doneWeeks + '/14 wks · ' + doneProbs + '/' + allProbItems.length + ' probs';
+  }
+
+  document.querySelectorAll('.te-wk-check').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var wk = btn.getAttribute('data-wk');
+      if (state.weeks[wk]) delete state.weeks[wk]; else state.weeks[wk] = 1;
+      saveState();
+      updateProgress();
+    });
+  });
+
+  var resetBtn = document.getElementById('te-reset-prog');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function () {
+      state.weeks = {};
+      state.probs = {};
+      allProbItems.forEach(function (li) { li.classList.remove('te-prob-done'); });
+      saveState();
+      updateProgress();
+      showToast('Progress tracker cleared');
+    });
+  }
+  updateProgress();
+
+  // ── Hash navigation & Expand / Collapse / Print ──
   function openFor(hash) {
     if (!hash || hash.length < 2) return;
     var el = document.getElementById(decodeURIComponent(hash.slice(1)));
@@ -611,6 +1223,119 @@
   window.addEventListener('beforeprint', function () { was = sets.map(function (d) { return d.open; }); sets.forEach(function (d) { d.open = true; }); });
   window.addEventListener('afterprint', function () { sets.forEach(function (d, i) { d.open = was[i]; }); });
   document.getElementById('te-print').addEventListener('click', function () { sets.forEach(function (d) { d.open = true; }); window.print(); });
+
+  // ── Interactive Grading Weight Builder ──
+  var presetBtns = Array.prototype.slice.call(document.querySelectorAll('[data-preset]'));
+  var totalEl = document.getElementById('te-weight-total');
+
+  function renderWeights() {
+    var sum = state.weights.reduce(function (a, b) { return a + b; }, 0);
+    state.weights.forEach(function (w, i) {
+      var valEl = document.getElementById('te-wv-' + i);
+      var segEl = document.getElementById('te-ws-' + i);
+      if (valEl) valEl.textContent = w + '%';
+      if (segEl) segEl.style.width = (sum > 0 ? (w / sum) * 100 : 0) + '%';
+    });
+    if (totalEl) {
+      totalEl.textContent = 'Total: ' + sum + '%' + (sum === 100 ? '' : ' (adjust to 100%)');
+      totalEl.classList.toggle('warn', sum !== 100);
+    }
+    var key = state.weights.join(',');
+    presetBtns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-preset') === key); });
+  }
+
+  presetBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      state.weights = btn.getAttribute('data-preset').split(',').map(Number);
+      saveState();
+      renderWeights();
+    });
+  });
+  document.querySelectorAll('.te-w-step button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var idx = Number(btn.getAttribute('data-wi'));
+      var delta = Number(btn.getAttribute('data-wd'));
+      state.weights[idx] = Math.max(0, Math.min(100, state.weights[idx] + delta));
+      saveState();
+      renderWeights();
+    });
+  });
+  renderWeights();
+
+  // ── Notebooks filter & search ──
+  var nbRows = Array.prototype.slice.call(document.querySelectorAll('.te-nb tbody tr'));
+  var nbBtns = Array.prototype.slice.call(document.querySelectorAll('[data-nbphase]'));
+  var nbSearch = document.getElementById('te-nb-search');
+  var nbCountEl = document.getElementById('te-nb-count');
+  var activeNbPhase = 'all';
+
+  function filterNotebooks() {
+    var q = (nbSearch ? nbSearch.value : '').trim().toLowerCase();
+    var shown = 0;
+    nbRows.forEach(function (tr) {
+      var pMatch = activeNbPhase === 'all' || tr.getAttribute('data-nbphase') === activeNbPhase;
+      var qMatch = !q || tr.textContent.toLowerCase().indexOf(q) !== -1;
+      var vis = pMatch && qMatch;
+      tr.classList.toggle('te-hidden', !vis);
+      if (vis) shown++;
+    });
+    if (nbCountEl) nbCountEl.textContent = shown + ' of ' + nbRows.length + ' notebooks';
+  }
+  nbBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activeNbPhase = btn.getAttribute('data-nbphase');
+      nbBtns.forEach(function (b) { b.classList.toggle('active', b === btn); });
+      filterNotebooks();
+    });
+  });
+  if (nbSearch) nbSearch.addEventListener('input', filterNotebooks);
+
+  // ── Copy Markdown Syllabus ──
+  function copySyllabus() {
+    var base = 'https://amotoolkit.com/pages/';
+    var lines = [
+      '# Experimental AMO Physics & Neutral-Atom Quantum Computing',
+      '',
+      'Built on [AMO Toolkit](https://amotoolkit.com/pages/teach.html) · 14 weeks · 28 lectures · 29 interactive pages · 86 problems.',
+      '',
+      '## Assessment',
+      '- **' + state.weights[0] + '%** Weekly problem sets',
+      '- **' + state.weights[1] + '%** Midterm (weeks 1–7)',
+      '- **' + state.weights[2] + '%** Final project',
+      '- **' + state.weights[3] + '%** Paper summaries and participation',
+      '',
+      '## Weekly Schedule',
+      ''
+    ];
+    weekCards.forEach(function (card) {
+      var wk = card.querySelector('.te-wk-n').textContent.trim();
+      var title = card.querySelector('h3').textContent.trim();
+      var dds = card.querySelectorAll('.te-lect dd');
+      var chips = Array.prototype.slice.call(card.querySelectorAll('.te-chip')).map(function (a) {
+        return '[' + a.textContent.trim() + '](' + base + a.getAttribute('href') + ')';
+      }).join(' · ');
+      lines.push('### ' + wk + ': ' + title);
+      if (dds[0]) lines.push('- **Lecture 1:** ' + dds[0].textContent.trim());
+      if (dds[1]) lines.push('- **Lecture 2:** ' + dds[1].textContent.trim());
+      if (dds[2]) lines.push('- **In-class demo:** ' + dds[2].textContent.trim());
+      lines.push('- **Interactive pages:** ' + chips);
+      lines.push('');
+    });
+    var text = lines.join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('Copied 14-week Markdown syllabus to clipboard');
+      }, function () {
+        showToast('Could not access clipboard');
+      });
+    } else {
+      showToast('Clipboard copy not supported in this browser');
+    }
+  }
+  var copyMdBtn = document.getElementById('te-copy-md');
+  var copyHeroBtn = document.getElementById('te-copy-hero');
+  if (copyMdBtn) copyMdBtn.addEventListener('click', copySyllabus);
+  if (copyHeroBtn) copyHeroBtn.addEventListener('click', copySyllabus);
 })();
 </script>
 </body>
