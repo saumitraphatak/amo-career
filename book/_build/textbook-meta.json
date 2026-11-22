@@ -1,0 +1,387 @@
+{
+  "atom-library": {
+    "title": "Atomic Species & Level Structure",
+    "prereqs": [],
+    "bridge": "Every experimental AMO apparatus begins with a single choice that locks in every laser wavelength, vacuum source, and cooling scheme downstream: the atomic species.",
+    "goals": [
+      "Compare alkali (Rb, Cs, Li, Na, K) and alkaline-earth-like (Sr, Yb) level structures, D-lines, and hyperfine splittings.",
+      "Read key atomic constants—natural linewidth Γ, saturation intensity I_sat, and Doppler/recoil temperatures—from standard data sheets.",
+      "Match atomic properties (magic wavelengths, nuclear spin, Feshbach resonances) to quantum computing, clock, or simulation goals."
+    ],
+    "summary": "Atomic structure sets the optical, magnetic, and thermal scales of the entire lab. With a target species chosen, we next design the laser architecture needed to drive its cooling, repumping, and trapping transitions."
+  },
+  "laser-planner": {
+    "title": "Laser Systems & Wavelength Architecture",
+    "prereqs": ["Ch. 1"],
+    "bridge": "Once the atomic transitions are fixed (Chapter 1), we must assemble a coherent set of laser sources covering every cooling, repumping, imaging, and trapping wavelength.",
+    "goals": [
+      "Select appropriate laser architectures (ECDL, DFB, Ti:Sapphire, tapered amplifier, SHG/SFG) for target wavelengths and linewidths.",
+      "Budget optical power across MOT beams, Zeeman slowers, optical pumping, and tweezer arrays including AOM and fiber-coupling losses.",
+      "Identify where narrow-linewidth cavities or phase-locked seed/amplifier chains are essential."
+    ],
+    "summary": "A well-budgeted laser tree prevents power-starved MOTs and noisy traps later in the build. Before turning those lasers onto atoms, however, the atoms need an ultra-high-vacuum environment free of background collisions."
+  },
+  "vacuum-systems": {
+    "title": "Ultra-High Vacuum Engineering",
+    "prereqs": ["Ch. 1"],
+    "bridge": "Laser-cooled atoms trapped at microkelvin temperatures are easily knocked out by room-temperature background gas, making ultra-high vacuum (10⁻¹⁰–10⁻¹¹ mbar) the physical foundation of the apparatus.",
+    "goals": [
+      "Relate background gas pressure and collision cross-sections to trap lifetime in MOTs and optical tweezers.",
+      "Design a staged pumping stack (roughing, turbomolecular, ion, NEG/Ti-sublimation) with appropriate CF hardware and bakeout schedules.",
+      "Diagnose real air leaks versus virtual leaks and outgassing using RGA mass spectra (H₂O, N₂/O₂ ≈ 3.7, Ar, H₂)."
+    ],
+    "summary": "Achieving 10⁻¹¹ mbar vacuum extends single-atom lifetimes to tens of seconds or minutes. With the chamber evacuated and the lasers chosen, our next step is locking every laser frequency to within a fraction of the atomic linewidth."
+  },
+  "laser-locking": {
+    "title": "Laser Frequency Stabilization",
+    "prereqs": ["Ch. 1", "Ch. 2"],
+    "bridge": "Free-running diode lasers drift by tens of megahertz per minute—far wider than a typical 5–6 MHz atomic linewidth—so active frequency locking is required before atoms can be cooled or imaged.",
+    "goals": [
+      "Generate dispersive error signals using saturated absorption spectroscopy (SAS), Pound-Drever-Hall (PDH) cavity locking, and RF beat-note offset locks.",
+      "Match servo loop bandwidths (current vs. PZT channels) to laser frequency noise spectra.",
+      "Identify common locking failure modes including residual amplitude modulation, etaloning, and acoustic cavity resonances."
+    ],
+    "summary": "Locked lasers provide the frequency stability required for reproducible detuning and narrow-line cooling. Next, we verify that the polarization of each beam matches the atomic selection rules."
+  },
+  "polarimetry": {
+    "title": "Polarimetry & Optical State Tomography",
+    "prereqs": ["Ch. 2", "Ch. 4"],
+    "bridge": "Atomic selection rules (σ⁺, σ⁻, π) depend critically on polarization purity; a few percent of unintended ellipticity can spoil optical pumping, MOT balance, or magic-polarization tweezers.",
+    "goals": [
+      "Represent polarization states on the Poincaré sphere using Stokes vectors and propagate them through waveplates and polarizers with Mueller matrices.",
+      "Align quarter- and half-waveplates systematically to convert linear polarization to pure σ± light after mirrors and vacuum viewports.",
+      "Connect optical Stokes polarimetry to single-qubit quantum state tomography and maximum-likelihood density-matrix reconstruction."
+    ],
+    "summary": "Clean polarization control ensures that every beam drives only its intended Zeeman sublevels. With vacuum, locked lasers, and verified polarizations in place, we are ready to trap our first cloud of atoms."
+  },
+  "mot-designer": {
+    "title": "Magneto-Optical Traps",
+    "prereqs": ["Ch. 1", "Ch. 4", "Ch. 5"],
+    "bridge": "Combining red-detuned σ⁺/σ⁻ laser beams (Chapters 4–5) with a quadrupole magnetic field gradient creates the magneto-optical trap (MOT)—the workhorse source of cold atoms for almost every AMO experiment.",
+    "goals": [
+      "Derive the scattering force, velocity damping coefficient, and restoring spring constant of a 3D MOT from the two-level optical Bloch equations.",
+      "Choose beam waist, detuning, saturation parameter, and magnetic gradient to maximize capture velocity and atom number.",
+      "Understand density limits from radiation trapping and light-assisted collisions, and plan the transition to sub-Doppler cooling."
+    ],
+    "summary": "A well-tuned MOT loads 10⁶–10⁹ atoms at tens to hundreds of microkelvin, serving as the cold reservoir for optical dipole traps and tweezers. To orchestrate MOT loading, ramps, and imaging with microsecond precision, we next build the experiment control system."
+  },
+  "control-systems": {
+    "title": "Experimental Control & Timing Systems",
+    "prereqs": ["Ch. 4", "Ch. 6"],
+    "bridge": "Running a cold-atom sequence requires coordinating dozens of shutters, AOMs, coils, and cameras on microsecond timescales—a job handled by deterministic hardware timing systems.",
+    "goals": [
+      "Distinguish the roles of TTL digital outputs, DAC analog ramps, DDS/AWG RF synthesizers, and ADC/camera triggers in an AMO shot.",
+      "Account for physical hardware latencies (mechanical shutters, coil eddy currents, AOM rise times) when compiling timing sequences.",
+      "Structure reproducible Python experiment scripts (ARTIQ/Sinara, labscript) with version control and parameter logging."
+    ],
+    "summary": "Deterministic timing turns static optical benches into programmable experimental cycles. With control hardware ready, we can now focus tightly confined optical tweezers to trap individual atoms."
+  },
+  "tweezer-designer": {
+    "title": "Optical Tweezer Arrays",
+    "prereqs": ["Ch. 1", "Ch. 6", "Ch. 7"],
+    "bridge": "Focusing a far-off-resonant laser through a high-NA objective (NA ≳ 0.5) creates micron-scale dipole traps small enough that light-assisted collisions leave at most one atom per site.",
+    "goals": [
+      "Calculate dipole trap depth, radial/axial trap frequencies, Lamb-Dicke parameter, and off-resonant photon scattering rate from wavelength, waist, and power.",
+      "Compare static SLM hologram arrays with dynamic AOD tweezers for defect-free rearrangement and shuttling.",
+      "Select magic wavelengths for clock or cooling transitions to cancel differential AC Stark shifts across the array."
+    ],
+    "summary": "Optical tweezers give single-atom spatial control across hundreds to thousands of sites. Because a high-NA objective is unforgiving of optical imperfections, we next characterize and cancel wavefront aberrations."
+  },
+  "zernike": {
+    "title": "Wavefront Aberrations & Zernike Modes",
+    "prereqs": ["Ch. 8"],
+    "bridge": "At NA > 0.5, even a fraction of a wavelength of coma, astigmatism, or spherical aberration from vacuum viewports degrades the Strehl ratio and destroys uniform tweezer depths across the field of view.",
+    "goals": [
+      "Decompose pupil wavefront errors into orthogonal Zernike polynomials and recognize their signatures in the point-spread function (PSF).",
+      "Quantify how RMS wavefront error lowers the Strehl ratio and widens the effective tweezer waist.",
+      "Use spatial light modulator (SLM) phase masks and Gerchberg-Saxton algorithms to equalize trap depths and flatten aberrations in situ."
+    ],
+    "summary": "Correcting low-order Zernike aberrations restores diffraction-limited tweezers and crisp single-atom fluorescence imaging. As array size and shot counts grow, manual tuning becomes unsustainable—leading directly to laboratory automation."
+  },
+  "automation": {
+    "title": "Laboratory Automation & Closed-Loop Optimization",
+    "prereqs": ["Ch. 4", "Ch. 7", "Ch. 9"],
+    "bridge": "A modern neutral-atom experiment has dozens of drifting knobs—laser powers, beam pointing, coil offsets, and ramp timings—that must stay locked over hours of data taking.",
+    "goals": [
+      "Contrast feedback servos (PID intensity and beam-pointing stabilization) with feedforward compensation for repeatable disturbances.",
+      "Apply derivative-free optimizers (Nelder-Mead, Gaussian-process Bayesian optimization, M-LOOP) to tune MOT loading, cooling, and imaging stages.",
+      "Design automated relock scripts, telemetry dashboards, and safe guardrails for unattended operation."
+    ],
+    "summary": "Automation stabilizes daily performance and frees researchers to focus on physics rather than knob-turning. To add a strong photonic interface to our trapped atoms, we next introduce optical cavities."
+  },
+  "cavity-qed": {
+    "title": "Cavity Quantum Electrodynamics",
+    "prereqs": ["Ch. 1", "Ch. 8"],
+    "bridge": "Placing a trapped atom inside a high-finesse optical resonator channels spontaneous emission into a single spatial mode, unlocking fast nondestructive readout and high-efficiency photonic interconnects.",
+    "goals": [
+      "Compute the single-atom coupling rate g₀, cavity decay rate κ, atomic decay rate γ, cooperativity C = g₀²/(κγ), and Purcell factor.",
+      "Distinguish the strong-coupling, bad-cavity (Purcell), and weak-coupling regimes and their signatures in cavity transmission spectra.",
+      "Evaluate single-photon extraction efficiency β = C/(1+C) and outcoupling trade-offs for quantum networking."
+    ],
+    "summary": "High-cooperativity cavities bridge localized atomic memories and flying photons. Rounding out Part I, we consolidate the practical alignment, RF, fiber, and troubleshooting habits that keep an AMO lab running smoothly."
+  },
+  "lab-techniques": {
+    "title": "AMO Laboratory Operations Handbook",
+    "prereqs": ["Ch. 2", "Ch. 4", "Ch. 5"],
+    "bridge": "Beyond individual subsystems, day-to-day experimental progress depends on disciplined optical alignment, fiber coupling, AOM driving, magnetic-field control, and systematic debugging.",
+    "goals": [
+      "Execute repeatable beam-walking, single-mode fiber coupling, and AOM double-pass alignment workflows.",
+      "Manage RF drive chains, magnetic field coils, eddy currents, and bucking coils cleanly.",
+      "Apply structured fault-isolation checklists when MOTs disappear, locks drop, or fluorescence SNR degrades."
+    ],
+    "summary": "With the full physical apparatus built, stabilized, and operational, Part I is complete. In Part II, we put the lab to work: cooling, imaging, and measuring clouds and single atoms."
+  },
+  "cooling-simulator": {
+    "title": "Laser Cooling Forces & Sub-Doppler Mechanisms",
+    "prereqs": ["Ch. 1", "Ch. 6"],
+    "bridge": "Part II shifts from building hardware to running experiments. We start by dissecting the optical forces that cool atomic clouds from room temperature down to microkelvin temperatures.",
+    "goals": [
+      "Compute velocity-dependent radiation pressure forces, momentum diffusion, and the Doppler temperature limit T_D = ℏΓ/(2k_B).",
+      "Understand how multi-level Zeeman structure enables Sisyphus (polarization-gradient) cooling well below the Doppler limit.",
+      "Compare scattering rates, capture velocities, and equilibrium temperatures across alkali species."
+    ],
+    "summary": "Laser cooling compresses phase-space density by many orders of magnitude. To verify atom number and cloud geometry experimentally, our first diagnostic is absorption imaging."
+  },
+  "absorption-imaging": {
+    "title": "Absorption & Dispersive Cloud Imaging",
+    "prereqs": ["Ch. 1", "Ch. 6", "Ch. 13"],
+    "bridge": "Once a cold cloud is trapped (Chapters 6 and 13), shining a weak resonant probe beam through it casts a shadow whose optical depth directly encodes the column density and atom number.",
+    "goals": [
+      "Extract optical depth (OD), column density, and total atom number using the Beer-Lambert law with high-intensity saturation corrections.",
+      "Minimize fringe artifacts and shot noise through proper reference-frame subtraction and probe fluence selection.",
+      "Identify when dense clouds require off-resonant phase-contrast or dispersive imaging instead of resonant absorption."
+    ],
+    "summary": "Absorption imaging gives calibrated atom numbers and spatial profiles in a single camera frame. Letting the cloud expand ballistically before taking that image immediately turns it into a thermometer."
+  },
+  "tof-calculator": {
+    "title": "Time-of-Flight Thermometry",
+    "prereqs": ["Ch. 13", "Ch. 14"],
+    "bridge": "Switching off the trap and taking absorption images (Chapter 14) after variable expansion delays maps the cloud's velocity distribution directly onto space.",
+    "goals": [
+      "Fit cloud width σ²(t) = σ₀² + (k_B T / m) t² to extract cloud temperature independent of initial size.",
+      "Compute peak phase-space density (PSD) and compare measured temperatures against Doppler and recoil scales.",
+      "Avoid systematic errors from pixel magnification calibration, gravitational sag, and finite camera depth of field."
+    ],
+    "summary": "Time-of-flight expansion is the gold-standard thermometer for cold atomic ensembles. Next, we zoom in from clouds of millions of atoms to detecting a single trapped atom in an optical tweezer."
+  },
+  "imaging-calculator": {
+    "title": "Single-Atom Fluorescence Imaging",
+    "prereqs": ["Ch. 8", "Ch. 13"],
+    "bridge": "Unlike dense clouds, a single atom in a tweezer casts negligible shadow; instead, we collect its scattered fluorescence photons through a high-NA objective onto an EMCCD or sCMOS camera.",
+    "goals": [
+      "Budget detected photon counts from scattering rate, objective NA, optical transmission, and camera quantum efficiency.",
+      "Evaluate single-atom detection fidelity from the separation of empty-trap and loaded-trap photon histograms.",
+      "Balance exposure time and imaging intensity to maximize readout fidelity without heating the atom out of the tweezer."
+    ],
+    "summary": "High-fidelity, low-loss single-atom imaging makes individual tweezers readable and reusable. With single-atom detection working, we can measure an individual atom's temperature via release and recapture."
+  },
+  "release-recapture": {
+    "title": "Release-and-Recapture Thermometry",
+    "prereqs": ["Ch. 8", "Ch. 16"],
+    "bridge": "For a single atom in a tweezer, standard time-of-flight imaging lacks SNR; instead, we briefly extinguish the trap for time Δt, turn it back on, and measure the survival probability.",
+    "goals": [
+      "Model single-atom ballistic trajectories in a Gaussian tweezer potential via Monte Carlo sampling to generate recapture curves.",
+      "Fit experimental survival versus release time Δt to infer the atom's temperature T relative to trap depth U₀.",
+      "Distinguish what release-and-recapture measures (thermal energy for a known potential) from direct trap-frequency spectroscopy."
+    ],
+    "summary": "Release-and-recapture confirms whether single atoms are cold enough for reliable trapping and rearrangement. To reach the quantum motional ground state (n̄ → 0) required for high-fidelity Rydberg gates, we next turn to sub-recoil single-atom cooling."
+  },
+  "laser-cooling": {
+    "title": "Ground-State Cooling of Trapped Atoms",
+    "prereqs": ["Ch. 8", "Ch. 13", "Ch. 17"],
+    "bridge": "When a single atom is tightly confined in the Lamb-Dicke regime (η_LD ≪ 1), motional sidebands resolve cleanly—allowing optical cooling all the way to the vibrational ground state n̄ ≈ 0.",
+    "goals": [
+      "Understand the Lamb-Dicke parameter η_LD and why recoil heating is suppressed inside a stiff harmonic trap.",
+      "Compare resolved sideband cooling (RSC), Raman sideband cooling, Λ-enhanced gray molasses, and EIT cooling.",
+      "Evaluate cooling rates and final mean phonon numbers n̄_f for alkali and alkaline-earth-like species."
+    ],
+    "summary": "Ground-state cooling suppresses Doppler dephasing and thermal position spread inside each tweezer. We can now put loading, imaging, rearrangement, and readout together into a complete experimental cycle."
+  },
+  "virtual-lab": {
+    "title": "End-to-End Tweezer Experimental Cycle",
+    "prereqs": ["Ch. 8", "Ch. 16", "Ch. 18"],
+    "bridge": "A real neutral-atom shot chains together stochastic loading, initial imaging, AOD rearrangement, verification imaging, quantum operations, and final state readout—each step carrying finite loss and duration.",
+    "goals": [
+      "Trace the full sequence of a tweezer-array shot from ~50% stochastic loading to defect-free array assembly.",
+      "Quantify how vacuum lifetime, imaging loss, and move efficiency compound into the overall shot success probability.",
+      "Identify which stage bottlenecks repetition rate and array yield as atom counts scale."
+    ],
+    "summary": "Thinking in terms of the full experimental cycle reveals how small per-step losses compound at scale. To close Part II, we gather the everyday optical, atomic, and angular-momentum calculators used at the bench."
+  },
+  "lab-calculators": {
+    "title": "Everyday AMO Reference Calculations",
+    "prereqs": ["Ch. 1", "Ch. 8", "Ch. 11"],
+    "bridge": "At the optical bench, researchers constantly convert between Gaussian beam waists, Rayleigh ranges, dBm/mW RF powers, Zeeman shifts, cavity FSRs, and Clebsch-Gordan transition strengths.",
+    "goals": [
+      "Compute Gaussian beam propagation, fiber-coupling mode matching, and focal spot sizes rapidly.",
+      "Calculate recoil velocities, Doppler shifts, Zeeman splittings, optical trap frequencies, and EOM/AOM parameters.",
+      "Evaluate Clebsch-Gordan coefficients and relative dipole transition strengths for multi-level atomic manifolds."
+    ],
+    "summary": "With Part II complete, we can load, cool, image, and characterize single trapped atoms with precision. In Part III, we encode quantum information in those atoms and build a programmable quantum processor."
+  },
+  "learn-quantum": {
+    "title": "Quantum Computing Fundamentals",
+    "prereqs": ["Ch. 1", "Ch. 18"],
+    "bridge": "Part III turns our single-atom tweezer array into a quantum computer. We begin by establishing the mathematical and physical language of qubits, gates, entanglement, error correction, and magic states.",
+    "goals": [
+      "Map single-qubit states and rotations onto the Bloch sphere and connect them to atomic Rabi oscillations and hyperfine clock qubits.",
+      "Understand entanglement, Rydberg blockade two-qubit gates, and core algorithms (Grover, Shor, analog simulation).",
+      "Grasp the foundations of quantum error correction (surface codes, threshold theorem) and non-Clifford magic states."
+    ],
+    "summary": "These fifteen core concepts form the shared vocabulary of quantum information processing. In real hardware, however, every qubit interacts with its environment—so we next study decoherence quantitatively."
+  },
+  "decoherence-lab": {
+    "title": "Decoherence & Optical Bloch Equations",
+    "prereqs": ["Ch. 21"],
+    "bridge": "Ideal unitary gates never exist in isolation: spontaneous emission, magnetic fluctuations, and trap-induced light shifts continuously shrink the Bloch vector through relaxation (T₁) and dephasing (T₂*, T₂).",
+    "goals": [
+      "Distinguish energy relaxation T₁, inhomogeneous free-induction decay T₂*, and homogeneous coherence time T₂ (with T₂ ≤ 2T₁).",
+      "Solve the optical Bloch equations to see how dissipation and pure dephasing deform Bloch-sphere trajectories.",
+      "Match experimental protocols (population decay, Ramsey fringes, Hahn echo) to the specific noise mechanism each isolates."
+    ],
+    "summary": "Measuring T₁, T₂*, and T₂ tells us which noise channels dominate our atomic memory. Once slow dephasing is diagnosed, we can actively suppress it using dynamical decoupling pulse sequences."
+  },
+  "dd-playground": {
+    "title": "Dynamical Decoupling & Noise Spectroscopy",
+    "prereqs": ["Ch. 22"],
+    "bridge": "Because magnetic gradients and slow laser drifts fluctuate on millisecond-to-second timescales, applying timed π-pulse trains refocuses accumulated phase errors and extends coherence by orders of magnitude.",
+    "goals": [
+      "Derive the filter-function formalism χ(T) = (1/2π) ∫ S(ω)|Ỹ(ω,T)|² dω for Ramsey, Hahn echo, and CPMG-N sequences.",
+      "Compare CPMG with error-compensating XY-4, XY-8, and XY-16 sequences under spatially inhomogeneous Rabi frequencies.",
+      "Use multi-pulse coherence decay to reconstruct the environmental noise power spectral density S(ω)."
+    ],
+    "summary": "Dynamical decoupling protects idle qubits over seconds-long storage windows. To perform universal quantum computation, we now introduce the entangling mechanism of neutral-atom processors: Rydberg blockade."
+  },
+  "rydberg-calculator": {
+    "title": "Rydberg Blockade Physics",
+    "prereqs": ["Ch. 1", "Ch. 8", "Ch. 21"],
+    "bridge": "Exciting trapped neutral atoms to high principal quantum numbers (n ~ 50–100) inflates their electric polarizability by ~n¹¹, creating strong van der Waals interactions over micron separations.",
+    "goals": [
+      "Compute the van der Waals coefficient C₆ ∝ n¹¹, radiative/BBR lifetime τ ∝ n³, and blockade radius R_b = (C₆/Ω)^(1/6).",
+      "Verify the strong-blockade condition V(R) ≫ Ω required to suppress doubly excited |rr⟩ population during two-qubit gates.",
+      "Compare single-photon UV and two-photon excitation schemes across alkali and alkaline-earth-like qubits."
+    ],
+    "summary": "Rydberg blockade turns micron-spaced neutral atoms into fast, switchable entangling gates. Reaching fault-tolerant fidelities (>99.5%) requires accounting for every physical error source in a quantitative gate budget."
+  },
+  "fidelity-budget": {
+    "title": "Two-Qubit Gate Error Budgets",
+    "prereqs": ["Ch. 18", "Ch. 22", "Ch. 24"],
+    "bridge": "A Rydberg CZ gate takes only a few hundred nanoseconds, yet spontaneous decay, finite blockade strength, Doppler shifts, and laser phase noise each nibble away at its fidelity.",
+    "goals": [
+      "Decompose two-qubit CZ infidelity into Rydberg lifetime decay, finite-blockade leakage, Doppler dephasing, and laser intensity/phase noise.",
+      "Understand time-optimal Rydberg gate pulses (such as the Levine-Pichler protocol) that minimize integrated Rydberg population.",
+      "Identify the dominant error lever to optimize when pushing gate fidelity from 99% toward 99.9%."
+    ],
+    "summary": "An itemized error budget turns fidelity engineering from guesswork into targeted upgrades. Once a gate is built, we need a SPAM-insensitive protocol to measure its true error rate in the lab."
+  },
+  "rb-explorer": {
+    "title": "Randomized Benchmarking",
+    "prereqs": ["Ch. 21", "Ch. 25"],
+    "bridge": "In neutral-atom arrays, state-preparation and measurement (SPAM) errors (~0.5–2%) are often larger than the gate errors (~0.1–0.5%) we want to measure—making direct single-gate tomography unreliable.",
+    "goals": [
+      "Explain how Clifford twirling converts general gate-independent noise into an exponential decay F(m) = A p^m + B that separates gate error from SPAM.",
+      "Extract error per Clifford r_C and isolate individual target gates (such as CZ) using Interleaved Randomized Benchmarking (IRB).",
+      "Design statistically sound RB experiments (depths, sequences, shots) and recognize breakdown regimes such as leakage and crosstalk."
+    ],
+    "summary": "Randomized benchmarking provides the standard, platform-agnostic scorecard for 1Q and 2Q gates. With high-fidelity local gates verified, we can scale up by physically shuttling atoms across a zoned processor."
+  },
+  "atom-processor": {
+    "title": "Zoned Neutral-Atom Processors",
+    "prereqs": ["Ch. 8", "Ch. 24", "Ch. 26"],
+    "bridge": "Unlike fixed-wiring superconducting chips, neutral atoms in optical tweezers can be coherently transported between dedicated storage, entangling, and readout zones—giving dynamic all-to-all connectivity.",
+    "goals": [
+      "Map quantum circuits (GHZ, Grover, Bernstein-Vazirani) onto a zoned architecture separating storage, Rydberg gate, and readout regions.",
+      "Evaluate the trade-off between AOD transport duration, heating/coherence loss, and parallel gate scheduling.",
+      "See how reconfigurable connectivity lowers SWAP overhead for both NISQ circuits and qLDPC/surface-code error correction."
+    ],
+    "summary": "Zoned shuttling unlocks thousands of dynamically connected qubits inside a single vacuum chamber. Scaling beyond a single chamber requires linking separate processor modules with flying photons."
+  },
+  "remote-entanglement": {
+    "title": "Remote Entanglement & Quantum Networks",
+    "prereqs": ["Ch. 11", "Ch. 21", "Ch. 27"],
+    "bridge": "Because Rydberg blockade acts over ~10 μm, linking separate neutral-atom modules—or distant quantum labs—requires photonic interconnects that herald entanglement between remote atoms.",
+    "goals": [
+      "Follow the two-photon heralded entanglement protocol from atom-photon spin-polarization entanglement through Hong-Ou-Mandel interference and Bell-state measurement.",
+      "Calculate entanglement generation rates from collection NA or cavity cooperativity, fiber attenuation, quantum frequency conversion, and round-trip latency.",
+      "Understand entanglement distillation and quantum repeater chains for overcoming exponential fiber loss."
+    ],
+    "summary": "Photonic links remove the single-chamber scaling ceiling, completing the technical arc from a single atom to modular fault-tolerant networks. Part IV serves as a field guide to the literature, research groups, and quantum industry."
+  },
+  "paper-syllabus": {
+    "title": "Foundational AMO Literature",
+    "prereqs": [],
+    "bridge": "Part IV transitions from evergreen lab physics to navigating the AMO research community. This chapter organizes 55 landmark papers into structured reading tracks from first-week primers to modern logical-qubit milestones.",
+    "goals": [
+      "Follow curated reading sequences across laser cooling, optical tweezers, cavity QED, Rydberg gates, clocks, and quantum error correction.",
+      "Distinguish foundational theory papers, pedagogical reviews, and landmark experimental demonstrations.",
+      "Connect each canonical paper back to the interactive calculators and chapters in Parts I–III."
+    ],
+    "summary": "Reading primary papers alongside hands-on calculations builds true research fluency. Next, we map the academic research groups around the world advancing these subfields."
+  },
+  "amo-groups": {
+    "title": "Global AMO Research Directory",
+    "prereqs": ["Ch. 29"],
+    "bridge": "Whether choosing a PhD group, postdoc, or collaborator, knowing which labs pioneer which atomic species and experimental techniques saves months of fragmented searching.",
+    "goals": [
+      "Survey leading experimental and theoretical AMO groups worldwide by subfield (Rydberg arrays, clocks, BEC/simulation, molecules, ions, cavities).",
+      "Match personal technical interests and target atomic species to active research ecosystems.",
+      "Identify adjacent groups and literature lineages when preparing graduate or postdoctoral applications."
+    ],
+    "summary": "Academic labs drive foundational physics and train the field's talent; increasingly, that same AMO skill set powers commercial quantum computing companies, which we map next."
+  },
+  "qc-landscape": {
+    "title": "Quantum Computing Industry Landscape",
+    "prereqs": ["Ch. 21", "Ch. 26", "Ch. 28"],
+    "bridge": "Translating AMO lab skills into industry requires separating peer-reviewed hardware milestones from roadmap projections across superconducting, trapped-ion, neutral-atom, and photonic platforms.",
+    "goals": [
+      "Compare physical qubit counts, two-qubit gate fidelities, connectivity, and scaling bottlenecks across all major hardware modalities.",
+      "Distinguish demonstrated experimental metrics from forward-looking commercial roadmaps.",
+      "Map hands-on AMO skills (lasers, vacuum, RF, FPGA control, benchmarking) directly to industry engineering roles."
+    ],
+    "summary": "Every quantum hardware platform faces a distinct engineering trade-off between gate speed, fidelity, and scaling. The final four chapters compare head-to-head matchups within each major modality."
+  },
+  "rb87-vs-yb171": {
+    "title": "Neutral-Atom Qubits: ⁸⁷Rb vs. ¹⁷¹Yb",
+    "prereqs": ["Ch. 1", "Ch. 24", "Ch. 31"],
+    "bridge": "Within neutral-atom quantum computing, the field has largely converged on two contrasting workhorses: alkali hyperfine qubits (⁸⁷Rb) and alkaline-earth-like nuclear-spin qubits (¹⁷¹Yb).",
+    "goals": [
+      "Compare ⁸⁷Rb and ¹⁷¹Yb across laser complexity, cooling, coherence times, erasure conversion, and Rydberg excitation pathways.",
+      "Evaluate published logical-qubit and two-qubit gate milestones from Harvard/QuEra (⁸⁷Rb) and JILA/Princeton/Atom Computing (¹⁷¹Yb).",
+      "Assess how species choice shapes mid-circuit readout, shuttling, and photonic networking architectures."
+    ],
+    "summary": "⁸⁷Rb leads in mature logical-processor demonstrations while ¹⁷¹Yb offers exceptional nuclear-spin coherence and erasure-check capabilities. Next, we examine the analogous architectural split in trapped ions."
+  },
+  "quantinuum-vs-ionq": {
+    "title": "Trapped-Ion Architectures: Quantinuum vs. IonQ",
+    "prereqs": ["Ch. 26", "Ch. 31"],
+    "bridge": "Trapped ions share neutral atoms' atomic precision and long coherence, but two leading companies—Quantinuum and IonQ—pursue sharply different scaling and control architectures.",
+    "goals": [
+      "Compare QCCD ion-shuttling architectures (Quantinuum H-series / Helios) with multi-core photonic-interconnect approaches (IonQ).",
+      "Evaluate peer-reviewed gate fidelities, logical-qubit demonstrations, and commercial deployment metrics.",
+      "Understand how motional mode crowding, optical delivery, and photonic link rates govern ion-trap scaling."
+    ],
+    "summary": "Trapped ions currently set the high-water mark for peer-reviewed two-qubit gate fidelity, with modular scaling as the central challenge. We next compare the two titans of superconducting qubits."
+  },
+  "google-vs-ibm": {
+    "title": "Superconducting Processors: Google vs. IBM",
+    "prereqs": ["Ch. 21", "Ch. 31"],
+    "bridge": "Superconducting transmon processors operate at nanosecond gate speeds inside dilution refrigerators, with Google Quantum AI and IBM pursuing contrasting error-correction and modularity strategies.",
+    "goals": [
+      "Contrast Google's 2D surface-code focus (Willow, below-threshold QEC) with IBM's heavy-hex/Nighthawk and qLDPC (gross-code) roadmap.",
+      "Interpret headline quantum-advantage and utility claims alongside subsequent classical-simulation benchmarks.",
+      "Identify the cryogenic wiring, coherence, and wafer-yield bottlenecks facing large-scale superconducting systems."
+    ],
+    "summary": "Superconducting qubits lead in gate speed and below-threshold surface-code demonstrations, while cryogenic wiring remains their defining scaling hurdle. Finally, we compare the two leading photonic approaches."
+  },
+  "psiquantum-vs-xanadu": {
+    "title": "Photonic Architectures: PsiQuantum vs. Xanadu",
+    "prereqs": ["Ch. 28", "Ch. 31"],
+    "bridge": "Photonic quantum computers aim to leverage room-temperature silicon-photonics foundries and fiber interconnects, with PsiQuantum and Xanadu representing discrete-variable fusion and continuous-variable/GKP paradigms.",
+    "goals": [
+      "Compare PsiQuantum's discrete-variable fusion-based architecture (Omega chipset) with Xanadu's continuous-variable / GKP-precursor networked racks (Borealis, Aurora).",
+      "Distinguish component-level foundry demonstrations from full-system peer-reviewed benchmarks.",
+      "Evaluate photon loss thresholds, SNSPD cryogenics, and optical switching as the primary photonic scaling bottlenecks."
+    ],
+    "summary": "Photonic platforms trade deterministic matter-qubit interactions for native telecom networking and semiconductor manufacturability. Together, Chapters 1–35 span the complete journey from a single laser-cooled atom to the modern quantum computing landscape."
+  }
+}

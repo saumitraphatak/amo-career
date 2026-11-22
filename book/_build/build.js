@@ -9,6 +9,7 @@ const SITE = 'https://amotoolkit.com/';
 const EDITION = 'Edition 1 · November 2026';
 const BOOK_URL = SITE + 'book/';
 const PDF_NAME = 'building-with-atoms.pdf';
+const META = JSON.parse(fs.readFileSync(path.join(__dirname, 'textbook-meta.json'), 'utf8'));
 fs.mkdirSync(path.join(out, 'img'), { recursive: true });
 
 const js = fs.readFileSync(path.join(site, 'js/main.js'), 'utf8');
@@ -59,23 +60,35 @@ async function saveImages(key, raw) {
 
 function chapterHtml(c, body, raw) {
   const kicker = { build: 'Build step', trap: 'Experiment step', qc: 'Quantum step', career: 'Career step' }[c.part.id];
-  const links = [`<dt>Interactive page</dt><dd><a href="${pageUrl(c.key)}">${pageUrl(c.key).replace('https://', '')}</a></dd>`];
-  if (notebooks.has(c.key)) links.push(`<dt>Python notebook</dt><dd><a href="${colab(c.key)}">Open in Colab</a> · <a href="${SITE}notebooks/${c.key}.ipynb">download ${c.key}.ipynb</a></dd>`);
-  if (week[c.key]) links.push(`<dt>Course</dt><dd>Week ${week[c.key]} of the 14-week course (Part V); problems at the end of this chapter</dd>`);
+  const m = META[c.key] || {};
+  const title = m.title || c.label;
+  const comp = [`<a href="${pageUrl(c.key)}">Live interactive page ↗</a>`];
+  if (notebooks.has(c.key)) comp.push(`Notebook: <a href="${colab(c.key)}">Open in Colab</a> · <a href="${SITE}notebooks/${c.key}.ipynb">download ${c.key}.ipynb</a>`);
+  if (week[c.key]) comp.push(`<a href="#part-teach">Week ${week[c.key]}</a>`);
+  const bridge = m.bridge ? `<p class="ch-bridge">${esc(m.bridge)}</p>` : '';
+  const prereq = (m.prereqs && m.prereqs.length) ? 'Prerequisites: ' + m.prereqs.join(', ') : 'No prerequisites';
+  const goals = (m.goals && m.goals.length) ? `<div class="ch-goals"><div class="ch-goals-head"><span class="ch-goals-title">In this chapter</span><span class="ch-prereqs">${esc(prereq)}</span></div><ul>${m.goals.map(g => `<li>${esc(g)}</li>`).join('')}</ul></div>` : '';
+  const summary = m.summary ? `<aside class="ch-summary"><div class="ch-summary-title">Chapter ${c.no} Summary</div><p>${esc(m.summary)}</p></aside>` : '';
   let end = '';
   if (problems[c.key]) end = `<section class="ch-end"><h2>Problems for Chapter ${c.no}</h2><ol>${problems[c.key]}</ol><p class="cap">Use the tool: on the interactive page. By hand: from the formulas in this chapter. Design: a decision a lab would make. Worked solutions are available to instructors on request (see Part V).</p></section>`;
+  const prevC = chapters[c.no - 2], nextC = chapters[c.no];
+  const prevLink = prevC ? `<a href="#ch-${prevC.key}">← Ch. ${prevC.no}: ${esc((META[prevC.key] || {}).title || prevC.label)}</a>` : '<a href="#contents">← Contents</a>';
+  const nextLink = nextC ? `<a href="#ch-${nextC.key}">Ch. ${nextC.no}: ${esc((META[nextC.key] || {}).title || nextC.label)} →</a>` : '<a href="#part-teach">Part V: The 14-week course →</a>';
   return `<section class="chapter" id="ch-${c.key}" data-key="${c.key}" style="--pc:${c.part.color}">
   <header class="ch-head">
     <span class="ch-num">${c.no}</span>
     <div class="ch-kicker">Chapter ${c.no} · ${kicker} ${String(c.step).padStart(2, '0')}</div>
-    <h1>${esc(c.label)}</h1>
+    <h1>${esc(title)}</h1>
     <div class="ch-sub">${c.icon} ${esc(c.tool)} · ${esc(c.kind)}</div>
     ${raw.desc ? `<p class="ch-lead">${raw.desc}</p>` : ''}
-    <dl class="ch-links">${links.join('')}</dl>
+    ${bridge}${goals}
+    <div class="ch-companion"><span class="ch-companion-label">Website Companion</span>${comp.join(' · ')}</div>
     <span class="marker">@@CH:${c.key}@@</span>
   </header>
   <div class="ch-body">${body}</div>
+  ${summary}
   ${end}
+  <nav class="ch-next-bridge screen-only" aria-label="Chapter navigation">${prevLink}${nextLink}</nav>
 </section>`;
 }
 
@@ -99,7 +112,7 @@ const COVER_ART = (() => {
 
 function front() {
   const toc = PARTS.map(p => `<div class="tp" style="--pc:${p.color}">Part ${p.n} · ${p.title}</div>` +
-    chapters.filter(c => c.part === p).map(c => `<div class="tc"><span class="n">${c.no}</span><a href="#ch-${c.key}">${esc(c.label)}</a><span class="dots"></span><span class="pg" data-pg="ch-${c.key}"></span></div>`).join('')).join('') +
+    chapters.filter(c => c.part === p).map(c => `<div class="tc"><span class="n">${c.no}</span><a href="#ch-${c.key}">${esc((META[c.key] || {}).title || c.label)}</a><span class="dots"></span><span class="pg" data-pg="ch-${c.key}"></span></div>`).join('')).join('') +
     `<div class="tp" style="--pc:var(--c-teach)">Part V · Teach with this Book</div><div class="tc"><span class="n">V</span><a href="#part-teach">The 14-week course</a><span class="dots"></span><span class="pg" data-pg="part-teach"></span></div>` +
     `<div class="tp" style="--pc:var(--c-app)">Appendices</div>` +
     [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly']]
@@ -144,7 +157,7 @@ function front() {
 }
 
 function partOpener(p) {
-  const list = chapters.filter(c => c.part === p).map(c => `<li><b>${c.no}</b>${esc(c.label)}<span>${esc(c.tool)}</span></li>`).join('');
+  const list = chapters.filter(c => c.part === p).map(c => `<li><b>${c.no}</b><a href="#ch-${c.key}">${esc((META[c.key] || {}).title || c.label)}</a><span>${esc(c.tool)}</span></li>`).join('');
   return `<section class="part" id="part-${p.id}" style="--pc:${p.color}"><div class="pn">Part ${p.n}</div><h1>${p.title}</h1><p class="pl">${p.lead}</p><ol>${list}</ol><span class="marker">@@CH:part-${p.id}@@</span></section>`;
 }
 
@@ -207,7 +220,7 @@ function appendices() {
   }
   sections.push(partTeach());
   sections.push(appendices());
-  const tocSide = PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc(c.label)}</a>`).join('')).join('') +
+  const tocSide = PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
     `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a>`;
   const draft = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Building with Atoms — a training kit for experimental AMO and neutral-atom researchers</title>
@@ -221,9 +234,12 @@ function appendices() {
 .marker { position: absolute; font: 1px monospace; font-variant-ligatures: none; color: #fff; opacity: .01; }
 .ia-inline { font: 12px var(--sans); border: 1px dashed var(--accent); border-radius: 4px; padding: 0 5px; }
 </style></head><body>
-<div class="topbar screen-only"><div class="in"><a href="../home.html"><b>AMO Toolkit</b></a><span>· Building with Atoms</span><a class="dl alt" href="${SITE}">Open the website</a><a class="dl" href="${PDF_NAME}" download>Download the PDF</a></div></div>
-<nav class="toc-side" aria-label="Book contents">${tocSide}</nav>
+<div class="topbar screen-only"><div class="in"><button type="button" class="topbar-btn toc-toggle" id="toc-toggle" aria-expanded="false" aria-controls="book-toc">☰ Contents</button><a class="topbar-brand" href="../home.html">⚛️ AMO Toolkit</a><span class="topbar-sub">· Building with Atoms</span><div class="topbar-actions"><button type="button" class="topbar-btn" id="book-theme-btn" aria-pressed="false">🌙 Dark</button><a class="dl alt" href="${SITE}">Website</a><a class="dl" href="${PDF_NAME}" download>Download PDF</a></div></div><div class="read-progress" id="read-progress" aria-hidden="true"></div></div>
+<div class="toc-backdrop screen-only" id="toc-backdrop" aria-hidden="true"></div>
+<nav class="toc-side" id="book-toc" aria-label="Book contents"><div class="toc-filter-wrap"><input type="search" class="toc-filter" id="toc-filter" placeholder="Filter chapters…" aria-label="Filter book chapters"></div>${tocSide}</nav>
 <main class="book">${sections.join('\n')}</main>
+<button type="button" class="back-top screen-only" id="back-top" aria-label="Back to top">↑ Top</button>
+<script>(function(){const r=document.documentElement,tb=document.getElementById('book-theme-btn'),bar=document.getElementById('read-progress'),toc=document.querySelector('.toc-side'),bg=document.getElementById('toc-backdrop'),tog=document.getElementById('toc-toggle'),flt=document.getElementById('toc-filter'),topBtn=document.getElementById('back-top');function syncTheme(){const d=r.getAttribute('data-theme')==='dark';if(tb){tb.textContent=d?'☀️ Light':'🌙 Dark';tb.setAttribute('aria-pressed',String(d));}}syncTheme();if(tb)tb.addEventListener('click',()=>{const d=r.getAttribute('data-theme')==='dark';if(d){r.removeAttribute('data-theme');try{localStorage.setItem('amo-theme','light');}catch(e){}}else{r.setAttribute('data-theme','dark');try{localStorage.setItem('amo-theme','dark');}catch(e){}}syncTheme();});function setToc(o){if(!toc)return;toc.classList.toggle('open',o);if(bg)bg.classList.toggle('open',o);if(tog)tog.setAttribute('aria-expanded',String(o));}if(tog)tog.addEventListener('click',()=>setToc(!toc.classList.contains('open')));if(bg)bg.addEventListener('click',()=>setToc(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setToc(false);});if(toc)toc.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setToc(false)));if(flt&&toc){flt.addEventListener('input',()=>{const q=flt.value.trim().toLowerCase();toc.querySelectorAll('a.tc').forEach(a=>{a.style.display=!q||a.textContent.toLowerCase().includes(q)?'':'none';});});}const links=toc?Array.from(toc.querySelectorAll('a.tc[href^="#"]')):[];const secs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);function onScroll(){const h=document.documentElement.scrollHeight-window.innerHeight;if(bar&&h>0)bar.style.width=Math.min(100,Math.max(0,(window.scrollY/h)*100)).toFixed(2)+'%';if(topBtn)topBtn.classList.toggle('show',window.scrollY>700);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();if(topBtn)topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));if('IntersectionObserver' in window&&secs.length){const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));let active=null;const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const a=map.get(e.target.id);if(a&&a!==active){if(active)active.classList.remove('is-active');active=a;active.classList.add('is-active');}}});},{rootMargin:'-12% 0px -78% 0px'});secs.forEach(s=>io.observe(s));}})();</script>
 </body></html>`;
   fs.writeFileSync(path.join(out, 'draft.html'), draft);
   console.log('draft', Math.round(draft.length / 1024), 'KB,', chapters.length, 'chapters');
