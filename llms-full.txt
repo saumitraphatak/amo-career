@@ -15,6 +15,7 @@ pages/atom-library.html
 pages/laser-planner.html
 pages/mot-designer.html
 pages/control-systems.html
+pages/automation.html
 pages/laser-locking.html
 pages/lab-techniques.html
 pages/polarimetry.html
@@ -383,6 +384,13 @@ Note: despite the historical page title, this tool does not include an Ioffe-Pri
 **URL:** https://amotoolkit.com/pages/control-systems.html
 
 Sections: 01 what the control system has to do (hardware-timed, repeatable, recorded; resolution, jitter, latency, update rate) · 02 architecture (PC, real-time core, cards, apparatus, slow instruments) · 03 signals: TTL (Sinara: 3 ns minimum pulse, ~350 ps jitter, 1 ns grid), DDS (Urukul AD9910: 1 GS/s, <1 to >400 MHz, 0.25 Hz steps), DAC (Zotino 32×16-bit ±10 V 1 MS/s shared; Fastino up to 2.55 MS/s per channel; NI PCIe-6363 2.86 MS/s one channel), ADC (Sampler 8×16-bit 1.5 MS/s), AWG (Phaser 1.25 GS/s) · 04 timing: ARTIQ timeline (now_mu, slack, RTIOUnderflow, 8 ns coarse / 1 ns fine), labscript pseudoclock, interactive shot with real vs compensated delays · 05 pulse shaping: interactive envelope and power spectrum (square ≈ −13 dB side lobes, Blackman ≈ −58 dB), AOM rise · 06 signal budget calculator (DAC step range/2^bits, DDS step f_clk/2^N, AOM rise τ ≈ 0.65 d/V and bandwidth ≈ 0.35/τ per Isomet AN2600, coax ≈ 5 ns/m) · 07 ARTIQ/Sinara, labscript, NI DAQ, RFSoC/commercial controllers · 08 Python sketches (ARTIQ, real-time branching, labscript, nidaqmx, pyvisa) · 09 git and GitHub practice · 10 checklist · 11 references (ARTIQ manual, Sinara datasheets, Kasprowicz IJET 2022, Starkey RSI 2013, Shammah arXiv:2309.17233, NI PCIe-6363 specs, Isomet AN2600, Wilson PLoS CB 2017).
+
+---
+
+## AUTOMATING THE EXPERIMENT (Build 10)
+**URL:** https://amotoolkit.com/pages/automation.html
+
+Sections: 01 layers of automation by timescale (analog servos, real-time decisions, shot-to-shot feedback, relock and calibration, optimisation, AI agents) and what to automate first, carefully, or not yet · 02 feedback vs feedforward on laser power: interactive simulator (Off/P/I/PI servo, none/setpoint/pick-off feedforward, bandwidth, loop delay; 0.25 µs steps, AOM 0.5 µs response, 5% pick-off calibration error; a pure integrator with delay τ goes unstable near 1/(4τ)) · 03 fields and frequencies: Merkel et al. arXiv:1808.03310 (14.6 mT held to 4.3 nT rms; coherence 0.082 ms → 0.57 ms with feedback → 2.03 ms with mains feedforward), line triggering, PDH feedforward (Chao et al., Optica 11, 945 (2024); adaptive version ≥40 dB at 2 MHz, preprint), wavemeter loops · 04 beam pointing: interactive quadrant photodiode (X = erf(√2 x/w)), two detectors and two mirrors, MRC-type stabilisers, automatic fibre coupling (Geng et al. ~10 s, preprint; Mathew et al. M-LOOP ~20 min for 200 runs; Richtmann et al. RL 90% after ~4 days of training, preprint) · 05 auto-relock state machine, lost-lock detection, scheduled calibrations, calibration as a dependency graph (Kelly et al. arXiv:1803.03226) · 06 nine-step workflow for optimising one stage · 07 optimiser race (grid, random, Nelder–Mead, Gaussian-process Bayesian with expected improvement) on a toy landscape; method cards; M-LOOP · 08 ML papers: Wigley Sci. Rep. 6, 25890 (2016); Tranter Nat. Commun. 9, 4360 (2018); Barker Mach. Learn. Sci. Technol. 1, 015007 (2020); Vendeiro PRR 4, 043216 (2022); Reinschmidt Nat. Commun. 15, 8532 (2024); Phuttitarn PR Applied 22, 024011 (2024); Lee & Chae arXiv:2401.04893 (simulation) · 09 AI agents: k-agents (Cao et al., arXiv:2412.07978 / Patterns 2025), QCopilot (arXiv:2508.05421, preprint), agentic NV sensing (Isogawa et al., arXiv:2607.25145, preprint), guardrails · 10 monitoring, alerts, parameter database, testing without atoms · 11 overnight checklist · 12 references.
 
 ---
 

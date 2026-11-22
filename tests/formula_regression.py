@@ -808,6 +808,7 @@ def test_build_story_order() -> None:
                   ("polarimetry", "Analyze the polarization"), ("mot-designer", "Design a MOT"),
                   ("control-systems", "Control the experiment"),
                   ("tweezer-designer", "Assemble a tweezer array"), ("zernike", "Get rid of aberrations"),
+                  ("automation", "Automate the experiment"),
                   ("cavity-qed", "Couple atoms to a cavity"), ("lab-techniques", "Run the lab day to day")]),
         "trapImageCool": ("TRAP", "Trap, Image &(?:amp;)? Cool", [("cooling-simulator", "Cool atoms with laser light"), ("absorption-imaging", "Image the atom cloud"), ("tof-calculator", "Measure the cloud’s temperature"), ("imaging-calculator", "See a single atom"), ("release-recapture", "Measure a single atom’s temperature"), ("laser-cooling", "Cool a single atom to its ground state"), ("virtual-lab", "Run a full experimental cycle"), ("lab-calculators", "Do the everyday lab math")]),
         "quantum": ("QC", "Quantum", [("learn-quantum", "Learn how qubits work"), ("decoherence-lab", "Watch a qubit lose coherence"), ("dd-playground", "Protect qubits with decoupling pulses"), ("rydberg-calculator", "Entangle atoms with Rydberg blockade"), ("fidelity-budget", "Budget the gate errors"), ("rb-explorer", "Benchmark the gates"), ("atom-processor", "Run a circuit on moving atoms"), ("remote-entanglement", "Link processors with photons")]),
@@ -838,7 +839,7 @@ def test_build_story_order() -> None:
         for n, (k, l) in enumerate(steps, 1):
             page = read(f"pages/{k}.html")
             assert re.search(rf"{cat} {n:02d}( · | &middot; |</span>\s*<span class=\"page-tag\">){re.escape(l)}\s*<", page), (k, l)
-    assert len(cards["CAREER"]) == 3 and len(cards["QC"]) == 8 and len(cards["TRAP"]) == 8 and len(cards["BUILD"]) == 11
+    assert len(cards["CAREER"]) == 3 and len(cards["QC"]) == 8 and len(cards["TRAP"]) == 8 and len(cards["BUILD"]) == 12
 
 
 def test_group_finder_rebuild() -> None:
@@ -1034,6 +1035,32 @@ def test_control_systems_page() -> None:
     assert "'control-systems': [" in js and "key: 'control-systems',  step: 7" in js
 
 
+def test_automation_page() -> None:
+    """Automating the Experiment (Build 10, 2026-11-22): paper numbers match their sources, the three
+    interactive figures are wired with the stated models, and preprints are flagged."""
+    import re
+    html = read("pages/automation.html")
+    assert "🤖 Build 10 · Automate the experiment" in html
+    assert re.findall(r'<span class="accent">(\d\d)</span>', html) == [f"{i:02d}" for i in range(1, 13)]
+    for fact in ("0.082 ms · 112 nT", "0.57 ms · 16.1 nT", "2.03 ms · 4.5 nT", "4.3 nT rms (0.29 ppm)", "25-fold",
+                 "<em>Optica</em> 11, 945 (2024)", "≥40 dB around 2 MHz with up to 50 MHz",
+                 "<em>Sci. Rep.</em> 6, 25890 (2016)", "10 times fewer iterations", "<em>Nat. Commun.</em> 9, 4360 (2018)",
+                 "970 ± 20 against 535 ± 8", "<em>Mach. Learn.: Sci. Technol.</em> 1, 015007 (2020)", "Four times the BEC atom number",
+                 "<em>Phys. Rev. Research</em> 4, 043216 (2022)", "up to 55 control parameters", "2.8 × 10³", "575 ms",
+                 "<em>Nat. Commun.</em> 15, 8532 (2024)", "<em>Phys. Rev. Applied</em> 22, 024011 (2024)", "78.5%",
+                 "about 10 s", "200 runs", "nearly four days", "99.87%", "10<sup>8</sup> sub-µK atoms", "arXiv:1803.03226"):
+        assert fact in html, fact
+    for ax in ("2405.02306", "2405.15421", "2401.04893", "2508.05421", "2607.25145", "2407.19642"):   # preprints are flagged
+        i = html.index(f'arxiv.org/abs/{ax}" target="_blank" rel="noopener">arXiv:{ax}</a>', html.index('id="references"'))
+        assert "preprint" in html[i:i + 160], ax
+    for el in ('id="au-servo"', 'id="au-qc"', 'id="au-qcurve"', 'id="au-race"', 'id="au-ladder"', 'data-m="pi"', 'value="pick"'):
+        assert el in html, el
+    assert "erf(Math.SQRT2 * st.x / st.w)" in html and "1 / (4 * (o.delay + TP))" in html and "CAL = 0.05" in html
+    assert html.count("<div") == html.count("</div>") and html.count("<section") == html.count("</section>")
+    js = read("js/main.js")
+    assert "'automation': [" in js and "key: 'automation',       step: 10" in js
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1146,6 +1173,7 @@ def main() -> None:
         test_start_here_rebuild,
         test_styling_pass_2026_11,
         test_control_systems_page,
+        test_automation_page,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

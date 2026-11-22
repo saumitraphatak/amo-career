@@ -381,8 +381,9 @@ const NAV = {
     { key: 'control-systems',  step: 7,  label: 'Control the experiment',         tool: 'Experiment Control Systems',  kind: 'Guide',       icon: '🎛️', color: '#2c4a63', href: 'pages/control-systems.html' },
     { key: 'tweezer-designer', step: 8,  label: 'Assemble a tweezer array',       tool: 'Tweezer Array Design Lab',    kind: 'Design lab',  icon: '🔦', color: '#a13c1c', href: 'pages/tweezer-designer.html' },
     { key: 'zernike',          step: 9,  label: 'Get rid of aberrations',         tool: 'Zernike Wavefront Lab',       kind: 'Simulator',   icon: '🌊', color: '#2c4a63', href: 'pages/zernike.html'          },
-    { key: 'cavity-qed',       step: 10, label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
-    { key: 'lab-techniques',   step: 11, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
+    { key: 'automation',       step: 10, label: 'Automate the experiment',        tool: 'Automating the Experiment',   kind: 'Guide',       icon: '🤖', color: '#0f6b5f', href: 'pages/automation.html'       },
+    { key: 'cavity-qed',       step: 11, label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
+    { key: 'lab-techniques',   step: 12, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
   ],
   // Trap, Image & Cool continues the story with a first experiment: cool and image a cloud, then one atom, then run the cycle.
   trapImageCool: [
@@ -742,6 +743,7 @@ const SEARCH_KEYWORDS = {
   'imaging-calculator': 'SNR fidelity photons EMCCD sCMOS histogram survival fluorescence single atom readout',
   'tof-calculator': 'time of flight thermometry temperature expansion PSD BEC Maxwell Boltzmann',
   'mot-designer': 'MOT magneto-optical trap gradient spring damping capture detuning Zeeman cooling cascade',
+  'automation': 'automation feedback feedforward servo PID intensity stabilisation power AOM photodiode quadrant QPD beam pointing stabiliser MRC fibre coupling auto-alignment relock calibration optimisation optimizer Bayesian Gaussian process M-LOOP Nelder-Mead machine learning reinforcement learning neural network AI agent LLM monitoring Grafana',
   'control-systems': 'experiment control ARTIQ Sinara labscript NI DAQ PulseBlaster FPGA TTL DAC ADC DDS AWG timing sequence pulse shaping python git github',
   'fidelity-budget': 'Rydberg gate error budget blockade Doppler phase SPAM lifetime intensity noise fidelity',
   'release-recapture': 'tweezer thermometry recapture release Monte Carlo trap depth temperature',
@@ -1990,6 +1992,7 @@ function initQuantumQuiz() {
 const PAGE_PLAYBOOKS = {
   'atom-library': ['Choose a species', 'Compare transition constants, recoil scales, and cooling limits before opening design tools.', 'Use data-sheet links when a number will enter an experiment.'],
   'laser-planner': ['Plan laser architecture', 'Select a species to see required wavelengths, power classes, nonlinear optics, and control elements.', 'Treat powers as starting points; vendors, linewidths, and beam geometry still need lab-specific checks.'],
+  'automation': ['Automate the experiment', 'See how servos, feedforward, beam stabilisers, relock and calibration scripts, optimisers and AI agents keep an experiment running, and follow a workflow for optimising one stage.', 'The servo simulator and optimiser race use illustrative toy models; the paper results are as reported by their authors, and several are preprints.'],
   'control-systems': ['Control the experiment', 'Learn the signals (TTL, DAC, ADC, DDS, AWG), how hardware timing and delays work, how pulses are shaped, and how a shot is written in Python and shared with git.', 'Delay values in the shot diagram are illustrative; measure your own shutters, AOMs and coils.'],
   'mot-designer': ['Estimate MOT behavior', 'Adjust detuning, saturation, beam size, and gradients to see damping, scattering, and capture trends.', 'Use it for scale and intuition before measuring loading curves.'],
   'laser-locking': ['Choose a stabilization route', 'Compare saturated absorption, PDH, and beat-note locking from signal generation to failure modes.', 'Keep sign conventions and RF prefactors visible when translating to the lab.'],
@@ -2028,6 +2031,7 @@ const RELATED_TOOLS = {
   'atom-library': ['laser-planner', 'mot-designer', 'lab-calculators'],
   'laser-planner': ['atom-library', 'laser-locking', 'lab-techniques'],
   'mot-designer': ['atom-library', 'tof-calculator', 'cooling-simulator'],
+  'automation': ['control-systems', 'laser-locking', 'lab-techniques'],
   'control-systems': ['laser-locking', 'tweezer-designer', 'virtual-lab'],
   'laser-locking': ['lab-techniques', 'polarimetry', 'zernike'],
   'lab-techniques': ['laser-planner', 'vacuum-systems', 'lab-calculators'],

@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automating the Experiment — AMO Toolkit</title>
+  <meta name="description" content="How AMO experiments are automated: feedback and feedforward on laser power, fields and frequency, beam-pointing stabilisation, auto-relock and calibration loops, a workflow for optimising one stage, machine-learning optimisers, and AI agents in the lab, with the papers that did it.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/automation.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Automating the Experiment — AMO Toolkit">
+  <meta property="og:description" content="Feedback and feedforward, beam-pointing stabilisation, auto-relock and calibration, optimising a stage of the experiment, machine learning and AI agents in AMO labs.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/automation.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Automating the Experiment">
+  <meta name="twitter:description" content="Servos, feedforward, beam stabilisation, relock and calibration loops, optimisers, machine learning and AI agents in AMO experiments.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Automating the Experiment","description":"Feedback and feedforward, beam-pointing stabilisation, auto-relock and calibration loops, optimisation workflow, machine learning and AI agents in AMO experiments.","url":"https://amotoolkit.com/pages/automation.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Automating the Experiment","item":"https://amotoolkit.com/pages/automation.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=36">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+
+  <style>
+    /* ── Automation page ── */
+    :root { --au: #0f6b5f; --au-ink: #0b5a50; --au-bg: rgba(15,107,95,0.07); --au-border: rgba(15,107,95,0.24);
+            --au-fb: #0369a1; --au-ff: #b45309; --au-ol: #8a94a6; --au-sp: #6d28d9; --au-ok: #047857; --au-warn: #b91c1c; }
+    [data-theme="dark"] { --au: #5eead4; --au-ink: #99f6e4; --au-bg: rgba(94,234,212,0.07); --au-border: rgba(94,234,212,0.22);
+            --au-fb: #7dd3fc; --au-ff: #fbbf24; --au-ol: #7c8799; --au-sp: #c4b5fd; --au-ok: #34d399; --au-warn: #f87171; }
+
+    .au-sec { margin: 0 0 var(--sp-12); scroll-margin-top: 90px; }
+    .au-sec > .section-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 .25rem; border-left: 3px solid var(--au); padding-left: .75rem; }
+    .au-lead { color: var(--text-secondary); font-size: .92rem; line-height: 1.7; margin: 0 0 var(--sp-5) .85rem; max-width: 82ch; }
+    .au-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+    .au-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+    @media (max-width: 900px) { .au-grid3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px) { .au-grid2, .au-grid3 { grid-template-columns: 1fr; } }
+    .au-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-5); }
+    .au-card h3 { margin: 0 0 .45rem; font-size: 1rem; color: var(--text-primary); }
+    .au-card p, .au-card li { color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
+    .au-card p { margin: 0 0 .5rem; }
+    .au-card p:last-child { margin-bottom: 0; }
+    .au-card ul, .au-card ol { margin: .3rem 0 0; padding-left: 1.1rem; }
+    .au-card ul { list-style: disc; }
+    .au-card li { margin-bottom: .25rem; }
+    .au-card .k { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--au-ink); display: block; margin-bottom: .3rem; }
+    .au-card.warn { border-color: color-mix(in srgb, var(--au-warn) 40%, var(--border)); }
+    .au-card.warn .k { color: var(--au-warn); }
+    .au-note { border-left: 3px solid var(--au); background: var(--au-bg); border-radius: 0 var(--r) var(--r) 0; padding: .75rem 1rem; margin: var(--sp-4) 0; color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
+    .au-note strong { color: var(--text-primary); }
+    .au-fig { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4); margin: var(--sp-4) 0 var(--sp-5); }
+    .au-fig-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; align-items: flex-start; margin-bottom: .6rem; }
+    .au-fig-top h3 { margin: 0; font-size: 1.05rem; }
+    .au-fig-top p { margin: .2rem 0 0; color: var(--text-secondary); font-size: .86rem; line-height: 1.6; max-width: 76ch; }
+    .au-cap { font-size: .78rem; color: var(--text-muted); line-height: 1.55; margin: .6rem 0 0; }
+    .au-controls { display: flex; flex-wrap: wrap; gap: .55rem 1.1rem; align-items: center; margin: .4rem 0 .6rem; font-size: .84rem; color: var(--text-secondary); }
+    .au-controls label { display: inline-flex; align-items: center; gap: .4rem; }
+    .au-controls input[type=range] { width: 140px; accent-color: var(--au); }
+    .au-controls select { font: inherit; font-size: .82rem; padding: .2rem .4rem; border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-primary); }
+    .au-seg { display: inline-flex; border: 1px solid var(--border-med); border-radius: 999px; overflow: hidden; }
+    .au-seg button { font: inherit; font-size: .78rem; padding: .28rem .8rem; background: transparent; border: 0; color: var(--text-secondary); cursor: pointer; }
+    .au-seg button[aria-pressed="true"] { background: var(--au-bg); color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--au); }
+    .au-btn { font: inherit; font-size: .8rem; padding: .3rem .9rem; border-radius: 999px; border: 1px solid var(--au); background: var(--au-bg); color: var(--text-primary); cursor: pointer; }
+    .au-btn[aria-pressed="true"] { background: var(--au); color: var(--bg-base); }
+    .au-readout { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+    .au-readout span { font-size: .8rem; color: var(--text-secondary); padding: .25rem .7rem; border-radius: 999px; border: 1px solid var(--border); background: color-mix(in srgb, var(--bg-card) 70%, transparent); }
+    .au-readout b { font-family: var(--font-mono); color: var(--text-primary); }
+    .au-readout span.bad { border-color: var(--au-warn); }
+    .au-readout span.bad b { color: var(--au-warn); }
+    .au-explain { margin-top: .6rem; min-height: 3.2em; padding: .6rem .85rem; border-radius: var(--r); background: var(--au-bg); border: 1px solid var(--au-border); color: var(--text-secondary); font-size: .86rem; line-height: 1.6; }
+    .au-explain b { color: var(--text-primary); }
+    .au-canvas { display: block; width: 100%; height: 380px; max-height: none !important; }
+    @media (max-width: 620px) { .au-canvas { height: 320px; } }
+    .au-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (max-width: 760px) { .au-scroll > svg { min-width: 720px; } }
+
+    /* svg figures */
+    .au-svg { width: 100%; height: auto; display: block; }
+    .au-svg .box { fill: var(--bg-card); stroke: var(--border-med); stroke-width: 1.2; }
+    .au-svg .box.hi { stroke: var(--au); stroke-width: 2; }
+    .au-svg .box.bad { stroke: var(--au-warn); stroke-width: 1.6; }
+    .au-svg .t1 { fill: var(--text-primary); font: 700 12.5px var(--font-sans, Inter, sans-serif); }
+    .au-svg .t2 { fill: var(--text-secondary); font: 11px var(--font-sans, Inter, sans-serif); }
+    .au-svg .t3 { fill: var(--text-muted); font: 10px var(--font-mono, monospace); }
+    .au-svg .wire { stroke: var(--text-muted); stroke-width: 1.4; fill: none; }
+    .au-svg .wire.fb { stroke: var(--au-fb); stroke-width: 2; }
+    .au-svg .wire.ff { stroke: var(--au-ff); stroke-width: 2; stroke-dasharray: 6 4; }
+    .au-svg .wire.beam { stroke: #dc2626; stroke-width: 3; opacity: .75; }
+    .au-svg .grid { stroke: var(--border); stroke-width: 1; }
+    .au-svg .axis { stroke: var(--text-muted); stroke-width: 1; }
+    .au-svg .bar { rx: 6; }
+
+    /* quad cell */
+    .au-quad { display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: var(--sp-5); align-items: start; }
+    @media (max-width: 820px) { .au-quad { grid-template-columns: 1fr; } }
+    #au-qc { width: 100%; max-width: 360px; height: auto; display: block; touch-action: none; cursor: grab; margin: 0 auto; }
+    #au-qc .q { fill: color-mix(in srgb, var(--au) 6%, var(--bg-card)); stroke: var(--border-med); }
+    #au-qc .ql { fill: var(--text-muted); font: 700 13px var(--font-mono, monospace); }
+    #au-qc .qv { fill: var(--text-primary); font: 600 11px var(--font-mono, monospace); }
+    #au-qcurve { width: 100%; max-width: 560px; height: auto; display: block; }
+    #au-qcurve .lbl { fill: var(--text-muted); font: 10px var(--font-mono, monospace); }
+
+    /* tables */
+    .au-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); }
+    .au-table { width: 100%; border-collapse: collapse; font-size: .82rem; min-width: 780px; }
+    .au-table th { text-align: left; font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-card); padding: .6rem .8rem; border-bottom: 1px solid var(--border-med); }
+    .au-table td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; line-height: 1.55; }
+    .au-table tr:last-child td { border-bottom: 0; }
+    .au-table td:first-child { font-weight: 700; color: var(--text-primary); }
+    .au-table a { color: color-mix(in srgb, var(--au) 55%, var(--text-primary)); font-weight: 600; }
+
+    /* workflow steps */
+    .au-steps { list-style: none; counter-reset: au; padding: 0; margin: 0; display: grid; gap: .55rem; }
+    .au-steps li { counter-increment: au; position: relative; padding: .7rem .9rem .7rem 3.1rem; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg-card); color: var(--text-secondary); font-size: .88rem; line-height: 1.62; }
+    .au-steps li::before { content: counter(au); position: absolute; left: .8rem; top: .7rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid; place-items: center; font: 700 .8rem var(--font-mono); color: var(--au-ink); background: var(--au-bg); border: 1px solid var(--au-border); }
+    .au-steps li strong { color: var(--text-primary); }
+    .au-steps li em.why { display: block; font-style: normal; font-size: .8rem; color: var(--text-muted); margin-top: .15rem; }
+
+    /* optimiser race */
+    .au-race-key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; font-size: .8rem; color: var(--text-secondary); margin-top: .4rem; }
+    .au-race-key i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: .35rem; vertical-align: -1px; background: var(--c); }
+    #au-race { height: 560px; }
+    @media (max-width: 620px) { #au-race { height: 720px; } }
+
+    .au-check { list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem; }
+    .au-check li { position: relative; padding: .55rem .8rem .55rem 2.1rem; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg-card); color: var(--text-secondary); font-size: .87rem; line-height: 1.6; }
+    .au-check li::before { content: "✓"; position: absolute; left: .8rem; top: .55rem; color: var(--au-ok); font-weight: 700; }
+    .au-check li strong { color: var(--text-primary); }
+    .au-refs { display: grid; gap: .55rem; }
+    .au-ref { padding: .6rem .85rem; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg-card); font-size: .85rem; color: var(--text-secondary); line-height: 1.55; }
+    .au-ref a { color: color-mix(in srgb, var(--au) 55%, var(--text-primary)); font-weight: 600; }
+    .au-ref h4 { margin: .4rem 0 .1rem; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    [data-theme="dark"] .page-hero-eyebrow { color: #99f6e4 !important; }
+    @media print { .au-controls, .au-seg, .au-btn { display: none !important; } }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <div class="page-hero" style="--page-color:#0f6b5f;--page-bg:rgba(15,107,95,0.06);--page-border:rgba(15,107,95,0.2);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(15,107,95,0.08);border-color:rgba(15,107,95,0.24);color:#0b5a50;">🤖 Build 10 · Automate the experiment</div>
+        <h1>Automating the <span class="grad-text" style="--ga:#5eead4;--gb:#a78bfa;">Experiment</span></h1>
+        <p class="page-hero-desc">
+          A well-run AMO experiment looks after itself for most of the night. Servos hold powers, fields and
+          frequencies. Scripts relock lasers and recalibrate whatever drifts. Optimisers tune one stage of the sequence
+          while you sleep. This page is the practical guide: feedback and feedforward, beam-pointing stabilisation,
+          relock and calibration loops, a workflow for optimising one part of the experiment, where machine learning
+          has already been used, and what AI agents can and cannot be trusted with.
+        </p>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes au-sp{from{stroke-dashoffset:0}to{stroke-dashoffset:-40}}
+.au-flow{animation:au-sp 1.6s linear infinite}
+@media (prefers-reduced-motion: reduce){.au-flow{animation:none}}
+</style>
+<g font-family="monospace" font-size="8" fill="#7a8aa3">
+<text x="34" y="30">sense</text><text x="218" y="30">act</text><text x="122" y="150">decide</text>
+</g>
+<rect x="22" y="38" width="66" height="34" rx="8" fill="none" stroke="#0ea5e9" stroke-width="1.6"/>
+<text x="55" y="59" text-anchor="middle" font-family="monospace" font-size="9" fill="#0ea5e9">PD · QPD</text>
+<rect x="206" y="38" width="72" height="34" rx="8" fill="none" stroke="#f59e0b" stroke-width="1.6"/>
+<text x="242" y="59" text-anchor="middle" font-family="monospace" font-size="9" fill="#f59e0b">AOM · piezo</text>
+<rect x="104" y="104" width="92" height="34" rx="8" fill="none" stroke="#14b8a6" stroke-width="1.6"/>
+<text x="150" y="125" text-anchor="middle" font-family="monospace" font-size="9" fill="#14b8a6">servo · optimiser</text>
+<path class="au-flow" d="M88,55 H206" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="8 12" fill="none" opacity=".8"/>
+<path class="au-flow" d="M55,72 V121 H104" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="4 6" fill="none"/>
+<path class="au-flow" d="M196,121 H242 V72" stroke="#14b8a6" stroke-width="1.6" stroke-dasharray="4 6" fill="none"/>
+<text x="147" y="48" text-anchor="middle" font-family="monospace" font-size="8" fill="#7a8aa3">beam → atoms</text>
+</svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="container">
+
+      <!-- ══ 01 ══ -->
+      <section class="au-sec" id="layers" aria-labelledby="layers-h">
+        <h2 class="section-title" id="layers-h"><span class="accent">01</span> What to automate, and at which timescale</h2>
+        <p class="au-lead">Automation is a stack of loops. Each one senses something, decides, and acts, and each closes at its own speed. The fast loops are electronics; the slower ones are scripts on the control PC; the slowest are optimisers and, since 2024, AI agents. A loop belongs at the slowest level that still keeps up with the disturbance it fights.</p>
+        <div class="au-fig">
+          <div class="au-scroll"><svg class="au-svg" id="au-ladder" viewBox="0 0 960 356" role="img" aria-labelledby="au-ladder-t au-ladder-d">
+<title id="au-ladder-t">Layers of automation by timescale</title>
+<desc id="au-ladder-d">Bars on a logarithmic time axis from 100 nanoseconds to a day. Analog servos and real-time decisions act in under a millisecond; shot-to-shot feedback in seconds; relock and calibration loops in minutes to hours; optimisation runs in tens of minutes to days; AI agents over hours to days.</desc>
+<line class="grid" x1="230.0" x2="230.0" y1="26" y2="326"/>
+<text class="t3" x="230.0" y="342" text-anchor="middle">100 ns</text>
+<line class="grid" x1="289.2" x2="289.2" y1="26" y2="326"/>
+<text class="t3" x="289.2" y="342" text-anchor="middle">1 µs</text>
+<line class="grid" x1="466.7" x2="466.7" y1="26" y2="326"/>
+<text class="t3" x="466.7" y="342" text-anchor="middle">1 ms</text>
+<line class="grid" x1="644.2" x2="644.2" y1="26" y2="326"/>
+<text class="t3" x="644.2" y="342" text-anchor="middle">1 s</text>
+<line class="grid" x1="749.4" x2="749.4" y1="26" y2="326"/>
+<text class="t3" x="749.4" y="342" text-anchor="middle">1 min</text>
+<line class="grid" x1="854.6" x2="854.6" y1="26" y2="326"/>
+<text class="t3" x="854.6" y="342" text-anchor="middle">1 h</text>
+<line class="grid" x1="936.2" x2="936.2" y1="26" y2="326"/>
+<text class="t3" x="936.2" y="342" text-anchor="middle">1 day</text>
+<text class="t3" x="230" y="20">time for one pass round the loop (log scale) →</text>
+<text class="t1" x="14" y="57">Analog servos</text><text class="t3" x="14" y="72">lock boxes · intensity servos · PDH</text>
+<rect x="230.0" y="46" width="236.7" height="24" rx="7" style="fill:color-mix(in srgb, var(--au-fb) 28%, transparent);stroke:var(--au-fb);stroke-width:1.4"/>
+<text class="t1" x="14" y="103">Real-time decisions</text><text class="t3" x="14" y="118">FPGA: count photons, then act</text>
+<rect x="289.2" y="92" width="177.5" height="24" rx="7" style="fill:color-mix(in srgb, var(--au-fb) 28%, transparent);stroke:var(--au-fb);stroke-width:1.4"/>
+<text class="t1" x="14" y="149">Shot-to-shot feedback</text><text class="t3" x="14" y="164">correct a drift using the last shot</text>
+<rect x="585.0" y="138" width="136.1" height="24" rx="7" style="fill:color-mix(in srgb, var(--au) 28%, transparent);stroke:var(--au);stroke-width:1.4"/>
+<text class="t1" x="14" y="195">Relock and calibration</text><text class="t3" x="14" y="210">relock, rescan a resonance, re-fit</text>
+<rect x="749.4" y="184" width="149.3" height="24" rx="7" style="fill:color-mix(in srgb, var(--au) 28%, transparent);stroke:var(--au);stroke-width:1.4"/>
+<text class="t1" x="14" y="241">Optimisation</text><text class="t3" x="14" y="256">scans, Nelder–Mead, Bayesian, M-LOOP</text>
+<rect x="808.5" y="230" width="131.5" height="24" rx="7" style="fill:color-mix(in srgb, var(--au-ff) 28%, transparent);stroke:var(--au-ff);stroke-width:1.4"/>
+<text class="t1" x="14" y="287">AI agents (early)</text><text class="t3" x="14" y="302">plan, run, interpret, report</text>
+<rect x="854.6" y="276" width="85.4" height="24" rx="7" style="fill:color-mix(in srgb, var(--au-sp) 28%, transparent);stroke:var(--au-sp);stroke-width:1.4"/>
+</svg></div>
+          <p class="au-cap">Blue: electronics. Teal, amber and violet: software on the control PC. Bars show orders of magnitude for one pass round each loop, not limits. A PDH lock corrects in microseconds; a resonance recalibration takes a few minutes of shots; an optimisation run can take a night.</p>
+        </div>
+        <div class="au-grid3">
+          <div class="au-card"><span class="k">Automate first</span><h3>What you do by hand every day</h3><p>Relocking a laser, re-peaking a fibre, checking a resonance, re-measuring a π-pulse. These are well understood, easy to verify, and they eat hours of student time. Automating them also makes the data more consistent, because the check is done the same way every time.</p></div>
+          <div class="au-card warn"><span class="k">Automate carefully</span><h3>What can break hardware</h3><p>Coil currents, high laser powers, RF amplifiers, vacuum valves and anything that heats. Limits for these belong in hardware (interlocks, current limits, thermal switches), with software limits on top. A loop that rails at full scale must fail safe, not try harder.</p></div>
+          <div class="au-card"><span class="k">Not yet</span><h3>What you do not understand</h3><p>An optimiser maximises the number you give it, including its flaws. If the "atom number" can be inflated by a background count, a saturated camera or a mis-set threshold, the optimiser will find that first. Understand the measurement before you let a machine push on it.</p></div>
+        </div>
+      </section>
+
+      <!-- ══ 02 ══ -->
+      <section class="au-sec" id="servo" aria-labelledby="servo-h">
+        <h2 class="section-title" id="servo-h"><span class="accent">02</span> Feedback and feedforward: holding a laser's power</h2>
+        <p class="au-lead">The first servo most students build. A photodiode samples the beam after the AOM, a servo compares it with a setpoint and adjusts the AOM's RF amplitude. Feedback corrects whatever it sees, but only after it sees it and only up to its bandwidth. Feedforward acts before an error appears, but only on what you can predict or measure, and only as well as it is calibrated. Real systems use both.</p>
+        <div class="au-fig" id="au-servo-fig">
+          <div class="au-scroll"><svg class="au-svg" viewBox="0 0 960 182" role="img" aria-labelledby="au-loop-t au-loop-d">
+            <title id="au-loop-t">Intensity servo with feedback and feedforward paths</title>
+            <desc id="au-loop-d">A laser beam passes a pick-off beam splitter, an AOM and a second sampling beam splitter before reaching the atoms. The sampling photodiode feeds a servo, which compares with a setpoint from the sequence and drives the AOM: the feedback path. The pick-off photodiode before the AOM drives the AOM directly: the feedforward path.</desc>
+            <rect class="box" x="20" y="30" width="100" height="44" rx="9"/><text class="t1" x="70" y="57" text-anchor="middle">Laser</text>
+            <path class="wire beam" d="M120,52 H900"/>
+            <line x1="191" y1="42" x2="209" y2="62" stroke="var(--text-secondary)" stroke-width="2"/>
+            <path class="wire beam" d="M200,52 V90" style="stroke-width:2"/>
+            <rect class="box" x="160" y="90" width="80" height="32" rx="7"/><text class="t2" x="200" y="110" text-anchor="middle">pick-off PD</text>
+            <rect class="box hi" x="330" y="30" width="90" height="44" rx="9"/><text class="t1" x="375" y="57" text-anchor="middle">AOM</text>
+            <line x1="591" y1="42" x2="609" y2="62" stroke="var(--text-secondary)" stroke-width="2"/>
+            <path class="wire beam" d="M600,52 V90" style="stroke-width:2"/>
+            <rect class="box" x="560" y="90" width="80" height="32" rx="7"/><text class="t2" x="600" y="110" text-anchor="middle">sample PD</text>
+            <text class="t3" x="905" y="56">atoms</text>
+            <text class="t3" x="700" y="44">after the fibre, if there is one</text>
+            <rect class="box" x="410" y="118" width="130" height="36" rx="8"/><text class="t1" x="475" y="141" text-anchor="middle">Servo</text>
+            <path class="wire fb" d="M600,122 V136 H540"/>
+            <path class="wire fb" d="M410,136 H385 V74"/>
+            <path class="wire ff" d="M240,106 H350 V74"/>
+            <path class="wire" d="M475,176 V154"/>
+            <text class="t3" x="485" y="174">setpoint r(t) from the sequence</text>
+            <text class="t3" x="250" y="98" style="fill:var(--au-ff)">feedforward</text>
+            <text class="t3" x="552" y="150" style="fill:var(--au-fb)">feedback</text>
+          </svg></div>
+          <div class="au-fig-top" style="margin-top:.6rem">
+            <div>
+              <h3>Power-servo simulator</h3>
+              <p>50 ms of a beam whose laser power has mains ripple, slow drift, a sudden 8% drop at 20 ms and fast noise. The setpoint holds, then ramps up at 30 ms. Grey: what reaches the atoms with no control. Coloured: with your servo.</p>
+            </div>
+          </div>
+          <div class="au-controls">
+            <span>Servo</span>
+            <span class="au-seg" role="group" aria-label="Servo type" id="au-mode">
+              <button type="button" data-m="off" aria-pressed="false">Off</button>
+              <button type="button" data-m="p" aria-pressed="false">P</button>
+              <button type="button" data-m="i" aria-pressed="true">I</button>
+              <button type="button" data-m="pi" aria-pressed="false">PI</button>
+            </span>
+            <label>Feedforward <select id="au-ff"><option value="none" selected>none</option><option value="set">setpoint model</option><option value="pick">setpoint + pick-off PD</option></select></label>
+            <label>Bandwidth <input type="range" id="au-fc" min="0" max="100" step="1" value="29"> <b id="au-fc-v">1 kHz</b></label>
+            <label>Loop delay <input type="range" id="au-dl" min="1" max="16" step="1" value="4"> <b id="au-dl-v">1.0 µs</b></label>
+            <label>Mains <select id="au-mains"><option value="50">50 Hz</option><option value="60" selected>60 Hz</option></select></label>
+          </div>
+          <canvas class="au-canvas" id="au-servo" data-export-ready="true" aria-label="Optical power against time with and without the servo, and the AOM drive signal"></canvas>
+          <div class="au-readout" id="au-servo-out" aria-live="polite"></div>
+          <div class="au-explain" id="au-servo-explain" aria-live="polite"></div>
+          <p class="au-cap">Simulated in the page at 0.25 µs steps. Laser power: 3% mains ripple, slow drift of about 2%, an 8% drop at 20 ms, 0.3% fast noise. Photodiodes: 0.1% noise. The AOM is a 0.5 µs first-order response after the loop delay, and its transmission is clamped between 0 and 1. The pick-off feedforward assumes a 5% calibration error. The numbers are illustrative; the behaviour is general.</p>
+        </div>
+        <div class="au-grid2">
+          <div class="au-card"><span class="k">Rules of thumb</span><ul>
+            <li><strong>Sample the light where the atoms are.</strong> After the fibre, if there is one; fibre coupling and polarisation drift change the power after the AOM.</li>
+            <li><strong>The loop is only as quiet as its photodiode.</strong> Sensor noise is written onto the beam. Check with a second, out-of-loop photodiode: the in-loop one always looks good.</li>
+            <li><strong>Delay sets the bandwidth.</strong> A pure integrator with a total delay τ goes unstable near f ≈ 1/(4τ), where the delay has used up its 90° of phase margin. Cables, the acoustic travel time in the AOM and digital processing all count.</li>
+            <li><strong>Leave headroom.</strong> Run the AOM below full diffraction so the servo can push up when the laser sags. At the limit the servo saturates and the power simply follows the laser.</li>
+          </ul></div>
+          <div class="au-card"><span class="k">Practical details</span><ul>
+            <li><strong>Pulsed beams.</strong> A servo cannot regulate light that is off. Use a sample-and-hold (servo while on, hold the drive while off) or a digital loop that measures each pulse and corrects the next shot.</li>
+            <li><strong>Which actuator.</strong> Feeding back to a diode laser's current also moves its frequency, so the AOM is the usual actuator. An EOM between polarisers ("noise eater") is faster still.</li>
+            <li><strong>Setpoint feedforward</strong> is a calibration table: measured power against AOM drive. Then a ramp is followed immediately and the servo only cleans up the residual.</li>
+            <li><strong>Digital or analog.</strong> FPGA servos (ARTIQ's SU-Servo combines ADC, servo and DDS amplitude in one loop) make the setpoint part of the sequence; analog PI boxes are simpler and have less delay.</li>
+          </ul></div>
+        </div>
+      </section>
+
+      <!-- ══ 03 ══ -->
+      <section class="au-sec" id="fields" aria-labelledby="fields-h">
+        <h2 class="section-title" id="fields-h"><span class="accent">03</span> Fields, frequencies and the mains</h2>
+        <p class="au-lead">The same two ideas, feedback for what you cannot predict and feedforward for what you can, hold magnetic fields and laser frequencies steady. The mains is the textbook case for feedforward: its noise repeats every cycle.</p>
+        <div class="au-grid2">
+          <div class="au-fig" style="margin:0">
+            <div class="au-fig-top"><div><h3>Feedforward on the mains: a trapped-ion example</h3><p>Merkel et al. stabilised a 14.6 mT field for a <sup>43</sup>Ca<sup>+</sup> clock qubit with a fluxgate sensor in a feedback loop, then added feedforward that cancels the 50 Hz mains harmonics. Qubit coherence time, from their Ramsey measurements:</p></div></div>
+            <svg class="au-svg" viewBox="0 0 460 200" role="img" aria-labelledby="au-bfield-t">
+              <title id="au-bfield-t">Coherence time without stabilisation 0.082 ms, with feedback 0.57 ms, with feedback and feedforward 2.03 ms</title>
+              <line class="axis" x1="150" y1="20" x2="150" y2="170"/>
+              <text class="t2" x="140" y="52" text-anchor="end">no stabilisation</text>
+              <rect x="150" y="36" width="7.3" height="26" rx="4" style="fill:var(--au-ol)"/>
+              <text class="t3" x="164" y="54">0.082 ms · 112 nT</text>
+              <text class="t2" x="140" y="102" text-anchor="end">feedback</text>
+              <rect x="150" y="86" width="50.6" height="26" rx="4" style="fill:var(--au-fb)"/>
+              <text class="t3" x="208" y="104">0.57 ms · 16.1 nT</text>
+              <text class="t2" x="140" y="152" text-anchor="end">feedback + feedforward</text>
+              <rect x="150" y="136" width="180" height="26" rx="4" style="fill:var(--au-ff)"/>
+              <text class="t3" x="338" y="154">2.03 ms · 4.5 nT</text>
+              <text class="t3" x="150" y="192">coherence time · rms field noise seen by the qubit</text>
+            </svg>
+            <p class="au-cap">Values from Table II of Merkel et al., arXiv:1808.03310. Their abstract quotes 4.3 nT rms (0.29 ppm) for the stabilised field against more than 100 nT without stabilisation; the coherence time improved 25-fold.</p>
+          </div>
+          <div class="au-card"><span class="k">What else is done this way</span><ul>
+            <li><strong>Line triggering.</strong> Start every shot at the same phase of the mains. The residual 50/60 Hz field is then the same in every shot, so it shifts a resonance by a fixed amount you can calibrate, instead of broadening it.</li>
+            <li><strong>Laser frequency, fast.</strong> A PDH lock cannot suppress noise above its bandwidth. Chao et al. fed the PDH error signal <em>forward</em> to the light after a delay fibre and report phase-noise suppression around a few MHz about four orders of magnitude better than PDH feedback alone (<em>Optica</em> 2024). An adaptive version reports ≥40 dB around 2 MHz with up to 50 MHz bandwidth (preprint).</li>
+            <li><strong>Laser frequency, slow.</strong> A software loop reads a wavemeter or a reference cavity and nudges a piezo or setpoint every second or so. It keeps a laser in range for the fast lock; see the <a href="laser-locking.html">laser locking guide</a>.</li>
+            <li><strong>Fields from known sources.</strong> If your own sequence switches a nearby coil, its stray field arrives at a known time. Feed the expected change forward to the compensation coils rather than waiting for the magnetometer to see it.</li>
+          </ul></div>
+        </div>
+      </section>
+
+      <!-- ══ 04 ══ -->
+      <section class="au-sec" id="pointing" aria-labelledby="pointing-h">
+        <h2 class="section-title" id="pointing-h"><span class="accent">04</span> Keeping beams pointed: quadrant detectors and auto-alignment</h2>
+        <p class="au-lead">Beams wander as the lab warms and cools, as mounts relax and as air moves. A position-sensitive detector turns that wander into an error signal and a piezo-driven mirror turns it back. The same hardware, with a smarter loop, can re-couple a fibre on its own.</p>
+        <div class="au-fig">
+          <div class="au-fig-top">
+            <div><h3>A quadrant photodiode as an error signal</h3><p>Drag the spot. The four quadrant signals give a horizontal error X = [(A+D) − (B+C)] / Σ and a vertical error Y = [(A+B) − (C+D)] / Σ, while Σ itself is the total power. Turn on drift to see the beam wander, then lock it.</p></div>
+            <div class="au-controls" style="margin:0">
+              <button type="button" class="au-btn" id="au-q-drift" aria-pressed="false">Drift</button>
+              <button type="button" class="au-btn" id="au-q-lock" aria-pressed="false">Lock</button>
+              <label>Beam radius w <input type="range" id="au-q-w" min="10" max="60" step="1" value="28"> <b id="au-q-w-v">0.28</b></label>
+            </div>
+          </div>
+          <div class="au-quad">
+            <svg id="au-qc" viewBox="0 0 300 300" role="img" aria-label="Quadrant photodiode with a draggable Gaussian beam spot"></svg>
+            <div>
+              <svg id="au-qcurve" viewBox="0 0 420 220" role="img" aria-label="Normalised horizontal error signal against beam displacement"></svg>
+              <div class="au-readout" id="au-q-out" aria-live="polite"></div>
+            </div>
+          </div>
+          <p class="au-cap">For a Gaussian spot of 1/e² radius w on an ideal split detector, X = erf(√2·x/w): linear only for displacements well below w, then saturating at ±1. A small spot is sensitive but has a short range; a large spot the reverse. Detector size is in units of the half-width of the detector; gaps between quadrants are ignored.</p>
+        </div>
+        <div class="au-grid3">
+          <div class="au-card"><span class="k">Four degrees of freedom</span><p>A beam has a position and an angle in each transverse direction. One detector sees position; a second placed at the focus of a lens sees angle. Two detectors and two piezo mirrors close all four loops. One detector and one mirror only fixes the spot at the detector, and may tilt the beam elsewhere.</p></div>
+          <div class="au-card"><span class="k">Commercial stabilisers</span><p>Closed-loop beam stabilisers (MRC Systems is a well-known example) combine piezo-driven steering mirrors with four-quadrant diodes and a controller. They are common in front of long beam paths, high-power fibres, SLMs and AODs, where a small angle becomes a large shift of a tweezer array.</p></div>
+          <div class="au-card"><span class="k">Without a detector</span><p>When you only care about the throughput (a fibre), use the throughput itself: a photodiode after the fibre and motorised mirror mounts, driven by a search or an optimiser. Slower, but it optimises exactly what you need.</p></div>
+        </div>
+        <h3 style="margin:var(--sp-6) 0 .6rem;font-size:1.02rem">Automatic fibre coupling: three published approaches</h3>
+        <div class="au-table-wrap">
+          <table class="au-table">
+            <thead><tr><th>Approach</th><th>Hardware</th><th>Method</th><th>Reported result</th></tr></thead>
+            <tbody>
+              <tr><td>Model-based (Geng et al., 2024)</td><td>Two 2D position-sensitive detectors, two piezo mirror mounts, a microcontroller</td><td>A linearised geometric model of the beam path, run as a state machine</td><td>Recovers the maximum coupling in about 10 s, even from a beam misaligned to zero coupling <span class="source-tag preprint">preprint</span></td></tr>
+              <tr><td>Optimiser (Mathew et al., 2020)</td><td>Stepper motors on the knobs of two kinematic mounts, a photodiode after the fibre, a Raspberry Pi</td><td>Gaussian-process optimiser (M-LOOP)</td><td>About 20 minutes for 200 runs; coupling as good as, or slightly better than, an experienced experimenter</td></tr>
+              <tr><td>Reinforcement learning (Richtmann et al., 2024)</td><td>Motorised mirror mounts with backlash and lost steps</td><td>Model-free RL agent trained on the real setup</td><td>90% coupling, comparable to a human expert; training took nearly four days at about one second per step <span class="source-tag preprint">preprint</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="au-note"><strong>The lesson generalises.</strong> If you can write a model of the system, a model-based loop is fastest. An optimiser needs no model but costs hundreds of measurements. Learning a policy costs the most, and pays off only when the task repeats under conditions a fixed model cannot capture.</div>
+      </section>
+
+      <!-- ══ 05 ══ -->
+      <section class="au-sec" id="relock" aria-labelledby="relock-h">
+        <h2 class="section-title" id="relock-h"><span class="accent">05</span> Auto-relock and calibration loops</h2>
+        <p class="au-lead">The most valuable automation in most labs is unglamorous: noticing that a lock has dropped, relocking it, and re-measuring the parameters that drift. Done well, it turns a machine that needs a student watching it into one that runs overnight.</p>
+        <div class="au-fig">
+          <div class="au-scroll"><svg class="au-svg" viewBox="0 0 960 250" role="img" aria-labelledby="au-relock-t au-relock-d">
+            <title id="au-relock-t">Auto-relock state machine</title>
+            <desc id="au-relock-d">Locked: monitor the lock. When a lock-lost condition is seen, flag the shots, park the servo, scan and find the resonance, engage the lock, and verify it holds. If verified, return to locked. After three failed attempts, pause the experiment and alert a person.</desc>
+            <defs><marker id="au-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--text-muted)"/></marker></defs>
+            <rect class="box hi" x="20" y="30" width="170" height="70" rx="10"/><text class="t1" x="36" y="56">Locked</text><text class="t2" x="36" y="76">monitor transmission,</text><text class="t2" x="36" y="92">error signal, integrator</text>
+            <rect class="box" x="250" y="30" width="170" height="70" rx="10"/><text class="t1" x="266" y="56">Lost lock</text><text class="t2" x="266" y="76">flag the shots, pause</text><text class="t2" x="266" y="92">the queue, park servo</text>
+            <rect class="box" x="480" y="30" width="170" height="70" rx="10"/><text class="t1" x="496" y="56">Search</text><text class="t2" x="496" y="76">scan piezo or current,</text><text class="t2" x="496" y="92">find the resonance</text>
+            <rect class="box" x="710" y="30" width="230" height="70" rx="10"/><text class="t1" x="726" y="56">Engage and verify</text><text class="t2" x="726" y="76">step to the peak, close the loop,</text><text class="t2" x="726" y="92">check it holds for N seconds</text>
+            <path class="wire" d="M190,65 H248" marker-end="url(#au-arr)"/>
+            <path class="wire" d="M420,65 H478" marker-end="url(#au-arr)"/>
+            <path class="wire" d="M650,65 H708" marker-end="url(#au-arr)"/>
+            <path class="wire fb" d="M825,100 V150 H105 V102" marker-end="url(#au-arr)"/>
+            <text class="t3" x="440" y="144" style="fill:var(--au-fb)">verified: resume the queue</text>
+            <path class="wire" d="M770,100 V128 H565 V102" marker-end="url(#au-arr)"/>
+            <text class="t3" x="590" y="124">failed: retry</text>
+            <rect class="box bad" x="480" y="180" width="460" height="52" rx="10"/><text class="t1" x="496" y="203">Three failures: stop and call a person</text><text class="t2" x="496" y="221">leave the hardware in a safe state, send a message with the last scan attached</text>
+            <path class="wire" d="M900,100 V178" marker-end="url(#au-arr)"/>
+            <text class="t3" x="22" y="196">The trigger condition and the</text><text class="t3" x="22" y="210">"is it really locked?" test matter</text><text class="t3" x="22" y="224">more than the search itself.</text>
+          </svg></div>
+        </div>
+        <div class="au-grid2">
+          <div class="au-card"><span class="k">Detecting a lost lock</span><ul>
+            <li>Cavity transmission or a beat note drops below a threshold.</li>
+            <li>The error signal's rms grows, or the integrator output approaches its rail (it will soon run out of range even if still locked).</li>
+            <li>A wavemeter reading leaves its window.</li>
+            <li>The atoms tell you: fluorescence or loading rate collapses. Treat this as a symptom to diagnose, not as a lock signal on its own.</li>
+          </ul></div>
+          <div class="au-card"><span class="k">Make it honest</span><ul>
+            <li><strong>Flag, don't average.</strong> Every shot records the lock state of every laser; shots taken while anything was unlocked are marked bad, not silently averaged in.</li>
+            <li><strong>Log every relock.</strong> A laser that relocks ten times a night is telling you something about its temperature or its current.</li>
+            <li><strong>Give up gracefully.</strong> A relock script that keeps trying forever can drive a laser to a mode hop or a piezo to its limit.</li>
+          </ul></div>
+        </div>
+        <h3 style="margin:var(--sp-6) 0 .6rem;font-size:1.02rem">Calibrations worth running on a schedule</h3>
+        <div class="au-table-wrap">
+          <table class="au-table">
+            <thead><tr><th>What drifts</th><th>Calibration experiment</th><th>What the script updates</th></tr></thead>
+            <tbody>
+              <tr><td>A transition frequency (field drift, light shifts)</td><td>Short spectroscopy scan across the line, fit the centre</td><td>The detuning parameter used by every later experiment</td></tr>
+              <tr><td>Rabi frequency (beam power, pointing, polarisation)</td><td>Rabi flop or a pulse-length scan, fit the period</td><td>The π-pulse time or amplitude</td></tr>
+              <tr><td>Bias magnetic field</td><td>Microwave or Raman spectroscopy on a field-sensitive transition</td><td>Compensation-coil setpoints</td></tr>
+              <tr><td>Tweezer-to-tweezer uniformity</td><td>Per-site light shift, loading or trap-frequency measurement</td><td>Per-tone amplitudes on the AWG (see the <a href="tweezer-designer.html">tweezer designer</a>)</td></tr>
+              <tr><td>Imaging threshold</td><td>Histogram of counts per site, fit the two peaks</td><td>The atom/no-atom threshold for each site</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="au-note"><strong>Calibrations depend on each other.</strong> A π-pulse calibration is meaningless if the resonance has moved. Google's superconducting-qubit group described organising calibrations as a directed acyclic graph: each node knows which others it depends on, checks them first, and only recalibrates what is out of date (Kelly et al., arXiv:1803.03226). The idea transfers directly to atoms. The cadence of each calibration should come from how fast that quantity actually drifts, which your monitoring logs (Section 10) will tell you.</div>
+      </section>
+
+      <!-- ══ 06 ══ -->
+      <section class="au-sec" id="workflow" aria-labelledby="workflow-h">
+        <h2 class="section-title" id="workflow-h"><span class="accent">06</span> Workflow: optimising one stage of the experiment</h2>
+        <p class="au-lead">Say the tweezer-loading probability has dropped and you want to re-optimise the stage that loads atoms from the MOT into the tweezers. The steps below work for any stage, with or without machine learning.</p>
+        <ol class="au-steps">
+          <li><strong>Define one number to maximise</strong>, measured at the end of the stage you are tuning (loading probability, atom number, temperature, survival). If you care about two things, combine them deliberately, for example atom number with a penalty above a temperature limit.<em class="why">Why: the optimiser will maximise exactly this number, flaws included (Section 01).</em></li>
+          <li><strong>Measure the noise of that number.</strong> Repeat the current settings 10–20 times. For a loading probability p from N shots the statistical error is √(p(1−p)/N): about 5% at p = 0.5 with 100 shots per point.<em class="why">Why: if two settings differ by less than this, no optimiser can tell them apart. It sets how many shots each point needs.</em></li>
+          <li><strong>Choose the parameters and safe bounds.</strong> Detunings, intensities, field gradients, durations. Start with the few you believe matter; bound each so that every combination is safe for the hardware.<em class="why">Why: cost grows with the number of parameters, and an optimiser will try the corners of the box.</em></li>
+          <li><strong>Freeze and monitor everything else.</strong> Lock states, laser powers, fields and the lab temperature should be logged alongside every shot.<em class="why">Why: a drift during the run looks to the optimiser like a change in the landscape.</em></li>
+          <li><strong>Look before you optimise.</strong> One-dimensional scans of each parameter around the current point show which ones matter and how smooth the landscape is.<em class="why">Why: if a 1D scan already finds the problem (a detuning off by a linewidth), you are done.</em></li>
+          <li><strong>Run the optimiser with reference points.</strong> Every so often re-measure the original settings.<em class="why">Why: if the reference drifts, the experiment changed under you, and the run must be corrected or restarted.</em></li>
+          <li><strong>Validate the winner.</strong> Re-measure the best settings many times, interleaved with the old ones. The best single measurement in a noisy run is biased high (the "winner's curse").<em class="why">Why: the improvement you report should survive a fair comparison.</em></li>
+          <li><strong>Understand it.</strong> Look at what the optimiser changed, and use its model of the landscape (if it has one) to see which parameters are sensitive.<em class="why">Why: a surprising optimum often reveals a misaligned beam or a wrong calibration, which is worth more than the gain itself.</em></li>
+          <li><strong>Write it down and schedule it.</strong> Commit the new values with a note (see <a href="control-systems.html">control systems: git</a>). If the optimum drifts, turn the stage into a periodic calibration (Section 05).<em class="why">Why: next month's student needs to know what changed and why.</em></li>
+        </ol>
+      </section>
+
+      <!-- ══ 07 ══ -->
+      <section class="au-sec" id="optimisers" aria-labelledby="optimisers-h">
+        <h2 class="section-title" id="optimisers-h"><span class="accent">07</span> Choosing an optimiser</h2>
+        <p class="au-lead">Every shot costs seconds and every measurement is noisy, so the question is not which optimiser is cleverest but which finds a good setting in the fewest shots, without being fooled by noise. The race below runs four common strategies on the same toy landscape.</p>
+        <div class="au-fig">
+          <div class="au-fig-top">
+            <div><h3>Optimiser race on a noisy two-parameter landscape</h3><p>Each panel shows the true landscape (stronger colour is better) and the points each strategy measured. The chart below shows, after each shot, how good the strategy's current best guess really is. Raise the noise to see which methods get fooled.</p></div>
+          </div>
+          <div class="au-controls">
+            <label>Shots <input type="range" id="au-r-n" min="20" max="120" step="5" value="60"> <b id="au-r-n-v">60</b></label>
+            <label>Noise <input type="range" id="au-r-s" min="0" max="30" step="1" value="10"> <b id="au-r-s-v">10%</b></label>
+            <button type="button" class="au-btn" id="au-r-run">Run</button>
+            <button type="button" class="au-btn" id="au-r-seed">New noise</button>
+          </div>
+          <canvas class="au-canvas" id="au-race" data-export-ready="true" aria-label="Four optimisers sampling a two-parameter landscape, and the true value of each one's best guess against the number of shots"></canvas>
+          <div class="au-race-key"><span><i style="--c:var(--au-ol)"></i>Grid scan</span><span><i style="--c:var(--au-ff)"></i>Random</span><span><i style="--c:var(--au-fb)"></i>Nelder–Mead</span><span><i style="--c:var(--au)"></i>Bayesian (Gaussian process)</span></div>
+          <div class="au-readout" id="au-race-out" aria-live="polite"></div>
+          <p class="au-cap">A toy landscape, not a real MOT: a broad main peak, a smaller second peak and a gentle slope, with Gaussian measurement noise in units of the peak height. Grid, random and Nelder–Mead report the best point they measured; the Bayesian optimiser reports the measured point its model rates highest, which is what protects it from lucky noisy shots. The grid uses the largest square number of shots that fits the budget. Results vary with the noise seed, so press "New noise" a few times before drawing conclusions.</p>
+        </div>
+        <div class="au-grid3">
+          <div class="au-card"><span class="k">Scans</span><h3>Grid and 1D scans</h3><p>Easy to understand and to plot, and the right first look. The cost is k<sup>d</sup> points for k values of d parameters, so a grid is hopeless beyond two or three parameters.</p></div>
+          <div class="au-card"><span class="k">Simplex</span><h3>Nelder–Mead</h3><p>Needs no model and few points per step. It was the workhorse of early online optimisation, but it can mistake noise for a slope and stall on a ridge, and it only finds the nearest peak.</p></div>
+          <div class="au-card"><span class="k">Model-based</span><h3>Bayesian optimisation</h3><p>Fits a Gaussian process (a smooth model with error bars) to every shot so far, then measures where the model says improvement is likely. Efficient for expensive, noisy shots and tens of parameters; Vendeiro et al. tuned up to 55.</p></div>
+          <div class="au-card"><span class="k">Population</span><h3>Evolutionary methods</h3><p>Differential evolution and CMA-ES keep a population of settings and breed better ones. Robust to noise and local peaks, but they spend more shots; good when shots are fast.</p></div>
+          <div class="au-card"><span class="k">Neural networks</span><h3>Neural-network learners</h3><p>Replace the Gaussian process with a network when there are many parameters. Tranter et al. tuned a 63-parameter MOT compression sequence this way.</p></div>
+          <div class="au-card"><span class="k">Policies</span><h3>Reinforcement learning</h3><p>For a different task: not one best set of numbers, but a policy that reacts to what it observes during the shot. Costly to train; usually trained in simulation first.</p></div>
+        </div>
+        <div class="au-note"><strong>Tools.</strong> <a href="https://github.com/michaelhush/M-LOOP" target="_blank" rel="noopener">M-LOOP</a> (Machine-Learner Online Optimization Package, from the group behind Wigley et al.) is built for exactly this job: it offers Gaussian-process, neural-net, differential-evolution, Nelder–Mead and random learners and talks to an experiment through files or a Python interface. General libraries such as scikit-optimize or BoTorch work too if you write the interface yourself. Either way the optimiser only proposes settings; your control system runs them (see <a href="control-systems.html">control systems</a>).</div>
+      </section>
+
+      <!-- ══ 08 ══ -->
+      <section class="au-sec" id="ml" aria-labelledby="ml-h">
+        <h2 class="section-title" id="ml-h"><span class="accent">08</span> Machine learning in AMO labs: what has been done</h2>
+        <p class="au-lead">Machine learning entered cold-atom labs as an optimiser for sequences too long to tune by hand, then spread to readout, control and alignment. These are representative papers, with what each one actually reports.</p>
+        <div class="au-table-wrap">
+          <table class="au-table">
+            <thead><tr><th>Paper</th><th>What was automated</th><th>Method</th><th>Reported result</th></tr></thead>
+            <tbody>
+              <tr><td>Wigley et al., <a href="https://doi.org/10.1038/srep25890" target="_blank" rel="noopener"><em>Sci. Rep.</em> 6, 25890 (2016)</a></td><td>Evaporation ramp for a Bose–Einstein condensate</td><td>Gaussian-process online optimiser (the origin of M-LOOP)</td><td>A ramp producing high-quality BECs in 10 times fewer iterations than the previous online optimiser (Nelder–Mead)</td></tr>
+              <tr><td>Tranter et al., <a href="https://doi.org/10.1038/s41467-018-06847-1" target="_blank" rel="noopener"><em>Nat. Commun.</em> 9, 4360 (2018)</a></td><td>MOT compression sequence for maximum optical depth</td><td>Stochastic artificial neural network; 63 parameters (21 time bins × 3 controls)</td><td>Optical depth 970 ± 20 against 535 ± 8 for the best human-designed sequence</td></tr>
+              <tr><td>Barker et al., <a href="https://doi.org/10.1088/2632-2153/ab6432" target="_blank" rel="noopener"><em>Mach. Learn.: Sci. Technol.</em> 1, 015007 (2020)</a></td><td>Laser cooling and evaporation together, for a BEC</td><td>Differential evolution, Gaussian process and neural network compared</td><td>Four times the BEC atom number of the manually optimised settings; a BEC from fully randomised starting parameters</td></tr>
+              <tr><td>Vendeiro et al., <a href="https://doi.org/10.1103/PhysRevResearch.4.043216" target="_blank" rel="noopener"><em>Phys. Rev. Research</em> 4, 043216 (2022)</a></td><td>Fast BEC production via Raman cooling in an optical trap</td><td>Bayesian optimisation of up to 55 control parameters</td><td>BECs of 2.8 × 10³ <sup>87</sup>Rb atoms from a room-temperature gas in 575 ms</td></tr>
+              <tr><td>Reinschmidt et al., <a href="https://doi.org/10.1038/s41467-024-52775-8" target="_blank" rel="noopener"><em>Nat. Commun.</em> 15, 8532 (2024)</a></td><td>Live control of a <sup>87</sup>Rb MOT (detuning and field gradient) from fluorescence images</td><td>Deep reinforcement learning, trained in simulation and transferred to the experiment</td><td>Adaptive loading control; compensated a sudden detuning step and met atom-number targets on demand</td></tr>
+              <tr><td>Phuttitarn et al., <a href="https://doi.org/10.1103/PhysRevApplied.22.024011" target="_blank" rel="noopener"><em>Phys. Rev. Applied</em> 22, 024011 (2024)</a></td><td>State readout of a Cs tweezer array</td><td>Convolutional neural networks on the camera images</td><td>Up to 56% (single-site) and 32% (whole-array) lower readout error; crosstalk correlation reduced by up to 78.5%</td></tr>
+              <tr><td>Lee &amp; Chae, <a href="https://arxiv.org/abs/2401.04893" target="_blank" rel="noopener">arXiv:2401.04893</a></td><td>Choosing tweezer moves for defect-free rearrangement</td><td>Reinforcement learning (PPO), simulations of 50–300 tweezers</td><td>A simulation study, compared against A* path search; no experiment <span class="source-tag preprint">preprint</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="au-note"><strong>Reading these papers.</strong> Notice what they compare against. "Better than our manual settings" depends on how hard the humans tried; "fewer shots than Nelder–Mead" is a cleaner benchmark. The lasting value is often in what the optimiser found: Tranter et al.'s sequences and Vendeiro et al.'s fast Raman-cooling route are now physics, not just numbers.</div>
+      </section>
+
+      <!-- ══ 09 ══ -->
+      <section class="au-sec" id="agents" aria-labelledby="agents-h">
+        <h2 class="section-title" id="agents-h"><span class="accent">09</span> AI agents and language models in the lab</h2>
+        <p class="au-lead">Since late 2024 several groups have connected large language models to real experiments, letting them plan, run and interpret measurements. These are early results, mostly preprints, and the architecture of each system is as instructive as the result.</p>
+        <div class="au-grid3">
+          <div class="au-card"><span class="k">Superconducting qubits</span><h3>k-agents (Cao et al.)</h3><p>LLM agents turn a lab procedure written in plain language into a state machine of experiments, run it, and use separate inspection agents to judge each result before moving on. They ran calibrations autonomously for hours on a 16-qubit processor, reaching 99.87% single-qubit gate fidelity after recalibration.</p><p style="font-size:.78rem;color:var(--text-muted)">arXiv:2412.07978; journal version in <em>Patterns</em> (2025).</p></div>
+          <div class="au-card"><span class="k">Cold atoms</span><h3>QCopilot (Sha et al.)</h3><p>A team of LLM agents (decision maker, experimenter, analyst, fault diagnoser, recorder) ran Bayesian optimisation on a Rb cold-atom apparatus and diagnosed faults. The authors report 10<sup>8</sup> sub-µK atoms without human intervention within a few hours, about 100 times faster than manual tuning.</p><p style="font-size:.78rem;color:var(--text-muted)">arXiv:2508.05421 <span class="source-tag preprint">preprint</span></p></div>
+          <div class="au-card"><span class="k">NV centres</span><h3>Agentic quantum sensing (Isogawa et al.)</h3><p>An LLM agent planned and interpreted NV-centre measurements, deciding for itself to run a CPMG follow-up after a weak Ramsey feature. It had no direct hardware access: it wrote requests to a queue that deterministic control software checked and executed.</p><p style="font-size:.78rem;color:var(--text-muted)">arXiv:2607.25145 <span class="source-tag preprint">preprint</span></p></div>
+        </div>
+        <div class="au-grid2" style="margin-top:var(--sp-5)">
+          <div class="au-card"><span class="k">Where LLMs help today</span><ul>
+            <li>Writing and explaining instrument drivers, analysis scripts and sequence code, which you then test like a new student's code.</li>
+            <li>Reading the night's logs and summarising what failed and when.</li>
+            <li>Turning a procedure you already do by hand into a script or a checklist.</li>
+            <li>Searching manuals and datasheets for the setting you need.</li>
+          </ul></div>
+          <div class="au-card warn"><span class="k">Guardrails</span><ul>
+            <li><strong>Hardware interlocks stay independent of all software</strong>, agent or not.</li>
+            <li><strong>The agent proposes, the control system disposes.</strong> Requests go through a queue that checks every parameter against fixed, safe ranges (the design in the NV-centre paper above).</li>
+            <li><strong>A person approves anything irreversible or hazardous</strong>: high laser power, coil currents, valves, bake-outs.</li>
+            <li><strong>Every action is logged</strong> with the reasoning the agent gave, so a bad night can be reconstructed.</li>
+          </ul></div>
+        </div>
+      </section>
+
+      <!-- ══ 10 ══ -->
+      <section class="au-sec" id="monitoring" aria-labelledby="monitoring-h">
+        <h2 class="section-title" id="monitoring-h"><span class="accent">10</span> The infrastructure that makes automation safe</h2>
+        <p class="au-lead">Automation without monitoring is a machine that fails quietly. These four pieces are what let a group trust an experiment that runs while nobody is watching.</p>
+        <div class="au-grid2">
+          <div class="au-card"><span class="k">Log every slow variable</span><p>Laser powers, lock states, wavemeter readings, temperatures and humidity, vacuum pressures, coil currents: sampled continuously into a time-series database with dashboards (a common choice is InfluxDB with Grafana). When the atom number dropped at 3 a.m., the logs show that the lab temperature rose at 2:40.</p></div>
+          <div class="au-card"><span class="k">Alert a person</span><p>A message to the group chat or a phone when a lock fails repeatedly, a pressure rises, cooling water stops, or a calibration lands far from its usual value. Alerts should be rare and specific, or people learn to ignore them.</p></div>
+          <div class="au-card"><span class="k">One source of truth for parameters</span><p>Calibrated values (resonances, π-times, thresholds) live in one database or file with history. Every shot records which values it used, and every automatic update is logged with the data that justified it.</p></div>
+          <div class="au-card"><span class="k">Test it without atoms</span><p>Run new automation against a simulator or with the lasers blocked before letting it loose. Check what it does when a sensor is unplugged, a reading is NaN or a device does not answer: those are the failures that happen at night.</p></div>
+        </div>
+      </section>
+
+      <!-- ══ 11 ══ -->
+      <section class="au-sec" id="checklist" aria-labelledby="checklist-h">
+        <h2 class="section-title" id="checklist-h"><span class="accent">11</span> Checklist before you let it run overnight</h2>
+        <ul class="au-check">
+          <li><strong>Every loop has limits</strong> on its output and a defined safe state when it gives up.</li>
+          <li><strong>Every shot records</strong> the lock states, the parameters used and the code version.</li>
+          <li><strong>The figure of merit has been checked</strong> by hand: it cannot be raised by a background, a saturated camera or a mis-set threshold.</li>
+          <li><strong>Reference measurements are interleaved</strong> so drift can be told apart from improvement.</li>
+          <li><strong>Someone gets a message</strong> if it stops, and knows what to do.</li>
+          <li><strong>In the morning, validate</strong> before you believe: re-measure the winner against the old settings.</li>
+        </ul>
+        <div class="au-note">Next in the build: <a href="cavity-qed.html">coupling atoms to a cavity</a>. The <a href="control-systems.html">control systems</a> page covers the hardware these loops run on, and the <a href="lab-techniques.html">lab handbook</a> the hands-on alignment that comes before any of this.</div>
+      </section>
+
+      <!-- ══ 12 ══ -->
+      <section class="au-sec" id="references" aria-labelledby="references-h">
+        <h2 class="section-title" id="references-h"><span class="accent">12</span> References and further reading</h2>
+        <div class="au-refs">
+          <h4>Feedback, feedforward and stabilisation</h4>
+          <div class="au-ref">B. Merkel et al., "Magnetic field stabilization system for atomic physics experiments," <a href="https://arxiv.org/abs/1808.03310" target="_blank" rel="noopener">arXiv:1808.03310</a>. Fluxgate feedback plus mains feedforward; the numbers in Section 03.</div>
+          <div class="au-ref">Y.-X. Chao et al., "Pound-Drever-Hall feedforward: laser phase noise suppression beyond feedback," <a href="https://doi.org/10.1364/OPTICA.516838" target="_blank" rel="noopener"><em>Optica</em> 11, 945 (2024)</a>, arXiv:2309.09759.</div>
+          <div class="au-ref">Y.-X. Chao et al., "Robust high-frequency laser phase noise suppression by adaptive Pound-Drever-Hall feedforward," <a href="https://arxiv.org/abs/2407.19642" target="_blank" rel="noopener">arXiv:2407.19642</a> <span class="source-tag preprint">preprint</span></div>
+          <div class="au-ref">MRC Systems beam position stabiliser, <a href="https://www.laserfocusworld.com/optics/article/16568295/mrc-systems-beam-position-stabilizer-uses-piezo-driven-steering-mirrors" target="_blank" rel="noopener">Laser Focus World product note</a> (2010): piezo steering mirrors with four-quadrant diodes.</div>
+          <h4>Auto-alignment</h4>
+          <div class="au-ref">Y. Geng et al., "A compact and open-source microcontroller-based rapid auto-alignment system," <a href="https://arxiv.org/abs/2405.02306" target="_blank" rel="noopener">arXiv:2405.02306</a> <span class="source-tag preprint">preprint</span></div>
+          <div class="au-ref">R. S. Mathew et al., "The Raspberry Pi auto-aligner: machine learning for automated alignment of laser beams," <a href="https://arxiv.org/abs/2010.15246" target="_blank" rel="noopener">arXiv:2010.15246</a>.</div>
+          <div class="au-ref">L. Richtmann et al., "Model-free reinforcement learning with noisy actions for automated experimental control in optics," <a href="https://arxiv.org/abs/2405.15421" target="_blank" rel="noopener">arXiv:2405.15421</a> <span class="source-tag preprint">preprint</span></div>
+          <h4>Calibration and optimisation</h4>
+          <div class="au-ref">J. Kelly et al., "Physical qubit calibration on a directed acyclic graph," <a href="https://arxiv.org/abs/1803.03226" target="_blank" rel="noopener">arXiv:1803.03226</a> <span class="source-tag preprint">preprint</span></div>
+          <div class="au-ref">P. B. Wigley et al., "Fast machine-learning online optimization of ultra-cold-atom experiments," <a href="https://doi.org/10.1038/srep25890" target="_blank" rel="noopener"><em>Sci. Rep.</em> 6, 25890 (2016)</a>; <a href="https://m-loop.readthedocs.io/en/latest/" target="_blank" rel="noopener">M-LOOP documentation</a>.</div>
+          <div class="au-ref">A. D. Tranter et al., "Multiparameter optimisation of a magneto-optical trap using deep learning," <a href="https://doi.org/10.1038/s41467-018-06847-1" target="_blank" rel="noopener"><em>Nat. Commun.</em> 9, 4360 (2018)</a>.</div>
+          <div class="au-ref">A. J. Barker et al., "Applying machine learning optimization methods to the production of a quantum gas," <a href="https://doi.org/10.1088/2632-2153/ab6432" target="_blank" rel="noopener"><em>Mach. Learn.: Sci. Technol.</em> 1, 015007 (2020)</a>.</div>
+          <div class="au-ref">Z. Vendeiro et al., "Machine-learning-accelerated Bose-Einstein condensation," <a href="https://doi.org/10.1103/PhysRevResearch.4.043216" target="_blank" rel="noopener"><em>Phys. Rev. Research</em> 4, 043216 (2022)</a>.</div>
+          <div class="au-ref">M. Reinschmidt et al., "Reinforcement learning in cold atom experiments," <a href="https://doi.org/10.1038/s41467-024-52775-8" target="_blank" rel="noopener"><em>Nat. Commun.</em> 15, 8532 (2024)</a>.</div>
+          <div class="au-ref">L. Phuttitarn et al., "Enhanced measurement of neutral atom qubits with machine learning," <a href="https://doi.org/10.1103/PhysRevApplied.22.024011" target="_blank" rel="noopener"><em>Phys. Rev. Applied</em> 22, 024011 (2024)</a>.</div>
+          <div class="au-ref">Y. Lee and E. Chae, "Machine learning-enhanced optical tweezers for defect-free rearrangement," <a href="https://arxiv.org/abs/2401.04893" target="_blank" rel="noopener">arXiv:2401.04893</a> <span class="source-tag preprint">preprint</span></div>
+          <h4>AI agents</h4>
+          <div class="au-ref">S. Cao et al., "Agents for self-driving laboratories applied to quantum computing," <a href="https://arxiv.org/abs/2412.07978" target="_blank" rel="noopener">arXiv:2412.07978</a>; journal version "Automating quantum computing laboratory experiments with an agent-based AI framework," <a href="https://doi.org/10.1016/j.patter.2025.101372" target="_blank" rel="noopener"><em>Patterns</em> 6 (2025)</a>.</div>
+          <div class="au-ref">R. Sha et al., "LLM-based multi-agent copilot for quantum sensor," <a href="https://arxiv.org/abs/2508.05421" target="_blank" rel="noopener">arXiv:2508.05421</a> <span class="source-tag preprint">preprint</span></div>
+          <div class="au-ref">T. Isogawa et al., "Agentic AI for scientific reasoning in autonomous quantum sensing experiments," <a href="https://arxiv.org/abs/2607.25145" target="_blank" rel="noopener">arXiv:2607.25145</a> <span class="source-tag preprint">preprint</span></div>
+        </div>
+      </section>
+
+    </div><!-- /.container -->
+  </div><!-- /.page-content -->
+</main><!-- /.page-wrap -->
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="control-systems.html">
+        <span class="see-also-icon">🎛️</span>
+        <div>
+          <div class="see-also-name">Experiment Control Systems</div>
+          <div class="see-also-desc">The hardware these loops run on</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="laser-locking.html">
+        <span class="see-also-icon">🔐</span>
+        <div>
+          <div class="see-also-name">Laser Locking Guide</div>
+          <div class="see-also-desc">The fastest feedback loops in the lab</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="lab-techniques.html">
+        <span class="see-also-icon">🔬</span>
+        <div>
+          <div class="see-also-name">AMO Lab Operations Handbook</div>
+          <div class="see-also-desc">Hands-on alignment before automation</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Automating the Experiment &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<!-- ──────── SCRIPTS ──────── -->
+<script src="../js/main.js?v=52"></script>
+<script>
+  renderNav({ active: 'automation', root: '../' });
+</script>
+<div id="amo-nav-ready" hidden></div>
+<script>
+(function () {
+  var css = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
+  var onTheme = function (fn) { new MutationObserver(fn).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); };
+  var $ = function (id) { return document.getElementById(id); };
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var mk = function (tag, attrs, parent) { var e = document.createElementNS(SVGNS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  function rng(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
+  function gauss(r) { var u = r() || 1e-12, v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function erf(x) { // Abramowitz–Stegun 7.1.26, |error| < 1.5e-7
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var t = 1 / (1 + 0.3275911 * x);
+    return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x));
+  }
+  function setupCanvas(cvs) {
+    var W = cvs.clientWidth, H = cvs.clientHeight, dpr = window.devicePixelRatio || 1, ctx = cvs.getContext('2d');
+    cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    ctx.font = '11px ' + (css('--font-mono') || 'monospace');
+    return { ctx: ctx, W: W, H: H };
+  }
+  function onResize(el, fn) { if (window.ResizeObserver) { var w0 = el.clientWidth; new ResizeObserver(function () { if (Math.abs(el.clientWidth - w0) > 4) { w0 = el.clientWidth; fn(); } }).observe(el); } }
+  function fmtHz(f) { return f >= 1e3 ? (f >= 1e4 ? Math.round(f / 1e3) : (f / 1e3).toFixed(1).replace(/\.0$/, '')) + ' kHz' : Math.round(f) + ' Hz'; }
+
+  /* ══ Section 02: power servo ══ */
+  (function () {
+    var cvs = $('au-servo'); if (!cvs) return;
+    var out = $('au-servo-out'), explain = $('au-servo-explain');
+    var mode = 'i', res = null, pending = false;
+    var TP = 0.5e-6, CAL = 0.05;
+    function fcVal() { return 100 * Math.pow(3000, +$('au-fc').value / 100); }
+    function simulate(o) {
+      var dt = 0.25e-6, T = 50e-3, N = Math.round(T / dt), r = rng(7), BIN = 40, NB = N / BIN;
+      var wc = 2 * Math.PI * o.fc, nd = Math.max(1, Math.round(o.delay / dt));
+      var buf = new Float64Array(nd), bi = 0, a = 0.5, integ = 0, y = 0;
+      var Kp = 10, wlp = wc / Kp, Ki = wc, Kp2 = 0.5;
+      var e2 = 0, n2 = 0, stepE = 0, nStep = 0, ramp = 0, sat = 0;
+      var Pmin = new Float32Array(NB), Pmax = new Float32Array(NB), R = new Float32Array(NB), OL = new Float32Array(NB), U = new Float32Array(NB);
+      for (var b = 0; b < NB; b++) { Pmin[b] = 9; Pmax[b] = -9; }
+      if (o.mode !== 'off' && o.ff === 'none') { integ = o.mode === 'p' ? 0 : 0.5; y = o.mode === 'p' ? 0.45 : 0; }
+      for (var i = 0; i < N; i++) {
+        var t = i * dt, bin = (i / BIN) | 0;
+        var Rt = t < 30e-3 ? 0.5 : (t < 35e-3 ? 0.5 + 0.3 * (t - 30e-3) / 5e-3 : 0.8);
+        var PL = 1 + 0.03 * Math.sin(2 * Math.PI * o.mains * t) + 0.015 * Math.sin(2 * Math.PI * 7 * t + 1.3) + 0.01 * Math.sin(2 * Math.PI * 23 * t + 4.1) + (t > 20e-3 ? -0.08 : 0) + 0.003 * gauss(r);
+        var PLm = PL + 0.001 * gauss(r);
+        var uff = o.ff === 'pick' ? Rt / (PLm * (1 + CAL)) : (o.ff === 'set' || o.mode === 'off') ? Rt : 0;
+        var P = PL * a, m = P + 0.001 * gauss(r), e = Rt - m, u;
+        if (o.mode === 'off') u = uff;
+        else if (o.mode === 'p') { y += dt * wlp * (Kp * e - y); u = uff + y; }
+        else if (o.mode === 'i') { u = uff + integ; if (u > 0 && u < 1) integ += wc * e * dt; }
+        else { u = uff + Kp2 * e + integ; if (u > 0 && u < 1) integ += Ki * e * dt; }
+        var us = Math.min(1, Math.max(0, u));
+        var ud = buf[bi]; buf[bi] = us; bi = (bi + 1) % nd;
+        if (i < nd) ud = us;
+        a += (ud - a) * dt / TP;
+        if (P < Pmin[bin]) Pmin[bin] = P; if (P > Pmax[bin]) Pmax[bin] = P;
+        if (i % BIN === 0) { R[bin] = Rt; OL[bin] = PL * Rt; U[bin] = us; }
+        if (t > 2e-3) {
+          var er = (P - Rt) / Rt; e2 += er * er; n2++;
+          if (us <= 0 || us >= 1) sat++;
+          if (t > 20.5e-3 && t < 25e-3) { stepE += Math.abs(er); nStep++; }
+          if (t > 30e-3 && t < 36e-3) ramp = Math.max(ramp, Math.abs(er));
+        }
+      }
+      return { Pmin: Pmin, Pmax: Pmax, R: R, OL: OL, U: U, NB: NB, rms: Math.sqrt(e2 / n2) * 100, step: stepE / nStep * 100, ramp: ramp * 100, sat: sat / n2 };
+    }
+    function run() {
+      pending = false;
+      var o = { mode: mode, ff: $('au-ff').value, fc: fcVal(), delay: +$('au-dl').value * 0.25e-6, mains: +$('au-mains').value };
+      $('au-fc-v').textContent = fmtHz(o.fc); $('au-dl-v').textContent = (o.delay * 1e6).toFixed(2).replace(/0$/, '') + ' µs';
+      $('au-fc').disabled = $('au-dl').disabled = (mode === 'off');
+      res = simulate(o); res.o = o; draw(); text();
+    }
+    function schedule() { if (!pending) { pending = true; requestAnimationFrame(run); } }
+    function draw() {
+      if (!res) return;
+      var c = setupCanvas(cvs), ctx = c.ctx, W = c.W, H = c.H;
+      var ink = css('--text-secondary'), mute = css('--text-muted'), grid = css('--border');
+      var cFb = css('--au-fb'), cOl = css('--au-ol'), cSp = css('--au-sp'), cU = css('--au-ff'), cWarn = css('--au-warn');
+      var L = 50, Rr = W - 12, t1 = 14, h1 = (H - 60) * 0.72, t2 = t1 + h1 + 18, h2 = H - t2 - 28;
+      var y1 = function (v) { return t1 + h1 - (Math.max(0.3, Math.min(1.0, v)) - 0.3) / 0.7 * h1; };
+      var y2 = function (v) { return t2 + h2 - v * h2; };
+      var X = function (b) { return L + b / res.NB * (Rr - L); };
+      ctx.strokeStyle = grid; ctx.lineWidth = 1;
+      ctx.strokeRect(L, t1, Rr - L, h1); ctx.strokeRect(L, t2, Rr - L, h2);
+      ctx.fillStyle = mute;
+      [0.4, 0.6, 0.8, 1.0].forEach(function (v) { var yy = y1(v); ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(Rr, yy); ctx.stroke(); ctx.fillText(v.toFixed(1), 18, yy + 4); });
+      for (var ms = 0; ms <= 50; ms += 10) { var xm = L + ms / 50 * (Rr - L); ctx.fillText(ms + ' ms', Math.min(xm - 12, Rr - 34), t2 + h2 + 16); }
+      ctx.save(); ctx.translate(11, t1 + h1 / 2 + 24); ctx.rotate(-Math.PI / 2); ctx.fillText('power at atoms', 0, 0); ctx.restore();
+      ctx.fillText('AOM drive', L + 6, t2 + 12);
+      ctx.fillText('1', 30, y2(1) + 4); ctx.fillText('0', 30, y2(0) + 4);
+      // events
+      [[20, 'laser drops 8%'], [30, 'setpoint ramp']].forEach(function (ev) {
+        var xe = L + ev[0] / 50 * (Rr - L); ctx.strokeStyle = grid; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(xe, t1); ctx.lineTo(xe, t2 + h2); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = mute; ctx.fillText(ev[1], xe + 4, t1 + 12);
+      });
+      var cols = Math.max(1, Math.floor(Rr - L)), per = res.NB / cols;
+      function line(arr, col, wdt, dash) {
+        ctx.strokeStyle = col; ctx.lineWidth = wdt; ctx.setLineDash(dash || []); ctx.beginPath();
+        for (var b = 0; b < res.NB; b += Math.max(1, Math.floor(per))) { var xx = X(b), yy = arr === res.U ? y2(arr[b]) : y1(arr[b]); if (b) ctx.lineTo(xx, yy); else ctx.moveTo(xx, yy); }
+        ctx.stroke(); ctx.setLineDash([]);
+      }
+      // open loop (grey band)
+      line(res.OL, cOl, 1.2);
+      // controlled power: min/max envelope per pixel
+      ctx.fillStyle = cFb; ctx.globalAlpha = 0.9;
+      for (var px = 0; px < cols; px++) {
+        var b0 = Math.floor(px * per), b1 = Math.max(b0 + 1, Math.floor((px + 1) * per)), lo = 9, hi = -9;
+        for (var b = b0; b < b1 && b < res.NB; b++) { if (res.Pmin[b] < lo) lo = res.Pmin[b]; if (res.Pmax[b] > hi) hi = res.Pmax[b]; }
+        var ya = y1(hi), yb = y1(lo); ctx.fillRect(L + px, ya, 1.2, Math.max(1.4, yb - ya));
+      }
+      ctx.globalAlpha = 1;
+      line(res.R, cSp, 1.4, [6, 4]);
+      line(res.U, cU, 1.4);
+      // legend
+      var lx = L + 8, ly = t1 + h1 - 10;
+      [[cOl, 'no control'], [cFb, 'with servo'], [cSp, 'setpoint']].forEach(function (k, i) { ctx.fillStyle = k[0]; ctx.fillRect(lx + i * 110, ly - 4, 14, 3); ctx.fillStyle = ink; ctx.fillText(k[1], lx + i * 110 + 18, ly); });
+      if (res.sat > 0.2) { ctx.fillStyle = cWarn; ctx.fillText('oscillating: the AOM drive slams between its limits', L + 8, t2 + h2 - 8); }
+    }
+    function text() {
+      var o = res.o, unstable = res.sat > 0.2 && o.mode !== 'off';
+      var span = function (l, v, bad) { return '<span' + (bad ? ' class="bad"' : '') + '>' + l + ' <b>' + v + '</b></span>'; };
+      out.innerHTML = span('rms power error', unstable ? 'unstable' : res.rms.toFixed(2) + '%', unstable || res.rms > 3) +
+        span('0.5–5 ms after the drop', res.step.toFixed(2) + '%', res.step > 3) +
+        span('worst error on the ramp', res.ramp.toFixed(1) + '%', res.ramp > 5) +
+        span('stability limit (I)', '≈ ' + fmtHz(1 / (4 * (o.delay + TP))), false);
+      var lagF = 1 / (2 * Math.PI * o.fc), msg;
+      if (o.mode === 'off') {
+        msg = o.ff === 'pick' ? '<b>Feedforward only.</b> The pick-off photodiode sees the laser fluctuate and the AOM compensates instantly, including the 8% drop. But a 5% calibration error leaves a constant offset that nothing corrects, and the pick-off cannot see anything that happens after it (fibre coupling, polarisation).'
+          : o.ff === 'set' ? '<b>Setpoint feedforward alone is open-loop control.</b> The ramp is right because the calibration table is right, but every fluctuation of the laser still reaches the atoms.'
+          : '<b>No control.</b> The power at the atoms follows every fluctuation of the laser: mains ripple, slow drift and the 8% drop.';
+      } else if (unstable) {
+        msg = '<b>Oscillating.</b> With ' + (o.delay * 1e6).toFixed(2) + ' µs of delay (plus the AOM response) the loop runs out of phase margin above about ' + fmtHz(1 / (4 * (o.delay + TP))) + '. Lower the bandwidth or the delay. PI keeps a little more margin than I at the same bandwidth.';
+      } else if (o.mode === 'p') {
+        msg = '<b>Proportional only.</b> The error is divided by 1 + K (here K = 10) but never removed, so a constant offset remains' + (o.ff === 'none' ? ': with no feedforward the power sits about 9% below the setpoint.' : '; feedforward has already done most of the work, so the leftover offset is small.') + ' An integrator removes the offset entirely.';
+      } else if (o.fc < 4 * o.mains) {
+        msg = '<b>Too slow.</b> At ' + fmtHz(o.fc) + ' the servo cannot follow the ' + o.mains + ' Hz ripple and lags the ramp. Raise the bandwidth, or add feedforward so the servo only handles what is left.';
+      } else if (o.ff === 'none') {
+        msg = '<b>Feedback only.</b> The integrator removes the drift and recovers from the drop in roughly 1/(2πf<sub>c</sub>) ≈ ' + (lagF * 1e3 < 1 ? (lagF * 1e6).toFixed(0) + ' µs' : (lagF * 1e3).toFixed(2) + ' ms') + '. It always reacts after the fact, so the ramp lags slightly. Setpoint feedforward removes that lag.';
+      } else {
+        msg = '<b>Feedforward plus feedback.</b> Feedforward does the predictable work instantly; the servo cleans up the calibration error and everything nobody predicted. This is how intensity servos inside a sequence are usually run.';
+      }
+      explain.innerHTML = msg;
+    }
+    document.querySelectorAll('#au-mode button').forEach(function (b) {
+      b.addEventListener('click', function () { mode = b.dataset.m; document.querySelectorAll('#au-mode button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); schedule(); });
+    });
+    ['au-fc', 'au-dl'].forEach(function (id) { $(id).addEventListener('input', schedule); });
+    ['au-ff', 'au-mains'].forEach(function (id) { $(id).addEventListener('change', schedule); });
+    run(); onTheme(draw); onResize(cvs, draw);
+  })();
+
+  /* ══ Section 04: quadrant photodiode ══ */
+  (function () {
+    var svg = $('au-qc'), curve = $('au-qcurve'); if (!svg) return;
+    var out = $('au-q-out');
+    var st = { x: 0.18, y: -0.1, vx: 0, vy: 0, w: 0.28, drift: false, lock: false }, raf = 0, last = 0, rnd = rng(11);
+    var R = 130, C = 150;
+    // static detector
+    var defs = mk('defs', {}, svg);
+    var gr = mk('radialGradient', { id: 'au-spot' }, defs);
+    mk('stop', { offset: '0%', 'stop-color': '#ef4444', 'stop-opacity': '0.95' }, gr);
+    mk('stop', { offset: '50%', 'stop-color': '#ef4444', 'stop-opacity': '0.45' }, gr);
+    mk('stop', { offset: '100%', 'stop-color': '#ef4444', 'stop-opacity': '0' }, gr);
+    var quads = [['A', 1, 1], ['B', -1, 1], ['C', -1, -1], ['D', 1, -1]], qText = {};
+    quads.forEach(function (q) {
+      var sx = q[1], sy = q[2];
+      var x0 = C + sx * 3, y0 = C - sy * 3, x1 = C + sx * R, y1 = C - sy * R;
+      var d = 'M' + x0 + ',' + y0 + ' L' + (C + sx * Math.sqrt(R * R - 9)) + ',' + y0 + ' A' + R + ',' + R + ' 0 0,' + (sx * sy > 0 ? 0 : 1) + ' ' + x0 + ',' + (C - sy * Math.sqrt(R * R - 9)) + ' Z';
+      mk('path', { 'class': 'q', d: d }, svg);
+      var l = mk('text', { 'class': 'ql', x: C + sx * 92, y: C - sy * 92 + 5, 'text-anchor': 'middle' }, svg); l.textContent = q[0];
+      qText[q[0]] = mk('text', { 'class': 'qv', x: C + sx * 92, y: C - sy * 92 + 22, 'text-anchor': 'middle' }, svg);
+    });
+    var spot = mk('circle', { fill: 'url(#au-spot)' }, svg);
+    var cross = mk('path', { stroke: '#ef4444', 'stroke-width': 1.2, fill: 'none' }, svg);
+    function sig() {
+      var fx = 0.5 * (1 + erf(Math.SQRT2 * st.x / st.w)), fy = 0.5 * (1 + erf(Math.SQRT2 * st.y / st.w));
+      return { A: fx * fy, B: (1 - fx) * fy, C: (1 - fx) * (1 - fy), D: fx * (1 - fy), X: 2 * fx - 1, Y: 2 * fy - 1 };
+    }
+    function drawCurve(s) {
+      while (curve.firstChild) curve.removeChild(curve.firstChild);
+      var L = 46, Rr = 410, T = 14, B = 186, xm = function (v) { return L + (v + 1) / 2 * (Rr - L); }, ym = function (v) { return T + (1 - v) / 2 * (B - T); };
+      mk('rect', { x: xm(-st.w / 2), y: T, width: xm(st.w / 2) - xm(-st.w / 2), height: B - T, style: 'fill:var(--au-bg)' }, curve);
+      mk('line', { x1: L, x2: Rr, y1: ym(0), y2: ym(0), style: 'stroke:var(--border)' }, curve);
+      mk('line', { x1: xm(0), x2: xm(0), y1: T, y2: B, style: 'stroke:var(--border)' }, curve);
+      mk('rect', { x: L, y: T, width: Rr - L, height: B - T, fill: 'none', style: 'stroke:var(--border-med)' }, curve);
+      var d = '';
+      for (var i = 0; i <= 200; i++) { var v = -1 + i / 100; d += (i ? 'L' : 'M') + xm(v).toFixed(1) + ',' + ym(erf(Math.SQRT2 * v / st.w)).toFixed(1); }
+      mk('path', { d: d, fill: 'none', style: 'stroke:var(--au-fb);stroke-width:2' }, curve);
+      mk('circle', { cx: xm(Math.max(-1, Math.min(1, st.x))), cy: ym(s.X), r: 5, style: 'fill:var(--au-ff)' }, curve);
+      [[-1, '−1'], [0, '0'], [1, '+1']].forEach(function (t) { var e = mk('text', { 'class': 'lbl', x: xm(t[0]), y: B + 14, 'text-anchor': 'middle' }, curve); e.textContent = t[1]; var f = mk('text', { 'class': 'lbl', x: L - 6, y: ym(t[0]) + 4, 'text-anchor': 'end' }, curve); f.textContent = t[1]; });
+      var a = mk('text', { 'class': 'lbl', x: (L + Rr) / 2, y: B + 30, 'text-anchor': 'middle' }, curve); a.textContent = 'beam position x (detector half-widths)';
+      var b = mk('text', { 'class': 'lbl', x: xm(st.w / 2) + 4, y: B - 8 }, curve); b.textContent = '← linear range ≈ ±w/2';
+      var c = mk('text', { 'class': 'lbl', x: L + 6, y: T + 12 }, curve); c.textContent = 'X';
+    }
+    function draw() {
+      var s = sig();
+      spot.setAttribute('cx', C + st.x * R); spot.setAttribute('cy', C - st.y * R); spot.setAttribute('r', Math.max(6, st.w * R * 1.25));
+      var px = C + st.x * R, py = C - st.y * R; cross.setAttribute('d', 'M' + (px - 6) + ',' + py + ' H' + (px + 6) + ' M' + px + ',' + (py - 6) + ' V' + (py + 6));
+      ['A', 'B', 'C', 'D'].forEach(function (k) { qText[k].textContent = (s[k] * 100).toFixed(0) + '%'; });
+      drawCurve(s);
+      out.innerHTML = '<span>X <b>' + s.X.toFixed(3) + '</b></span><span>Y <b>' + s.Y.toFixed(3) + '</b></span><span>Σ <b>1.00</b> (power)</span><span>Offset <b>' + (Math.hypot(st.x, st.y) / st.w).toFixed(2) + ' w</b></span><span>' + (st.lock ? 'Loop <b>locked</b>' : 'Loop <b>open</b>') + '</span>';
+    }
+    function step(ts) {
+      var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0.016; last = ts;
+      if (st.drift) { // slow wander: velocity is an Ornstein–Uhlenbeck process
+        st.vx += (-st.vx * 0.8 + 0.25 * gauss(rnd)) * dt; st.vy += (-st.vy * 0.8 + 0.25 * gauss(rnd)) * dt;
+        st.x += st.vx * dt; st.y += st.vy * dt;
+      }
+      if (st.lock) { var s = sig(), k = 3.0; st.x -= k * s.X * st.w * 0.6 * dt; st.y -= k * s.Y * st.w * 0.6 * dt; }
+      st.x = Math.max(-0.9, Math.min(0.9, st.x)); st.y = Math.max(-0.9, Math.min(0.9, st.y));
+      draw();
+      if (st.drift || (st.lock && Math.hypot(st.x, st.y) > 1e-3)) raf = requestAnimationFrame(step); else { raf = 0; last = 0; }
+    }
+    function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(step); } }
+    function toggle(btn, key) { btn.addEventListener('click', function () { st[key] = !st[key]; btn.setAttribute('aria-pressed', String(st[key])); draw(); kick(); }); }
+    toggle($('au-q-drift'), 'drift'); toggle($('au-q-lock'), 'lock');
+    $('au-q-w').addEventListener('input', function () { st.w = +this.value / 100; $('au-q-w-v').textContent = st.w.toFixed(2); draw(); kick(); });
+    var drag = false;
+    function toLocal(ev) { var r = svg.getBoundingClientRect(), sx = 300 / r.width; st.x = ((ev.clientX - r.left) * sx - C) / R; st.y = -((ev.clientY - r.top) * sx - C) / R; st.x = Math.max(-0.9, Math.min(0.9, st.x)); st.y = Math.max(-0.9, Math.min(0.9, st.y)); st.vx = st.vy = 0; draw(); }
+    svg.addEventListener('pointerdown', function (ev) { drag = true; svg.setPointerCapture(ev.pointerId); toLocal(ev); });
+    svg.addEventListener('pointermove', function (ev) { if (drag) toLocal(ev); });
+    svg.addEventListener('pointerup', function () { drag = false; kick(); });
+    svg.setAttribute('tabindex', '0');
+    svg.addEventListener('keydown', function (ev) { var d = 0.03, m = { ArrowLeft: [-d, 0], ArrowRight: [d, 0], ArrowUp: [0, d], ArrowDown: [0, -d] }[ev.key]; if (m) { ev.preventDefault(); st.x = Math.max(-0.9, Math.min(0.9, st.x + m[0])); st.y = Math.max(-0.9, Math.min(0.9, st.y + m[1])); draw(); kick(); } });
+    draw();
+  })();
+
+  /* ══ Section 07: optimiser race ══ */
+  (function () {
+    var cvs = $('au-race'); if (!cvs) return;
+    var out = $('au-race-out'), seed = 3, res = null, shown = 0, anim = 0;
+    function f(x, y) {
+      return Math.exp(-(Math.pow(x - 0.7, 2) / (2 * 0.2 * 0.2) + Math.pow(y - 0.35, 2) / (2 * 0.26 * 0.26)))
+        + 0.55 * Math.exp(-(Math.pow(x - 0.18, 2) + Math.pow(y - 0.8, 2)) / (2 * 0.08 * 0.08)) + 0.1 * y;
+    }
+    var FMAX = 0; for (var i = 0; i <= 200; i++) for (var j = 0; j <= 200; j++) FMAX = Math.max(FMAX, f(i / 200, j / 200));
+    var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
+    function methods(B, sig, sd) {
+      var res = {};
+      function runner(name, gen) {
+        var r = rng(sd * 97 + name.charCodeAt(0) + name.length * 13), pts = [], rec = [];
+        var meas = function (x, y) { x = clamp(x); y = clamp(y); var v = f(x, y) + sig * gauss(r); pts.push([x, y, v]); return v; };
+        try { gen(meas, r, pts, rec, B); } catch (e) { if (e !== 'done') throw e; }
+        res[name] = { pts: pts.slice(0, B), rec: rec.slice(0, B) };
+      }
+      function bestObs(pts) { var b = 0; for (var k = 1; k < pts.length; k++) if (pts[k][2] > pts[b][2]) b = k; return [pts[b][0], pts[b][1]]; }
+      function wrap(meas, pts, rec, B) { return function (x, y) { if (pts.length >= B) throw 'done'; var v = meas(x, y); rec.push(bestObs(pts)); return v; }; }
+      runner('grid', function (meas, r, pts, rec, B) { var k = Math.floor(Math.sqrt(B)), m = wrap(meas, pts, rec, B); for (var a = 0; a < k; a++) for (var b = 0; b < k; b++) m((b + 0.5) / k, (a + 0.5) / k); });
+      runner('random', function (meas, r, pts, rec, B) { var m = wrap(meas, pts, rec, B); for (var a = 0; a < B; a++) m(r(), r()); });
+      runner('nm', function (meas, r, pts, rec, B) {
+        var m = wrap(meas, pts, rec, B), F = function (p) { return -m(p[0], p[1]); };
+        var S = [[0.25, 0.25], [0.45, 0.25], [0.25, 0.45]].map(function (p) { return { p: p, v: F(p) }; });
+        while (true) {
+          S.sort(function (a, b) { return a.v - b.v; });
+          var c = [(S[0].p[0] + S[1].p[0]) / 2, (S[0].p[1] + S[1].p[1]) / 2], w = S[2];
+          var pt = function (t) { return [clamp(c[0] + t * (w.p[0] - c[0])), clamp(c[1] + t * (w.p[1] - c[1]))]; };
+          var xr = pt(-1), vr = F(xr);
+          if (vr < S[0].v) { var xe = pt(-2), ve = F(xe); S[2] = ve < vr ? { p: xe, v: ve } : { p: xr, v: vr }; }
+          else if (vr < S[1].v) S[2] = { p: xr, v: vr };
+          else { var xc = vr < w.v ? pt(-0.5) : pt(0.5), vc = F(xc);
+            if (vc < Math.min(vr, w.v)) S[2] = { p: xc, v: vc };
+            else { for (var q = 1; q < 3; q++) { var p2 = [(S[0].p[0] + S[q].p[0]) / 2, (S[0].p[1] + S[q].p[1]) / 2]; S[q] = { p: p2, v: F(p2) }; } } }
+        }
+      });
+      runner('bo', function (meas, r, pts, rec, B) {
+        var A2 = 0.1, ell = 0.15, nv = Math.max(1e-6, sig * sig), G = 31, cand = [];
+        for (var a = 0; a < G; a++) for (var b = 0; b < G; b++) cand.push([b / (G - 1), a / (G - 1)]);
+        var k = function (p, q) { var dx = p[0] - q[0], dy = p[1] - q[1]; return A2 * Math.exp(-(dx * dx + dy * dy) / (2 * ell * ell)); };
+        var model = function () {
+          var n = pts.length, mean = 0; pts.forEach(function (p) { mean += p[2]; }); mean /= n;
+          var Lm = new Float64Array(n * n);
+          for (var i = 0; i < n; i++) for (var j = 0; j <= i; j++) {
+            var s = k(pts[i], pts[j]) + (i === j ? nv : 0);
+            for (var t = 0; t < j; t++) s -= Lm[i * n + t] * Lm[j * n + t];
+            Lm[i * n + j] = i === j ? Math.sqrt(Math.max(s, 1e-12)) : s / Lm[j * n + j];
+          }
+          var solveL = function (v) { var z = new Float64Array(n); for (var i = 0; i < n; i++) { var s = v[i]; for (var t = 0; t < i; t++) s -= Lm[i * n + t] * z[t]; z[i] = s / Lm[i * n + i]; } return z; };
+          var z = solveL(pts.map(function (p) { return p[2] - mean; })), al = new Float64Array(n);
+          for (var i2 = n - 1; i2 >= 0; i2--) { var s2 = z[i2]; for (var t2 = i2 + 1; t2 < n; t2++) s2 -= Lm[t2 * n + i2] * al[t2]; al[i2] = s2 / Lm[i2 * n + i2]; }
+          return function (c, wantVar) {
+            var ks = pts.map(function (p) { return k(c, p); }), mu = mean; for (var i = 0; i < n; i++) mu += ks[i] * al[i];
+            if (!wantVar) return [mu, 0];
+            var v = solveL(ks), vv = 0; for (i = 0; i < n; i++) vv += v[i] * v[i];
+            return [mu, Math.max(1e-12, A2 - vv)];
+          };
+        };
+        var recGP = function () { var M = model(), best = 0, bv = -1e9; pts.forEach(function (p, i) { var mu = M(p, false)[0]; if (mu > bv) { bv = mu; best = i; } }); return [pts[best][0], pts[best][1]]; };
+        var m = function (x, y) { if (pts.length >= B) throw 'done'; meas(x, y); rec.push(recGP()); };
+        for (var s0 = 0; s0 < 5; s0++) m(r(), r());
+        while (true) {
+          var M = model(), fb = -1e9; pts.forEach(function (p) { fb = Math.max(fb, M(p, false)[0]); });
+          var bestC = null, bestEI = -1;
+          cand.forEach(function (c) { var o = M(c, true), sd2 = Math.sqrt(o[1]), zz = (o[0] - fb - 0.01) / sd2;
+            var pdf = Math.exp(-zz * zz / 2) / Math.sqrt(2 * Math.PI), cdf = 0.5 * (1 + erf(zz / Math.SQRT2)), ei = (o[0] - fb - 0.01) * cdf + sd2 * pdf;
+            if (ei > bestEI) { bestEI = ei; bestC = c; } });
+          m(bestC[0] + (r() - 0.5) / (G - 1) * 0.5, bestC[1] + (r() - 0.5) / (G - 1) * 0.5);
+        }
+      });
+      return res;
+    }
+    var ORDER = [['grid', 'Grid scan', '--au-ol'], ['random', 'Random', '--au-ff'], ['nm', 'Nelder–Mead', '--au-fb'], ['bo', 'Bayesian', '--au']];
+    function compute() {
+      var B = +$('au-r-n').value, sig = +$('au-r-s').value / 100;
+      $('au-r-n-v').textContent = B; $('au-r-s-v').textContent = Math.round(sig * 100) + '%';
+      res = methods(B, sig, seed); res.B = B; shown = B; draw();
+    }
+    function draw() {
+      if (!res) return;
+      var c = setupCanvas(cvs), ctx = c.ctx, W = c.W, H = c.H, mute = css('--text-muted'), ink = css('--text-secondary'), grid = css('--border'), au = css('--au');
+      var narrow = W < 620, cols = narrow ? 2 : 4, gap = 12, ps = Math.min((W - gap * (cols - 1)) / cols, narrow ? 999 : 260);
+      var rows = narrow ? 2 : 1, top = 18, chartTop = top + rows * (ps + 22) + 30, chartH = H - chartTop - 30;
+      var startX = (W - (cols * ps + (cols - 1) * gap)) / 2;
+      ORDER.forEach(function (o, idx) {
+        var col = idx % cols, row = Math.floor(idx / cols), x0 = startX + col * (ps + gap), y0 = top + row * (ps + 22);
+        var color = css(o[2]), N = 36, cell = ps / N;
+        for (var a = 0; a < N; a++) for (var b = 0; b < N; b++) { var v = f((b + 0.5) / N, 1 - (a + 0.5) / N) / FMAX; ctx.globalAlpha = 0.06 + 0.5 * v * v; ctx.fillStyle = au; ctx.fillRect(x0 + b * cell, y0 + a * cell, cell + 0.5, cell + 0.5); }
+        ctx.globalAlpha = 1; ctx.strokeStyle = grid; ctx.strokeRect(x0, y0, ps, ps);
+        ctx.fillStyle = ink; ctx.fillText(o[1], x0, y0 - 5);
+        var R = res[o[0]], n = Math.min(shown, R.pts.length);
+        for (var k = 0; k < n; k++) { var p = R.pts[k]; ctx.beginPath(); ctx.arc(x0 + p[0] * ps, y0 + (1 - p[1]) * ps, 3, 0, 2 * Math.PI); ctx.fillStyle = color; ctx.globalAlpha = 0.5 + 0.5 * (k + 1) / n; ctx.fill(); ctx.strokeStyle = css('--bg-card'); ctx.lineWidth = 0.8; ctx.stroke(); }
+        ctx.globalAlpha = 1;
+        if (n) { var rc = R.rec[n - 1]; ctx.beginPath(); ctx.arc(x0 + rc[0] * ps, y0 + (1 - rc[1]) * ps, 8, 0, 2 * Math.PI); ctx.strokeStyle = css('--text-primary'); ctx.lineWidth = 2; ctx.stroke(); }
+        ctx.fillStyle = mute; if (row === rows - 1) ctx.fillText('parameter 1 →', x0, y0 + ps + 13);
+      });
+      // chart
+      var L = 46, Rr = W - 10, B = res.B;
+      ctx.strokeStyle = grid; ctx.lineWidth = 1; ctx.strokeRect(L, chartTop, Rr - L, chartH);
+      ctx.fillStyle = mute;
+      [0, 0.25, 0.5, 0.75, 1].forEach(function (v) { var yy = chartTop + chartH - v * chartH; ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(Rr, yy); ctx.stroke(); ctx.fillText(Math.round(v * 100) + '%', 8, yy + 4); });
+      ctx.fillStyle = ink; ctx.fillText(narrow ? 'Best guess, % of the true maximum' : 'True value of each strategy\'s best guess (% of the global maximum) after each shot', L, chartTop - 8); ctx.fillStyle = mute;
+      for (var s = 0; s <= B; s += (B > 60 ? 20 : 10)) ctx.fillText(String(s), L + s / B * (Rr - L) - 6, chartTop + chartH + 15);
+      ORDER.forEach(function (o) {
+        var R = res[o[0]], n = Math.min(shown, R.rec.length); if (!n) return;
+        ctx.strokeStyle = css(o[2]); ctx.lineWidth = o[0] === 'bo' ? 2.4 : 1.8; ctx.beginPath();
+        for (var k = 0; k < n; k++) { var v = f(R.rec[k][0], R.rec[k][1]) / FMAX, xx = L + (k + 1) / B * (Rr - L), yy = chartTop + chartH - Math.max(0, v) * chartH; if (k) ctx.lineTo(xx, yy); else ctx.moveTo(xx, yy); }
+        ctx.stroke();
+      });
+      out.innerHTML = ORDER.map(function (o) { var R = res[o[0]], n = Math.min(shown, R.rec.length); var v = n ? f(R.rec[n - 1][0], R.rec[n - 1][1]) / FMAX * 100 : 0; return '<span>' + o[1] + ' <b>' + v.toFixed(0) + '%</b></span>'; }).join('') + '<span>after <b>' + shown + '</b> shots</span>';
+    }
+    function play() {
+      cancelAnimationFrame(anim); shown = 0; var t0 = 0;
+      var tick = function (ts) { if (!t0) t0 = ts; shown = Math.min(res.B, Math.ceil((ts - t0) / 3000 * res.B)); draw(); if (shown < res.B) anim = requestAnimationFrame(tick); };
+      anim = requestAnimationFrame(tick);
+    }
+    $('au-r-run').addEventListener('click', function () { compute(); play(); });
+    $('au-r-seed').addEventListener('click', function () { seed++; compute(); play(); });
+    ['au-r-n', 'au-r-s'].forEach(function (id) { $(id).addEventListener('change', function () { cancelAnimationFrame(anim); compute(); }); $(id).addEventListener('input', function () { $('au-r-n-v').textContent = $('au-r-n').value; $('au-r-s-v').textContent = $('au-r-s').value + '%'; }); });
+    compute(); onTheme(draw); onResize(cvs, draw);
+  })();
+})();
+</script>
+</body>
+</html>
