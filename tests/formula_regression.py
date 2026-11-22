@@ -1108,6 +1108,28 @@ def test_notebooks() -> None:
     assert "NOTEBOOKS.has(key)" in js and (nb_dir / "README.md").exists() and (nb_dir / "requirements.txt").exists()
 
 
+def test_book() -> None:
+    """Building with Atoms (2026-11-22): the book has a chapter for every story page, its images exist, its
+    contents carry PDF page numbers, it never points at the local build server, and the site links to it."""
+    import re
+    book = ROOT / "book"
+    html = (book / "index.html").read_text()
+    js = read("js/main.js")
+    keys = re.findall(r"key: '([a-z0-9-]+)',\s+step: \d+", js)
+    for k in keys:
+        assert f'id="ch-{k}"' in html, k
+    assert "127.0.0.1" not in html and "localhost" not in html
+    for src in set(re.findall(r'src="(img/[^"]+)"', html)):
+        assert (book / src).exists(), src
+    pgs = re.findall(r'<span class="pg" data-pg="[^"]+">(\d*)</span>', html)
+    assert pgs and all(pgs), "contents without page numbers"
+    pdf = book / "building-with-atoms.pdf"
+    assert pdf.exists() and pdf.stat().st_size > 1_000_000
+    assert 'href="book/"' in read("home.html") and 'href="../book/"' in read("pages/start-here.html") and 'pages/teach.html' in html
+    assert "${root}book/" in js and "byHref.set('book:overview'" in js
+    assert (book / "_build" / "extract.js").exists() and (book / "katex" / "katex.min.css").exists()
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1223,6 +1245,7 @@ def main() -> None:
         test_automation_page,
         test_teach_page,
         test_notebooks,
+        test_book,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

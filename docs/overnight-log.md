@@ -355,3 +355,9 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - Linked from each page's playbook note and a new Teach §05 table; README with Colab links.
 - Found while porting: laser-locking showed "Pump needed: 0.00 mW" (4.3 µW) and lab-calculators showed z_R = "0.00 mm" (2.66 µm) and x_zpf in thousands of pm; all now print in sensible units. The MOT/cooling notebooks and the week-5 problem now give the damping maximum as (Γ/2)√((1+s)/3), which is Γ/2√3 only as s → 0.
 - main.js v54 on all 39 HTML files. Tests: OK 42 (new `test_notebooks`).
+
+## 2026-11-22: The book, *Building with Atoms* ("compile all the information on the website into a book people can read online and download")
+- New `book/`: `index.html` (online reader with a side contents list and a Download PDF bar) and `building-with-atoms.pdf` (7 × 10 in, ~386 pages, outline, clickable links to every live page, notebook and reference). 35 chapters in the NAV order of the four stories, Part V the 14-week course, appendices for notebooks, constants, citing and responsible use. Each chapter carries its page's Teach problems.
+- Generated from the live pages by `book/_build/` (extract → build → polish; two PDF passes so the contents carry page numbers). Interactive widgets appear as their default-setting output with links back to the website.
+- Found while extracting: `\( … \)` TeX on lab-calculators, rydberg-calculator and tof-calculator was never rendered (the site's auto-render only knows `$` and `$$`); now `$ … $`.
+- Linked from nav ("Book"), mobile menu, home (hero, Guided Paths, footer), Start Here, Teach §01, search. main.js v56, styles.css v39 on all 39 HTML files (and in sw.js). Tests: OK 43 (new `test_book`).

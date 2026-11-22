@@ -517,6 +517,7 @@ function renderNav({ active = '', root = '' } = {}) {
           ${dropdown('Quantum Computing', NAV.quantum, 'Turn trapped atoms into a quantum computer', 640)}
           ${dropdown('Career & Literature', NAV.career, 'Take it into a career', 640)}
           <a class="nav-btn" href="${root}pages/teach.html">Teach</a>
+          <a class="nav-btn" href="${root}book/">Book</a>
           <a class="nav-btn" href="${root}home.html#about">About</a>
         </div>
 
@@ -540,6 +541,7 @@ function renderNav({ active = '', root = '' } = {}) {
         <div class="nav-mobile-section-title">Start Here</div>
         <a class="nav-mobile-link" href="${root}pages/start-here.html"><span>🗺️</span> Site Map &amp; Start Here</a>
         <a class="nav-mobile-link" href="${root}pages/teach.html"><span>🎓</span> Teach with AMO Toolkit</a>
+        <a class="nav-mobile-link" href="${root}book/"><span>📘</span> The book: Building with Atoms</a>
         <a class="nav-mobile-link" href="${root}home.html#intent-paths"><span>🧭</span> I am trying to...</a>
         <a class="nav-mobile-link" href="${root}home.html#paths"><span>🧩</span> Guided Paths (home)</a>
       </div>
@@ -789,6 +791,7 @@ const SEARCH_KEYWORDS = {
   'quantum-algorithms': 'quantum algorithms Deutsch-Jozsa Grover Shor VQE',
   'analog-sim': 'analog simulation Hubbard model Ising Hamiltonian BEC-BCS crossover',
   'start-here': 'site map directory start here where to begin guided paths recommended order navigation overview',
+  'book': 'book pdf download offline building with atoms training kit read print chapters everything in one place',
   'teach': 'teach course syllabus lectures semester 14 weeks problem sets homework exercises instructors solutions final projects curriculum',
 };
 
@@ -825,6 +828,15 @@ function getSearchEntries(root = '') {
     href: `${root}pages/laser-cooling.html`,
     color: '#a13c1c',
     keywords: SEARCH_KEYWORDS['laser-cooling'].toLowerCase(),
+  });
+
+  byHref.set('book:overview', {
+    key: 'book',
+    title: 'Building with Atoms (the book)',
+    icon: '📘',
+    href: `${root}book/`,
+    color: '#a13c1c',
+    keywords: SEARCH_KEYWORDS['book'].toLowerCase(),
   });
 
   byHref.set('teach:overview', {
