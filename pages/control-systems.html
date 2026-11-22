@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experiment Control Systems — AMO Toolkit</title>
+  <meta name="description" content="How an AMO experiment is controlled: TTL, DAC, ADC, DDS and AWG signals, hardware timing and delays, pulse shaping, ARTIQ/Sinara, labscript and NI DAQ, Python control and git for a shared experiment.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/control-systems.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Experiment Control Systems — AMO Toolkit">
+  <meta property="og:description" content="TTL, DAC, ADC, DDS and AWG signals, timing and delays, pulse shaping, ARTIQ, labscript and NI DAQ, Python control and git for an AMO experiment.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/control-systems.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Experiment Control Systems">
+  <meta name="twitter:description" content="How AMO experiments are timed and controlled: signals, timing, pulse shaping, ARTIQ, labscript, NI DAQ, Python and git.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Experiment Control Systems","description":"How an AMO experiment is controlled: signals, hardware timing, pulse shaping, ARTIQ/Sinara, labscript, NI DAQ, Python control and git.","url":"https://amotoolkit.com/pages/control-systems.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Experiment Control Systems","item":"https://amotoolkit.com/pages/control-systems.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=36">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+
+  <style>
+    /* ── Control-systems page ── */
+    :root { --cs: #2c4a63; --cs-ink: #24405a; --cs-bg: rgba(44,74,99,0.07); --cs-border: rgba(44,74,99,0.24);
+            --cs-ttl: #b45309; --cs-dds: #6d28d9; --cs-dac: #047857; --cs-adc: #0369a1; --cs-awg: #be185d; --cs-warn: #b91c1c; }
+    [data-theme="dark"] { --cs: #8fbde0; --cs-ink: #a8cbe6; --cs-bg: rgba(143,189,224,0.07); --cs-border: rgba(143,189,224,0.22);
+            --cs-ttl: #fbbf24; --cs-dds: #c4b5fd; --cs-dac: #34d399; --cs-adc: #7dd3fc; --cs-awg: #f9a8d4; --cs-warn: #f87171; }
+
+    .cs-sec { margin: 0 0 var(--sp-12); scroll-margin-top: 90px; }
+    .cs-sec > .section-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 .25rem; border-left: 3px solid var(--cs); padding-left: .75rem; }
+    .cs-lead { color: var(--text-secondary); font-size: .92rem; line-height: 1.7; margin: 0 0 var(--sp-5) .85rem; max-width: 82ch; }
+    .cs-p { color: var(--text-secondary); line-height: 1.75; font-size: .93rem; max-width: 86ch; }
+    .cs-p strong { color: var(--text-primary); }
+    .cs-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+    .cs-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+    @media (max-width: 900px) { .cs-grid3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px) { .cs-grid2, .cs-grid3 { grid-template-columns: 1fr; } }
+    .cs-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-5); }
+    .cs-card h3 { margin: 0 0 .45rem; font-size: 1rem; color: var(--text-primary); }
+    .cs-card p, .cs-card li { color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
+    .cs-card p { margin: 0 0 .5rem; }
+    .cs-card p:last-child { margin-bottom: 0; }
+    .cs-card ul { list-style: disc; margin: .3rem 0 0; padding-left: 1.1rem; }
+    .cs-card li { margin-bottom: .2rem; }
+    .cs-card .k { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cs-ink); display: block; margin-bottom: .3rem; }
+    .cs-note { border-left: 3px solid var(--cs); background: var(--cs-bg); border-radius: 0 var(--r) var(--r) 0; padding: .75rem 1rem; margin: var(--sp-4) 0; color: var(--text-secondary); font-size: .875rem; line-height: 1.68; }
+    .cs-note strong { color: var(--text-primary); }
+    .cs-fig { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-4); margin: var(--sp-4) 0 var(--sp-5); }
+    .cs-fig-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; align-items: flex-start; margin-bottom: .6rem; }
+    .cs-fig-top h3 { margin: 0; font-size: 1.05rem; }
+    .cs-fig-top p { margin: .2rem 0 0; color: var(--text-secondary); font-size: .86rem; line-height: 1.6; max-width: 76ch; }
+    .cs-cap { font-size: .78rem; color: var(--text-muted); line-height: 1.55; margin: .6rem 0 0; }
+    .cs-controls { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; margin: .4rem 0 .6rem; font-size: .84rem; color: var(--text-secondary); }
+    .cs-controls label { display: inline-flex; align-items: center; gap: .4rem; }
+    .cs-controls input[type=range] { width: 150px; accent-color: var(--cs); }
+    .cs-controls select { font: inherit; font-size: .82rem; padding: .2rem .4rem; border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-primary); }
+    .cs-seg { display: inline-flex; border: 1px solid var(--border-med); border-radius: 999px; overflow: hidden; }
+    .cs-seg button { font: inherit; font-size: .78rem; padding: .28rem .8rem; background: transparent; border: 0; color: var(--text-secondary); cursor: pointer; }
+    .cs-seg button[aria-pressed="true"] { background: var(--cs-bg); color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--cs); }
+    .cs-readout { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+    .cs-readout span { font-size: .8rem; color: var(--text-secondary); padding: .25rem .7rem; border-radius: 999px; border: 1px solid var(--border); background: color-mix(in srgb, var(--bg-card) 70%, transparent); }
+    .cs-readout b { font-family: var(--font-mono); color: var(--text-primary); }
+
+    /* signal table */
+    .cs-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-lg); }
+    .cs-table { width: 100%; border-collapse: collapse; font-size: .82rem; min-width: 760px; }
+    .cs-table th { text-align: left; font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-card); padding: .6rem .8rem; border-bottom: 1px solid var(--border-med); }
+    .cs-table td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; line-height: 1.55; }
+    .cs-table tr:last-child td { border-bottom: 0; }
+    .cs-table td:first-child { font-weight: 700; color: var(--text-primary); white-space: nowrap; }
+    .cs-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: .4rem; background: var(--c); vertical-align: 1px; }
+
+    /* code */
+    .cs-tabs { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .6rem; }
+    .cs-tabs button { font: inherit; font-size: .8rem; padding: .35rem .85rem; border-radius: 999px; border: 1px solid var(--border-med); background: transparent; color: var(--text-secondary); cursor: pointer; }
+    .cs-tabs button[aria-selected="true"] { color: var(--text-primary); border-color: var(--cs); background: var(--cs-bg); }
+    .cs-code { position: relative; }
+    .cs-code pre { margin: 0; font-family: var(--font-mono); font-size: .78rem; line-height: 1.6; color: var(--text-primary); background: color-mix(in srgb, var(--bg-base) 70%, transparent); border: 1px solid var(--border-med); border-radius: var(--r); padding: .9rem 1rem; overflow-x: auto; white-space: pre; tab-size: 4; }
+    .cs-code .cm { color: var(--text-muted); }
+    .cs-code .kw { color: var(--cs-dds); }
+    .cs-code [hidden] { display: none; }
+    .cs-copy { position: absolute; top: .45rem; right: .45rem; font: inherit; font-size: .72rem; padding: .15rem .6rem; border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; }
+
+    /* figures */
+    .cs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (max-width: 760px) { .cs-scroll > svg { min-width: 760px; } }
+    #cs-arch { width: 100%; height: auto; display: block; }
+    #cs-arch .box { fill: var(--bg-card); stroke: var(--border-med); stroke-width: 1.2; }
+    #cs-arch .box.core { stroke: var(--cs); stroke-width: 2; }
+    #cs-arch .t1 { fill: var(--text-primary); font: 700 12.5px var(--font-sans, Inter, sans-serif); }
+    #cs-arch .t2 { fill: var(--text-secondary); font: 11px var(--font-sans, Inter, sans-serif); }
+    #cs-arch .t3 { fill: var(--text-muted); font: 10px var(--font-mono, monospace); }
+    #cs-arch .wire { stroke: var(--text-muted); stroke-width: 1.4; fill: none; }
+    #cs-arch .wire.rt { stroke: var(--cs); stroke-width: 2; }
+    #cs-arch .wire.in { stroke-dasharray: 5 4; }
+    #cs-arch .lab { fill: var(--text-muted); font: 10px var(--font-mono, monospace); }
+    #cs-seq { width: 100%; height: auto; display: block; }
+    #cs-seq .ph { fill: color-mix(in srgb, var(--cs) 5%, transparent); stroke: var(--border); }
+    #cs-seq .phl { fill: var(--text-secondary); font: 600 11px var(--font-sans, Inter, sans-serif); }
+    #cs-seq .phd { fill: var(--text-muted); font: 10px var(--font-mono, monospace); }
+    #cs-seq .rowl { fill: var(--text-primary); font: 600 11.5px var(--font-sans, Inter, sans-serif); cursor: pointer; }
+    #cs-seq .rows { fill: var(--text-muted); font: 9.5px var(--font-mono, monospace); }
+    #cs-seq .grid { stroke: var(--border); stroke-width: 1; }
+    #cs-seq .prog { fill: none; stroke-width: 2; }
+    #cs-seq .phys { fill: none; stroke-width: 1.6; stroke-dasharray: 4 3; opacity: .95; }
+    #cs-seq .lag { opacity: .18; }
+    #cs-seq .sel rect.rowbg { fill: var(--cs-bg); }
+    .cs-seq-key { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .78rem; color: var(--text-secondary); margin-top: .4rem; }
+    .cs-seq-key i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--text-secondary); vertical-align: middle; margin-right: .35rem; }
+    .cs-seq-key i.d { border-top-style: dashed; }
+    .cs-explain { margin-top: .6rem; min-height: 3.2em; padding: .6rem .85rem; border-radius: var(--r); background: var(--cs-bg); border: 1px solid var(--cs-border); color: var(--text-secondary); font-size: .86rem; line-height: 1.6; }
+    .cs-explain b { color: var(--text-primary); }
+    .cs-canvas { display: block; width: 100%; height: 360px; max-height: none !important; }
+    @media (max-width: 620px) { .cs-canvas { height: 300px; } }
+
+    /* calculator */
+    .cs-calc { display: grid; grid-template-columns: minmax(240px, 330px) 1fr; gap: var(--sp-5); }
+    @media (max-width: 820px) { .cs-calc { grid-template-columns: 1fr; } }
+    .cs-fields { display: grid; gap: .55rem; }
+    .cs-fields label { display: grid; grid-template-columns: 1fr 110px; align-items: center; gap: .5rem; font-size: .83rem; color: var(--text-secondary); }
+    .cs-fields input, .cs-fields select { font: inherit; font-size: .82rem; width: 100%; padding: .3rem .45rem; border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-primary); }
+    .cs-fields h4 { margin: .5rem 0 0; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    .cs-outs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .6rem; align-content: start; }
+    .cs-out { border: 1px solid var(--border); border-radius: var(--r); padding: .6rem .75rem; background: color-mix(in srgb, var(--bg-card) 70%, transparent); }
+    .cs-out .v { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+    .cs-out .l { font-size: .76rem; color: var(--text-secondary); line-height: 1.45; margin-top: .15rem; }
+
+    /* checklist */
+    .cs-check { list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem; }
+    .cs-check li { position: relative; padding: .55rem .8rem .55rem 2.1rem; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg-card); color: var(--text-secondary); font-size: .87rem; line-height: 1.6; }
+    .cs-check li::before { content: "✓"; position: absolute; left: .8rem; top: .55rem; color: var(--cs-dac); font-weight: 700; }
+    .cs-check li strong { color: var(--text-primary); }
+    .cs-refs { display: grid; gap: .55rem; }
+    .cs-ref { padding: .6rem .85rem; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg-card); font-size: .85rem; color: var(--text-secondary); line-height: 1.55; }
+    .cs-ref a { color: color-mix(in srgb, var(--cs) 60%, var(--text-primary)); font-weight: 600; }
+    [data-theme="dark"] .page-hero-eyebrow { color: #a8cbe6 !important; }
+    @media print { .cs-copy, .cs-tabs { display: none !important; } .cs-code [hidden] { display: block !important; } }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44,74,99,0.06);--page-border:rgba(44,74,99,0.2);">
+    <div class="container page-hero-2col">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(44,74,99,0.08);border-color:rgba(44,74,99,0.24);color:#24405a;">🎛️ Build 07 · Control the experiment</div>
+        <h1>Experiment Control <span class="grad-text" style="--ga:#7dd3fc;--gb:#a78bfa;">Systems</span></h1>
+        <p class="page-hero-desc">
+          Every shot of an AMO experiment is a list of a few hundred events on dozens of channels, timed to nanoseconds and
+          repeated thousands of times. This page is what a new student needs to run that machine: the signals (TTL, DAC,
+          ADC, DDS, AWG), how timing really works, how pulses are engineered, which systems labs use, how the whole
+          experiment is driven from Python, and how a group shares one code base with git.
+        </p>
+      </div>
+      <div class="page-hero-anim" aria-hidden="true">
+        <svg viewBox="0 0 300 165" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<style>
+@keyframes cs-scan{from{transform:translateX(0)}to{transform:translateX(232px)}}
+.cs-ph{animation:cs-scan 4s linear infinite}
+@media (prefers-reduced-motion: reduce){.cs-ph{animation:none}}
+</style>
+<g font-family="monospace" font-size="8" fill="#7a8aa3">
+<text x="8" y="34">TTL</text><text x="8" y="66">DDS</text><text x="8" y="98">DAC</text><text x="8" y="130">CAM</text>
+</g>
+<g fill="none" stroke-width="1.8">
+<path d="M40,38 H70 V26 H120 V38 H190 V26 H200 V38 H272" stroke="#d97706"/>
+<path d="M40,66 h20 l4,-6 l4,12 l4,-12 l4,12 l4,-12 l4,12 l4,-6 h40 l3,-5 l3,10 l3,-10 l3,10 l3,-5 h50 l2,-4 l2,8 l2,-8 l2,8 l2,-4 h46" stroke="#8b5cf6"/>
+<path d="M40,104 H70 L120,90 H160 L200,104 H272" stroke="#10b981"/>
+<path d="M40,134 H186 V122 H206 V134 H272" stroke="#0ea5e9"/>
+</g>
+<line class="cs-ph" x1="40" y1="16" x2="40" y2="146" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="150" y="160" text-anchor="middle" font-family="monospace" font-size="8" fill="#7a8aa3">one shot · hardware-timed</text>
+</svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="container">
+
+      <!-- ══ 01 ══ -->
+      <section class="cs-sec" id="job" aria-labelledby="job-h">
+        <h2 class="section-title" id="job-h"><span class="accent">01</span> What the control system has to do</h2>
+        <p class="cs-lead">An experiment is a sequence of switches, ramps and triggers. The control system turns a description of that sequence into voltages at the right instant, every shot, and records what happened.</p>
+        <div class="cs-grid3">
+          <div class="cs-card"><span class="k">Hardware-timed</span><h3>Time comes from a clock, not the PC</h3><p>A Python script on a desktop cannot promise when a line of code runs: the operating system can pause it for milliseconds. So the PC only <em>describes</em> the sequence; a dedicated timing device (an FPGA, a pulse generator or a DAQ card with its own sample clock) plays it out. Everything below follows from this split.</p></div>
+          <div class="cs-card"><span class="k">Repeatable</span><h3>Thousands of identical shots</h3><p>Most measurements average many shots or scan one parameter while everything else stays fixed. A useful system lets you change one number (a detuning, a hold time) between shots and guarantees that nothing else moved.</p></div>
+          <div class="cs-card"><span class="k">Recorded</span><h3>Every shot leaves a record</h3><p>Months later someone will ask what the imaging detuning was on a given run. The parameters, the code version and the data should be stored together, shot by shot, automatically.</p></div>
+        </div>
+        <div class="cs-note"><strong>Four numbers describe any timing system.</strong> <em>Resolution</em>: the smallest step in which an edge can be placed. <em>Jitter</em>: how much an edge wanders from shot to shot. <em>Latency</em>: how long between an input (a photon count) and the earliest output that can react to it. <em>Update rate</em>: how often an analog value can change. A system can be excellent at one and poor at another, so ask for all four.</div>
+      </section>
+
+      <!-- ══ 02 ══ -->
+      <section class="cs-sec" id="anatomy" aria-labelledby="anatomy-h">
+        <h2 class="section-title" id="anatomy-h"><span class="accent">02</span> Anatomy: from a Python script to photons</h2>
+        <p class="cs-lead">The same layout appears in almost every lab, whatever the brand: a PC that writes and schedules sequences, a real-time core that owns the clock, output and input cards, and the lab hardware those cards drive.</p>
+        <div class="cs-fig">
+          <div class="cs-scroll"><svg id="cs-arch" viewBox="0 0 960 470" role="img" aria-labelledby="cs-arch-t cs-arch-d">
+            <title id="cs-arch-t">Architecture of an experiment control system</title>
+            <desc id="cs-arch-d">A control PC sends compiled sequences over Ethernet to a real-time core that holds the clock. The core drives TTL, DDS, DAC and AWG output cards and reads ADC, counter and camera inputs. The outputs go through AOM drivers, coil drivers and shutters to the atoms; detectors return signals to the inputs. Slow instruments such as wavemeters and synthesizers connect to the PC directly.</desc>
+            <!-- PC -->
+            <rect class="box" x="20" y="20" width="250" height="118" rx="12"/>
+            <text class="t1" x="36" y="46">Control PC (Python)</text>
+            <text class="t2" x="36" y="68">experiment scripts · scans</text>
+            <text class="t2" x="36" y="86">scheduler · dashboard</text>
+            <text class="t2" x="36" y="104">datasets (HDF5) · analysis</text>
+            <text class="t3" x="36" y="126">git repository of the lab code</text>
+            <!-- slow instruments -->
+            <rect class="box" x="20" y="300" width="250" height="140" rx="12"/>
+            <text class="t1" x="36" y="326">Slow instruments (no real-time)</text>
+            <text class="t2" x="36" y="348">wavemeter · RF/µw synthesizers</text>
+            <text class="t2" x="36" y="366">lock boxes · scope · motor stages</text>
+            <text class="t2" x="36" y="384">set between shots via USB/Ethernet</text>
+            <text class="t3" x="36" y="406">SCPI / vendor SDK / pyvisa</text>
+            <path class="wire" d="M145,138 V300"/>
+            <text class="lab" x="152" y="226">USB · Ethernet</text>
+            <!-- core -->
+            <rect class="box core" x="350" y="20" width="250" height="148" rx="12"/>
+            <text class="t1" x="366" y="46">Real-time core</text>
+            <text class="t2" x="366" y="68">FPGA or pulse generator</text>
+            <text class="t2" x="366" y="86">owns the clock, plays the</text>
+            <text class="t2" x="366" y="104">timeline, reacts to inputs</text>
+            <text class="t3" x="366" y="128">10 MHz ref in · ns timestamps</text>
+            <text class="t3" x="366" y="146">e.g. ARTIQ core · pseudoclock</text>
+            <path class="wire" d="M270,80 H350"/>
+            <text class="lab" x="276" y="72">compiled</text>
+            <text class="lab" x="276" y="98">sequence</text>
+            <!-- cards -->
+            <g>
+              <rect class="box" x="350" y="210" width="118" height="54" rx="9"/><text class="t1" x="362" y="233">TTL</text><text class="t3" x="362" y="252">on/off, triggers</text>
+              <rect class="box" x="482" y="210" width="118" height="54" rx="9"/><text class="t1" x="494" y="233">DDS / RF</text><text class="t3" x="494" y="252">freq · phase · amp</text>
+              <rect class="box" x="350" y="276" width="118" height="54" rx="9"/><text class="t1" x="362" y="299">DAC</text><text class="t3" x="362" y="318">±10 V analog</text>
+              <rect class="box" x="482" y="276" width="118" height="54" rx="9"/><text class="t1" x="494" y="299">AWG</text><text class="t3" x="494" y="318">multi-tone RF</text>
+              <rect class="box" x="350" y="342" width="118" height="54" rx="9"/><text class="t1" x="362" y="365">ADC</text><text class="t3" x="362" y="384">sample voltages</text>
+              <rect class="box" x="482" y="342" width="118" height="54" rx="9"/><text class="t1" x="494" y="365">Counters</text><text class="t3" x="494" y="384">photon clicks</text>
+            </g>
+            <path class="wire rt" d="M475,168 V210"/>
+            <!-- lab hardware -->
+            <rect class="box" x="690" y="20" width="250" height="420" rx="12"/>
+            <text class="t1" x="706" y="46">The apparatus</text>
+            <text class="t2" x="706" y="74">AOM drivers → AOMs (light on/off,</text>
+            <text class="t2" x="706" y="92">frequency, power)</text>
+            <text class="t2" x="706" y="120">Mechanical shutters (full blocking)</text>
+            <text class="t2" x="706" y="148">Coil drivers → MOT / bias coils</text>
+            <text class="t2" x="706" y="176">RF amplifiers → AODs (tweezer moves)</text>
+            <text class="t2" x="706" y="204">Microwave horn, EOMs, piezos</text>
+            <text class="t2" x="706" y="244">Camera (trigger in, exposure out)</text>
+            <text class="t2" x="706" y="272">Photodiodes → ADC (powers, monitors)</text>
+            <text class="t2" x="706" y="300">SPCM / PMT → counter (fluorescence)</text>
+            <text class="t3" x="706" y="340">outputs →  ← inputs</text>
+            <text class="t3" x="706" y="362">coax, 50 Ω, isolated grounds</text>
+            <path class="wire rt" d="M600,237 H690"/>
+            <path class="wire rt" d="M600,303 H690"/>
+            <path class="wire in" d="M690,369 H600"/>
+            <text class="lab" x="612" y="230">TTL/RF</text>
+            <text class="lab" x="612" y="296">analog</text>
+            <text class="lab" x="612" y="390">signals back</text>
+          </svg></div>
+          <p class="cs-cap">Real-time links in the page accent colour; dashed = signals coming back. Slow instruments never sit in the real-time path: they are set between shots, so their latency does not matter.</p>
+        </div>
+        <div class="cs-grid2">
+          <div class="cs-card"><span class="k">What lives where</span><p><strong>On the PC:</strong> the experiment description, parameter scans, the queue of experiments, plots, the data files, and drivers for slow instruments.</p><p><strong>On the real-time core:</strong> the timeline itself, plus any decision that must be made within microseconds (count photons, then decide whether to fire the next pulse).</p></div>
+          <div class="cs-card"><span class="k">Why the split matters</span><p>Anything that crosses back to the PC during a shot is slow and unpredictable (milliseconds). ARTIQ's manual makes the point concretely: after a call back to the host, the next real-time event must be pushed into the future again or it raises an underflow. Keep timing-critical logic on the core.</p></div>
+        </div>
+      </section>
+
+      <!-- ══ 03 ══ -->
+      <section class="cs-sec" id="signals" aria-labelledby="signals-h">
+        <h2 class="section-title" id="signals-h"><span class="accent">03</span> The signals you will wire</h2>
+        <p class="cs-lead">Five kinds of signal cover nearly everything. The examples are real hardware specifications, from the Sinara (ARTIQ) datasheets and the NI PCIe-6363 manual, so you can see the order of magnitude a modern system offers.</p>
+        <div class="cs-table-wrap">
+          <table class="cs-table">
+            <thead><tr><th>Signal</th><th>What it drives</th><th>Typical numbers (example hardware)</th><th>What bites people</th></tr></thead>
+            <tbody>
+              <tr><td><span class="cs-dot" style="--c:var(--cs-ttl)"></span>TTL (digital)</td><td>AOM RF switches, shutters, camera and scope triggers, coil switches, gating counters</td><td>Sinara 8-channel BNC/SMA cards: minimum pulse 3 ns (typ. 5 ns), ~350 ps peak jitter, galvanically isolated in banks of four, 50 Ω or high-Z per channel. ARTIQ places edges on a 1 ns grid.</td><td>Logic levels (5 V vs 3.3 V), driving a 50 Ω load, unterminated cables ringing, a TTL line that is a ground loop.</td></tr>
+              <tr><td><span class="cs-dot" style="--c:var(--cs-dds)"></span>DDS / RF</td><td>AOM and EOM frequency, phase and amplitude; Raman and microwave tones (with a synthesizer)</td><td>Urukul (AD9910): 4 channels, 1 GS/s, output &lt;1 to &gt;400 MHz, 0.25 Hz frequency steps, 14-bit amplitude, 0–31.5 dB attenuator, RF switch with 70 dB isolation. Mirny: 53 MHz–4 GHz synthesizer.</td><td>Phase continuity when you change frequency; images and spurs; forgetting that a frequency change takes time to program.</td></tr>
+              <tr><td><span class="cs-dot" style="--c:var(--cs-dac)"></span>DAC (analog out)</td><td>Coil-driver setpoints, laser and tweezer power (via AOM amplitude), piezo offsets, servo setpoints</td><td>Zotino: 32 × 16-bit, ±10 V, 1 MS/s shared, 75 kHz bandwidth. Fastino: 32 × 16-bit, up to 2.55 MS/s per channel with current gateware. NI PCIe-6363: 4 × 16-bit, 2.86 MS/s (one channel) to 1.25 MS/s (all four).</td><td>16 bits over 20 V is 305 µV per step; the output filter (here 75 kHz) rounds fast steps; the driver downstream is usually slower than the DAC.</td></tr>
+              <tr><td><span class="cs-dot" style="--c:var(--cs-adc)"></span>ADC (analog in)</td><td>Photodiode powers, error signals, monitor voltages, intensity servo inputs</td><td>Sampler: 8 × 16-bit, 1.5 MS/s simultaneous, programmable gain from ±10 V to ±10 mV. NI PCIe-6363: 32 inputs, 16-bit, 2 MS/s single-channel (1 MS/s aggregate).</td><td>Aliasing (filter before you sample), ground offsets, input range set too wide so the signal uses a few bits.</td></tr>
+              <tr><td><span class="cs-dot" style="--c:var(--cs-awg)"></span>AWG (fast arbitrary RF)</td><td>Multi-tone AOD drive for tweezer arrays and rearrangement, shaped Raman or Rydberg pulses</td><td>Phaser: 4 × 16-bit DAC channels at 1.25 GS/s with IQ upconversion (0.3–4.8 GHz LO). Standalone AWG cards are common for tweezer rearrangement.</td><td>Memory and streaming bandwidth, phase relationships between tones, intermodulation in the RF amplifier.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cs-grid2" style="margin-top:var(--sp-5)">
+          <div class="cs-card"><span class="k">Inputs that make decisions</span><p>A counter on a TTL input turns single-photon detector clicks into a number inside the shot. The Sinara TTL datasheet quotes a gateware edge counter of up to 125 million events per second. That is how "is there an atom in this tweezer?" becomes a decision in microseconds instead of a camera frame later.</p></div>
+          <div class="cs-card"><span class="k">Cameras</span><p>Cameras are triggered by TTL and usually report back an "exposure active" output. Wire that output to a scope or an input at least once: the real exposure window is rarely exactly where the trigger edge suggests. Frame grabbers (Sinara's Grabber reads CameraLink) can extract regions of interest in real time.</p></div>
+        </div>
+        <div class="cs-note"><strong>Signal integrity in one paragraph.</strong> Use coax and terminate fast lines in 50 Ω at the receiving end (or deliberately use high-Z and short cables). A signal travels roughly 5 ns per metre of coax (velocity factor ≈ 0.66), so a 3 m cable is a 15 ns delay. Keep the control system's ground and the high-current coil supplies apart; isolated TTL cards exist for this, though their datasheet notes that isolation adds jitter, so a non-isolated card is better for the most timing-critical lines. Look at every new signal on a scope before trusting it.</div>
+      </section>
+
+      <!-- ══ 04 ══ -->
+      <section class="cs-sec" id="timing" aria-labelledby="timing-h">
+        <h2 class="section-title" id="timing-h"><span class="accent">04</span> Timing: resolution, jitter, latency and hardware delays</h2>
+        <p class="cs-lead">The control system can place an edge to the nanosecond. The hardware it drives cannot respond that fast, and each device lags by a different amount. Good sequences are written for what the atoms see, not for what the TTL line does.</p>
+        <div class="cs-fig" id="cs-seq-fig">
+          <div class="cs-fig-top">
+            <div>
+              <h3>One shot, channel by channel</h3>
+              <p>A tweezer-loading shot. Solid lines are what the control system outputs; dashed lines are what the hardware actually does. Click a channel name for what it is and what goes wrong. Each phase has its own time scale.</p>
+            </div>
+            <div class="cs-seg" role="group" aria-label="Delay handling">
+              <button type="button" data-mode="ideal" aria-pressed="false">Ideal hardware</button>
+              <button type="button" data-mode="real" aria-pressed="true">Real delays</button>
+              <button type="button" data-mode="comp" aria-pressed="false">Delays compensated</button>
+            </div>
+          </div>
+          <div class="cs-scroll"><svg id="cs-seq" viewBox="0 0 960 420" role="img" aria-label="Timing diagram of one experimental shot with programmed and physical signals on each channel"></svg></div>
+          <div class="cs-seq-key"><span><i></i>programmed output</span><span><i class="d"></i>physical response</span><span>Shaded: the lag between them</span></div>
+          <div class="cs-explain" id="cs-seq-explain" aria-live="polite">Pick <b>Real delays</b> and look at the shutter and the coils: the light keeps leaking and the field keeps decaying after the command. <b>Delays compensated</b> moves each command earlier by that device's measured lag.</div>
+          <p class="cs-cap">Delay values are illustrative (shutter: a few ms of delay plus sub-ms jitter; coils: an L/R decay of about a millisecond; AOM: tens to hundreds of ns, invisible at this scale). Measure your own: the numbers depend on the shutter, the coil inductance and the driver.</p>
+        </div>
+        <div class="cs-grid2">
+          <div class="cs-card"><span class="k">How ARTIQ keeps time</span><p>Code on the core moves a timeline cursor, <code>now_mu</code>, forward with <code>delay()</code>; outputs are timestamped with the cursor and queued in FIFOs; the hardware fires each event when the wall clock reaches its timestamp. The machine unit is normally 1 ns; the coarse RTIO clock is commonly 125 MHz, so events are processed in 8 ns cycles with 1 ns fine placement.</p><p>The gap between cursor and wall clock is the <em>slack</em>. If code falls behind and submits an event whose time has passed, ARTIQ raises <code>RTIOUnderflow</code>. Two events on the same channel at the same coarse time collide and are dropped.</p></div>
+          <div class="cs-card"><span class="k">How a pseudoclock keeps time</span><p>The labscript suite compiles the whole shot in Python, then plays it from a <em>pseudoclock</em>: a pulse generator (a SpinCore PulseBlaster, or the Raspberry-Pi-Pico-based PrawnBlaster) that ticks only when something must change. DAQ cards and DDS boards update on those ticks. Each shot is stored as an HDF5 file holding the globals and the compiled instructions.</p><p>The resolution is set by the pulse generator's clock (labscript encodes 20 ns for a PulseBlaster-USB, 4 ns for the ESR-PRO-500), and a few clock cycles are the minimum interval between instructions.</p></div>
+        </div>
+        <div class="cs-note"><strong>Speed limits that are not the control system.</strong> An AOM switches in roughly the time sound takes to cross the beam (next section's calculator); a mechanical shutter needs milliseconds and its delay drifts as it wears; a coil's current decays with its L/R time and eddy currents in nearby metal add a slower tail; a camera has its own trigger latency. Measure each with a photodiode or a pick-up coil, write the delays into one place in the code, and compensate there.</div>
+      </section>
+
+      <!-- ══ 05 ══ -->
+      <section class="cs-sec" id="pulses" aria-labelledby="pulses-h">
+        <h2 class="section-title" id="pulses-h"><span class="accent">05</span> Engineering pulses and ramps</h2>
+        <p class="cs-lead">A light pulse is not just "on for T". Its shape sets its spectrum, and the spectrum decides which transitions it drives. Square pulses are easy to program and spectrally dirty; shaped pulses cost a little length and buy a lot of cleanliness.</p>
+        <div class="cs-fig">
+          <div class="cs-fig-top">
+            <div>
+              <h3>Pulse shape and its spectrum</h3>
+              <p>Top: the intensity envelope in time. Bottom: its power spectrum in dB against detuning, in units of 1/T and in kHz for the chosen length. The marker shows a neighbouring transition (for example a motional sideband at the trap frequency) and how much the pulse drives it.</p>
+            </div>
+          </div>
+          <div class="cs-controls">
+            <span class="cs-seg" role="group" aria-label="Pulse shape" id="cs-shape">
+              <button type="button" data-s="square" aria-pressed="true">Square</button>
+              <button type="button" data-s="hann" aria-pressed="false">cos² (Hann)</button>
+              <button type="button" data-s="gauss" aria-pressed="false">Gaussian</button>
+              <button type="button" data-s="blackman" aria-pressed="false">Blackman</button>
+            </span>
+            <label>Length T <input type="range" id="cs-T" min="1" max="100" step="1" value="10"> <b id="cs-T-v">10 µs</b></label>
+            <label>AOM rise (10–90%) <input type="range" id="cs-rise" min="0" max="2000" step="10" value="100"> <b id="cs-rise-v">100 ns</b></label>
+            <label>Neighbour at <input type="range" id="cs-nb" min="10" max="1000" step="10" value="200"> <b id="cs-nb-v">200 kHz</b></label>
+          </div>
+          <canvas class="cs-canvas" id="cs-pulse" data-export-ready="true" aria-label="Pulse envelope and power spectrum for the selected shape"></canvas>
+          <div class="cs-readout" id="cs-pulse-out" aria-live="polite"></div>
+          <p class="cs-cap">Computed in the page with a numerical Fourier transform of the envelope (the AOM rise is a Gaussian smoothing of the edges). All shapes have the same total length T, so smooth shapes have a wider central lobe but far lower side lobes: about −13 dB for a square pulse, about −58 dB for Blackman.</p>
+        </div>
+        <div class="cs-grid3">
+          <div class="cs-card"><span class="k">Where shaping matters</span><ul><li>Raman and sideband pulses next to a carrier.</li><li>Rydberg pulses, where leakage drives unwanted states (see the <a href="fidelity-budget.html">gate error budget</a>).</li><li>Fast switching of trap light, where a hard edge heats the atom.</li></ul></div>
+          <div class="cs-card"><span class="k">How shapes are made</span><ul><li>DDS amplitude profiles or on-chip RAM (the AD9910 in Urukul has a waveform RAM for this).</li><li>A DAC driving a voltage-controlled attenuator or the AOM driver's amplitude input.</li><li>An AWG that synthesises the shaped RF directly.</li></ul></div>
+          <div class="cs-card"><span class="k">Ramps</span><ul><li>Linear ramps for detunings and fields.</li><li>Exponential or piecewise ramps for evaporation.</li><li>Smooth (minimum-jerk or sin²) profiles for moving tweezers, so atoms are not heated by sudden acceleration.</li><li>Enough points: a DAC at 1 MS/s gives 1000 steps per millisecond.</li></ul></div>
+        </div>
+      </section>
+
+      <!-- ══ 06 ══ -->
+      <section class="cs-sec" id="budget" aria-labelledby="budget-h">
+        <h2 class="section-title" id="budget-h"><span class="accent">06</span> How fine, how fast: a signal budget</h2>
+        <p class="cs-lead">Before choosing hardware or writing a sequence, check that each channel can resolve what the physics needs. Change any input; every result updates.</p>
+        <div class="cs-fig">
+          <div class="cs-calc">
+            <div class="cs-fields" id="cs-calc">
+              <h4>DAC</h4>
+              <label>Bits <input type="number" id="c-bits" value="16" min="8" max="24"></label>
+              <label>Full range (V) <input type="number" id="c-span" value="20" min="0.1" step="0.1"></label>
+              <label>Update rate (MS/s) <input type="number" id="c-rate" value="1" min="0.001" step="0.1"></label>
+              <label>Ramp length (ms) <input type="number" id="c-ramp" value="10" min="0.001" step="0.1"></label>
+              <h4>DDS</h4>
+              <label>Clock (MHz) <input type="number" id="c-clk" value="1000" min="1" step="1"></label>
+              <label>Tuning word (bits) <input type="number" id="c-ftw" value="32" min="8" max="64"></label>
+              <h4>AOM</h4>
+              <label>Beam diameter 1/e² (mm) <input type="number" id="c-d" value="0.5" min="0.01" step="0.05"></label>
+              <label>Crystal <select id="c-v"><option value="4.2" selected>TeO₂, longitudinal (4.2 mm/µs)</option><option value="5.7">Quartz (5.7 mm/µs)</option><option value="0.65">TeO₂, slow shear (≈0.65 mm/µs)</option></select></label>
+              <h4>Cabling</h4>
+              <label>Coax length (m) <input type="number" id="c-cable" value="3" min="0" step="0.5"></label>
+            </div>
+            <div class="cs-outs" id="cs-outs" aria-live="polite"></div>
+          </div>
+          <p class="cs-cap">Formulas: DAC step = range / 2<sup>bits</sup>; DDS step = f<sub>clk</sub> / 2<sup>N</sup>; AOM optical rise time τ ≈ 0.65 d/V and modulation bandwidth ≈ 0.35/τ (Isomet application note AN2600; acoustic velocities from the same note); coax delay ≈ 5 ns/m for a velocity factor of 0.66.</p>
+        </div>
+      </section>
+
+      <!-- ══ 07 ══ -->
+      <section class="cs-sec" id="systems" aria-labelledby="systems-h">
+        <h2 class="section-title" id="systems-h"><span class="accent">07</span> Which system? ARTIQ, labscript, NI and the rest</h2>
+        <p class="cs-lead">You will usually inherit a system rather than choose one. Knowing the families helps you read a new lab's code and judge what it can and cannot do.</p>
+        <div class="cs-grid2">
+          <div class="cs-card"><span class="k">ARTIQ + Sinara</span><h3>An FPGA that runs your Python</h3><p>Started in 2013 by NIST's Ion Storage Group with M-Labs; open source (LGPLv3+ software, CERN-OHL hardware). Experiments are Python classes; methods marked <code>@kernel</code> are compiled and run on the FPGA core (Kasli: Artix-7, 12 slots for Sinara cards), the rest runs on the PC. Distributed RTIO (DRTIO) links several crates over fibre. A 2023 review of open quantum hardware counted almost a thousand experiments using ARTIQ/Sinara.</p><p><strong>Best at:</strong> nanosecond timing, real-time decisions (count, then act), large channel counts. <strong>Costs you:</strong> learning the timeline model and its errors.</p></div>
+          <div class="cs-card"><span class="k">labscript suite</span><h3>Compile the whole shot, then play it</h3><p>From Monash (Starkey et al., <em>Rev. Sci. Instrum.</em> 84, 085111, 2013). You write the shot in Python; <em>runmanager</em> fills in parameters and builds one HDF5 file per shot; <em>BLACS</em> runs the hardware; <em>lyse</em> analyses shots as they arrive; <em>runviewer</em> plots the compiled instructions. It drives off-the-shelf hardware: PulseBlaster and PrawnBlaster pseudoclocks, NI-DAQmx cards, NovaTech DDS, many cameras.</p><p><strong>Best at:</strong> mixing commercial hardware, a clean record of every shot. <strong>Costs you:</strong> no decisions inside a shot.</p></div>
+          <div class="cs-card"><span class="k">NI DAQ + LabVIEW or Python</span><h3>Buffered, hardware-timed cards</h3><p>Multifunction cards such as the PCIe-6363 (4 analog outputs, 32 inputs, 48 digital lines with 32 hardware-timed up to 10 MHz, a 100 MHz timebase) are a common first system, programmed in LabVIEW or from Python with the official <code>nidaqmx</code> package. Several cards share a clock and a start trigger to act as one.</p><p><strong>Best at:</strong> availability and drivers. <strong>Costs you:</strong> slower digital timing, and sequencing logic you must build yourself.</p></div>
+          <div class="cs-card"><span class="k">RFSoC and commercial controllers</span><h3>When the RF is the experiment</h3><p>Boards built on Xilinx RFSoC (the open QICK project reached over 40 labs within two years) and commercial controllers from Quantum Machines, Zurich Instruments, Keysight and others generate GHz waveforms directly with fast feedback. They are common in superconducting-qubit labs and increasingly used for Rydberg and Raman control. Pulser (from Pasqal) describes neutral-atom pulse sequences at a higher level.</p><p><strong>Best at:</strong> wideband shaped RF. <strong>Costs you:</strong> price or closed software.</p></div>
+        </div>
+      </section>
+
+      <!-- ══ 08 ══ -->
+      <section class="cs-sec" id="python" aria-labelledby="python-h">
+        <h2 class="section-title" id="python-h"><span class="accent">08</span> Running the experiment from Python</h2>
+        <p class="cs-lead">Whatever the hardware, the pattern is the same: name the channels once, describe one shot in terms of physical parameters, scan those parameters from outside, and save everything. The sketches below show that pattern in four common stacks; device names come from your lab's configuration.</p>
+        <div class="cs-fig">
+          <div class="cs-tabs" role="tablist" aria-label="Code examples">
+            <button type="button" role="tab" aria-selected="true" data-code="artiq">ARTIQ</button>
+            <button type="button" role="tab" aria-selected="false" data-code="branch">ARTIQ: decide in real time</button>
+            <button type="button" role="tab" aria-selected="false" data-code="labscript">labscript</button>
+            <button type="button" role="tab" aria-selected="false" data-code="nidaq">NI-DAQmx</button>
+            <button type="button" role="tab" aria-selected="false" data-code="visa">Slow instruments</button>
+          </div>
+          <div class="cs-code">
+            <button type="button" class="cs-copy">Copy</button>
+<pre data-code="artiq"><span class="kw">from</span> artiq.experiment <span class="kw">import</span> *
+
+<span class="kw">class</span> LoadAndImage(EnvExperiment):
+    <span class="kw">def</span> build(self):
+        self.setattr_device("core")
+        self.setattr_device("ttl_cooling")     <span class="cm"># names are defined in device_db.py</span>
+        self.setattr_device("ttl_camera")
+        self.setattr_device("urukul0_ch0")     <span class="cm"># imaging AOM (DDS + RF switch)</span>
+        self.setattr_device("zotino0")         <span class="cm"># DAC: MOT coil-driver setpoint</span>
+        self.setattr_argument("t_load", NumberValue(200*ms, unit="ms"))
+        self.setattr_argument("detuning", NumberValue(-10*MHz, unit="MHz"))
+
+    @kernel
+    <span class="kw">def</span> run(self):
+        self.core.reset()
+        self.urukul0_ch0.cpld.init()
+        self.urukul0_ch0.init()
+        self.zotino0.init()
+        delay(1*ms)                             <span class="cm"># build up slack before the first event</span>
+
+        self.zotino0.set_dac([2.5], [0])        <span class="cm"># coils on</span>
+        self.ttl_cooling.on()
+        delay(self.t_load)                      <span class="cm"># load the MOT</span>
+        self.ttl_cooling.off()
+        self.zotino0.set_dac([0.0], [0])        <span class="cm"># coils off</span>
+        delay(2*ms)                             <span class="cm"># wait for the field to decay (measured!)</span>
+
+        self.urukul0_ch0.set(80*MHz + self.detuning, amplitude=0.8)
+        <span class="kw">with</span> parallel:                          <span class="cm"># camera and light open together</span>
+            self.ttl_camera.pulse(30*us)
+            self.urukul0_ch0.sw.pulse(20*us)</pre>
+<pre data-code="branch" hidden><span class="cm"># Count fluorescence photons for 200 us; continue only if an atom is there.</span>
+@kernel
+<span class="kw">def</span> run(self):
+    self.core.reset()
+    delay(1*ms)
+    self.ttl_probe.on()
+    n = self.ttl_spcm.count(self.ttl_spcm.gate_rising(200*us))   <span class="cm"># gate, then read the count</span>
+    self.ttl_probe.off()
+    delay(10*us)                     <span class="cm"># reading put the cursor in the past: restore slack</span>
+    <span class="kw">if</span> n &gt; self.threshold:
+        self.ttl_rydberg.pulse(1*us)  <span class="cm"># the decision was made on the FPGA, in microseconds</span>
+    <span class="kw">else</span>:
+        self.ttl_flag.pulse(1*us)     <span class="cm"># e.g. mark the shot as empty</span></pre>
+<pre data-code="labscript" hidden><span class="cm"># One shot. Devices come from the lab's connection table;</span>
+<span class="cm"># t_load and detuning are runmanager globals, so scans need no code changes.</span>
+<span class="kw">from</span> labscript <span class="kw">import</span> start, stop, add_time_marker
+
+start()
+t = 0
+add_time_marker(t, "Load MOT")
+cooling_aom.go_high(t)                               <span class="cm"># DigitalOut</span>
+mot_coils.constant(t, 2.5)                           <span class="cm"># AnalogOut (V into the coil driver)</span>
+t += t_load
+mot_coils.ramp(t, duration=20e-3, initial=2.5, final=0.0, samplerate=1e4)
+cooling_aom.go_low(t)
+t += 20e-3 + 2e-3
+
+add_time_marker(t, "Image")
+camera.expose(t, "atoms", trigger_duration=30e-6)
+imaging_aom.go_high(t)
+imaging_aom.go_low(t + 20e-6)
+t += 1e-3
+stop(t)                    <span class="cm"># compiled into this shot's HDF5 file, with the globals</span></pre>
+<pre data-code="nidaq" hidden><span class="cm"># A hardware-timed 10 ms analog ramp that waits for a trigger from the master clock.</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np, nidaqmx
+<span class="kw">from</span> nidaqmx.constants <span class="kw">import</span> AcquisitionType, Edge
+
+ramp = np.linspace(0.0, 5.0, 1000)                  <span class="cm"># 1000 samples</span>
+<span class="kw">with</span> nidaqmx.Task() <span class="kw">as</span> ao:
+    ao.ao_channels.add_ao_voltage_chan("Dev1/ao0")
+    ao.timing.cfg_samp_clk_timing(100_000,           <span class="cm"># 100 kS/s → 10 ms</span>
+        sample_mode=AcquisitionType.FINITE, samps_per_chan=len(ramp))
+    ao.triggers.start_trigger.cfg_dig_edge_start_trig("/Dev1/PFI0", Edge.RISING)
+    ao.write(ramp, auto_start=False)                <span class="cm"># load the buffer first</span>
+    ao.start()                                       <span class="cm"># armed; the card's clock does the timing</span>
+    ao.wait_until_done(timeout=5.0)</pre>
+<pre data-code="visa" hidden><span class="cm"># Instruments outside the real-time path: set them between shots, record what you set.</span>
+<span class="kw">import</span> pyvisa
+rm = pyvisa.ResourceManager()
+synth = rm.open_resource("TCPIP0::192.168.1.20::INSTR")
+print(synth.query("*IDN?"))                 <span class="cm"># always log what you are talking to</span>
+synth.write("FREQ 6.834682611 GHz")         <span class="cm"># e.g. the Rb-87 ground hyperfine splitting</span>
+synth.write("POW -10 dBm")
+settings = {"mw_freq_GHz": 6.834682611, "mw_pow_dBm": -10}   <span class="cm"># → save into the shot file</span></pre>
+          </div>
+          <p class="cs-cap">Sketches, not drop-in code: check the API version of your ARTIQ, labscript or nidaqmx release. The ARTIQ calls follow the ARTIQ manual (experiment classes, <code>@kernel</code>, <code>setattr_argument</code>, <code>gate_rising</code>/<code>count</code>); the labscript calls follow its device API; the NI example uses <code>nidaqmx</code>'s hardware-timed sample clock and start trigger.</p>
+        </div>
+        <div class="cs-grid3">
+          <div class="cs-card"><span class="k">Scans</span><p>Expose physical parameters as arguments or globals and scan them from the dashboard or runmanager. Randomise or interleave the scan order so a slow drift (a laser, the room temperature) does not masquerade as a signal.</p></div>
+          <div class="cs-card"><span class="k">Data</span><p>Both ARTIQ and labscript write HDF5. Store the parameters, the code version, the raw data and the analysis results of each shot together. ARTIQ's master keeps an HDF5 record of every experiment it runs.</p></div>
+          <div class="cs-card"><span class="k">Monitoring</span><p>Log slow signals (laser powers, wavemeter readings, lab temperature, vacuum pressure) continuously, with timestamps, into a database the analysis can query. When a dataset looks odd, the first question is what else changed.</p></div>
+        </div>
+      </section>
+
+      <!-- ══ 09 ══ -->
+      <section class="cs-sec" id="git" aria-labelledby="git-h">
+        <h2 class="section-title" id="git-h"><span class="accent">09</span> Working as a team: git and GitHub</h2>
+        <p class="cs-lead">An apparatus outlives every student who works on it. Its code is written by many people, often at 2 a.m., and has to keep working. Version control is not optional.</p>
+        <div class="cs-grid2">
+          <div class="cs-card"><span class="k">The minimum</span><ul>
+            <li>One repository for the experiment: device configuration, sequences, drivers, analysis. Data stays out of it.</li>
+            <li>Commit small changes with messages that say why ("compensate 3.1 ms shutter delay, measured 2026-11-02").</li>
+            <li>Never leave uncommitted edits on the lab computer overnight; the next person cannot tell what changed.</li>
+            <li>Write the commit hash into every data file, so any result can be traced to the exact code that produced it.</li>
+          </ul></div>
+          <div class="cs-card"><span class="k">How groups work</span><ul>
+            <li>A protected main branch that always runs; new features on branches; changes merged by pull request after someone else reads them.</li>
+            <li>Issues for broken hardware and planned work, so knowledge does not live in one person's head.</li>
+            <li>Pin the software environment (ARTIQ uses Nix; conda or pip lock files elsewhere) so an update cannot silently change the machine.</li>
+            <li>A few automated tests that compile every sequence, run on each push.</li>
+          </ul></div>
+        </div>
+        <div class="cs-fig">
+          <div class="cs-code">
+            <button type="button" class="cs-copy">Copy</button>
+<pre><span class="cm"># a typical day</span>
+git switch main &amp;&amp; git pull               <span class="cm"># start from what everyone agreed on</span>
+git switch -c imaging-detuning-scan       <span class="cm"># your change gets its own branch</span>
+<span class="cm"># ... edit, run a test shot ...</span>
+git add sequences/imaging.py
+git commit -m "Scan imaging detuning; add 3.1 ms shutter lead (measured)"
+git push -u origin imaging-detuning-scan  <span class="cm"># open a pull request; a labmate reviews it</span>
+
+<span class="cm"># in the experiment, record the code version with the data</span>
+rev = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()</pre>
+          </div>
+          <p class="cs-cap">Repository layout that works: <code>device_db.py</code> or <code>connection_table.py</code> (hardware), <code>sequences/</code> (shots), <code>lib/</code> (shared building blocks such as "image atoms"), <code>drivers/</code>, <code>analysis/</code>, <code>tests/</code>, and a <code>README</code> that tells a new student how to run one shot. For the wider habits, see Wilson et al., "Good enough practices in scientific computing" (<em>PLoS Comput. Biol.</em> 2017).</p>
+        </div>
+      </section>
+
+      <!-- ══ 10 ══ -->
+      <section class="cs-sec" id="checklist" aria-labelledby="checklist-h">
+        <h2 class="section-title" id="checklist-h"><span class="accent">10</span> Checklist before you trust a new sequence</h2>
+        <ul class="cs-check">
+          <li><strong>Look at it.</strong> Put the key TTLs and analog lines on a four-channel scope, triggered by the start of the shot, and compare with what you meant.</li>
+          <li><strong>Measure the delays</strong> of every shutter, AOM and coil with a photodiode or pick-up coil, and compensate them in one place in the code.</li>
+          <li><strong>Check the slack or the compile output.</strong> Underflows, collisions and "instruction too short" warnings are bugs, not noise.</li>
+          <li><strong>Make it safe when it stops.</strong> If a sequence crashes, lasers, coils and RF should end in a safe state; coils must not stay at full current.</li>
+          <li><strong>Record everything:</strong> parameters, code hash, slow-instrument settings and environmental logs, per shot.</li>
+          <li><strong>Change one thing at a time</strong> and keep a short lab-notebook line for each change; your future self is the main reader.</li>
+        </ul>
+        <div class="cs-note">Next in the build: the <a href="tweezer-designer.html">tweezer array</a> this control system will drive. The <a href="laser-locking.html">laser locks</a> and <a href="lab-techniques.html">day-to-day lab handbook</a> cover the servos and routines that run alongside it.</div>
+      </section>
+
+      <!-- ══ 11 ══ -->
+      <section class="cs-sec" id="references" aria-labelledby="references-h">
+        <h2 class="section-title" id="references-h"><span class="accent">11</span> References and further reading</h2>
+        <div class="cs-refs">
+          <div class="cs-ref"><a href="https://m-labs.hk/artiq/manual/" target="_blank" rel="noopener">ARTIQ manual</a> (M-Labs). Experiment structure, kernels and RPCs, the RTIO timeline (cursor, slack, underflow, collisions), management system.</div>
+          <div class="cs-ref"><a href="https://m-labs.hk/experiment-control/sinara-core" target="_blank" rel="noopener">Sinara hardware and datasheets</a> (M-Labs). Kasli, TTL cards, Urukul, Mirny, Zotino, Fastino, Sampler, Phaser, Grabber; the numbers in Section 03.</div>
+          <div class="cs-ref">G. Kasprowicz et al., "Urukul – Open-source frequency synthesizer module for quantum physics," <a href="https://doi.org/10.24425/ijet.2022.139859" target="_blank" rel="noopener"><em>Int. J. Electron. Telecommun.</em> 68, 123 (2022)</a>.</div>
+          <div class="cs-ref">P. T. Starkey et al., "A scripted control system for autonomous hardware-timed experiments," <a href="https://doi.org/10.1063/1.4817213" target="_blank" rel="noopener"><em>Rev. Sci. Instrum.</em> 84, 085111 (2013)</a>, and the <a href="https://labscriptsuite.org/" target="_blank" rel="noopener">labscript suite documentation</a>.</div>
+          <div class="cs-ref">N. Shammah et al., "Open hardware solutions in quantum technology," <a href="https://arxiv.org/abs/2309.17233" target="_blank" rel="noopener">arXiv:2309.17233</a> (2023), a survey of ARTIQ/Sinara, QICK, QubiC and related tools <span class="source-tag preprint">preprint</span></div>
+          <div class="cs-ref">National Instruments, <a href="https://www.ni.com/docs/en-US/bundle/pcie-6363-specs/page/specs.html" target="_blank" rel="noopener">PCIe-6363 specifications</a>, and the <a href="https://nidaqmx-python.readthedocs.io/" target="_blank" rel="noopener">nidaqmx Python package</a>.</div>
+          <div class="cs-ref">Isomet, <a href="https://isomet.com/PDF%20Manuals/AO/AO%20Modulator_Crib_AN2600.pdf" target="_blank" rel="noopener">"Basic AO modulator equations" (AN2600)</a>: rise time τ ≈ 0.65 d/V, bandwidth ≈ 0.35/τ, acoustic velocities.</div>
+          <div class="cs-ref">G. Wilson et al., "Good enough practices in scientific computing," <a href="https://doi.org/10.1371/journal.pcbi.1005510" target="_blank" rel="noopener"><em>PLoS Comput. Biol.</em> 13, e1005510 (2017)</a>.</div>
+        </div>
+      </section>
+
+    </div><!-- /.container -->
+  </div><!-- /.page-content -->
+</main><!-- /.page-wrap -->
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="laser-locking.html">
+        <span class="see-also-icon">🔐</span>
+        <div>
+          <div class="see-also-name">Laser Locking Guide</div>
+          <div class="see-also-desc">The servos that run alongside the sequence</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="tweezer-designer.html">
+        <span class="see-also-icon">🔦</span>
+        <div>
+          <div class="see-also-name">Tweezer Array Design Lab</div>
+          <div class="see-also-desc">The array this control system drives</div>
+        </div>
+      </a>
+      <a class="see-also-card" href="virtual-lab.html">
+        <span class="see-also-icon">🧪</span>
+        <div>
+          <div class="see-also-name">Virtual Tweezer Lab</div>
+          <div class="see-also-desc">A full shot, from loading to the camera</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Experiment Control Systems &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<!-- ──────── SCRIPTS ──────── -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+<script src="../js/main.js?v=51"></script>
+<script>
+  renderNav({ active: 'control-systems', root: '../' });
+</script>
+<div id="amo-nav-ready" hidden></div>
+<script>
+/* ── shared helpers ── */
+(function () {
+  var css = function (name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); };
+  var onTheme = function (fn) { new MutationObserver(fn).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); };
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var mk = function (tag, attrs, parent) { var e = document.createElementNS(SVGNS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+
+  /* ══ Section 04: one shot, programmed vs physical ══ */
+  (function () {
+    var svg = document.getElementById('cs-seq'); if (!svg) return;
+    var explain = document.getElementById('cs-seq-explain');
+    var PH = [ { n: 'Load MOT', d: 300 }, { n: 'Cool & load tweezers', d: 30 }, { n: 'Release cloud', d: 10 }, { n: 'Image', d: 8 } ];
+    var X0 = 210, X1 = 945, Y0 = 46, RH = 50;
+    var pw = (X1 - X0) / PH.length;
+    var start = []; var acc = 0; PH.forEach(function (p) { start.push(acc); acc += p.d; });
+    function x(t) { // piecewise: each phase gets equal width
+      for (var i = PH.length - 1; i >= 0; i--) if (t >= start[i]) return X0 + i * pw + Math.min(1, (t - start[i]) / PH[i].d) * pw;
+      return X0;
+    }
+    // channels: programmed edges (ms), physical model
+    var CH = [
+      { id: 'cool', n: 'Cooling AOM', s: 'TTL → RF switch', c: '--cs-ttl', kind: 'ttl', on: [[0, 330]], lag: 0.0002,
+        info: '<b>Cooling AOM (TTL to the AOM driver\'s RF switch).</b> Switches in well under a microsecond, so its lag is invisible here. But an AOM never blocks fully: some light leaks through, which is why a mechanical shutter usually sits behind it.' },
+      { id: 'shut', n: 'Cooling shutter', s: 'TTL → mechanical', c: '--cs-ttl', kind: 'ttl', on: [[0, 330]], lag: 3.0, jit: 0.4,
+        info: '<b>Mechanical shutter.</b> Blocks the leak light completely, but moves milliseconds after the command, and the delay drifts as it ages. Without compensation the cooling light is still on during the release and imaging phases. The fix: command it to close earlier by its measured delay.' },
+      { id: 'coil', n: 'MOT coils', s: 'DAC → coil driver', c: '--cs-dac', kind: 'ana', pts: [[0, 1], [330, 1], [331, 0]], tau: 1.2,
+        info: '<b>MOT coils.</b> The DAC sets the driver instantly; the current decays with the coil\'s L/R time and eddy currents add a slower tail. The cloud is released into a field that is still there. Compensate by switching earlier, use a faster driver (higher voltage, snubber), or wait longer before imaging.' },
+      { id: 'det', n: 'Cooling detuning', s: 'DDS frequency', c: '--cs-dds', kind: 'ana', pts: [[0, 0.35], [300, 0.35], [315, 0.95], [338, 0.95], [339, 0.35]], tau: 0,
+        info: '<b>Detuning ramp (DDS).</b> A phase-continuous frequency ramp for sub-Doppler cooling. The DDS itself is fast; check that the AOM\'s double-pass alignment and the fibre coupling hold over the whole ramp.' },
+      { id: 'tw', n: 'Tweezer power', s: 'DAC → AOM amplitude', c: '--cs-dac', kind: 'ana', pts: [[0, 0], [300, 0], [310, 1], [348, 1]], tau: 0.05,
+        info: '<b>Tweezer power.</b> Ramped up smoothly while the cloud is cooled so atoms load without being heated. The ramp shape is a choice (Section 05); the DAC update rate sets how smooth it really is.' },
+      { id: 'img', n: 'Imaging AOM', s: 'TTL → RF switch', c: '--cs-ttl', kind: 'ttl', on: [[343, 345.5]], lag: 0.0002,
+        info: '<b>Imaging light.</b> A short pulse (here a few ms for visibility; often tens of µs to ms). It must not overlap with leftover cooling light or a decaying field, which is exactly what the delays above threaten.' },
+      { id: 'cam', n: 'Camera', s: 'TTL trigger', c: '--cs-adc', kind: 'ttl', on: [[342.5, 346]], lag: 0.2,
+        info: '<b>Camera trigger.</b> The exposure starts after a trigger latency and lasts a set time. Open the exposure slightly before the imaging pulse and close it after; verify with the camera\'s exposure-active output on a scope.' }
+    ];
+    var mode = 'real', sel = null;
+    function draw() {
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      var H = Y0 + CH.length * RH + 14; svg.setAttribute('viewBox', '0 0 960 ' + H);
+      PH.forEach(function (p, i) {
+        mk('rect', { 'class': 'ph', x: X0 + i * pw, y: 8, width: pw, height: H - 14 }, svg);
+        var t = mk('text', { 'class': 'phl', x: X0 + i * pw + 8, y: 24 }, svg); t.textContent = p.n;
+        var d = mk('text', { 'class': 'phd', x: X0 + i * pw + 8, y: 38 }, svg); d.textContent = p.d + ' ms';
+      });
+      CH.forEach(function (ch, r) {
+        var y = Y0 + r * RH, top = y + 10, bot = y + RH - 12, col = css(ch.c);
+        var g = mk('g', { 'class': sel === ch.id ? 'sel' : '' }, svg);
+        mk('rect', { 'class': 'rowbg', x: 4, y: y + 2, width: 952, height: RH - 4, rx: 6, fill: 'transparent' }, g);
+        var lt = mk('text', { 'class': 'rowl', x: 12, y: y + 22, tabindex: 0, role: 'button' }, g); lt.textContent = ch.n;
+        var ls = mk('text', { 'class': 'rows', x: 12, y: y + 37 }, g); ls.textContent = ch.s;
+        lt.addEventListener('click', function () { pick(ch); });
+        lt.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(ch); } });
+        mk('line', { 'class': 'grid', x1: X0, x2: X1, y1: bot, y2: bot }, svg);
+        var lead = (mode === 'comp') ? (ch.lag || 0) + (ch.tau ? ch.tau * 2 : 0) : 0;
+        var prog = [], phys = [];
+        if (ch.kind === 'ttl') {
+          var p = 'M' + X0 + ',' + bot, q = p, segs = ch.on;
+          segs.forEach(function (s) {
+            var a = s[0], b = s[1] - (ch.id === 'shut' || ch.id === 'cool' ? 0 : 0);
+            var bc = Math.max(a, b - lead);
+            p += ' H' + x(a).toFixed(1) + ' V' + top + ' H' + x(bc).toFixed(1) + ' V' + bot;
+            var lag = mode === 'ideal' ? 0 : (ch.lag || 0);
+            q += ' H' + x(a + lag).toFixed(1) + ' V' + top + ' H' + x(bc + lag).toFixed(1) + ' V' + bot;
+            if (lag > 0.05 && mode !== 'ideal') mk('rect', { 'class': 'lag', x: x(bc), y: top, width: Math.max(1, x(bc + lag) - x(bc)), height: bot - top, fill: col }, svg);
+          });
+          p += ' H' + X1; q += ' H' + X1;
+          mk('path', { 'class': 'prog', d: p, stroke: col }, svg);
+          if (mode !== 'ideal') mk('path', { 'class': 'phys', d: q, stroke: col }, svg);
+        } else {
+          var amp = function (v) { return bot - v * (bot - top); };
+          var pts = ch.pts.map(function (pt, i) { return [i === ch.pts.length - 2 && ch.id === 'coil' ? pt[0] - lead : (i === ch.pts.length - 1 && ch.id === 'coil' ? pt[0] - lead : pt[0]), pt[1]]; });
+          var d = 'M' + x(pts[0][0]).toFixed(1) + ',' + amp(pts[0][1]).toFixed(1);
+          for (var i = 1; i < pts.length; i++) d += ' L' + x(pts[i][0]).toFixed(1) + ',' + amp(pts[i][1]).toFixed(1);
+          d += ' L' + X1 + ',' + amp(pts[pts.length - 1][1]).toFixed(1);
+          mk('path', { 'class': 'prog', d: d, stroke: col }, svg);
+          if (mode !== 'ideal' && ch.tau > 0) { // first-order response sampled finely
+            var tEnd = acc, v = pts[0][1], tPrev = 0, dd = '', seg = 0;
+            var target = function (t) { for (var k = pts.length - 1; k >= 0; k--) if (t >= pts[k][0]) { if (k === pts.length - 1) return pts[k][1]; var f = (t - pts[k][0]) / Math.max(1e-9, pts[k + 1][0] - pts[k][0]); return pts[k][1] + (pts[k + 1][1] - pts[k][1]) * Math.min(1, f); } return pts[0][1]; };
+            for (var tt = 0; tt <= tEnd; tt += 0.05) {
+              var dt = tt - tPrev; v += (target(tt) - v) * (1 - Math.exp(-dt / ch.tau)); tPrev = tt;
+              dd += (dd ? ' L' : 'M') + x(tt).toFixed(1) + ',' + amp(v).toFixed(1);
+            }
+            mk('path', { 'class': 'phys', d: dd, stroke: col }, svg);
+          }
+        }
+      });
+    }
+    function pick(ch) { sel = ch.id; explain.innerHTML = ch.info; draw(); }
+    document.querySelectorAll('#cs-seq-fig .cs-seg button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        mode = b.dataset.mode;
+        document.querySelectorAll('#cs-seq-fig .cs-seg button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+        explain.innerHTML = mode === 'ideal' ? '<b>Ideal hardware</b>: every device does exactly what the line tells it, instantly. This is the sequence as written.'
+          : mode === 'real' ? '<b>Real delays</b>: the shutter closes milliseconds late, so cooling light (shaded) leaks into the release phase, and the coil current is still decaying while the cloud is released.'
+          : '<b>Delays compensated</b>: the shutter is commanded to close earlier by its measured delay and the coils are switched off earlier by a few L/R times, so the physical responses land where the sequence intended.';
+        draw();
+      });
+    });
+    draw(); onTheme(draw);
+  })();
+
+  /* ══ Section 05: pulse shape → spectrum ══ */
+  (function () {
+    var cvs = document.getElementById('cs-pulse'); if (!cvs) return;
+    var ctx = cvs.getContext('2d'), out = document.getElementById('cs-pulse-out');
+    var shape = 'square';
+    var $ = function (id) { return document.getElementById(id); };
+    function fft(re, im) { // in-place radix-2
+      var n = re.length, i, j, k, l;
+      for (i = 1, j = 0; i < n; i++) { var bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit; if (i < j) { var t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+      for (l = 2; l <= n; l <<= 1) { var ang = -2 * Math.PI / l, wr = Math.cos(ang), wi = Math.sin(ang);
+        for (i = 0; i < n; i += l) { var cr = 1, ci = 0; for (k = 0; k < l / 2; k++) {
+          var a = i + k, b = a + l / 2, tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+          re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti; var nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr; } } }
+    }
+    function envelope(T, rise) { // samples over a window of 32 T, dt = T/128
+      var N = 8192, dt = T / 128, e = new Float64Array(N), c = N / 2;
+      for (var i = 0; i < N; i++) {
+        var t = (i - c) * dt, u = t / T + 0.5, v = 0;
+        if (u >= 0 && u <= 1) {
+          if (shape === 'square') v = 1;
+          else if (shape === 'hann') v = Math.pow(Math.sin(Math.PI * u), 2);
+          else if (shape === 'gauss') { var s = 1 / 6; v = Math.exp(-Math.pow(u - 0.5, 2) / (2 * s * s)); }
+          else v = 0.42 - 0.5 * Math.cos(2 * Math.PI * u) + 0.08 * Math.cos(4 * Math.PI * u);
+        }
+        e[i] = v;
+      }
+      if (rise > 0) { // Gaussian smoothing; 10–90 % of an erf edge = 2.563 σ
+        var sig = rise / 2.563 / dt, R = Math.ceil(4 * sig), ker = [], sum = 0;
+        for (var k = -R; k <= R; k++) { var w = Math.exp(-k * k / (2 * sig * sig)); ker.push(w); sum += w; }
+        var o = new Float64Array(N);
+        for (i = 0; i < N; i++) { var a = 0; for (k = -R; k <= R; k++) { var j = i + k; if (j >= 0 && j < N) a += e[j] * ker[k + R]; } o[i] = a / sum; }
+        e = o;
+      }
+      return { e: e, dt: dt, N: N };
+    }
+    function draw() {
+      var T = +$('cs-T').value * 1e-6, rise = +$('cs-rise').value * 1e-9, nb = +$('cs-nb').value * 1e3;
+      $('cs-T-v').textContent = (T * 1e6) + ' µs'; $('cs-rise-v').textContent = Math.round(rise * 1e9) + ' ns'; $('cs-nb-v').textContent = Math.round(nb / 1e3) + ' kHz';
+      var env = envelope(T, rise), N = env.N, re = Float64Array.from(env.e), im = new Float64Array(N);
+      fft(re, im);
+      var df = 1 / (N * env.dt), P = new Float64Array(N / 2), P0 = re[0] * re[0] + im[0] * im[0];
+      for (var i = 0; i < N / 2; i++) P[i] = (re[i] * re[i] + im[i] * im[i]) / P0;
+      var dB = function (p) { return 10 * Math.log10(Math.max(p, 1e-12)); };
+      // metrics
+      var iz = 1; while (iz < N / 2 - 1 && !(P[iz] < P[iz - 1] && P[iz] <= P[iz + 1])) iz++;      // first minimum
+      var side = 0; for (i = iz; i < N / 2; i++) if (P[i] > side) side = P[i];
+      var i20 = 0; while (i20 < N / 2 && P[i20] > 0.01) i20++;
+      var inb = Math.round(nb / df), Pnb = inb < N / 2 ? P[inb] : 1e-12;
+      // canvas
+      var W = cvs.clientWidth, H = cvs.clientHeight, dpr = window.devicePixelRatio || 1;
+      cvs.width = W * dpr; cvs.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+      var ink = css('--text-secondary'), mute = css('--text-muted'), grid = css('--border'), col = css('--cs-dds'), warn = css('--cs-warn');
+      ctx.font = '11px ' + (css('--font-mono') || 'monospace');
+      var L = 54, Rr = W - 14, top1 = 12, h1 = H * 0.32, top2 = top1 + h1 + 34, h2 = H - top2 - 26;
+      // envelope (window ±1.5T)
+      ctx.strokeStyle = grid; ctx.strokeRect(L, top1, Rr - L, h1);
+      ctx.fillStyle = mute; ctx.fillText('intensity', 4, top1 + 10); ctx.fillText('time →', Rr - 46, top1 + h1 + 12);
+      ctx.beginPath(); ctx.strokeStyle = col; ctx.lineWidth = 2;
+      var c = N / 2, span = 1.5 * T;
+      for (var px = 0; px <= Rr - L; px++) { var t = -span + 2 * span * px / (Rr - L), idx = Math.round(c + t / env.dt), v = env.e[Math.max(0, Math.min(N - 1, idx))];
+        var yy = top1 + h1 - 4 - v * (h1 - 10); if (px) ctx.lineTo(L + px, yy); else ctx.moveTo(L + px, yy); }
+      ctx.stroke();
+      // spectrum 0 .. 12/T
+      var fmax = 12 / T, ymin = -80;
+      ctx.lineWidth = 1; ctx.strokeStyle = grid; ctx.strokeRect(L, top2, Rr - L, h2);
+      ctx.fillStyle = mute;
+      for (var db = 0; db >= ymin; db -= 20) { var yd = top2 + (-db / -ymin) * h2; ctx.beginPath(); ctx.moveTo(L, yd); ctx.lineTo(Rr, yd); ctx.strokeStyle = grid; ctx.stroke(); ctx.fillText(db + ' dB', 6, yd + 4); }
+      for (var m = 0; m <= 12; m += 2) { var xm = L + (m / 12) * (Rr - L); ctx.fillText(m + '/T', xm - 8, top2 + h2 + 14); }
+      ctx.fillText('= ' + (12 / T / 1e3).toFixed(0) + ' kHz', Rr - 70, top2 + h2 + 24 > H ? top2 + h2 + 14 : top2 + h2 + 24);
+      ctx.beginPath(); ctx.strokeStyle = col; ctx.lineWidth = 1.6;
+      for (px = 0; px <= Rr - L; px++) { var f = fmax * px / (Rr - L), k2 = Math.min(N / 2 - 1, Math.round(f / df)), yv = top2 + (Math.max(ymin, dB(P[k2])) / ymin) * h2;
+        if (px) ctx.lineTo(L + px, yv); else ctx.moveTo(L + px, yv); }
+      ctx.stroke();
+      // neighbour marker
+      if (nb <= fmax) { var xn = L + (nb / fmax) * (Rr - L); ctx.strokeStyle = warn; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(xn, top2); ctx.lineTo(xn, top2 + h2); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = warn; ctx.fillText('neighbour', Math.min(xn + 4, Rr - 64), top2 + 12); }
+      out.innerHTML = '<span>First side lobe <b>' + dB(side).toFixed(1) + ' dB</b></span>' +
+        '<span>−20 dB half-width <b>' + (i20 * df / 1e3).toFixed(1) + ' kHz</b> (' + (i20 * df * T).toFixed(2) + '/T)</span>' +
+        '<span>Drive at neighbour (' + Math.round(nb / 1e3) + ' kHz) <b>' + dB(Pnb).toFixed(1) + ' dB</b></span>';
+    }
+    document.querySelectorAll('#cs-shape button').forEach(function (b) {
+      b.addEventListener('click', function () { shape = b.dataset.s; document.querySelectorAll('#cs-shape button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); }); draw(); });
+    });
+    ['cs-T', 'cs-rise', 'cs-nb'].forEach(function (id) { document.getElementById(id).addEventListener('input', draw); });
+    draw(); onTheme(draw);
+    if (window.ResizeObserver) { var w0 = 0; new ResizeObserver(function () { if (Math.abs(cvs.clientWidth - w0) > 4) { w0 = cvs.clientWidth; draw(); } }).observe(cvs); }
+  })();
+
+  /* ══ Section 06: signal budget ══ */
+  (function () {
+    var box = document.getElementById('cs-outs'); if (!box) return;
+    var v = function (id) { return parseFloat(document.getElementById(id).value); };
+    function eng(x, unit) { var a = Math.abs(x), p = [[1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'µ'], [1e-9, 'n'], [1e-12, 'p']];
+      for (var i = 0; i < p.length; i++) if (a >= p[i][0] * 0.9995) return (x / p[i][0]).toPrecision(3).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '') + ' ' + p[i][1] + unit; return x.toExponential(2) + ' ' + unit; }
+    function calc() {
+      var bits = v('c-bits'), span = v('c-span'), rate = v('c-rate') * 1e6, ramp = v('c-ramp') * 1e-3, clk = v('c-clk') * 1e6, ftw = v('c-ftw'),
+          d = v('c-d') * 1e-3, vel = v('c-v') * 1e3, cable = v('c-cable');
+      var lsb = span / Math.pow(2, bits), steps = Math.floor(rate * ramp), fstep = clk / Math.pow(2, ftw), nyq = clk / 2,
+          tau = 0.65 * d / vel, bw = 0.35 / tau, delay = cable * 5e-9;
+      var rows = [
+        [eng(lsb, 'V'), 'DAC step (' + bits + ' bits over ' + span + ' V). Through a 1 A/V coil driver this is a ' + eng(lsb, 'A') + ' current step.'],
+        [steps.toLocaleString() + ' points', 'in a ' + v('c-ramp') + ' ms ramp at ' + v('c-rate') + ' MS/s; one update every ' + eng(1 / rate, 's') + '.'],
+        [eng(fstep, 'Hz'), 'DDS frequency step (f_clk / 2^' + ftw + '); a double-pass AOM doubles it on the light.'],
+        [eng(nyq, 'Hz'), 'Nyquist limit of the DDS; usable output is well below it (Urukul: up to ~400 MHz at 1 GS/s).'],
+        [eng(tau, 's'), 'AOM optical rise time 0.65 d/V for a ' + v('c-d') + ' mm beam. Focus tighter to switch faster (at the cost of diffraction efficiency).'],
+        [eng(bw, 'Hz'), 'AOM modulation bandwidth ≈ 0.35/τ: the fastest intensity changes it can follow.'],
+        [eng(delay, 's'), 'signal delay in ' + cable + ' m of coax; matters when comparing edges on different cables.']
+      ];
+      box.innerHTML = rows.map(function (r) { return '<div class="cs-out"><div class="v">' + r[0] + '</div><div class="l">' + r[1] + '</div></div>'; }).join('');
+    }
+    document.querySelectorAll('#cs-calc input, #cs-calc select').forEach(function (el) { el.addEventListener('input', calc); });
+    calc();
+  })();
+
+  /* ══ Section 08: code tabs + copy ══ */
+  (function () {
+    var tabs = document.querySelectorAll('.cs-tabs [data-code]');
+    tabs.forEach(function (b) {
+      b.addEventListener('click', function () {
+        tabs.forEach(function (o) { o.setAttribute('aria-selected', String(o === b)); });
+        document.querySelectorAll('#python pre[data-code]').forEach(function (p) { p.hidden = p.dataset.code !== b.dataset.code; });
+      });
+    });
+    document.querySelectorAll('.cs-copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pre = Array.prototype.filter.call(btn.parentElement.querySelectorAll('pre'), function (p) { return !p.hidden; })[0];
+        if (!pre || !navigator.clipboard) return;
+        navigator.clipboard.writeText(pre.textContent).then(function () { btn.textContent = 'Copied ✓'; setTimeout(function () { btn.textContent = 'Copy'; }, 1400); }, function () {});
+      });
+    });
+  })();
+})();
+</script>
+</body>
+</html>

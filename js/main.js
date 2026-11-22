@@ -369,7 +369,7 @@ function initThemeToggle() {
    ───────────────────────────────────────────────────── */
 const NAV = {
   // Build reads as one story, in the order a lab actually gets built: choose the atom, get its lasers,
-  // pump down, lock, set polarizations, catch atoms in a MOT, trap them in tweezers, clean up the optics,
+  // pump down, lock, set polarizations, catch atoms in a MOT, wire up the control system, trap them in tweezers, clean up the optics,
   // add a cavity, then keep it all running. `label` is the step; `tool` is the page's own name.
   build: [
     { key: 'atom-library',     step: 1,  label: 'Select an atomic species',       tool: 'Atomic Species Selector',     kind: 'Reference',   icon: '⚛️', color: '#a13c1c', href: 'pages/atom-library.html'     },
@@ -378,10 +378,11 @@ const NAV = {
     { key: 'laser-locking',    step: 4,  label: 'Lock the lasers to the atom',    tool: 'Laser Locking Guide',         kind: 'Guide',       icon: '🔐', color: '#a13c1c', href: 'pages/laser-locking.html'    },
     { key: 'polarimetry',      step: 5,  label: 'Analyze the polarization',       tool: 'Polarimetry Simulator',       kind: 'Simulator',   icon: '🔭', color: '#2c4a63', href: 'pages/polarimetry.html'      },
     { key: 'mot-designer',     step: 6,  label: 'Design a MOT',                   tool: 'MOT Designer',                kind: 'Calculator',  icon: '🧲', color: '#3f5d3f', href: 'pages/mot-designer.html'     },
-    { key: 'tweezer-designer', step: 7,  label: 'Assemble a tweezer array',       tool: 'Tweezer Array Design Lab',    kind: 'Design lab',  icon: '🔦', color: '#a13c1c', href: 'pages/tweezer-designer.html' },
-    { key: 'zernike',          step: 8,  label: 'Get rid of aberrations',         tool: 'Zernike Wavefront Lab',       kind: 'Simulator',   icon: '🌊', color: '#2c4a63', href: 'pages/zernike.html'          },
-    { key: 'cavity-qed',       step: 9,  label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
-    { key: 'lab-techniques',   step: 10, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
+    { key: 'control-systems',  step: 7,  label: 'Control the experiment',         tool: 'Experiment Control Systems',  kind: 'Guide',       icon: '🎛️', color: '#2c4a63', href: 'pages/control-systems.html' },
+    { key: 'tweezer-designer', step: 8,  label: 'Assemble a tweezer array',       tool: 'Tweezer Array Design Lab',    kind: 'Design lab',  icon: '🔦', color: '#a13c1c', href: 'pages/tweezer-designer.html' },
+    { key: 'zernike',          step: 9,  label: 'Get rid of aberrations',         tool: 'Zernike Wavefront Lab',       kind: 'Simulator',   icon: '🌊', color: '#2c4a63', href: 'pages/zernike.html'          },
+    { key: 'cavity-qed',       step: 10, label: 'Couple atoms to a cavity',       tool: 'Cavity QED Coupling Lab',     kind: 'Calculator',  icon: '💎', color: '#3f5d3f', href: 'pages/cavity-qed.html'       },
+    { key: 'lab-techniques',   step: 11, label: 'Run the lab day to day',         tool: 'AMO Lab Operations Handbook', kind: 'Guide',       icon: '🔬', color: '#a13c1c', href: 'pages/lab-techniques.html'   },
   ],
   // Trap, Image & Cool continues the story with a first experiment: cool and image a cloud, then one atom, then run the cycle.
   trapImageCool: [
@@ -741,6 +742,7 @@ const SEARCH_KEYWORDS = {
   'imaging-calculator': 'SNR fidelity photons EMCCD sCMOS histogram survival fluorescence single atom readout',
   'tof-calculator': 'time of flight thermometry temperature expansion PSD BEC Maxwell Boltzmann',
   'mot-designer': 'MOT magneto-optical trap gradient spring damping capture detuning Zeeman cooling cascade',
+  'control-systems': 'experiment control ARTIQ Sinara labscript NI DAQ PulseBlaster FPGA TTL DAC ADC DDS AWG timing sequence pulse shaping python git github',
   'fidelity-budget': 'Rydberg gate error budget blockade Doppler phase SPAM lifetime intensity noise fidelity',
   'release-recapture': 'tweezer thermometry recapture release Monte Carlo trap depth temperature',
   'lab-calculators': 'beam waist dBm recoil Doppler Zeeman saturation cavity FSR finesse trap frequency Clebsch Gordan',
@@ -1463,9 +1465,9 @@ function initStoryTrail() {
 
 /* The author's own scholarly work. Pages built on one of these papers list it in
    CITE_RESEARCH so readers who use its results cite the paper, not only the page. */
-const CITE_THESIS = {
-  plain: 'Phatak, S. S. (2026). Cooling Lithium and Cesium Single Atoms in Optical Tweezers [Doctoral dissertation, Purdue University]. https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018',
-  bibtex: '@phdthesis{phatak2026thesis,\n  author = {Phatak, Saumitra S.},\n  title  = {Cooling Lithium and Cesium Single Atoms in Optical Tweezers},\n  school = {Purdue University},\n  year   = {2026},\n  url    = {https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018}\n}',
+const CITE_THESIS = {   // as listed by Google Scholar (Purdue University Graduate School, 2026)
+  plain: 'Phatak, S. S. (2026). Cooling Lithium and Cesium Single Atoms in Optical Tweezers (Doctoral dissertation, Purdue University Graduate School). https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018',
+  bibtex: '@phdthesis{phatak2026cooling,\n  title  = {Cooling Lithium and Cesium Single Atoms in Optical Tweezers},\n  author = {Phatak, Saumitra Sudhir},\n  school = {Purdue University Graduate School},\n  year   = {2026},\n  url    = {https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018}\n}',
 };
 const CITE_PAPERS = {
   'phatak2024cooling': {
@@ -1988,6 +1990,7 @@ function initQuantumQuiz() {
 const PAGE_PLAYBOOKS = {
   'atom-library': ['Choose a species', 'Compare transition constants, recoil scales, and cooling limits before opening design tools.', 'Use data-sheet links when a number will enter an experiment.'],
   'laser-planner': ['Plan laser architecture', 'Select a species to see required wavelengths, power classes, nonlinear optics, and control elements.', 'Treat powers as starting points; vendors, linewidths, and beam geometry still need lab-specific checks.'],
+  'control-systems': ['Control the experiment', 'Learn the signals (TTL, DAC, ADC, DDS, AWG), how hardware timing and delays work, how pulses are shaped, and how a shot is written in Python and shared with git.', 'Delay values in the shot diagram are illustrative; measure your own shutters, AOMs and coils.'],
   'mot-designer': ['Estimate MOT behavior', 'Adjust detuning, saturation, beam size, and gradients to see damping, scattering, and capture trends.', 'Use it for scale and intuition before measuring loading curves.'],
   'laser-locking': ['Choose a stabilization route', 'Compare saturated absorption, PDH, and beat-note locking from signal generation to failure modes.', 'Keep sign conventions and RF prefactors visible when translating to the lab.'],
   'lab-techniques': ['Orient lab practice', 'Use the technique cards as an operations checklist for alignment, loading, imaging, and troubleshooting.', 'Open calculators from the related-tool panel when a number is needed.'],
@@ -2025,6 +2028,7 @@ const RELATED_TOOLS = {
   'atom-library': ['laser-planner', 'mot-designer', 'lab-calculators'],
   'laser-planner': ['atom-library', 'laser-locking', 'lab-techniques'],
   'mot-designer': ['atom-library', 'tof-calculator', 'cooling-simulator'],
+  'control-systems': ['laser-locking', 'tweezer-designer', 'virtual-lab'],
   'laser-locking': ['lab-techniques', 'polarimetry', 'zernike'],
   'lab-techniques': ['laser-planner', 'vacuum-systems', 'lab-calculators'],
   'polarimetry': ['laser-locking', 'lab-techniques', 'zernike'],

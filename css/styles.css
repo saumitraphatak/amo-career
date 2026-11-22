@@ -276,8 +276,9 @@ code, .mono {
   border: 1px solid color-mix(in srgb, var(--c-atom) 14%, transparent);
   border-radius: var(--r-sm);
   padding: 0.1em 0.45em;
-  color: #67e8f9;
+  color: #0b5d73;            /* light theme; #67e8f9 was 1.2:1 on cream */
 }
+[data-theme="dark"] code, [data-theme="dark"] .mono { color: #67e8f9; }
 
 /* =====================================================
    LAYOUT
@@ -3972,3 +3973,18 @@ span.read-link { color: var(--text-secondary); }
   [data-theme="dark"] .assumption-badge { color: #fcd34d; }
   [data-theme="dark"] .notebook-count { color: #4ade80; }
 }
+
+/* home "about" card: its navy-to-cream gradient was designed for the dark theme; on cream the
+   headline (#dffcf6) sat on the light half and the stack labels on the dark half (2026-11-22) */
+@media screen {
+  :root:not([data-theme="dark"]) .about-card {
+    background:
+      radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--ink-rust) 12%, transparent), transparent 28%),
+      radial-gradient(circle at 5% 100%, rgba(45,212,191,0.12), transparent 38%),
+      linear-gradient(145deg, var(--bg-card), color-mix(in srgb, var(--bg-surface) 92%, transparent));
+  }
+  :root:not([data-theme="dark"]) .about-card-headline { color: var(--text-primary); }
+  :root:not([data-theme="dark"]) .about-stack-card p { color: var(--text-secondary); }
+}
+.about-pill span { color: #7a5900; }
+[data-theme="dark"] .about-pill span { color: #fbbf24; }

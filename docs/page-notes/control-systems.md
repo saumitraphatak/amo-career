@@ -1,0 +1,10 @@
+# pages/control-systems.html
+
+**Purpose:** Build step 07, "Control the experiment" (Experiment Control Systems). What a PhD student needs to run an AMO experiment's control system: signals, timing and delays, pulse shaping, the common systems, Python control and git.
+
+## Created 2026-11-22 (Saumitra: "add a page ... control systems knowledge")
+- **Flow:** 01 the job (hardware-timed, repeatable, recorded; resolution / jitter / latency / update rate) → 02 architecture figure (PC, real-time core, cards, apparatus, slow instruments) → 03 signals table (TTL, DDS, DAC, ADC, AWG) with Sinara and NI numbers + signal integrity → 04 timing: interactive shot (ideal / real delays / compensated), ARTIQ timeline vs labscript pseudoclock → 05 pulse shape vs spectrum (interactive FFT) → 06 signal budget calculator → 07 ARTIQ/Sinara, labscript, NI, RFSoC/commercial → 08 Python sketches (ARTIQ, real-time branch, labscript, nidaqmx, pyvisa) → 09 git/GitHub → 10 checklist → 11 references.
+- **Sources (all fetched 2026-11-22):** Sinara datasheets 1124, 2118/2128, 4410/4412, 4456/4457, 4624/4625, 5108, 5432, 5632 and the sinara-core page (M-Labs); ARTIQ manual (RTIO concepts, getting started core/mgmt); Kasprowicz et al., IJET 68, 123 (2022); Starkey et al., RSI 84, 085111 (2013) and labscript docs (components, hardware list, runmanager shot files); labscript-devices PulseBlaster encodings; Shammah et al., arXiv:2309.17233; NI PCIe-6363 specifications and nidaqmx docs; Isomet AN2600 / AN0510 (τ ≈ 0.65 d/V, BW ≈ 0.35/τ, acoustic velocities).
+- **Deliberately hedged:** shot-diagram delays are illustrative (measure your own); no SU-Servo numbers (the manual text was not reached); commercial controllers named without specs; the nidaqmx AO example is written from the API (the docs show only an AI example).
+- Fastino rate: datasheet says 3 MS/s per channel, current gateware 2.55 MS/s; the page quotes 2.55. The sinara-core page says "2 MSPS"; not used.
+- `test_control_systems_page` pins the quoted numbers, the interactive elements and step 7.

@@ -806,6 +806,7 @@ def test_build_story_order() -> None:
         "build": ("BUILD", "Build", [("atom-library", "Select an atomic species"), ("laser-planner", "Pick lasers for that atom"),
                   ("vacuum-systems", "Pump down to ultra-high vacuum"), ("laser-locking", "Lock the lasers to the atom"),
                   ("polarimetry", "Analyze the polarization"), ("mot-designer", "Design a MOT"),
+                  ("control-systems", "Control the experiment"),
                   ("tweezer-designer", "Assemble a tweezer array"), ("zernike", "Get rid of aberrations"),
                   ("cavity-qed", "Couple atoms to a cavity"), ("lab-techniques", "Run the lab day to day")]),
         "trapImageCool": ("TRAP", "Trap, Image &(?:amp;)? Cool", [("cooling-simulator", "Cool atoms with laser light"), ("absorption-imaging", "Image the atom cloud"), ("tof-calculator", "Measure the cloud’s temperature"), ("imaging-calculator", "See a single atom"), ("release-recapture", "Measure a single atom’s temperature"), ("laser-cooling", "Cool a single atom to its ground state"), ("virtual-lab", "Run a full experimental cycle"), ("lab-calculators", "Do the everyday lab math")]),
@@ -837,7 +838,7 @@ def test_build_story_order() -> None:
         for n, (k, l) in enumerate(steps, 1):
             page = read(f"pages/{k}.html")
             assert re.search(rf"{cat} {n:02d}( · | &middot; |</span>\s*<span class=\"page-tag\">){re.escape(l)}\s*<", page), (k, l)
-    assert len(cards["CAREER"]) == 3 and len(cards["QC"]) == 8 and len(cards["TRAP"]) == 8 and len(cards["BUILD"]) == 10
+    assert len(cards["CAREER"]) == 3 and len(cards["QC"]) == 8 and len(cards["TRAP"]) == 8 and len(cards["BUILD"]) == 11
 
 
 def test_group_finder_rebuild() -> None:
@@ -1014,6 +1015,25 @@ def test_styling_pass_2026_11() -> None:
     assert "hero.after(panel)" in js                                               # playbook never lands above a hero
 
 
+def test_control_systems_page() -> None:
+    """Experiment Control Systems (Build 07, 2026-11-22): hardware numbers match the cited datasheets,
+    the timing/pulse/budget figures are wired, and the page sits at step 7 of the build story."""
+    import re
+    html = read("pages/control-systems.html")
+    assert "🎛️ Build 07 · Control the experiment" in html
+    assert re.findall(r'<span class="accent">(\d\d)</span>', html) == [f"{i:02d}" for i in range(1, 12)]
+    for fact in ("minimum pulse 3 ns", "1 GS/s, output &lt;1 to &gt;400 MHz, 0.25 Hz", "1 MS/s shared, 75 kHz",
+                 "up to 2.55 MS/s per channel", "1.5 MS/s simultaneous", "1.25 GS/s", "2.86 MS/s (one channel) to 1.25 MS/s",
+                 "125 million events per second", "τ ≈ 0.65 d/V", "84, 085111", "10.24425/ijet.2022.139859", "arXiv:2309.17233"):
+        assert fact in html, fact
+    for el in ('id="cs-seq"', 'id="cs-pulse"', 'id="cs-calc"', 'data-code="branch"', 'data-mode="comp"'):
+        assert el in html, el
+    assert "0.65 * d / vel" in html and "clk / Math.pow(2, ftw)" in html and "span / Math.pow(2, bits)" in html
+    assert html.count("<div") == html.count("</div>") and html.count("<section") == html.count("</section>")
+    js = read("js/main.js")
+    assert "'control-systems': [" in js and "key: 'control-systems',  step: 7" in js
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1125,6 +1145,7 @@ def main() -> None:
         test_career_comparisons_rebuild,
         test_start_here_rebuild,
         test_styling_pass_2026_11,
+        test_control_systems_page,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,
