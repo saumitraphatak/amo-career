@@ -259,6 +259,7 @@
           <button type="button" class="vl-btn" id="vlNew">New load</button>
           <label>Speed <select id="vlSpeed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
           <label><input type="checkbox" id="vlTruth"> Show hidden truth</label>
+          <label><input type="checkbox" id="vlEmccd" checked> Realistic EMCCD</label>
         </div>
       </div>
       <aside class="vl-panel" aria-labelledby="vlPanelH">
@@ -598,13 +599,40 @@ initScrollReveal();
     for (let i = 0; i < S.n; i++) { bgA[i] = poisson(S.P.ng); sgA[i] = occArr[i] && (!filter || filter(i)) ? poisson(S.P.nb) : 0; }
     return photons(S, bgA, sgA);
   }
+  // Deterministic per-pixel PRNG for realistic EMCCD readout floor & dark-current speckles
+  const pixHash = (i, salt) => { let x = Math.imul(i ^ salt, 0x27d4eb2d); x ^= x >>> 15; return ((x >>> 0) / 4294967296); };
   function drawImage(S, ph, frac, alpha) {
+    const emccd = !!($('vlEmccd') && $('vlEmccd').checked);
     const N = S.M * CP, acc = new Float32Array(N * N), m = Math.floor(ph.length / 2 * frac);
-    for (let k = 0; k < m; k++) { const x = ph[2 * k] | 0, y = ph[2 * k + 1] | 0; if (x >= 0 && y >= 0 && x < N && y < N) acc[y * N + x]++; }
+    for (let k = 0; k < m; k++) {
+      const x = ph[2 * k] | 0, y = ph[2 * k + 1] | 0;
+      if (x >= 0 && y >= 0 && x < N && y < N) {
+        acc[y * N + x] += 1;
+        if (emccd) {
+          // Subtle Airy PSF diffraction bleed into 4-neighbours
+          if (x > 0) acc[y * N + x - 1] += 0.12;
+          if (x + 1 < N) acc[y * N + x + 1] += 0.12;
+          if (y > 0) acc[(y - 1) * N + x] += 0.12;
+          if (y + 1 < N) acc[(y + 1) * N + x] += 0.12;
+        }
+      }
+    }
     const vmax = 0.14 * S.P.nb + 3 * S.P.ng / (CP * CP) + 1;
     off.width = N; off.height = N;
     const img = octx.createImageData(N, N);
-    for (let p = 0; p < N * N; p++) { const col = cmap(acc[p] / vmax); img.data[4 * p] = col[0]; img.data[4 * p + 1] = col[1]; img.data[4 * p + 2] = col[2]; img.data[4 * p + 3] = 255; }
+    const salt = (m * 31 + 17) | 0;
+    for (let p = 0; p < N * N; p++) {
+      let v = acc[p] / vmax;
+      if (emccd) {
+        // Realistic EMCCD bias + Gaussian readout noise + occasional CIC/dark-current hot pixel
+        const u1 = pixHash(p, salt), u2 = pixHash(p, salt + 997);
+        const rn = (u1 + u2 - 1) * 0.075;
+        const cic = u1 > 0.996 ? 0.28 : 0;
+        v = Math.max(0.03, v + 0.045 + rn + cic);
+      }
+      const col = cmap(v);
+      img.data[4 * p] = col[0]; img.data[4 * p + 1] = col[1]; img.data[4 * p + 2] = col[2]; img.data[4 * p + 3] = 255;
+    }
     octx.putImageData(img, 0, 0);
     ctx.save(); ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = false; ctx.drawImage(off, PAD, PAD, W - 2 * PAD, W - 2 * PAD); ctx.restore();
   }

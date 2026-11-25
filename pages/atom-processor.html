@@ -229,6 +229,12 @@
             <button type="button" data-pl="opt" aria-pressed="true">Optimised</button>
           </span>
         </label>
+        <label>View
+          <span class="zp-seg" role="group" aria-label="Processor view mode">
+            <button type="button" data-view="3d" aria-pressed="true">3D Lab</button>
+            <button type="button" data-view="2d" aria-pressed="false">2D Top</button>
+          </span>
+        </label>
       </div>
       <div class="zp-grid">
         <div>
@@ -379,6 +385,10 @@
         <span class="see-also-icon">📊</span>
         <div><div class="see-also-name">Rydberg Gate Error Budget</div><div class="see-also-desc">Where the CZ infidelity comes from</div></div>
       </a>
+      <a class="see-also-card" href="learn-quantum.html#surface-code-erasure">
+        <span class="see-also-icon">🛡️</span>
+        <div><div class="see-also-name">Live Surface Code &amp; <sup>171</sup>Yb Erasure Decoder</div><div class="see-also-desc">Inject Pauli errors and erasure flags on a 2D logical patch</div></div>
+      </a>
       <a class="see-also-card" href="learn-quantum.html">
         <span class="see-also-icon">🔵</span>
         <div><div class="see-also-name">Quantum Computing Learning Path</div><div class="see-also-desc">Gates, entanglement and algorithms from scratch</div></div>
@@ -397,6 +407,7 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=57"></script>
+<script src="../js/orbit3d.js?v=2"></script>
 <script>
 renderNav({ active: 'atom-processor', root: '../' });
 initScrollReveal();
@@ -643,9 +654,200 @@ initScrollReveal();
   }
   const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
+  /* 3D Lab perspective renderer (drag to orbit via js/orbit3d.js) */
+  let viewMode = '3d';
+  const view3D = (window.AMO3D && AMO3D.orbit)
+    ? AMO3D.orbit(cv, { az: -0.32, el: 0.56, minEl: 0.14, maxEl: 1.38, label: '3D zoned neutral-atom processor', onChange: () => { if (P && viewMode === '3d') frame(P, k, u); } })
+    : { az: -0.32, el: 0.56 };
+
+  function proj3(umX, umY, umZ) {
+    const lx = (umX - 50) / 52, ly = (umY - 46) / 52, lz = umZ / 52;
+    const ca = Math.cos(view3D.az), sa = Math.sin(view3D.az);
+    const ce = Math.cos(view3D.el), se = Math.sin(view3D.el);
+    const xr = lx * ca - ly * sa;
+    const yr = lx * sa + ly * ca;
+    const sx = xr;
+    const sy = lz * ce - yr * se;
+    const depth = lz * se + yr * ce;
+    const persp = 2.65 / (2.65 - depth * 0.65);
+    return [W * 0.5 + sx * 425 * persp, H * 0.57 - sy * 425 * persp, depth, persp];
+  }
+
+  function poly3(pts, fill, stroke, lw) {
+    ctx.beginPath();
+    pts.forEach((p, i) => { const q = proj3(p[0], p[1], p[2]); i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); });
+    ctx.closePath();
+    if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1.2; ctx.stroke(); }
+  }
+
+  function drawObjective3D() {
+    const N = 36, rGlass = 13, rRim = 18;
+    const drawRing = (z, r, fill, stroke) => {
+      ctx.beginPath();
+      for (let i = 0; i <= N; i++) {
+        const a = (i / N) * Math.PI * 2;
+        const q = proj3(50 + Math.cos(a) * r, 46 + Math.sin(a) * r, z);
+        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+      }
+      ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.3; ctx.stroke(); }
+    };
+    drawRing(33, rGlass, 'rgba(56,189,248,0.18)', 'rgba(125,211,252,0.55)');
+    drawRing(36, rRim, 'rgba(15,23,42,0.82)', 'rgba(148,163,184,0.45)');
+    drawRing(43, rRim * 1.06, 'rgba(30,41,59,0.75)', 'rgba(148,163,184,0.4)');
+    const lbl = proj3(50 + rRim + 3, 46, 39);
+    ctx.fillStyle = 'rgba(148,163,184,0.72)'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'left';
+    ctx.fillText('HIGH-NA OBJECTIVE', lbl[0], lbl[1]);
+  }
+
+  function drawWireSphere3D(cx, cy, cz, r, alpha) {
+    ctx.save();
+    ctx.strokeStyle = `rgba(216,180,254,${(0.75 * alpha).toFixed(2)})`;
+    ctx.lineWidth = 1.2;
+    for (const lat of [-0.45, 0, 0.45]) {
+      ctx.beginPath();
+      const rl = r * Math.cos(lat), zl = cz + r * Math.sin(lat);
+      for (let i = 0; i <= 32; i++) {
+        const a = (i / 32) * Math.PI * 2;
+        const q = proj3(cx + rl * Math.cos(a), cy + rl * Math.sin(a), zl);
+        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+      }
+      ctx.stroke();
+    }
+    for (const lon of [0, Math.PI / 2]) {
+      ctx.beginPath();
+      for (let i = 0; i <= 32; i++) {
+        const a = (i / 32) * Math.PI * 2;
+        const q = proj3(cx + r * Math.cos(a) * Math.cos(lon), cy + r * Math.cos(a) * Math.sin(lon), cz + r * Math.sin(a));
+        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function frame3D(P, k, u) {
+    ctx.fillStyle = '#05070d'; ctx.fillRect(0, 0, W, H);
+    poly3([[2, 0, -1], [98, 0, -1], [98, 92, -1], [2, 92, -1]], 'rgba(15,23,42,0.55)', 'rgba(148,163,184,0.18)', 1.2);
+    ctx.strokeStyle = 'rgba(148,163,184,0.08)'; ctx.lineWidth = 1;
+    for (let x = 10; x <= 90; x += 10) {
+      const a = proj3(x, 2, -0.8), b = proj3(x, 90, -0.8);
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+    }
+    const zones3 = [
+      [2, 18, '45,212,191', 'READOUT ZONE'],
+      [33, 57, '168,85,247', 'ENTANGLING ZONE'],
+      [70, 90, '245,158,11', 'STORAGE ZONE'],
+    ];
+    zones3.forEach(([y0, y1, rgb, label]) => {
+      poly3([[4, y0, 0], [96, y0, 0], [96, y1, 0], [4, y1, 0]], `rgba(${rgb},0.09)`, `rgba(${rgb},0.38)`, 1.3);
+      const lp = proj3(6, y0 + 5, 0.5);
+      ctx.fillStyle = `rgba(${rgb},0.9)`; ctx.font = '700 11px JetBrains Mono, monospace'; ctx.textAlign = 'left';
+      ctx.fillText(label, lp[0], lp[1]);
+    });
+    ctx.strokeStyle = 'rgba(148,163,184,0.34)'; ctx.lineWidth = 1;
+    for (let s = 0; s < P.n; s++) for (const y of [Y_ST, Y_RO]) {
+      const q = proj3(slotX(s, P.n), y, 0);
+      ctx.beginPath(); ctx.ellipse(q[0], q[1], 10 * q[3], 5.5 * q[3], 0, 0, Math.PI * 2); ctx.stroke();
+    }
+    for (const g of GATE) for (const d of [-HALF, HALF]) {
+      const q = proj3(g + d, Y_EN, 0);
+      ctx.beginPath(); ctx.ellipse(q[0], q[1], 8.5 * q[3], 4.8 * q[3], 0, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    const st = k >= 0 ? P.steps[k] : null, before = info[Math.max(0, k)], after = info[k + 1] || before;
+    const posNow = P.home.map(h => [h[0], h[1], 0]);
+    let movers = [], ryd = 0, useAfter = false, readBits = null, localGates = [];
+
+    if (st && st.kind === '1q') {
+      useAfter = u > 0.55;
+      localGates = st.gates;
+    } else if (st && st.kind === 'trip') {
+      movers = Object.keys(st.dest).map(Number);
+      let f = 0, lift = 0;
+      if (u < 0.38) { f = ease(u / 0.38); lift = Math.sin(Math.PI * f) * 7.5; }
+      else if (u < 0.62) { f = 1; lift = 0; }
+      else { f = 1 - ease((u - 0.62) / 0.38); lift = Math.sin(Math.PI * f) * 7.5; }
+      for (const q of movers) {
+        const h = P.home[q], d = st.dest[q];
+        posNow[q] = [h[0] + (d[0] - h[0]) * f, h[1] + (d[1] - h[1]) * f, lift];
+      }
+      if (u >= 0.38 && u < 0.62) ryd = Math.sin(Math.PI * (u - 0.38) / 0.24);
+      useAfter = u >= 0.5;
+    } else if (st && st.kind === 'read') {
+      const f = ease(Math.min(1, u / 0.5));
+      const lift = u < 0.5 ? Math.sin(Math.PI * f) * 6 : 0;
+      for (let q = 0; q < P.n; q++) posNow[q] = [P.home[q][0], Y_ST + (Y_RO - Y_ST) * f, lift];
+      if (u < 0.5) movers = [...Array(P.n).keys()];
+      else readBits = shot1;
+      useAfter = true;
+    }
+
+    if (ryd > 0) {
+      poly3([[0, Y_EN - 8, 2.5], [100, Y_EN - 8, 2.5], [100, Y_EN + 8, 2.5], [0, Y_EN + 8, 2.5]], `rgba(168,85,247,${(0.22 * ryd).toFixed(2)})`, `rgba(216,180,254,${(0.65 * ryd).toFixed(2)})`, 1.4);
+      for (const g of st.sites) drawWireSphere3D(g, Y_EN, 0, 7.2, ryd);
+    }
+
+    if (movers.length && (st.kind === 'read' || u < 0.4 || u > 0.6)) {
+      for (const q of movers) {
+        const [ax, ay, az] = posNow[q];
+        const topL = proj3(ax - 3.2, ay, 33), topR = proj3(ax + 3.2, ay, 33);
+        const waist = proj3(ax, ay, az);
+        const botL = proj3(ax - 2.0, ay, -7), botR = proj3(ax + 2.0, ay, -7);
+        ctx.fillStyle = 'rgba(34,211,238,0.16)';
+        ctx.beginPath(); ctx.moveTo(topL[0], topL[1]); ctx.lineTo(topR[0], topR[1]); ctx.lineTo(waist[0] + 1.5, waist[1]); ctx.lineTo(waist[0] - 1.5, waist[1]); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(waist[0] - 1.5, waist[1]); ctx.lineTo(waist[0] + 1.5, waist[1]); ctx.lineTo(botR[0], botR[1]); ctx.lineTo(botL[0], botL[1]); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = 'rgba(34,211,238,0.55)'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo((topL[0] + topR[0]) / 2, (topL[1] + topR[1]) / 2); ctx.lineTo(waist[0], waist[1]); ctx.stroke();
+      }
+    }
+
+    if (localGates.length) {
+      const a = Math.sin(Math.PI * Math.min(1, u / 0.9));
+      for (const g of localGates) {
+        const [ax, ay, az] = posNow[g.q];
+        const top = proj3(ax, ay, 33), pt = proj3(ax, ay, az);
+        ctx.strokeStyle = `rgba(251,146,60,${(0.85 * a).toFixed(2)})`; ctx.lineWidth = 3.2;
+        ctx.beginPath(); ctx.moveTo(top[0], top[1]); ctx.lineTo(pt[0], pt[1]); ctx.stroke();
+        ctx.fillStyle = `rgba(251,146,60,${(0.3 + 0.7 * a).toFixed(2)})`;
+        ctx.fillRect(pt[0] - 12, pt[1] - 42, 24, 20);
+        ctx.fillStyle = '#1a0f05'; ctx.font = '700 12px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(g.g, pt[0], pt[1] - 28);
+      }
+    }
+
+    const inf = useAfter ? after : before;
+    const order = [...Array(P.n).keys()].map(q => ({ q, p: proj3(posNow[q][0], posNow[q][1], posNow[q][2]) })).sort((a, b) => a.p[2] - b.p[2]);
+    for (const item of order) {
+      const q = item.q, [sx, sy, , persp] = item.p;
+      if (posNow[q][2] > 0.5) {
+        const sh = proj3(posNow[q][0], posNow[q][1], 0);
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath(); ctx.ellipse(sh[0], sh[1], 7 * sh[3], 3.5 * sh[3], 0, 0, Math.PI * 2); ctx.fill();
+      }
+      if (readBits !== null) {
+        const b = (readBits >> q) & 1, a = Math.min(1, (u - 0.5) / 0.2);
+        if (b) glow(sx, sy, 24 * persp, '255,236,179', a);
+        else { ctx.strokeStyle = `rgba(100,116,139,${a})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(sx, sy, 8 * persp, 0, Math.PI * 2); ctx.stroke(); }
+        ctx.fillStyle = `rgba(226,232,240,${a})`; ctx.font = '700 13px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText(String(b), sx, sy + 28 * persp);
+        if (u < 0.7) atom(P, q, sx, sy, inf[q], null);
+      } else {
+        atom(P, q, sx, sy, inf[q], st && st.kind === 'trip' && st.dest[q] !== undefined ? { ryd } : null);
+      }
+    }
+
+    drawObjective3D();
+    if (readBits !== null && u > 0.7) {
+      ctx.fillStyle = 'rgba(226,232,240,.95)'; ctx.font = '700 16px JetBrains Mono, monospace'; ctx.textAlign = 'right';
+      ctx.fillText('shot: ' + bits(readBits, P.n), W - 24, 58);
+    }
+  }
+
   /* per-step timeline (s at 1×) */
   const DUR = { '1q': 1.0, trip: 3.0, read: 2.4 };
   function frame(P, k, u) {                                                 // k = step index (−1 idle), u ∈ [0,1]
+    if (viewMode === '3d') { frame3D(P, k, u); return; }
     backdrop(P);
     const st = k >= 0 ? P.steps[k] : null, before = info[Math.max(0, k)], after = info[k + 1] || before;
     const posNow = P.home.map(h => h.slice());
@@ -835,8 +1037,11 @@ initScrollReveal();
   const bitsEl = $('zpBits');
   bvSecret.forEach((b, i) => { const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 's' + i; btn.setAttribute('aria-pressed', b ? 'true' : 'false');
     btn.addEventListener('click', () => { bvSecret[i] ^= 1; btn.setAttribute('aria-pressed', bvSecret[i] ? 'true' : 'false'); build(); }); bitsEl.appendChild(btn); });
-  document.querySelectorAll('.zp-seg button').forEach(b => b.addEventListener('click', () => {
-    placement = b.dataset.pl; document.querySelectorAll('.zp-seg button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); build();
+  document.querySelectorAll('.zp-seg button[data-pl]').forEach(b => b.addEventListener('click', () => {
+    placement = b.dataset.pl; document.querySelectorAll('.zp-seg button[data-pl]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); build();
+  }));
+  document.querySelectorAll('.zp-seg button[data-view]').forEach(b => b.addEventListener('click', () => {
+    viewMode = b.dataset.view; document.querySelectorAll('.zp-seg button[data-view]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); if (P) render();
   }));
 
   /* ═════════════ noise + histogram ═════════════ */

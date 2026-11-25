@@ -361,6 +361,67 @@
     .rep-mc .ctrl-group { flex: 1 1 240px; }
     .rep-chartwrap { position: relative; height: 260px; }
 
+    /* ─── Live Surface Code & Yb-171 Erasure Decoder ─── */
+    .sc-card { margin-top: 1.25rem; }
+    .sc-toolbar { display: flex; flex-wrap: wrap; gap: .45rem .6rem; align-items: center; margin: .75rem 0; }
+    .sc-group { display: inline-flex; gap: .3rem; flex-wrap: wrap; align-items: center; }
+    .sc-sep { width: 1px; height: 1.3rem; background: var(--border); margin: 0 .15rem; }
+    .sc-tool.active-x { border-color: #ef4444; color: #cf0a0a; background: color-mix(in srgb, #ef4444 12%, var(--bg-card)); }
+    .sc-tool.active-z { border-color: #6366f1; color: #4f46e5; background: color-mix(in srgb, #6366f1 12%, var(--bg-card)); }
+    .sc-tool.active-e { border-color: #06b6d4; color: #0e7490; background: color-mix(in srgb, #06b6d4 14%, var(--bg-card)); }
+    [data-theme="dark"] .sc-tool.active-x { color: #f87171; }
+    [data-theme="dark"] .sc-tool.active-z { color: #a5b4fc; }
+    [data-theme="dark"] .sc-tool.active-e { color: #22d3ee; }
+    .sc-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; margin-top: .75rem; }
+    @media (max-width: 860px) { .sc-layout { grid-template-columns: minmax(0, 1fr); } }
+    .sc-board-wrap {
+      background: #060d1b; border: 1px solid rgba(56,189,248,.22); border-radius: 12px;
+      padding: .85rem; position: relative;
+    }
+    .sc-svg { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; user-select: none; }
+    .sc-q-hit { cursor: pointer; }
+    .sc-q-hit:hover .sc-q-ring { stroke-width: 3; }
+    @keyframes scPulse { 0%,100% { opacity: .88; } 50% { opacity: .48; } }
+    .sc-lit { animation: scPulse 1.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .sc-lit { animation: none; } }
+    .sc-legend { display: flex; flex-wrap: wrap; gap: .5rem .9rem; justify-content: center; margin-top: .65rem; font-size: .72rem; color: #94a3b8; font-family: var(--font-mono); }
+    .sc-legend span { display: inline-flex; align-items: center; gap: .32rem; }
+    .sc-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .sc-sq { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+    .sc-status {
+      margin-top: .7rem; padding: .65rem .85rem; border-radius: 8px;
+      font-family: var(--font-mono); font-size: .78rem; line-height: 1.6;
+      background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-secondary);
+    }
+    .sc-status.ok { border-color: #15803d; color: #166534; background: color-mix(in srgb, #22c55e 9%, var(--bg-surface)); }
+    .sc-status.fail { border-color: #dc2626; color: #991b1b; background: color-mix(in srgb, #ef4444 9%, var(--bg-surface)); }
+    [data-theme="dark"] .sc-status.ok { color: #4ade80; }
+    [data-theme="dark"] .sc-status.fail { color: #f87171; }
+    .sc-presets { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem; }
+    .sc-preset-btn {
+      font-size: .73rem; font-family: var(--font-mono); padding: .28rem .58rem;
+      border-radius: 6px; border: 1px solid var(--border-med); background: var(--bg-surface);
+      color: var(--text-secondary); cursor: pointer;
+    }
+    .sc-preset-btn:hover { border-color: var(--c-qc); color: var(--c-qc); }
+    .sc-race {
+      background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: .9rem 1rem;
+    }
+    .sc-race h6 {
+      margin: 0 0 .45rem 0; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--text-muted); font-family: var(--font-mono);
+    }
+    .sc-race-row { margin: .65rem 0; }
+    .sc-race-head { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: .76rem; margin-bottom: .25rem; color: var(--text-secondary); }
+    .sc-bar-track { height: 12px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border); overflow: hidden; }
+    .sc-bar-fill { height: 100%; width: 0; border-radius: 6px; transition: width .35s ease; }
+    .sc-bar-pauli { background: linear-gradient(90deg, #f97316, #ef4444); }
+    .sc-bar-erasure { background: linear-gradient(90deg, #06b6d4, #22c55e); }
+    .sc-race-summary { margin-top: .65rem; font-family: var(--font-mono); font-size: .76rem; color: var(--text-secondary); line-height: 1.6; }
+    .sc-bridge { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+    @media print { .sc-board-wrap { background: #fff; border-color: #cbd5e1; } }
+
     /* dark-ink overrides (generated): light-theme accent text lifted to >= 4.5:1 on dark cards */
     @media screen {
       [data-theme="dark"] .matrix-wrap td.val { color: #a78bfa; }
@@ -1729,6 +1790,95 @@ Example: $d=7$, $p=0.1\%$ physical $\Rightarrow p_L \approx A\,(0.001/0.01)^4 = 
       Below the crossing a bigger code is exponentially better; above it, worse. Here the crossing sits at 50% because only data qubits err and only bit flips are possible.
       Real codes must also catch phase flips (the surface code checks both), and every check is itself a noisy circuit, which is why the surface-code threshold in the chart above is about 1%, not 50%.
     </p>
+  </div>
+
+  <div class="chart-card sc-card" id="surface-code-erasure">
+    <span class="amo-eyebrow">Interactive &middot; Neutral-Atom Fault Tolerance</span>
+    <h5>Live 2D Surface Code &amp; <sup>171</sup>Yb Erasure-Conversion Decoder</h5>
+    <p class="chsh-p">
+      Click any physical data qubit on the rotated surface code to inject a bit-flip (<b>X</b>), phase-flip (<b>Z</b>), or a
+      heralded <b><sup>171</sup>Yb erasure flag</b> (a detected leak out of the metastable <sup>3</sup>P<sub>0</sub> qubit manifold).
+      Watch Z- and X-stabilizer plaquettes light up with syndromes in real time, then run the minimum-weight decoder to heal the logical qubit&mdash;or watch it fail past threshold.
+      Because an erasure tells the decoder <em>which</em> atom erred, a distance-<i>d</i> code can survive up to <i>d</i>&minus;1 erasures instead of &lfloor;(<i>d</i>&minus;1)/2&rfloor; unflagged Pauli errors.
+    </p>
+
+    <div class="sc-toolbar">
+      <div class="sc-group" role="group" aria-label="Surface code distance">
+        <button class="gate-btn active" type="button" data-sc-d="3">d = 3 (9 data)</button>
+        <button class="gate-btn" type="button" data-sc-d="5">d = 5 (25 data)</button>
+      </div>
+      <span class="sc-sep" aria-hidden="true"></span>
+      <div class="sc-group" role="group" aria-label="Click injection tool">
+        <button class="gate-btn sc-tool active-x" type="button" data-sc-tool="X">Inject X</button>
+        <button class="gate-btn sc-tool" type="button" data-sc-tool="Z">Inject Z</button>
+        <button class="gate-btn sc-tool" type="button" data-sc-tool="E">Inject <sup>171</sup>Yb Erasure</button>
+      </div>
+      <span class="sc-sep" aria-hidden="true"></span>
+      <div class="sc-group">
+        <button class="action-btn" type="button" id="scDecodeBtn" style="font-size:.78rem;padding:.35rem .8rem;">Decode &amp; Heal</button>
+        <button class="gate-btn" type="button" id="scRandBtn">Random Noise</button>
+        <button class="gate-btn" type="button" id="scClearBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="sc-presets" aria-label="Guided presets">
+      <button class="sc-preset-btn" type="button" id="scPreSingle">Demo: 1-qubit X error</button>
+      <button class="sc-preset-btn" type="button" id="scPrePauliFail">Demo: 2 Pauli X errors (fails!)</button>
+      <button class="sc-preset-btn" type="button" id="scPreErasureWin">Demo: Same 2 as <sup>171</sup>Yb erasures (heals!)</button>
+    </div>
+
+    <div class="sc-layout">
+      <div>
+        <div class="sc-board-wrap">
+          <svg id="scSvg" class="sc-svg" viewBox="0 0 420 420" role="img" aria-label="Interactive rotated surface code lattice with clickable data qubits, Z and X stabilizer plaquettes, and erasure flags"></svg>
+          <div class="sc-legend">
+            <span><i class="sc-sq" style="background:#f59e0b"></i>Z-check (spots X)</span>
+            <span><i class="sc-sq" style="background:#38bdf8"></i>X-check (spots Z)</span>
+            <span><i class="sc-dot" style="background:#ef4444"></i>X error</span>
+            <span><i class="sc-dot" style="background:#818cf8"></i>Z error</span>
+            <span><i class="sc-dot" style="background:#06b6d4;box-shadow:0 0 6px #22d3ee"></i><sup>171</sup>Yb erasure</span>
+            <span><i class="sc-sq" style="background:#22c55e"></i>Decoder fix</span>
+          </div>
+        </div>
+        <div class="sc-status" id="scStatus" aria-live="polite">
+          Click data qubits to inject errors, or try the three guided demos above.
+        </div>
+      </div>
+
+      <div class="sc-race">
+        <h6>Side-by-Side: Standard Pauli vs. <sup>171</sup>Yb Erasure Conversion</h6>
+        <p class="chsh-p" style="font-size:.78rem;margin-bottom:.65rem;">
+          Run the exact same 2D minimum-weight decoder on random shots at physical error rate <i>p</i>:
+          <b>Standard Pauli</b> (0% heralded, equal X/Y/Z) vs. <b><sup>171</sup>Yb Erasure Conversion</b> (98% of errors heralded as glowing erasures, 2% dark Pauli; Wu et al. 2022).
+        </p>
+        <div class="ctrl-row" style="margin-bottom:.55rem;">
+          <div class="ctrl-group" style="flex:1 1 170px;">
+            <label for="scRaceP">Physical error rate p: <span class="ctrl-val" id="scRacePV">6.0%</span></label>
+            <input type="range" id="scRaceP" min="1" max="15" step="0.5" value="6" style="width:100%;">
+          </div>
+          <button class="action-btn" type="button" id="scRaceRun" style="font-size:.78rem;padding:.38rem .8rem;">Run 1,500 shots</button>
+        </div>
+
+        <div class="sc-race-row">
+          <div class="sc-race-head"><span>Standard Pauli (0% erasure)</span><strong id="scPauliRate">&mdash;</strong></div>
+          <div class="sc-bar-track"><div class="sc-bar-fill sc-bar-pauli" id="scPauliBar"></div></div>
+        </div>
+        <div class="sc-race-row">
+          <div class="sc-race-head"><span><sup>171</sup>Yb Erasure Conversion (98% heralded)</span><strong id="scErasureRate">&mdash;</strong></div>
+          <div class="sc-bar-track"><div class="sc-bar-fill sc-bar-erasure" id="scErasureBar"></div></div>
+        </div>
+        <div class="sc-race-summary" id="scRaceSummary">
+          Press <b>Run 1,500 shots</b> to compare logical failure rates on the active distance-<span id="scRaceD">3</span> patch.
+        </div>
+
+        <div class="sc-bridge">
+          <a class="read-link" href="rb87-vs-yb171.html#erasure"><span class="rl-icon">⚛️</span>Why <sup>171</sup>Yb converts 98% of errors to erasures</a>
+          <a class="read-link" href="atom-processor.html"><span class="rl-icon">🧩</span>Neutral-Atom Processor Zones</a>
+          <a class="read-link" href="https://doi.org/10.1038/s41467-022-32094-6" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Wu et al., Nat. Commun. (2022)</a>
+          <a class="read-link" href="https://doi.org/10.1038/s41586-023-06438-1" target="_blank" rel="noopener"><span class="rl-icon">📄</span>Ma et al., Nature (2023)</a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Overhead table -->
@@ -4055,6 +4205,447 @@ function opReset() {
   }
   ['mgN', 'mgT'].forEach(id => document.getElementById(id).addEventListener('input', cost));
   cost();
+})();
+
+/* ═══════════════════════════════════════════════
+   LIVE 2D ROTATED SURFACE CODE & Yb-171 ERASURE DECODER
+   Exact rotated surface code (d=3, d=5) with Dijkstra + bitmask-DP MWPM
+   erasure-weighted decoder and Monte Carlo Pauli vs. Erasure race.
+   ═══════════════════════════════════════════════ */
+(function () {
+  function buildCode(d) {
+    const nData = d * d;
+    const zChecks = [], xChecks = [];
+    // Interior plaquettes
+    for (let r = 0; r < d - 1; r++) {
+      for (let c = 0; c < d - 1; c++) {
+        const qs = [r * d + c, r * d + (c + 1), (r + 1) * d + c, (r + 1) * d + (c + 1)];
+        if ((r + c) % 2 === 0) zChecks.push({ type: 'Z', r: r + 0.5, c: c + 0.5, qs, bnd: null });
+        else xChecks.push({ type: 'X', r: r + 0.5, c: c + 0.5, qs, bnd: null });
+      }
+    }
+    // Boundary weight-2 Z-checks (left & right)
+    for (let r = 1; r < d - 1; r += 2) {
+      zChecks.push({ type: 'Z', r: r + 0.5, c: -0.35, qs: [r * d, (r + 1) * d], bnd: 'L' });
+    }
+    for (let r = 0; r < d - 1; r += 2) {
+      zChecks.push({ type: 'Z', r: r + 0.5, c: d - 1 + 0.35, qs: [r * d + (d - 1), (r + 1) * d + (d - 1)], bnd: 'R' });
+    }
+    // Boundary weight-2 X-checks (top & bottom)
+    for (let c = 0; c < d - 1; c += 2) {
+      xChecks.push({ type: 'X', r: -0.35, c: c + 0.5, qs: [c, c + 1], bnd: 'T' });
+    }
+    for (let c = 1; c < d - 1; c += 2) {
+      xChecks.push({ type: 'X', r: d - 1 + 0.35, c: c + 0.5, qs: [(d - 1) * d + c, (d - 1) * d + c + 1], bnd: 'B' });
+    }
+
+    // Build matching graphs: each data qubit connects exactly 2 vertices (check or boundary)
+    function buildGraph(checks, isA, isB) {
+      const nCheck = checks.length;
+      const nVert = nCheck + 2; // nCheck = bndA, nCheck+1 = bndB
+      const qToCheck = Array.from({ length: nData }, () => []);
+      checks.forEach((ch, idx) => ch.qs.forEach(q => qToCheck[q].push(idx)));
+      const adj = Array.from({ length: nVert }, () => []);
+      const edges = [];
+      for (let q = 0; q < nData; q++) {
+        const r = Math.floor(q / d), c = q % d;
+        const verts = qToCheck[q].slice();
+        if (isA(r, c)) verts.push(nCheck);
+        if (isB(r, c)) verts.push(nCheck + 1);
+        const u = verts[0], v = verts[1];
+        edges.push({ q, u, v });
+        adj[u].push({ to: v, q });
+        adj[v].push({ to: u, q });
+      }
+      return { nCheck, nVert, bndA: nCheck, bndB: nCheck + 1, adj, edges };
+    }
+
+    const zGraph = buildGraph(zChecks, r => r === 0, r => r === d - 1);
+    const xGraph = buildGraph(xChecks, (_, c) => c === 0, (_, c) => c === d - 1);
+    return { d, nData, zChecks, xChecks, zGraph, xGraph };
+  }
+
+  function syndrome(checks, err) {
+    return checks.map(ch => ch.qs.reduce((acc, q) => acc ^ (err[q] ? 1 : 0), 0));
+  }
+
+  function dijkstra(graph, src, weights) {
+    const n = graph.nVert;
+    const dist = new Float64Array(n).fill(1e9);
+    const prevV = new Int32Array(n).fill(-1);
+    const prevQ = new Int32Array(n).fill(-1);
+    const used = new Uint8Array(n);
+    dist[src] = 0;
+    for (let iter = 0; iter < n; iter++) {
+      let u = -1, best = 1e9;
+      for (let i = 0; i < n; i++) if (!used[i] && dist[i] < best) { best = dist[i]; u = i; }
+      if (u === -1) break;
+      used[u] = 1;
+      const nbrs = graph.adj[u];
+      for (let k = 0; k < nbrs.length; k++) {
+        const e = nbrs[k];
+        const nd = best + weights[e.q];
+        if (nd < dist[e.to]) {
+          dist[e.to] = nd;
+          prevV[e.to] = u;
+          prevQ[e.to] = e.q;
+        }
+      }
+    }
+    return { dist, prevV, prevQ };
+  }
+
+  function tracePath(res, src, dst) {
+    const qs = [];
+    let cur = dst;
+    while (cur !== src && cur !== -1) {
+      qs.push(res.prevQ[cur]);
+      cur = res.prevV[cur];
+    }
+    return qs;
+  }
+
+  function decodeGraph(code, graph, syn, erased) {
+    const lit = [];
+    for (let i = 0; i < syn.length; i++) if (syn[i]) lit.push(i);
+    const corr = new Uint8Array(code.nData);
+    if (lit.length === 0) return { corr, paths: [] };
+
+    const weights = new Float64Array(code.nData);
+    for (let q = 0; q < code.nData; q++) weights[q] = erased && erased[q] ? 0.005 : 1.0;
+
+    const m = lit.length;
+    const sp = lit.map(v => dijkstra(graph, v, weights));
+    // Best boundary cost and target for each lit vertex
+    const bCost = new Float64Array(m), bNode = new Int32Array(m);
+    for (let i = 0; i < m; i++) {
+      const dA = sp[i].dist[graph.bndA], dB = sp[i].dist[graph.bndB];
+      if (dA <= dB) { bCost[i] = dA; bNode[i] = graph.bndA; }
+      else { bCost[i] = dB; bNode[i] = graph.bndB; }
+    }
+
+    const pairs = [];
+    if (m <= 12) {
+      const N = 1 << m;
+      const dp = new Float64Array(N).fill(1e9);
+      const choice = new Int32Array(N).fill(-1);
+      dp[0] = 0;
+      for (let mask = 1; mask < N; mask++) {
+        let i = 0; while (!((mask >> i) & 1)) i++;
+        const rest = mask ^ (1 << i);
+        let best = bCost[i] + dp[rest], bestC = -1;
+        for (let j = i + 1; j < m; j++) {
+          if ((rest >> j) & 1) {
+            const cost = sp[i].dist[lit[j]] + dp[rest ^ (1 << j)];
+            if (cost < best) { best = cost; bestC = j; }
+          }
+        }
+        dp[mask] = best;
+        choice[mask] = bestC;
+      }
+      let mask = N - 1;
+      while (mask > 0) {
+        let i = 0; while (!((mask >> i) & 1)) i++;
+        const c = choice[mask];
+        if (c === -1) {
+          pairs.push([i, -1]);
+          mask ^= (1 << i);
+        } else {
+          pairs.push([i, c]);
+          mask ^= (1 << i) | (1 << c);
+        }
+      }
+    } else {
+      const alive = new Uint8Array(m).fill(1);
+      for (let i = 0; i < m; i++) {
+        if (!alive[i]) continue;
+        alive[i] = 0;
+        let best = bCost[i], bestJ = -1;
+        for (let j = i + 1; j < m; j++) {
+          if (alive[j] && sp[i].dist[lit[j]] < best) { best = sp[i].dist[lit[j]]; bestJ = j; }
+        }
+        if (bestJ !== -1) { alive[bestJ] = 0; pairs.push([i, bestJ]); }
+        else pairs.push([i, -1]);
+      }
+    }
+
+    const paths = [];
+    pairs.forEach(([i, j]) => {
+      const dst = j === -1 ? bNode[i] : lit[j];
+      const qs = tracePath(sp[i], lit[i], dst);
+      paths.push(qs);
+      qs.forEach(q => { corr[q] ^= 1; });
+    });
+    return { corr, paths };
+  }
+
+  function evaluate(code, errX, errZ, erased) {
+    const synZ = syndrome(code.zChecks, errX);
+    const synX = syndrome(code.xChecks, errZ);
+    const decX = decodeGraph(code, code.zGraph, synZ, erased);
+    const decZ = decodeGraph(code, code.xGraph, synX, erased);
+    let logX = 0, logZ = 0;
+    for (let c = 0; c < code.d; c++) logX ^= (errX[c] ^ decX.corr[c]);
+    for (let r = 0; r < code.d; r++) logZ ^= (errZ[r * code.d] ^ decZ.corr[r * code.d]);
+    return { synZ, synX, corrX: decX.corr, corrZ: decZ.corr, logX: !!logX, logZ: !!logZ, failed: !!(logX || logZ) };
+  }
+
+  function runMonteCarlo(d, p, erasureFrac, shots) {
+    const code = buildCode(d);
+    let fails = 0;
+    const errX = new Uint8Array(code.nData);
+    const errZ = new Uint8Array(code.nData);
+    const erased = new Uint8Array(code.nData);
+    for (let s = 0; s < shots; s++) {
+      errX.fill(0); errZ.fill(0); erased.fill(0);
+      let any = false;
+      for (let q = 0; q < code.nData; q++) {
+        if (Math.random() < p) {
+          if (Math.random() < erasureFrac) {
+            erased[q] = 1;
+            if (Math.random() < 0.5) { errX[q] = 1; any = true; }
+            if (Math.random() < 0.5) { errZ[q] = 1; any = true; }
+          } else {
+            const r = Math.random();
+            if (r < 1 / 3) { errX[q] = 1; }
+            else if (r < 2 / 3) { errZ[q] = 1; }
+            else { errX[q] = 1; errZ[q] = 1; }
+            any = true;
+          }
+        }
+      }
+      if (any && evaluate(code, errX, errZ, erased).failed) fails++;
+    }
+    return fails / shots;
+  }
+
+  window.SURFCODE = { buildCode, syndrome, decodeGraph, evaluate, runMonteCarlo };
+
+  const svg = document.getElementById('scSvg');
+  if (!svg) return;
+
+  let d = 3, tool = 'X';
+  let code = buildCode(d);
+  let errX = new Uint8Array(code.nData);
+  let errZ = new Uint8Array(code.nData);
+  let erased = new Uint8Array(code.nData);
+  let lastDecode = null;
+
+  function resetState(newD) {
+    if (newD) { d = newD; code = buildCode(d); }
+    errX = new Uint8Array(code.nData);
+    errZ = new Uint8Array(code.nData);
+    erased = new Uint8Array(code.nData);
+    lastDecode = null;
+    const dSpan = document.getElementById('scRaceD');
+    if (dSpan) dSpan.textContent = d;
+    render();
+  }
+
+  function render() {
+    const W = 420, pad = 68;
+    const step = (W - 2 * pad) / (d - 1);
+    const px = c => pad + c * step;
+    const py = r => pad + r * step;
+    const synZ = syndrome(code.zChecks, errX);
+    const synX = syndrome(code.xChecks, errZ);
+
+    let out = `<defs>
+      <filter id="scGlowC" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="scGlowA" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>`;
+
+    out += `<text x="${W / 2}" y="18" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono,monospace" font-size="10" opacity="0.8">Z BOUNDARY (X_L runs Top ↔ Bottom)</text>`;
+    out += `<text x="${W / 2}" y="${W - 8}" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono,monospace" font-size="10" opacity="0.8">Z BOUNDARY</text>`;
+    out += `<text x="14" y="${W / 2}" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono,monospace" font-size="10" opacity="0.8" transform="rotate(-90 14 ${W / 2})">X BOUNDARY (Z_L runs Left ↔ Right)</text>`;
+    out += `<text x="${W - 14}" y="${W / 2}" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono,monospace" font-size="10" opacity="0.8" transform="rotate(90 ${W - 14} ${W / 2})">X BOUNDARY</text>`;
+
+    function drawPlaquette(ch, lit, color) {
+      const fillOp = lit ? 0.42 : 0.10;
+      const strokeOp = lit ? 0.98 : 0.34;
+      const cls = lit ? ' class="sc-lit"' : '';
+      if (!ch.bnd) {
+        const r0 = Math.floor(ch.r), c0 = Math.floor(ch.c);
+        const x0 = px(c0), y0 = py(r0);
+        out += `<rect${cls} x="${x0}" y="${y0}" width="${step}" height="${step}" rx="4" fill="${color}" fill-opacity="${fillOp}" stroke="${color}" stroke-opacity="${strokeOp}" stroke-width="${lit ? 2.4 : 1.1}"${lit ? ' filter="url(#scGlowA)"' : ''}/>`;
+      } else {
+        const q0 = ch.qs[0], q1 = ch.qs[1];
+        const x0 = px(q0 % d), y0 = py(Math.floor(q0 / d));
+        const x1 = px(q1 % d), y1 = py(Math.floor(q1 / d));
+        const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+        const bulge = step * 0.42;
+        let cx = mx, cy = my;
+        if (ch.bnd === 'L') cx -= bulge;
+        if (ch.bnd === 'R') cx += bulge;
+        if (ch.bnd === 'T') cy -= bulge;
+        if (ch.bnd === 'B') cy += bulge;
+        out += `<path${cls} d="M${x0},${y0} Q${cx},${cy} ${x1},${y1} Z" fill="${color}" fill-opacity="${fillOp}" stroke="${color}" stroke-opacity="${strokeOp}" stroke-width="${lit ? 2.4 : 1.1}"${lit ? ' filter="url(#scGlowA)"' : ''}/>`;
+      }
+      const lx = px(ch.c), ly = py(ch.r);
+      out += `<text x="${lx}" y="${ly + 4}" text-anchor="middle" fill="${lit ? '#ffffff' : color}" font-family="JetBrains Mono,monospace" font-size="${d === 3 ? 11 : 9.5}" font-weight="${lit ? 700 : 500}" opacity="${lit ? 1 : 0.65}">${ch.type}${lit ? '!' : ''}</text>`;
+    }
+
+    code.zChecks.forEach((ch, i) => drawPlaquette(ch, !!synZ[i], '#f59e0b'));
+    code.xChecks.forEach((ch, i) => drawPlaquette(ch, !!synX[i], '#38bdf8'));
+
+    const qR = d === 3 ? 16 : 12.5;
+    for (let q = 0; q < code.nData; q++) {
+      const r = Math.floor(q / d), c = q % d;
+      const x = px(c), y = py(r);
+      const hx = errX[q], hz = errZ[q], he = erased[q];
+      const fx = lastDecode && lastDecode.corrX[q];
+      const fz = lastDecode && lastDecode.corrZ[q];
+      let fill = '#0f172a', stroke = '#475569', lbl = '';
+      if (hx && hz) { fill = '#7c3aed'; stroke = '#e879f9'; lbl = 'Y'; }
+      else if (hx) { fill = '#991b1b'; stroke = '#f87171'; lbl = 'X'; }
+      else if (hz) { fill = '#312e81'; stroke = '#818cf8'; lbl = 'Z'; }
+      if (he && !lbl) { fill = '#083344'; stroke = '#22d3ee'; lbl = 'E'; }
+
+      out += `<g class="sc-q-hit" data-q="${q}" role="button" tabindex="0" aria-label="Data qubit row ${r + 1} column ${c + 1}${he ? ', erased' : ''}${hx ? ', X error' : ''}${hz ? ', Z error' : ''}">`;
+      if (he) {
+        out += `<circle cx="${x}" cy="${y}" r="${qR + 5.5}" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-dasharray="4 2.5" filter="url(#scGlowC)"/>`;
+      }
+      if (fx || fz) {
+        out += `<circle cx="${x}" cy="${y}" r="${qR + (he ? 9 : 4.5)}" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="3 2"/>`;
+      }
+      out += `<circle class="sc-q-ring" cx="${x}" cy="${y}" r="${qR}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+      if (lbl) {
+        out += `<text x="${x}" y="${y + 4}" text-anchor="middle" fill="#f8fafc" font-family="JetBrains Mono,monospace" font-size="${d === 3 ? 12 : 10}" font-weight="700">${lbl}</text>`;
+      } else {
+        out += `<text x="${x}" y="${y + 3.5}" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono,monospace" font-size="${d === 3 ? 9.5 : 8.5}">q${q}</text>`;
+      }
+      out += `</g>`;
+    }
+    svg.innerHTML = out;
+
+    svg.querySelectorAll('.sc-q-hit').forEach(g => {
+      const act = () => {
+        const q = +g.dataset.q;
+        lastDecode = null;
+        if (tool === 'X') errX[q] ^= 1;
+        else if (tool === 'Z') errZ[q] ^= 1;
+        else {
+          if (erased[q]) { erased[q] = 0; }
+          else {
+            erased[q] = 1;
+            if (!errX[q] && !errZ[q]) {
+              if (Math.random() < 0.5) errX[q] = 1; else errZ[q] = 1;
+            }
+          }
+        }
+        render();
+      };
+      g.addEventListener('click', act);
+      g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });
+    });
+
+    const nX = errX.reduce((a, b) => a + b, 0);
+    const nZ = errZ.reduce((a, b) => a + b, 0);
+    const nE = erased.reduce((a, b) => a + b, 0);
+    const litZ = synZ.reduce((a, b) => a + b, 0);
+    const litX = synX.reduce((a, b) => a + b, 0);
+    const st = document.getElementById('scStatus');
+    if (!lastDecode) {
+      st.className = 'sc-status';
+      if (nX + nZ + nE === 0) {
+        st.innerHTML = `Lattice clean (d=${d}, ${code.nData} data + ${code.zChecks.length + code.xChecks.length} ancilla qubits). Click any qubit to inject an error, or pick a demo.`;
+      } else {
+        st.innerHTML = `Active errors: <b>${nX} X</b>, <b>${nZ} Z</b>, <b>${nE} <sup>171</sup>Yb erasure${nE === 1 ? '' : 's'}</b> &middot; Lit syndromes: <b>${litZ} Z-check</b>, <b>${litX} X-check</b>. Press <b>Decode &amp; Heal</b> to run minimum-weight matching.`;
+      }
+    } else if (!lastDecode.failed) {
+      st.className = 'sc-status ok';
+      const fixCount = lastDecode.corrX.reduce((a, b) => a + b, 0) + lastDecode.corrZ.reduce((a, b) => a + b, 0);
+      st.innerHTML = `<b>Logical qubit healed ✓</b> — Decoder applied ${fixCount} recovery flip${fixCount === 1 ? '' : 's'} (green dashed rings). Residual error is a trivial stabilizer; logical state intact.`;
+    } else {
+      st.className = 'sc-status fail';
+      const which = [lastDecode.logX ? 'X_L' : '', lastDecode.logZ ? 'Z_L' : ''].filter(Boolean).join(' & ');
+      st.innerHTML = `<b>Logical ${which} error ✗</b> — The decoder satisfied every stabilizer, but its shorter recovery path completed a non-trivial chain across the lattice. Try flagging those same qubits as <b><sup>171</sup>Yb erasures</b>!`;
+    }
+  }
+
+  document.querySelectorAll('[data-sc-d]').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-sc-d]').forEach(b => b.classList.toggle('active', b === btn));
+    resetState(+btn.dataset.scD);
+  }));
+
+  document.querySelectorAll('[data-sc-tool]').forEach(btn => btn.addEventListener('click', () => {
+    tool = btn.dataset.scTool;
+    document.querySelectorAll('[data-sc-tool]').forEach(b => b.classList.remove('active-x', 'active-z', 'active-e'));
+    btn.classList.add(tool === 'X' ? 'active-x' : tool === 'Z' ? 'active-z' : 'active-e');
+  }));
+
+  document.getElementById('scDecodeBtn').addEventListener('click', () => {
+    lastDecode = evaluate(code, errX, errZ, erased);
+    render();
+  });
+  document.getElementById('scClearBtn').addEventListener('click', () => resetState());
+  document.getElementById('scRandBtn').addEventListener('click', () => {
+    resetState();
+    const p = +document.getElementById('scRaceP').value / 100;
+    for (let q = 0; q < code.nData; q++) {
+      if (Math.random() < p) {
+        if (tool === 'E') {
+          erased[q] = 1;
+          if (Math.random() < 0.5) errX[q] = 1;
+          if (Math.random() < 0.5) errZ[q] = 1;
+        } else {
+          const r = Math.random();
+          if (r < 0.34) errX[q] = 1;
+          else if (r < 0.67) errZ[q] = 1;
+          else { errX[q] = 1; errZ[q] = 1; }
+        }
+      }
+    }
+    render();
+  });
+
+  document.getElementById('scPreSingle').addEventListener('click', () => {
+    resetState();
+    const mid = Math.floor(d / 2) * d + Math.floor(d / 2);
+    errX[mid] = 1;
+    lastDecode = evaluate(code, errX, errZ, erased);
+    render();
+  });
+  document.getElementById('scPrePauliFail').addEventListener('click', () => {
+    if (d !== 3) {
+      document.querySelectorAll('[data-sc-d]').forEach(b => b.classList.toggle('active', +b.dataset.scD === 3));
+      resetState(3);
+    } else resetState();
+    errX[0] = 1; errX[3] = 1;
+    lastDecode = evaluate(code, errX, errZ, erased);
+    render();
+  });
+  document.getElementById('scPreErasureWin').addEventListener('click', () => {
+    if (d !== 3) {
+      document.querySelectorAll('[data-sc-d]').forEach(b => b.classList.toggle('active', +b.dataset.scD === 3));
+      resetState(3);
+    } else resetState();
+    errX[0] = 1; errX[3] = 1; erased[0] = 1; erased[3] = 1;
+    lastDecode = evaluate(code, errX, errZ, erased);
+    render();
+  });
+
+  const raceP = document.getElementById('scRaceP');
+  const racePV = document.getElementById('scRacePV');
+  raceP.addEventListener('input', () => { racePV.textContent = (+raceP.value).toFixed(1) + '%'; });
+  function runRace() {
+    const p = +raceP.value / 100;
+    const shots = d === 3 ? 1500 : 800;
+    const rPauli = runMonteCarlo(d, p, 0.0, shots);
+    const rErasure = runMonteCarlo(d, p, 0.98, shots);
+    document.getElementById('scPauliRate').textContent = (rPauli * 100).toFixed(2) + '%';
+    document.getElementById('scErasureRate').textContent = (rErasure * 100).toFixed(2) + '%';
+    const scale = Math.max(0.05, rPauli, rErasure);
+    document.getElementById('scPauliBar').style.width = Math.min(100, (rPauli / scale) * 100) + '%';
+    document.getElementById('scErasureBar').style.width = Math.min(100, (rErasure / scale) * 100) + '%';
+    const ratio = rErasure > 0 ? (rPauli / rErasure).toFixed(1) + '× lower logical error' : '0 logical errors in ' + shots + ' shots';
+    document.getElementById('scRaceSummary').innerHTML =
+      `At <b>p = ${(p * 100).toFixed(1)}%</b> on d=${d} (${shots.toLocaleString()} shots): <sup>171</sup>Yb erasure conversion achieved <b>${ratio}</b> than unflagged Pauli noise.`;
+  }
+  document.getElementById('scRaceRun').addEventListener('click', runRace);
+
+  render();
+  runRace();
 })();
 </script>
 <div id="amo-nav-ready" hidden></div>

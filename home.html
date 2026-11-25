@@ -109,6 +109,100 @@
   </style>
   <style>/* styling pass 2026-11-21: contrast */
     .about-stack-card span { color: color-mix(in srgb, var(--accent, #0678ab) 72%, var(--text-primary)); }
+    /* ── Scale of a Neutral-Atom Quantum Computer (15-decade zoom) ── */
+    .sz-shell {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 18px;
+      padding: 1.15rem; box-shadow: 0 14px 40px rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] .sz-shell { box-shadow: 0 18px 48px rgba(0,0,0,0.34); }
+    .sz-grid {
+      display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.15rem; align-items: stretch;
+    }
+    @media (max-width: 900px) { .sz-grid { grid-template-columns: minmax(0, 1fr); } }
+    .sz-stage {
+      position: relative; background: #050914; border: 1px solid #1d2a44; border-radius: 14px;
+      overflow: hidden; min-height: 320px; display: flex; align-items: center; justify-content: center;
+    }
+    .sz-stage canvas {
+      display: block; width: 100%; height: 100%; max-height: none !important; aspect-ratio: 16 / 10;
+    }
+    .sz-hud-top {
+      position: absolute; left: 12px; right: 12px; top: 10px; pointer-events: none;
+      display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+      font: 600 .7rem/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #94a3b8;
+    }
+    .sz-decade-pill {
+      padding: .25rem .6rem; border-radius: 999px; background: rgba(15,23,42,0.82);
+      border: 1px solid rgba(148,163,184,0.28); color: #e2e8f0; backdrop-filter: blur(6px);
+    }
+    .sz-hud-bot {
+      position: absolute; left: 14px; right: 14px; bottom: 12px; pointer-events: none;
+      display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem;
+    }
+    .sz-ruler { display: flex; flex-direction: column; gap: 4px; }
+    .sz-ruler-bar { width: 110px; height: 6px; border-left: 2px solid #38bdf8; border-right: 2px solid #38bdf8; border-bottom: 2px solid #38bdf8; }
+    .sz-ruler-lbl { font: 600 .72rem/1 var(--font-mono); color: #7dd3fc; }
+    .sz-zoom-hint { font: 500 .68rem/1 var(--font-mono); color: #64748b; }
+    .sz-info {
+      display: flex; flex-direction: column; gap: .75rem; justify-content: space-between;
+      background: color-mix(in srgb, var(--bg-surface, var(--bg-base)) 55%, var(--bg-card));
+      border: 1px solid var(--border); border-radius: 14px; padding: 1.05rem 1.15rem;
+    }
+    .sz-kicker {
+      font: 700 .7rem/1.2 var(--font-mono); letter-spacing: .09em; text-transform: uppercase;
+      color: var(--sz-c, #38bdf8);
+    }
+    .sz-title { margin: .2rem 0 .35rem; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); line-height: 1.25; }
+    .sz-desc { margin: 0; font-size: .88rem; color: var(--text-secondary); line-height: 1.66; }
+    .sz-eq-box {
+      background: var(--bg-card); border: 1px solid var(--border-med); border-left: 3px solid var(--sz-c, #38bdf8);
+      border-radius: 9px; padding: .6rem .85rem;
+    }
+    .sz-eq-lbl { font: 700 .65rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .25rem; }
+    .sz-eq-val { font: 600 .88rem/1.45 var(--font-mono); color: var(--text-primary); }
+    .sz-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
+    .sz-metric {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: .45rem .65rem;
+    }
+    .sz-metric small { display: block; font-size: .68rem; color: var(--text-muted); }
+    .sz-metric b { font-family: var(--font-mono); font-size: .84rem; color: var(--text-primary); }
+    .sz-links { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .15rem; }
+    .sz-link {
+      font-size: .79rem; font-weight: 600; padding: .34rem .75rem; border-radius: 999px;
+      border: 1px solid var(--border-med); background: var(--bg-card); color: var(--text-primary);
+      text-decoration: none; transition: border-color .15s, background .15s, transform .15s;
+    }
+    .sz-link:hover { border-color: var(--sz-c, #38bdf8); transform: translateY(-1px); }
+    .sz-controls {
+      margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: .7rem;
+    }
+    .sz-slider-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+    .sz-slider-row input[type="range"] {
+      flex: 1 1 240px; accent-color: var(--c-atom, #38bdf8); height: 6px; cursor: pointer;
+    }
+    .sz-tour-btn {
+      font: 600 .79rem/1 inherit; padding: .46rem .95rem; border-radius: 999px; cursor: pointer;
+      border: 1px solid var(--c-atom, #38bdf8); background: color-mix(in srgb, var(--c-atom, #38bdf8) 12%, transparent);
+      color: var(--text-primary); transition: background .15s, transform .15s;
+    }
+    .sz-tour-btn:hover { background: color-mix(in srgb, var(--c-atom, #38bdf8) 22%, transparent); transform: translateY(-1px); }
+    .sz-stops { display: grid; grid-template-columns: repeat(6, 1fr); gap: .4rem; }
+    @media (max-width: 820px) { .sz-stops { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px) { .sz-stops { grid-template-columns: repeat(2, 1fr); } }
+    .sz-stop {
+      font: inherit; text-align: left; cursor: pointer; padding: .45rem .6rem; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--bg-surface, transparent); color: var(--text-secondary);
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+    .sz-stop:hover { border-color: var(--border-med); transform: translateY(-1px); color: var(--text-primary); }
+    .sz-stop.active {
+      border-color: var(--c-atom, #38bdf8); background: color-mix(in srgb, var(--c-atom, #38bdf8) 11%, var(--bg-card));
+      color: var(--text-primary);
+    }
+    .sz-stop b { display: block; font-family: var(--font-mono); font-size: .76rem; color: var(--text-primary); }
+    .sz-stop span { display: block; font-size: .71rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media print { .sz-controls { display: none !important; } }
   </style>
 </head>
 
@@ -414,6 +508,71 @@
             <span class="showcase-cta">Take a temperature →</span>
           </span>
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       SCALE OF A NEUTRAL-ATOM QUANTUM COMPUTER
+       ══════════════════════════════════════════════ -->
+  <section class="section" id="scale-zoom" aria-labelledby="scale-zoom-heading">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-eyebrow anim-in"><span class="live-dot" aria-hidden="true"></span> 15 orders of magnitude</div>
+        <h2 class="section-title anim-in delay-1" id="scale-zoom-heading">Zoom from an optical table to a single nucleus</h2>
+        <p class="section-desc anim-in delay-2">
+          A neutral-atom quantum computer spans fifteen orders of magnitude in length — from a two-metre steel table full of lasers down to the femtometre nuclear spin that stores the qubit. Drag the slider or run the tour to dive in.
+        </p>
+      </div>
+
+      <div class="sz-shell anim-in delay-2">
+        <div class="sz-grid">
+          <div class="sz-stage">
+            <canvas id="szCanvas" width="760" height="475" data-export-ready="true" role="img" aria-label="Interactive 15-order-of-magnitude zoom from an optical table to a single atomic nucleus"></canvas>
+            <div class="sz-hud-top">
+              <span class="sz-decade-pill" id="szDecade">10⁰ m · 1.0 m</span>
+              <span class="sz-decade-pill" id="szStagePill">1 / 6 · Optical table</span>
+            </div>
+            <div class="sz-hud-bot">
+              <div class="sz-ruler">
+                <div class="sz-ruler-bar" id="szRulerBar"></div>
+                <span class="sz-ruler-lbl" id="szRulerLbl">scale bar: 1 m</span>
+              </div>
+              <span class="sz-zoom-hint">drag slider or click a decade</span>
+            </div>
+          </div>
+
+          <div class="sz-info" id="szInfo" style="--sz-c:#38bdf8">
+            <div>
+              <div class="sz-kicker" id="szKicker">1 m · Macroscopic lab hardware</div>
+              <h3 class="sz-title" id="szTitle">Optical Table &amp; Laser Breadboard</h3>
+              <p class="sz-desc" id="szDesc"></p>
+            </div>
+            <div class="sz-eq-box">
+              <div class="sz-eq-lbl">Governing physics at this scale</div>
+              <div class="sz-eq-val" id="szEq"></div>
+            </div>
+            <div class="sz-metrics" id="szMetrics"></div>
+            <div class="sz-links" id="szLinks"></div>
+          </div>
+        </div>
+
+        <div class="sz-controls">
+          <div class="sz-slider-row">
+            <span style="font-family:var(--font-mono);font-size:.76rem;color:var(--text-muted);white-space:nowrap">1 m</span>
+            <input type="range" id="szSlider" min="0" max="15" step="0.02" value="0" aria-label="Zoom scale from 1 meter (0) to 1 femtometer (15)">
+            <span style="font-family:var(--font-mono);font-size:.76rem;color:var(--text-muted);white-space:nowrap">1 fm</span>
+            <button type="button" class="sz-tour-btn" id="szTourBtn">▶ Auto-tour</button>
+          </div>
+          <div class="sz-stops" role="group" aria-label="Jump to physical scale">
+            <button type="button" class="sz-stop active" data-sz="0"><b>1 m</b><span>Optical table</span></button>
+            <button type="button" class="sz-stop" data-sz="1.3"><b>5 cm</b><span>UHV glass cell</span></button>
+            <button type="button" class="sz-stop" data-sz="4.0"><b>100 µm</b><span>Tweezer array</span></button>
+            <button type="button" class="sz-stop" data-sz="5.3"><b>5 µm</b><span>Blockade sphere</span></button>
+            <button type="button" class="sz-stop" data-sz="7.3"><b>50 nm</b><span>Rydberg orbital</span></button>
+            <button type="button" class="sz-stop" data-sz="15.0"><b>1 fm</b><span>Atomic nucleus</span></button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1597,7 +1756,400 @@
   <script src="js/hero3d.js?v=2" defer></script>
   <script>
     renderNav({ active: 'home', root: '' });
+  </script>
+  <script>
+  /* ═══════════════════════════════════════════════════════════════════
+     SCALE OF A NEUTRAL-ATOM QUANTUM COMPUTER — 15-decade interactive zoom
+     z ∈ [0, 15] represents length scale L = 10^(-z) metres.
+     ═══════════════════════════════════════════════════════════════════ */
+  (function () {
+    const cv = document.getElementById('szCanvas');
+    const slider = document.getElementById('szSlider');
+    if (!cv || !slider) return;
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height, CX = W / 2, CY = H / 2;
+    const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
+    const STAGES = [
+      {
+        z: 0.0, label: 'Optical table', scale: '1 m', color: '#38bdf8',
+        kicker: '10⁰ m · Macroscopic lab hardware',
+        title: 'Optical Table & Laser Breadboard',
+        desc: 'Air-floated steel tables hold diode and solid-state lasers, acousto-optic modulators (AOMs), and optical cavities that lock laser frequencies to better than a part in 10¹¹ before fibre delivery to the chamber.',
+        eq: 'c = λν  ·  Δν_lock ≲ 10 kHz  (PDH / SAS)',
+        metrics: [['Table footprint', '2 m × 1 m'], ['Laser lines', '4–8 wavelengths']],
+        links: [['💡 Laser System Planner', 'pages/laser-planner.html'], ['🔐 Laser Locking Guide', 'pages/laser-locking.html']],
+      },
+      {
+        z: 1.3, label: 'UHV glass cell', scale: '5 cm', color: '#fb923c',
+        kicker: '5 × 10⁻² m · Ultra-high vacuum & MOT',
+        title: 'UHV Glass Cell & Magneto-Optical Trap',
+        desc: 'Six counter-propagating red-detuned laser beams intersect inside an anti-reflection-coated quartz cell at 10⁻¹¹ mbar. Magnetic quadrupole coils create a restoring force that cools a vapour of atoms to ~100 µK in milliseconds.',
+        eq: 'F_MOT(r, v) = −α v − κ r  ·  P ≲ 10⁻¹¹ mbar',
+        metrics: [['Cloud temperature', '~10–150 µK'], ['Vacuum lifetime', '20–60 s']],
+        links: [['⚗️ Vacuum Systems', 'pages/vacuum-systems.html'], ['🧲 MOT Designer', 'pages/mot-designer.html']],
+      },
+      {
+        z: 4.0, label: 'Tweezer array', scale: '100 µm', color: '#34d399',
+        kicker: '10⁻⁴ m · Optical dipole traps',
+        title: 'Optical Tweezer Array',
+        desc: 'A high-NA microscope objective focuses an SLM hologram into hundreds of diffraction-limited infrared beams (waist ~0.8 µm). Light-assisted collisions leave at most one atom per trap; crossed AODs sort them into a defect-free grid.',
+        eq: 'U₀ = −Re[α(ω)] I₀ / (2ε₀c)  ·  w₀ ≈ λ / (π NA)',
+        metrics: [['Trap depth U₀', '~0.5–1.5 mK'], ['Site spacing', '3–6 µm']],
+        links: [['🔦 Tweezer Designer', 'pages/tweezer-designer.html'], ['🧩 Virtual Tweezer Lab', 'pages/virtual-lab.html']],
+      },
+      {
+        z: 5.3, label: 'Blockade sphere', scale: '5 µm', color: '#c084fc',
+        kicker: '5 × 10⁻⁶ m · Two-qubit entanglement',
+        title: 'Rydberg Blockade Sphere',
+        desc: 'Exciting one atom to a high principal quantum number (n ≈ 60–80) creates a giant van der Waals shift V(R) = C₆/R⁶ that shifts any neighbour inside R_b out of resonance — enabling parallel high-fidelity CZ gates in ~300 ns.',
+        eq: 'R_b = (C₆ / ℏΩ)^(1/6)  ·  V(R) = C₆ / R⁶',
+        metrics: [['Blockade radius R_b', '5–10 µm'], ['CZ gate time', '~0.2–0.5 µs']],
+        links: [['🔮 Rydberg Blockade Lab', 'pages/rydberg-calculator.html'], ['📊 Gate Error Budget', 'pages/fidelity-budget.html']],
+      },
+      {
+        z: 7.3, label: 'Rydberg orbital', scale: '50 nm', color: '#f472b6',
+        kicker: '5 × 10⁻⁸ m · Giant atomic wavefunction',
+        title: 'Rydberg Electron Orbital (n ≈ 70)',
+        desc: 'The valence electron orbits hundreds of nanometres from the ionic core — over 1,000× wider than a ground-state atom and comparable to a virus. That inflated orbital is why polarisability scales as n⁷ and C₆ as n¹¹.',
+        eq: '⟨r⟩ ≈ (3/2) n*² a₀  ·  C₆ ∝ n*¹¹',
+        metrics: [['Orbital radius (n=70)', '~250 nm'], ['Radiative lifetime', '~150–350 µs']],
+        links: [['⚛️ Atom Library', 'pages/atom-library.html'], ['🎛️ Zoned Atom Processor', 'pages/atom-processor.html']],
+      },
+      {
+        z: 15.0, label: 'Atomic nucleus', scale: '1 fm', color: '#fbbf24',
+        kicker: '10⁻¹⁵ m · The protected qubit',
+        title: 'Atomic Nucleus & Hyperfine Clock Qubit',
+        desc: 'At the very centre sits the femtometre nucleus. Its spin I couples weakly to the valence electron (⁸⁷Rb clock states, 6.835 GHz) or stands alone in a J=0 ground state (¹⁷¹Yb, I = 1/2), yielding coherence times over 10 seconds.',
+        eq: 'H_hf = A_hf I·J  ·  T₂ > 10 s (clock / nuclear spin)',
+        metrics: [['Nuclear radius', '~5 fm (Rb/Yb)'], ['Coherence T₂', '1–40+ s']],
+        links: [['🔑 Hyperfine Qubits', 'pages/learn-quantum.html#hyperfine'], ['⚖️ Rb-87 vs Yb-171', 'pages/rb87-vs-yb171.html']],
+      },
+    ];
+
+    const SUP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','.':'·' };
+    const toSup = s => String(s).split('').map(c => SUP[c] || c).join('');
+    function fmtScale(z) {
+      const m = Math.pow(10, -z);
+      if (m >= 0.5) return m.toFixed(1) + ' m';
+      if (m >= 1e-2) return (m * 100).toFixed(1) + ' cm';
+      if (m >= 1e-3) return (m * 1e3).toFixed(1) + ' mm';
+      if (m >= 1e-6) return (m * 1e6).toFixed(m >= 1e-4 ? 0 : 1) + ' µm';
+      if (m >= 1e-9) return (m * 1e9).toFixed(m >= 1e-7 ? 0 : 1) + ' nm';
+      if (m >= 1e-12) return (m * 1e12).toFixed(0) + ' pm';
+      return (m * 1e15).toFixed(m >= 1e-14 ? 0 : 1) + ' fm';
+    }
+
+    function nearestStage(z) {
+      let best = 0, bd = Infinity;
+      STAGES.forEach((s, i) => { const d = Math.abs(s.z - z); if (d < bd) { bd = d; best = i; } });
+      return best;
+    }
+
+    let lastIdx = -1;
+    const stopBtns = Array.prototype.slice.call(document.querySelectorAll('.sz-stop'));
+    function updateInfo(z) {
+      const idx = nearestStage(z);
+      const exp = z < 0.05 ? '0' : ('-' + z.toFixed(1));
+      document.getElementById('szDecade').textContent = '10' + toSup(exp) + ' m · ' + fmtScale(z);
+      document.getElementById('szRulerLbl').textContent = 'field scale ≈ ' + fmtScale(z);
+      if (idx === lastIdx) return;
+      lastIdx = idx;
+      const s = STAGES[idx];
+      document.getElementById('szStagePill').textContent = (idx + 1) + ' / 6 · ' + s.label;
+      document.getElementById('szInfo').style.setProperty('--sz-c', s.color);
+      document.getElementById('szKicker').textContent = s.kicker;
+      document.getElementById('szTitle').textContent = s.title;
+      document.getElementById('szDesc').textContent = s.desc;
+      document.getElementById('szEq').textContent = s.eq;
+      document.getElementById('szMetrics').innerHTML = s.metrics.map(([k, v]) => `<div class="sz-metric"><small>${k}</small><b>${v}</b></div>`).join('');
+      document.getElementById('szLinks').innerHTML = s.links.map(([t, h]) => `<a class="sz-link" href="${h}">${t} →</a>`).join('');
+      stopBtns.forEach((b, i) => b.classList.toggle('active', i === idx));
+    }
+
+    /* ── Layer drawing helpers (each drawn centred at (0,0) in logical coords) ── */
+    function drawTable(t) {
+      // Breadboard hole grid
+      ctx.fillStyle = 'rgba(148,163,184,0.16)';
+      for (let x = -280; x <= 280; x += 28) for (let y = -160; y <= 160; y += 28) {
+        ctx.beginPath(); ctx.arc(x, y, 2.2, 0, Math.PI * 2); ctx.fill();
+      }
+      // Table outline
+      ctx.strokeStyle = 'rgba(56,189,248,0.35)'; ctx.lineWidth = 2;
+      ctx.strokeRect(-295, -172, 590, 344);
+      // Laser heads
+      const boxes = [[-250, -130, 88, 36, '#ef4444', '780 nm'], [-250, -60, 88, 36, '#a855f7', '420 nm'], [-250, 70, 88, 36, '#38bdf8', '1064 nm']];
+      boxes.forEach(([x, y, w, h, col, txt]) => {
+        ctx.fillStyle = '#0f172a'; ctx.strokeStyle = col; ctx.lineWidth = 1.6;
+        ctx.fillRect(x, y, w, h); ctx.strokeRect(x, y, w, h);
+        ctx.fillStyle = '#e2e8f0'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+        ctx.fillText(txt, x + w / 2, y + 22);
+      });
+      // Glowing laser beams routed via mirrors to central chamber
+      const pulse = 0.65 + 0.35 * Math.sin(t * 2.4);
+      const beams = [
+        ['#ef4444', [[-162, -112], [60, -112], [60, 0], [0, 0]]],
+        ['#a855f7', [[-162, -42], [-40, -42], [-40, 0], [0, 0]]],
+        ['#38bdf8', [[-162, 88], [130, 88], [130, 0], [0, 0]]],
+      ];
+      beams.forEach(([col, pts]) => {
+        ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2.2; ctx.globalAlpha = pulse;
+        ctx.shadowColor = col; ctx.shadowBlur = 10;
+        ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+        ctx.restore();
+        // Mirrors at bends
+        for (let i = 1; i < pts.length - 1; i++) {
+          const [mx, my] = pts[i];
+          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(mx - 8, my - 8); ctx.lineTo(mx + 8, my + 8); ctx.stroke();
+        }
+      });
+      // Central vacuum chamber target
+      ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 2; ctx.fillStyle = 'rgba(251,146,60,0.12)';
+      ctx.beginPath(); ctx.arc(0, 0, 34, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#fdba74'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+      ctx.fillText('UHV CELL', 0, 4);
+    }
+
+    /* ── Lightweight 3D projection + subtle pointer parallax for #scale-zoom ── */
+    let tiltX = 0, tiltY = 0, tgtTiltX = 0, tgtTiltY = 0;
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect();
+      tgtTiltX = ((e.clientX - r.left) / r.width - 0.5) * 0.7;
+      tgtTiltY = ((e.clientY - r.top) / r.height - 0.5) * 0.55;
+    });
+    cv.addEventListener('pointerleave', () => { tgtTiltX = 0; tgtTiltY = 0; });
+
+    function p3(x, y, z, az, el) {
+      const ca = Math.cos(az), sa = Math.sin(az), ce = Math.cos(el), se = Math.sin(el);
+      const xr = x * ca - y * sa, yr = x * sa + y * ca;
+      const sy = z * ce - yr * se, d = z * se + yr * ce;
+      const k = 420 / (420 - d * 0.75);
+      return [xr * k, -sy * k, d, k];
+    }
+
+    function drawCell(t) {
+      const az = 0.55 + t * 0.25 + tiltX, el = 0.36 + tiltY;
+      const hx = 105, hy = 72, hz = 68;
+      const corners = [
+        [-hx,-hy,-hz],[hx,-hy,-hz],[hx,hy,-hz],[-hx,hy,-hz],
+        [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz]
+      ].map(c => p3(c[0], c[1], c[2], az, el));
+      const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+      ctx.fillStyle = 'rgba(30,58,95,0.22)';
+      [[0,1,5,4],[1,2,6,5],[4,5,6,7]].forEach(f => {
+        ctx.beginPath(); f.forEach((idx, i) => i ? ctx.lineTo(corners[idx][0], corners[idx][1]) : ctx.moveTo(corners[idx][0], corners[idx][1]));
+        ctx.closePath(); ctx.fill();
+      });
+      const axes = [[[-190,0,0],[190,0,0]], [[0,-165,0],[0,165,0]], [[0,0,-145],[0,0,145]]];
+      axes.forEach(([a, b]) => {
+        const pa = p3(a[0], a[1], a[2], az, el), pb = p3(b[0], b[1], b[2], az, el);
+        ctx.save(); ctx.strokeStyle = 'rgba(248,113,113,0.48)'; ctx.lineWidth = 8; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 10;
+        ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke(); ctx.restore();
+      });
+      for (const cz of [-92, 92]) {
+        ctx.strokeStyle = 'rgba(251,146,60,0.78)'; ctx.lineWidth = 5.5;
+        ctx.beginPath();
+        for (let i = 0; i <= 40; i++) {
+          const a = (i / 40) * Math.PI * 2;
+          const q = p3(Math.cos(a) * 116, Math.sin(a) * 116, cz, az, el);
+          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        }
+        ctx.stroke();
+      }
+      ctx.strokeStyle = 'rgba(186,230,253,0.68)'; ctx.lineWidth = 1.6;
+      edges.forEach(([i, j]) => { ctx.beginPath(); ctx.moveTo(corners[i][0], corners[i][1]); ctx.lineTo(corners[j][0], corners[j][1]); ctx.stroke(); });
+      const rCloud = 25 + 3 * Math.sin(t * 2.2);
+      const g = ctx.createRadialGradient(0, 0, 2, 0, 0, rCloud * 1.9);
+      g.addColorStop(0, 'rgba(255,236,228,0.96)'); g.addColorStop(0.38, 'rgba(248,113,113,0.78)'); g.addColorStop(1, 'rgba(248,113,113,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rCloud * 1.9, 0, Math.PI * 2); ctx.fill();
+    }
+
+    function drawTweezers(t) {
+      const az = 0.25 + tiltX * 0.8, el = 0.62 + tiltY * 0.6;
+      const N = 5, sp = 48;
+      const pts = [];
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+        const x = (c - (N - 1) / 2) * sp, y = (r - (N - 1) / 2) * sp;
+        const jz = Math.sin(t * 2.8 + r * 2.1 + c * 1.3) * 2.2;
+        pts.push({ x, y, z: jz, p: p3(x, y, jz, az, el) });
+      }
+      pts.sort((a, b) => a.p[2] - b.p[2]);
+      pts.forEach(pt => {
+        const [sx, sy, , k] = pt.p;
+        const top = p3(pt.x, pt.y, 64, az, el), bot = p3(pt.x, pt.y, -48, az, el);
+        ctx.strokeStyle = 'rgba(52,211,153,0.16)'; ctx.lineWidth = 2.2 * k;
+        ctx.beginPath(); ctx.moveTo(top[0], top[1]); ctx.lineTo(bot[0], bot[1]); ctx.stroke();
+        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 10 * k);
+        g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, '#34d399'); g.addColorStop(1, 'rgba(52,211,153,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, 10 * k, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    function drawBlockade(t) {
+      const az = 0.35 + t * 0.22 + tiltX, el = 0.32 + tiltY;
+      const sep = 74, Rb = 122;
+      const pA = p3(-sep / 2, 0, 0, az, el), pB = p3(sep / 2, 0, 0, az, el);
+      const g = ctx.createRadialGradient(pA[0], pA[1], 8, pA[0], pA[1], Rb * pA[3]);
+      g.addColorStop(0, 'rgba(192,132,252,0.28)'); g.addColorStop(0.72, 'rgba(192,132,252,0.11)'); g.addColorStop(1, 'rgba(192,132,252,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(pA[0], pA[1], Rb * pA[3], 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(192,132,252,0.52)'; ctx.lineWidth = 1.2;
+      for (const lat of [-0.5, 0, 0.5]) {
+        ctx.beginPath();
+        for (let i = 0; i <= 40; i++) {
+          const a = (i / 40) * Math.PI * 2;
+          const q = p3(-sep / 2 + Rb * Math.cos(lat) * Math.cos(a), Rb * Math.cos(lat) * Math.sin(a), Rb * Math.sin(lat), az, el);
+          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        }
+        ctx.stroke();
+      }
+      for (const lon of [0, Math.PI / 2]) {
+        ctx.beginPath();
+        for (let i = 0; i <= 40; i++) {
+          const a = (i / 40) * Math.PI * 2;
+          const q = p3(-sep / 2 + Rb * Math.cos(a) * Math.cos(lon), Rb * Math.cos(a) * Math.sin(lon), Rb * Math.sin(a), az, el);
+          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        }
+        ctx.stroke();
+      }
+      ctx.strokeStyle = 'rgba(226,232,240,0.65)'; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(pA[0], pA[1]); ctx.lineTo(pB[0], pB[1]); ctx.stroke();
+      ctx.fillStyle = '#e2e8f0'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+      ctx.fillText('R < R_b', (pA[0] + pB[0]) / 2, (pA[1] + pB[1]) / 2 - 12);
+      ctx.fillStyle = '#d8b4fe'; ctx.fillText('V(R) = C₆/R⁶ ≫ ℏΩ', pA[0], pA[1] - Rb * pA[3] + 18);
+      const p1 = 0.5 + 0.5 * Math.sin(t * 2.6);
+      [[pA, p1], [pB, 1 - p1]].sort((u, v) => u[0][2] - v[0][2]).forEach(([pt, p]) => {
+        const ga = ctx.createRadialGradient(pt[0], pt[1], 1, pt[0], pt[1], 22 * pt[3]);
+        ga.addColorStop(0, '#fff'); ga.addColorStop(0.35, p > 0.5 ? '#c084fc' : '#60a5fa'); ga.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = ga; ctx.beginPath(); ctx.arc(pt[0], pt[1], 22 * pt[3], 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    function drawRydberg(t) {
+      const az = t * 0.32 + tiltX, el = 0.42 + tiltY;
+      for (let k = 1; k <= 5; k++) {
+        const r = k * 28;
+        ctx.strokeStyle = `rgba(244,114,182,${0.14 + 0.08 * (k / 5)})`;
+        ctx.lineWidth = k === 5 ? 2.4 : 1.1;
+        for (const tilt of [0, 1.05, -1.05]) {
+          ctx.beginPath();
+          for (let i = 0; i <= 48; i++) {
+            const a = (i / 48) * Math.PI * 2;
+            const x = r * Math.cos(a), y = r * Math.sin(a) * Math.cos(tilt), z = r * Math.sin(a) * Math.sin(tilt);
+            const q = p3(x, y, z, az, el);
+            i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+          }
+          ctx.stroke();
+        }
+      }
+      const ang = t * 1.5;
+      const ep = p3(Math.cos(ang) * 140, Math.sin(ang) * 140 * Math.cos(0.45), Math.sin(ang) * 140 * Math.sin(0.45), az, el);
+      const ge = ctx.createRadialGradient(ep[0], ep[1], 1, ep[0], ep[1], 22 * ep[3]);
+      ge.addColorStop(0, '#fff'); ge.addColorStop(0.4, '#f472b6'); ge.addColorStop(1, 'rgba(244,114,182,0)');
+      ctx.fillStyle = ge; ctx.beginPath(); ctx.arc(ep[0], ep[1], 22 * ep[3], 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f9a8d4'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.textAlign = 'center';
+      ctx.fillText('n = 70 valence electron (r ≈ 250 nm)', 0, 174);
+    }
+
+    function drawNucleus(t) {
+      const az = t * 0.38 + tiltX, el = 0.35 + tiltY;
+      const g = ctx.createRadialGradient(0, 0, 4, 0, 0, 120);
+      g.addColorStop(0, 'rgba(251,191,36,0.26)'); g.addColorStop(1, 'rgba(251,191,36,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 120, 0, Math.PI * 2); ctx.fill();
+      const sp = p3(Math.sin(t * 2.2) * 34, Math.cos(t * 2.2) * 34, 102, az, el);
+      ctx.strokeStyle = 'rgba(251,191,36,0.9)'; ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(sp[0], sp[1]); ctx.stroke();
+      ctx.fillStyle = '#fde68a'; ctx.beginPath(); ctx.arc(sp[0], sp[1], 5 * sp[3], 0, Math.PI * 2); ctx.fill();
+      ctx.font = '700 12px JetBrains Mono, monospace'; ctx.textAlign = 'left';
+      ctx.fillText('nuclear spin I', sp[0] + 10, sp[1] + 4);
+      const nucs = [];
+      for (let i = 0; i < 28; i++) {
+        const phi = Math.acos(1 - 2 * (i + 0.5) / 28);
+        const th = Math.PI * (1 + Math.sqrt(5)) * i;
+        const r = i < 8 ? 16 : 34;
+        const pt = p3(r * Math.sin(phi) * Math.cos(th), r * Math.sin(phi) * Math.sin(th), r * Math.cos(phi), az, el);
+        nucs.push({ pt, isProton: i % 2 === 0 });
+      }
+      nucs.sort((a, b) => a.pt[2] - b.pt[2]);
+      nucs.forEach(n => {
+        const [nx, ny, , k] = n.pt;
+        const rad = 11 * k;
+        const gn = ctx.createRadialGradient(nx - 3, ny - 3, 1, nx, ny, rad);
+        gn.addColorStop(0, '#fff'); gn.addColorStop(0.45, n.isProton ? '#f59e0b' : '#60a5fa'); gn.addColorStop(1, n.isProton ? '#b45309' : '#1d4ed8');
+        ctx.fillStyle = gn; ctx.beginPath(); ctx.arc(nx, ny, rad, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    const DRAWERS = [drawTable, drawCell, drawTweezers, drawBlockade, drawRydberg, drawNucleus];
+
+    let curZ = 0, targetZ = 0, touring = false;
+    function drawFrame(ms) {
+      const t = (ms || 0) * 0.001;
+      tiltX += (tgtTiltX - tiltX) * 0.1;
+      tiltY += (tgtTiltY - tiltY) * 0.1;
+      if (touring) {
+        targetZ += 0.018;
+        if (targetZ >= 15) { targetZ = 15; touring = false; document.getElementById('szTourBtn').textContent = '↻ Replay tour'; }
+        slider.value = targetZ.toFixed(2);
+      }
+      curZ += (targetZ - curZ) * (reduced ? 1 : 0.14);
+      updateInfo(curZ);
+
+      // Background
+      ctx.fillStyle = '#050914'; ctx.fillRect(0, 0, W, H);
+      // Concentric subtle scale rings moving outward as we zoom in
+      const frac = curZ % 1;
+      ctx.strokeStyle = 'rgba(56,189,248,0.09)'; ctx.lineWidth = 1;
+      for (let k = -1; k <= 3; k++) {
+        const rr = 55 * Math.pow(2.4, k + frac);
+        if (rr > 10 && rr < 460) { ctx.beginPath(); ctx.arc(CX, CY, rr, 0, Math.PI * 2); ctx.stroke(); }
+      }
+
+      // Draw active & neighbouring stages with smooth logarithmic zoom cross-fade
+      STAGES.forEach((st, i) => {
+        const dz = curZ - st.z;
+        const span = i === 5 ? 4.2 : i === 4 ? 3.5 : 2.1;
+        if (Math.abs(dz) > span) return;
+        const alpha = Math.max(0, 1 - Math.abs(dz) / span);
+        const scale = Math.pow(2.15, Math.max(-2.2, Math.min(2.2, dz)));
+        ctx.save();
+        ctx.translate(CX, CY);
+        ctx.scale(scale, scale);
+        ctx.globalAlpha = alpha * alpha * (3 - 2 * alpha);
+        DRAWERS[i](t);
+        ctx.restore();
+      });
+
+      if (!reduced) requestAnimationFrame(drawFrame);
+    }
+
+    slider.addEventListener('input', () => {
+      touring = false;
+      document.getElementById('szTourBtn').textContent = '▶ Auto-tour';
+      targetZ = +slider.value;
+      if (reduced) drawFrame(0);
+    });
+    stopBtns.forEach(btn => btn.addEventListener('click', () => {
+      touring = false;
+      document.getElementById('szTourBtn').textContent = '▶ Auto-tour';
+      targetZ = +btn.dataset.sz;
+      slider.value = targetZ;
+      if (reduced) drawFrame(0);
+    }));
+    document.getElementById('szTourBtn').addEventListener('click', () => {
+      if (touring) {
+        touring = false;
+        document.getElementById('szTourBtn').textContent = '▶ Auto-tour';
+      } else {
+        if (targetZ >= 14.8) { targetZ = 0; curZ = 0; slider.value = '0'; }
+        touring = true;
+        document.getElementById('szTourBtn').textContent = '❚❚ Pause tour';
+        if (reduced) { targetZ = 15; slider.value = '15'; touring = false; document.getElementById('szTourBtn').textContent = '↻ Replay tour'; drawFrame(0); }
+      }
+    });
+    drawFrame(0);
+  })();
   </script>
 <div id="amo-nav-ready" hidden></div>
 

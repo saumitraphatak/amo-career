@@ -156,7 +156,7 @@
       padding: .5rem; margin-top: .75rem; border-radius: 6px; transition: all .3s;
     }
     #mol-canvas {
-      width: 100%; height: 100px; background: var(--bg-card); border-radius: 8px;
+      width: 100%; height: 230px; background: #050b16; border-radius: 10px;
       border: 1px solid var(--border-med); display: block; margin-top: .75rem;
     }
 
@@ -517,7 +517,7 @@
               <span>Atm 10⁵</span>
             </div>
           </div>
-          <canvas id="mol-canvas" height="100" role="img" aria-label="Schematic gas molecules in the chamber; fewer dots at lower pressure (log-scaled, not to scale)"></canvas>
+          <canvas id="mol-canvas" height="230" data-export-ready="true" role="img" aria-label="Rotatable 3D UHV quartz glass cell with trapped atom in optical tweezer and background gas molecules; drag to rotate"></canvas>
           <div class="regime-label-display" id="regime-label">Ultra-High Vacuum</div>
           <div class="readout-grid">
             <div class="readout-card">
@@ -1233,6 +1233,7 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
 <script src="../js/main.js?v=57"></script>
+<script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/motion.js?v=2"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
 <script>
@@ -1350,34 +1351,120 @@
     { min: -12, label: 'Extreme High Vacuum',color: '#818cf8', ink: '#3f3fc9', bg: 'rgba(129,140,248,.12)' },
   ];
 
-  /* Molecule positions (fixed random set, scaled by density) */
-  const seeds = Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), vx: (Math.random()-.5)*.6, vy: (Math.random()-.5)*.6, r: 1.5 + Math.random()*2, phase: Math.random()*Math.PI*2 }));
-  let molCount = 0;
-  let t = 0;
+  /* 3D UHV quartz glass cell + trapped atom + background-gas kinetics */
+  const vacView = (window.AMO3D && AMO3D.orbit)
+    ? AMO3D.orbit(canvas, { az: 0.48, el: 0.32, label: '3D UHV glass cell', onChange: () => drawMolecules(false) })
+    : { az: 0.48, el: 0.32 };
+  const seeds = Array.from({ length: 85 }, () => ({
+    x: (Math.random() * 2 - 1) * 1.15, y: (Math.random() * 2 - 1) * 0.62, z: (Math.random() * 2 - 1) * 0.62,
+    vx: (Math.random() - 0.5) * 1.6, vy: (Math.random() - 0.5) * 1.2, vz: (Math.random() - 0.5) * 1.2,
+    r: 1.6 + Math.random() * 1.4
+  }));
+  let molCount = 0, t = 0, hitFlash = 0, hitCount = 0;
 
-  // drawMolecules(true) advances the drift one frame; drawMolecules(false) repaints (theme, paused)
+  function vProj(x, y, z, W, H) {
+    const ca = Math.cos(vacView.az), sa = Math.sin(vacView.az);
+    const ce = Math.cos(vacView.el), se = Math.sin(vacView.el);
+    const xr = x * ca - y * sa, yr = x * sa + y * ca;
+    const sy = z * ce - yr * se, d = z * se + yr * ce;
+    const sc = Math.min(W * 0.31, H * 0.52);
+    const k = 3.2 / (3.2 - d * 0.55);
+    return [W * 0.5 + xr * sc * k, H * 0.53 - sy * sc * k, d, k];
+  }
+
+  // drawMolecules(true) advances 3D ballistic motion; drawMolecules(false) repaints
   function drawMolecules(step) {
-    // CSS-pixel size: the context is scaled by dpr, so canvas.width (device px) put
-    // most molecules outside the visible area on high-DPI screens
     const W = canvas.width / dpr;
     const H = canvas.height / dpr;
     ctx.clearRect(0, 0, W, H);
-    const n = Math.min(80, Math.round(molCount));
-    if (n === 0) return;
-    if (step) t += 0.016;
+    ctx.fillStyle = '#050b16';
+    ctx.fillRect(0, 0, W, H);
+
+    const n = Math.min(85, Math.round(molCount));
+    if (step) {
+      t += 0.016;
+      hitFlash = Math.max(0, hitFlash - 0.045);
+      for (let i = 0; i < n; i++) {
+        const s = seeds[i];
+        s.x += s.vx * 0.018; s.y += s.vy * 0.018; s.z += s.vz * 0.018;
+        if (Math.abs(s.x) > 1.15) { s.x = Math.sign(s.x) * 1.15; s.vx *= -1; }
+        if (Math.abs(s.y) > 0.62) { s.y = Math.sign(s.y) * 0.62; s.vy *= -1; }
+        if (Math.abs(s.z) > 0.62) { s.z = Math.sign(s.z) * 0.62; s.vz *= -1; }
+        if (Math.hypot(s.x, s.y, s.z) < 0.14 && hitFlash < 0.15) { hitFlash = 1.0; hitCount++; }
+      }
+    }
+
+    // Quartz UHV glass cell box [-1.2, 1.2] x [-0.66, 0.66] x [-0.66, 0.66]
+    const hx = 1.2, hy = 0.66, hz = 0.66;
+    const corners = [
+      [-hx,-hy,-hz],[hx,-hy,-hz],[hx,hy,-hz],[-hx,hy,-hz],
+      [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz]
+    ].map(c => vProj(c[0], c[1], c[2], W, H));
+    const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+
+    // Translucent quartz faces
+    ctx.fillStyle = 'rgba(34,211,238,0.05)';
+    [[0,1,5,4],[1,2,6,5],[4,5,6,7]].forEach(f => {
+      ctx.beginPath();
+      f.forEach((idx, i) => i ? ctx.lineTo(corners[idx][0], corners[idx][1]) : ctx.moveTo(corners[idx][0], corners[idx][1]));
+      ctx.closePath(); ctx.fill();
+    });
+
+    // Left CF-flange stainless neck
+    ctx.strokeStyle = 'rgba(148,163,184,0.55)'; ctx.lineWidth = 2;
+    for (const fx of [-1.2, -1.42]) {
+      ctx.beginPath();
+      for (let i = 0; i <= 24; i++) {
+        const a = (i / 24) * Math.PI * 2;
+        const q = vProj(fx, Math.cos(a) * 0.42, Math.sin(a) * 0.42, W, H);
+        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+      }
+      ctx.stroke();
+    }
+
+    // Vertical optical tweezer cone holding trapped atom at origin
+    const tTopL = vProj(-0.18, 0, hz, W, H), tTopR = vProj(0.18, 0, hz, W, H);
+    const tMid = vProj(0, 0, 0, W, H);
+    const tBotL = vProj(-0.18, 0, -hz, W, H), tBotR = vProj(0.18, 0, -hz, W, H);
+    ctx.fillStyle = 'rgba(251,191,36,0.14)';
+    ctx.beginPath(); ctx.moveTo(tTopL[0], tTopL[1]); ctx.lineTo(tTopR[0], tTopR[1]); ctx.lineTo(tMid[0] + 1.5, tMid[1]); ctx.lineTo(tMid[0] - 1.5, tMid[1]); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(tMid[0] - 1.5, tMid[1]); ctx.lineTo(tMid[0] + 1.5, tMid[1]); ctx.lineTo(tBotR[0], tBotR[1]); ctx.lineTo(tBotL[0], tBotL[1]); ctx.closePath(); ctx.fill();
+
+    // Depth-sort background gas molecules + central trapped atom
+    const items = [{ kind: 'atom', p: tMid }];
     for (let i = 0; i < n; i++) {
       const s = seeds[i];
-      const x = ((s.x + s.vx * t * .3 + 100) % 1) * W;
-      const y = ((s.y + s.vy * t * .3 + 100) % 1) * H;
-      const alpha = 0.4 + 0.5 * Math.abs(Math.sin(t + s.phase));
-      ctx.beginPath();
-      ctx.arc(x, y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(11,124,141,${alpha})`;
-      ctx.shadowColor = '#0b7c8d';
-      ctx.shadowBlur = 4;
-      ctx.fill();
+      items.push({ kind: 'mol', r: s.r, p: vProj(s.x, s.y, s.z, W, H), pPrev: vProj(s.x - s.vx * 0.06, s.y - s.vy * 0.06, s.z - s.vz * 0.06, W, H) });
     }
-    ctx.shadowBlur = 0;
+    items.sort((a, b) => a.p[2] - b.p[2]);
+
+    for (const it of items) {
+      const [px, py, , k] = it.p;
+      if (it.kind === 'atom') {
+        const col = hitFlash > 0.1 ? '248,113,113' : '251,191,36';
+        const rad = (hitFlash > 0.1 ? 13 + hitFlash * 10 : 10) * k;
+        const g = ctx.createRadialGradient(px, py, 0, px, py, rad);
+        g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, `rgba(${col},0.95)`); g.addColorStop(1, `rgba(${col},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, rad, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.strokeStyle = 'rgba(34,211,238,0.28)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(it.pPrev[0], it.pPrev[1]); ctx.lineTo(px, py); ctx.stroke();
+        ctx.fillStyle = 'rgba(56,189,248,0.88)';
+        ctx.beginPath(); ctx.arc(px, py, it.r * k, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // Quartz cell edges on top
+    ctx.strokeStyle = 'rgba(186,230,253,0.58)'; ctx.lineWidth = 1.4;
+    edges.forEach(([i, j]) => { ctx.beginPath(); ctx.moveTo(corners[i][0], corners[i][1]); ctx.lineTo(corners[j][0], corners[j][1]); ctx.stroke(); });
+
+    // HUD overlay
+    ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#7dd3fc';
+    ctx.fillText('3D UHV QUARTZ CELL · H₂ BACKGROUND GAS', 10, 16);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = hitFlash > 0.1 ? '#f87171' : '#94a3b8';
+    ctx.fillText(hitFlash > 0.1 ? 'COLLISION! ATOM EJECTED' : `trapped atom · hits: ${hitCount}`, W - 10, 16);
   }
 
   function updatePressure() {

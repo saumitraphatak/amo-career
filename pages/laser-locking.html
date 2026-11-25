@@ -297,6 +297,7 @@
       <div style="display:flex; gap:.75rem; justify-content:center; align-items:center; padding:.65rem .75rem .5rem; background:color-mix(in srgb, var(--bg-card) 60%, transparent); border-top:1px solid #1e293b; flex-wrap:wrap;">
         <button id="lockBtn" onclick="laserLockToggle()" style="padding:.35rem 1.1rem; border-radius:6px; border:1px solid #e20b0b; background:rgba(248,113,113,0.1); color:#b40909; font-size:.82rem; font-weight:700; cursor:pointer; font-family:var(--font-sans); transition: all .2s;">🔓 Free Running</button>
         <button onclick="laserPerturb()" style="padding:.35rem 1.1rem; border-radius:6px; border:1px solid #475569; background:rgba(255,255,255,0.03); color:#486896; font-size:.82rem; font-weight:600; cursor:pointer; font-family:var(--font-sans);">⚡ Perturb</button>
+        <button id="scopeBtn" onclick="laserScopeToggle()" style="padding:.35rem .95rem; border-radius:6px; border:1px solid #06b6d4; background:rgba(6,182,212,0.12); color:#0e7490; font-size:.8rem; font-weight:600; cursor:pointer; font-family:var(--font-mono);">📺 Scope: ON</button>
         <span style="font-size:.8rem; color:#59687c; font-family:var(--font-mono);">
           offset: <span id="driftHz" style="color:#486896;">—</span>
         </span>
@@ -1891,15 +1892,40 @@ updateBeat();
     draw(false);
   };
 
+  let scopeMode = true;
+  window.laserScopeToggle = function() {
+    scopeMode = !scopeMode;
+    const b = document.getElementById('scopeBtn');
+    if (b) {
+      b.textContent = scopeMode ? '📺 Scope: ON' : '📺 Scope: OFF';
+      b.style.borderColor = scopeMode ? '#06b6d4' : '#475569';
+      b.style.background = scopeMode ? 'rgba(6,182,212,0.12)' : 'rgba(255,255,255,0.03)';
+    }
+    draw(false);
+  };
+
   // ── Main draw loop ──────────────────────────────────
   // draw(true) advances the laser/servo one frame; draw(false) repaints (theme, resize, paused)
   function draw(step) {
     const W = cvs.width, H = cvs.height;
     ctx.clearRect(0, 0, W, H);
 
-    // Background
-    ctx.fillStyle = '#faf5e9';
-    ctx.fillRect(0, 0, W, H);
+    // Background (phosphor oscilloscope screen vs clean paper)
+    if (scopeMode) {
+      ctx.fillStyle = '#040c0e';
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = 'rgba(34,211,238,0.10)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx <= W; gx += W / 10) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+      for (let gy = 0; gy <= H; gy += H / 8) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+      ctx.fillStyle = 'rgba(34,211,238,0.55)';
+      ctx.font = '600 9px JetBrains Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('CH1: SAS 20mV/div · CH2: ERR 50mV/div · TRIG: AUTO', W - 12, 13);
+    } else {
+      ctx.fillStyle = '#faf5e9';
+      ctx.fillRect(0, 0, W, H);
+    }
 
     // Layout: left half = absorption profile, right half = freq trace
     const splitX = W * 0.44;
@@ -1956,30 +1982,37 @@ updateBeat();
     ctx.lineWidth = 1.5; ctx.stroke();
 
     // Lamb dip (narrow Lorentzian dip at 0)
+    ctx.save();
+    if (scopeMode) { ctx.shadowColor = '#22d3ee'; ctx.shadowBlur = 7; }
     ctx.beginPath();
     for (let px = 12; px < profileW + 12; px++) {
       const fMHz = (px - profileCX) / freqScale;
       const dop  = 0.55 * Math.exp(-fMHz * fMHz / (2 * 80 * 80));
       const lam  = lorentzian(fMHz) * 0.38;
-      const py   = profileMidY + profileH / 2 - (dop - lam * 0.55) * profileH * 0.82;
+      const jit  = scopeMode ? Math.sin(px * 0.9 + t * 0.7) * 0.9 : 0;
+      const py   = profileMidY + profileH / 2 - (dop - lam * 0.55) * profileH * 0.82 + jit;
       px === 12 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
-    ctx.strokeStyle = 'rgba(226,11,11,0.55)';
-    ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.strokeStyle = scopeMode ? '#22d3ee' : 'rgba(226,11,11,0.55)';
+    ctx.lineWidth = scopeMode ? 1.8 : 1.5; ctx.stroke();
+    ctx.restore();
 
     // Error signal (dispersive, scaled small at bottom)
-    // (was +28 px and ×0.32: the trace sat on the bottom edge, ~4 px tall, under the caption)
     const errScale = profileH * 0.14;
     const errMidY  = profileMidY + profileH / 2 + 10;
+    ctx.save();
+    if (scopeMode) { ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 7; }
     ctx.beginPath();
     for (let px = 12; px < profileW + 12; px++) {
       const fMHz = (px - profileCX) / freqScale;
       const es   = errorSignal(fMHz);
-      const py   = errMidY - es * errScale * 1.4;
+      const jit  = scopeMode ? Math.cos(px * 1.3 - t * 0.9) * 1.0 : 0;
+      const py   = errMidY - es * errScale * 1.4 + jit;
       px === 12 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
-    ctx.strokeStyle = 'rgba(146,106,3,0.5)';
-    ctx.lineWidth = 1.3; ctx.stroke();
+    ctx.strokeStyle = scopeMode ? '#fbbf24' : 'rgba(146,106,3,0.5)';
+    ctx.lineWidth = scopeMode ? 1.6 : 1.3; ctx.stroke();
+    ctx.restore();
 
     // Zero crossing tick
     ctx.strokeStyle = 'rgba(146,106,3,0.3)';
@@ -2045,15 +2078,17 @@ updateBeat();
     const traceMidY = H / 2 + 10;
     const pxPerSample = traceW / HIST;
 
+    ctx.save();
+    if (scopeMode) { ctx.shadowColor = locked ? '#34d399' : '#f87171'; ctx.shadowBlur = 9; }
     ctx.beginPath();
     history.forEach((f, i) => {
       const x = traceX + i * pxPerSample;
-      const y = traceMidY - f * tScale;
+      const y = traceMidY - f * tScale + (scopeMode ? Math.sin(i * 1.7 + t * 0.6) * 0.65 : 0);
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     });
-    // Colour by locked state (use gradient over time)
-    ctx.strokeStyle = locked ? 'rgba(52,211,153,0.85)' : 'rgba(248,113,113,0.75)';
-    ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.strokeStyle = locked ? (scopeMode ? '#4ade80' : 'rgba(52,211,153,0.85)') : (scopeMode ? '#fb7185' : 'rgba(248,113,113,0.75)');
+    ctx.lineWidth = scopeMode ? 2.0 : 1.8; ctx.stroke();
+    ctx.restore();
 
     // Axis labels (were drawn in the paper colour, i.e. invisible)
     ctx.fillStyle = '#8c8066';
