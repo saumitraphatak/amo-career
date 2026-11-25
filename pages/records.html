@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Hardware Records Board — AMO Toolkit</title>
+  <meta name="description" content="Where quantum computing hardware stands, with sources: best two-qubit and single-qubit gate fidelities, largest systems, longest coherence and error-correction milestones for neutral atoms, trapped ions, superconducting circuits, silicon spins and photonics, each marked peer-reviewed, preprint or company-reported.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/records.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Quantum Hardware Records Board">
+  <meta property="og:description" content="Best gate fidelities, largest systems, longest coherence and error-correction milestones by platform, each with its source and marked peer-reviewed, preprint or company-reported.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/records.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Quantum Hardware Records Board">
+  <meta name="twitter:description" content="Where each quantum computing platform stands, with sources and review status.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Quantum Hardware Records Board","description":"Record gate fidelities, system sizes, coherence times and error-correction milestones by quantum computing platform, each with its source and review status.","url":"https://amotoolkit.com/pages/records.html","dateModified":"2026-11-25","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Career","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Records Board","item":"https://amotoolkit.com/pages/records.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=42">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+
+  <style>
+    /* ── Records board ── */
+    :root { --rb: #7a5a12; --rb-soft: rgba(122,90,18,.08); --rb-line: rgba(122,90,18,.24);
+            --st-peer: #047857; --st-pre: #b45309; --st-co: #6d28d9;
+            --pf-atom: #a13c1c; --pf-ion: #2c4a63; --pf-sc: #3f5d3f; --pf-spin: #7a5a12; --pf-ph: #6d28d9; }
+    [data-theme="dark"] { --rb: #fbbf24; --rb-soft: rgba(251,191,36,.08); --rb-line: rgba(251,191,36,.24);
+            --st-peer: #34d399; --st-pre: #fbbf24; --st-co: #c4b5fd;
+            --pf-atom: #f0916b; --pf-ion: #8fbde0; --pf-sc: #86c58f; --pf-spin: #e9c46a; --pf-ph: #c4b5fd; }
+    .page-hero .page-hero-eyebrow { color: #5c430c !important; } [data-theme="dark"] .page-hero .page-hero-eyebrow { color: #fcd34d !important; }
+    .rb-stamp { display: inline-flex; gap: .5rem; align-items: center; font-family: var(--font-mono); font-size: .76rem; color: var(--text-muted); margin-top: .8rem; }
+    .rb-filters { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; align-items: center; margin: 0 0 1.6rem; padding: .8rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; position: sticky; top: 72px; z-index: 4; }
+    .rb-filters .rb-fl { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    .rb-filters button { font: inherit; font-size: .84rem; cursor: pointer; border-radius: 999px; padding: .24rem .7rem; color: var(--text-primary); background: transparent; border: 1px solid var(--border-med); }
+    .rb-filters button[aria-pressed="false"] { opacity: .45; }
+    .rb-filters button i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: .35rem; vertical-align: 0; }
+
+    .rb-glance { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 1.2rem; margin-bottom: 2.4rem; }
+    .rb-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.1rem 1.2rem; }
+    .rb-box h2 { font-size: 1.1rem; margin: 0 0 .3rem; }
+    .rb-box p { color: var(--text-secondary); font-size: .9rem; line-height: 1.6; margin: 0 0 .6rem; }
+    #rbChart { width: 100%; height: auto; display: block; }
+    .rb-keys { display: grid; gap: .55rem; }
+    .rb-key { display: grid; grid-template-columns: auto 1fr; gap: .2rem .6rem; align-items: start; font-size: .88rem; color: var(--text-secondary); line-height: 1.5; }
+
+    .rb-cat { margin: 0 0 2.6rem; scroll-margin-top: 140px; }
+    .rb-cat > h2 { font-size: 1.35rem; margin: 0 0 .25rem; border-left: 3px solid var(--rb); padding-left: .7rem; }
+    .rb-cat > p { color: var(--text-secondary); margin: 0 0 1rem .9rem; max-width: 80ch; line-height: 1.65; }
+    .rb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: .9rem; }
+    .rb-card { background: var(--bg-card); border: 1px solid var(--border); border-top: 3px solid var(--pf); border-radius: 14px; padding: .9rem 1rem .85rem; display: flex; flex-direction: column; gap: .35rem; }
+    .rb-card[hidden] { display: none; }
+    .rb-pf { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--pf); }
+    .rb-val { font-family: var(--font-mono); font-size: 1.45rem; font-weight: 600; color: var(--text-primary); line-height: 1.15; }
+    .rb-what { font-size: .9rem; color: var(--text-primary); line-height: 1.45; }
+    .rb-who { font-size: .84rem; color: var(--text-secondary); line-height: 1.5; }
+    .rb-src { font-size: .82rem; line-height: 1.5; }
+    .rb-src a { color: var(--text-secondary); }
+    .rb-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: auto; padding-top: .35rem; }
+    .rb-st, .rb-flag { font-family: var(--font-mono); font-size: .66rem; border-radius: 6px; padding: .12rem .45rem; border: 1px solid currentColor; }
+    .rb-st.peer { color: var(--st-peer); } .rb-st.pre { color: var(--st-pre); } .rb-st.co { color: var(--st-co); }
+    .rb-flag { color: var(--text-muted); border-style: dashed; }
+    .rb-method { font-size: .92rem; color: var(--text-secondary); line-height: 1.7; }
+    .rb-method li { margin: .3rem 0; }
+    @media (max-width: 860px) { .rb-glance { grid-template-columns: 1fr; } .rb-filters { position: static; } }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+  <div class="page-hero" style="--page-color:#7a5a12;--page-bg:rgba(122,90,18,0.06);--page-border:rgba(122,90,18,0.2);">
+    <div class="container">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(122,90,18,0.08);border-color:rgba(122,90,18,0.24);">🏆 Where the field stands</div>
+        <h1>The <span class="grad-text" style="--ga:#fbbf24;--gb:#f0916b;">Records</span> Board</h1>
+        <p class="page-hero-desc">
+          The best published numbers for each quantum computing platform, in one place: gate fidelities, system size, coherence and
+          error correction. Every entry names its paper and date and says how much to trust it: <strong>peer-reviewed</strong>,
+          <strong>preprint</strong>, or <strong>company-reported</strong>. Records measured on one pair of qubits and averages over a
+          whole machine are both here, and labelled as such, because they answer different questions.
+        </p>
+        <div class="rb-stamp">Last checked: 25 November 2026 · <a href="#method">how entries are chosen</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="container">
+
+      <div class="rb-filters" role="group" aria-label="Filter records">
+        <span class="rb-fl">Platform</span><span id="rbPf"></span>
+        <span class="rb-fl">Status</span><span id="rbSt"></span>
+      </div>
+
+      <div class="rb-glance">
+        <div class="rb-box">
+          <h2>Two-qubit gate error, by platform</h2>
+          <p>Lower is better; the axis is logarithmic. Filled marks are peer-reviewed, hollow ones are preprints. The dashed line is 0.1% (99.9%), roughly where surface-code error correction becomes comfortable.</p>
+          <svg id="rbChart" viewBox="0 0 560 250" role="img" aria-label="Two-qubit gate error by platform; the full list is in the cards below."></svg>
+        </div>
+        <div class="rb-box">
+          <h2>How to read a record</h2>
+          <div class="rb-keys">
+            <div class="rb-key"><span class="rb-st peer">peer-reviewed</span><span>Published in a refereed journal.</span></div>
+            <div class="rb-key"><span class="rb-st pre">preprint</span><span>On arXiv, not yet refereed. Often right, sometimes revised.</span></div>
+            <div class="rb-key"><span class="rb-st co">company-reported</span><span>A press release, blog or product sheet, without an independent paper behind the number.</span></div>
+            <div class="rb-key"><span class="rb-flag">one pair</span><span>Measured on one or a few qubit pairs, not averaged over a whole processor.</span></div>
+            <div class="rb-key"><span class="rb-flag">conditional</span><span>Counts only the runs where nothing was lost (post-selected or heralded), so loss is not in the number.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="rbCats"></div>
+
+      <section class="rb-cat" id="method">
+        <h2>How entries are chosen</h2>
+        <ul class="rb-method">
+          <li>Each card is the best number we could verify against the paper or the company's own statement, as of the date at the top. When the best preprint and the best peer-reviewed result differ, both are listed.</li>
+          <li>Numbers are copied as published, including uncertainties where given. Fidelities from different benchmarks (randomized benchmarking, cross-entropy, Bell-state fidelity) are not strictly interchangeable.</li>
+          <li>Physical-qubit counts are atoms or qubits held and controlled in one system; they say nothing on their own about gate quality.</li>
+          <li>Something missing or out of date? Use "Report an error" at the bottom of the page. Records move fast, and corrections are welcome.</li>
+          <li>For context and the full history behind each platform, see the comparison chapters: <a href="rb87-vs-yb171.html">Rb vs Yb</a>, <a href="quantinuum-vs-ionq.html">Quantinuum vs IonQ</a>, <a href="google-vs-ibm.html">Google vs IBM</a>, <a href="psiquantum-vs-xanadu.html">PsiQuantum vs Xanadu</a> and the <a href="qc-landscape.html">QC landscape</a>.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</main>
+
+<section class="see-also">
+  <div class="container">
+    <p class="see-also-title">See Also</p>
+    <div class="see-also-grid">
+      <a class="see-also-card" href="qc-landscape.html"><span class="see-also-icon">🌐</span><div><div class="see-also-name">QC Landscape</div><div class="see-also-desc">Every platform and company, in context</div></div></a>
+      <a class="see-also-card" href="fidelity-budget.html"><span class="see-also-icon">⚖️</span><div><div class="see-also-name">Fidelity Budget</div><div class="see-also-desc">What limits a Rydberg gate</div></div></a>
+      <a class="see-also-card" href="rb-explorer.html"><span class="see-also-icon">🎲</span><div><div class="see-also-name">Randomized Benchmarking</div><div class="see-also-desc">How these fidelities are measured</div></div></a>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Records Board &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/main.js?v=58"></script>
+<script>
+  renderNav({ active: 'records', root: '../' });
+</script>
+<div id="amo-nav-ready" hidden></div>
+<script>
+(function () {
+  'use strict';
+  var PF = { atom: 'Neutral atoms', ion: 'Trapped ions', sc: 'Superconducting', spin: 'Silicon spins', ph: 'Photonic' };
+  var ST = { peer: 'peer-reviewed', pre: 'preprint', co: 'company-reported' };
+  var arx = function (id) { return 'https://arxiv.org/abs/' + id; }, doi = function (d) { return 'https://doi.org/' + d; };
+  // err: two-qubit error (1 − F) used by the chart; only set on two-qubit gate entries.
+  var CATS = [
+    { id: 'two-qubit', title: 'Best two-qubit gate fidelity', lead: 'The number that decides how much error correction costs. Entangling gates are the hardest operation on every platform.', rows: [
+      { pf: 'ion', st: 'pre', val: '> 99.99%', err: 8.4e-5, what: 'Estimated two-qubit gate error 8.4(7) × 10⁻⁵, without ground-state cooling', who: 'Hughes et al. (Oxford Ionics, now IonQ), Oct 2025', src: [['arXiv:2510.17286', arx('2510.17286')]], flags: ['one pair'] },
+      { pf: 'ion', st: 'peer', val: '99.921%', err: 7.9e-4, what: 'Two-qubit fidelity averaged over all pairs of a 98-qubit machine (Helios); 99.967% SPAM', who: 'Ransford, Bohnet et al. (Quantinuum, with Sandia), 2026', src: [['Nature 655, 81 (2026)', 'quantinuum-vs-ionq.html']], flags: ['full system'] },
+      { pf: 'atom', st: 'pre', val: '99.854(4)%', err: 1.46e-3, what: 'Raw CZ fidelity on ⁸⁷Rb (99.941% when no atom is lost), stable for over 10 hours', who: 'Evered et al. (Harvard, MIT, QuEra), Apr 2026', src: [['arXiv:2604.25987', arx('2604.25987')]], flags: [] },
+      { pf: 'atom', st: 'peer', val: '99.71(5)%', err: 2.9e-3, what: 'Rydberg CZ fidelity, corrected downward for leakage', who: 'Tsai et al. (Caltech, Endres group), 2025', src: [['PRX Quantum 6, 010331 (2025)', doi('10.1103/PRXQuantum.6.010331')]], flags: [] },
+      { pf: 'sc', st: 'pre', val: '99.94%', err: 6e-4, what: 'CNOT on two fluxonium qubits, above 99.9% for 24 days', who: 'Lin et al. (University of Maryland), Jul 2024', src: [['arXiv:2407.15783', arx('2407.15783')]], flags: ['one pair'] },
+      { pf: 'sc', st: 'peer', val: '99.93%', err: 7e-4, what: 'CZ fidelity averaged over 40 hours, with 99.98% single-qubit gates and 99.94% readout on the same device', who: 'Marxer et al. (IQM), 2025', src: [['arXiv:2508.16437', arx('2508.16437')], ['DOI', doi('10.1103/n86s-2b88')]], flags: ['one pair'] },
+      { pf: 'spin', st: 'peer', val: '99.81%', err: 1.9e-3, what: 'Two-qubit gate in silicon (double quantum dot), with single-qubit and two-qubit control above 99%', who: 'Mills et al. (Princeton), 2022', src: [['Sci. Adv. 8, eabn5130 (2022)', doi('10.1126/sciadv.abn5130')]], flags: ['one pair'] },
+      { pf: 'ph', st: 'peer', val: '99.22%', err: null, what: 'Two-qubit fusion fidelity on a silicon-photonic chip (not a gate on stored qubits)', who: 'PsiQuantum team, 2025', src: [['Nature 641, 876 (2025)', 'psiquantum-vs-xanadu.html']], flags: ['conditional', 'component'] }
+    ] },
+    { id: 'one-qubit', title: 'Best single-qubit gate fidelity', lead: 'Single-qubit rotations are routinely above 99.9% now; the differences show up in the last digits.', rows: [
+      { pf: 'ion', st: 'peer', val: '99.9975%', what: 'Single-qubit gate fidelity across the full 98-qubit Helios machine', who: 'Ransford, Bohnet et al. (Quantinuum), 2026', src: [['Nature 655, 81 (2026)', 'quantinuum-vs-ionq.html']], flags: ['full system'] },
+      { pf: 'atom', st: 'peer', val: '99.98%', what: 'Single-qubit gates on a 6,100-atom caesium array', who: 'Manetsch, Nomura, Bataille et al. (Caltech, Endres group), 2025', src: [['Nature (2025)', doi('10.1038/s41586-025-09641-4')]], flags: ['full system'] },
+      { pf: 'sc', st: 'peer', val: '99.98%', what: 'Simultaneous single-qubit gates, on the same device as the 99.93% CZ', who: 'Marxer et al. (IQM), 2025', src: [['arXiv:2508.16437', arx('2508.16437')]], flags: [] }
+    ] },
+    { id: 'scale', title: 'Most qubits in one system', lead: 'How many qubits one machine holds and controls. Scale and quality are separate questions: the largest arrays are not the ones with the best gates.', rows: [
+      { pf: 'atom', st: 'peer', val: '6,100 atoms', what: 'Caesium atoms in 12,000 tweezers, with 12.6 s coherence and 99.98% single-qubit gates', who: 'Manetsch, Nomura, Bataille et al. (Caltech), Sep 2025', src: [['Nature (2025)', doi('10.1038/s41586-025-09641-4')]], flags: [] },
+      { pf: 'atom', st: 'peer', val: '3,000+ for 2 h', what: 'Continuous operation: an array of over 3,000 atoms kept full for more than two hours by reloading 300,000 atoms per second', who: 'Chiu et al. (Harvard, Lukin group), 2025', src: [['Nature 646, 1075 (2025)', doi('10.1038/s41586-025-09596-6')]], flags: [] },
+      { pf: 'ion', st: 'peer', val: '98 qubits', what: '¹³⁷Ba⁺ qubits with all-to-all connectivity in one trap (Helios)', who: 'Ransford, Bohnet et al. (Quantinuum), 2026', src: [['Nature 655, 81 (2026)', 'quantinuum-vs-ionq.html']], flags: ['full system'] },
+      { pf: 'ion', st: 'co', val: '256 qubits', what: 'Physical qubits in IonQ\'s Superion system', who: 'IonQ, Sep 2026', src: [['Quantinuum vs IonQ chapter', 'quantinuum-vs-ionq.html']], flags: [] },
+      { pf: 'sc', st: 'co', val: '1,121 qubits', what: 'IBM Condor, the largest superconducting chip announced (now retired; IBM\'s current flagships are the 120-qubit Nighthawk and 156-qubit Heron r2)', who: 'IBM, Dec 2023', src: [['Google vs IBM chapter', 'google-vs-ibm.html']], flags: [] },
+      { pf: 'ph', st: 'peer', val: '216 modes', what: 'Squeezed-light modes in Borealis, a Gaussian boson sampling machine (not a universal computer). Xanadu\'s universal Aurora (2025) has 12 qubits.', who: 'Madsen et al. (Xanadu), 2022', src: [['Nature 606, 75 (2022)', doi('10.1038/s41586-022-04725-x')]], flags: [] }
+    ] },
+    { id: 'coherence', title: 'Longest coherence', lead: 'How long a superposition survives. Atoms and ions are measured in seconds to hours; superconducting circuits in milliseconds, but their gates are also thousands of times faster.', rows: [
+      { pf: 'ion', st: 'peer', val: '≈ 5,500 s', what: 'Coherence of a single ¹⁷¹Yb⁺ memory qubit, over an hour, with sympathetic cooling', who: 'Wang et al. (Tsinghua, Kim group), 2021', src: [['Nat. Commun. 12, 233 (2021)', doi('10.1038/s41467-020-20330-w')]], flags: ['one qubit'] },
+      { pf: 'atom', st: 'peer', val: 'T₂ = 42(6) s', what: 'Spin-echo coherence of ⁸⁷Sr nuclear-spin qubits in a tweezer array (T₂* = 21 s)', who: 'Barnes et al. (Atom Computing), 2022', src: [['Nat. Commun. 13 (2022)', 'rb87-vs-yb171.html']], flags: [] },
+      { pf: 'atom', st: 'peer', val: 'T₂ = 12.6 s', what: 'Hyperfine coherence across a 6,100-atom caesium array, with dynamical decoupling', who: 'Manetsch, Nomura, Bataille et al. (Caltech), 2025', src: [['Nature (2025)', doi('10.1038/s41586-025-09641-4')]], flags: ['full system'] },
+      { pf: 'sc', st: 'pre', val: 'T₁ = 1.68 ms', what: 'Lifetime up to 1.68 ms in planar transmons, with Hahn-echo coherence longer still (tantalum on high-resistivity silicon)', who: 'Bland et al. (Princeton, Houck and de Leon groups), Mar 2025', src: [['arXiv:2503.14798', arx('2503.14798')]], flags: ['one qubit'] }
+    ] },
+    { id: 'qec', title: 'Error correction milestones', lead: 'Logical qubits are what will eventually run useful algorithms. Counts depend heavily on the code and on whether errors are corrected or only detected, so read the description, not just the number.', rows: [
+      { pf: 'atom', st: 'peer', val: '96 logical', what: 'Up to 96 logical qubits in [[16,6,4]] codes on a 448-atom array, inside a universal fault-tolerant architecture', who: 'Bluvstein et al. (Harvard, MIT, QuEra), Nov 2025', src: [['Nature (2025)', doi('10.1038/s41586-025-09848-5')]], flags: [] },
+      { pf: 'atom', st: 'pre', val: '24 logical', what: '24 entangled logical qubits encoded in 48 ytterbium atoms; up to 28 logical qubits (112 atoms) running Bernstein–Vazirani, on a 256-atom processor', who: 'Reichardt et al. (Microsoft and Atom Computing), Nov 2024', src: [['arXiv:2411.11822', arx('2411.11822')]], flags: [] },
+      { pf: 'ion', st: 'co', val: '48 logical', what: '48 error-corrected (94 error-detected) logical qubits on the 98-qubit Helios', who: 'Quantinuum, Nov 2025', src: [['Quantinuum vs IonQ chapter', 'quantinuum-vs-ionq.html']], flags: [] },
+      { pf: 'sc', st: 'peer', val: 'Λ = 2.14', what: 'Below-threshold surface code: logical error halved with each step from distance 3 to 7; 0.143% error per cycle at distance 7', who: 'Google Quantum AI (Willow), Dec 2024', src: [['Nature 638, 920 (2025)', 'google-vs-ibm.html'], ['arXiv:2408.13687', arx('2408.13687')]], flags: [] }
+    ] }
+  ];
+
+  var on = { pf: {}, st: {} }; Object.keys(PF).forEach(function (k) { on.pf[k] = true; }); Object.keys(ST).forEach(function (k) { on.st[k] = true; });
+  var wrap = document.getElementById('rbCats');
+  CATS.forEach(function (c) {
+    var sec = document.createElement('section'); sec.className = 'rb-cat'; sec.id = c.id;
+    sec.innerHTML = '<h2>' + c.title + '</h2><p>' + c.lead + '</p><div class="rb-grid"></div>';
+    var grid = sec.querySelector('.rb-grid');
+    c.rows.forEach(function (r) {
+      var d = document.createElement('article'); d.className = 'rb-card'; d.dataset.pf = r.pf; d.dataset.st = r.st; d.style.setProperty('--pf', 'var(--pf-' + r.pf + ')');
+      d.innerHTML = '<div class="rb-pf">' + PF[r.pf] + '</div><div class="rb-val">' + r.val + '</div><div class="rb-what">' + r.what + '</div>' +
+        '<div class="rb-who">' + r.who + '</div><div class="rb-src">' + r.src.map(function (s) { var ext = /^https?:/.test(s[1]); return '<a href="' + s[1] + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + s[0] + (ext ? ' ↗' : ' →') + '</a>'; }).join(' · ') + '</div>' +
+        '<div class="rb-tags"><span class="rb-st ' + r.st + '">' + ST[r.st] + '</span>' + r.flags.map(function (f) { return '<span class="rb-flag">' + f + '</span>'; }).join('') + '</div>';
+      grid.appendChild(d);
+    });
+    wrap.appendChild(sec);
+  });
+
+  function filt(kind, keys, labels, host) {
+    keys.forEach(function (k) {
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', 'true');
+      b.innerHTML = (kind === 'pf' ? '<i style="background:var(--pf-' + k + ')"></i>' : '') + labels[k];
+      b.addEventListener('click', function () { on[kind][k] = !on[kind][k]; b.setAttribute('aria-pressed', String(on[kind][k])); apply(); });
+      host.appendChild(b);
+    });
+  }
+  filt('pf', Object.keys(PF), PF, document.getElementById('rbPf'));
+  filt('st', Object.keys(ST), ST, document.getElementById('rbSt'));
+  function apply() {
+    document.querySelectorAll('.rb-card').forEach(function (d) { d.hidden = !(on.pf[d.dataset.pf] && on.st[d.dataset.st]); });
+    chart();
+  }
+
+  // ── chart: two-qubit error by platform, log axis ──
+  var svg = document.getElementById('rbChart'), NS = 'http://www.w3.org/2000/svg';
+  function el(t, a, p) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; }
+  function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function chart() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var L = 120, R = 515, T = 18, B = 210, lo = -4.5, hi = -2, x = function (e) { return L + (Math.log10(e) - lo) / (hi - lo) * (R - L); };
+    var ink = css('--text-muted'), grid = css('--border-med');
+    for (var p = -4; p <= -2; p++) { el('line', { x1: x(Math.pow(10, p)), x2: x(Math.pow(10, p)), y1: T, y2: B, stroke: grid }); el('text', { x: x(Math.pow(10, p)), y: B + 16, 'text-anchor': 'middle', 'font-size': 11, fill: ink, 'font-family': 'JetBrains Mono, monospace' }).textContent = (100 * Math.pow(10, p)) + '% error'; }
+    el('line', { x1: x(1e-3), x2: x(1e-3), y1: T, y2: B, stroke: css('--rb'), 'stroke-dasharray': '5 4' });
+    el('text', { x: x(1e-3) + 4, y: T + 10, 'font-size': 10, fill: css('--rb'), 'font-family': 'JetBrains Mono, monospace' }).textContent = '99.9%';
+    var rows = CATS[0].rows.filter(function (r) { return r.err; }), pfs = ['ion', 'sc', 'atom', 'spin'];
+    pfs.forEach(function (pf, i) {
+      var y = T + 22 + i * 46;
+      el('text', { x: L - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: css('--pf-' + pf), 'font-family': 'JetBrains Mono, monospace', opacity: on.pf[pf] ? 1 : 0.35 }).textContent = PF[pf];
+      rows.filter(function (r) { return r.pf === pf; }).forEach(function (r, j) {
+        if (!on.pf[pf] || !on.st[r.st]) return;
+        var cx = x(r.err), col = css('--pf-' + pf);
+        el('circle', { cx: cx, cy: y, r: 6.5, fill: r.st === 'peer' ? col : 'none', stroke: col, 'stroke-width': 2 });
+        el('text', { x: cx, y: y + (j % 2 ? 22 : -11), 'text-anchor': 'middle', 'font-size': 10.5, fill: css('--text-secondary'), 'font-family': 'JetBrains Mono, monospace' }).textContent = r.val;
+      });
+    });
+    el('text', { x: (L + R) / 2, y: 244, 'text-anchor': 'middle', 'font-size': 10, fill: ink, 'font-family': 'JetBrains Mono, monospace' }).textContent = '← better   two-qubit error (1 − F)   worse →';
+  }
+  chart();
+  new MutationObserver(chart).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  window.AMORecords = CATS;
+})();
+</script>
+</body>
+</html>

@@ -537,6 +537,9 @@ function renderNav({ active = '', root = '' } = {}) {
         <a class="nav-mobile-link" href="${root}pages/start-here.html"><span>🗺️</span> Site Map &amp; Start Here</a>
         <a class="nav-mobile-link" href="${root}pages/teach.html"><span>🎓</span> Teach with AMO Toolkit</a>
         <a class="nav-mobile-link" href="${root}book/"><span>📘</span> The book: Building with Atoms</a>
+        <a class="nav-mobile-link" href="${root}pages/follow-one-atom.html"><span>⚛️</span> Follow one atom</a>
+        <a class="nav-mobile-link" href="${root}pages/apparatus.html"><span>🧭</span> The apparatus map (3D)</a>
+        <a class="nav-mobile-link" href="${root}pages/records.html"><span>🏆</span> Records board</a>
         <a class="nav-mobile-link" href="${root}home.html#intent-paths"><span>🧭</span> I am trying to...</a>
         <a class="nav-mobile-link" href="${root}home.html#paths"><span>🧩</span> Guided Paths (home)</a>
       </div>
@@ -791,6 +794,9 @@ const SEARCH_KEYWORDS = {
   'analog-sim': 'analog simulation Hubbard model Ising Hamiltonian BEC-BCS crossover',
   'start-here': 'site map directory start here where to begin guided paths recommended order navigation overview',
   'book': 'book pdf download offline building with atoms training kit read print chapters everything in one place',
+  'follow-one-atom': 'follow one atom journey story rubidium oven to qubit powers of ten temperature speed de broglie cooling stages overview introduction',
+  'apparatus': 'apparatus map 3d exploded machine experiment parts chamber coils objective aod slm camera lasers where does each page fit',
+  'records': 'records board leaderboard best fidelity largest array qubit count coherence logical qubits state of the field peer reviewed preprint company',
   'teach': 'teach course syllabus lectures semester 14 weeks problem sets homework exercises instructors solutions final projects curriculum',
 };
 
@@ -836,6 +842,10 @@ function getSearchEntries(root = '') {
     href: `${root}book/`,
     color: '#a13c1c',
     keywords: SEARCH_KEYWORDS['book'].toLowerCase(),
+  });
+
+  [['follow-one-atom', 'Follow One Atom', '⚛️', '#a13c1c'], ['apparatus', 'The Apparatus Map', '🧭', '#2c4a63'], ['records', 'Records Board', '🏆', '#7a5a12']].forEach(([key, title, icon, color]) => {
+    byHref.set(key + ':overview', { key, title, icon, href: `${root}pages/${key}.html`, color, keywords: SEARCH_KEYWORDS[key].toLowerCase() });
   });
 
   byHref.set('teach:overview', {
@@ -941,7 +951,7 @@ function initGlobalSearch(root = '') {
     if (window.AMO_SECTION_INDEX || sectionsLoading) return;
     sectionsLoading = true;
     const s = document.createElement('script');
-    s.src = `${root}js/search-sections.js?v=1`;
+    s.src = `${root}js/search-sections.js?v=2`;
     s.onload = () => { if (!modal.hidden) render(input.value); };
     document.head.appendChild(s);
   }

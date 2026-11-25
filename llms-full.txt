@@ -17,6 +17,9 @@ pages/mot-designer.html
 pages/control-systems.html
 pages/automation.html
 pages/teach.html
+pages/follow-one-atom.html  — Follow One Atom: the journey of one Rb atom, oven to gate
+pages/apparatus.html        — The Apparatus Map: exploded 3D tweezer experiment
+pages/records.html          — Records Board: hardware records by platform, with sources
 book/index.html         — Building with Atoms: the whole site as one book (online + PDF)
 pages/laser-locking.html
 pages/lab-techniques.html
@@ -386,6 +389,27 @@ Note: despite the historical page title, this tool does not include an Ioffe-Pri
 **URL:** https://amotoolkit.com/pages/control-systems.html
 
 Sections: 01 what the control system has to do (hardware-timed, repeatable, recorded; resolution, jitter, latency, update rate) · 02 architecture (PC, real-time core, cards, apparatus, slow instruments) · 03 signals: TTL (Sinara: 3 ns minimum pulse, ~350 ps jitter, 1 ns grid), DDS (Urukul AD9910: 1 GS/s, <1 to >400 MHz, 0.25 Hz steps), DAC (Zotino 32×16-bit ±10 V 1 MS/s shared; Fastino up to 2.55 MS/s per channel; NI PCIe-6363 2.86 MS/s one channel), ADC (Sampler 8×16-bit 1.5 MS/s), AWG (Phaser 1.25 GS/s) · 04 timing: ARTIQ timeline (now_mu, slack, RTIOUnderflow, 8 ns coarse / 1 ns fine), labscript pseudoclock, interactive shot with real vs compensated delays · 05 pulse shaping: interactive envelope and power spectrum (square ≈ −13 dB side lobes, Blackman ≈ −58 dB), AOM rise · 06 signal budget calculator (DAC step range/2^bits, DDS step f_clk/2^N, AOM rise τ ≈ 0.65 d/V and bandwidth ≈ 0.35/τ per Isomet AN2600, coax ≈ 5 ns/m) · 07 ARTIQ/Sinara, labscript, NI DAQ, RFSoC/commercial controllers · 08 Python sketches (ARTIQ, real-time branching, labscript, nidaqmx, pyvisa) · 09 git and GitHub practice · 10 checklist · 11 references (ARTIQ manual, Sinara datasheets, Kasprowicz IJET 2022, Starkey RSI 2013, Shammah arXiv:2309.17233, NI PCIe-6363 specs, Isomet AN2600, Wilson PLoS CB 2017).
+
+---
+
+## FOLLOW ONE ATOM (scrolling story)
+**URL:** https://amotoolkit.com/pages/follow-one-atom.html
+
+Ten stages for one ⁸⁷Rb atom: oven (400 K, σv = 196 m/s, λdB = 9.4 pm; mean speed 312 m/s) · slowing (recoil 5.9 mm/s per photon, ~53,000 photons to stop, a_max ≈ 1.1×10⁵ m/s²) · MOT (~200 µK; Doppler limit 146 µK) · sub-Doppler molasses (~10 µK, λdB 59 nm) · optical tweezer (~1 µm waist, ~1 mK deep, 0 or 1 atom) · imaging and AOD rearrangement · Raman sideband cooling (n̄ = 0.05 at ω/2π = 100 kHz: P(0) = 95%, wavepacket 24 nm, effective 1.6 µK, 8.4 decades below the oven) · hyperfine clock qubit (6.834 682 61 GHz) · Rydberg 70S gate (orbit ≈ 0.35 µm) · zoned processor. Constants from Steck's Rb-87 data; typical temperatures stated as typical.
+
+---
+
+## THE APPARATUS MAP (exploded 3D)
+**URL:** https://amotoolkit.com/pages/apparatus.html
+
+A schematic, rotatable 3D tweezer experiment with an explode slider and labels; 20 parts, each with a one-paragraph role and links to its chapters (e.g. objective → Tweezer Designer, Zernike; AODs → Virtual Lab, Zoned Atom Processor; Rydberg lasers → Rydberg Calculator, Fidelity Budget; reference cavity → Laser Locking; control system → Control Systems, Automation). A part list below the figure is the keyboard/mobile route.
+
+---
+
+## RECORDS BOARD
+**URL:** https://amotoolkit.com/pages/records.html
+
+Records by platform (checked 25 Nov 2026), each with source and status. Two-qubit: ions >99.99% (Hughes et al., arXiv:2510.17286, preprint, one pair) and 99.921% full 98-qubit Helios (Nature 655, 81, 2026); neutral atoms 99.854(4)% raw Rb CZ (Evered et al., arXiv:2604.25987, preprint) and 99.71(5)% (Tsai et al., PRX Quantum 6, 010331, 2025); superconducting 99.94% fluxonium CNOT (Lin et al., arXiv:2407.15783) and 99.93% 40-h CZ (Marxer et al., IQM, arXiv:2508.16437); silicon 99.81% (Mills et al., Sci. Adv. 2022); photonic fusion 99.22% conditional (PsiQuantum, Nature 641, 876, 2025). Scale: 6,100 Cs atoms (Manetsch et al., Nature 2025); 3,000+ atoms continuously for 2 h (Chiu et al., Nature 646, 1075, 2025); 98-ion Helios; IonQ 256 (company); IBM Condor 1,121 (company); Borealis 216 modes (Nature 606, 75, 2022). Coherence: ¹⁷¹Yb⁺ ≈ 5,500 s (Wang et al., Nat. Commun. 12, 233, 2021); ⁸⁷Sr T₂ 42 s (Barnes et al., 2022); Cs array 12.6 s; transmon T₁ 1.68 ms (Bland et al., arXiv:2503.14798). QEC: 96 logical qubits on 448 atoms (Bluvstein et al., Nature 2025); 24 entangled logical qubits on Yb (Reichardt et al., arXiv:2411.11822); 48 error-corrected logical on Helios (company); Google below threshold Λ = 2.14 (Nature 638, 920, 2025).
 
 ---
 

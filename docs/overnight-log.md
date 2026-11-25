@@ -366,3 +366,8 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - Report: `docs/site-audit-2026-11-22.md`. Full render of 39 pages + the book in three configurations with real KaTeX and Chart.js, link/anchor resolution, contrast, the cross-tool handoff, the service worker offline, counts across docs.
 - Fixed: raw TeX on six pages; prose inside display math (psiquantum-vs-xanadu); dark-mode contrast of the home automation card; Tweezer Designer slider steps (1064 nm and 1.5 mW were rounded); service worker no longer caches the book PDF/notebooks or partial responses and redirects offline navigations instead of breaking them; ~3.9 KB of dead CSS from the deleted panels; stale CLAUDE.md lines. Book regenerated (410 pages, on top of the chapter-goal redesign committed meanwhile as 4b79564): handoff bar skipped, SVG ids namespaced, GA4 tag, build scripts portable.
 - styles.css v40 on all 39 HTML files and in sw.js. Tests: OK 44 (new `test_service_worker`); smoke 39 × 3 clean.
+
+## 2026-11-25: Follow One Atom, the Apparatus Map, the Records Board ("3, 4 and 14 from the ideas list")
+- `pages/follow-one-atom.html` (scrolling story, oven to gate, live gauges), `pages/apparatus.html` (exploded 3D machine, every part to its chapter), `pages/records.html` (records by platform with sources and review status). Linked from home ("three ways in"), Start Here, mobile menu and search; search index rebuilt (`search-sections.js?v=2`).
+- Teach was loading `main.js?v=56` (the Teach redesign was committed with an older version string); all 42 HTML files now on main.js v58, styles.css v42 (and sw.js).
+- Tests: OK 45 (new `test_explorer_pages`); smoke 42 × 3 clean; contrast clean on the new pages in both themes.

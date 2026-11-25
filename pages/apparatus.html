@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Apparatus Map — AMO Toolkit</title>
+  <meta name="description" content="An exploded 3D view of a neutral-atom tweezer experiment: vacuum chamber, oven and 2D MOT, MOT coils and beams, objective, AODs and SLM, cameras, cooling, tweezer and Rydberg lasers, reference cavity, microwaves and the control system. Click any part to open the chapter that designs it.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/apparatus.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="The Apparatus Map — a tweezer experiment in exploded 3D">
+  <meta property="og:description" content="Take a neutral-atom quantum computer apart: click any part of the machine to open the chapter that designs it.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/apparatus.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Apparatus Map">
+  <meta name="twitter:description" content="A neutral-atom tweezer experiment in exploded 3D; every part links to its chapter.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"The Apparatus Map","description":"An exploded 3D view of a neutral-atom tweezer experiment; each part links to the chapter that designs it.","url":"https://amotoolkit.com/pages/apparatus.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Start Here","item":"https://amotoolkit.com/pages/start-here.html"},{"@type":"ListItem","position":3,"name":"The Apparatus Map","item":"https://amotoolkit.com/pages/apparatus.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=42">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+
+  <style>
+    /* ── The Apparatus Map ── */
+    :root { --ap: #2c4a63; --ap-soft: rgba(44,74,99,.08); --ap-line: rgba(44,74,99,.24);
+            --ap-build: #92400e; --ap-trap: #047857; --ap-qc: #6d28d9; }
+    [data-theme="dark"] { --ap: #8fbde0; --ap-soft: rgba(143,189,224,.08); --ap-line: rgba(143,189,224,.24);
+            --ap-build: #fbbf24; --ap-trap: #34d399; --ap-qc: #a78bfa; }
+    .ap-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.2rem; align-items: start; }
+    .ap-stagebox { position: relative; background: #050b15; border: 1px solid rgba(125,211,252,.14); border-radius: 18px; overflow: hidden; }
+    #apCanvas { display: block; width: 100%; height: min(70vh, 640px); max-height: none !important; touch-action: pan-y; } /* the site-wide Chart.js cap is 280 px */
+    .ap-bar { position: absolute; left: 12px; right: 12px; bottom: 10px; display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center;
+              font-family: var(--font-mono); font-size: .72rem; color: #a9bbd1; pointer-events: none; }
+    .ap-bar > * { pointer-events: auto; }
+    .ap-bar label { display: inline-flex; align-items: center; gap: .45rem; }
+    .ap-bar input[type=range] { width: 140px; accent-color: #f0916b; }
+    .ap-bar button { font: inherit; color: #dbe7f5; background: rgba(15,30,53,.85); border: 1px solid rgba(125,211,252,.25); border-radius: 8px; padding: .25rem .6rem; cursor: pointer; }
+    .ap-bar button[aria-pressed="true"] { border-color: #f0916b; color: #f6b49a; }
+    .ap-tip { position: absolute; pointer-events: none; font-family: var(--font-mono); font-size: .72rem; color: #fff; background: rgba(5,11,21,.92);
+              border: 1px solid rgba(125,211,252,.3); border-radius: 6px; padding: .2rem .45rem; transform: translate(12px, -28px); white-space: nowrap; display: none; }
+    .ap-legend { position: absolute; left: 14px; top: 12px; display: flex; gap: .9rem; font-family: var(--font-mono); font-size: .68rem; color: #a9bbd1; pointer-events: none; }
+    .ap-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: .35rem; vertical-align: -1px; }
+
+    .ap-card { position: sticky; top: 84px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.1rem 1.2rem; min-height: 220px; }
+    .ap-card .ap-kicker { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .ap-card h2 { font-size: 1.3rem; margin: .3rem 0 .5rem; }
+    .ap-card p { color: var(--text-secondary); line-height: 1.65; font-size: .95rem; margin: 0 0 .8rem; }
+    .ap-card .ap-links { display: flex; flex-direction: column; gap: .45rem; }
+    .ap-card .ap-links a { text-decoration: none; border: 1px solid var(--ap-line); border-radius: 10px; padding: .5rem .7rem; color: var(--text-primary); font-size: .9rem; transition: background .2s; }
+    .ap-card .ap-links a:hover { background: var(--ap-soft); }
+    .ap-card .ap-links small { display: block; color: var(--text-muted); font-size: .76rem; }
+    .ap-story { display: inline-block; font-family: var(--font-mono); font-size: .66rem; border-radius: 999px; padding: .1rem .5rem; border: 1px solid currentColor; }
+
+    .ap-index { margin-top: 1.6rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    .ap-index h3 { font-size: .8rem; font-family: var(--font-mono); letter-spacing: .08em; text-transform: uppercase; margin: 0 0 .5rem; }
+    .ap-index ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+    .ap-index button { font: inherit; font-size: .86rem; cursor: pointer; color: var(--text-primary); background: var(--bg-card); border: 1px solid var(--border-med); border-radius: 999px; padding: .28rem .7rem; }
+    .ap-index button:hover, .ap-index button[aria-pressed="true"] { border-color: currentColor; background: var(--ap-soft); }
+    .ap-note { color: var(--text-muted); font-size: .86rem; line-height: 1.6; margin-top: 1.4rem; }
+
+    @media (max-width: 980px) {
+      .ap-wrap { grid-template-columns: 1fr; }
+      .ap-card { position: static; min-height: 0; }
+      #apCanvas { height: 440px; }
+      .ap-index { grid-template-columns: 1fr; }
+      .ap-legend { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+  <div class="page-hero" style="--page-color:#2c4a63;--page-bg:rgba(44,74,99,0.06);--page-border:rgba(44,74,99,0.2);">
+    <div class="container">
+      <div class="page-hero-text">
+        <div class="page-hero-eyebrow" style="background:rgba(44,74,99,0.08);border-color:rgba(44,74,99,0.24);">🧭 The site, as the machine it describes</div>
+        <h1>The <span class="grad-text" style="--ga:#7dd3fc;--gb:#f0916b;">Apparatus</span> Map</h1>
+        <p class="page-hero-desc">
+          A neutral-atom tweezer experiment, taken apart. Drag to turn it, slide to explode it, and click any part (or pick it from
+          the list below) to see what it does and open the chapter that designs it. The layout is schematic, not to scale: real machines
+          differ in every detail, but they all have these parts.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="container">
+      <div class="ap-wrap">
+        <div>
+          <div class="ap-stagebox">
+            <canvas id="apCanvas" aria-label="Exploded 3D view of a neutral-atom tweezer experiment. Use the part list below the figure to open each part's description."></canvas>
+            <div class="ap-legend" aria-hidden="true"><span><i style="background:#fbbf24"></i>Build a lab</span><span><i style="background:#34d399"></i>First experiment</span><span><i style="background:#a78bfa"></i>Quantum computer</span></div>
+            <div class="ap-tip" id="apTip"></div>
+            <div class="ap-bar">
+              <label>Explode <input type="range" id="apExplode" min="0" max="100" value="60" aria-label="Explode the apparatus"></label>
+              <button type="button" id="apLabels" aria-pressed="true">Labels</button>
+              <button type="button" id="apSpin" aria-pressed="true">Turning</button>
+              <button type="button" id="apReset">Reset view</button>
+            </div>
+          </div>
+          <div class="ap-index" id="apIndex"></div>
+        </div>
+        <aside class="ap-card" id="apCard" aria-live="polite">
+          <div class="ap-kicker">Pick a part</div>
+          <h2>Where does each page fit?</h2>
+          <p>Every chapter of the site designs one part of this machine. Hover to name a part; click it to read what it does and jump to its chapter.</p>
+          <p>New to the field? Ride along with a single atom through the whole machine first.</p>
+          <div class="ap-links"><a href="follow-one-atom.html">⚛️ Follow one atom<small>From a 400 K oven to a qubit in a gate</small></a><a href="start-here.html">🗺️ Start Here<small>Every page as a guided list</small></a></div>
+        </aside>
+      </div>
+      <p class="ap-note">Schematic only: the optics above the chamber are drawn on one level for clarity, beam paths are simplified, and many
+        real experiments use a glass cell, a 2D MOT instead of a Zeeman slower, or several objectives. The atoms in the middle are an 8 × 8 array.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      The Apparatus Map &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/orbit3d.js?v=2"></script>
+<script src="../js/main.js?v=58"></script>
+<script>
+  renderNav({ active: 'apparatus', root: '../' });
+</script>
+<div id="amo-nav-ready" hidden></div>
+<script>
+(function () {
+  'use strict';
+  var STORY = { build: { name: 'Build a lab', dark: '#fbbf24', light: '#b45309' },
+                trap:  { name: 'First experiment', dark: '#34d399', light: '#047857' },
+                qc:    { name: 'Quantum computer', dark: '#a78bfa', light: '#6d28d9' } };
+  // Each part: what it is, which story, where it moves when exploded, and the chapters that design it.
+  var PARTS = [
+    { id: 'chamber', name: 'Vacuum chamber', story: 'build', ex: [0, 0, 0], text: 'Ultra-high vacuum, around 10⁻¹¹ mbar, so background gas does not knock trapped atoms out for many seconds. Viewports let every beam in and every photon out.',
+      links: [['vacuum-systems', 'Vacuum Systems Guide', 'pressure, pumps, bakeout, lifetime']] },
+    { id: 'source', name: 'Atom source and 2D MOT', story: 'build', ex: [0, -1, 0], text: 'An oven or dispenser releases rubidium; a 2D MOT (or a Zeeman slower) slows the fast atoms and sends a cold beam into the chamber.',
+      links: [['atom-library', 'Atom Library', 'which atom, which wavelengths'], ['follow-one-atom', 'Follow one atom', 'what happens to it next']] },
+    { id: 'pump', name: 'Ion and getter pumps', story: 'build', ex: [0, 0, -1], text: 'Ion pumps and non-evaporable getters hold the vacuum with no moving parts, for years.',
+      links: [['vacuum-systems', 'Vacuum Systems Guide', 'pump choice and pump-down']] },
+    { id: 'coils', name: 'MOT coils', story: 'build', ex: [0, 0, 1], text: 'An anti-Helmholtz pair makes the quadrupole field gradient that turns optical molasses into a trap.',
+      links: [['mot-designer', 'MOT Designer', 'gradient, detuning, capture velocity'], ['lab-techniques', 'Lab Operations Handbook', 'coil drivers and eddy currents']] },
+    { id: 'bias', name: 'Bias coils', story: 'build', ex: [1, 0, 0], text: 'Three pairs of large coils cancel stray fields and set the quantisation axis for optical pumping and the qubit.',
+      links: [['lab-techniques', 'Lab Operations Handbook', 'field zeroing'], ['lab-calculators', 'Lab Calculators', 'Zeeman shifts']] },
+    { id: 'motbeams', name: 'MOT beams and waveplates', story: 'build', ex: [0, 0, 0], text: 'Six circularly polarised, red-detuned beams. The waveplates that set their handedness are the most common reason a new MOT does not appear.',
+      links: [['mot-designer', 'MOT Designer', 'beam size, power, detuning'], ['polarimetry', 'Polarimetry', 'getting σ⁺ and σ⁻ right'], ['cooling-simulator', 'Laser Cooling Simulator', 'the cooling force']] },
+    { id: 'objective', name: 'High-NA objective', story: 'build', ex: [0, 0, 1.4], text: 'Focuses the tweezer light to about a micron and collects the atoms\' fluorescence. Its numerical aperture sets both the tweezer size and the imaging efficiency.',
+      links: [['tweezer-designer', 'Tweezer Designer', 'waist, depth, trap frequencies'], ['zernike', 'Zernike Wavefront Lab', 'aberrations through the viewport']] },
+    { id: 'dichroic', name: 'Dichroic mirror', story: 'trap', ex: [0, 0, 1.8], text: 'Separates the tweezer light going down from the fluorescence coming up, so the camera sees atoms, not the trap laser.',
+      links: [['imaging-calculator', 'Single-atom Imaging', 'photon budget and filters']] },
+    { id: 'aod', name: 'AODs', story: 'trap', ex: [-0.6, 0, 1.8], text: 'Two crossed acousto-optic deflectors make a grid of movable tweezers; changing their RF tones drags atoms into a defect-free array.',
+      links: [['virtual-lab', 'Virtual Tweezer Lab', 'load, image, rearrange'], ['atom-processor', 'Zoned Atom Processor', 'moving atoms between zones']] },
+    { id: 'slm', name: 'Spatial light modulator', story: 'build', ex: [-1, 0, 1.8], text: 'A liquid-crystal phase mask that writes hundreds of static tweezers at once and corrects aberrations.',
+      links: [['zernike', 'Zernike Wavefront Lab', 'holograms and Gerchberg–Saxton'], ['tweezer-designer', 'Tweezer Designer', 'array uniformity']] },
+    { id: 'tweezerlaser', name: 'Tweezer laser', story: 'build', ex: [-1.4, 0, 1.8], text: 'A high-power laser far from the atomic resonance (850 nm, 1064 nm and similar), so the atom feels the light shift but scatters few photons.',
+      links: [['laser-planner', 'Laser Planner', 'wavelengths and power'], ['tweezer-designer', 'Tweezer Designer', 'trap depth per watt']] },
+    { id: 'camera', name: 'Imaging camera', story: 'trap', ex: [1.2, 0, 1.8], text: 'An EMCCD or sCMOS camera photographs single atoms through the objective. The histogram of counts in each tweezer is the experiment\'s readout.',
+      links: [['imaging-calculator', 'Single-atom Imaging', 'fidelity, exposure, loss'], ['release-recapture', 'Release & Recapture', 'single-atom thermometry']] },
+    { id: 'abscam', name: 'Absorption imaging', story: 'trap', ex: [-0.8, -0.8, 0], text: 'A resonant probe beam casts the cloud\'s shadow onto a second camera: atom number, size and, after time of flight, temperature.',
+      links: [['absorption-imaging', 'Absorption Imaging', 'optical depth to atom number'], ['tof-calculator', 'TOF Thermometry', 'temperature from expansion']] },
+    { id: 'atoms', name: 'The atom array', story: 'qc', ex: [0, 0, 0], text: 'The point of the whole machine: single atoms in tweezers, cooled to their motional ground state, each one a qubit.',
+      links: [['follow-one-atom', 'Follow one atom', 'how one atom gets here'], ['laser-cooling', 'Single-atom Cooling', 'ground-state cooling'], ['learn-quantum', 'Learn Quantum', 'qubits from scratch']] },
+    { id: 'rydberg', name: 'Rydberg lasers', story: 'qc', ex: [0.5, 1.2, 0.3], text: 'Two lasers (for rubidium, 420 nm and 1013 nm) excite atoms to Rydberg states for entangling gates. Their phase noise is a line in every gate error budget.',
+      links: [['rydberg-calculator', 'Rydberg Calculator', 'C₆, blockade radius, lifetime'], ['fidelity-budget', 'Fidelity Budget', 'what limits the CZ gate'], ['rb-explorer', 'Randomized Benchmarking', 'measuring gate error']] },
+    { id: 'microwave', name: 'Microwave horn', story: 'qc', ex: [0.9, -0.9, 0], text: 'Drives the 6.8 GHz hyperfine qubit transition for global rotations, Ramsey and spin-echo sequences.',
+      links: [['decoherence-lab', 'Decoherence Lab', 'T₁, T₂*, T₂'], ['dd-playground', 'Dynamical Decoupling', 'echo sequences']] },
+    { id: 'lasers', name: 'Cooling lasers, TA and AOMs', story: 'build', ex: [0, 1.3, 0], text: 'Diode lasers, a tapered amplifier and acousto-optic modulators make the cooling, repump, imaging and optical-pumping light, each switched in microseconds.',
+      links: [['laser-planner', 'Laser Planner', 'every wavelength the atom needs'], ['lab-techniques', 'Lab Operations Handbook', 'AOM double-pass, fibre coupling']] },
+    { id: 'refcav', name: 'Reference cavity and locks', story: 'build', ex: [-0.4, 1.6, 0], text: 'Spectroscopy cells and an ultra-stable cavity give the lasers something fixed to lock to: within a fraction of a linewidth, all day.',
+      links: [['laser-locking', 'Laser Locking', 'saturated absorption, PDH, offset locks']] },
+    { id: 'fibres', name: 'Optical fibres', story: 'build', ex: [0, 0.5, 0], text: 'Single-mode fibres carry light from the laser table to the chamber and clean up its spatial mode; their coupling efficiency drifts and needs watching.',
+      links: [['lab-techniques', 'Lab Operations Handbook', 'fibre coupling'], ['automation', 'Automation', 'beam-pointing stabilisation']] },
+    { id: 'control', name: 'Control system', story: 'build', ex: [1.4, 0.4, 0], text: 'An FPGA-timed sequencer drives every TTL, DAC, DDS and camera trigger with nanosecond timing, and the computer that runs it optimises and logs everything.',
+      links: [['control-systems', 'Control Systems', 'TTL, DAC, DDS, ARTIQ, labscript'], ['automation', 'Automation', 'servos, relocks, optimisers']] }
+  ];
+  var byId = {}; PARTS.forEach(function (p) { byId[p.id] = p; p.items = []; });
+
+  // ── geometry (z up; units ≈ 2 cm) ──
+  function add(id, it) { byId[id].items.push(it); }
+  function quad(id, pts, col, alpha) { add(id, { kind: 'face', pts: pts, col: col, alpha: alpha == null ? 1 : alpha }); }
+  function box(id, c, s, col, alpha) {
+    var x = c[0], y = c[1], z = c[2], a = s[0] / 2, b = s[1] / 2, d = s[2] / 2;
+    var v = [[x - a, y - b, z - d], [x + a, y - b, z - d], [x + a, y + b, z - d], [x - a, y + b, z - d], [x - a, y - b, z + d], [x + a, y - b, z + d], [x + a, y + b, z + d], [x - a, y + b, z + d]];
+    [[0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [2, 3, 7, 6], [1, 2, 6, 5], [0, 4, 7, 3]].forEach(function (f) { quad(id, f.map(function (i) { return v[i]; }), col, alpha); });
+  }
+  function axisPt(axis, c, u, v, w) { return axis === 'z' ? [c[0] + u, c[1] + v, c[2] + w] : axis === 'x' ? [c[0] + w, c[1] + u, c[2] + v] : [c[0] + u, c[1] + w, c[2] + v]; }
+  function prism(id, c, r, h, n, axis, col, alpha, rot) {
+    rot = rot || 0;
+    var ring = function (w) { var o = []; for (var i = 0; i < n; i++) { var t = rot + i / n * 2 * Math.PI; o.push(axisPt(axis, c, r * Math.cos(t), r * Math.sin(t), w)); } return o; };
+    var lo = ring(-h / 2), hi = ring(h / 2);
+    for (var i = 0; i < n; i++) { var j = (i + 1) % n; quad(id, [lo[i], lo[j], hi[j], hi[i]], col, alpha); }
+    quad(id, lo.slice().reverse(), col, alpha); quad(id, hi, col, alpha);
+  }
+  function ring(id, c, R, axis, col, wd, alpha) { var n = 48, prev = null; for (var i = 0; i <= n; i++) { var t = i / n * 2 * Math.PI, p = axisPt(axis, c, R * Math.cos(t), R * Math.sin(t), 0); if (prev) add(id, { kind: 'seg', a: prev, b: p, col: col, wd: wd, alpha: alpha == null ? 1 : alpha }); prev = p; } }
+  function line(id, a, b, col, wd, alpha, glow) { var n = Math.max(1, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) / 1.2));
+    for (var i = 0; i < n; i++) { var p = [a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n, a[2] + (b[2] - a[2]) * i / n], q = [a[0] + (b[0] - a[0]) * (i + 1) / n, a[1] + (b[1] - a[1]) * (i + 1) / n, a[2] + (b[2] - a[2]) * (i + 1) / n];
+      add(id, { kind: 'seg', a: p, b: q, col: col, wd: wd, alpha: alpha == null ? 1 : alpha, glow: glow }); } }
+  function curve(id, pts, col, wd) { for (var i = 1; i < pts.length; i++) line(id, pts[i - 1], pts[i], col, wd, 0.9); }
+
+  var STEEL = '#8a97a8', DARK = '#4b5563', COPPER = '#c2803a', GLASS = '#7dd3fc', RED = '#ff5a5a', BLUE = '#60a5fa';
+  prism('chamber', [0, 0, 0], 3.0, 2.2, 8, 'z', STEEL, 0.34, Math.PI / 8);
+  [0, 2, 4, 6].forEach(function (k) { var t = Math.PI / 8 + k * Math.PI / 4 + Math.PI / 8; ring('chamber', [3.0 * Math.cos(t) * 0.93, 3.0 * Math.sin(t) * 0.93, 0], 0.6, Math.abs(Math.cos(t)) > 0.5 ? 'x' : 'y', GLASS, 2, 0.7); });
+  ring('chamber', [0, 0, 1.12], 1.3, 'z', GLASS, 2, 0.7);
+  // source: 2D MOT cell and oven along −y
+  box('source', [0, -5.0, 0], [1.3, 2.4, 1.3], STEEL, 0.6); prism('source', [0, -3.4, 0], 0.32, 1.2, 10, 'y', STEEL, 0.9); box('source', [0, -7.0, 0], [0.9, 1.2, 0.9], '#d97706', 1);
+  line('source', [0, -6.2, 0], [0, -3.0, 0], '#fde68a', 3, 0.6, true);
+  // pumps below
+  box('pump', [0, 0, -3.6], [2.6, 1.6, 2.0], DARK, 1); prism('pump', [0, 0, -2.0], 0.45, 1.6, 12, 'z', STEEL, 0.9);
+  // coils
+  ring('coils', [0, 0, 1.55], 2.1, 'z', COPPER, 9, 1); ring('coils', [0, 0, -1.55], 2.1, 'z', COPPER, 9, 1);
+  // bias coils: square frames at ±x
+  [-1, 1].forEach(function (sg) { var x = sg * 4.4, s = 3.2; var c = [[x, -s, -s], [x, s, -s], [x, s, s], [x, -s, s], [x, -s, -s]]; for (var i = 1; i < 5; i++) line('bias', c[i - 1], c[i], '#b45309', 4, 0.75); });
+  // MOT beams through the centre
+  [[[-9, 0, 0], [9, 0, 0]], [[-6, -6, 0], [6, 6, 0]], [[0, 0, -6], [0, 0, 6]]].forEach(function (b) { line('motbeams', b[0], b[1], RED, 10, 0.22, true); });
+  [[-6.6, 0, 0], [6.6, 0, 0], [-4.6, -4.6, 0], [4.6, 4.6, 0]].forEach(function (p) { prism('motbeams', p, 0.55, 0.12, 16, Math.abs(p[1]) > 0.1 ? 'x' : 'x', '#d1d5db', 0.85); });
+  // objective above
+  prism('objective', [0, 0, 2.3], 1.0, 1.4, 16, 'z', '#9ca3af', 1); prism('objective', [0, 0, 1.55], 0.6, 0.3, 16, 'z', GLASS, 0.8);
+  // optics level above: dichroic, AODs, SLM, tweezer laser, camera
+  var L = 5.2;
+  quad('dichroic', [[-0.9, -0.9, L - 0.9], [0.9, -0.9, L + 0.9], [0.9, 0.9, L + 0.9], [-0.9, 0.9, L - 0.9]], '#a5f3fc', 0.55);
+  line('objective', [0, 0, 3.0], [0, 0, L], RED, 6, 0.3, true);
+  box('aod', [-3.2, 0, L], [0.9, 0.8, 0.8], '#e5e7eb', 1); box('aod', [-4.4, 0, L], [0.9, 0.8, 0.8], '#e5e7eb', 1);
+  box('slm', [-6.0, 0, L], [0.3, 1.6, 1.6], '#1f2937', 1); quad('slm', [[-5.84, -0.7, L - 0.7], [-5.84, 0.7, L - 0.7], [-5.84, 0.7, L + 0.7], [-5.84, -0.7, L + 0.7]], '#38bdf8', 0.6);
+  box('tweezerlaser', [-8.6, 0, L], [2.6, 1.4, 1.0], '#374151', 1);
+  line('tweezerlaser', [-7.3, 0, L], [0, 0, L], RED, 6, 0.35, true);
+  box('camera', [3.8, 0, L], [1.6, 1.4, 1.4], '#111827', 1); prism('camera', [2.8, 0, L], 0.45, 0.6, 14, 'x', '#6b7280', 1);
+  line('camera', [0, 0, L], [2.5, 0, L], '#fde68a', 3, 0.5, true);
+  // absorption imaging along the other diagonal
+  box('abscam', [-5.2, 5.2, 0], [1.3, 1.3, 1.2], '#111827', 1); line('abscam', [4.6, -4.6, 0], [-4.6, 4.6, 0], BLUE, 5, 0.25, true);
+  // the atoms
+  var ATOMS = []; for (var i = 0; i < 8; i++) for (var j = 0; j < 8; j++) ATOMS.push([(i - 3.5) * 0.16, (j - 3.5) * 0.16, 0]);
+  add('atoms', { kind: 'atoms', pts: ATOMS });
+  // Rydberg lasers on the back table, beam into the chamber from +y
+  box('rydberg', [-1.2, 8.6, -0.4], [1.8, 1.3, 0.9], '#4c1d95', 1); box('rydberg', [1.2, 8.6, -0.4], [1.8, 1.3, 0.9], '#3f2a7a', 1);
+  line('rydberg', [-1.2, 7.9, -0.4], [0, 3.0, 0], '#a78bfa', 4, 0.6, true); line('rydberg', [1.2, 7.9, -0.4], [0, 3.0, 0], '#f87171', 4, 0.5, true);
+  // microwave horn
+  box('microwave', [4.2, -4.2, 0], [1.2, 1.2, 0.9], '#9ca3af', 1); line('microwave', [3.6, -3.6, 0], [2.4, -2.4, 0], '#94a3b8', 2, 0.5);
+  // laser table: cooling lasers, TA, AOMs
+  box('lasers', [5.0, 8.6, -0.5], [2.0, 1.4, 0.8], '#374151', 1); box('lasers', [7.4, 8.6, -0.5], [1.6, 1.0, 0.6], '#4b5563', 1);
+  [[4.0, 10.4], [5.5, 10.4], [7.0, 10.4]].forEach(function (p) { box('lasers', [p[0], p[1], -0.6], [0.7, 0.5, 0.5], '#e5e7eb', 1); });
+  // reference cavity and spectroscopy
+  prism('refcav', [-6.0, 9.0, -0.4], 0.55, 2.4, 16, 'x', '#e5e7eb', 1); box('refcav', [-6.0, 10.8, -0.6], [1.6, 0.6, 0.5], '#fca5a5', 0.8);
+  // fibres from the laser table to the chamber
+  curve('fibres', [[5.0, 7.8, -0.5], [4.5, 5.6, -1.2], [3.4, 3.6, -0.4], [2.8, 2.8, 0]], '#fbbf24', 2);
+  curve('fibres', [[7.4, 8.0, -0.5], [6.6, 4.0, 0.2], [6.6, 0.6, 0]], '#fbbf24', 2);
+  // control rack
+  box('control', [9.6, 2.0, -0.6], [1.6, 2.2, 3.6], '#1f2937', 1);
+  for (var k = 0; k < 6; k++) box('control', [8.79, 2.0, -2.0 + k * 0.55], [0.04, 1.8, 0.32], k % 2 ? '#22c55e' : '#0ea5e9', 0.9);
+
+  // ── rendering ──
+  var cv = document.getElementById('apCanvas'), cx = cv.getContext('2d'), tip = document.getElementById('apTip');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, DPR = 1;
+  function size() { DPR = Math.min(2, window.devicePixelRatio || 1); var r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cx.setTransform(DPR, 0, 0, DPR, 0, 0); dirty = true; }
+  var dirty = true;
+  var view = window.AMO3D.orbit(cv, { az: -0.65, el: 0.42, label: 'Exploded 3D view of a tweezer experiment', hint: false, onChange: function () { dirty = true; spinning = false; syncSpin(); } });
+  var explode = 0, explodeTarget = 0.6, spinning = !reduce, labels = true, hover = null, sel = null, drawn = [];
+  var isDark = function () { return document.documentElement.getAttribute('data-theme') === 'dark'; };
+  function storyCol(p) { return isDark() ? STORY[p.story].dark : STORY[p.story].light; }
+  function hexA(hex, a) { var n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16 & 255) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')'; }
+  function shade(hex, f) { var n = parseInt(hex.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255; f = Math.max(0.25, Math.min(1.25, f));
+    return [Math.min(255, r * f | 0), Math.min(255, g * f | 0), Math.min(255, b * f | 0)]; }
+  var EXS = 3.2; // explode distance scale
+  function proj(p, off) { var v = view.project(p[0] + off[0], p[1] + off[1], p[2] + off[2]), sc = Math.min(W, H) / 22, persp = 34 / (34 - v[2]);
+    return [W / 2 + v[0] * sc * persp, H * 0.56 - v[1] * sc * persp, v[2]]; }
+  function render() {
+    var dark = isDark(); cx.clearRect(0, 0, W, H);
+    var g = cx.createRadialGradient(W / 2, H * 0.5, 10, W / 2, H * 0.5, Math.max(W, H) * 0.7); g.addColorStop(0, '#0b1a30'); g.addColorStop(1, '#03070e'); cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    var list = []; drawn = [];
+    PARTS.forEach(function (p) {
+      var off = [p.ex[0] * explode * EXS, p.ex[1] * explode * EXS, p.ex[2] * explode * EXS], hl = (p === hover || p === sel);
+      p.items.forEach(function (it) {
+        if (it.kind === 'face') {
+          var s = it.pts.map(function (q) { return proj(q, off); }), d = 0; s.forEach(function (q) { d += q[2]; }); d /= s.length;
+          var ax = s[1][0] - s[0][0], ay = s[1][1] - s[0][1], bx = s[2][0] - s[0][0], by = s[2][1] - s[0][1], cross = ax * by - ay * bx;
+          var a3 = it.pts[0], b3 = it.pts[1], c3 = it.pts[2], n = [(b3[1] - a3[1]) * (c3[2] - a3[2]) - (b3[2] - a3[2]) * (c3[1] - a3[1]), (b3[2] - a3[2]) * (c3[0] - a3[0]) - (b3[0] - a3[0]) * (c3[2] - a3[2]), (b3[0] - a3[0]) * (c3[1] - a3[1]) - (b3[1] - a3[1]) * (c3[0] - a3[0])];
+          var nl = Math.hypot(n[0], n[1], n[2]) || 1, nv = view.project(n[0] / nl, n[1] / nl, n[2] / nl), lit = 0.55 + 0.55 * Math.max(0, nv[0] * -0.35 + nv[1] * 0.55 + nv[2] * 0.75);
+          if (it.alpha >= 0.95 && cross > 0) return; // back face of an opaque solid
+          list.push({ d: d, kind: 'face', s: s, rgb: shade(it.col, lit * (hl ? 1.25 : 1)), alpha: it.alpha, part: p, hl: hl });
+        } else if (it.kind === 'seg') {
+          var a = proj(it.a, off), b = proj(it.b, off); list.push({ d: (a[2] + b[2]) / 2, kind: 'seg', a: a, b: b, col: it.col, wd: it.wd, alpha: it.alpha * (hl ? 1.5 : 1), glow: it.glow, part: p, hl: hl });
+        } else if (it.kind === 'atoms') {
+          it.pts.forEach(function (q) { var s2 = proj(q, off); list.push({ d: s2[2] + 0.01, kind: 'atom', s: s2, part: p, hl: hl }); });
+        }
+      });
+    });
+    list.sort(function (x, y) { return x.d - y.d; });
+    var sc = Math.min(W, H) / 22;
+    list.forEach(function (o) {
+      if (o.kind === 'face') {
+        cx.beginPath(); o.s.forEach(function (q, i) { if (i) cx.lineTo(q[0], q[1]); else cx.moveTo(q[0], q[1]); }); cx.closePath();
+        cx.fillStyle = 'rgba(' + o.rgb[0] + ',' + o.rgb[1] + ',' + o.rgb[2] + ',' + o.alpha + ')'; cx.fill();
+        cx.strokeStyle = o.hl ? hexA(storyCol(o.part), 0.95) : 'rgba(0,0,0,' + (o.alpha > 0.9 ? 0.35 : 0.12) + ')'; cx.lineWidth = o.hl ? 1.6 : 0.6; cx.stroke();
+        drawn.push(o);
+      } else if (o.kind === 'seg') {
+        var wd = o.wd * sc / 22;
+        if (o.glow) { cx.strokeStyle = hexA(o.col, Math.min(1, o.alpha * 0.4)); cx.lineWidth = wd * 2.6; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(o.a[0], o.a[1]); cx.lineTo(o.b[0], o.b[1]); cx.stroke(); }
+        cx.strokeStyle = o.hl ? hexA(storyCol(o.part), 1) : hexA(o.col, Math.min(1, o.alpha)); cx.lineWidth = Math.max(1, o.glow ? wd * 0.6 : wd); cx.lineCap = 'round';
+        cx.beginPath(); cx.moveTo(o.a[0], o.a[1]); cx.lineTo(o.b[0], o.b[1]); cx.stroke(); drawn.push(o);
+      } else {
+        var r = Math.max(1.4, sc * 0.05);
+        var gg = cx.createRadialGradient(o.s[0], o.s[1], 0, o.s[0], o.s[1], r * 4); gg.addColorStop(0, 'rgba(255,200,150,.55)'); gg.addColorStop(1, 'rgba(255,200,150,0)');
+        cx.fillStyle = gg; cx.beginPath(); cx.arc(o.s[0], o.s[1], r * 4, 0, 6.283); cx.fill();
+        cx.fillStyle = o.hl ? '#fff' : '#ffe8d2'; cx.beginPath(); cx.arc(o.s[0], o.s[1], r, 0, 6.283); cx.fill(); drawn.push(o);
+      }
+    });
+    if (labels && explode > 0.25) {
+      var boxes = [], la = Math.min(1, (explode - 0.25) / 0.25);
+      cx.font = (W < 560 ? 10 : 11) + 'px JetBrains Mono, monospace';
+      PARTS.forEach(function (p) {
+        var c = anchor(p); if (!c) return; var t = p.name, tw = cx.measureText(t).width + 10, x = Math.max(4, Math.min(W - tw - 4, c[0] - tw / 2)), y = c[1] - 16;
+        if (boxes.some(function (b) { return x < b[0] + b[2] && b[0] < x + tw && Math.abs(b[1] - y) < 16; })) return;
+        boxes.push([x, y, tw]);
+        cx.fillStyle = 'rgba(5,11,21,' + 0.75 * la + ')'; cx.fillRect(x, y - 11, tw, 15);
+        cx.fillStyle = hexA(STORY[p.story].dark, la); cx.fillText(t, x + 5, y);
+      });
+    }
+  }
+  function anchor(p) { // screen centre of a part
+    var off = [p.ex[0] * explode * EXS, p.ex[1] * explode * EXS, p.ex[2] * explode * EXS], sx = 0, sy = 0, n = 0;
+    p.items.forEach(function (it) { var pts = it.kind === 'face' || it.kind === 'atoms' ? it.pts : [it.a, it.b]; pts.forEach(function (q) { var s = proj(q, off); sx += s[0]; sy += s[1]; n++; }); });
+    return n ? [sx / n, sy / n] : null;
+  }
+  function pick(x, y) {
+    for (var i = drawn.length - 1; i >= 0; i--) { var o = drawn[i];
+      if (o.kind === 'face') { if (o.alpha < 0.5 && o.part.id === 'chamber') continue; if (inPoly(x, y, o.s)) return o.part; }
+      else if (o.kind === 'seg') { if (segDist(x, y, o.a, o.b) < Math.max(5, o.wd * 0.4)) return o.part; }
+      else if (Math.hypot(x - o.s[0], y - o.s[1]) < 7) return o.part;
+    }
+    for (i = drawn.length - 1; i >= 0; i--) if (drawn[i].kind === 'face' && drawn[i].part.id === 'chamber' && inPoly(x, y, drawn[i].s)) return drawn[i].part;
+    return null;
+  }
+  function inPoly(x, y, s) { var c = false; for (var i = 0, j = s.length - 1; i < s.length; j = i++) if ((s[i][1] > y) !== (s[j][1] > y) && x < (s[j][0] - s[i][0]) * (y - s[i][1]) / (s[j][1] - s[i][1]) + s[i][0]) c = !c; return c; }
+  function segDist(x, y, a, b) { var dx = b[0] - a[0], dy = b[1] - a[1], l = dx * dx + dy * dy, t = l ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / l)) : 0; return Math.hypot(x - a[0] - t * dx, y - a[1] - t * dy); }
+
+  // ── interaction ──
+  var card = document.getElementById('apCard'), idx = document.getElementById('apIndex'), btns = {};
+  function choose(p, scroll) {
+    sel = p; dirty = true;
+    Object.keys(btns).forEach(function (k) { btns[k].setAttribute('aria-pressed', String(p && k === p.id)); });
+    if (!p) return;
+    var col = storyCol(p);
+    card.innerHTML = '<div class="ap-kicker"><span class="ap-story" style="color:' + col + '">' + STORY[p.story].name + '</span></div><h2>' + p.name + '</h2><p>' + p.text + '</p>' +
+      '<div class="ap-links">' + p.links.map(function (l) { return '<a href="' + l[0] + '.html">' + l[1] + ' →<small>' + l[2] + '</small></a>'; }).join('') + '</div>';
+    if (scroll && window.matchMedia('(max-width: 980px)').matches) card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+  }
+  ['build', 'trap', 'qc'].forEach(function (st) {
+    var d = document.createElement('div'); d.innerHTML = '<h3 style="color:var(--ap-' + st + ')">' + STORY[st].name + '</h3><ul></ul>';
+    PARTS.filter(function (p) { return p.story === st; }).forEach(function (p) { var li = document.createElement('li'), b = document.createElement('button'); b.type = 'button'; b.textContent = p.name; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () { choose(p, true); }); b.addEventListener('mouseenter', function () { hover = p; dirty = true; }); b.addEventListener('mouseleave', function () { hover = null; dirty = true; });
+      li.appendChild(b); d.querySelector('ul').appendChild(li); btns[p.id] = b; });
+    idx.appendChild(d);
+  });
+  var down = null;
+  cv.addEventListener('pointerdown', function (e) { down = [e.clientX, e.clientY]; });
+  cv.addEventListener('pointermove', function (e) {
+    var r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, p = pick(x, y);
+    if (p !== hover) { hover = p; dirty = true; }
+    cv.style.cursor = p ? 'pointer' : '';
+    if (p) { tip.style.display = 'block'; tip.textContent = p.name; tip.style.left = x + 'px'; tip.style.top = y + 'px'; } else tip.style.display = 'none';
+  });
+  cv.addEventListener('pointerleave', function () { hover = null; dirty = true; tip.style.display = 'none'; });
+  cv.addEventListener('click', function (e) {
+    if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+    var r = cv.getBoundingClientRect(), p = pick(e.clientX - r.left, e.clientY - r.top); if (p) choose(p, true);
+  });
+  var exS = document.getElementById('apExplode'), labB = document.getElementById('apLabels'), spinB = document.getElementById('apSpin');
+  exS.addEventListener('input', function () { explodeTarget = exS.value / 100; dirty = true; });
+  labB.addEventListener('click', function () { labels = !labels; labB.setAttribute('aria-pressed', String(labels)); dirty = true; });
+  function syncSpin() { spinB.setAttribute('aria-pressed', String(spinning)); spinB.textContent = spinning ? 'Turning' : 'Paused'; }
+  spinB.addEventListener('click', function () { spinning = !spinning; syncSpin(); });
+  document.getElementById('apReset').addEventListener('click', function () { view.reset(); explodeTarget = 0.6; exS.value = 60; spinning = !reduce; syncSpin(); });
+  new MutationObserver(function () { dirty = true; }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  window.addEventListener('resize', size); size(); syncSpin();
+  if (reduce) explode = explodeTarget;
+
+  var visible = true, last = performance.now();
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(cv);
+  function loop(now) {
+    var dt = Math.min(50, now - last); last = now;
+    if (visible) {
+      if (Math.abs(explode - explodeTarget) > 0.002) { explode += (explodeTarget - explode) * Math.min(1, dt / 220); dirty = true; }
+      if (spinning && !reduce) { var az = view.az + dt * 0.00012, el = view.el; view.az = az; view.version++; dirty = true; }
+      if (dirty) { render(); dirty = false; }
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.AMOApparatus = { PARTS: PARTS, choose: function (id) { choose(byId[id]); } };
+})();
+</script>
+</body>
+</html>

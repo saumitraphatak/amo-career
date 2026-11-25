@@ -1146,6 +1146,45 @@ def test_service_worker() -> None:
     assert "navigator.serviceWorker.register(`${root}sw.js`)" in read("js/main.js")
 
 
+def test_explorer_pages() -> None:
+    """Follow One Atom, the Apparatus Map and the Records Board (2026-11-25): the story's quoted numbers match
+    ⁸⁷Rb physics, every apparatus part links to pages that exist, every record names a source and a review status,
+    and all three are reachable from home, Start Here, the mobile menu and search."""
+    import re
+    h, hb, kB, u = 6.62607015e-34, 6.62607015e-34 / (2 * math.pi), 1.380649e-23, 1.66053906660e-27
+    m, lam = 86.909180527 * u, 780.241209686e-9
+    k = 2 * math.pi / lam
+    fa = read("pages/follow-one-atom.html")
+    assert abs(math.sqrt(kB * 400 / m) - 196) < 0.5 and "196 m/s" in fa                       # one-axis rms at 400 K
+    assert abs(math.sqrt(8 * kB * 400 / (math.pi * m)) - 312) < 0.5 and "312 m/s" in fa         # mean speed out of the oven
+    assert abs(h / math.sqrt(2 * math.pi * m * kB * 400) * 1e12 - 9.4) < 0.05 and "9.4 picometres" in fa
+    assert abs(hb * k / m * 1e3 - 5.9) < 0.05 and "5.9 mm/s" in fa                              # recoil velocity
+    assert abs(math.sqrt(8 * kB * 400 / (math.pi * m)) / (hb * k / m) - 53000) < 500 and "53,000 photons" in fa
+    G = 2 * math.pi * 6.0666e6
+    assert abs(hb * G / (2 * kB) * 1e6 - 146) < 0.5 and "146 µK" in fa                         # Doppler limit
+    w, nbar = 2 * math.pi * 100e3, 0.05
+    assert abs(math.sqrt(hb / (2 * m * w)) * 1e9 - 24) < 0.5 and "24 nm" in fa                  # ground-state wavepacket
+    assert abs(hb * w / (kB * math.log(1 + 1 / nbar)) * 1e6 - 1.6) < 0.05 and "1.6 µK" in fa
+    assert abs(1 / (1 + nbar) - 0.95) < 0.003 and "95%" in fa
+    assert abs(math.log10(400 / (hb * w / (kB * math.log(1 + 1 / nbar)))) - 8.4) < 0.05 and "8.4" in fa
+    ap = read("pages/apparatus.html")
+    links = re.findall(r"links: \[(.*?)\] \}", ap, re.S)
+    assert len(links) >= 18
+    for target in set(t for seg in links for t in re.findall(r"\['([a-z0-9-]+)', '", seg)):
+        assert (ROOT / "pages" / f"{target}.html").exists(), target
+    assert ap.count("{ id: '") >= 18
+    rec = read("pages/records.html")
+    rows = re.findall(r"\{ pf: '(\w+)', st: '(\w+)'.*?src: \[\[(.*?)\]\]", rec)
+    assert len(rows) >= 20
+    for pf, st, src in rows:
+        assert pf in ("atom", "ion", "sc", "spin", "ph") and st in ("peer", "pre", "co") and ("arx(" in src or "doi(" in src or ".html" in src), (pf, st, src)
+    assert "Last checked:" in rec
+    js, home, sh = read("js/main.js"), read("home.html"), read("pages/start-here.html")
+    for key in ("follow-one-atom", "apparatus", "records"):
+        assert f'href="pages/{key}.html"' in home and f'href="{key}.html"' in sh, key
+        assert f"pages/{key}.html\"><span>" in js and f"'{key}':" in js, key
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1263,6 +1302,7 @@ def main() -> None:
         test_notebooks,
         test_book,
         test_service_worker,
+        test_explorer_pages,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

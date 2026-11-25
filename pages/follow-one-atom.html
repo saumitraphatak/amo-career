@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QY3G6MDXBD');
+</script>
+  <meta charset="UTF-8">
+  <script>(function(){try{if(localStorage.getItem("amo-theme")!=="light")document.documentElement.setAttribute("data-theme","dark");}catch(e){}})();</script>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#02080f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Follow One Atom — AMO Toolkit</title>
+  <meta name="description" content="Follow a single rubidium-87 atom from a 400 K oven to a qubit in a Rydberg gate: slowed by fifty thousand photon kicks, trapped, cooled eight orders of magnitude, caught in an optical tweezer, cooled to its quantum ground state and entangled. Every number is computed from the atom's own constants, and every stage links to the tool that designs it.">
+  <meta name="author" content="Saumitra Phatak">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://amotoolkit.com/pages/follow-one-atom.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Follow One Atom — from a 400 K oven to a quantum gate">
+  <meta property="og:description" content="One rubidium atom, eight orders of magnitude colder, in about a second: the whole journey of a neutral-atom qubit, with every stage linked to its interactive tool.">
+  <meta property="og:url" content="https://amotoolkit.com/pages/follow-one-atom.html">
+  <meta property="og:site_name" content="AMO Toolkit">
+  <meta property="og:image" content="https://amotoolkit.com/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AMO Toolkit — interactive tools for atomic, molecular, and optical physics">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Follow One Atom">
+  <meta name="twitter:description" content="From a 400 K oven to a qubit in a quantum gate: the journey of one rubidium atom.">
+  <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Follow One Atom","description":"The journey of a single rubidium-87 atom from a 400 K oven to a qubit in a Rydberg gate, with every stage linked to its interactive tool.","url":"https://amotoolkit.com/pages/follow-one-atom.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Follow One Atom","item":"https://amotoolkit.com/pages/follow-one-atom.html"}]}</script>
+  <link rel="stylesheet" href="../css/styles.css?v=42">
+  <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
+  <link rel="expect" href="#amo-nav-ready" blocking="render">
+
+  <style>
+    /* ── Follow One Atom ── */
+    :root { --fa: #a13c1c; --fa-ink: #8c3416; --fa-soft: rgba(161,60,28,.08); --fa-line: rgba(161,60,28,.22);
+            --fa-cold: #0e6aa3; --fa-panel: #050b15; --fa-panel-ink: #dbe7f5; --fa-panel-muted: #8fa3bd; }
+    [data-theme="dark"] { --fa: #f0916b; --fa-ink: #f6b49a; --fa-soft: rgba(240,145,107,.08); --fa-line: rgba(240,145,107,.24); --fa-cold: #7dd3fc; }
+
+    .fa-intro { padding: 3.2rem 0 2.2rem; text-align: center; }
+    .fa-intro .page-hero-eyebrow { display: inline-block; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+                  color: var(--fa-ink); border: 1px solid var(--fa-line); background: var(--fa-soft); border-radius: 999px; padding: .3rem .8rem; }
+    .fa-intro h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); line-height: 1.02; margin: 1rem 0 .8rem; letter-spacing: -.02em; }
+    .fa-intro .fa-lead { max-width: 62ch; margin: 0 auto; font-size: 1.12rem; line-height: 1.7; color: var(--text-secondary); }
+    .fa-headline { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 1.6rem; margin: 1.6rem 0 0; font-family: var(--font-mono); font-size: .86rem; color: var(--text-secondary); }
+    .fa-headline b { color: var(--text-primary); font-weight: 600; }
+    .fa-cue { display: inline-block; margin-top: 2.2rem; font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+    .fa-cue::after { content: ''; display: block; width: 1px; height: 38px; margin: .6rem auto 0; background: linear-gradient(var(--fa), transparent); animation: fa-cue 1.8s ease-in-out infinite; transform-origin: top; }
+    @keyframes fa-cue { 0%,100% { transform: scaleY(.35); opacity: .5 } 50% { transform: scaleY(1); opacity: 1 } }
+
+    .fa-story { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 2.5rem; align-items: start; }
+    .fa-stage { position: sticky; top: calc(var(--nav-h, 64px) + 1rem); }
+    .fa-panel { position: relative; background: var(--fa-panel); border-radius: 18px; overflow: hidden; border: 1px solid rgba(125,211,252,.14);
+                box-shadow: 0 24px 60px rgba(2,8,15,.28); }
+    #faScene { display: block; width: 100%; height: min(46vh, 400px); max-height: none !important; } /* the site-wide Chart.js cap is 280 px */
+    .fa-scene-label { position: absolute; left: 14px; top: 12px; font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--fa-panel-muted); }
+    .fa-scene-label b { color: var(--fa-panel-ink); font-weight: 600; }
+    .fa-scene-note { position: absolute; right: 14px; bottom: 10px; font-family: var(--font-mono); font-size: .68rem; color: var(--fa-panel-muted); text-align: right; }
+
+    .fa-gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; margin-top: 1rem; }
+    .fa-gauge { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: .7rem .8rem .8rem; }
+    .fa-g-head { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    .fa-g-val { font-family: var(--font-mono); font-size: 1.12rem; font-weight: 600; color: var(--text-primary); margin: .15rem 0 .05rem; min-height: 1.4em; }
+    .fa-g-def { font-size: .74rem; color: var(--text-muted); min-height: 2.3em; line-height: 1.3; }
+    .fa-g-scale { position: relative; height: 190px; margin: .55rem 0 0 .35rem; border-left: 2px solid var(--border-med); }
+    .fa-g-fill { position: absolute; left: -2px; width: 2px; bottom: 0; height: calc(var(--p, 100) * 1%); background: linear-gradient(to top, var(--fa-cold), var(--fa));
+                 transition: height .9s cubic-bezier(.22,.8,.2,1); }
+    .fa-tick { position: absolute; left: 0; bottom: calc(var(--p) * 1%); transform: translateY(50%); display: flex; align-items: center; gap: .35rem;
+               font-size: .66rem; line-height: 1.1; color: var(--text-muted); white-space: nowrap; }
+    .fa-tick::before { content: ''; width: 7px; height: 1px; background: var(--border-strong); flex: none; }
+    .fa-tick.dec { color: color-mix(in srgb, var(--text-muted) 70%, transparent); font-family: var(--font-mono); font-size: .58rem; }
+    .fa-marker { position: absolute; left: -7px; bottom: calc(var(--p, 100) * 1%); width: 12px; height: 12px; margin-bottom: -6px; border-radius: 50%;
+                 background: var(--fa); box-shadow: 0 0 0 4px var(--fa-soft), 0 0 14px var(--fa); transition: bottom .9s cubic-bezier(.22,.8,.2,1), opacity .4s; }
+    .fa-gauge.na .fa-marker { opacity: .25; }
+
+    .fa-steps { padding-bottom: 30vh; }
+    .fa-step { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; padding: 2rem 0; scroll-margin-top: 80px; }
+    .fa-step:first-child { min-height: 60vh; }
+    .fa-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem 1.5rem 1.2rem; transition: border-color .4s, box-shadow .4s, opacity .4s; opacity: .86; }
+    .fa-step.active .fa-card { opacity: 1; border-color: var(--fa-line); box-shadow: 0 14px 40px rgba(0,0,0,.08); }
+    .fa-num { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--fa-ink); }
+    .fa-card h2 { font-size: 1.55rem; line-height: 1.2; margin: .35rem 0 .7rem; }
+    .fa-card p { line-height: 1.72; color: var(--text-secondary); margin: 0 0 .8rem; }
+    .fa-card p strong { color: var(--text-primary); }
+    .fa-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .9rem; }
+    .fa-chip { font-family: var(--font-mono); font-size: .74rem; border: 1px solid var(--border-med); border-radius: 8px; padding: .2rem .5rem; color: var(--text-primary); background: var(--bg-surface); }
+    .fa-fact { border-left: 3px solid var(--fa); background: var(--fa-soft); border-radius: 0 10px 10px 0; padding: .6rem .8rem; font-size: .92rem; line-height: 1.6; color: var(--text-primary); margin: .4rem 0 .9rem; }
+    .fa-tools { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .3rem; }
+    .fa-tools a { font-size: .84rem; text-decoration: none; border: 1px solid var(--fa-line); border-radius: 999px; padding: .28rem .7rem; color: var(--fa-ink); background: transparent; transition: background .2s; }
+    .fa-tools a:hover { background: var(--fa-soft); }
+
+    .fa-end { padding: 3rem 0 4rem; }
+    .fa-end h2 { text-align: center; font-size: clamp(1.6rem, 3.4vw, 2.3rem); margin: 0 0 .5rem; }
+    .fa-end > .container > p { text-align: center; color: var(--text-secondary); max-width: 60ch; margin: 0 auto 1.8rem; line-height: 1.7; }
+    .fa-next { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .fa-next a { display: block; text-decoration: none; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.2rem; color: inherit; transition: border-color .2s, transform .2s; }
+    .fa-next a:hover { border-color: var(--fa-line); transform: translateY(-2px); }
+    .fa-next b { display: block; font-size: 1.05rem; margin: .3rem 0 .25rem; color: var(--text-primary); }
+    .fa-next span { color: var(--text-secondary); font-size: .9rem; line-height: 1.55; }
+    .fa-sources { margin-top: 2.5rem; font-size: .86rem; color: var(--text-secondary); line-height: 1.65; }
+    .fa-sources h3 { font-size: 1rem; margin: 0 0 .4rem; color: var(--text-primary); }
+    .fa-sources li { margin: .2rem 0; }
+
+    @media (max-width: 900px) {
+      .fa-story { grid-template-columns: 1fr; gap: 0; }
+      .fa-stage { top: 64px; z-index: 5; background: var(--bg-base); padding: .45rem 0 .35rem; box-shadow: 0 10px 14px -10px rgba(0,0,0,.35); }
+      #faScene { height: 128px; }
+      .fa-scene-note { display: none; }
+      .fa-panel { border-radius: 12px; }
+      .fa-gauges { grid-template-columns: 1fr; gap: .3rem; margin-top: .45rem; }
+      .fa-gauge { display: grid; grid-template-columns: 5.6rem 1fr 6.2rem; align-items: center; gap: .5rem; padding: .3rem .55rem; border-radius: 10px; }
+      .fa-g-def, .fa-tick:not(.dec) { display: none; }
+      .fa-g-val { font-size: .78rem; margin: 0; min-height: 0; text-align: right; order: 3; }
+      .fa-g-head { font-size: .58rem; }
+      .fa-g-scale { height: 8px; margin: 0; border-left: none; border-bottom: 2px solid var(--border-med); order: 2; }
+      .fa-g-fill { bottom: -2px; left: 0; height: 2px; width: calc(var(--p, 100) * 1%); transition: width .9s cubic-bezier(.22,.8,.2,1); }
+      .fa-marker { bottom: -6px; left: calc(var(--p, 100) * 1%); margin: 0 0 0 -5px; width: 10px; height: 10px; transition: left .9s cubic-bezier(.22,.8,.2,1), opacity .4s; }
+      .fa-tick.dec { display: none; }
+      .fa-step, .fa-step:first-child { min-height: auto; padding: 1.2rem 0; }
+      .fa-card { opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fa-cue::after { animation: none; }
+      .fa-g-fill, .fa-marker { transition: none; }
+    }
+    @media print {
+      .fa-stage { display: none; } .fa-story { display: block; } .fa-step { min-height: 0; break-inside: avoid; } .fa-card { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+<div id="nav-root"></div>
+
+<main class="page-wrap" id="main-content">
+
+  <header class="fa-intro">
+    <div class="container">
+      <span class="page-hero-eyebrow">⚛️ A journey in ten stages</span>
+      <h1>Follow <span class="grad-text" style="--ga:#f0916b;--gb:#7dd3fc;">one atom</span></h1>
+      <p class="fa-lead">
+        A single rubidium-87 atom leaves a hot oven and, about a second later, holds one bit of quantum information
+        inside a gate. On the way it is slowed by fifty thousand photons, caught by light and magnetism, picked up by
+        a single focused laser beam and cooled until its motion is pure quantum mechanics. Scroll to ride along. The
+        gauges track how hot, how fast and how quantum it is; every number is computed from the atom's own constants.
+      </p>
+      <div class="fa-headline">
+        <span><b>400 K → 1.6 µK</b> · 8.4 decades colder</span>
+        <span><b>196 m/s → 1.6 cm/s</b> · 4 decades slower</span>
+        <span><b>9 pm → 24 nm</b> · quantum wave 2,600× wider</span>
+      </div>
+      <span class="fa-cue">Scroll</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="fa-story">
+
+      <!-- sticky visual: scene + three logarithmic gauges -->
+      <div class="fa-stage" aria-hidden="true">
+        <div class="fa-panel">
+          <canvas id="faScene"></canvas>
+          <div class="fa-scene-label">Stage <b id="faStageNo">1</b> · <b id="faStageName">The oven</b></div>
+          <div class="fa-scene-note" id="faSceneNote">⁸⁷Rb</div>
+        </div>
+        <div class="fa-gauges" id="faGauges"></div>
+      </div>
+
+      <div class="fa-steps">
+
+        <section class="fa-step" data-stage="0" id="oven">
+          <div class="fa-card">
+            <div class="fa-num">Stage 1 · The oven</div>
+            <h2>A hot gas, faster than a jet airliner</h2>
+            <div class="fa-chips"><span class="fa-chip">T = 400 K</span><span class="fa-chip">σ<sub>v</sub> = 196 m/s</span><span class="fa-chip">λ<sub>dB</sub> = 9.4 pm</span></div>
+            <p>Our atom starts as rubidium metal warmed to about 400 K (127 °C) in a small oven or dispenser inside the vacuum chamber.
+              It flies out with a mean speed of <strong>312 m/s</strong>; the spread of its velocity along any one axis, the number the
+              gauges follow, is σ<sub>v</sub> = √(k<sub>B</sub>T/m) = 196 m/s.</p>
+            <p>Quantum mechanics is invisible here. The atom's thermal de Broglie wavelength, λ<sub>dB</sub> = h/√(2πmk<sub>B</sub>T),
+              is <strong>9.4 picometres</strong>, far smaller than the atom itself. It behaves like a tiny billiard ball.</p>
+            <div class="fa-fact">Everything downstream depends on this choice of atom: its wavelengths set every laser, its mass sets every speed on this page.</div>
+            <div class="fa-tools"><a href="atom-library.html">Atom Library</a><a href="vacuum-systems.html">Vacuum Systems Guide</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="1" id="slowing">
+          <div class="fa-card">
+            <div class="fa-num">Stage 2 · Slowing with light</div>
+            <h2>Fifty thousand photon kicks</h2>
+            <div class="fa-chips"><span class="fa-chip">one kick = 5.9 mm/s</span><span class="fa-chip">a<sub>max</sub> ≈ 11,400 g</span><span class="fa-chip">→ ~20 m/s</span></div>
+            <p>A laser tuned just below the 780 nm D2 resonance shines straight at the atom. Each absorbed photon pushes it back by
+              ħk/m = <strong>5.9 mm/s</strong>; the re-emitted photon leaves in a random direction, so on average only the push survives.
+              Stopping an atom moving at the oven's mean speed takes about <strong>53,000 photons</strong>.</p>
+            <p>A saturated atom scatters a photon every 52 ns or so, which adds up to a deceleration of ħkΓ/2m ≈ 1.1 × 10⁵ m/s², over
+              eleven thousand times gravity. In principle the atom stops in about 43 cm and 3 ms; real Zeeman slowers or 2D MOTs bring it to a
+              few tens of m/s, slow enough for the trap that comes next.</p>
+            <div class="fa-fact">The laser must stay locked to a few MHz of a 384 THz transition, about one part in a hundred million, the whole time.</div>
+            <div class="fa-tools"><a href="laser-planner.html">Laser Planner</a><a href="laser-locking.html">Laser Locking</a><a href="polarimetry.html">Polarimetry</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="2" id="mot">
+          <div class="fa-card">
+            <div class="fa-num">Stage 3 · The magneto-optical trap</div>
+            <h2>Caught in a cloud of light</h2>
+            <div class="fa-chips"><span class="fa-chip">T ≈ 200 µK</span><span class="fa-chip">σ<sub>v</sub> = 14 cm/s</span><span class="fa-chip">Doppler limit 146 µK</span></div>
+            <p>Six red-detuned beams and a pair of anti-Helmholtz coils form a MOT: the light both brakes the atom (optical molasses) and,
+              thanks to the magnetic field gradient, pushes it back toward the centre. Our atom joins a millimetre-sized cloud of
+              millions to billions of others.</p>
+            <p>The random recoils of spontaneous emission set a floor, the Doppler limit ħΓ/2k<sub>B</sub> = <strong>146 µK</strong> for
+              rubidium. A typical MOT sits at a hundred to a few hundred microkelvin; we take 200 µK. The atom is already
+              <strong>two million times colder</strong> than when it left the oven.</p>
+            <div class="fa-fact">This cloud is visible to the eye through a camera: a faint glowing dot, the first sign the machine works.</div>
+            <div class="fa-tools"><a href="mot-designer.html">MOT Designer</a><a href="cooling-simulator.html">Laser Cooling Simulator</a><a href="absorption-imaging.html">Absorption Imaging</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="3" id="molasses">
+          <div class="fa-card">
+            <div class="fa-num">Stage 4 · Sub-Doppler cooling</div>
+            <h2>Colder than the theory first allowed</h2>
+            <div class="fa-chips"><span class="fa-chip">T ≈ 10 µK</span><span class="fa-chip">σ<sub>v</sub> = 3.1 cm/s</span><span class="fa-chip">λ<sub>dB</sub> = 59 nm</span></div>
+            <p>Switch the magnetic field off, detune the light further and lower its intensity. Polarization gradients between the
+              beams make the atom climb potential hills and lose energy at each optical-pumping step: Sisyphus cooling. In 1988 it
+              produced temperatures far below the Doppler limit, a surprise that was explained the next year.</p>
+            <p>At about 10 µK the atom drifts at a few centimetres per second and its de Broglie wavelength has grown to
+              <strong>59 nm</strong>, more than six thousand times larger than in the oven.</p>
+            <div class="fa-fact">Time-of-flight imaging measures this temperature: let the cloud fall and expand, and the growth rate of its size is √(k<sub>B</sub>T/m).</div>
+            <div class="fa-tools"><a href="cooling-simulator.html">Laser Cooling Simulator</a><a href="tof-calculator.html">TOF Thermometry</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="4" id="tweezer">
+          <div class="fa-card">
+            <div class="fa-num">Stage 5 · Into an optical tweezer</div>
+            <h2>One atom, alone in a beam of light</h2>
+            <div class="fa-chips"><span class="fa-chip">waist ≈ 1 µm</span><span class="fa-chip">depth ≈ 1 mK</span><span class="fa-chip">T ≈ 20 µK</span></div>
+            <p>A laser far from resonance, focused through a high-numerical-aperture objective to a spot about a micron across, pulls the
+              atom toward the brightest light: an optical tweezer. Its depth is around a millikelvin, fifty times the atom's thermal energy.</p>
+            <p>The tweezer is so small that when two atoms fall in, light-assisted collisions throw both out. Each tweezer ends up
+              holding <strong>exactly one atom, or none</strong>, each about half the time. Ours is one of the lucky ones.</p>
+            <div class="fa-fact">Release-and-recapture measures a single atom's temperature: switch the tweezer off for a few microseconds and see whether the atom is still there.</div>
+            <div class="fa-tools"><a href="tweezer-designer.html">Tweezer Designer</a><a href="zernike.html">Zernike Wavefront Lab</a><a href="release-recapture.html">Release &amp; Recapture</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="5" id="arrange">
+          <div class="fa-card">
+            <div class="fa-num">Stage 6 · Seen, then moved</div>
+            <h2>A photograph of a single atom</h2>
+            <div class="fa-chips"><span class="fa-chip">~50% loading</span><span class="fa-chip">image ~10–50 ms</span><span class="fa-chip">AOD moves</span></div>
+            <p>Shine resonant light and the atom scatters millions of photons a second; the objective catches a few percent of them and a
+              camera records a bright spot where the atom is and darkness where it is not. That photograph is the readout of the whole experiment.</p>
+            <p>Software looks at the picture, plans moves, and acousto-optic deflectors drag atoms from full tweezers into the gaps.
+              Within tens of milliseconds a random half-filled pattern becomes a <strong>defect-free array</strong>, and our atom has a site in it.</p>
+            <div class="fa-fact">Every move must be fast, smooth and in time with the rest of the sequence: this is where control systems and automation earn their keep.</div>
+            <div class="fa-tools"><a href="imaging-calculator.html">Single-atom Imaging</a><a href="virtual-lab.html">Virtual Tweezer Lab</a><a href="control-systems.html">Control Systems</a><a href="automation.html">Automation</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="6" id="ground-state">
+          <div class="fa-card">
+            <div class="fa-num">Stage 7 · The motional ground state</div>
+            <h2>When motion becomes quantum</h2>
+            <div class="fa-chips"><span class="fa-chip">n̄ = 0.05</span><span class="fa-chip">P(n=0) = 95%</span><span class="fa-chip">wavepacket 24 nm</span></div>
+            <p>Inside the tweezer the atom oscillates like a mass on a spring, with quantised energy levels spaced by ħω. Raman sideband
+              cooling removes one quantum of motion at a time until the atom sits in the lowest level about 95% of the time
+              (mean phonon number n̄ = 0.05 in our example, with a radial trap frequency of 100 kHz).</p>
+            <p>The atom is no longer a ball rattling in a bowl. It is a <strong>24 nm quantum wavepacket</strong>, √(ħ/2mω), whose motion
+              is set by zero-point fluctuations. Its "temperature", ħω/k<sub>B</sub> ln(1 + 1/n̄), is 1.6 µK, but the number that matters now is n̄.</p>
+            <div class="fa-fact">From the oven to here the atom has cooled by a factor of 250 million, 8.4 orders of magnitude.</div>
+            <div class="fa-tools"><a href="laser-cooling.html">Single-atom Cooling Guide</a><a href="lab-calculators.html">Lab Calculators</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="7" id="qubit">
+          <div class="fa-card">
+            <div class="fa-num">Stage 8 · A qubit</div>
+            <h2>Two states, six point eight gigahertz apart</h2>
+            <div class="fa-chips"><span class="fa-chip">|F=1, m<sub>F</sub>=0⟩ ↔ |F=2, m<sub>F</sub>=0⟩</span><span class="fa-chip">6.834 682 61 GHz</span></div>
+            <p>The atom's ground state is split by the hyperfine interaction into two levels 6.834 682 61 GHz apart. Optical pumping
+              prepares it in one of them; microwaves or a pair of Raman beams rotate it into any superposition. It is now a
+              <strong>qubit</strong>, a point on the Bloch sphere.</p>
+            <p>The two m<sub>F</sub> = 0 "clock" states shift only weakly with magnetic field, so the superposition survives for
+              milliseconds on its own and far longer with echo pulses that undo slow noise.</p>
+            <div class="fa-fact">Temperature has stopped mattering. From here on, what counts is coherence: how long the phase between |0⟩ and |1⟩ is remembered.</div>
+            <div class="fa-tools"><a href="learn-quantum.html">Learn Quantum</a><a href="decoherence-lab.html">Decoherence Lab</a><a href="dd-playground.html">Dynamical Decoupling</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="8" id="gate">
+          <div class="fa-card">
+            <div class="fa-num">Stage 9 · The Rydberg gate</div>
+            <h2>A thousand times bigger, for a few hundred nanoseconds</h2>
+            <div class="fa-chips"><span class="fa-chip">n = 70</span><span class="fa-chip">orbit ≈ 0.35 µm</span><span class="fa-chip">CZ in ~ few hundred ns</span></div>
+            <p>To entangle our atom with its neighbour, a laser briefly lifts its outer electron to a Rydberg state, here 70S, where the
+              orbit is about <strong>0.35 µm</strong> across: a thousand times the size of the atom in its ground state, and big
+              enough to feel a neighbour several microns away.</p>
+            <p>That interaction shifts the doubly excited state so far that the laser cannot reach it: the Rydberg blockade. Because only one of
+              the two atoms can be excited, a short pulse sequence imprints a phase that depends on both qubits, a controlled-Z gate.
+              Our atom is now <strong>entangled</strong>.</p>
+            <div class="fa-fact">The gate's error budget is a list of everything in this story: the atom's leftover motion, the laser's noise, the Rydberg state's lifetime, the trap light.</div>
+            <div class="fa-tools"><a href="rydberg-calculator.html">Rydberg Calculator</a><a href="fidelity-budget.html">Fidelity Budget</a><a href="rb-explorer.html">Randomized Benchmarking</a></div>
+          </div>
+        </section>
+
+        <section class="fa-step" data-stage="9" id="computer">
+          <div class="fa-card">
+            <div class="fa-num">Stage 10 · A computer</div>
+            <h2>Then do it again, hundreds of times over</h2>
+            <div class="fa-chips"><span class="fa-chip">zoned arrays</span><span class="fa-chip">photonic links</span><span class="fa-chip">error correction</span></div>
+            <p>Our atom is one of hundreds or thousands in the array. Tweezers shuttle them between storage, gate and readout zones;
+              groups of physical qubits become one error-corrected logical qubit; photons may one day link separate machines.</p>
+            <p>At the end of the sequence the atom is imaged once more, its state turned into light or darkness, and then it is gone.
+              The next cycle starts with a fresh atom from the same oven, roughly a second later.</p>
+            <div class="fa-fact">Each stage of this journey is one chapter of the field, and one page of this site.</div>
+            <div class="fa-tools"><a href="atom-processor.html">Zoned Atom Processor</a><a href="remote-entanglement.html">Remote Entanglement</a><a href="qc-landscape.html">QC Landscape</a></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <section class="fa-end page-content">
+    <div class="container">
+      <h2>Now build the machine that does this</h2>
+      <p>The story above is the table of contents of an experimental AMO education. Pick it up wherever you are.</p>
+      <div class="fa-next">
+        <a href="../book/"><span>📘 The book</span><b>Building with Atoms</b><span>Every stage in depth, to read online or download as a PDF.</span></a>
+        <a href="apparatus.html"><span>🧭 The apparatus map</span><b>Explore the machine in 3D</b><span>Click any part of a tweezer experiment to open its chapter.</span></a>
+        <a href="records.html"><span>🏆 The records board</span><b>Where the field stands</b><span>Best fidelities, largest arrays and longest coherence, with sources.</span></a>
+        <a href="start-here.html"><span>🗺️ Start Here</span><b>Every page, in order</b><span>Guided paths through the whole site.</span></a>
+      </div>
+
+      <div class="fa-sources">
+        <h3>Numbers and sources</h3>
+        <p>All values are for ⁸⁷Rb on the D2 line (λ = 780.241 nm, Γ/2π = 6.067 MHz, m = 86.909 u), from D. A. Steck,
+          <a href="https://steck.us/alkalidata/" target="_blank" rel="noopener"><em>Rubidium 87 D Line Data</em></a>. Velocities are one-axis rms values
+          σ<sub>v</sub> = √(k<sub>B</sub>T/m) except stage 2 (the slowed beam's speed) and stage 7 (the quantum spread √((2n̄+1)ħω/2m)).
+          Temperatures for the MOT (200 µK), molasses (10 µK) and tweezer (20 µK) are typical values, not limits; the tools compute them for your parameters.</p>
+        <ul>
+          <li>Slowing and cooling: W. D. Phillips, Nobel lecture, <a href="https://doi.org/10.1103/RevModPhys.70.721" target="_blank" rel="noopener">Rev. Mod. Phys. 70, 721 (1998)</a>.</li>
+          <li>MOT: E. L. Raab et al., <a href="https://doi.org/10.1103/PhysRevLett.59.2631" target="_blank" rel="noopener">Phys. Rev. Lett. 59, 2631 (1987)</a>.</li>
+          <li>Sub-Doppler cooling: P. D. Lett et al., <a href="https://doi.org/10.1103/PhysRevLett.61.169" target="_blank" rel="noopener">Phys. Rev. Lett. 61, 169 (1988)</a>; J. Dalibard and C. Cohen-Tannoudji, <a href="https://doi.org/10.1364/JOSAB.6.002023" target="_blank" rel="noopener">J. Opt. Soc. Am. B 6, 2023 (1989)</a>.</li>
+          <li>Single atoms in tweezers: N. Schlosser et al., <a href="https://doi.org/10.1038/35082512" target="_blank" rel="noopener">Nature 411, 1024 (2001)</a>.</li>
+          <li>Rearrangement: D. Barredo et al., <a href="https://doi.org/10.1126/science.aah3778" target="_blank" rel="noopener">Science 354, 1021 (2016)</a>; M. Endres et al., <a href="https://doi.org/10.1126/science.aah3752" target="_blank" rel="noopener">Science 354, 1024 (2016)</a>.</li>
+          <li>Ground-state cooling in a tweezer: A. M. Kaufman, B. J. Lester and C. A. Regal, <a href="https://doi.org/10.1103/PhysRevX.2.041014" target="_blank" rel="noopener">Phys. Rev. X 2, 041014 (2012)</a>.</li>
+          <li>Rydberg gates: M. Saffman, T. G. Walker and K. Mølmer, <a href="https://doi.org/10.1103/RevModPhys.82.2313" target="_blank" rel="noopener">Rev. Mod. Phys. 82, 2313 (2010)</a>; H. Levine et al., <a href="https://doi.org/10.1103/PhysRevLett.123.170503" target="_blank" rel="noopener">Phys. Rev. Lett. 123, 170503 (2019)</a>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p style="color:var(--text-muted);font-size:.82rem;text-align:center">
+      Follow One Atom &middot; AMO Toolkit &middot; Saumitra Phatak &middot; Purdue University
+    </p>
+  </div>
+</footer>
+
+<script src="../js/main.js?v=58"></script>
+<script>
+  renderNav({ active: 'follow-one-atom', root: '../' });
+</script>
+<div id="amo-nav-ready" hidden></div>
+<script>
+(function () {
+  'use strict';
+  // ── ⁸⁷Rb constants (Steck) and the derived numbers quoted in the text ──
+  var h = 6.62607015e-34, hb = h / (2 * Math.PI), kB = 1.380649e-23, u = 1.66053906660e-27;
+  var m = 86.909180527 * u, lam = 780.241209686e-9, k = 2 * Math.PI / lam;
+  var sv = function (T) { return Math.sqrt(kB * T / m); };
+  var ldb = function (T) { return h / Math.sqrt(2 * Math.PI * m * kB * T); };
+  var w = 2 * Math.PI * 100e3, nbar = 0.05;
+  var Tgs = hb * w / (kB * Math.log(1 + 1 / nbar));
+  var svgs = Math.sqrt((2 * nbar + 1) * hb * w / (2 * m));
+  var x0 = Math.sqrt(hb / (2 * m * w));
+  var a0 = 5.29177210903e-11, nstar = 70 - 3.1311804 - 0.1784 / Math.pow(70 - 3.1311804, 2), rRyd = 1.5 * nstar * nstar * a0;
+
+  // per stage: [temperature K | null, speed m/s, speed definition, size m, size definition]
+  var S = [
+    { name: 'The oven',            T: 400,    v: sv(400),  vd: 'one-axis rms speed',           x: ldb(400),   xd: 'thermal de Broglie wavelength', note: '400 K · 127 °C' },
+    { name: 'Slowing with light',  T: null,   v: 20,       vd: 'speed of the slowed atom',      x: null,       xd: 'not thermal: a slowed beam',     note: '~53,000 photon kicks' },
+    { name: 'The MOT',             T: 200e-6, v: sv(200e-6), vd: 'one-axis rms speed',         x: ldb(200e-6), xd: 'thermal de Broglie wavelength', note: 'millions of atoms · mm cloud' },
+    { name: 'Sub-Doppler cooling', T: 10e-6,  v: sv(10e-6), vd: 'one-axis rms speed',          x: ldb(10e-6), xd: 'thermal de Broglie wavelength', note: 'polarization-gradient molasses' },
+    { name: 'Optical tweezer',     T: 20e-6,  v: sv(20e-6), vd: 'one-axis rms speed',          x: ldb(20e-6), xd: 'thermal de Broglie wavelength', note: 'one atom · ~1 mK deep trap' },
+    { name: 'Seen, then moved',    T: 20e-6,  v: sv(20e-6), vd: 'one-axis rms speed',          x: ldb(20e-6), xd: 'thermal de Broglie wavelength', note: 'imaging · AOD rearrangement' },
+    { name: 'Ground state',        T: Tgs,    v: svgs,      vd: 'quantum spread √((2n̄+1)ħω/2m)', x: x0,       xd: 'ground-state wavepacket √(ħ/2mω)', note: 'n̄ = 0.05 · ω/2π = 100 kHz' },
+    { name: 'A qubit',             T: Tgs,    v: svgs,      vd: 'quantum spread (unchanged)',   x: x0,         xd: 'ground-state wavepacket',       note: '6.834 682 61 GHz clock qubit' },
+    { name: 'The Rydberg gate',    T: Tgs,    v: svgs,      vd: 'quantum spread (unchanged)',   x: rRyd,       xd: 'Rydberg electron orbit, 70S',   note: 'blockade · controlled-Z' },
+    { name: 'A computer',          T: Tgs,    v: svgs,      vd: 'quantum spread (unchanged)',   x: x0,         xd: 'ground-state wavepacket',       note: 'hundreds of atoms, one cycle per second' }
+  ];
+
+  var G = [
+    { key: 'T', head: 'Temperature', lo: -7, hi: 3, unit: 'K',
+      marks: [[400, 'oven'], [77, 'liquid N₂'], [2.73, 'deep space (CMB)'], [0.01, 'dilution fridge'], [145.6e-6, 'Doppler limit'], [362e-9, 'recoil limit']] },
+    { key: 'v', head: 'Speed', lo: -3, hi: 3, unit: 'm/s',
+      marks: [[343, 'sound in air'], [30, 'car on a highway'], [1.4, 'walking'], [5.88e-3, 'one photon kick'], [1e-3, 'snail']] },
+    { key: 'x', head: 'Quantum size', lo: -12, hi: -5, unit: 'm',
+      marks: [[1e-10, 'hydrogen atom'], [2e-9, 'DNA helix'], [780e-9, 'laser wavelength']] }
+  ];
+
+  function sup(e) { return String(e).split('').map(function (c) { return '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(c)]; }).join(''); }
+  function fmt(val, unit) {
+    if (val == null) return '—';
+    var pre = unit === 'K' ? [[1, 'K'], [1e-3, 'mK'], [1e-6, 'µK'], [1e-9, 'nK']]
+            : unit === 'm/s' ? [[1, 'm/s'], [1e-2, 'cm/s'], [1e-3, 'mm/s']]
+            : [[1e-6, 'µm'], [1e-9, 'nm'], [1e-12, 'pm']];
+    for (var i = 0; i < pre.length; i++) if (val >= pre[i][0] * 0.9995 || i === pre.length - 1) {
+      var x = val / pre[i][0];
+      return (x >= 100 ? x.toFixed(0) : x >= 10 ? x.toFixed(1).replace(/\.0$/, '') : x.toFixed(x >= 1 ? 2 : 2).replace(/0$/, '')) + ' ' + pre[i][1];
+    }
+  }
+  var pct = function (g, val) { return Math.max(0, Math.min(100, (Math.log10(val) - g.lo) / (g.hi - g.lo) * 100)); };
+
+  var gWrap = document.getElementById('faGauges'), gEls = {};
+  G.forEach(function (g) {
+    var d = document.createElement('div'); d.className = 'fa-gauge';
+    var ticks = '';
+    for (var e = g.lo; e <= g.hi; e++) ticks += '<span class="fa-tick dec" style="--p:' + ((e - g.lo) / (g.hi - g.lo) * 100) + '">10' + sup(e) + '</span>';
+    g.marks.forEach(function (mk) { ticks += '<span class="fa-tick" style="--p:' + pct(g, mk[0]) + ';left:46px">' + mk[1] + '</span>'; });
+    d.innerHTML = '<div class="fa-g-head">' + g.head + '</div><div class="fa-g-val"></div><div class="fa-g-def"></div>' +
+      '<div class="fa-g-scale"><div class="fa-g-fill"></div>' + ticks + '<div class="fa-marker"></div></div>';
+    gWrap.appendChild(d); gEls[g.key] = d;
+  });
+  // On the vertical scale the decade labels sit on the left of the axis line, the landmarks to the right of them.
+  function setStage(i) {
+    var s = S[i];
+    document.getElementById('faStageNo').textContent = i + 1;
+    document.getElementById('faStageName').textContent = s.name;
+    document.getElementById('faSceneNote').textContent = s.note;
+    G.forEach(function (g) {
+      var d = gEls[g.key], val = s[g.key], def = g.key === 'T' ? (val == null ? 'a beam, not a gas in equilibrium' : (i >= 6 ? 'effective, from n̄' : 'thermal')) : g.key === 'v' ? s.vd : s.xd;
+      var last = val; if (val == null) for (var j = i - 1; j >= 0; j--) if (S[j][g.key] != null) { last = S[j][g.key]; break; }
+      d.classList.toggle('na', val == null);
+      d.querySelector('.fa-g-val').textContent = fmt(val, g.unit);
+      d.querySelector('.fa-g-def').textContent = def;
+      d.style.setProperty('--p', pct(g, last));
+    });
+  }
+
+  // ── scene ──
+  var cv = document.getElementById('faScene'), cx = cv.getContext('2d');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, DPR = 1;
+  function size() { DPR = Math.min(2, window.devicePixelRatio || 1); var r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cx.setTransform(DPR, 0, 0, DPR, 0, 0); }
+  size(); window.addEventListener('resize', function () { size(); if (reduce) frame(performance.now()); });
+
+  function rnd(seed) { var s = seed >>> 0; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
+  var R = rnd(7), P = [];
+  for (var n = 0; n < 160; n++) P.push({ x: R(), y: R(), a: R() * 6.283, b: R() * 6.283, s: 0.5 + R(), r: R() });
+
+  function glow(x, y, r, col, a) {
+    var g = cx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col.replace('A', a)); g.addColorStop(1, col.replace('A', 0));
+    cx.fillStyle = g; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.fill();
+  }
+  function dot(x, y, r, a) { glow(x, y, r * 4, 'rgba(255,190,140,A)', 0.35 * a); cx.fillStyle = 'rgba(255,236,214,' + a + ')'; cx.beginPath(); cx.arc(x, y, r, 0, 6.283); cx.fill(); }
+  function beam(x1, y1, x2, y2, wd, a) { cx.strokeStyle = 'rgba(248,82,72,' + (0.16 * a) + ')'; cx.lineWidth = wd; cx.beginPath(); cx.moveTo(x1, y1); cx.lineTo(x2, y2); cx.stroke();
+    cx.strokeStyle = 'rgba(255,120,110,' + (0.32 * a) + ')'; cx.lineWidth = Math.max(1, wd * 0.18); cx.stroke(); }
+  function label(t, x, y, a, al) { // kept inside the panel on narrow screens
+    cx.fillStyle = 'rgba(143,163,189,' + a + ')'; cx.font = (W < 500 ? 10 : 11) + 'px JetBrains Mono, monospace'; cx.textAlign = 'left';
+    var tw = cx.measureText(t).width, x0 = al === 'center' ? x - tw / 2 : x;
+    x0 = Math.max(6, Math.min(W - tw - 6, x0)); cx.fillText(t, x0, Math.max(12, Math.min(H - 6, y))); }
+
+  var scenes = [
+    function oven(t, a) { // hot atoms streaming out of an aperture
+      var ox = W * 0.12, oy = H * 0.55;
+      cx.fillStyle = 'rgba(240,120,60,' + 0.5 * a + ')'; cx.fillRect(ox - 54, oy - 34, 54, 68);
+      glow(ox - 27, oy, 70, 'rgba(255,110,40,A)', 0.25 * a); label('oven 400 K', ox - 54, oy + 52, a);
+      P.forEach(function (p, i) { var sp = 0.35 + p.s * 0.5, x = ox + ((p.x + t * 0.00028 * sp) % 1) * (W - ox), y = oy + (p.y - 0.5) * 30 + (p.y - 0.5) * (x - ox) * 0.32;
+        cx.strokeStyle = 'rgba(255,200,150,' + 0.35 * a + ')'; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(x - 12 * sp, y - (p.y - 0.5) * 4); cx.lineTo(x, y); cx.stroke(); dot(x, y, 1.6, a * 0.9); });
+    },
+    function slowing(t, a) { // beam from the right, atoms decelerating, photon kicks
+      var y0 = H * 0.55; beam(W, y0, 0, y0, 40, a); label('780 nm slowing light →  ← atoms', W * 0.5, y0 + 46, a, 'center');
+      P.slice(0, 60).forEach(function (p) { var f = (p.x + t * 0.00018 * p.s) % 1, x = W * (0.05 + 0.9 * (1 - Math.pow(1 - f, 2))), y = y0 + (p.y - 0.5) * 30;
+        dot(x, y, 1.7, a); if (((t * 0.01 + p.r * 100) | 0) % 9 === 0) { cx.fillStyle = 'rgba(255,140,120,' + 0.8 * a + ')'; cx.beginPath(); cx.arc(x + 4, y + (p.b - 3) * 2, 1.2, 0, 6.283); cx.fill(); } });
+    },
+    function mot(t, a) { // six beams, coils, glowing cloud
+      var c = [W * 0.5, H * 0.55], L = Math.max(W, H);
+      beam(c[0] - L, c[1], c[0] + L, c[1], 34, a); beam(c[0] - L * 0.6, c[1] + L * 0.6, c[0] + L * 0.6, c[1] - L * 0.6, 30, a * 0.8); beam(c[0] - L * 0.6, c[1] - L * 0.6, c[0] + L * 0.6, c[1] + L * 0.6, 30, a * 0.8);
+      cx.strokeStyle = 'rgba(184,140,80,' + 0.55 * a + ')'; cx.lineWidth = 5; [-1, 1].forEach(function (sg) { cx.beginPath(); cx.ellipse(c[0], c[1] + sg * H * 0.3, W * 0.17, 10, 0, 0, 6.283); cx.stroke(); });
+      glow(c[0], c[1], 70, 'rgba(255,170,120,A)', 0.45 * a);
+      P.forEach(function (p) { var rr = 34 * Math.sqrt(p.r), x = c[0] + rr * Math.cos(p.a + t * 0.002 * p.s), y = c[1] + rr * 0.8 * Math.sin(p.b + t * 0.0023 * p.s); dot(x, y, 1.1, a * 0.85); });
+      label('quadrupole coils', c[0] + W * 0.19, c[1] - H * 0.3 + 4, a);
+    },
+    function molasses(t, a) { // cloud slowly expanding, slower jitter
+      var c = [W * 0.5, H * 0.52], L = Math.max(W, H), ex = 1 + 0.35 * ((t * 0.00012) % 1);
+      beam(c[0] - L, c[1], c[0] + L, c[1], 34, a * 0.6); beam(c[0] - L * 0.6, c[1] + L * 0.6, c[0] + L * 0.6, c[1] - L * 0.6, 30, a * 0.5); beam(c[0] - L * 0.6, c[1] - L * 0.6, c[0] + L * 0.6, c[1] + L * 0.6, 30, a * 0.5);
+      glow(c[0], c[1], 60 * ex, 'rgba(160,200,255,A)', 0.3 * a);
+      P.forEach(function (p) { var rr = 34 * ex * Math.sqrt(p.r), x = c[0] + rr * Math.cos(p.a + t * 0.0005 * p.s), y = c[1] + rr * 0.8 * Math.sin(p.b + t * 0.0006 * p.s); cx.fillStyle = 'rgba(200,225,255,' + 0.85 * a + ')'; cx.beginPath(); cx.arc(x, y, 1.1, 0, 6.283); cx.fill(); });
+      label('field off · polarization gradients', c[0], H - 14, a, 'center');
+    },
+    function tweezer(t, a) { // hourglass beam with one atom
+      var c = [W * 0.5, H * 0.55], wz = function (y) { var z = (y - c[1]) / (H * 0.22); return 7 * Math.sqrt(1 + z * z); };
+      cx.fillStyle = 'rgba(255,90,90,' + 0.13 * a + ')'; cx.beginPath();
+      for (var y = 0; y <= H; y += 4) cx.lineTo(c[0] - wz(y) * 3, y); for (y = H; y >= 0; y -= 4) cx.lineTo(c[0] + wz(y) * 3, y); cx.fill();
+      glow(c[0], c[1], 40, 'rgba(255,100,100,A)', 0.3 * a);
+      var jx = Math.sin(t * 0.011) * 3 + Math.sin(t * 0.017) * 1.5, jy = Math.cos(t * 0.004) * 7;
+      dot(c[0] + jx, c[1] + jy, 2.6, a); label('one atom in a ~1 µm focus', c[0] + 30, c[1] - 30, a);
+      [[0.2, 0.3], [0.8, 0.7]].forEach(function (q, i) { var f = (t * 0.0003 + i * 0.5) % 1; dot(W * q[0] + (i ? 1 : -1) * f * 90, H * q[1] - f * 40, 1.4, a * (1 - f)); });
+    },
+    function arrange(t, a) { // 6×4 array, random filling, atoms slide into a compact block
+      var cols = 7, rows = 4, sx = W / (cols + 1), sy = H / (rows + 2), ph = (t * 0.00025) % 1, prog = Math.min(1, Math.max(0, (ph - 0.25) / 0.45));
+      var rr = rnd(3), filled = []; for (var i = 0; i < cols * rows; i++) filled.push(rr() < 0.55);
+      var src = [], k = 0; filled.forEach(function (f, i) { if (f) src.push(i); });
+      for (i = 0; i < cols * rows; i++) { var x = sx * (1 + i % cols), y = sy * (1.6 + (i / cols | 0)); cx.strokeStyle = 'rgba(255,110,110,' + 0.25 * a + ')'; cx.lineWidth = 1; cx.beginPath(); cx.arc(x, y, 7, 0, 6.283); cx.stroke(); }
+      src.forEach(function (s, j) { var x1 = sx * (1 + s % cols), y1 = sy * (1.6 + (s / cols | 0)), x2 = sx * (1 + j % cols), y2 = sy * (1.6 + (j / cols | 0));
+        var e = prog < 0.5 ? 2 * prog * prog : 1 - 2 * (1 - prog) * (1 - prog); dot(x1 + (x2 - x1) * e, y1 + (y2 - y1) * e, 2.3, a); });
+      label(prog < 0.02 ? 'random loading' : prog < 0.98 ? 'AOD moves' : 'defect-free block', W * 0.5, H - 12, a, 'center');
+    },
+    function ground(t, a) { // harmonic well, ladder, ground-state wavefunction
+      var c = [W * 0.5, H * 0.86], sc = Math.min(W * 0.32, H * 1.6);
+      cx.strokeStyle = 'rgba(125,211,252,' + 0.7 * a + ')'; cx.lineWidth = 1.6; cx.beginPath();
+      for (var x = -1; x <= 1.0001; x += 0.02) cx.lineTo(c[0] + x * sc, c[1] - x * x * H * 0.72); cx.stroke();
+      for (var nn = 0; nn < 5; nn++) { var e = (nn + 0.5) / 5.5, hw = Math.sqrt(e) * sc, yy = c[1] - e * H * 0.72; cx.strokeStyle = 'rgba(143,163,189,' + (nn ? 0.35 : 0.9) * a + ')'; cx.lineWidth = nn ? 1 : 1.6; cx.beginPath(); cx.moveTo(c[0] - hw, yy); cx.lineTo(c[0] + hw, yy); cx.stroke(); label('n=' + nn, c[0] + hw + 6, yy + 4, a * 0.8); }
+      var y0 = c[1] - 0.5 / 5.5 * H * 0.72, br = 1 + 0.05 * Math.sin(t * 0.004);
+      cx.fillStyle = 'rgba(255,190,140,' + 0.5 * a + ')'; cx.beginPath(); cx.moveTo(c[0] - sc * 0.4, y0);
+      for (x = -0.4; x <= 0.4001; x += 0.01) cx.lineTo(c[0] + x * sc, y0 - 34 * br * Math.exp(-x * x / 0.012)); cx.closePath(); cx.fill();
+      label('ground-state wavepacket', c[0], y0 - 44, a, 'center');
+    },
+    function qubit(t, a) { // Bloch sphere with precessing state
+      var c = [W * 0.5, H * 0.53], r = Math.min(W, H) * 0.32, th = 1.1 + 0.4 * Math.sin(t * 0.0007), ph = t * 0.0016;
+      cx.strokeStyle = 'rgba(125,211,252,' + 0.45 * a + ')'; cx.lineWidth = 1.2; cx.beginPath(); cx.arc(c[0], c[1], r, 0, 6.283); cx.stroke();
+      cx.beginPath(); cx.ellipse(c[0], c[1], r, r * 0.3, 0, 0, 6.283); cx.stroke();
+      var X = Math.sin(th) * Math.cos(ph), Y = Math.sin(th) * Math.sin(ph), Z = Math.cos(th), px = c[0] + r * X, py = c[1] - r * (Z * 0.95 - Y * 0.3);
+      cx.strokeStyle = 'rgba(255,190,140,' + a + ')'; cx.lineWidth = 2.2; cx.beginPath(); cx.moveTo(c[0], c[1]); cx.lineTo(px, py); cx.stroke(); dot(px, py, 3, a);
+      label('|0⟩ = F=1', c[0], c[1] - r - 8, a, 'center'); label('|1⟩ = F=2', c[0], c[1] + r + 16, a, 'center');
+    },
+    function gate(t, a) { // two atoms, blockade sphere, swelling Rydberg orbit
+      var c1 = [W * 0.36, H * 0.55], c2 = [W * 0.64, H * 0.55], ph = (t * 0.0004) % 1, sw = Math.sin(Math.PI * Math.min(1, ph * 1.6));
+      cx.strokeStyle = 'rgba(167,139,250,' + 0.55 * a + ')'; cx.setLineDash([5, 5]); cx.lineWidth = 1.3; cx.beginPath(); cx.arc(c1[0], c1[1], W * 0.36, 0, 6.283); cx.stroke(); cx.setLineDash([]);
+      glow(c1[0], c1[1], 18 + 60 * sw, 'rgba(167,139,250,A)', 0.35 * a);
+      cx.strokeStyle = 'rgba(196,181,253,' + 0.8 * a + ')'; cx.lineWidth = 1.2; cx.beginPath(); cx.ellipse(c1[0], c1[1], 6 + 42 * sw, (6 + 42 * sw) * 0.55, t * 0.002, 0, 6.283); cx.stroke();
+      dot(c1[0], c1[1], 2.4, a); dot(c2[0], c2[1], 2.4, a);
+      label('blockade radius', c1[0] + W * 0.25, c1[1] - W * 0.27, a, 'center'); label(sw > 0.3 ? 'Rydberg 70S' : 'ground', c1[0], c1[1] + 62, a, 'center'); label('neighbour stays put', c2[0], c2[1] + 30, a, 'center');
+    },
+    function computer(t, a) { // big array with zones and flicker of gates
+      var cols = 16, rows = 8, sx = W / (cols + 1), sy = H / (rows + 1.6), rr = rnd(11);
+      for (var i = 0; i < cols * rows; i++) { var x = sx * (1 + i % cols), y = sy * (1.1 + (i / cols | 0)), zone = (i % cols) < 5 ? 0 : (i % cols) < 11 ? 1 : 2, fl = 0.55 + 0.45 * Math.sin(t * 0.003 + rr() * 30);
+        dot(x, y, 1.5, a * (zone === 1 ? fl : 0.75)); }
+      cx.strokeStyle = 'rgba(167,139,250,' + 0.35 * a + ')'; cx.strokeRect(sx * 5.5, sy * 0.6, sx * 6, sy * (rows + 0.1));
+      label('storage', sx * 3, H - 8, a, 'center'); label('entangling zone', sx * 8.5, H - 8, a, 'center'); label('readout', sx * 14, H - 8, a, 'center');
+    }
+  ];
+
+  var cur = 0, prev = 0, tSwitch = -1e9;
+  function frame(now) {
+    cx.clearRect(0, 0, W, H);
+    var g = cx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#071224'); g.addColorStop(1, '#02060d'); cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    var mix = reduce ? 1 : Math.min(1, (now - tSwitch) / 700), t = reduce ? 12000 : now;
+    if (mix < 1) scenes[prev](t, 1 - mix);
+    scenes[cur](t, mix);
+    if (!reduce && visible) raf = requestAnimationFrame(frame);
+  }
+  var raf = 0, visible = true;
+  function go(i) { if (i === cur) return; prev = cur; cur = i; tSwitch = performance.now(); setStage(i); if (reduce) frame(performance.now()); }
+  setStage(0);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible && !reduce) { cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); } }).observe(cv);
+    var steps = document.querySelectorAll('.fa-step');
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { steps.forEach(function (s) { s.classList.toggle('active', s === e.target); }); go(+e.target.dataset.stage); } }); },
+      { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(function (s) { io.observe(s); });
+  }
+  frame(performance.now());
+  window.AMOFollow = { S: S, Tgs: Tgs, svgs: svgs, x0: x0, rRyd: rRyd };
+})();
+</script>
+</body>
+</html>
