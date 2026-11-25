@@ -682,49 +682,109 @@ initScrollReveal();
   }
 
   function drawObjective3D() {
-    const N = 36, rGlass = 13, rRim = 18;
-    const drawRing = (z, r, fill, stroke) => {
-      ctx.beginPath();
-      for (let i = 0; i <= N; i++) {
+    const N = 32, rGlass = 12.5, rBot = 17.5, rTop = 19.2, zGlass = 33.2, zBot = 35.5, zTop = 44.5;
+    const ring = (z, r) => {
+      const pts = [];
+      for (let i = 0; i < N; i++) {
         const a = (i / N) * Math.PI * 2;
-        const q = proj3(50 + Math.cos(a) * r, 46 + Math.sin(a) * r, z);
-        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        pts.push({ a, p: proj3(50 + Math.cos(a) * r, 46 + Math.sin(a) * r, z) });
       }
-      ctx.closePath();
-      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.3; ctx.stroke(); }
+      return pts;
     };
-    drawRing(33, rGlass, 'rgba(56,189,248,0.18)', 'rgba(125,211,252,0.55)');
-    drawRing(36, rRim, 'rgba(15,23,42,0.82)', 'rgba(148,163,184,0.45)');
-    drawRing(43, rRim * 1.06, 'rgba(30,41,59,0.75)', 'rgba(148,163,184,0.4)');
-    const lbl = proj3(50 + rRim + 3, 46, 39);
-    ctx.fillStyle = 'rgba(148,163,184,0.72)'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'left';
-    ctx.fillText('HIGH-NA OBJECTIVE', lbl[0], lbl[1]);
+    const botPts = ring(zBot, rBot), topPts = ring(zTop, rTop), glassPts = ring(zGlass, rGlass);
+
+    // Recessed AR-coated meniscus glass lens
+    const gCenter = proj3(50, 46, zGlass);
+    const gGrad = ctx.createRadialGradient(gCenter[0] - 18, gCenter[1] - 6, 4, gCenter[0], gCenter[1], 76 * gCenter[3]);
+    gGrad.addColorStop(0, 'rgba(186,230,253,0.42)');
+    gGrad.addColorStop(0.45, 'rgba(56,189,248,0.20)');
+    gGrad.addColorStop(0.82, 'rgba(139,92,246,0.16)');
+    gGrad.addColorStop(1, 'rgba(15,23,42,0.38)');
+    ctx.beginPath();
+    glassPts.forEach((pt, i) => i ? ctx.lineTo(pt.p[0], pt.p[1]) : ctx.moveTo(pt.p[0], pt.p[1]));
+    ctx.closePath(); ctx.fillStyle = gGrad; ctx.fill();
+    ctx.strokeStyle = 'rgba(125,211,252,0.6)'; ctx.lineWidth = 1.2; ctx.stroke();
+
+    // Specular cyan/violet AR coating glint across lens
+    const gl1 = proj3(44, 41, zGlass + 0.3), gl2 = proj3(54, 43, zGlass + 0.3);
+    ctx.strokeStyle = 'rgba(224,242,254,0.55)'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(gl1[0], gl1[1]); ctx.lineTo(gl2[0], gl2[1]); ctx.stroke();
+    ctx.lineCap = 'butt';
+
+    // Extruded metallic barrel quads, depth-sorted
+    const quads = [];
+    for (let i = 0; i < N; i++) {
+      const j = (i + 1) % N;
+      const dAvg = (botPts[i].p[2] + botPts[j].p[2] + topPts[i].p[2] + topPts[j].p[2]) * 0.25;
+      const midA = botPts[i].a + Math.PI / N;
+      const shade = 0.5 + 0.5 * Math.cos(midA - view3D.az + 0.85);
+      quads.push({ i, j, dAvg, shade });
+    }
+    quads.sort((a, b) => a.dAvg - b.dAvg);
+    for (const q of quads) {
+      const r = Math.round(18 + 38 * q.shade), g = Math.round(27 + 44 * q.shade), b = Math.round(44 + 54 * q.shade);
+      ctx.fillStyle = `rgba(${r},${g},${b},0.88)`;
+      ctx.beginPath();
+      ctx.moveTo(botPts[q.i].p[0], botPts[q.i].p[1]);
+      ctx.lineTo(botPts[q.j].p[0], botPts[q.j].p[1]);
+      ctx.lineTo(topPts[q.j].p[0], topPts[q.j].p[1]);
+      ctx.lineTo(topPts[q.i].p[0], topPts[q.i].p[1]);
+      ctx.closePath(); ctx.fill();
+    }
+
+    // Top bezel cap + chamfer rings
+    ctx.beginPath();
+    topPts.forEach((pt, i) => i ? ctx.lineTo(pt.p[0], pt.p[1]) : ctx.moveTo(pt.p[0], pt.p[1]));
+    ctx.closePath(); ctx.fillStyle = 'rgba(15,23,42,0.82)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(148,163,184,0.55)'; ctx.lineWidth = 1.4; ctx.stroke();
+
+    ctx.beginPath();
+    botPts.forEach((pt, i) => i ? ctx.lineTo(pt.p[0], pt.p[1]) : ctx.moveTo(pt.p[0], pt.p[1]));
+    ctx.closePath(); ctx.strokeStyle = 'rgba(148,163,184,0.42)'; ctx.lineWidth = 1.1; ctx.stroke();
+
+    const lbl = proj3(50 + rTop + 3.5, 46, 40);
+    ctx.fillStyle = 'rgba(148,163,184,0.78)'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'left';
+    ctx.fillText('HIGH-NA OBJECTIVE (NA 0.65)', lbl[0], lbl[1]);
   }
 
   function drawWireSphere3D(cx, cy, cz, r, alpha) {
     ctx.save();
-    ctx.strokeStyle = `rgba(216,180,254,${(0.75 * alpha).toFixed(2)})`;
-    ctx.lineWidth = 1.2;
+    const cProj = proj3(cx, cy, cz);
+    const cDepth = cProj[2];
+    const rPx = r * 7.6 * cProj[3];
+    const vg = ctx.createRadialGradient(cProj[0], cProj[1], 2, cProj[0], cProj[1], rPx);
+    vg.addColorStop(0, `rgba(192,132,252,${(0.28 * alpha).toFixed(2)})`);
+    vg.addColorStop(0.65, `rgba(168,85,247,${(0.11 * alpha).toFixed(2)})`);
+    vg.addColorStop(1, 'rgba(168,85,247,0)');
+    ctx.fillStyle = vg; ctx.beginPath(); ctx.arc(cProj[0], cProj[1], rPx, 0, Math.PI * 2); ctx.fill();
+
+    const drawDepthArc = pts => {
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i], b = pts[i + 1];
+        const front = (a[2] + b[2]) * 0.5 >= cDepth;
+        ctx.setLineDash(front ? [] : [3, 4]);
+        ctx.strokeStyle = front ? `rgba(216,180,254,${(0.82 * alpha).toFixed(2)})` : `rgba(192,132,252,${(0.28 * alpha).toFixed(2)})`;
+        ctx.lineWidth = front ? 1.4 : 0.9;
+        ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+      }
+    };
     for (const lat of [-0.45, 0, 0.45]) {
-      ctx.beginPath();
-      const rl = r * Math.cos(lat), zl = cz + r * Math.sin(lat);
+      const rl = r * Math.cos(lat), zl = cz + r * Math.sin(lat), pts = [];
       for (let i = 0; i <= 32; i++) {
         const a = (i / 32) * Math.PI * 2;
-        const q = proj3(cx + rl * Math.cos(a), cy + rl * Math.sin(a), zl);
-        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        pts.push(proj3(cx + rl * Math.cos(a), cy + rl * Math.sin(a), zl));
       }
-      ctx.stroke();
+      drawDepthArc(pts);
     }
     for (const lon of [0, Math.PI / 2]) {
-      ctx.beginPath();
+      const pts = [];
       for (let i = 0; i <= 32; i++) {
         const a = (i / 32) * Math.PI * 2;
-        const q = proj3(cx + r * Math.cos(a) * Math.cos(lon), cy + r * Math.cos(a) * Math.sin(lon), cz + r * Math.sin(a));
-        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        pts.push(proj3(cx + r * Math.cos(a) * Math.cos(lon), cy + r * Math.cos(a) * Math.sin(lon), cz + r * Math.sin(a)));
       }
-      ctx.stroke();
+      drawDepthArc(pts);
     }
+    ctx.setLineDash([]);
     ctx.restore();
   }
 
@@ -785,8 +845,22 @@ initScrollReveal();
       useAfter = true;
     }
 
+    // Faint static SLM storage tweezers (visible contrast against bright cyan AOD shuttling cones)
+    for (let s = 0; s < P.n; s++) {
+      const sx = slotX(s, P.n);
+      const topL = proj3(sx - 2.4, Y_ST, 33), topR = proj3(sx + 2.4, Y_ST, 33);
+      const waist = proj3(sx, Y_ST, 0);
+      const botL = proj3(sx - 1.5, Y_ST, -6), botR = proj3(sx + 1.5, Y_ST, -6);
+      ctx.fillStyle = 'rgba(245,158,11,0.055)';
+      ctx.beginPath(); ctx.moveTo(topL[0], topL[1]); ctx.lineTo(topR[0], topR[1]); ctx.lineTo(waist[0] + 1, waist[1]); ctx.lineTo(waist[0] - 1, waist[1]); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(waist[0] - 1, waist[1]); ctx.lineTo(waist[0] + 1, waist[1]); ctx.lineTo(botR[0], botR[1]); ctx.lineTo(botL[0], botL[1]); ctx.closePath(); ctx.fill();
+    }
+
     if (ryd > 0) {
-      poly3([[0, Y_EN - 8, 2.5], [100, Y_EN - 8, 2.5], [100, Y_EN + 8, 2.5], [0, Y_EN + 8, 2.5]], `rgba(168,85,247,${(0.22 * ryd).toFixed(2)})`, `rgba(216,180,254,${(0.65 * ryd).toFixed(2)})`, 1.4);
+      // Volumetric 3-layer horizontal violet Rydberg laser sheet
+      for (const [zl, op] of [[0, 0.14], [2.2, 0.20], [4.4, 0.12]]) {
+        poly3([[0, Y_EN - 8.5, zl], [100, Y_EN - 8.5, zl], [100, Y_EN + 8.5, zl], [0, Y_EN + 8.5, zl]], `rgba(168,85,247,${(op * ryd).toFixed(2)})`, zl === 2.2 ? `rgba(216,180,254,${(0.68 * ryd).toFixed(2)})` : null, 1.3);
+      }
       for (const g of st.sites) drawWireSphere3D(g, Y_EN, 0, 7.2, ryd);
     }
 
@@ -796,10 +870,10 @@ initScrollReveal();
         const topL = proj3(ax - 3.2, ay, 33), topR = proj3(ax + 3.2, ay, 33);
         const waist = proj3(ax, ay, az);
         const botL = proj3(ax - 2.0, ay, -7), botR = proj3(ax + 2.0, ay, -7);
-        ctx.fillStyle = 'rgba(34,211,238,0.16)';
+        ctx.fillStyle = 'rgba(34,211,238,0.18)';
         ctx.beginPath(); ctx.moveTo(topL[0], topL[1]); ctx.lineTo(topR[0], topR[1]); ctx.lineTo(waist[0] + 1.5, waist[1]); ctx.lineTo(waist[0] - 1.5, waist[1]); ctx.closePath(); ctx.fill();
         ctx.beginPath(); ctx.moveTo(waist[0] - 1.5, waist[1]); ctx.lineTo(waist[0] + 1.5, waist[1]); ctx.lineTo(botR[0], botR[1]); ctx.lineTo(botL[0], botL[1]); ctx.closePath(); ctx.fill();
-        ctx.strokeStyle = 'rgba(34,211,238,0.55)'; ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(34,211,238,0.58)'; ctx.lineWidth = 1.2;
         ctx.beginPath(); ctx.moveTo((topL[0] + topR[0]) / 2, (topL[1] + topR[1]) / 2); ctx.lineTo(waist[0], waist[1]); ctx.stroke();
       }
     }
@@ -818,6 +892,31 @@ initScrollReveal();
     }
 
     const inf = useAfter ? after : before;
+    // Subtle 3D pink correlation arcs linking entangled qubits
+    const entQ = [...Array(P.n).keys()].filter(q => 1 - inf[q].r > 0.15).sort((a, b) => posNow[a][0] - posNow[b][0]);
+    if (entQ.length >= 2 && readBits === null) {
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      for (let i = 0; i < entQ.length - 1; i++) {
+        const qa = entQ[i], qb = entQ[i + 1];
+        const pa = posNow[qa], pb = posNow[qb];
+        const strength = Math.min(1 - inf[qa].r, 1 - inf[qb].r);
+        ctx.strokeStyle = `rgba(244,114,182,${(0.45 * strength).toFixed(2)})`;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        for (let s = 0; s <= 16; s++) {
+          const f = s / 16;
+          const mx = pa[0] + (pb[0] - pa[0]) * f;
+          const my = pa[1] + (pb[1] - pa[1]) * f;
+          const mz = pa[2] + (pb[2] - pa[2]) * f + Math.sin(Math.PI * f) * (4.5 + Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) * 0.12);
+          const q3 = proj3(mx, my, mz);
+          s ? ctx.lineTo(q3[0], q3[1]) : ctx.moveTo(q3[0], q3[1]);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
     const order = [...Array(P.n).keys()].map(q => ({ q, p: proj3(posNow[q][0], posNow[q][1], posNow[q][2]) })).sort((a, b) => a.p[2] - b.p[2]);
     for (const item of order) {
       const q = item.q, [sx, sy, , persp] = item.p;
@@ -1041,7 +1140,10 @@ initScrollReveal();
     placement = b.dataset.pl; document.querySelectorAll('.zp-seg button[data-pl]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); build();
   }));
   document.querySelectorAll('.zp-seg button[data-view]').forEach(b => b.addEventListener('click', () => {
-    viewMode = b.dataset.view; document.querySelectorAll('.zp-seg button[data-view]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); if (P) render();
+    viewMode = b.dataset.view;
+    cv.classList.toggle('orbit3d', viewMode === '3d');
+    document.querySelectorAll('.zp-seg button[data-view]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    if (P) render();
   }));
 
   /* ═════════════ noise + histogram ═════════════ */

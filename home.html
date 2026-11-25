@@ -1920,14 +1920,33 @@
       ctx.fillText('UHV CELL', 0, 4);
     }
 
-    /* ── Lightweight 3D projection + subtle pointer parallax for #scale-zoom ── */
+    /* ── Lightweight 3D projection + drag-to-orbit & subtle pointer parallax for #scale-zoom ── */
     let tiltX = 0, tiltY = 0, tgtTiltX = 0, tgtTiltY = 0;
-    cv.addEventListener('pointermove', e => {
-      const r = cv.getBoundingClientRect();
-      tgtTiltX = ((e.clientX - r.left) / r.width - 0.5) * 0.7;
-      tgtTiltY = ((e.clientY - r.top) / r.height - 0.5) * 0.55;
+    let orbAz = 0, orbEl = 0, dragging = false, dragX = 0, dragY = 0;
+    cv.style.cursor = 'grab';
+    cv.style.touchAction = 'none';
+    cv.addEventListener('pointerdown', e => {
+      dragging = true; dragX = e.clientX; dragY = e.clientY;
+      cv.style.cursor = 'grabbing';
+      if (cv.setPointerCapture) cv.setPointerCapture(e.pointerId);
     });
-    cv.addEventListener('pointerleave', () => { tgtTiltX = 0; tgtTiltY = 0; });
+    cv.addEventListener('pointermove', e => {
+      if (dragging) {
+        orbAz += (e.clientX - dragX) * 0.0085;
+        orbEl = Math.max(-0.65, Math.min(0.85, orbEl + (e.clientY - dragY) * 0.0075));
+        dragX = e.clientX; dragY = e.clientY;
+        if (reduced) drawFrame(0);
+        return;
+      }
+      const r = cv.getBoundingClientRect();
+      tgtTiltX = ((e.clientX - r.left) / r.width - 0.5) * 0.55;
+      tgtTiltY = ((e.clientY - r.top) / r.height - 0.5) * 0.42;
+    });
+    const endDrag = () => { dragging = false; cv.style.cursor = 'grab'; };
+    cv.addEventListener('pointerup', endDrag);
+    cv.addEventListener('pointercancel', endDrag);
+    cv.addEventListener('pointerleave', () => { if (!dragging) { tgtTiltX = 0; tgtTiltY = 0; } });
+    cv.addEventListener('dblclick', () => { orbAz = 0; orbEl = 0; if (reduced) drawFrame(0); });
 
     function p3(x, y, z, az, el) {
       const ca = Math.cos(az), sa = Math.sin(az), ce = Math.cos(el), se = Math.sin(el);
@@ -1938,44 +1957,64 @@
     }
 
     function drawCell(t) {
-      const az = 0.55 + t * 0.25 + tiltX, el = 0.36 + tiltY;
+      const az = 0.55 + t * 0.22 + tiltX + orbAz, el = 0.36 + tiltY + orbEl;
       const hx = 105, hy = 72, hz = 68;
       const corners = [
         [-hx,-hy,-hz],[hx,-hy,-hz],[hx,hy,-hz],[-hx,hy,-hz],
         [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz]
       ].map(c => p3(c[0], c[1], c[2], az, el));
-      const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-      ctx.fillStyle = 'rgba(30,58,95,0.22)';
-      [[0,1,5,4],[1,2,6,5],[4,5,6,7]].forEach(f => {
-        ctx.beginPath(); f.forEach((idx, i) => i ? ctx.lineTo(corners[idx][0], corners[idx][1]) : ctx.moveTo(corners[idx][0], corners[idx][1]));
-        ctx.closePath(); ctx.fill();
+      const faces = [
+        [0,1,2,3], [4,5,6,7], [0,1,5,4], [2,3,7,6], [0,3,7,4], [1,2,6,5]
+      ].map(idx => ({ idx, d: idx.reduce((s, i) => s + corners[i][2], 0) * 0.25 })).sort((a, b) => a.d - b.d);
+
+      // 3 back faces of the quartz glass cell
+      faces.slice(0, 3).forEach(f => {
+        ctx.fillStyle = 'rgba(30,58,95,0.16)';
+        ctx.strokeStyle = 'rgba(125,211,252,0.22)'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        f.idx.forEach((ci, i) => i ? ctx.lineTo(corners[ci][0], corners[ci][1]) : ctx.moveTo(corners[ci][0], corners[ci][1]));
+        ctx.closePath(); ctx.fill(); ctx.stroke();
       });
+
+      // 6 counter-propagating MOT laser beams + central glowing atom cloud
       const axes = [[[-190,0,0],[190,0,0]], [[0,-165,0],[0,165,0]], [[0,0,-145],[0,0,145]]];
       axes.forEach(([a, b]) => {
         const pa = p3(a[0], a[1], a[2], az, el), pb = p3(b[0], b[1], b[2], az, el);
-        ctx.save(); ctx.strokeStyle = 'rgba(248,113,113,0.48)'; ctx.lineWidth = 8; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 10;
+        ctx.save(); ctx.strokeStyle = 'rgba(248,113,113,0.46)'; ctx.lineWidth = 7.5; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 10;
         ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke(); ctx.restore();
       });
-      for (const cz of [-92, 92]) {
-        ctx.strokeStyle = 'rgba(251,146,60,0.78)'; ctx.lineWidth = 5.5;
-        ctx.beginPath();
-        for (let i = 0; i <= 40; i++) {
-          const a = (i / 40) * Math.PI * 2;
-          const q = p3(Math.cos(a) * 116, Math.sin(a) * 116, cz, az, el);
-          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
-        }
-        ctx.stroke();
-      }
-      ctx.strokeStyle = 'rgba(186,230,253,0.68)'; ctx.lineWidth = 1.6;
-      edges.forEach(([i, j]) => { ctx.beginPath(); ctx.moveTo(corners[i][0], corners[i][1]); ctx.lineTo(corners[j][0], corners[j][1]); ctx.stroke(); });
       const rCloud = 25 + 3 * Math.sin(t * 2.2);
       const g = ctx.createRadialGradient(0, 0, 2, 0, 0, rCloud * 1.9);
       g.addColorStop(0, 'rgba(255,236,228,0.96)'); g.addColorStop(0.38, 'rgba(248,113,113,0.78)'); g.addColorStop(1, 'rgba(248,113,113,0)');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rCloud * 1.9, 0, Math.PI * 2); ctx.fill();
+
+      // 3 front faces of the quartz cell (glass sheen + crisp edges)
+      faces.slice(3).forEach(f => {
+        ctx.fillStyle = 'rgba(56,189,248,0.08)';
+        ctx.strokeStyle = 'rgba(186,230,253,0.72)'; ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        f.idx.forEach((ci, i) => i ? ctx.lineTo(corners[ci][0], corners[ci][1]) : ctx.moveTo(corners[ci][0], corners[ci][1]));
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      });
+
+      // Multi-winding anti-Helmholtz copper coils above & below cell
+      for (const baseZ of [-90, 90]) {
+        for (const dz of [-5, 0, 5]) {
+          ctx.strokeStyle = dz === 0 ? 'rgba(251,146,60,0.92)' : 'rgba(217,119,6,0.72)';
+          ctx.lineWidth = dz === 0 ? 3.2 : 2.2;
+          ctx.beginPath();
+          for (let i = 0; i <= 40; i++) {
+            const a = (i / 40) * Math.PI * 2;
+            const q = p3(Math.cos(a) * 116, Math.sin(a) * 116, baseZ + dz, az, el);
+            i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+          }
+          ctx.stroke();
+        }
+      }
     }
 
     function drawTweezers(t) {
-      const az = 0.25 + tiltX * 0.8, el = 0.62 + tiltY * 0.6;
+      const az = 0.25 + tiltX * 0.8 + orbAz, el = 0.62 + tiltY * 0.6 + orbEl;
       const N = 5, sp = 48;
       const pts = [];
       for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
@@ -1986,41 +2025,55 @@
       pts.sort((a, b) => a.p[2] - b.p[2]);
       pts.forEach(pt => {
         const [sx, sy, , k] = pt.p;
-        const top = p3(pt.x, pt.y, 64, az, el), bot = p3(pt.x, pt.y, -48, az, el);
-        ctx.strokeStyle = 'rgba(52,211,153,0.16)'; ctx.lineWidth = 2.2 * k;
-        ctx.beginPath(); ctx.moveTo(top[0], top[1]); ctx.lineTo(bot[0], bot[1]); ctx.stroke();
-        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 10 * k);
+        const topL = p3(pt.x - 10, pt.y, 72, az, el), topR = p3(pt.x + 10, pt.y, 72, az, el);
+        const botL = p3(pt.x - 8, pt.y, -56, az, el), botR = p3(pt.x + 8, pt.y, -56, az, el);
+        ctx.fillStyle = 'rgba(52,211,153,0.10)';
+        ctx.beginPath(); ctx.moveTo(topL[0], topL[1]); ctx.lineTo(topR[0], topR[1]); ctx.lineTo(sx + 1.4 * k, sy); ctx.lineTo(sx - 1.4 * k, sy); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(sx - 1.4 * k, sy); ctx.lineTo(sx + 1.4 * k, sy); ctx.lineTo(botR[0], botR[1]); ctx.lineTo(botL[0], botL[1]); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = 'rgba(110,231,183,0.22)'; ctx.lineWidth = 1.1 * k;
+        ctx.beginPath(); ctx.moveTo((topL[0] + topR[0]) / 2, (topL[1] + topR[1]) / 2); ctx.lineTo((botL[0] + botR[0]) / 2, (botL[1] + botR[1]) / 2); ctx.stroke();
+        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 10.5 * k);
         g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, '#34d399'); g.addColorStop(1, 'rgba(52,211,153,0)');
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, 10 * k, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, 10.5 * k, 0, Math.PI * 2); ctx.fill();
       });
     }
 
     function drawBlockade(t) {
-      const az = 0.35 + t * 0.22 + tiltX, el = 0.32 + tiltY;
+      const az = 0.35 + t * 0.22 + tiltX + orbAz, el = 0.32 + tiltY + orbEl;
       const sep = 74, Rb = 122;
       const pA = p3(-sep / 2, 0, 0, az, el), pB = p3(sep / 2, 0, 0, az, el);
+      const cDepth = pA[2];
       const g = ctx.createRadialGradient(pA[0], pA[1], 8, pA[0], pA[1], Rb * pA[3]);
       g.addColorStop(0, 'rgba(192,132,252,0.28)'); g.addColorStop(0.72, 'rgba(192,132,252,0.11)'); g.addColorStop(1, 'rgba(192,132,252,0)');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(pA[0], pA[1], Rb * pA[3], 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = 'rgba(192,132,252,0.52)'; ctx.lineWidth = 1.2;
+
+      const drawArc = pts => {
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i], b = pts[i + 1];
+          const front = (a[2] + b[2]) * 0.5 >= cDepth;
+          ctx.setLineDash(front ? [] : [4, 4]);
+          ctx.strokeStyle = front ? 'rgba(216,180,254,0.68)' : 'rgba(192,132,252,0.24)';
+          ctx.lineWidth = front ? 1.4 : 0.9;
+          ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+        }
+      };
       for (const lat of [-0.5, 0, 0.5]) {
-        ctx.beginPath();
+        const pts = [];
         for (let i = 0; i <= 40; i++) {
           const a = (i / 40) * Math.PI * 2;
-          const q = p3(-sep / 2 + Rb * Math.cos(lat) * Math.cos(a), Rb * Math.cos(lat) * Math.sin(a), Rb * Math.sin(lat), az, el);
-          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+          pts.push(p3(-sep / 2 + Rb * Math.cos(lat) * Math.cos(a), Rb * Math.cos(lat) * Math.sin(a), Rb * Math.sin(lat), az, el));
         }
-        ctx.stroke();
+        drawArc(pts);
       }
       for (const lon of [0, Math.PI / 2]) {
-        ctx.beginPath();
+        const pts = [];
         for (let i = 0; i <= 40; i++) {
           const a = (i / 40) * Math.PI * 2;
-          const q = p3(-sep / 2 + Rb * Math.cos(a) * Math.cos(lon), Rb * Math.cos(a) * Math.sin(lon), Rb * Math.sin(a), az, el);
-          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+          pts.push(p3(-sep / 2 + Rb * Math.cos(a) * Math.cos(lon), Rb * Math.cos(a) * Math.sin(lon), Rb * Math.sin(a), az, el));
         }
-        ctx.stroke();
+        drawArc(pts);
       }
+      ctx.setLineDash([]);
       ctx.strokeStyle = 'rgba(226,232,240,0.65)'; ctx.lineWidth = 1.4;
       ctx.beginPath(); ctx.moveTo(pA[0], pA[1]); ctx.lineTo(pB[0], pB[1]); ctx.stroke();
       ctx.fillStyle = '#e2e8f0'; ctx.font = '600 11px JetBrains Mono, monospace'; ctx.textAlign = 'center';
@@ -2034,12 +2087,32 @@
       });
     }
 
+    // Pre-sampled 150-point 3D Rydberg probability cloud (nD-like nodal lobes)
+    const RYD_PTS = [];
+    for (let i = 0; i < 150; i++) {
+      const s1 = Math.sin(i * 12.9898 + 1.3) * 43758.5453; const u1 = s1 - Math.floor(s1);
+      const s2 = Math.sin(i * 78.233 + 2.7) * 43758.5453; const u2 = s2 - Math.floor(s2);
+      const s3 = Math.sin(i * 37.719 + 4.1) * 43758.5453; const u3 = s3 - Math.floor(s3);
+      const th = Math.acos(1 - 2 * u1), ph = u2 * Math.PI * 2;
+      const lobe = Math.abs(3 * Math.cos(th) * Math.cos(th) - 1) * 0.55 + 0.45;
+      const r = (36 + 112 * Math.pow(u3, 0.48)) * lobe;
+      RYD_PTS.push([r * Math.sin(th) * Math.cos(ph), r * Math.sin(th) * Math.sin(ph), r * Math.cos(th), 0.35 + 0.65 * lobe]);
+    }
+
     function drawRydberg(t) {
-      const az = t * 0.32 + tiltX, el = 0.42 + tiltY;
+      const az = t * 0.32 + tiltX + orbAz, el = 0.42 + tiltY + orbEl;
+      // Depth-sorted 3D quantum probability density cloud
+      const projCloud = RYD_PTS.map(pt => ({ q: p3(pt[0], pt[1], pt[2], az, el), w: pt[3] })).sort((a, b) => a.q[2] - b.q[2]);
+      for (const pt of projCloud) {
+        const [qx, qy, qd, qk] = pt.q;
+        const a = Math.max(0.08, Math.min(0.65, (0.28 + qd / 340) * pt.w));
+        ctx.fillStyle = `rgba(244,114,182,${a.toFixed(2)})`;
+        ctx.beginPath(); ctx.arc(qx, qy, (2.2 + pt.w * 2.2) * qk, 0, Math.PI * 2); ctx.fill();
+      }
       for (let k = 1; k <= 5; k++) {
         const r = k * 28;
-        ctx.strokeStyle = `rgba(244,114,182,${0.14 + 0.08 * (k / 5)})`;
-        ctx.lineWidth = k === 5 ? 2.4 : 1.1;
+        ctx.strokeStyle = `rgba(244,114,182,${0.12 + 0.08 * (k / 5)})`;
+        ctx.lineWidth = k === 5 ? 2.2 : 1.0;
         for (const tilt of [0, 1.05, -1.05]) {
           ctx.beginPath();
           for (let i = 0; i <= 48; i++) {
@@ -2062,7 +2135,7 @@
     }
 
     function drawNucleus(t) {
-      const az = t * 0.38 + tiltX, el = 0.35 + tiltY;
+      const az = t * 0.38 + tiltX + orbAz, el = 0.35 + tiltY + orbEl;
       const g = ctx.createRadialGradient(0, 0, 4, 0, 0, 120);
       g.addColorStop(0, 'rgba(251,191,36,0.26)'); g.addColorStop(1, 'rgba(251,191,36,0)');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 120, 0, Math.PI * 2); ctx.fill();
