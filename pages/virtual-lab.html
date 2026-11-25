@@ -871,6 +871,7 @@ initScrollReveal();
   });
   $('vlNew').addEventListener('click', () => { setPlaying(false); newShot(); log(S, -1); render(); setPlaying(false); });
   $('vlTruth').addEventListener('change', render);
+  if ($('vlEmccd')) $('vlEmccd').addEventListener('change', render);
 
   /* ═════════════ settings ═════════════ */
   const fmtP = x => x >= 1e-3 ? (x >= 0.995 && x < 1 ? (100 * x).toFixed(2) + '%' : (100 * x).toFixed(1) + '%') : x > 0 ? x.toExponential(1).replace('e', '×10^').replace(/\^(-?\d+)/, (m, e) => '<sup>' + e + '</sup>').replace('×10', ' × 10').replace('-', '−') : '0';

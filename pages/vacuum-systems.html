@@ -1429,30 +1429,33 @@
       ctx.stroke();
     };
 
+    // Left ConFlat (CF) stainless flange + copper gasket + bolt circle helper
+    const drawFlange = () => {
+      const drawFlangeRing = (fx, r, stroke, lw, fill) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 28; i++) {
+          const a = (i / 28) * Math.PI * 2;
+          const q = vProj(fx, Math.cos(a) * r, Math.sin(a) * r, W, H);
+          i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
+        }
+        ctx.closePath();
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke();
+      };
+      drawFlangeRing(-1.20, 0.36, 'rgba(148,163,184,0.5)', 1.6, 'rgba(30,41,59,0.45)');
+      drawFlangeRing(-1.38, 0.44, 'rgba(251,146,60,0.65)', 2.0, null);
+      drawFlangeRing(-1.45, 0.50, 'rgba(148,163,184,0.72)', 2.2, 'rgba(51,65,85,0.45)');
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        const b = vProj(-1.46, Math.cos(a) * 0.43, Math.sin(a) * 0.43, W, H);
+        ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(b[0], b[1], 2.1 * b[3], 0, Math.PI * 2); ctx.fill();
+      }
+    };
+    const flangeInFront = vProj(-1.35, 0, 0, W, H)[2] > 0;
+    if (!flangeInFront) drawFlange();
+
     // 1. Back 3 quartz faces
     faces.slice(0, 3).forEach(f => drawFace(f, false));
-
-    // 2. Left ConFlat (CF) stainless flange + copper gasket + bolt circle
-    const drawFlangeRing = (fx, r, stroke, lw, fill) => {
-      ctx.beginPath();
-      for (let i = 0; i <= 28; i++) {
-        const a = (i / 28) * Math.PI * 2;
-        const q = vProj(fx, Math.cos(a) * r, Math.sin(a) * r, W, H);
-        i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
-      }
-      ctx.closePath();
-      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-      ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke();
-    };
-    drawFlangeRing(-1.20, 0.36, 'rgba(148,163,184,0.5)', 1.6, 'rgba(30,41,59,0.45)');
-    drawFlangeRing(-1.38, 0.44, 'rgba(251,146,60,0.65)', 2.0, null); // copper gasket hint
-    drawFlangeRing(-1.45, 0.50, 'rgba(148,163,184,0.72)', 2.2, 'rgba(51,65,85,0.45)');
-    // 6 CF bolts around flange perimeter
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2;
-      const b = vProj(-1.46, Math.cos(a) * 0.43, Math.sin(a) * 0.43, W, H);
-      ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(b[0], b[1], 2.1 * b[3], 0, Math.PI * 2); ctx.fill();
-    }
 
     // 3. Vertical optical tweezer cone holding trapped atom at origin
     const tTopL = vProj(-0.18, 0, hz, W, H), tTopR = vProj(0.18, 0, hz, W, H);
@@ -1495,6 +1498,7 @@
 
     // 5. Front 3 quartz faces + subtle Fresnel glass sheen
     faces.slice(3).forEach(f => drawFace(f, true));
+    if (flangeInFront) drawFlange();
 
     // HUD overlay
     ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'left';
@@ -1561,9 +1565,10 @@
   function resizeCanvas() {
     dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
     canvas.width  = rect.width  * dpr;
     canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   slider.addEventListener('input', updatePressure);
