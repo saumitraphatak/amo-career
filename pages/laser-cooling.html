@@ -643,6 +643,10 @@
               <div class="r-label">Doppler limit ⟨n⟩ (Δ = −Γ/2)</div>
               <div class="r-val" id="sb-n-doppler">—</div>
             </div>
+            <div class="result-chip">
+              <div class="r-label">Ground-state size x₀ = √(ħ/2mω)</div>
+              <div class="r-val" id="sb-x0">—</div>
+            </div>
           </div>
           <p style="font-size:.76rem;color:var(--text-muted);margin-top:.6rem;">
             Resolved = $\nu > \Gamma$ (both as ordinary frequencies). The resolved formula only applies in that regime. Doppler limit (unresolved, $\nu \ll \Gamma$, at the optimal $\Delta = -\Gamma/2$): $\langle n\rangle = (1+\alpha)\Gamma/(4\nu) - \tfrac12$, i.e. $k_BT_D = \hbar\Gamma/2$ for $\alpha = 1$.
@@ -1699,6 +1703,8 @@ function calcSB() {
 
   document.getElementById('sb-n-resolved').textContent   = isResolved ? nResolved.toFixed(4) : 'n/a (unresolved)';
   document.getElementById('sb-n-doppler').textContent    = nDoppler.toFixed(3);
+  // the mass only enters through the size of the motional ground state (the ⟨n⟩ limits depend on Γ/ν alone)
+  document.getElementById('sb-x0').textContent = m > 0 ? (Math.sqrt(HBAR / (2 * m * 2 * Math.PI * nu_hz)) * 1e9).toFixed(1) + ' nm' : '—';
 
   const chip = document.getElementById('sb-regime-chip');
   const text = document.getElementById('sb-regime');

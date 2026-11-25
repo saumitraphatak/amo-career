@@ -25,6 +25,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script>/* If Plotly cannot load (offline, blocked CDN), say so in each 3D plot instead of breaking the page's other figures. */
+  if (!window.Plotly) window.Plotly = { newPlot: function (id) { var e = typeof id === 'string' ? document.getElementById(id) : id; if (e && !e.dataset.noPlotly) { e.dataset.noPlotly = '1'; e.innerHTML = '<p style="padding:1rem;font-size:.85rem;color:var(--text-muted)">This interactive plot needs the Plotly library, which did not load. Check your connection and reload.</p>'; } return Promise.resolve(); },
+    react: function (id) { return window.Plotly.newPlot(id); }, relayout: function () { return Promise.resolve(); }, restyle: function () { return Promise.resolve(); }, purge: function () {}, Plots: { resize: function () {} } };</script>
   <link rel="stylesheet" href="../css/styles.css?v=42">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">

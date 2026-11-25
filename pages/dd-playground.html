@@ -1093,7 +1093,8 @@
         </div>
         <p style="font-size:.78rem;color:var(--text-muted);margin-top:.6rem;text-align:center">
           Enhancement T₂(N)/T₂* vs N for CPMG sequences.
-          Expected scaling: α=0 → N^0 (no improvement), α=1 → N^0.5, α=2 → N^1.
+          Expected scaling: T₂ ∝ N^(α/(1+α)), so α=0 → N^0 (no improvement), α=1 → N^0.5, α=2 → N^(2/3).
+          For power-law noise the ratio T₂(N)/T₂* does not depend on T₂*; the baseline sets the absolute times shown in the chips.
         </p>
 
         <div class="info-box" id="scalingInfo" style="margin-top:.75rem">
@@ -1693,9 +1694,10 @@ function updateT2Chart() {
   const e1   = enhancements[N_VALUES.indexOf(1)];
   const e16  = enhancements[N_VALUES.indexOf(16)];
   const e256 = enhancements[N_VALUES.indexOf(256)];
-  document.getElementById('t2ChipN1').textContent   = `N=1: ${e1.toFixed(2)}×`;
-  document.getElementById('t2ChipN16').textContent  = `N=16: ${e16.toFixed(2)}×`;
-  document.getElementById('t2ChipN256').textContent = `N=256: ${e256.toFixed(2)}×`;
+  const tAbs = r => { const t = T2star * r; return t >= 1 ? t.toFixed(2) + ' s' : (t * 1e3).toFixed(t < 0.01 ? 2 : 1) + ' ms'; };
+  document.getElementById('t2ChipN1').textContent   = `N=1: ${e1.toFixed(2)}× · T₂ = ${tAbs(e1)}`;
+  document.getElementById('t2ChipN16').textContent  = `N=16: ${e16.toFixed(2)}× · T₂ = ${tAbs(e16)}`;
+  document.getElementById('t2ChipN256').textContent = `N=256: ${e256.toFixed(2)}× · T₂ = ${tAbs(e256)}`;
 
   // Estimate scaling exponent from log-log fit (N=4 to N=256)
   let scalingExp = '—';

@@ -33,7 +33,7 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(req.url);
   const isSameOrigin = url.origin === self.location.origin;
-  const isCdnAsset = /^(cdn\.jsdelivr\.net|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(url.hostname);
+  const isCdnAsset = /^(cdn\.jsdelivr\.net|cdn\.plot\.ly|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(url.hostname);
   if (!isSameOrigin && !isCdnAsset) return;
   // Leave large downloads (the book PDF, notebooks) and range requests to the network:
   // caching them would fill the visitor's storage, and a 206 partial response can't be cached.

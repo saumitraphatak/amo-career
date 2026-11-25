@@ -1185,6 +1185,24 @@ def test_explorer_pages() -> None:
         assert f"pages/{key}.html\"><span>" in js and f"'{key}':" in js, key
 
 
+def test_bug_sweep_2026_11_25() -> None:
+    """Site-wide control sweep (2026-11-25): every slider, select, input and button driven on every page. Fixed: the CPMG
+    caption claimed T2 ∝ N for 1/f² noise (it is N^(α/(1+α)) = N^(2/3)); the T2* slider only relabelled itself; the
+    sideband calculator's mass input changed nothing; polarimetry broke without Plotly; three low-contrast labels."""
+    dd = read("pages/dd-playground.html")
+    assert "α=2 → N^1." not in dd and "α=2 → N^(2/3)" in dd and "T₂ = ${tAbs(e16)}" in dd
+    lc = read("pages/laser-cooling.html")
+    assert 'id="sb-x0"' in lc and "Math.sqrt(HBAR / (2 * m * 2 * Math.PI * nu_hz))" in lc
+    m = 87 * 1.6605e-27; x0 = math.sqrt(1.0546e-34 / (2 * m * 2 * math.pi * 100e3)) * 1e9
+    assert abs(x0 - 24.1) < 0.1                                                          # default Rb, 100 kHz → 24.1 nm
+    pol = read("pages/polarimetry.html")
+    assert "if (!window.Plotly) window.Plotly" in pol and "cdn\\.plot\\.ly" in read("sw.js")
+    assert "(−1)^{${" not in read("pages/lab-calculators.html")
+    assert "#scopeBtn { color: #0b5c70; }" in read("pages/laser-locking.html")
+    home = read("home.html")
+    assert ':root:not([data-theme="dark"]) .sz-kicker' in home and ".sz-zoom-hint { font: 500 .68rem/1 var(--font-mono); color: #94a3b8; }" in home
+
+
 def test_cavity_photon_race() -> None:
     """Cavity QED section 04 (2026-11-19): exact single-photon branching and the closed-form propagator."""
     page = read("pages/cavity-qed.html")
@@ -1303,6 +1321,7 @@ def main() -> None:
         test_book,
         test_service_worker,
         test_explorer_pages,
+        test_bug_sweep_2026_11_25,
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,

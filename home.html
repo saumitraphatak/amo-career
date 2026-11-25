@@ -142,7 +142,7 @@
     .sz-ruler { display: flex; flex-direction: column; gap: 4px; }
     .sz-ruler-bar { width: 110px; height: 6px; border-left: 2px solid #38bdf8; border-right: 2px solid #38bdf8; border-bottom: 2px solid #38bdf8; }
     .sz-ruler-lbl { font: 600 .72rem/1 var(--font-mono); color: #7dd3fc; }
-    .sz-zoom-hint { font: 500 .68rem/1 var(--font-mono); color: #64748b; }
+    .sz-zoom-hint { font: 500 .68rem/1 var(--font-mono); color: #94a3b8; }
     .sz-info {
       display: flex; flex-direction: column; gap: .75rem; justify-content: space-between;
       background: color-mix(in srgb, var(--bg-surface, var(--bg-base)) 55%, var(--bg-card));
@@ -152,6 +152,8 @@
       font: 700 .7rem/1.2 var(--font-mono); letter-spacing: .09em; text-transform: uppercase;
       color: var(--sz-c, #38bdf8);
     }
+    /* the stage colours are tuned for the dark canvas; on paper, darken them enough to read */
+    :root:not([data-theme="dark"]) .sz-kicker { color: color-mix(in srgb, var(--sz-c, #38bdf8) 38%, #22190f); }
     .sz-title { margin: .2rem 0 .35rem; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); line-height: 1.25; }
     .sz-desc { margin: 0; font-size: .88rem; color: var(--text-secondary); line-height: 1.66; }
     .sz-eq-box {
@@ -189,7 +191,8 @@
     .sz-tour-btn:hover { background: color-mix(in srgb, var(--c-atom, #38bdf8) 22%, transparent); transform: translateY(-1px); }
     .sz-stops { display: grid; grid-template-columns: repeat(6, 1fr); gap: .4rem; }
     @media (max-width: 820px) { .sz-stops { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 480px) { .sz-stops { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .sz-stops { grid-template-columns: repeat(2, 1fr); }
+      .sz-decade-pill { white-space: nowrap; font-size: .58rem; letter-spacing: .02em; } .sz-hud-top { left: 8px; right: 8px; } .sz-ruler-lbl, .sz-zoom-hint { font-size: .6rem; } }
     .sz-stop {
       font: inherit; text-align: left; cursor: pointer; padding: .45rem .6rem; border-radius: 9px;
       border: 1px solid var(--border); background: var(--bg-surface, transparent); color: var(--text-secondary);
@@ -1784,7 +1787,7 @@
         z: 0.0, label: 'Optical table', scale: '1 m', color: '#38bdf8',
         kicker: '10⁰ m · Macroscopic lab hardware',
         title: 'Optical Table & Laser Breadboard',
-        desc: 'Air-floated steel tables hold diode and solid-state lasers, acousto-optic modulators (AOMs), and optical cavities that lock laser frequencies to better than a part in 10¹¹ before fibre delivery to the chamber.',
+        desc: 'Air-floated steel tables hold diode and solid-state lasers, acousto-optic modulators (AOMs), and optical cavities that lock laser frequencies to within ~10 kHz, a few parts in 10¹¹, before fibre delivery to the chamber.',
         eq: 'c = λν  ·  Δν_lock ≲ 10 kHz  (PDH / SAS)',
         metrics: [['Table footprint', '2 m × 1 m'], ['Laser lines', '4–8 wavelengths']],
         links: [['💡 Laser System Planner', 'pages/laser-planner.html'], ['🔐 Laser Locking Guide', 'pages/laser-locking.html']],
@@ -1822,16 +1825,16 @@
         title: 'Rydberg Electron Orbital (n ≈ 70)',
         desc: 'The valence electron orbits hundreds of nanometres from the ionic core — over 1,000× wider than a ground-state atom and comparable to a virus. That inflated orbital is why polarisability scales as n⁷ and C₆ as n¹¹.',
         eq: '⟨r⟩ ≈ (3/2) n*² a₀  ·  C₆ ∝ n*¹¹',
-        metrics: [['Orbital radius (n=70)', '~250 nm'], ['Radiative lifetime', '~150–350 µs']],
+        metrics: [['Orbital radius (70S)', '~350 nm'], ['Radiative lifetime', '~150–350 µs']],
         links: [['⚛️ Atom Library', 'pages/atom-library.html'], ['🎛️ Zoned Atom Processor', 'pages/atom-processor.html']],
       },
       {
         z: 15.0, label: 'Atomic nucleus', scale: '1 fm', color: '#fbbf24',
         kicker: '10⁻¹⁵ m · The protected qubit',
         title: 'Atomic Nucleus & Hyperfine Clock Qubit',
-        desc: 'At the very centre sits the femtometre nucleus. Its spin I couples weakly to the valence electron (⁸⁷Rb clock states, 6.835 GHz) or stands alone in a J=0 ground state (¹⁷¹Yb, I = 1/2), yielding coherence times over 10 seconds.',
+        desc: 'At the very centre sits the femtometre nucleus. Its spin I couples weakly to the valence electron (⁸⁷Rb clock states, 6.835 GHz) or stands alone in a J=0 ground state (¹⁷¹Yb, I = 1/2), yielding coherence times of seconds, beyond 10 s with dynamical decoupling.',
         eq: 'H_hf = A_hf I·J  ·  T₂ > 10 s (clock / nuclear spin)',
-        metrics: [['Nuclear radius', '~5 fm (Rb/Yb)'], ['Coherence T₂', '1–40+ s']],
+        metrics: [['Nuclear radius', '~5–7 fm (Rb/Yb)'], ['Coherence T₂', '1–40+ s']],
         links: [['🔑 Hyperfine Qubits', 'pages/learn-quantum.html#hyperfine'], ['⚖️ Rb-87 vs Yb-171', 'pages/rb87-vs-yb171.html']],
       },
     ];
