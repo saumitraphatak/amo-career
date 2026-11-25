@@ -39,7 +39,7 @@
   <meta name="twitter:image" content="https://amotoolkit.com/assets/og-image.png">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Vacuum Systems Guide","description":"Complete guide to ultra-high vacuum systems for AMO physics experiments.","url":"https://amotoolkit.com/pages/vacuum-systems.html","author":{"@type":"Person","name":"Saumitra Phatak","url":"https://www.curious96.com"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://amotoolkit.com/home.html"},{"@type":"ListItem","position":2,"name":"Build","item":"https://amotoolkit.com/home.html#tools"},{"@type":"ListItem","position":3,"name":"Vacuum Systems Guide","item":"https://amotoolkit.com/pages/vacuum-systems.html"}]}</script>
-  <link rel="stylesheet" href="../css/styles.css?v=41">
+  <link rel="stylesheet" href="../css/styles.css?v=42">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
@@ -1232,7 +1232,7 @@
 <!-- ──────── SCRIPTS ──────── -->
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
-<script src="../js/main.js?v=57"></script>
+<script src="../js/main.js?v=58"></script>
 <script src="../js/orbit3d.js?v=2"></script>
 <script src="../js/motion.js?v=2"></script>
 <script src="../js/canvas-ink.js?v=2"></script>
@@ -1351,7 +1351,7 @@
     { min: -12, label: 'Extreme High Vacuum',color: '#818cf8', ink: '#3f3fc9', bg: 'rgba(129,140,248,.12)' },
   ];
 
-  /* 3D UHV quartz glass cell + trapped atom + background-gas kinetics */
+  /* 3D UHV quartz glass cell + CF flange + trapped atom + ballistic H₂ collision ejection */
   const vacView = (window.AMO3D && AMO3D.orbit)
     ? AMO3D.orbit(canvas, { az: 0.48, el: 0.32, label: '3D UHV glass cell', onChange: () => drawMolecules(false) })
     : { az: 0.48, el: 0.32 };
@@ -1361,6 +1361,8 @@
     r: 1.6 + Math.random() * 1.4
   }));
   let molCount = 0, t = 0, hitFlash = 0, hitCount = 0;
+  let atomAlive = true, reloadTimer = 0;
+  let kick = null; // { x, y, z, vx, vy, vz, life }
 
   function vProj(x, y, z, W, H) {
     const ca = Math.cos(vacView.az), sa = Math.sin(vacView.az);
@@ -1372,7 +1374,6 @@
     return [W * 0.5 + xr * sc * k, H * 0.53 - sy * sc * k, d, k];
   }
 
-  // drawMolecules(true) advances 3D ballistic motion; drawMolecules(false) repaints
   function drawMolecules(step) {
     const W = canvas.width / dpr;
     const H = canvas.height / dpr;
@@ -1383,55 +1384,88 @@
     const n = Math.min(85, Math.round(molCount));
     if (step) {
       t += 0.016;
-      hitFlash = Math.max(0, hitFlash - 0.045);
+      hitFlash = Math.max(0, hitFlash - 0.035);
+      if (!atomAlive) {
+        reloadTimer -= 0.016;
+        if (reloadTimer <= 0) atomAlive = true;
+      }
+      if (kick) {
+        kick.x += kick.vx * 0.04; kick.y += kick.vy * 0.04; kick.z += kick.vz * 0.04;
+        kick.life -= 0.045;
+        if (kick.life <= 0) kick = null;
+      }
       for (let i = 0; i < n; i++) {
         const s = seeds[i];
         s.x += s.vx * 0.018; s.y += s.vy * 0.018; s.z += s.vz * 0.018;
         if (Math.abs(s.x) > 1.15) { s.x = Math.sign(s.x) * 1.15; s.vx *= -1; }
         if (Math.abs(s.y) > 0.62) { s.y = Math.sign(s.y) * 0.62; s.vy *= -1; }
         if (Math.abs(s.z) > 0.62) { s.z = Math.sign(s.z) * 0.62; s.vz *= -1; }
-        if (Math.hypot(s.x, s.y, s.z) < 0.14 && hitFlash < 0.15) { hitFlash = 1.0; hitCount++; }
+        if (atomAlive && Math.hypot(s.x, s.y, s.z) < 0.14) {
+          hitFlash = 1.0; hitCount++; atomAlive = false; reloadTimer = 0.72;
+          kick = { x: 0, y: 0, z: 0, vx: s.vx * 1.4, vy: s.vy * 1.4, vz: s.vz * 1.4, life: 1.0 };
+        }
       }
     }
 
     // Quartz UHV glass cell box [-1.2, 1.2] x [-0.66, 0.66] x [-0.66, 0.66]
     const hx = 1.2, hy = 0.66, hz = 0.66;
-    const corners = [
+    const rawC = [
       [-hx,-hy,-hz],[hx,-hy,-hz],[hx,hy,-hz],[-hx,hy,-hz],
       [-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz]
-    ].map(c => vProj(c[0], c[1], c[2], W, H));
-    const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    ];
+    const corners = rawC.map(c => vProj(c[0], c[1], c[2], W, H));
+    const faces = [
+      [0,1,2,3], [4,5,6,7], [0,1,5,4], [2,3,7,6], [0,3,7,4], [1,2,6,5]
+    ].map(idx => ({ idx, d: idx.reduce((s, k) => s + corners[k][2], 0) / 4 })).sort((a, b) => a.d - b.d);
 
-    // Translucent quartz faces
-    ctx.fillStyle = 'rgba(34,211,238,0.05)';
-    [[0,1,5,4],[1,2,6,5],[4,5,6,7]].forEach(f => {
+    const drawFace = (f, isFront) => {
       ctx.beginPath();
-      f.forEach((idx, i) => i ? ctx.lineTo(corners[idx][0], corners[idx][1]) : ctx.moveTo(corners[idx][0], corners[idx][1]));
-      ctx.closePath(); ctx.fill();
-    });
+      f.idx.forEach((k, i) => i ? ctx.lineTo(corners[k][0], corners[k][1]) : ctx.moveTo(corners[k][0], corners[k][1]));
+      ctx.closePath();
+      ctx.fillStyle = isFront ? 'rgba(186,230,253,0.055)' : 'rgba(15,23,42,0.28)';
+      ctx.fill();
+      ctx.strokeStyle = isFront ? 'rgba(186,230,253,0.62)' : 'rgba(148,163,184,0.22)';
+      ctx.lineWidth = isFront ? 1.45 : 0.9;
+      ctx.stroke();
+    };
 
-    // Left CF-flange stainless neck
-    ctx.strokeStyle = 'rgba(148,163,184,0.55)'; ctx.lineWidth = 2;
-    for (const fx of [-1.2, -1.42]) {
+    // 1. Back 3 quartz faces
+    faces.slice(0, 3).forEach(f => drawFace(f, false));
+
+    // 2. Left ConFlat (CF) stainless flange + copper gasket + bolt circle
+    const drawFlangeRing = (fx, r, stroke, lw, fill) => {
       ctx.beginPath();
-      for (let i = 0; i <= 24; i++) {
-        const a = (i / 24) * Math.PI * 2;
-        const q = vProj(fx, Math.cos(a) * 0.42, Math.sin(a) * 0.42, W, H);
+      for (let i = 0; i <= 28; i++) {
+        const a = (i / 28) * Math.PI * 2;
+        const q = vProj(fx, Math.cos(a) * r, Math.sin(a) * r, W, H);
         i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]);
       }
-      ctx.stroke();
+      ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke();
+    };
+    drawFlangeRing(-1.20, 0.36, 'rgba(148,163,184,0.5)', 1.6, 'rgba(30,41,59,0.45)');
+    drawFlangeRing(-1.38, 0.44, 'rgba(251,146,60,0.65)', 2.0, null); // copper gasket hint
+    drawFlangeRing(-1.45, 0.50, 'rgba(148,163,184,0.72)', 2.2, 'rgba(51,65,85,0.45)');
+    // 6 CF bolts around flange perimeter
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      const b = vProj(-1.46, Math.cos(a) * 0.43, Math.sin(a) * 0.43, W, H);
+      ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(b[0], b[1], 2.1 * b[3], 0, Math.PI * 2); ctx.fill();
     }
 
-    // Vertical optical tweezer cone holding trapped atom at origin
+    // 3. Vertical optical tweezer cone holding trapped atom at origin
     const tTopL = vProj(-0.18, 0, hz, W, H), tTopR = vProj(0.18, 0, hz, W, H);
     const tMid = vProj(0, 0, 0, W, H);
     const tBotL = vProj(-0.18, 0, -hz, W, H), tBotR = vProj(0.18, 0, -hz, W, H);
-    ctx.fillStyle = 'rgba(251,191,36,0.14)';
+    ctx.fillStyle = atomAlive ? 'rgba(251,191,36,0.14)' : 'rgba(248,113,113,0.12)';
     ctx.beginPath(); ctx.moveTo(tTopL[0], tTopL[1]); ctx.lineTo(tTopR[0], tTopR[1]); ctx.lineTo(tMid[0] + 1.5, tMid[1]); ctx.lineTo(tMid[0] - 1.5, tMid[1]); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(tMid[0] - 1.5, tMid[1]); ctx.lineTo(tMid[0] + 1.5, tMid[1]); ctx.lineTo(tBotR[0], tBotR[1]); ctx.lineTo(tBotL[0], tBotL[1]); ctx.closePath(); ctx.fill();
 
-    // Depth-sort background gas molecules + central trapped atom
-    const items = [{ kind: 'atom', p: tMid }];
+    // 4. Depth-sort background gas molecules + central trapped atom + ejected recoil streak
+    const items = [];
+    if (atomAlive) items.push({ kind: 'atom', p: tMid });
+    if (kick) items.push({ kind: 'kick', p: vProj(kick.x, kick.y, kick.z, W, H), p0: tMid, life: kick.life });
     for (let i = 0; i < n; i++) {
       const s = seeds[i];
       items.push({ kind: 'mol', r: s.r, p: vProj(s.x, s.y, s.z, W, H), pPrev: vProj(s.x - s.vx * 0.06, s.y - s.vy * 0.06, s.z - s.vz * 0.06, W, H) });
@@ -1441,11 +1475,16 @@
     for (const it of items) {
       const [px, py, , k] = it.p;
       if (it.kind === 'atom') {
-        const col = hitFlash > 0.1 ? '248,113,113' : '251,191,36';
-        const rad = (hitFlash > 0.1 ? 13 + hitFlash * 10 : 10) * k;
+        const rad = 10.5 * k;
         const g = ctx.createRadialGradient(px, py, 0, px, py, rad);
-        g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, `rgba(${col},0.95)`); g.addColorStop(1, `rgba(${col},0)`);
+        g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, 'rgba(251,191,36,0.95)'); g.addColorStop(1, 'rgba(251,191,36,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, rad, 0, Math.PI * 2); ctx.fill();
+      } else if (it.kind === 'kick') {
+        ctx.strokeStyle = `rgba(248,113,113,${(it.life * 0.85).toFixed(2)})`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(it.p0[0], it.p0[1]); ctx.lineTo(px, py); ctx.stroke();
+        const g = ctx.createRadialGradient(px, py, 0, px, py, 11 * k);
+        g.addColorStop(0, `rgba(255,255,255,${it.life.toFixed(2)})`); g.addColorStop(0.4, `rgba(248,113,113,${it.life.toFixed(2)})`); g.addColorStop(1, 'rgba(248,113,113,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, 11 * k, 0, Math.PI * 2); ctx.fill();
       } else {
         ctx.strokeStyle = 'rgba(34,211,238,0.28)'; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(it.pPrev[0], it.pPrev[1]); ctx.lineTo(px, py); ctx.stroke();
@@ -1454,17 +1493,16 @@
       }
     }
 
-    // Quartz cell edges on top
-    ctx.strokeStyle = 'rgba(186,230,253,0.58)'; ctx.lineWidth = 1.4;
-    edges.forEach(([i, j]) => { ctx.beginPath(); ctx.moveTo(corners[i][0], corners[i][1]); ctx.lineTo(corners[j][0], corners[j][1]); ctx.stroke(); });
+    // 5. Front 3 quartz faces + subtle Fresnel glass sheen
+    faces.slice(3).forEach(f => drawFace(f, true));
 
     // HUD overlay
     ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'left';
     ctx.fillStyle = '#7dd3fc';
-    ctx.fillText('3D UHV QUARTZ CELL · H₂ BACKGROUND GAS', 10, 16);
+    ctx.fillText('3D UHV QUARTZ CELL · CF FLANGE + H₂ GAS', 10, 16);
     ctx.textAlign = 'right';
-    ctx.fillStyle = hitFlash > 0.1 ? '#f87171' : '#94a3b8';
-    ctx.fillText(hitFlash > 0.1 ? 'COLLISION! ATOM EJECTED' : `trapped atom · hits: ${hitCount}`, W - 10, 16);
+    ctx.fillStyle = !atomAlive ? '#f87171' : '#94a3b8';
+    ctx.fillText(!atomAlive ? 'COLLISION! ATOM EJECTED — RELOADING' : `trapped atom · collisions: ${hitCount}`, W - 10, 16);
   }
 
   function updatePressure() {
