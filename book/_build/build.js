@@ -6,11 +6,13 @@ const [site0, raw0, out0] = process.argv.slice(2);
 const site = path.resolve(site0), rawDir = path.resolve(raw0), out = path.resolve(out0);
 const KATEX = process.env.KATEX_DIST || (() => { for (const id of ['katex/dist/katex.min.js', '/opt/npm-tools/node_modules/katex/dist/katex.min.js']) { try { return path.dirname(require.resolve(id)); } catch (e) {} } return '/opt/npm-tools/node_modules/katex/dist'; })();
 const SITE = 'https://amotoolkit.com/';
-const EDITION = 'Edition 1 · November 2026';
+const EDITION = 'Edition 1.1 · November 2026';
 const BOOK_URL = SITE + 'book/';
 const PDF_NAME = 'building-with-atoms.pdf';
+const EXTRAS = require('./extras.js');
+const TERMS = JSON.parse(fs.readFileSync(path.join(__dirname, 'index-terms.json'), 'utf8'));
+const REF = JSON.parse(fs.readFileSync(path.join(__dirname, 'book-ref.json'), 'utf8'));   // scale map, notation, glossary
 const META = JSON.parse(fs.readFileSync(path.join(__dirname, 'textbook-meta.json'), 'utf8'));
-const REF = JSON.parse(fs.readFileSync(path.join(__dirname, 'book-ref.json'), 'utf8'));
 fs.mkdirSync(path.join(out, 'img'), { recursive: true });
 
 const js = fs.readFileSync(path.join(site, 'js/main.js'), 'utf8');
@@ -112,11 +114,11 @@ const COVER_ART = (() => {
 })();
 
 function front() {
-  const toc = PARTS.map(p => `<div class="tp" style="--pc:${p.color}">Part ${p.n} · ${p.title}</div>` +
+  const toc = `<div class="tp" style="--pc:var(--accent)">Prologue</div><div class="tc"><span class="n">P</span><a href="#prologue">Follow one atom: the journey and the machine</a><span class="dots"></span><span class="pg" data-pg="prologue"></span></div>` + PARTS.map(p => `<div class="tp" style="--pc:${p.color}">Part ${p.n} · ${p.title}</div>` +
     chapters.filter(c => c.part === p).map(c => `<div class="tc"><span class="n">${c.no}</span><a href="#ch-${c.key}">${esc((META[c.key] || {}).title || c.label)}</a><span class="dots"></span><span class="pg" data-pg="ch-${c.key}"></span></div>`).join('')).join('') +
     `<div class="tp" style="--pc:var(--c-teach)">Part V · Teach with this Book</div><div class="tc"><span class="n">V</span><a href="#part-teach">The 14-week course</a><span class="dots"></span><span class="pg" data-pg="part-teach"></span></div>` +
     `<div class="tp" style="--pc:var(--c-app)">Appendices</div>` +
-    [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly'], ['appx-notation', 'E', 'Notation and symbols'], ['appx-glossary', 'F', 'Glossary of key terms']]
+    [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly'], ['appx-notation', 'E', 'Notation and symbols'], ['appx-glossary', 'F', 'Glossary of key terms'], ['appx-records', 'G', 'Where the field stands: the records board'], ['appx-index', 'H', 'Index']]
       .map(([id, n, t]) => `<div class="tc"><span class="n">${n}</span><a href="#${id}">${t}</a><span class="dots"></span><span class="pg" data-pg="${id}"></span></div>`).join('');
   return `
 <section class="cover">
@@ -147,14 +149,21 @@ function front() {
   <h2>How to read it</h2>
   <p>Part I follows the build of a lab, Part II the first experiment with single atoms, Part III the step from atoms to qubits, and Part IV the literature, the research groups and the industry. Read a part in order, or go straight to the chapter you need: every chapter starts with what it is for and links to its live page.</p>
   <p>Boxes have consistent meanings. A <strong>tinted box</strong> is a key idea or a practical note; an <strong>amber box</strong> is a warning or a common mistake; a <strong>bordered box</strong> groups a worked example, a formula or a comparison. Tags such as <span class="tag">preprint</span> flag the status of a source.</p>
+  <h2>New in edition 1.1</h2>
+  <ul>
+    <li>A <strong>prologue</strong> that follows one atom through the machine, an exploded view of the apparatus, and a <strong>map of scales</strong>.</li>
+    <li><strong>Numbered figures, tables and equations</strong>, and each chapter's headline figures in <strong>key-number panels</strong>.</li>
+    <li>Appendices on <strong>notation</strong>, a <strong>glossary</strong>, <strong>where the field stands</strong> (record results, each with its source and review status) and an <strong>index</strong>; the research-group directory (Chapter ${chapters.find(c => c.key === 'amo-groups').no}) as tables by country.</li>
+    <li>Corrections made on the website since the first edition, and its newest material, such as the surface-code decoder and the zoned-processor views.</li>
+  </ul>
   <h2>A word of care</h2>
   <p>The numbers in this book are estimates from simple models, checked against their sources when written. They are good for scale, design trade-offs and intuition; they are not a substitute for measuring your own system. Preprints are marked as such, and company and funding figures carry the date they were checked. If you find an error, the "Found a problem?" link on any page of the website reaches the author. Appendix D says more.</p>
 </section>
 
 <section class="front" id="scale-map">
-  <h1>Map of Scales: 15 Orders of Magnitude</h1>
-  <p>A neutral-atom quantum computer spans fifteen decades of length, from the meter-scale optical table to the femtometer nucleus. Explore the interactive zoom on the <a href="${SITE}home.html#scale-zoom">home page</a>.</p>
-  <div class="scale-map-grid">${(REF.scaleMap || []).map(s => `<div class="scale-stop"><div class="scale-decade">${s.decade}</div><div class="scale-eq">${s.eq}</div><div class="scale-desc">${s.desc}</div></div>`).join('')}</div>
+  <h1>Map of scales</h1>
+  <p>A neutral-atom quantum computer spans about fifteen decades of length, from the metre-scale optical table to the femtometre-scale nucleus. Each stop below names the chapters that work at that scale. The website's home page has an interactive zoom through them: <a href="${SITE}home.html">amotoolkit.com</a>.</p>
+  <div class="scale-map-grid">${(REF.scaleMap || []).map(s => `<div class="scale-stop"><div class="sc-len">${s.len}</div><div class="sc-name">${s.name}</div><p>${s.desc}</p><div class="sc-eq">${s.eq}</div><div class="sc-ch">${(s.ch || []).map(k => chapters.find(c => c.key === k)).filter(Boolean).map(c => `<a href="#ch-${c.key}">Ch. ${c.no}</a>`).join(' · ')}</div></div>`).join('')}</div>
 </section>
 
 <section class="front" id="contents">
@@ -199,7 +208,7 @@ function appendices() {
   <div class="tablewrap"><table><tr><th>Quantity</th><th>Symbol</th><th>Value</th></tr>${consts}</table></div></section>
   <section class="appx" id="appx-cite"><h1>C · Citing this book and the work behind it</h1><span class="marker">@@CH:appx-cite@@</span>
   <p>If this book or the website helps your research, please cite the relevant chapter or page. For results, derivations or material from the author's doctoral research, please also cite the thesis or the relevant paper.</p>
-  <div class="card"><h5>This book</h5><p>S. S. Phatak, <em>Building with Atoms: a training kit for experimental AMO and neutral-atom researchers</em>, ${EDITION.replace('Edition 1 · ', 'edition 1, ')}. AMO Toolkit, <a href="${BOOK_URL}">${BOOK_URL.replace('https://', '')}</a>.</p></div>
+  <div class="card"><h5>This book</h5><p>S. S. Phatak, <em>Building with Atoms: a training kit for experimental AMO and neutral-atom researchers</em>, ${EDITION.replace(/^Edition ([\d.]+) · /, 'edition $1, ')}. AMO Toolkit, <a href="${BOOK_URL}">${BOOK_URL.replace('https://', '')}</a>.</p></div>
   <div class="card"><h5>Doctoral thesis</h5><p>Phatak, S. S. (2026). <em>Cooling Lithium and Cesium Single Atoms in Optical Tweezers</em> (Doctoral dissertation, Purdue University Graduate School). <a href="https://hammer.purdue.edu/articles/thesis/_b_Cooling_Lithium_and_Cesium_Single_Atoms_in_Optical_Tweezers_b_/32867018">hammer.purdue.edu</a></p></div>
   <div class="card"><h5>Paper (sideband cooling limits, used in Chapters ${['laser-cooling', 'cooling-simulator'].map(k => chapters.find(c => c.key === k).no).join(' and ')})</h5><p>S. S. Phatak <em>et al.</em>, <em>Phys. Rev. A</em> <strong>110</strong>, 043116 (2024). <a href="https://doi.org/10.1103/PhysRevA.110.043116">doi:10.1103/PhysRevA.110.043116</a></p></div></section>
   <section class="appx" id="appx-care"><h1>D · Using this material responsibly</h1><span class="marker">@@CH:appx-care@@</span>
@@ -212,30 +221,33 @@ function appendices() {
   </ul></section>
   <section class="appx" id="appx-notation"><h1>E · Notation and symbols</h1><span class="marker">@@CH:appx-notation@@</span>
   <p>Common symbols used across Parts I&ndash;IV. Context-specific subscripts are defined where they first appear.</p>
-  <div class="tablewrap"><table><tr><th>Symbol</th><th>Meaning</th><th>Typical Units</th></tr>${(REF.notation || []).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table></div></section>
+  <div class="tablewrap"><table><tr><th>Symbol</th><th>Meaning</th><th>Typical units</th></tr>${(REF.notation || []).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table></div></section>
   <section class="appx" id="appx-glossary"><h1>F · Glossary of key terms</h1><span class="marker">@@CH:appx-glossary@@</span>
-  <p>Concise definitions of experimental and quantum-computing terms recurring across the book.</p>
+  <p>Short definitions of experimental and quantum-computing terms that recur across the book. Appendix H points to where each is developed.</p>
   <dl class="glossary-dl">${(REF.glossary || []).map(g => `<dt>${g[0]}</dt><dd>${g[1]}</dd>`).join('')}</dl></section>`;
 }
 
 (async () => {
   const sections = [];
   sections.push(front());
+  await EXTRAS.apparatusShot(site, out, chromium, sharp);
+  sections.push(EXTRAS.prologue(site, chapters, SITE));
   for (const p of PARTS) {
     sections.push(partOpener(p));
     for (const c of chapters.filter(c => c.part === p)) {
       const f = path.join(rawDir, c.key + '.json');
       if (!fs.existsSync(f)) { console.warn('missing', c.key); continue; }
       const raw = JSON.parse(fs.readFileSync(f, 'utf8'));
-      const body = await saveImages(c.key, raw);
+      const body = c.key === 'amo-groups' ? EXTRAS.groupsBody(site, raw) : await saveImages(c.key, raw);
       sections.push(chapterHtml(c, body, raw));
     }
   }
   sections.push(partTeach());
   sections.push(appendices());
-  const tocSide = `<div class="tp">Front Matter</div><a class="tc" href="#about">About this book</a><a class="tc" href="#scale-map">Map of Scales</a>` +
-    PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
-    `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a><a class="tc" href="#appx-notation">E · Notation &amp; symbols</a><a class="tc" href="#appx-glossary">F · Glossary</a>`;
+  sections.push(EXTRAS.recordsAppendix(site));
+  sections.push(EXTRAS.indexSection(TERMS));
+  const tocSide = `<div class="tp">Front matter</div><a class="tc" href="#about">About this book</a><a class="tc" href="#scale-map">Map of scales</a><div class="tp">Prologue</div><a class="tc" href="#prologue">Follow one atom</a>` + PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
+    `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a><a class="tc" href="#appx-notation">E · Notation &amp; symbols</a><a class="tc" href="#appx-glossary">F · Glossary</a><a class="tc" href="#appx-records">G · Where the field stands</a><a class="tc" href="#appx-index">H · Index</a>`;
   const draft = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <!-- Google tag (gtag.js), same as every site page -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>

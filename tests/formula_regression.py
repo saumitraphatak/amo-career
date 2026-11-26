@@ -1110,7 +1110,8 @@ def test_notebooks() -> None:
 
 def test_book() -> None:
     """Building with Atoms (2026-11-22): the book has a chapter for every story page, its images exist, its
-    contents carry PDF page numbers, it never points at the local build server, and the site links to it."""
+    contents carry PDF page numbers, it never points at the local build server, and the site links to it.
+    Edition 1.1 adds the prologue, Appendices E and F with a filled index, and numbered figures."""
     import re
     book = ROOT / "book"
     html = (book / "index.html").read_text()
@@ -1128,6 +1129,17 @@ def test_book() -> None:
     assert 'href="book/"' in read("home.html") and 'href="../book/"' in read("pages/start-here.html") and 'pages/teach.html' in html
     assert "${root}book/" in js and "byHref.set('book:overview'" in js
     assert (book / "_build" / "extract.js").exists() and (book / "katex" / "katex.min.css").exists()
+    # edition 1.1 (2026-11-26): prologue, records and index appendices, numbered figures, the directory as tables
+    for anchor in ("scale-map", "prologue", "prologue-journey", "appx-notation", "appx-glossary", "appx-records", "appx-index"):
+        assert f'id="{anchor}"' in html, anchor
+    assert "Edition 1.1" in html and (book / "img" / "apparatus-map.png").exists()
+    entries = re.findall(r'<p class="ix-e" data-term="[^"]*">.*?<span class="ix-pg">(.*?)</span>', html)
+    assert len(entries) > 100 and all(re.search(r'>\d+</a>', e) for e in entries), "index without page numbers"
+    assert html.count('class="fig-num">Figure ') > 150 and 'class="gdir"' in html
+    assert "<span>Worked example</span>" not in html and "Calculator output at the page" not in html   # .stats panels are not all calculator output
+    ids = re.findall(r'\sid="([^"]+)"', html)
+    assert len(ids) == len(set(ids)), "duplicate ids"
+    assert not set(re.findall(r'href="#([^"]+)"', html)) - set(ids), "broken in-book links"
 
 
 def test_service_worker() -> None:

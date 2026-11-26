@@ -1,65 +1,193 @@
 {
   "scaleMap": [
     {
-      "decade": "1 m · Optical Table",
+      "len": "1 m",
+      "name": "Optical table",
       "eq": "L ~ 1 m, &lambda; = 780&ndash;1064 nm",
-      "desc": "Laser distribution, AOMs, fiber couplers, and vibration isolation (Ch. 2, 4, 5)."
+      "desc": "Laser distribution, AOMs, fibre couplers and vibration isolation.",
+      "ch": [
+        "laser-planner",
+        "laser-locking",
+        "polarimetry"
+      ]
     },
     {
-      "decade": "5 cm · UHV Glass Cell",
-      "eq": "P &lt; 10<sup>-11</sup> Torr, &tau;<sub>vac</sub> &gt; 60 s",
-      "desc": "Ultra-high vacuum science cell with anti-reflection windows and high-NA objective (Ch. 3, 6)."
+      "len": "5 cm",
+      "name": "UHV glass cell",
+      "eq": "P &lt; 10<sup>&minus;11</sup> Torr, &tau;<sub>vac</sub> &gt; 60 s",
+      "desc": "The ultra-high-vacuum science cell, with anti-reflection-coated windows and the high-NA objective outside it.",
+      "ch": [
+        "vacuum-systems",
+        "mot-designer"
+      ]
     },
     {
-      "decade": "100 &mu;m · Optical Tweezer Array",
+      "len": "100 &mu;m",
+      "name": "Optical tweezer array",
       "eq": "w<sub>0</sub> &approx; 0.8 &mu;m, U<sub>0</sub>/k<sub>B</sub> ~ 1 mK",
-      "desc": "SLM static array and crossed-AOD movable traps holding single atoms (Ch. 8, 9, 15)."
+      "desc": "A static SLM array and movable crossed-AOD traps, each holding a single atom.",
+      "ch": [
+        "tweezer-designer",
+        "zernike",
+        "automation"
+      ]
     },
     {
-      "decade": "5 &mu;m · Rydberg Blockade Sphere",
-      "eq": "R<sub>b</sub> = (C<sub>6</sub> / &hbar;&Omega;)<sup>1/6</sup> &approx; 5&ndash;10 &mu;m",
-      "desc": "Van der Waals shift suppresses double excitation, enabling native CZ gates (Ch. 22, 23, 25)."
+      "len": "5&ndash;10 &mu;m",
+      "name": "Rydberg blockade radius",
+      "eq": "R<sub>b</sub> = (C<sub>6</sub>/&hbar;&Omega;)<sup>1/6</sup>",
+      "desc": "Inside this distance the van der Waals shift suppresses double excitation, which makes the native CZ gate possible.",
+      "ch": [
+        "rydberg-calculator",
+        "fidelity-budget",
+        "atom-processor"
+      ]
     },
     {
-      "decade": "50 nm · Rydberg Orbital",
-      "eq": "&langle;r&rangle; &approx; (3/2) n<sup>2</sup> a<sub>0</sub> (n ~ 50&ndash;70)",
-      "desc": "Valence electron orbits hundreds of Bohr radii from the core with giant polarizability (Ch. 1, 22)."
+      "len": "0.2&ndash;0.4 &mu;m",
+      "name": "Rydberg orbital",
+      "eq": "&lang;r&rang; &approx; (3/2) n<sup>2</sup> a<sub>0</sub>, n ~ 50&ndash;70",
+      "desc": "The valence electron orbits thousands of Bohr radii from the core, which is why Rydberg atoms are so polarisable and interact so strongly.",
+      "ch": [
+        "atom-library",
+        "rydberg-calculator"
+      ]
     },
     {
-      "decade": "1 fm · Atomic Nucleus",
+      "len": "~5 fm",
+      "name": "Atomic nucleus",
       "eq": "I = 3/2 (<sup>87</sup>Rb), I = 1/2 (<sup>171</sup>Yb)",
-      "desc": "Nuclear spin sets hyperfine clock transitions and long-lived qubit coherence (Ch. 1, 20, 21)."
+      "desc": "The nuclear spin sets the hyperfine structure that the clock-state and nuclear-spin qubits are built on.",
+      "ch": [
+        "atom-library",
+        "rb87-vs-yb171"
+      ]
     }
   ],
   "notation": [
-    ["&Gamma;", "Natural excited-state decay rate (FWHM linewidth = &Gamma;/2&pi;)", "rad/s or MHz"],
-    ["&Delta;", "Laser detuning from atomic resonance (&omega;<sub>L</sub> &minus; &omega;<sub>0</sub>)", "MHz or &Gamma;"],
-    ["&Omega;", "Rabi frequency (single-photon or effective two-photon)", "2&pi; &times; MHz"],
-    ["I<sub>sat</sub>", "Saturation intensity of a cycling transition", "mW/cm<sup>2</sup>"],
-    ["w<sub>0</sub>, z<sub>R</sub>", "Gaussian beam waist (1/e<sup>2</sup> intensity radius) and Rayleigh range", "&mu;m"],
-    ["U<sub>0</sub>", "Optical dipole trap depth (often quoted as U<sub>0</sub>/k<sub>B</sub>)", "mK or MHz"],
-    ["&omega;<sub>r</sub>, &omega;<sub>z</sub>", "Radial and axial harmonic trap frequencies", "2&pi; &times; kHz"],
-    ["&eta;", "Lamb-Dicke parameter, k<sub>L</sub> x<sub>0</sub>", "dimensionless"],
-    ["n&#772;", "Mean motional occupation number in a harmonic trap", "quanta"],
-    ["T<sub>D</sub>, T<sub>r</sub>", "Doppler cooling limit (&hbar;&Gamma;/2k<sub>B</sub>) and recoil temperature", "&mu;K"],
-    ["R<sub>b</sub>, C<sub>6</sub>", "Rydberg blockade radius and van der Waals coefficient", "&mu;m; GHz&middot;&mu;m<sup>6</sup>"],
-    ["T<sub>1</sub>, T<sub>2</sub>*, T<sub>2</sub>", "Relaxation, inhomogeneous dephasing, and spin-echo coherence times", "ms to s"],
-    ["F, &epsilon;", "Gate or state fidelity and infidelity (&epsilon; = 1 &minus; F)", "dimensionless"],
-    ["p, p<sub>th</sub>", "Physical error rate and fault-tolerance threshold", "dimensionless"]
+    [
+      "&Gamma;",
+      "Natural excited-state decay rate (FWHM linewidth = &Gamma;/2&pi;)",
+      "rad/s or MHz"
+    ],
+    [
+      "&Delta;",
+      "Laser detuning from atomic resonance (&omega;<sub>L</sub> &minus; &omega;<sub>0</sub>)",
+      "MHz or &Gamma;"
+    ],
+    [
+      "&Omega;",
+      "Rabi frequency (single-photon or effective two-photon)",
+      "2&pi; &times; MHz"
+    ],
+    [
+      "I<sub>sat</sub>",
+      "Saturation intensity of a cycling transition",
+      "mW/cm<sup>2</sup>"
+    ],
+    [
+      "w<sub>0</sub>, z<sub>R</sub>",
+      "Gaussian beam waist (1/e<sup>2</sup> intensity radius) and Rayleigh range",
+      "&mu;m"
+    ],
+    [
+      "U<sub>0</sub>",
+      "Optical dipole trap depth (often quoted as U<sub>0</sub>/k<sub>B</sub>)",
+      "mK or MHz"
+    ],
+    [
+      "&omega;<sub>r</sub>, &omega;<sub>z</sub>",
+      "Radial and axial harmonic trap frequencies",
+      "2&pi; &times; kHz"
+    ],
+    [
+      "&eta;",
+      "Lamb-Dicke parameter, k<sub>L</sub> x<sub>0</sub>",
+      "dimensionless"
+    ],
+    [
+      "n&#772;",
+      "Mean motional occupation number in a harmonic trap",
+      "quanta"
+    ],
+    [
+      "T<sub>D</sub>, T<sub>r</sub>",
+      "Doppler cooling limit (&hbar;&Gamma;/2k<sub>B</sub>) and recoil temperature",
+      "&mu;K"
+    ],
+    [
+      "R<sub>b</sub>, C<sub>6</sub>",
+      "Rydberg blockade radius and van der Waals coefficient",
+      "&mu;m; GHz&middot;&mu;m<sup>6</sup>"
+    ],
+    [
+      "T<sub>1</sub>, T<sub>2</sub>*, T<sub>2</sub>",
+      "Relaxation, inhomogeneous dephasing, and spin-echo coherence times",
+      "ms to s"
+    ],
+    [
+      "F, &epsilon;",
+      "Gate or state fidelity and infidelity (&epsilon; = 1 &minus; F)",
+      "dimensionless"
+    ],
+    [
+      "p, p<sub>th</sub>",
+      "Physical error rate and fault-tolerance threshold",
+      "dimensionless"
+    ]
   ],
   "glossary": [
-    ["Acousto-Optic Deflector (AOD)", "Crystal driven by RF acoustic waves whose frequency steers a laser beam angle, used to shuttle single atoms across an array."],
-    ["Collisional Blockade", "Light-assisted two-body loss in a sub-micron optical tweezer that leaves either zero or one atom with ~50% probability."],
-    ["Doppler Cooling", "Velocity-dependent radiation pressure from red-detuned lasers that damps atomic motion toward T<sub>D</sub> = &hbar;&Gamma;/(2k<sub>B</sub>)."],
-    ["Erasure Conversion", "Mapping dominant qubit errors (such as Rydberg decay in <sup>171</sup>Yb) into flagged, heralded leakage outside the qubit subspace to raise error-correction thresholds."],
-    ["Lamb-Dicke Regime", "Confinement where the atomic zero-point spread x<sub>0</sub> is much smaller than the laser wavelength (&eta; &ll; 1), suppressing recoil heating during sideband transitions."],
-    ["Magic Wavelength", "Trap wavelength at which the ground and excited states of a transition experience identical AC Stark shifts, canceling differential trap broadening."],
-    ["Optical Tweezer", "Tightly focused far-off-resonant laser beam (w<sub>0</sub> ~ 0.7&ndash;1 &mu;m) that traps a single neutral atom via the dipole force."],
-    ["Pound-Drever-Hall (PDH) Lock", "Phase-modulation technique that derives a steep dispersive error signal from a reference cavity to stabilize laser frequency."],
-    ["Raman Sideband Cooling (RSC)", "Two-photon coherent transitions that step a trapped atom down by one motional quantum (&Delta;n = &minus;1) per optical-pumping cycle toward n&#772; &approx; 0."],
-    ["Rydberg Blockade", "Strong van der Waals shift (V = C<sub>6</sub>/R<sup>6</sup>) between two highly excited atoms within R<sub>b</sub> that prevents simultaneous excitation and mediates entangling gates."],
-    ["Spatial Light Modulator (SLM)", "Liquid-crystal phase mask that shapes a laser wavefront into hundreds or thousands of static optical tweezers via Gerchberg-Saxton holography."],
-    ["Surface Code", "2D topological stabilizer error-correcting code using alternating X and Z plaquettes with a high fault-tolerance threshold (~1% Pauli, ~4% erasure)."],
-    ["Ultra-High Vacuum (UHV)", "Pressure regime below 10<sup>-9</sup> Torr (typically 10<sup>-11</sup> Torr in science cells) required to limit background-gas collisions with trapped atoms."]
+    [
+      "Acousto-Optic Deflector (AOD)",
+      "Crystal driven by RF acoustic waves whose frequency steers a laser beam angle, used to shuttle single atoms across an array."
+    ],
+    [
+      "Collisional Blockade",
+      "Light-assisted two-body loss in a sub-micron optical tweezer that leaves either zero or one atom with ~50% probability."
+    ],
+    [
+      "Doppler Cooling",
+      "Velocity-dependent radiation pressure from red-detuned lasers that damps atomic motion toward T<sub>D</sub> = &hbar;&Gamma;/(2k<sub>B</sub>)."
+    ],
+    [
+      "Erasure Conversion",
+      "Mapping dominant qubit errors (such as Rydberg decay in <sup>171</sup>Yb) into flagged, heralded leakage outside the qubit subspace to raise error-correction thresholds."
+    ],
+    [
+      "Lamb-Dicke Regime",
+      "Confinement where the atomic zero-point spread x<sub>0</sub> is much smaller than the laser wavelength (&eta; &ll; 1), suppressing recoil heating during sideband transitions."
+    ],
+    [
+      "Magic Wavelength",
+      "Trap wavelength at which the ground and excited states of a transition experience identical AC Stark shifts, canceling differential trap broadening."
+    ],
+    [
+      "Optical Tweezer",
+      "Tightly focused far-off-resonant laser beam (w<sub>0</sub> ~ 0.7&ndash;1 &mu;m) that traps a single neutral atom via the dipole force."
+    ],
+    [
+      "Pound-Drever-Hall (PDH) Lock",
+      "Phase-modulation technique that derives a steep dispersive error signal from a reference cavity to stabilize laser frequency."
+    ],
+    [
+      "Raman Sideband Cooling (RSC)",
+      "Two-photon coherent transitions that step a trapped atom down by one motional quantum (&Delta;n = &minus;1) per optical-pumping cycle toward n&#772; &approx; 0."
+    ],
+    [
+      "Rydberg Blockade",
+      "Strong van der Waals shift (V = C<sub>6</sub>/R<sup>6</sup>) between two highly excited atoms within R<sub>b</sub> that prevents simultaneous excitation and mediates entangling gates."
+    ],
+    [
+      "Spatial Light Modulator (SLM)",
+      "Liquid-crystal phase mask that shapes a laser wavefront into hundreds or thousands of static optical tweezers via Gerchberg-Saxton holography."
+    ],
+    [
+      "Surface Code",
+      "2D topological stabiliser code with alternating X and Z plaquettes and a high fault-tolerance threshold: about 1% for circuit-level Pauli noise, and about 4% when most errors are converted to erasures (Wu et al., <em>Nat. Commun.</em> 13, 4657, 2022)."
+    ],
+    [
+      "Ultra-High Vacuum (UHV)",
+      "Pressure regime below 10<sup>-9</sup> Torr (typically 10<sup>-11</sup> Torr in science cells) required to limit background-gas collisions with trapped atoms."
+    ]
   ]
 }

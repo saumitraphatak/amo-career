@@ -25,20 +25,13 @@ function transform() {
     body.querySelectorAll('h2').forEach(h => h.setAttribute('data-num', `${no}.${++s}`));
     // empty blocks
     body.querySelectorAll('p,div.card,aside,li').forEach(e => { if (!e.textContent.trim() && !e.querySelector('img,svg,.katex,.ctl')) e.remove(); });
-    // group stat chips into textbook Worked Examples (n.m)
-    let exN = 0;
+    // group stat chips
     const stats = [...body.querySelectorAll('.stat')];
     for (const st of stats) {
       if (st.parentElement.classList.contains('stats')) continue;
       const grp = document.createElement('div'); grp.className = 'stats';
       st.before(grp);
       let n = st; while (n && n.classList && n.classList.contains('stat')) { const nx = n.nextElementSibling; grp.appendChild(n); n = nx; }
-      if (grp.children.length >= 2) {
-        const wx = document.createElement('div'); wx.className = 'worked-ex';
-        wx.innerHTML = `<div class="worked-ex-head"><span>Worked Example ${no}.${++exN}</span><span class="worked-ex-note">Default operating point · interactive on <a href="${SITE}${key}.html">amotoolkit.com</a></span></div>`;
-        grp.before(wx);
-        wx.appendChild(grp);
-      }
     }
     // control markers → one "interactive" note per run
     const ctls = [...body.querySelectorAll('p.ctl')];
@@ -51,23 +44,13 @@ function transform() {
       m.replaceWith(ia); last = ia;
     }
     body.querySelectorAll('.ia + .ia').forEach(x => x.remove());
-    // numbered textbook figures (Figure n.m) + dark-canvas framing
+    // canvas snapshots get a caption (bookish() turns it into the numbered figure caption); pages whose canvases are dark get a dark frame
     const DARK_FIGS = new Set(['atom-processor', 'virtual-lab', 'vacuum-systems']);
-    let figN = 0;
-    body.querySelectorAll('figure.fig').forEach(f => {
-      const img = f.querySelector('img[src^="img/"]');
-      if (img) {
-        if (DARK_FIGS.has(key)) f.classList.add('fig-dark');
-        const w = +img.dataset.w, hh = +img.dataset.h; if (w && hh) { img.width = Math.round(w / 2); img.height = Math.round(hh / 2); }
-      }
-      const next = f.nextElementSibling;
-      if (next && next.classList.contains('fig-cap')) return;
-      const alt = (img && img.getAttribute('alt') || '').trim();
-      const existingCap = (next && (next.classList.contains('cap') || next.classList.contains('snap'))) ? next : null;
-      const capTxt = (existingCap && !existingCap.classList.contains('snap')) ? existingCap.innerHTML : (alt || 'Computed figure at the default operating point (interactive on the website).');
-      const p = document.createElement('p'); p.className = 'fig-cap';
-      p.innerHTML = `<span class="fig-num">Figure ${no}.${++figN}.</span> ${capTxt}`;
-      if (existingCap) existingCap.replaceWith(p); else f.after(p);
+    body.querySelectorAll('figure.fig img[src^="img/"]').forEach(img => {
+      const f = img.closest('figure'); if (DARK_FIGS.has(key)) f.classList.add('fig-dark');
+      if (f.nextElementSibling && f.nextElementSibling.classList.contains('snap')) return;
+      const c = document.createElement('p'); c.className = 'snap'; c.textContent = 'Snapshot of an interactive figure at its default settings. On the website it responds to the controls.'; f.after(c);
+      const w = +img.dataset.w, hh = +img.dataset.h; if (w && hh) { img.width = Math.round(w / 2); img.height = Math.round(hh / 2); }
     });
     // numbered display equations (n.m)
     let eqN = 0;
@@ -101,6 +84,61 @@ function transform() {
 }
 
 
+// Edition 1.1: numbered figures and tables with captions, calculator readouts as worked examples, wide tables.
+function bookish() {
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const n = { fig: 0, tab: 0, ex: 0 };
+  document.querySelectorAll('section.chapter').forEach(ch => {
+    const numEl = ch.querySelector('.ch-num'), num = numEl ? numEl.textContent.trim() : (ch.id.startsWith('prologue') ? 'P' : null);
+    if (!num) return;                                                  // the course section has its own tables
+    const body = ch.querySelector('.ch-body') || ch, key = ch.dataset.key;
+    let f = 0, t = 0;
+    const heading = el => {                                            // nearest heading above an element, within its chapter
+      let x = el;
+      for (let k = 0; k < 40 && x && x !== body; k++) {
+        if (x.previousElementSibling) { x = x.previousElementSibling; if (/^H[2-5]$/.test(x.tagName)) return x.textContent.trim(); const hs = x.querySelectorAll ? x.querySelectorAll('h2,h3,h4,h5') : []; if (hs.length) return hs[hs.length - 1].textContent.trim(); }
+        else x = x.parentElement;
+      }
+      return '';
+    };
+    body.querySelectorAll('figure.fig, figure.svgfig').forEach(fig => {
+      if (fig.closest('figure') !== fig) return;
+      f++; n.fig++; fig.id = fig.id || `fig-${num}-${f}`;
+      const sv = fig.querySelector(':scope > svg[viewBox]'); if (sv && +sv.getAttribute('viewBox').split(/[\s,]+/)[2] <= 240) { fig.classList.add('svg-small'); n.small = (n.small || 0) + 1; }
+      const own = fig.querySelector('figcaption'), snap = fig.nextElementSibling && fig.nextElementSibling.classList.contains('snap') ? fig.nextElementSibling : null;
+      const h = heading(fig);
+      let text = own ? own.innerHTML.trim() : '';
+      if (!text) text = h ? esc(h) + '.' : '';
+      if (snap) text += (text ? ' ' : '') + '<span class="fig-live">Snapshot at the default settings; interactive on the website.</span>';
+      if (own) own.remove(); if (snap) snap.remove();
+      const fc = document.createElement('figcaption'); fc.className = 'fig-cap'; fc.innerHTML = `<span class="fig-num">Figure ${num}.${f}</span>${text}`;
+      fig.appendChild(fc);
+    });
+    body.querySelectorAll('table').forEach(tb => {
+      if (tb.closest('figure, .stats, .worked-ex, .ch-end')) return;
+      t++; n.tab++;
+      const cols = Math.max(0, ...[...tb.rows].map(r => [...r.cells].reduce((a, c) => a + (c.colSpan || 1), 0)));
+      if (cols >= 7) tb.classList.add('wide');
+      const wrap = tb.closest('.tablewrap') || tb, h = heading(wrap);
+      const cap = document.createElement('p'); cap.className = 'tab-cap'; cap.innerHTML = `<span class="fig-num">Table ${num}.${t}</span>${h ? esc(h) : ''}`;
+      wrap.before(cap);
+    });
+    body.querySelectorAll('.card, .ia').forEach(c => { if (c.querySelectorAll('figure').length >= 2 || c.textContent.length > 1800) { c.classList.add('long'); n.long = (n.long || 0) + 1; } });   // too big to keep on one page
+    if (key) body.querySelectorAll('.stats').forEach(st => {
+      if (st.closest('.worked-ex') || st.children.length < 2) return;
+      // only number panels: every chip carries a figure, none is a link card or a numbered step
+      const chips = [...st.children];
+      if (st.querySelector('a') || !chips.every(c => /\d/.test(c.textContent) && !/^\s*0\d(?!\d)/.test(c.textContent))) return;
+      n.ex++;
+      const cap = st.nextElementSibling && st.nextElementSibling.classList.contains('stats-cap') ? st.nextElementSibling : null;
+      const box = document.createElement('div'); box.className = 'worked-ex';
+      box.innerHTML = `<div class="worked-ex-head"><span>Key numbers</span><span class="worked-ex-note"><a href="https://amotoolkit.com/pages/${key}.html">Live version on the website</a></span></div>`;
+      st.before(box); box.appendChild(st); if (cap) cap.remove();
+    });
+  });
+  return n;
+}
+
 // UI hints that only make sense with a mouse on the live page
 function cleanHints() {
   const RX = /^\(?\s*(drag (to rotate|to turn|the sphere|on the|to pan)[^]*|double-click to reset|hover( \/ tap)? [^]*|tap datasets[^]*|hover a qubit[^]*|press run( or step)?[^]*|click two[^]*)\)?\s*\.?$/i;
@@ -110,13 +148,13 @@ function cleanHints() {
     const t = e.textContent.replace(/\s+/g, ' ').trim();
     if (t.length && t.length < 110 && !e.querySelector('img,svg,.katex,table') && RX.test(t)) { e.remove(); n++; }
   });
-  // hint fragments glued into a longer text node + web-centric "this page" phrasing
+  // hint fragments glued into a longer text node, and the website's "this page" phrasing
   const FR = /\s*(drag to rotate|drag to turn it)\s*·\s*double-click to reset\s*/gi;
   const FR2 = /\s*(\(drag to rotate\)|Drag to (rotate|turn it)[^.]*\.|Hover \/ tap datasets to isolate\.?|Press Run or Step\.?)/g;
   const w = document.createTreeWalker(document.querySelector('main') || document.body, NodeFilter.SHOW_TEXT);
   for (let x; (x = w.nextNode());) {
     FR.lastIndex = 0; FR2.lastIndex = 0;
-    let v = x.nodeValue.replace(FR, ' ').replace(FR2, '')
+    const v = x.nodeValue.replace(FR, ' ').replace(FR2, '')
       .replace(/\bon this page\b/gi, m => m[0] === 'O' ? 'In this chapter' : 'in this chapter')
       .replace(/\bthis page's\b/gi, m => m[0] === 'T' ? "This chapter's" : "this chapter's")
       .replace(/\bthis page\b/gi, m => m[0] === 'T' ? 'This chapter' : 'this chapter');
@@ -132,7 +170,7 @@ srv.listen(0, '127.0.0.1', async () => {
   await ctx.route('**/*', r => r.request().url().startsWith('http://127.0.0.1:' + port) ? r.continue() : r.abort());
   const p = await ctx.newPage();
   await p.goto(`http://127.0.0.1:${port}/${REPRINT ? 'index' : 'draft'}.html`, { waitUntil: 'load' });
-  if (!REPRINT) await p.evaluate(transform);
+  if (!REPRINT) { await p.evaluate(transform); console.log('bookish', JSON.stringify(await p.evaluate(bookish))); }
   console.log('hints removed', await p.evaluate(cleanHints));
   let html = '<!DOCTYPE html>\n' + await p.evaluate(() => document.documentElement.outerHTML);
   fs.writeFileSync(path.join(out, 'index.html'), html);
@@ -149,14 +187,24 @@ srv.listen(0, '127.0.0.1', async () => {
   await pp.evaluate(() => document.querySelectorAll('img[loading]').forEach(i => i.loading = 'eager'));
   await pp.waitForTimeout(1500);
   await pp.pdf(opts);
-  const pages = JSON.parse(execFileSync('python3', [path.join(__dirname, 'markers.py'), pdf]).toString());
-  await pp.evaluate(pages => {
+  const scan = () => JSON.parse(execFileSync('python3', [path.join(__dirname, 'index.py'), pdf, path.join(__dirname, 'index-terms.json')], { maxBuffer: 1 << 26 }).toString());
+  const r1 = scan(), pages = r1.markers;
+  await pp.evaluate(({ pages, index }) => {
     document.querySelectorAll('[data-pg]').forEach(s => { const k = s.dataset.pg.replace(/^ch-/, ''); if (pages[k]) s.textContent = pages[k]; });
-  }, pages);
+    // index: page numbers, each linked (online) to the chapter or section that contains that page
+    const starts = Object.entries(pages).filter(([k]) => !/^part-/.test(k)).sort((a, b) => a[1] - b[1]);
+    const where = pg => { let id = null; for (const [k, v] of starts) if (v <= pg) id = k; return !id ? '#contents' : id === 'prologue' || /^appx-/.test(id) ? '#' + id : '#ch-' + id; };
+    const compact = ps => ps.map((p, i) => [p, ps[i + 1] === p + 1]);
+    document.querySelectorAll('.ix-e').forEach(e => {
+      const ps = index[e.dataset.term]; const span = e.querySelector('.ix-pg');
+      if (!ps || !ps.length) { e.remove(); return; }
+      span.innerHTML = ps.map(p => `<a href="${where(p)}">${p}</a>`).join(', ');
+    });
+  }, { pages, index: r1.index });
   await pp.pdf(opts);
   html = '<!DOCTYPE html>\n' + await pp.evaluate(() => document.documentElement.outerHTML);
   fs.writeFileSync(path.join(out, 'index.html'), html);   // keep the PDF page numbers in the online contents too
-  const pages2 = JSON.parse(execFileSync('python3', [path.join(__dirname, 'markers.py'), pdf]).toString());
+  const pages2 = scan().markers;
   const n = execFileSync('python3', ['-c', `import pypdf;print(len(pypdf.PdfReader("${pdf}").pages))`]).toString().trim();
   console.log('pdf pages', n, 'markers', Object.keys(pages2).length, 'stable', JSON.stringify(pages) === JSON.stringify(pages2));
   await b.close(); srv.close();

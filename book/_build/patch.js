@@ -6,6 +6,7 @@ for (let i = 0; i < parts.length; i += 2) {
   parts[i] = parts[i]
     .replace(/\\\((.{1,60}?)\\\)/g, (m, x) => { n.tex = (n.tex || 0) + 1; return katex.renderToString(x.replace(/&amp;/g, '&'), { throwOnError: false }); })
     .replace(/\$10\^\{-3\}\$–\$10\^\{-4\}\$/g, () => { n.money = (n.money || 0) + 1; return katex.renderToString('10^{-3}') + '–' + katex.renderToString('10^{-4}'); })
+    .replace(/<p>(?:Section|Step) \d{1,2}<\/p>(?=<h[2-4])/g, () => { n.secword = (n.secword || 0) + 1; return ''; })
     .replace(/<p>\d{1,2}<\/p>(?=<h[2-4])/g, () => { n.secnum = (n.secnum || 0) + 1; return ''; })
     .replace(/<p>(?:Open (?:now ↓|chapter →|it →)|Jump ↓|Try it →)<\/p>/g, () => { n.ui = (n.ui || 0) + 1; return ''; })
     .replace(/\s*·\s*Open chapter →/g, () => { n.ui = (n.ui || 0) + 1; return ''; })
