@@ -43,9 +43,17 @@ function extractInPage(origin) {
     try {
       const w = cv.width, h = cv.height; if (w < 40 || h < 30) return true;
       const ctx = cv.getContext('2d'); if (!ctx) return false;
-      const d = ctx.getImageData(0, 0, w, h).data; let n = 0;
-      for (let i = 3; i < d.length; i += 4 * 97) if (d[i] > 10) { n++; if (n > 8) return false; }
-      return true;
+      const d = ctx.getImageData(0, 0, w, h).data;
+      const r0 = d[0], g0 = d[1], b0 = d[2], a0 = d[3];
+      let alphaN = 0, diffN = 0;
+      for (let i = 0; i < d.length; i += 4 * 97) {
+        if (d[i + 3] > 10) alphaN++;
+        if (Math.abs(d[i] - r0) + Math.abs(d[i + 1] - g0) + Math.abs(d[i + 2] - b0) + Math.abs(d[i + 3] - a0) > 24) {
+          diffN++;
+          if (diffN > 12) return false;
+        }
+      }
+      return alphaN <= 8 || diffN <= 12;
     } catch (e) { return false; }
   }
   const SVG_PROPS = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'fill-opacity', 'stroke-opacity', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-anchor', 'dominant-baseline'];

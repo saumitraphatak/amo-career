@@ -1593,9 +1593,25 @@ document.addEventListener('DOMContentLoaded', () => {
     animRaf=setTimeout(()=>requestAnimationFrame(simStep),60);
   }
 
+  const prefersReduced = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   window.toggleRBSim=function(){
-    if(running){running=false;clearTimeout(animRaf);document.getElementById('rbSimBtn').textContent='▶ Run';}
-    else{running=true;points=[];depthIdx=0;runsDone=0;document.getElementById('rbSimBtn').textContent='⏹ Stop';requestAnimationFrame(simStep);}
+    if(running){running=false;clearTimeout(animRaf);document.getElementById('rbSimBtn').textContent='▶ Run';return;}
+    points=[];depthIdx=0;runsDone=0;
+    if(prefersReduced()){
+      resize();
+      for(const m of DEPTHS){
+        for(let i=0;i<runsPerDepth;i++){
+          const noise=(Math.random()-0.5)*0.06;
+          points.push({m,f:Math.max(0,Math.min(1,fidelity(m)+noise)),alpha:0.65});
+        }
+      }
+      const lastM=DEPTHS[DEPTHS.length-1];
+      const st=document.getElementById('rbSimStatus');
+      if(st)st.textContent=`m=${lastM}  F≈${fidelity(lastM).toFixed(3)} (instant · reduced motion)`;
+      drawFrame();
+      return;
+    }
+    running=true;document.getElementById('rbSimBtn').textContent='⏹ Stop';requestAnimationFrame(simStep);
   };
 
   resize(); drawFrame();

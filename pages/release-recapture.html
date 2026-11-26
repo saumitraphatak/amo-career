@@ -964,6 +964,11 @@ function toggleTrajPlay() {
   const btn = document.getElementById('playTrajBtn');
   if (!_trajTp || !slider || !btn) return;
   if (_trajAnim) { stopTrajPlay(); return; }
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    slider.value = (+slider.value >= 100) ? 0 : Math.min(100, +slider.value + 25);
+    drawTrajCanvas();
+    return;
+  }
   if (+slider.value >= 100) slider.value = 0;
   btn.textContent = '⏸ Pause';
   const step = (ts) => {

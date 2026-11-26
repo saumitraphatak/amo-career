@@ -25,14 +25,20 @@ function transform() {
     body.querySelectorAll('h2').forEach(h => h.setAttribute('data-num', `${no}.${++s}`));
     // empty blocks
     body.querySelectorAll('p,div.card,aside,li').forEach(e => { if (!e.textContent.trim() && !e.querySelector('img,svg,.katex,.ctl')) e.remove(); });
-    // group stat chips
+    // group stat chips into textbook Worked Examples (n.m)
+    let exN = 0;
     const stats = [...body.querySelectorAll('.stat')];
     for (const st of stats) {
       if (st.parentElement.classList.contains('stats')) continue;
       const grp = document.createElement('div'); grp.className = 'stats';
       st.before(grp);
       let n = st; while (n && n.classList && n.classList.contains('stat')) { const nx = n.nextElementSibling; grp.appendChild(n); n = nx; }
-      if (grp.children.length >= 2) { const c = document.createElement('p'); c.className = 'stats-cap'; c.textContent = "Calculator output at the page's default settings."; grp.after(c); }
+      if (grp.children.length >= 2) {
+        const wx = document.createElement('div'); wx.className = 'worked-ex';
+        wx.innerHTML = `<div class="worked-ex-head"><span>Worked Example ${no}.${++exN}</span><span class="worked-ex-note">Default operating point · interactive on <a href="${SITE}${key}.html">amotoolkit.com</a></span></div>`;
+        grp.before(wx);
+        wx.appendChild(grp);
+      }
     }
     // control markers → one "interactive" note per run
     const ctls = [...body.querySelectorAll('p.ctl')];
@@ -45,11 +51,32 @@ function transform() {
       m.replaceWith(ia); last = ia;
     }
     body.querySelectorAll('.ia + .ia').forEach(x => x.remove());
-    // canvas snapshots get a caption
-    body.querySelectorAll('figure.fig img[src^="img/"]').forEach(img => {
-      const f = img.closest('figure'); if (f.nextElementSibling && f.nextElementSibling.classList.contains('snap')) return;
-      const c = document.createElement('p'); c.className = 'snap'; c.textContent = 'Snapshot of an interactive figure at its default settings. On the website it responds to the controls.'; f.after(c);
-      const w = +img.dataset.w, hh = +img.dataset.h; if (w && hh) { img.width = Math.round(w / 2); img.height = Math.round(hh / 2); }
+    // numbered textbook figures (Figure n.m) + dark-canvas framing
+    const DARK_FIGS = new Set(['atom-processor', 'virtual-lab', 'vacuum-systems']);
+    let figN = 0;
+    body.querySelectorAll('figure.fig').forEach(f => {
+      const img = f.querySelector('img[src^="img/"]');
+      if (img) {
+        if (DARK_FIGS.has(key)) f.classList.add('fig-dark');
+        const w = +img.dataset.w, hh = +img.dataset.h; if (w && hh) { img.width = Math.round(w / 2); img.height = Math.round(hh / 2); }
+      }
+      const next = f.nextElementSibling;
+      if (next && next.classList.contains('fig-cap')) return;
+      const alt = (img && img.getAttribute('alt') || '').trim();
+      const existingCap = (next && (next.classList.contains('cap') || next.classList.contains('snap'))) ? next : null;
+      const capTxt = (existingCap && !existingCap.classList.contains('snap')) ? existingCap.innerHTML : (alt || 'Computed figure at the default operating point (interactive on the website).');
+      const p = document.createElement('p'); p.className = 'fig-cap';
+      p.innerHTML = `<span class="fig-num">Figure ${no}.${++figN}.</span> ${capTxt}`;
+      if (existingCap) existingCap.replaceWith(p); else f.after(p);
+    });
+    // numbered display equations (n.m)
+    let eqN = 0;
+    body.querySelectorAll('.math, :scope > .katex-display').forEach(m => {
+      if (m.closest('.eq-wrap')) return;
+      const w = document.createElement('div'); w.className = 'eq-wrap';
+      m.before(w); w.appendChild(m);
+      const num = document.createElement('span'); num.className = 'eq-num'; num.textContent = `(${no}.${++eqN})`;
+      w.appendChild(num);
     });
     // ids inside inlined SVG figures (arrow markers, gradients) are unique per page on the site but collide
     // once every page is in one document; namespace them per figure and rewrite the references.
@@ -83,11 +110,18 @@ function cleanHints() {
     const t = e.textContent.replace(/\s+/g, ' ').trim();
     if (t.length && t.length < 110 && !e.querySelector('img,svg,.katex,table') && RX.test(t)) { e.remove(); n++; }
   });
-  // hint fragments glued into a longer text node
+  // hint fragments glued into a longer text node + web-centric "this page" phrasing
   const FR = /\s*(drag to rotate|drag to turn it)\s*·\s*double-click to reset\s*/gi;
-  const FR2 = /\s*(\(drag to rotate\)|Drag to (rotate|turn it)[^.]*\.|Hover \/ tap datasets to isolate\.?)/g;
+  const FR2 = /\s*(\(drag to rotate\)|Drag to (rotate|turn it)[^.]*\.|Hover \/ tap datasets to isolate\.?|Press Run or Step\.?)/g;
   const w = document.createTreeWalker(document.querySelector('main') || document.body, NodeFilter.SHOW_TEXT);
-  for (let x; (x = w.nextNode());) { FR.lastIndex = 0; FR2.lastIndex = 0; const v = x.nodeValue.replace(FR, ' ').replace(FR2, ''); if (v !== x.nodeValue) { x.nodeValue = v; n++; } }
+  for (let x; (x = w.nextNode());) {
+    FR.lastIndex = 0; FR2.lastIndex = 0;
+    let v = x.nodeValue.replace(FR, ' ').replace(FR2, '')
+      .replace(/\bon this page\b/gi, m => m[0] === 'O' ? 'In this chapter' : 'in this chapter')
+      .replace(/\bthis page's\b/gi, m => m[0] === 'T' ? "This chapter's" : "this chapter's")
+      .replace(/\bthis page\b/gi, m => m[0] === 'T' ? 'This chapter' : 'this chapter');
+    if (v !== x.nodeValue) { x.nodeValue = v; n++; }
+  }
   return n;
 }
 

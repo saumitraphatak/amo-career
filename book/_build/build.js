@@ -10,6 +10,7 @@ const EDITION = 'Edition 1 · November 2026';
 const BOOK_URL = SITE + 'book/';
 const PDF_NAME = 'building-with-atoms.pdf';
 const META = JSON.parse(fs.readFileSync(path.join(__dirname, 'textbook-meta.json'), 'utf8'));
+const REF = JSON.parse(fs.readFileSync(path.join(__dirname, 'book-ref.json'), 'utf8'));
 fs.mkdirSync(path.join(out, 'img'), { recursive: true });
 
 const js = fs.readFileSync(path.join(site, 'js/main.js'), 'utf8');
@@ -115,7 +116,7 @@ function front() {
     chapters.filter(c => c.part === p).map(c => `<div class="tc"><span class="n">${c.no}</span><a href="#ch-${c.key}">${esc((META[c.key] || {}).title || c.label)}</a><span class="dots"></span><span class="pg" data-pg="ch-${c.key}"></span></div>`).join('')).join('') +
     `<div class="tp" style="--pc:var(--c-teach)">Part V · Teach with this Book</div><div class="tc"><span class="n">V</span><a href="#part-teach">The 14-week course</a><span class="dots"></span><span class="pg" data-pg="part-teach"></span></div>` +
     `<div class="tp" style="--pc:var(--c-app)">Appendices</div>` +
-    [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly']]
+    [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly'], ['appx-notation', 'E', 'Notation and symbols'], ['appx-glossary', 'F', 'Glossary of key terms']]
       .map(([id, n, t]) => `<div class="tc"><span class="n">${n}</span><a href="#${id}">${t}</a><span class="dots"></span><span class="pg" data-pg="${id}"></span></div>`).join('');
   return `
 <section class="cover">
@@ -148,6 +149,12 @@ function front() {
   <p>Boxes have consistent meanings. A <strong>tinted box</strong> is a key idea or a practical note; an <strong>amber box</strong> is a warning or a common mistake; a <strong>bordered box</strong> groups a worked example, a formula or a comparison. Tags such as <span class="tag">preprint</span> flag the status of a source.</p>
   <h2>A word of care</h2>
   <p>The numbers in this book are estimates from simple models, checked against their sources when written. They are good for scale, design trade-offs and intuition; they are not a substitute for measuring your own system. Preprints are marked as such, and company and funding figures carry the date they were checked. If you find an error, the "Found a problem?" link on any page of the website reaches the author. Appendix D says more.</p>
+</section>
+
+<section class="front" id="scale-map">
+  <h1>Map of Scales: 15 Orders of Magnitude</h1>
+  <p>A neutral-atom quantum computer spans fifteen decades of length, from the meter-scale optical table to the femtometer nucleus. Explore the interactive zoom on the <a href="${SITE}home.html#scale-zoom">home page</a>.</p>
+  <div class="scale-map-grid">${(REF.scaleMap || []).map(s => `<div class="scale-stop"><div class="scale-decade">${s.decade}</div><div class="scale-eq">${s.eq}</div><div class="scale-desc">${s.desc}</div></div>`).join('')}</div>
 </section>
 
 <section class="front" id="contents">
@@ -202,7 +209,13 @@ function appendices() {
     <li><strong>Dated facts.</strong> Company, funding and roadmap facts in Part IV change quickly. Each carries the date it was checked; check again before quoting.</li>
     <li><strong>Safety.</strong> Lasers, high-current coils, RF amplifiers and vacuum systems can injure people and damage equipment. Nothing here replaces your institution's safety training, interlocks and procedures.</li>
     <li><strong>This is a snapshot.</strong> The website is corrected and extended continuously; the book is regenerated from it. The edition date is on the cover. Report errors with the "Found a problem?" panel on any page.</li>
-  </ul></section>`;
+  </ul></section>
+  <section class="appx" id="appx-notation"><h1>E · Notation and symbols</h1><span class="marker">@@CH:appx-notation@@</span>
+  <p>Common symbols used across Parts I&ndash;IV. Context-specific subscripts are defined where they first appear.</p>
+  <div class="tablewrap"><table><tr><th>Symbol</th><th>Meaning</th><th>Typical Units</th></tr>${(REF.notation || []).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table></div></section>
+  <section class="appx" id="appx-glossary"><h1>F · Glossary of key terms</h1><span class="marker">@@CH:appx-glossary@@</span>
+  <p>Concise definitions of experimental and quantum-computing terms recurring across the book.</p>
+  <dl class="glossary-dl">${(REF.glossary || []).map(g => `<dt>${g[0]}</dt><dd>${g[1]}</dd>`).join('')}</dl></section>`;
 }
 
 (async () => {
@@ -220,8 +233,9 @@ function appendices() {
   }
   sections.push(partTeach());
   sections.push(appendices());
-  const tocSide = PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
-    `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a>`;
+  const tocSide = `<div class="tp">Front Matter</div><a class="tc" href="#about">About this book</a><a class="tc" href="#scale-map">Map of Scales</a>` +
+    PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
+    `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a><a class="tc" href="#appx-notation">E · Notation &amp; symbols</a><a class="tc" href="#appx-glossary">F · Glossary</a>`;
   const draft = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <!-- Google tag (gtag.js), same as every site page -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>
