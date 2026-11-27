@@ -1103,3 +1103,48 @@ ul.watch { columns: 2; column-gap: 28px; padding-left: 1.1em; font-size: .92em; 
 .formula-sheet-group { margin: 1.1rem 0 1.35rem; }
 .formula-sheet-group h2 { font-size: 1.05rem; margin-bottom: .45rem; }
 @media print { .book-search-modal, .ch-read-time { display: none !important; } }
+
+/* Iteration 3: Figure lightbox, reading resume pill, chapter bookmarks, List of Figures & Tables */
+@media screen {
+  figure.fig img, figure.svgfig svg { cursor: zoom-in; }
+}
+.fig-lightbox {
+  position: fixed; inset: 0; z-index: 220; background: rgba(6, 10, 18, 0.84);
+  backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.fig-lightbox.open { display: flex; }
+.fig-lightbox-box {
+  max-width: min(1160px, 94vw); max-height: 90vh; background: var(--paper); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 14px; padding: 16px; display: flex; flex-direction: column;
+  gap: 10px; box-shadow: 0 28px 70px rgba(0,0,0,0.5); overflow: auto;
+}
+.fig-lightbox-stage { display: flex; justify-content: center; align-items: center; }
+.fig-lightbox-stage img, .fig-lightbox-stage svg { max-width: 100%; max-height: 72vh; width: auto; height: auto; border-radius: 8px; }
+.fig-lightbox-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.fig-lightbox-cap { font: 13.5px/1.5 var(--sans); color: var(--ink2); margin: 0; }
+.fig-lightbox-close {
+  font: 600 12px/1 var(--sans); padding: 6px 11px; border-radius: 7px; border: 1px solid var(--rule);
+  background: var(--tint); color: var(--ink); cursor: pointer; flex-shrink: 0;
+}
+.resume-pill {
+  display: none; align-items: center; gap: 6px; margin-top: 10px;
+  font: 600 12.5px/1 var(--sans); padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent); text-decoration: none;
+}
+.resume-pill.show { display: inline-flex; }
+.ch-bmark-btn {
+  margin-left: auto; font: 600 11.5px/1 var(--sans); padding: 3px 8px; border-radius: 6px;
+  border: 1px solid var(--rule); background: transparent; color: var(--muted); cursor: pointer;
+}
+.ch-bmark-btn.on { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.toc-side a.tc.is-bookmarked::after { content: " ★"; color: var(--accent); font-size: 11px; }
+.lof-group { margin: 1rem 0; border: 1px solid var(--rule); border-radius: 10px; padding: .6rem .95rem; background: var(--tint); }
+.lof-group summary { cursor: pointer; font: 700 14px/1.4 var(--sans); color: var(--ink); padding: .25rem 0; }
+.lof-list { list-style: none; padding: 0; margin: .6rem 0 .2rem; columns: 1; display: grid; gap: 5px; }
+.lof-list li { font: 12.8px/1.45 var(--sans); padding: 4px 0; border-bottom: 1px dashed var(--rule); }
+.lof-list li:last-child { border-bottom: none; }
+.lof-list a { text-decoration: none; border-bottom: none; color: var(--ink); }
+.lof-list a:hover { color: var(--accent); }
+.lof-num { font: 700 12px/1 var(--mono); color: var(--accent); margin-right: 6px; }
+@media print { .fig-lightbox, .resume-pill, .ch-bmark-btn { display: none !important; } }
