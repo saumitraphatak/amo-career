@@ -22,7 +22,7 @@ function transform() {
       if (h.firstChild && h.firstChild.nodeType === 3) h.firstChild.nodeValue = h.firstChild.nodeValue.replace(emo, '');
       if (!h.textContent.trim()) h.remove();
     });
-    body.querySelectorAll('h2').forEach(h => h.setAttribute('data-num', `${no}.${++s}`));
+    body.querySelectorAll('h2').forEach(h => { const dn = `${no}.${++s}`; h.setAttribute('data-num', dn); if (!h.id) h.id = `sec-${no}-${s}`; });
     // empty blocks
     body.querySelectorAll('p,div.card,aside,li').forEach(e => { if (!e.textContent.trim() && !e.querySelector('img,svg,.katex,.ctl')) e.remove(); });
     // group stat chips
@@ -56,7 +56,7 @@ function transform() {
     let eqN = 0;
     body.querySelectorAll('.math, :scope > .katex-display').forEach(m => {
       if (m.closest('.eq-wrap')) return;
-      const w = document.createElement('div'); w.className = 'eq-wrap';
+      const w = document.createElement('div'); w.className = 'eq-wrap'; w.id = `eq-${no}-${eqN + 1}`;
       m.before(w); w.appendChild(m);
       const num = document.createElement('span'); num.className = 'eq-num'; num.textContent = `(${no}.${++eqN})`;
       w.appendChild(num);
