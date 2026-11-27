@@ -112,7 +112,7 @@ function bookish() {
       const live = key ? `https://amotoolkit.com/pages/${key}.html${fig.dataset.anchor ? '#' + fig.dataset.anchor : ''}` : '';
       if (snap) text += (text ? ' ' : '') + `<span class="fig-live">Snapshot at the default settings; ${live ? `<a href="${live}">interactive on the website</a>` : 'interactive on the website'}.</span>`;
       if (own) own.remove(); if (snap) snap.remove();
-      const fc = document.createElement('figcaption'); fc.className = 'fig-cap'; fc.innerHTML = `<span class="fig-num">Figure ${num}.${f}</span>${text}`;
+      const fc = document.createElement('figcaption'); fc.className = 'fig-cap'; fc.innerHTML = `<span class="fig-num">Figure ${num}.${f}</span>${text}<span class="marker">@@CH:${fig.id.toLowerCase()}@@</span>`;
       fig.appendChild(fc);
     });
     body.querySelectorAll('table').forEach(tb => {
@@ -121,7 +121,8 @@ function bookish() {
       const cols = Math.max(0, ...[...tb.rows].map(r => [...r.cells].reduce((a, c) => a + (c.colSpan || 1), 0)));
       if (cols >= 7) tb.classList.add('wide');
       const wrap = tb.closest('.tablewrap') || tb, h = heading(wrap);
-      const cap = document.createElement('p'); cap.className = 'tab-cap'; cap.innerHTML = `<span class="fig-num">Table ${num}.${t}</span>${h ? esc(h) : ''}`;
+      tb.id = tb.id || `tab-${num}-${t}`;
+      const cap = document.createElement('p'); cap.className = 'tab-cap'; cap.innerHTML = `<span class="fig-num">Table ${num}.${t}</span>${h ? esc(h) : ''}<span class="marker">@@CH:${tb.id.toLowerCase()}@@</span>`;
       wrap.before(cap);
     });
     body.querySelectorAll('.card, .ia').forEach(c => { if (c.querySelectorAll('figure').length >= 2 || c.textContent.length > 1800) { c.classList.add('long'); n.long = (n.long || 0) + 1; } });   // too big to keep on one page
@@ -138,6 +139,18 @@ function bookish() {
     });
   });
   return n;
+}
+
+// List of figures and tables (front matter): one row per numbered figure/table, page numbers filled from their markers
+function lof() {
+  const body = document.getElementById('lof-body'); if (!body) return 0;
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const title = (el, num) => { const c = el.cloneNode(true); c.querySelectorAll('.fig-num, .fig-live, .marker').forEach(x => x.remove()); let t = c.textContent.replace(/\s+/g, ' ').trim().replace(/\.$/, ''); if (t.length > 96) t = t.slice(0, 93).replace(/\s\S*$/, '') + '…'; return t || num; };
+  const row = (id, num, t) => `<div class="tc"><span class="n lof-num">${num}</span><a href="#${id}">${esc(t)}</a><span class="dots"></span><span class="pg" data-pg="${id.toLowerCase()}"></span></div>`;
+  const figs = [...document.querySelectorAll('figure[id] > figcaption.fig-cap')].map(fc => { const n = fc.querySelector('.fig-num').textContent.replace('Figure ', ''); return row(fc.parentElement.id, n, title(fc, 'Figure ' + n)); });
+  const tabs = [...document.querySelectorAll('p.tab-cap')].map(tc => { const t = tc.nextElementSibling && (tc.nextElementSibling.matches('table') ? tc.nextElementSibling : tc.nextElementSibling.querySelector('table')); if (!t || !t.id) return ''; const n = tc.querySelector('.fig-num').textContent.replace('Table ', ''); return row(t.id, n, title(tc, 'Table ' + n)); }).filter(Boolean);
+  body.innerHTML = `<details class="lof-group" open><summary>Figures (${figs.length})</summary><div class="toc lof">${figs.join('')}</div></details><details class="lof-group" open><summary>Tables (${tabs.length})</summary><div class="toc lof">${tabs.join('')}</div></details>`;
+  return figs.length + tabs.length;
 }
 
 // UI hints that only make sense with a mouse on the live page
@@ -181,9 +194,10 @@ srv.listen(0, '127.0.0.1', async () => {
   const port = srv.address().port, b = await chromium.launch();
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   await ctx.route('**/*', r => r.request().url().startsWith('http://127.0.0.1:' + port) ? r.continue() : r.abort());
+  await ctx.addInitScript(() => { window.__BOOK_BUILD__ = true; });   // reader.js stays idle, so its buttons never reach the saved HTML or the PDF
   const p = await ctx.newPage();
   await p.goto(`http://127.0.0.1:${port}/${REPRINT ? 'index' : 'draft'}.html`, { waitUntil: 'load' });
-  if (!REPRINT) { await p.evaluate(transform); console.log('bookish', JSON.stringify(await p.evaluate(bookish))); }
+  if (!REPRINT) { await p.evaluate(transform); console.log('bookish', JSON.stringify(await p.evaluate(bookish)), 'lof', await p.evaluate(lof)); }
   console.log('hints removed', await p.evaluate(cleanHints));
   let html = '<!DOCTYPE html>\n' + await p.evaluate(() => document.documentElement.outerHTML);
   fs.writeFileSync(path.join(out, 'index.html'), html);
@@ -205,7 +219,7 @@ srv.listen(0, '127.0.0.1', async () => {
   await pp.evaluate(({ pages, index }) => {
     document.querySelectorAll('[data-pg]').forEach(s => { const k = s.dataset.pg.replace(/^ch-/, ''); if (pages[k]) s.textContent = pages[k]; });
     // index: page numbers, each linked (online) to the chapter or section that contains that page
-    const starts = Object.entries(pages).filter(([k]) => !/^part-/.test(k)).sort((a, b) => a[1] - b[1]);
+    const starts = Object.entries(pages).filter(([k]) => !/^(part-|fig-|tab-|lof$)/.test(k)).sort((a, b) => a[1] - b[1]);
     const where = pg => { let id = null; for (const [k, v] of starts) if (v <= pg) id = k; return !id ? '#contents' : id === 'prologue' || /^appx-/.test(id) ? '#' + id : '#ch-' + id; };
     const compact = ps => ps.map((p, i) => [p, ps[i + 1] === p + 1]);
     document.querySelectorAll('.ix-e').forEach(e => {

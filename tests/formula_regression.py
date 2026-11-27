@@ -1144,6 +1144,15 @@ def test_book() -> None:
     assert len(entries) > 100 and all(re.search(r'>\d+</a>', e) for e in entries), "index without page numbers"
     assert html.count('class="fig-num">Figure ') > 150 and 'class="gdir"' in html
     assert "<span>Worked example</span>" not in html and "Calculator output at the page" not in html   # .stats panels are not all calculator output
+    # online reader (reader.js, 2026-11-27): inlined once, idle during the build so none of its buttons are baked in,
+    # and every element it drives is in the page; the list of figures and tables has a page for every entry
+    assert html.count("Building with Atoms — reader script") == 1 and "window.__BOOK_BUILD__" in html
+    for el in ("book-search-modal", "book-search-input", "book-search-btn", "fig-lightbox", "book-toast", "resume-pill",
+               "toc-read-count", "toc-saved-toggle", "book-font-dec", "book-font-inc", "lof"):
+        assert f'id="{el}"' in html, el
+    assert 'class="ch-bmark-btn' not in html and 'class="sec-anchor' not in html and 'class="ch-read-bar' not in html
+    lof = re.findall(r'<span class="pg" data-pg="(?:fig|tab)-[^"]+">(\d*)</span>', html)
+    assert len(lof) > 250 and all(lof), "list of figures without page numbers"
     ids = re.findall(r'\sid="([^"]+)"', html)
     assert len(ids) == len(set(ids)), "duplicate ids"
     assert not set(re.findall(r'href="#([^"]+)"', html)) - set(ids), "broken in-book links"
@@ -1336,6 +1345,19 @@ def test_hosting_and_theme_tokens_2026_11_27() -> None:
         assert max(len(b) for b in re.findall(r"<script>(.*?)</script>", html, re.S)) < 3000, p
 
 
+def test_usage_log() -> None:
+    """Usage log (Gemini, 2026-11-27): downloads, figure exports, prints and citation copies are counted in the
+    browser and sent to GA4 through the existing tag; nothing goes to a webhook until Saumitra sets one; the home page
+    shows the counts, and the book uses the same log."""
+    js = read("js/main.js")
+    assert 'const AMO_TELEMETRY_URL = "";' in js and "window.AMOTrack = track;" in js and '"amo-activity-log"' in js
+    home = read("home.html")
+    for el in ("amo-activity-panel", "amo-activity-stats", "amo-activity-list", "amo-activity-clear"):
+        assert f'id="{el}"' in home, el
+    assert "'amo-activity-log'" in read("book/_build/reader.js")
+    assert (ROOT / "scripts" / "telemetry-apps-script.gs").exists()
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -1385,6 +1407,7 @@ def main() -> None:
         test_cz_pulse,
         test_showcase_links_resolve,
         test_hosting_and_theme_tokens_2026_11_27,
+        test_usage_log,
     ]
     for test in tests:
         test()

@@ -40,3 +40,7 @@ Generated sections that read site data directly (no extraction needed), in `extr
 - `indexSection()` (Appendix I) from `index-terms.json`: term → regex list (patterns with two capitals in a row are
   case-sensitive). `python3 index.py book.pdf index-terms.json` prints the marker pages and, per term, the up to
   three pages where it occurs most (prologue pages weigh less). Add terms there, then rerun `polish.js`.
+
+The online reader's behaviour (search, figure zoom, bookmarks, resume, mark as read, permalinks, text size, usage log)
+is `reader.js`, inlined into `index.html` by `build.js`; `polish.js` sets `window.__BOOK_BUILD__` so it stays idle while
+the book is rendered. `polish.js` also writes the list of figures and tables, with PDF page numbers from per-figure markers.

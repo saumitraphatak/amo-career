@@ -3085,3 +3085,146 @@ const AMOPrint = (() => {
   return { before, after };
 })();
 window.AMOPrint = AMOPrint;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DOWNLOAD, FIGURE EXPORT, PRINT & CITATION TELEMETRY (GA4 + local log + optional webhook)
+   Paste your deployed Google Apps Script Web App URL (scripts/telemetry-apps-script.gs)
+   into AMO_TELEMETRY_URL to log globally to a Google Sheet, get email alerts, and show
+   live community totals on home.html.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function () {
+  const AMO_TELEMETRY_URL = "";
+  const STORE_KEY = "amo-activity-log";
+  const EMPTY = () => ({
+    counts: { book_pdf_download: 0, figure_export: 0, notebook_download: 0, page_print: 0, citation_copy: 0 },
+    recent: [],
+  });
+  function loadLog() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+      if (raw && raw.counts) return raw;
+    } catch (e) {}
+    return EMPTY();
+  }
+  function saveLog(log) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(log)); } catch (e) {}
+  }
+  function track(eventName, detail) {
+    const page = (location.pathname || "").replace(/^.*\//, "") || "home.html";
+    const info = String(detail || "").trim().slice(0, 140);
+    // 1. GA4 custom event (existing G-QY3G6MDXBD tag)
+    try {
+      if (typeof window.gtag === "function") {
+        window.gtag("event", eventName, { page_path: page, asset_label: info || page });
+      }
+    } catch (e) {}
+    // 2. Local per-browser record (displayed on home.html)
+    const log = loadLog();
+    if (Object.prototype.hasOwnProperty.call(log.counts, eventName)) {
+      log.counts[eventName] = (log.counts[eventName] || 0) + 1;
+    }
+    log.recent.unshift({ t: new Date().toISOString(), ev: eventName, page, detail: info || page });
+    if (log.recent.length > 30) log.recent.length = 30;
+    saveLog(log);
+    renderActivityPanel();
+    // 3. Optional remote webhook (Google Apps Script / Cloudflare Worker)
+    if (AMO_TELEMETRY_URL) {
+      try {
+        const payload = JSON.stringify({ event: eventName, page, detail: info, referrer: document.referrer || "" });
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(AMO_TELEMETRY_URL, new Blob([payload], { type: "text/plain" }));
+        } else {
+          fetch(AMO_TELEMETRY_URL, { method: "POST", mode: "no-cors", body: payload }).catch(() => {});
+        }
+      } catch (e) {}
+    }
+  }
+  window.AMOTrack = track;
+
+  // Auto-wire sitewide downloads, notebook links, figure exports, prints, and citation copies
+  document.addEventListener("click", (e) => {
+    const a = e.target && e.target.closest ? e.target.closest("a") : null;
+    if (a) {
+      const href = a.getAttribute("href") || "";
+      if (/\.pdf(\?|#|$)/i.test(href) || a.hasAttribute("download")) {
+        track("book_pdf_download", href.split("/").pop() || a.textContent.trim());
+        return;
+      }
+      if (/\.ipynb(\?|#|$)/i.test(href) || href.includes("colab.research.google.com")) {
+        track("notebook_download", href.split("/").pop() || a.textContent.trim());
+        return;
+      }
+    }
+    const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+    if (btn) {
+      const cls = btn.className || "";
+      const txt = (btn.textContent || "").trim();
+      if (/export/i.test(cls) || /\b(export|save)\s+(png|svg|figure|plot|image)\b/i.test(txt)) {
+        track("figure_export", txt || btn.id || "canvas-export");
+        return;
+      }
+      // citations only: "Copy parameters", "Copy link" and similar buttons are not citations
+      if (/\bcite\b|citation/i.test(cls) || btn.closest(".cite-panel") || /\b(cite|citation|bibtex)\b/i.test(txt)) {
+        track("citation_copy", txt.slice(0, 60));
+      }
+    }
+  }, true);
+
+  window.addEventListener("beforeprint", () => track("page_print", document.title || location.pathname));
+
+  const LABELS = [
+    ["book_pdf_download", "📘 Book PDFs"],
+    ["figure_export", "🖼️ Figures Exported"],
+    ["notebook_download", "📓 Notebooks Opened"],
+    ["page_print", "🖨️ Pages Printed"],
+    ["citation_copy", "📎 Citations Copied"],
+  ];
+
+  function renderActivityPanel(communityCounts) {
+    const statsEl = document.getElementById("amo-activity-stats");
+    const listEl = document.getElementById("amo-activity-list");
+    const scopeEl = document.getElementById("amo-activity-scope");
+    if (!statsEl) return;
+    const log = loadLog();
+    const src = communityCounts || log.counts;
+    if (scopeEl) {
+      scopeEl.textContent = communityCounts
+        ? "Live community totals · synced with Google Sheets & GA4"
+        : "Your browser activity · events also recorded in GA4";
+    }
+    statsEl.innerHTML = LABELS.map(([k, lbl]) => {
+      const val = src[k] || 0;
+      const mine = communityCounts ? ` <span style="font-size:.68rem;color:var(--text-muted);font-weight:400;">(you: ${log.counts[k] || 0})</span>` : "";
+      return `<div style="background:var(--bg-surface,var(--bg-base));border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;">
+        <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.15rem;">${lbl}</div>
+        <div style="font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:var(--text-primary);">${val}${mine}</div>
+      </div>`;
+    }).join("");
+    if (listEl) {
+      const evNames = Object.fromEntries(LABELS);
+      listEl.innerHTML = log.recent.length
+        ? log.recent.slice(0, 12).map((r) => {
+            const d = new Date(r.t);
+            const when = isNaN(d.getTime()) ? "" : d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+            return `<li style="display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap;padding:.25rem 0;border-bottom:1px solid var(--border);"><span><strong>${evNames[r.ev] || r.ev}</strong> · ${String(r.detail || r.page).replace(/</g, "&lt;")}</span><span style="opacity:.75;">${when}</span></li>`;
+          }).join("")
+        : `<li>No downloads or exports recorded in this browser yet — try exporting a figure, downloading the book PDF, or opening a notebook.</li>`;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderActivityPanel();
+    const clearBtn = document.getElementById("amo-activity-clear");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        saveLog(EMPTY());
+        renderActivityPanel();
+      });
+    }
+    if (AMO_TELEMETRY_URL && document.getElementById("amo-activity-stats")) {
+      fetch(AMO_TELEMETRY_URL).then((r) => r.json()).then((d) => {
+        if (d && d.ok && d.counts) renderActivityPanel(d.counts);
+      }).catch(() => {});
+    }
+  });
+})();
