@@ -97,6 +97,10 @@ ul, ol { list-style: none; }
    default; this block restores every original token plus the handful of
    hardcoded gradient/glow/pill rules that don't follow the token system. */
 [data-theme="dark"] {
+  /* Dark-theme versions of the saturated inks some pages hard-code for light mode. Pages write
+     color: var(--dk-blue, #0556b9): the light theme never defines these, so it keeps the page's own colour. */
+  --dk-blue: #60a5fa; --dk-sky: #38bdf8; --dk-cyan: #22d3ee; --dk-green: #34d399; --dk-lime: #4ade80; --dk-violet: #a78bfa;
+  --dk-purple: #c084fc; --dk-indigo: #818cf8; --dk-amber: #fbbf24; --dk-orange: #fb923c; --dk-pink: #f472b6; --dk-red: #f87171;
   --bg-base:        #02080f;
   --bg-surface:     #060e1c;
   --bg-card:        #0c1526;
@@ -3900,3 +3904,7 @@ span.read-link { color: var(--text-secondary); }
 .ways-card small { display: block; color: var(--text-secondary); font-size: .86rem; line-height: 1.5; }
 .sh-ways { margin-top: var(--sp-4); color: var(--text-secondary); font-size: .95rem; line-height: 1.7; }
 @media (max-width: 860px) { .ways-grid { grid-template-columns: 1fr; } }
+
+/* KaTeX's hidden MathML copy is absolutely positioned. Without a positioned ancestor inside a scrolling table or
+   equation box it escapes the scroller and widens the whole page on phones (decoherence-lab, laser-cooling at 390 px). */
+.katex { position: relative; }

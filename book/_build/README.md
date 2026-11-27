@@ -16,14 +16,19 @@ The book is generated from the live pages, so it stays in step with the site.
    On the way it runs `patch.js` (renders stray `\( \)` TeX with KaTeX, folds stray step and section numbers
    into the text, drops "Open chapter →" buttons) and strips mouse-only hints ("drag to rotate").
    Edition 1.1 adds `bookish()` (numbered figure and table captions, "Key numbers" panels, small-icon and
-   long-card handling) and fills the index (Appendix H) with page numbers from `index.py`, each linked to its
+   long-card handling) and fills the index (Appendix I) with page numbers from `index.py`, each linked to its
    chapter in the online edition.
 4. `node book/_build/polish.js book --reprint` re-runs only the clean-up and the two PDF passes on the existing
    `index.html` (about 3–4 minutes), for CSS or wording changes that do not need a fresh extraction.
 
-Requirements: Node with `npm i playwright sharp katex chart.js` (KaTeX and Chart.js are served to the pages
-locally because the build blocks the network; set `KATEX_DIST` or `CHARTJS_UMD` to use other copies), Python
-with pypdf, and the Lora and Inter fonts installed for the PDF. Regenerate the whole book after changing pages:
+Requirements: Node with Playwright and `sharp`; KaTeX and Chart.js come from the repo's own `vendor/` folder (set
+`KATEX_DIST` or `CHARTJS_UMD` to use other copies); Python with pypdf; the Lora and Inter fonts for the PDF; and,
+optionally, `qpdf`, which `polish.js` runs at the end to cut the PDF from ~20 MB to ~15 MB and linearize it for fast
+first-page display on phones. Continuous-tone snapshots (3D renders, heat maps) are saved as JPEG, line art as PNG.
+Figures carry `data-anchor` (the nearest id on the live page, kept only if it is in the page's HTML), so each
+snapshot's "interactive on the website" link opens the exact widget. `.route-card` step cards are kept as cards, and
+CSS-drawn diagrams listed in `extract.js` (`.pol-oppath`, `.pol-sphere-grid`, or any element with `data-book-shot`) are
+screenshotted. The scheduled nightly rebuild follows `docs/book-rebuild-runbook.md`. Regenerate the whole book after changing pages:
 
     node book/_build/extract.js . /tmp/raw && node book/_build/build.js . /tmp/raw book && node book/_build/polish.js book
 
@@ -31,7 +36,7 @@ Generated sections that read site data directly (no extraction needed), in `extr
 - `prologue()` from `pages/follow-one-atom.html` (its `.fa-step` sections) and `pages/apparatus.html` (`PARTS`),
   with `apparatusShot()` taking a still of the exploded apparatus for `img/apparatus-map.png`;
 - `groupsBody()` replaces the extracted amo-groups chapter with tables built from that page's data constants;
-- `recordsAppendix()` (Appendix G) from `pages/records.html` (`CATS`);
-- `indexSection()` (Appendix H) from `index-terms.json`: term → regex list (patterns with two capitals in a row are
+- `recordsAppendix()` (Appendix H) from `pages/records.html` (`CATS`);
+- `indexSection()` (Appendix I) from `index-terms.json`: term → regex list (patterns with two capitals in a row are
   case-sensitive). `python3 index.py book.pdf index-terms.json` prints the marker pages and, per term, the up to
   three pages where it occurs most (prologue pages weigh less). Add terms there, then rerun `polish.js`.

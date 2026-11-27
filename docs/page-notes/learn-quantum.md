@@ -115,3 +115,4 @@ Entanglement section gained "Play the CHSH game": four basis-angle sliders, pred
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Nine reference links fixed (arXiv ids that pointed at other papers → verified DOIs/ids: Barenco 1995, Horodecki 2009, CHSH 1969, Zhang 2003, Jaksch 2000, Zurek 2003, Ebadi 2021/2022, Gross & Bloch 2017, Saffman 2016, Kaufman & Ni, Browaeys & Lahaye). Action buttons: white on ink-blue (light), dark ink on violet (dark); the Single-shot button had blue text on a teal fill.
+- 2026-11-27: page scripts moved to `js/pages/learn-quantum.js` and `learn-quantum-protocols.js` (HTML 242 KB → 134 KB; the scripts are cached separately). Behaviour checked identical with the control sweep (same controls, no errors).

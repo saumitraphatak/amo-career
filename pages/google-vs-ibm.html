@@ -22,13 +22,12 @@
   <link rel="canonical" href="https://amotoolkit.com/pages/google-vs-ibm.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/styles.css?v=42">
+  <link rel="stylesheet" href="../css/styles.css?v=43">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../vendor/katex/0.16.11/katex.min.css">
+  <script src="../vendor/chart.js/4.4.3/chart.umd.js"></script>
 
   <style>
     /* ── page theme ─────────────────────────────────── */
@@ -55,7 +54,7 @@
       color: var(--text-muted); cursor: pointer; transition: all .18s; white-space: nowrap;
     }
     .tnav-btn:hover   { color: var(--text-primary); border-color: rgba(180,83,9,0.35); }
-    .tnav-btn.active  { color: #924307; background: rgba(180,83,9,0.1); border-color: rgba(180,83,9,0.4); }
+    .tnav-btn.active  { color: var(--dk-orange, #924307); background: rgba(180,83,9,0.1); border-color: rgba(180,83,9,0.4); }
 
     .page-hero {
       background: linear-gradient(135deg, rgba(66,133,244,0.06) 0%, rgba(105,41,196,0.06) 100%);
@@ -73,8 +72,8 @@
     .hero-atom-sub  { font-size: .85rem; color: var(--text-muted); margin: 0; }
     .hero-atom-stats { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
     .hero-stat-chip { border-radius: 6px; padding: .15rem .55rem; font-size: .76rem; font-weight: 600; }
-    .hero-stat-chip.goog { background: rgba(66,133,244,0.15); color: #184fc9; border: 1px solid rgba(26,86,219,0.3); }
-    .hero-stat-chip.ibm  { background: rgba(105,41,196,0.15); color: #491d8b; border: 1px solid rgba(73,29,139,0.3); }
+    .hero-stat-chip.goog { background: rgba(66,133,244,0.15); color: var(--dk-blue, #184fc9); border: 1px solid rgba(26,86,219,0.3); }
+    .hero-stat-chip.ibm  { background: rgba(105,41,196,0.15); color: var(--dk-purple, #491d8b); border: 1px solid rgba(73,29,139,0.3); }
 
     .page-content .container { padding-top: 2.5rem; padding-bottom: 4rem; }
     .section-block { margin-bottom: 3.5rem; scroll-margin-top: 120px; }
@@ -96,8 +95,8 @@
     .atom-col.ibm  .atom-col-header { border-color: rgba(105,41,196,0.25); }
 
     .atom-col-title { font-size: 1.05rem; font-weight: 700; }
-    .atom-col.goog .atom-col-title { color: #184fc9; }
-    .atom-col.ibm  .atom-col-title { color: #491d8b; }
+    .atom-col.goog .atom-col-title { color: var(--dk-blue, #184fc9); }
+    .atom-col.ibm  .atom-col-title { color: var(--dk-purple, #491d8b); }
 
     .atom-col ul { padding-left: 1.1rem; margin: 0; }
     .atom-col li { font-size: .86rem; color: var(--text-muted); margin-bottom: .42rem; line-height: 1.55; }
@@ -112,19 +111,19 @@
       background: rgba(180,83,9,0.07); border: 1px solid rgba(180,83,9,0.22); border-radius: 10px;
       padding: 1rem 1.2rem; margin: .8rem 0; font-size: .87rem; color: var(--text-secondary); line-height: 1.65;
     }
-    .info-box strong { color: #924307; }
+    .info-box strong { color: var(--dk-orange, #924307); }
 
     .goog-box {
       background: rgba(66,133,244,0.07); border: 1px solid rgba(66,133,244,0.22); border-radius: 10px;
       padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
     }
-    .goog-box strong { color: #184fc9; }
+    .goog-box strong { color: var(--dk-blue, #184fc9); }
 
     .ibm-box {
       background: rgba(105,41,196,0.07); border: 1px solid rgba(105,41,196,0.22); border-radius: 10px;
       padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
     }
-    .ibm-box strong { color: #491d8b; }
+    .ibm-box strong { color: var(--dk-purple, #491d8b); }
 
     .chart-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
     .chart-caption { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0 0; font-style: italic; }
@@ -132,16 +131,16 @@
     .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
     .cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
     .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; font-size: .8rem; }
-    .cmp th.goog-h { background: rgba(66,133,244,0.12); color: #184fc9; }
-    .cmp th.ibm-h  { background: rgba(105,41,196,0.12); color: #491d8b; }
+    .cmp th.goog-h { background: rgba(66,133,244,0.12); color: var(--dk-blue, #184fc9); }
+    .cmp th.ibm-h  { background: rgba(105,41,196,0.12); color: var(--dk-purple, #491d8b); }
     .cmp th.cat-h  { background: var(--bg-card); color: var(--text-muted); }
     .cmp td { color: var(--text-secondary); padding: .55rem .9rem; border-bottom: 1px solid #0d1827; vertical-align: top; line-height: 1.55; }
     .cmp td.goog-td { background: rgba(66,133,244,0.04); }
     .cmp td.ibm-td  { background: rgba(105,41,196,0.04); }
     .cmp tr:hover td { filter: brightness(1.1); }
     .cmp .win { font-weight: 700; }
-    .cmp .win.goog { color: #184fc9; }
-    .cmp .win.ibm  { color: #491d8b; }
+    .cmp .win.goog { color: var(--dk-blue, #184fc9); }
+    .cmp .win.ibm  { color: var(--dk-purple, #491d8b); }
     .cmp .win.tie  { color: #3f5b83; }
 
     .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: .9rem; margin: 1.2rem 0; }   /* six stats: 3 + 3, not 5 + 1 */
@@ -160,7 +159,7 @@
     }
     .paper-card:hover { border-color: rgba(180,83,9,0.35); }
     .paper-card .paper-title { font-size: .9rem; font-weight: 600; color: var(--text-primary); margin-bottom: .3rem; }
-    .paper-card .paper-meta  { font-size: .78rem; color: #924307; margin-bottom: .35rem; }
+    .paper-card .paper-meta  { font-size: .78rem; color: var(--dk-orange, #924307); margin-bottom: .35rem; }
     .paper-card .paper-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
     .paper-card a { color: #046de1; text-decoration: none; }
     .paper-card a:hover { text-decoration: underline; }
@@ -179,8 +178,8 @@
     .company-card p { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
 
     .adv-badge { display: inline-block; border-radius: 4px; padding: .1rem .45rem; font-size: .72rem; font-weight: 700; vertical-align: middle; margin-left: .3rem; }
-    .adv-goog { background: rgba(66,133,244,0.18); color: #184fc9; border: 1px solid rgba(26,86,219,0.35); }
-    .adv-ibm  { background: rgba(105,41,196,0.18); color: #491d8b; border: 1px solid rgba(73,29,139,0.35); }
+    .adv-goog { background: rgba(66,133,244,0.18); color: var(--dk-blue, #184fc9); border: 1px solid rgba(26,86,219,0.35); }
+    .adv-ibm  { background: rgba(105,41,196,0.18); color: var(--dk-purple, #491d8b); border: 1px solid rgba(73,29,139,0.35); }
     .adv-tie  { background: rgba(148,163,184,0.15); color: #3f5b83; border: 1px solid rgba(148,163,184,0.25); }
 
     .insight {
@@ -191,7 +190,7 @@
     .vs-divider { display: flex; align-items: center; gap: .75rem; margin: 1rem 0; }
     .vs-line { flex: 1; height: 1px; background: var(--bg-card); }
     .vs-label {
-      font-size: .9rem; font-weight: 800; color: #924307; background: rgba(180,83,9,0.1);
+      font-size: .9rem; font-weight: 800; color: var(--dk-orange, #924307); background: rgba(180,83,9,0.1);
       border: 1px solid rgba(180,83,9,0.25); border-radius: 20px; padding: .2rem .75rem;
     }
 
@@ -251,14 +250,6 @@
     .common-mistake strong { color: #6e5600; }
     [data-theme="dark"] .common-mistake strong { color: #fcd34d; }
   </style>
-
-  <style>/* dark-mode inline-color contrast pass */
-  @media screen {
-    [data-theme="dark"] [style*="color:#184fc9" i], [data-theme="dark"] [style*="color: #184fc9" i] { color: #60a5fa !important; }
-    [data-theme="dark"] [style*="color:#491d8b" i], [data-theme="dark"] [style*="color: #491d8b" i] { color: #c084fc !important; }
-    [data-theme="dark"] [style*="color:#924307" i], [data-theme="dark"] [style*="color: #924307" i] { color: #fb923c !important; }
-  }
-  </style>
 </head>
 <body>
 <div id="nav-root"></div>
@@ -269,8 +260,8 @@
   <div class="page-hero">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(180,83,9,0.1);border-color:rgba(180,83,9,0.25);color:#924307;">🖥️ Career 06 · Compare superconducting companies</div>
-        <h1><span style="color:#184fc9;">Google</span> <span style="color:#924307;" class="vs-word">vs</span> <span style="color:#491d8b;">IBM</span></h1>
+        <div class="page-hero-eyebrow" style="background:rgba(180,83,9,0.1);border-color:rgba(180,83,9,0.25);color:var(--dk-orange, #924307);">🖥️ Career 06 · Compare superconducting companies</div>
+        <h1><span style="color:var(--dk-blue, #184fc9);">Google</span> <span style="color:var(--dk-orange, #924307);" class="vs-word">vs</span> <span style="color:var(--dk-purple, #491d8b);">IBM</span></h1>
         <p class="page-hero-desc">
           The superconducting-qubit showdown between the two longest-running programs and their two ideas of progress: Google's "beyond-classical" physics milestones versus IBM's "utility" claims and dated roadmap to fault tolerance. Each headline claim is shown next to the classical-simulation papers that challenged it.
         </p>
@@ -278,7 +269,7 @@
 
       <div class="hero-split">
         <div class="hero-atom-card goog">
-          <div class="hero-atom-name" style="color:#184fc9;">Google Quantum AI</div>
+          <div class="hero-atom-name" style="color:var(--dk-blue, #184fc9);">Google Quantum AI</div>
           <div class="hero-atom-sub">Alphabet subsidiary · transmon superconducting · not separately public</div>
           <div class="hero-atom-stats">
             <span class="hero-stat-chip goog">Below-threshold QEC (Nature, Dec 2024 / Feb 2025)</span>
@@ -288,7 +279,7 @@
           </div>
         </div>
         <div class="hero-atom-card ibm">
-          <div class="hero-atom-name" style="color:#491d8b;">IBM Quantum</div>
+          <div class="hero-atom-name" style="color:var(--dk-purple, #491d8b);">IBM Quantum</div>
           <div class="hero-atom-sub">IBM Corp division · transmon superconducting · NYSE: IBM</div>
           <div class="hero-atom-stats">
             <span class="hero-stat-chip ibm">"Utility" claim (Nature 2023)</span>
@@ -377,9 +368,9 @@
       Superconducting transmon qubits are tiny LC circuits made from aluminum films on silicon or sapphire, cooled
       to millikelvin temperatures in a dilution refrigerator, and manipulated with microwave pulses. It is the
       oldest continuously-funded qubit modality at industrial scale, and it is dominated by two very differently
-      structured organizations: <strong style="color:#184fc9;">Google Quantum AI</strong> (a research division
+      structured organizations: <strong style="color:var(--dk-blue, #184fc9);">Google Quantum AI</strong> (a research division
       inside Alphabet/Google, not separately publicly traded, that treats each generation of hardware as a
-      physics-demonstration vehicle) and <strong style="color:#491d8b;">IBM Quantum</strong> (a business unit of a
+      physics-demonstration vehicle) and <strong style="color:var(--dk-purple, #491d8b);">IBM Quantum</strong> (a business unit of a
       NYSE-listed technology company founded in 1911, that has published detailed multi-year commercial roadmaps and
       announced in June 2026 that it will invest more than <span class="money">$10B</span> in quantum computing over five years). Both are chasing the same underlying physics —
       the surface code, or a related error-correcting code, layered on top of a scalable transmon lattice — but from
@@ -403,12 +394,12 @@
     </div>
 
     <div class="stat-row">
-      <div class="stat-card-sm goog"><div class="stat-num" style="color:#184fc9;">13,000×</div><div class="stat-label">Google Quantum Echoes speedup<br>vs. best classical algorithm (Nature 2025)</div></div>
-      <div class="stat-card-sm goog"><div class="stat-num" style="color:#184fc9;">105</div><div class="stat-label">Willow qubits<br>(two chip variants, Dec 2024)</div></div>
-      <div class="stat-card-sm goog"><div class="stat-num" style="color:#184fc9;">40×</div><div class="stat-label">Magic-state error reduction<br>via cultivation (<em>Science</em> 2026)</div></div>
-      <div class="stat-card-sm ibm"><div class="stat-num" style="color:#491d8b;">120</div><div class="stat-label">IBM Nighthawk qubits<br>(square lattice, Nov 2025)</div></div>
-      <div class="stat-card-sm ibm"><div class="stat-num" style="color:#491d8b;">2029</div><div class="stat-label">IBM's public target date<br>for Starling, its first FTQC system</div></div>
-      <div class="stat-card-sm ibm"><div class="stat-num" style="color:#491d8b;"><span class="money">$10B+</span></div><div class="stat-label">IBM quantum investment<br>over five years (announced Jun 2026)</div></div>
+      <div class="stat-card-sm goog"><div class="stat-num" style="color:var(--dk-blue, #184fc9);">13,000×</div><div class="stat-label">Google Quantum Echoes speedup<br>vs. best classical algorithm (Nature 2025)</div></div>
+      <div class="stat-card-sm goog"><div class="stat-num" style="color:var(--dk-blue, #184fc9);">105</div><div class="stat-label">Willow qubits<br>(two chip variants, Dec 2024)</div></div>
+      <div class="stat-card-sm goog"><div class="stat-num" style="color:var(--dk-blue, #184fc9);">40×</div><div class="stat-label">Magic-state error reduction<br>via cultivation (<em>Science</em> 2026)</div></div>
+      <div class="stat-card-sm ibm"><div class="stat-num" style="color:var(--dk-purple, #491d8b);">120</div><div class="stat-label">IBM Nighthawk qubits<br>(square lattice, Nov 2025)</div></div>
+      <div class="stat-card-sm ibm"><div class="stat-num" style="color:var(--dk-purple, #491d8b);">2029</div><div class="stat-label">IBM's public target date<br>for Starling, its first FTQC system</div></div>
+      <div class="stat-card-sm ibm"><div class="stat-num" style="color:var(--dk-purple, #491d8b);"><span class="money">$10B+</span></div><div class="stat-label">IBM quantum investment<br>over five years (announced Jun 2026)</div></div>
     </div>
 
     <div class="common-mistake" style="margin-top:1rem;">
@@ -482,7 +473,7 @@
 
     <div class="side-by-side">
       <div>
-        <h3 style="color:#184fc9;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Google Quantum AI Chips</h3>
+        <h3 style="color:var(--dk-blue, #184fc9);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Google Quantum AI Chips</h3>
         <div class="timeline" style="--dot:#4285f4;">
           <div class="tl-item"><div class="tl-year">2017–2018 · Foxtail / Bristlecone</div><div class="tl-body">20-qubit and 72-qubit prototypes establishing the fixed-frequency, tunable-coupler transmon architecture Google has used ever since.</div></div>
           <div class="tl-item"><div class="tl-year">2019 · Sycamore</div><div class="tl-body">53 usable qubits (54 fabricated, 1 non-functional). Basis of the original "quantum supremacy" claim (Section 06) — later disputed by classical-simulation papers.</div></div>
@@ -494,7 +485,7 @@
       </div>
 
       <div>
-        <h3 style="color:#491d8b;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IBM Quantum Chips</h3>
+        <h3 style="color:var(--dk-purple, #491d8b);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IBM Quantum Chips</h3>
         <div class="timeline" style="--dot:#6929c4;">
           <div class="tl-item"><div class="tl-year">2021 · Eagle</div><div class="tl-body">127 qubits, first IBM chip to break the 100-qubit barrier and the first to use the heavy-hex lattice at scale.</div></div>
           <div class="tl-item"><div class="tl-year">2022 · Osprey</div><div class="tl-body">433 qubits, heavy-hex, primarily a packaging/scaling demonstration rather than a fidelity milestone.</div></div>
@@ -813,7 +804,7 @@ Google's Dec 2024 result measured the error-suppression factor $\Lambda$ directl
 
     <div class="side-by-side">
       <div>
-        <h3 style="color:#184fc9;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Google Quantum AI Ecosystem</h3>
+        <h3 style="color:var(--dk-blue, #184fc9);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Google Quantum AI Ecosystem</h3>
         <div class="company-card">
           <h4><a href="https://abc.xyz" target="_blank" rel="noopener">Alphabet Inc. ↗</a></h4>
           <p>Parent company (NASDAQ: GOOGL). Quantum AI is funded as part of Alphabet's broader research investment, alongside DeepMind and Google Research, without a separately reported budget.</p>
@@ -837,7 +828,7 @@ Google's Dec 2024 result measured the error-suppression factor $\Lambda$ directl
       </div>
 
       <div>
-        <h3 style="color:#491d8b;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IBM Quantum Ecosystem</h3>
+        <h3 style="color:var(--dk-purple, #491d8b);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">IBM Quantum Ecosystem</h3>
         <div class="company-card">
           <h4><a href="https://www.ibm.com/quantum" target="_blank" rel="noopener">IBM Quantum Network ↗</a></h4>
           <p>A large, long-running (since 2016) consortium of enterprise, government, and academic partners with cloud access to IBM hardware — one of the broadest and oldest quantum-cloud-access programs in the industry.</p>
@@ -875,7 +866,7 @@ Google's Dec 2024 result measured the error-suppression factor $\Lambda$ directl
     <h2 class="section-title"><span class="accent">10</span> Key Papers &amp; References</h2>
     <p class="section-sub">Primary sources for every claim above: peer-reviewed papers, preprints, and company/press material, clearly separated.</p>
 
-    <h3 style="color:#184fc9;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">Google, Landmark Papers &amp; Releases</h3>
+    <h3 style="color:var(--dk-blue, #184fc9);font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">Google, Landmark Papers &amp; Releases</h3>
     <div class="paper-grid">
       <div class="paper-card">
         <div class="paper-title">Quantum supremacy using a programmable superconducting processor</div>
@@ -915,7 +906,7 @@ Google's Dec 2024 result measured the error-suppression factor $\Lambda$ directl
       </div>
     </div>
 
-    <h3 style="color:#491d8b;font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">IBM, Landmark Papers &amp; Releases</h3>
+    <h3 style="color:var(--dk-purple, #491d8b);font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">IBM, Landmark Papers &amp; Releases</h3>
     <div class="paper-grid">
       <div class="paper-card">
         <div class="paper-title">Evidence for the utility of quantum computing before fault tolerance</div>
@@ -1013,8 +1004,8 @@ Google's Dec 2024 result measured the error-suppression factor $\Lambda$ directl
 </footer>
 
 <!-- KaTeX -->
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+<script src="../vendor/katex/0.16.11/katex.min.js" defer></script>
+<script src="../vendor/katex/0.16.11/contrib/auto-render.min.js" defer></script>
 
 <script src="../js/main.js?v=58"></script>
 <script src="../js/versus.js?v=3"></script>

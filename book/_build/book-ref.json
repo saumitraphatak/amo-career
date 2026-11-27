@@ -189,5 +189,153 @@
       "Ultra-High Vacuum (UHV)",
       "Pressure regime below 10<sup>-9</sup> Torr (typically 10<sup>-11</sup> Torr in science cells) required to limit background-gas collisions with trapped atoms."
     ]
+  ],
+  "formulas": [
+    {
+      "group": "Laser Cooling &amp; MOTs",
+      "rows": [
+        [
+          "Doppler limit",
+          "T<sub>D</sub> = &hbar;&Gamma; / (2k<sub>B</sub>)",
+          "~146 &mu;K (<sup>87</sup>Rb D2)",
+          "cooling-simulator",
+          13
+        ],
+        [
+          "Recoil temperature",
+          "E<sub>r</sub>/k<sub>B</sub> = (&hbar;k)<sup>2</sup> / (2m k<sub>B</sub>); &nbsp; T<sub>r</sub> = 2E<sub>r</sub>/k<sub>B</sub>",
+          "181 nK and 362 nK (<sup>87</sup>Rb D2); conventions differ, so say which you quote",
+          "tof-calculator",
+          15
+        ],
+        [
+          "Saturation intensity",
+          "I<sub>sat</sub> = &pi; h c &Gamma; / (3 &lambda;<sup>3</sup>)",
+          "1.67 mW/cm<sup>2</sup> (<sup>87</sup>Rb)",
+          "atom-library",
+          1
+        ],
+        [
+          "Scattering rate",
+          "R<sub>sc</sub> = (&Gamma;/2) &middot; s<sub>0</sub> / (1 + s<sub>0</sub> + 4&Delta;<sup>2</sup>/&Gamma;<sup>2</sup>)",
+          "max &Gamma;/2 &approx; 1.9&times;10<sup>7</sup> s<sup>-1</sup>",
+          "imaging-calculator",
+          16
+        ],
+        [
+          "TOF ballistic expansion",
+          "&sigma;<sup>2</sup>(t) = &sigma;<sub>0</sub><sup>2</sup> + (k<sub>B</sub>T / m) t<sup>2</sup>",
+          "slope gives T directly",
+          "tof-calculator",
+          15
+        ]
+      ]
+    },
+    {
+      "group": "Optical Tweezers &amp; Gaussian Beams",
+      "rows": [
+        [
+          "Diffraction waist",
+          "w<sub>0</sub> &approx; &lambda; / (&pi; NA)",
+          "0.6&ndash;0.9 &mu;m (NA &ge; 0.5)",
+          "tweezer-designer",
+          8
+        ],
+        [
+          "Rayleigh range",
+          "z<sub>R</sub> = &pi; w<sub>0</sub><sup>2</sup> / &lambda;",
+          "2&ndash;4 &mu;m",
+          "tweezer-designer",
+          8
+        ],
+        [
+          "Dipole trap depth",
+          "U<sub>0</sub> = Re[&alpha;(&omega;)] I<sub>peak</sub> / (2 &epsilon;<sub>0</sub> c)",
+          "U<sub>0</sub>/k<sub>B</sub> ~ 0.5&ndash;1.5 mK",
+          "tweezer-designer",
+          8
+        ],
+        [
+          "Harmonic trap frequencies",
+          "&omega;<sub>r</sub> = (4U<sub>0</sub> / m w<sub>0</sub><sup>2</sup>)<sup>1/2</sup>, &nbsp; &omega;<sub>z</sub> = (2U<sub>0</sub> / m z<sub>R</sub><sup>2</sup>)<sup>1/2</sup>",
+          "&omega;<sub>r</sub>/2&pi; ~ 50&ndash;150 kHz",
+          "release-recapture",
+          17
+        ],
+        [
+          "Lamb-Dicke parameter",
+          "&eta; = k<sub>L</sub> (&hbar; / 2m&omega;)<sup>1/2</sup>",
+          "&eta; &ll; 1 for sideband cooling",
+          "laser-cooling",
+          18
+        ]
+      ]
+    },
+    {
+      "group": "Rydberg Gates &amp; Cavity QED",
+      "rows": [
+        [
+          "Van der Waals shift",
+          "V(R) = C<sub>6</sub> / R<sup>6</sup> &nbsp; (C<sub>6</sub> &prop; n*<sup>11</sup>)",
+          "tens of MHz to ~1 GHz at R ~ 3&ndash;5 &mu;m (n ~ 70)",
+          "rydberg-calculator",
+          24
+        ],
+        [
+          "Blockade radius",
+          "R<sub>b</sub> = (C<sub>6</sub> / &hbar;&Omega;)<sup>1/6</sup>",
+          "5&ndash;10 &mu;m (n ~ 60&ndash;70)",
+          "rydberg-calculator",
+          24
+        ],
+        [
+          "Single-atom cooperativity",
+          "C = g<sub>0</sub><sup>2</sup> / (&kappa;&gamma;), with half-widths &kappa; = FSR/(2<i>F</i>) and &gamma; = &Gamma;/2",
+          "C &gt; 1: the cavity mode wins over free space",
+          "cavity-qed",
+          11
+        ],
+        [
+          "Cavity finesse &amp; FSR",
+          "FSR = c / (2L), &nbsp; full linewidth 2&kappa; = FSR / <i>F</i>",
+          "<i>F</i> ~ 10<sup>3</sup>&ndash;10<sup>5</sup>",
+          "cavity-qed",
+          11
+        ]
+      ]
+    },
+    {
+      "group": "Benchmarking &amp; Error Correction",
+      "rows": [
+        [
+          "RB survival decay",
+          "F(m) = A p<sup>m</sup> + B",
+          "B = 1/d (0.5 for 1Q, 0.25 for 2Q)",
+          "rb-explorer",
+          26
+        ],
+        [
+          "Error per Clifford",
+          "r<sub>C</sub> = (d &minus; 1)(1 &minus; p) / d",
+          "r<sub>C</sub> &lt; 0.005 (2Q SOTA)",
+          "rb-explorer",
+          26
+        ],
+        [
+          "Interleaved gate error",
+          "r<sub>gate</sub> = [(d &minus; 1)/d] (1 &minus; p<sub>int</sub> / p<sub>ref</sub>)",
+          "isolates target gate G",
+          "rb-explorer",
+          26
+        ],
+        [
+          "Surface-code threshold",
+          "p<sub>th</sub> &approx; 1% (circuit-level Pauli) vs. ~4% when most errors are converted to erasures (<sup>171</sup>Yb)",
+          "distance d corrects d&minus;1 flagged erasures but only &lfloor;(d&minus;1)/2&rfloor; unflagged errors",
+          "learn-quantum",
+          21
+        ]
+      ]
+    }
   ]
 }

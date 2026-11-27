@@ -13,7 +13,7 @@ Each run is a **fresh session with no memory**. Everything it needs is in this r
   - `python3 tests/formula_regression.py` (run on the Mac; must print `OK 11 …` or more).
   - `tests/browser/smoke.js`: loads every page, dark + light at 1280 px and dark at 390 px, and reports page errors, console errors and horizontal overflow. It compares against a baseline so pre-existing issues don't hide new ones.
   - `tests/browser/chartstub.js`: the Chart.js stand-in the smoke test injects.
-  - **Real Chart.js / KaTeX for rendered checks.** npm and the CDNs are blocked in the cloud workspace, but GitHub release downloads work:
+  - **Real Chart.js / KaTeX for rendered checks.** Since 2026-11-27 both are vendored in `vendor/`, so any local test server already serves them. (For older checkouts: npm and the CDNs are blocked in the cloud workspace, but GitHub release downloads work:)
     - `curl -sSL -o cjs.tgz https://github.com/chartjs/Chart.js/releases/download/v4.4.3/chart.js-4.4.3.tgz` (use `package/dist/chart.umd.js`);
     - `https://github.com/KaTeX/KaTeX/releases/download/v0.16.11/katex.tar.gz`.
 
@@ -40,7 +40,7 @@ Each run is a **fresh session with no memory**. Everything it needs is in this r
   - Label schematics as schematics.
   - Flag preprints as preprints; the site already has `source-tag` styles for peer-reviewed / preprint / company / roadmap.
 - **Follow the site's rules.** See `CLAUDE.md`, `docs/site-philosophy.md` and the page's `docs/page-notes/<slug>.md`.
-  - Static HTML/CSS/vanilla JS; CDN libraries only (no build step, no npm deps on the site).
+  - Static HTML/CSS/vanilla JS; libraries are vendored in `vendor/` (KaTeX, Chart.js; see `vendor/README.md`), no build step, no npm deps on the site.
   - "No phantom features."
   - Route-panel cards stay 1:1 with sections where they are 1:1 today.
   - Theory before tool.

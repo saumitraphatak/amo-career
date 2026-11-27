@@ -4,11 +4,13 @@ const { chromium } = require('playwright');
 const http = require('http'), fs = require('fs'), path = require('path');
 const [dir0, out0, only] = process.argv.slice(2);
 const dir = path.resolve(dir0), outDir = path.resolve(out0);
-// Dependencies: Playwright, KaTeX and Chart.js (npm), resolved from node_modules; override with KATEX_DIST / CHARTJS_UMD.
+// Dependencies: Playwright. KaTeX and Chart.js come from the repo's vendor/ folder (or node_modules); override with KATEX_DIST / CHARTJS_UMD.
 const tryResolve = (...ids) => { for (const id of ids) { try { return require.resolve(id); } catch (e) {} } return null; };
-const KATEX = process.env.KATEX_DIST || path.dirname(tryResolve('katex/dist/katex.min.js', '/opt/npm-tools/node_modules/katex/dist/katex.min.js') || '.');
-const CHART = process.env.CHARTJS_UMD || tryResolve('chart.js/dist/chart.umd.js', 'chart.js/dist/chart.umd.min.js') || path.resolve(__dirname, '../vendor/chart.umd.js');
-if (!fs.existsSync(path.join(KATEX, 'katex.min.js')) || !fs.existsSync(CHART)) { console.error('Need KaTeX and Chart.js: npm i katex chart.js (or set KATEX_DIST / CHARTJS_UMD)'); process.exit(2); }
+// the site vendors both (vendor/README.md), so the repo's own copies are the default
+const VENDOR = path.resolve(__dirname, '../../vendor');
+const KATEX = process.env.KATEX_DIST || [path.join(VENDOR, 'katex/0.16.11'), path.dirname(tryResolve('katex/dist/katex.min.js', '/opt/npm-tools/node_modules/katex/dist/katex.min.js') || '.')].find(d => fs.existsSync(path.join(d, 'katex.min.js')));
+const CHART = process.env.CHARTJS_UMD || [path.join(VENDOR, 'chart.js/4.4.3/chart.umd.js'), tryResolve('chart.js/dist/chart.umd.js', 'chart.js/dist/chart.umd.min.js')].find(f => f && fs.existsSync(f));
+if (!KATEX || !CHART) { console.error('Need KaTeX and Chart.js: npm i katex chart.js (or set KATEX_DIST / CHARTJS_UMD)'); process.exit(2); }
 fs.mkdirSync(outDir, { recursive: true });
 const T = { '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json' };
 const srv = http.createServer((q, r) => {
@@ -57,6 +59,8 @@ function extractInPage(origin) {
     } catch (e) { return false; }
   }
   const SVG_PROPS = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'fill-opacity', 'stroke-opacity', 'font-size', 'font-weight', 'font-family', 'font-style', 'text-anchor', 'dominant-baseline'];
+  // the nearest id on the live page, so a book figure can link to the exact widget rather than the top of the page
+  const anchorOf = el => { const a = el.closest('[id]:not(main):not(body):not(#nav-root):not(#main-content)'); return a && /^[A-Za-z][\w-]*$/.test(a.id) ? ` data-anchor="${a.id}"` : ''; };
   function svgOut(svg) {
     const r = svg.getBoundingClientRect();
     if (r.width < 60 || r.height < 40) return '';
@@ -75,7 +79,7 @@ function extractInPage(origin) {
     clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     // keep <title>/<desc> for accessibility; drop scripts/styles that reference page classes
     clone.querySelectorAll('style,script').forEach(n => n.remove());
-    return `<figure class="fig svgfig" style="--ar:${(r.width / r.height).toFixed(3)}">${clone.outerHTML}</figure>`;
+    return `<figure class="fig svgfig"${anchorOf(svg)} style="--ar:${(r.width / r.height).toFixed(3)}">${clone.outerHTML}</figure>`;
   }
   function canvasOut(cv) {
     if (!visible(cv) || isBlank(cv)) return '';
@@ -83,7 +87,7 @@ function extractInPage(origin) {
       const url = cv.toDataURL('image/png'); const id = 'img' + (++imgN);
       images.push({ id, url, w: cv.width, h: cv.height });
       const label = cv.getAttribute('aria-label') || '';
-      return `<figure class="fig"><img data-img="${id}" alt="${esc(label)}" width="${cv.width}" height="${cv.height}"></figure>`;
+      return `<figure class="fig"${anchorOf(cv)}><img data-img="${id}" alt="${esc(label)}" width="${cv.width}" height="${cv.height}"></figure>`;
     } catch (e) { return ''; }
   }
   function inline(node) {
@@ -126,7 +130,7 @@ function extractInPage(origin) {
     if (el.dataset && el.dataset.bookshot && window.__shots && window.__shots[el.dataset.bookshot]) {
       const id = 'img' + (++imgN), u = window.__shots[el.dataset.bookshot];
       images.push({ id, url: u.url, w: u.w, h: u.h });
-      return `<figure class="fig"><img data-img="${id}" alt="" width="${u.w}" height="${u.h}"></figure>`;
+      return `<figure class="fig"${anchorOf(el)}><img data-img="${id}" alt="" width="${u.w}" height="${u.h}"></figure>`;
     }
     if (el.tagName === 'svg' || el.tagName === 'SVG') return visible(el) ? svgOut(el) : '';
     if (el.tagName === 'CANVAS') return canvasOut(el);
@@ -182,7 +186,7 @@ function extractInPage(origin) {
       const longest = Math.max(0, ...[...el.querySelectorAll('p,li')].map(x => x.innerText.length));
       if (longest < 140 && el.innerText.length < 900) return '<p class="ctl"></p>';
     }
-    if (CARDRE.test(cls) && !nCtl && !el.querySelector('svg,canvas,table,ul,ol,h2,h3') && el.innerText.trim().length < 160) {
+    if (CARDRE.test(cls) && !el.matches('.route-card') && !nCtl && !el.querySelector('svg,canvas,table,ul,ol,h2,h3') && el.innerText.trim().length < 160) {   // route cards are numbered steps, not readouts
       const leaves = [...el.querySelectorAll('*')].filter(x => visible(x) && !x.children.length && x.innerText && x.innerText.trim()).map(x => x.closest('.katex') ? null : x).filter(Boolean);
       const parts = []; const seen = new Set();
       for (const x of leaves) { const top = x.closest('p,div,span') || x; if (seen.has(top)) continue; seen.add(top); }
@@ -291,6 +295,8 @@ srv.listen(0, '127.0.0.1', async () => {
         return L.reduce((a, b) => a + b, 0) / L.length <= 4.5 && Math.max(...L) <= 30;
       });
       for (const el of cands) { if (el.closest('[data-bookshot]')) continue; el.dataset.bookshot = String(++n); }
+      // CSS-drawn diagrams that read as loose words when flattened to text (polarimetry's beam paths); a page can opt in with data-book-shot
+      main.querySelectorAll('.pol-oppath, .pol-sphere-grid, [data-book-shot]').forEach(el => { if (!el.closest('[data-bookshot]') && el.getBoundingClientRect().width > 100) el.dataset.bookshot = String(++n); });
       return n;
     });
     const shots = {};

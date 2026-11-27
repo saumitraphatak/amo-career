@@ -22,13 +22,12 @@
   <link rel="canonical" href="https://amotoolkit.com/pages/psiquantum-vs-xanadu.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/styles.css?v=42">
+  <link rel="stylesheet" href="../css/styles.css?v=43">
   <!-- hold first paint until the nav is rendered (smooth page-to-page transitions) -->
   <link rel="expect" href="#amo-nav-ready" blocking="render">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../vendor/katex/0.16.11/katex.min.css">
+  <script src="../vendor/chart.js/4.4.3/chart.umd.js"></script>
 
   <style>
     /* ── page theme ─────────────────────────────────── */
@@ -55,7 +54,7 @@
       color: var(--text-muted); cursor: pointer; transition: all .18s; white-space: nowrap;
     }
     .tnav-btn:hover   { color: var(--text-primary); border-color: rgba(190,24,93,0.35); }
-    .tnav-btn.active  { color: #ae1655; background: rgba(190,24,93,0.1); border-color: rgba(190,24,93,0.4); }
+    .tnav-btn.active  { color: var(--dk-pink, #ae1655); background: rgba(190,24,93,0.1); border-color: rgba(190,24,93,0.4); }
 
     .page-hero {
       background: linear-gradient(135deg, rgba(124,58,237,0.06) 0%, rgba(13,148,136,0.06) 100%);
@@ -73,8 +72,8 @@
     .hero-atom-sub  { font-size: .85rem; color: var(--text-muted); margin: 0; }
     .hero-atom-stats { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
     .hero-stat-chip { border-radius: 6px; padding: .15rem .55rem; font-size: .76rem; font-weight: 600; }
-    .hero-stat-chip.psi { background: rgba(124,58,237,0.15); color: #5b21b6; border: 1px solid rgba(91,33,182,0.3); }
-    .hero-stat-chip.xan { background: rgba(13,148,136,0.15); color: #065f46; border: 1px solid rgba(6,95,70,0.3); }
+    .hero-stat-chip.psi { background: rgba(124,58,237,0.15); color: var(--dk-purple, #5b21b6); border: 1px solid rgba(91,33,182,0.3); }
+    .hero-stat-chip.xan { background: rgba(13,148,136,0.15); color: var(--dk-green, #065f46); border: 1px solid rgba(6,95,70,0.3); }
 
     .page-content .container { padding-top: 2.5rem; padding-bottom: 4rem; }
     .section-block { margin-bottom: 3.5rem; scroll-margin-top: 120px; }
@@ -96,8 +95,8 @@
     .atom-col.xan .atom-col-header { border-color: rgba(13,148,136,0.25); }
 
     .atom-col-title { font-size: 1.05rem; font-weight: 700; }
-    .atom-col.psi .atom-col-title { color: #5b21b6; }
-    .atom-col.xan .atom-col-title { color: #065f46; }
+    .atom-col.psi .atom-col-title { color: var(--dk-purple, #5b21b6); }
+    .atom-col.xan .atom-col-title { color: var(--dk-green, #065f46); }
 
     .atom-col ul { padding-left: 1.1rem; margin: 0; }
     .atom-col li { font-size: .86rem; color: var(--text-muted); margin-bottom: .42rem; line-height: 1.55; }
@@ -112,19 +111,19 @@
       background: rgba(190,24,93,0.07); border: 1px solid rgba(190,24,93,0.22); border-radius: 10px;
       padding: 1rem 1.2rem; margin: .8rem 0; font-size: .87rem; color: var(--text-secondary); line-height: 1.65;
     }
-    .info-box strong { color: #ae1655; }
+    .info-box strong { color: var(--dk-pink, #ae1655); }
 
     .psi-box {
       background: rgba(124,58,237,0.07); border: 1px solid rgba(124,58,237,0.22); border-radius: 10px;
       padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
     }
-    .psi-box strong { color: #5b21b6; }
+    .psi-box strong { color: var(--dk-purple, #5b21b6); }
 
     .xan-box {
       background: rgba(13,148,136,0.07); border: 1px solid rgba(13,148,136,0.22); border-radius: 10px;
       padding: .9rem 1.2rem; margin: .7rem 0; font-size: .86rem; color: var(--text-secondary); line-height: 1.6;
     }
-    .xan-box strong { color: #065f46; }
+    .xan-box strong { color: var(--dk-green, #065f46); }
 
     .chart-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
     .chart-caption { font-size: .78rem; color: var(--text-muted); margin: .4rem 0 0 0; font-style: italic; }
@@ -132,16 +131,16 @@
     .cmp-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
     .cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
     .cmp th { padding: .65rem .9rem; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; font-size: .8rem; }
-    .cmp th.psi-h { background: rgba(124,58,237,0.12); color: #5b21b6; }
-    .cmp th.xan-h { background: rgba(13,148,136,0.12); color: #065f46; }
+    .cmp th.psi-h { background: rgba(124,58,237,0.12); color: var(--dk-purple, #5b21b6); }
+    .cmp th.xan-h { background: rgba(13,148,136,0.12); color: var(--dk-green, #065f46); }
     .cmp th.cat-h { background: var(--bg-card); color: var(--text-muted); }
     .cmp td { color: var(--text-secondary); padding: .55rem .9rem; border-bottom: 1px solid #0d1827; vertical-align: top; line-height: 1.55; }
     .cmp td.psi-td { background: rgba(124,58,237,0.04); }
     .cmp td.xan-td { background: rgba(13,148,136,0.04); }
     .cmp tr:hover td { filter: brightness(1.1); }
     .cmp .win { font-weight: 700; }
-    .cmp .win.psi { color: #5b21b6; }
-    .cmp .win.xan { color: #065f46; }
+    .cmp .win.psi { color: var(--dk-purple, #5b21b6); }
+    .cmp .win.xan { color: var(--dk-green, #065f46); }
     .cmp .win.tie { color: #3f5b83; }
 
     .stat-row { display: grid; grid-template-columns: repeat(5,1fr); gap: .9rem; margin: 1.2rem 0; }
@@ -160,7 +159,7 @@
     }
     .paper-card:hover { border-color: rgba(190,24,93,0.35); }
     .paper-card .paper-title { font-size: .9rem; font-weight: 600; color: var(--text-primary); margin-bottom: .3rem; }
-    .paper-card .paper-meta  { font-size: .78rem; color: #ae1655; margin-bottom: .35rem; }
+    .paper-card .paper-meta  { font-size: .78rem; color: var(--dk-pink, #ae1655); margin-bottom: .35rem; }
     .paper-card .paper-desc  { font-size: .82rem; color: var(--text-muted); line-height: 1.55; margin: 0; }
     .paper-card a { color: #046de1; text-decoration: none; }
     .paper-card a:hover { text-decoration: underline; }
@@ -179,8 +178,8 @@
     .company-card p { font-size: .83rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
 
     .adv-badge { display: inline-block; border-radius: 4px; padding: .1rem .45rem; font-size: .72rem; font-weight: 700; vertical-align: middle; margin-left: .3rem; }
-    .adv-psi { background: rgba(124,58,237,0.18); color: #5b21b6; border: 1px solid rgba(91,33,182,0.35); }
-    .adv-xan { background: rgba(13,148,136,0.18); color: #065f46; border: 1px solid rgba(6,95,70,0.35); }
+    .adv-psi { background: rgba(124,58,237,0.18); color: var(--dk-purple, #5b21b6); border: 1px solid rgba(91,33,182,0.35); }
+    .adv-xan { background: rgba(13,148,136,0.18); color: var(--dk-green, #065f46); border: 1px solid rgba(6,95,70,0.35); }
     .adv-tie { background: rgba(148,163,184,0.15); color: #3f5b83; border: 1px solid rgba(148,163,184,0.25); }
 
     .insight {
@@ -191,7 +190,7 @@
     .vs-divider { display: flex; align-items: center; gap: .75rem; margin: 1rem 0; }
     .vs-line { flex: 1; height: 1px; background: var(--bg-card); }
     .vs-label {
-      font-size: .9rem; font-weight: 800; color: #ae1655; background: rgba(190,24,93,0.1);
+      font-size: .9rem; font-weight: 800; color: var(--dk-pink, #ae1655); background: rgba(190,24,93,0.1);
       border: 1px solid rgba(190,24,93,0.25); border-radius: 20px; padding: .2rem .75rem;
     }
 
@@ -251,14 +250,6 @@
     .common-mistake strong { color: #6e5600; }
     [data-theme="dark"] .common-mistake strong { color: #fcd34d; }
   </style>
-
-  <style>/* dark-mode inline-color contrast pass */
-  @media screen {
-    [data-theme="dark"] [style*="color:#065f46" i], [data-theme="dark"] [style*="color: #065f46" i] { color: #34d399 !important; }
-    [data-theme="dark"] [style*="color:#5b21b6" i], [data-theme="dark"] [style*="color: #5b21b6" i] { color: #c084fc !important; }
-    [data-theme="dark"] [style*="color:#ae1655" i], [data-theme="dark"] [style*="color: #ae1655" i] { color: #f472b6 !important; }
-  }
-  </style>
 </head>
 <body>
 <div id="nav-root"></div>
@@ -269,15 +260,15 @@
   <div class="page-hero">
     <div class="container page-hero-2col">
       <div class="page-hero-text">
-        <div class="page-hero-eyebrow" style="background:rgba(190,24,93,0.1);border-color:rgba(190,24,93,0.25);color:#ae1655;">💡 Career 07 · Compare photonic companies</div>
-        <h1><span style="color:#5b21b6;">PsiQuantum</span> <span style="color:#ae1655;" class="vs-word">vs</span> <span style="color:#065f46;">Xanadu</span></h1>
+        <div class="page-hero-eyebrow" style="background:rgba(190,24,93,0.1);border-color:rgba(190,24,93,0.25);color:var(--dk-pink, #ae1655);">💡 Career 07 · Compare photonic companies</div>
+        <h1><span style="color:var(--dk-purple, #5b21b6);">PsiQuantum</span> <span style="color:var(--dk-pink, #ae1655);" class="vs-word">vs</span> <span style="color:var(--dk-green, #065f46);">Xanadu</span></h1>
         <p class="page-hero-desc">
           The photonic showdown, and an asymmetric one: PsiQuantum has raised more money and published record component fidelities but no public full system, while Xanadu has run complete photonic machines in public, with peer-reviewed results, and is now listed. This page keeps that difference explicit instead of comparing unlike numbers.
         </p>
         <p class="vs-checked">Numbers checked on 21 Nov 2026. Each one is dated where it appears and tagged <span class="source-tag peer-reviewed">peer-reviewed</span>, <span class="source-tag preprint">preprint</span> or <span class="source-tag company-roadmap">company</span>; company figures move fast, so check the source before quoting one.</p>
       <div class="hero-split">
         <div class="hero-atom-card psi">
-          <div class="hero-atom-name" style="color:#5b21b6;">PsiQuantum</div>
+          <div class="hero-atom-name" style="color:var(--dk-purple, #5b21b6);">PsiQuantum</div>
           <p class="hero-atom-sub">Private, Palo Alto · silicon-photonic, fusion-based · <span class="money">$7B</span> valuation (Series E, Sep 2025)</p>
           <div class="hero-atom-stats">
             <span class="hero-stat-chip psi">99.5% two-photon interference (Nature 2025)</span>
@@ -287,7 +278,7 @@
           </div>
         </div>
         <div class="hero-atom-card xan">
-          <div class="hero-atom-name" style="color:#065f46;">Xanadu</div>
+          <div class="hero-atom-name" style="color:var(--dk-green, #065f46);">Xanadu</div>
           <p class="hero-atom-sub">Public (Nasdaq &amp; TSX: XNDU, since Mar 2026) · squeezed-light CV + fusion, room-temp photonics</p>
           <div class="hero-atom-stats">
             <span class="hero-stat-chip xan">Borealis: peer-reviewed quantum advantage (2022)</span>
@@ -361,9 +352,9 @@
       extreme cryogenic cooling of the qubits themselves. In exchange, photons are hard to store, hard to make
       interact with each other for two-qubit gates, and are lost from the system at a much higher rate than other
       modalities' error rates — loss, not just gate infidelity, is the central engineering problem. Two companies
-      dominate the well-funded end of this approach: <strong style="color:#5b21b6;">PsiQuantum</strong> (founded
+      dominate the well-funded end of this approach: <strong style="color:var(--dk-purple, #5b21b6);">PsiQuantum</strong> (founded
       2015, Palo Alto, still private, pursuing a fusion-based architecture built entirely on silicon-photonic chips
-      fabricated at GlobalFoundries) and <strong style="color:#065f46;">Xanadu</strong> (founded 2016, Toronto,
+      fabricated at GlobalFoundries) and <strong style="color:var(--dk-green, #065f46);">Xanadu</strong> (founded 2016, Toronto,
       publicly traded on Nasdaq and the TSX under <strong>XNDU</strong> since March 2026, pursuing continuous-variable
       squeezed-light and, more recently, fusion-based gate-model architectures).
     </p>
@@ -384,11 +375,11 @@
     </div>
 
     <div class="stat-row">
-      <div class="stat-card-sm psi"><div class="stat-num" style="color:#5b21b6;">99.5%</div><div class="stat-label">PsiQuantum 2-photon interference<br>(Nature 2025, component-level)</div></div>
-      <div class="stat-card-sm psi"><div class="stat-num" style="color:#5b21b6;"><span class="money">$7B</span></div><div class="stat-label">PsiQuantum valuation<br>(Series E, Sep 2025, private)</div></div>
-      <div class="stat-card-sm xan"><div class="stat-num" style="color:#065f46;">216</div><div class="stat-label">Xanadu Borealis squeezed modes<br>(Nature 2022, peer-reviewed advantage)</div></div>
-      <div class="stat-card-sm xan"><div class="stat-num" style="color:#065f46;">12</div><div class="stat-label">Xanadu Aurora qubits<br>(2025, full universal system)</div></div>
-      <div class="stat-card-sm xan"><div class="stat-num" style="color:#065f46;">XNDU</div><div class="stat-label">Nasdaq &amp; TSX ticker<br>(public since Mar 27, 2026)</div></div>
+      <div class="stat-card-sm psi"><div class="stat-num" style="color:var(--dk-purple, #5b21b6);">99.5%</div><div class="stat-label">PsiQuantum 2-photon interference<br>(Nature 2025, component-level)</div></div>
+      <div class="stat-card-sm psi"><div class="stat-num" style="color:var(--dk-purple, #5b21b6);"><span class="money">$7B</span></div><div class="stat-label">PsiQuantum valuation<br>(Series E, Sep 2025, private)</div></div>
+      <div class="stat-card-sm xan"><div class="stat-num" style="color:var(--dk-green, #065f46);">216</div><div class="stat-label">Xanadu Borealis squeezed modes<br>(Nature 2022, peer-reviewed advantage)</div></div>
+      <div class="stat-card-sm xan"><div class="stat-num" style="color:var(--dk-green, #065f46);">12</div><div class="stat-label">Xanadu Aurora qubits<br>(2025, full universal system)</div></div>
+      <div class="stat-card-sm xan"><div class="stat-num" style="color:var(--dk-green, #065f46);">XNDU</div><div class="stat-label">Nasdaq &amp; TSX ticker<br>(public since Mar 27, 2026)</div></div>
     </div>
 
     <div class="common-mistake" style="margin-top:1rem;">
@@ -463,7 +454,7 @@
 
     <div class="side-by-side">
       <div>
-        <h3 style="color:#5b21b6;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">PsiQuantum</h3>
+        <h3 style="color:var(--dk-purple, #5b21b6);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">PsiQuantum</h3>
         <div class="timeline" style="--dot:#7c3aed;">
           <div class="tl-item"><div class="tl-year">2015 · Founded</div><div class="tl-body">Founded in Palo Alto by Jeremy O'Brien, Terry Rudolph, and others from the UK photonic-quantum-computing academic community.</div></div>
           <div class="tl-item"><div class="tl-year">Feb 2025 · Omega chipset + Nature paper</div><div class="tl-body">"A manufacturable platform for photonic quantum computing," Nature 641, 876–883: record component fidelities (99.98% SPAM, 99.5% two-photon interference, 99.22% two-qubit fusion, 99.72% chip-to-chip interconnect), all conditional on photon detection; component/subsystem-level only.</div></div>
@@ -476,7 +467,7 @@
       </div>
 
       <div>
-        <h3 style="color:#065f46;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Xanadu</h3>
+        <h3 style="color:var(--dk-green, #065f46);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Xanadu</h3>
         <div class="timeline" style="--dot:#0d9488;">
           <div class="tl-item"><div class="tl-year">2016 · Founded</div><div class="tl-body">Founded in Toronto by Christian Weedbrook and collaborators, initially focused on continuous-variable photonic quantum computing and the open-source PennyLane software framework.</div></div>
           <div class="tl-item"><div class="tl-year">Jun 2022 · Borealis quantum advantage</div><div class="tl-body">"Quantum computational advantage with a programmable photonic processor," Nature 606, 75–81: 216-mode Gaussian boson sampling; one sample in 36 microseconds versus an estimated ~9,000 years on the Fugaku supercomputer for classical simulation. Made available for public cloud access after publication.</div></div>
@@ -755,7 +746,7 @@ Because photon loss compounds across every optical component a photon passes thr
 
     <div class="side-by-side">
       <div>
-        <h3 style="color:#5b21b6;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">PsiQuantum Ecosystem</h3>
+        <h3 style="color:var(--dk-purple, #5b21b6);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">PsiQuantum Ecosystem</h3>
         <div class="company-card">
           <h4>GlobalFoundries</h4>
           <p>Commercial semiconductor foundry (New York) manufacturing PsiQuantum's Omega silicon-photonic chipset — a rare example of a quantum computing hardware company relying on an established, high-volume commercial fab rather than its own custom cleanroom.</p>
@@ -783,7 +774,7 @@ Because photon loss compounds across every optical component a photon passes thr
       </div>
 
       <div>
-        <h3 style="color:#065f46;font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Xanadu Ecosystem</h3>
+        <h3 style="color:var(--dk-green, #065f46);font-size:1rem;font-weight:700;margin:0 0 .8rem 0;">Xanadu Ecosystem</h3>
         <div class="company-card">
           <h4>Crane Harbor Acquisition Corp.</h4>
           <p>The SPAC vehicle Xanadu merged with to go public (closed March 2026), now dissolved into the combined public entity trading as XNDU.</p>
@@ -829,7 +820,7 @@ Because photon loss compounds across every optical component a photon passes thr
     <h2 class="section-title"><span class="accent">09</span> Key Papers &amp; References</h2>
     <p class="section-sub">Primary sources for every claim above: peer-reviewed papers, preprints, and company/press material, clearly separated.</p>
 
-    <h3 style="color:#5b21b6;font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">PsiQuantum, Landmark Papers &amp; Releases</h3>
+    <h3 style="color:var(--dk-purple, #5b21b6);font-size:.95rem;font-weight:700;margin:0 0 .75rem 0;">PsiQuantum, Landmark Papers &amp; Releases</h3>
     <div class="paper-grid">
       <div class="paper-card">
         <div class="paper-title">A manufacturable platform for photonic quantum computing</div>
@@ -857,7 +848,7 @@ Because photon loss compounds across every optical component a photon passes thr
       </div>
     </div>
 
-    <h3 style="color:#065f46;font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Xanadu, Landmark Papers &amp; Releases</h3>
+    <h3 style="color:var(--dk-green, #065f46);font-size:.95rem;font-weight:700;margin:1.5rem 0 .75rem 0;">Xanadu, Landmark Papers &amp; Releases</h3>
     <div class="paper-grid">
       <div class="paper-card">
         <div class="paper-title">Quantum computational advantage with a programmable photonic processor</div>
@@ -954,8 +945,8 @@ Because photon loss compounds across every optical component a photon passes thr
 </footer>
 
 <!-- KaTeX -->
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" defer></script>
+<script src="../vendor/katex/0.16.11/katex.min.js" defer></script>
+<script src="../vendor/katex/0.16.11/contrib/auto-render.min.js" defer></script>
 
 <script src="../js/main.js?v=58"></script>
 <script src="../js/versus.js?v=3"></script>

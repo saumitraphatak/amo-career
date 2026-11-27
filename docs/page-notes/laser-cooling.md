@@ -68,3 +68,4 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Stenholm 1986 title is "The semiclassical theory of laser cooling"; Brown et al. 2019 is ⁸⁷Rb gray-molasses tweezer loading (89%), not ³⁹K (title and description fixed).
+- 2026-11-27: fixed a phone-width overflow (525 px at 390 px), same KaTeX MathML cause and fix as decoherence-lab (styles.css v43).

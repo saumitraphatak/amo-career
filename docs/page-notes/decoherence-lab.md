@@ -60,3 +60,4 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - Zurek 2003 now links the RMP DOI (the arXiv id pointed elsewhere).
+- 2026-11-27: fixed a phone-width overflow (page was 493 px wide at 390 px): KaTeX's hidden MathML in scrolling tables escaped the scroller; `.katex { position: relative }` in styles.css v43. Found once the smoke test could render real KaTeX (vendored).

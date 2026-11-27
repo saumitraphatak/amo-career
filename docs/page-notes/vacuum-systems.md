@@ -67,3 +67,4 @@ Sitewide fix in main.js/styles.css (see `docs/overnight-log.md` and CLAUDE.md "C
 
 ## 2026-11-14: citation check 2 + contrast pass 2
 - O'Hanlon, Jousten, Chambers DOIs restored (Crossref-verified). Regime badges darker on cream.
+- 2026-11-27: dark-mode colour patch block (11 colours) replaced by `--dk-*` tokens on the inline colours. KaTeX and Chart.js now load from `vendor/`.

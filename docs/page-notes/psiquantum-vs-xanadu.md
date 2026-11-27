@@ -104,3 +104,4 @@ All four facts independently re-verified against primary/near-primary sources (c
 ## 2026-11-21: career-page pass ("do the same for the other Career pages")
 - Standard hero, "numbers checked" line, "At a glance" scoreboard at the end of section 01.
 - **Fact fixed:** there was no "May 2026, $1.5B at $10.5B" round. That is the September 2025 Series E ($1B at a $7B valuation) in Australian dollars (A$1.5B, A$10.5B; e.g. SmartCompany, 11 Sep 2025); Sacra's text repeats it with a 2026 date while its own header still says $7B, and no news report of a 2026 round exists. All six places now say $7B (Sep 2025); the timeline and funding chart use the verified $100M CHIPS R&D award (finalized Sep 2026) instead.
+- 2026-11-27: dark-mode colour patch block replaced by `--dk-*` tokens on the inline colours and page-style rules. KaTeX and Chart.js now load from `vendor/`.

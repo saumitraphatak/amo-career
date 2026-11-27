@@ -14,7 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def read(rel: str) -> str:
-    return (ROOT / rel).read_text(encoding="utf-8")
+    """A file's text. For a page, its own scripts under js/pages/ are appended, so formula checks find the code
+    whether it is inline or moved out of the HTML (learn-quantum and remote-entanglement, 2026-11-27)."""
+    import re
+    text = (ROOT / rel).read_text(encoding="utf-8")
+    if rel.endswith(".html"):
+        for src in re.findall(r'<script src="(?:\.\./)?(js/pages/[a-z0-9-]+\.js)\?v=\d+"></script>', text):
+            text += "\n" + (ROOT / src).read_text(encoding="utf-8")
+    return text
 
 
 def assert_contains(rel: str, needle: str) -> None:
@@ -1130,9 +1137,9 @@ def test_book() -> None:
     assert "${root}book/" in js and "byHref.set('book:overview'" in js
     assert (book / "_build" / "extract.js").exists() and (book / "katex" / "katex.min.css").exists()
     # edition 1.1 (2026-11-26): prologue, records and index appendices, numbered figures, the directory as tables
-    for anchor in ("scale-map", "prologue", "prologue-journey", "appx-notation", "appx-glossary", "appx-records", "appx-index"):
+    for anchor in ("scale-map", "prologue", "prologue-journey", "appx-notation", "appx-glossary", "appx-formulas", "appx-records", "appx-index"):
         assert f'id="{anchor}"' in html, anchor
-    assert "Edition 1.1" in html and (book / "img" / "apparatus-map.png").exists()
+    assert "Edition 1.1" in html and (book / "img" / "apparatus-map.jpg").exists()
     entries = re.findall(r'<p class="ix-e" data-term="[^"]*">.*?<span class="ix-pg">(.*?)</span>', html)
     assert len(entries) > 100 and all(re.search(r'>\d+</a>', e) for e in entries), "index without page numbers"
     assert html.count('class="fig-num">Figure ') > 150 and 'class="gdir"' in html
@@ -1289,6 +1296,46 @@ def test_showcase_links_resolve() -> None:
     assert "function initLiveFigures()" in read("js/main.js") and "initLiveFigures();" in read("js/main.js")
 
 
+def test_hosting_and_theme_tokens_2026_11_27() -> None:
+    """2026-11-27: KaTeX and Chart.js are vendored (no page loads them from jsDelivr; the KaTeX files are the exact
+    bytes the pages' SRI hashes pinned), the service worker precaches them, the six dark-mode patch blocks became --dk-*
+    tokens, KaTeX's hidden MathML is contained (phone overflow), and the two heaviest pages load their scripts from js/pages/."""
+    import re, hashlib, base64, glob
+    pages = ["home.html", "404.html"] + sorted(p.replace(str(ROOT) + "/", "") for p in glob.glob(str(ROOT / "pages" / "*.html")))
+    sri = {"katex.min.css": "nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+",
+           "katex.min.js": "7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg",
+           "contrib/auto-render.min.js": "43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk"}
+    for name, h in sri.items():
+        data = (ROOT / "vendor" / "katex" / "0.16.11" / name).read_bytes()
+        assert base64.b64encode(hashlib.sha384(data).digest()).decode() == h, name
+    assert b"Chart.js v4.4.3" in (ROOT / "vendor" / "chart.js" / "4.4.3" / "chart.umd.js").read_bytes()[:200]
+    css = read("vendor/katex/0.16.11/katex.min.css")
+    for font in set(re.findall(r"url\((fonts/[^)]+\.woff2)\)", css)):
+        assert (ROOT / "vendor" / "katex" / "0.16.11" / font).exists(), font
+    sw = read("sw.js")
+    for p in pages:
+        html = (ROOT / p).read_text(encoding="utf-8")
+        assert "cdn.jsdelivr.net" not in html, p
+        assert "contrast pass" not in html, p
+        for src in re.findall(r'(?:src|href)="((?:\.\./)?vendor/[^"]+)"', html):
+            assert (ROOT / src.replace("../", "")).exists(), (p, src)
+            assert "./" + src.replace("../", "") in sw or src.endswith(".css") and "./" + src.replace("../", "") in sw, (p, src)
+        for src in re.findall(r'<script src="\.\./(js/pages/[a-z0-9-]+\.js)\?v=\d+"></script>', html):
+            assert (ROOT / src).exists(), (p, src)
+    styles = read("css/styles.css")
+    dark = styles[styles.index('[data-theme="dark"] {'):]
+    defined = set(re.findall(r"--dk-([a-z]+):", dark[:dark.index("}")]))
+    used = set()
+    for p in pages:
+        used |= set(re.findall(r"var\(--dk-([a-z]+),", (ROOT / p).read_text(encoding="utf-8")))
+    assert used and used <= defined, used - defined
+    assert ".katex { position: relative; }" in styles
+    for p in ("pages/learn-quantum.html", "pages/remote-entanglement.html"):
+        html = (ROOT / p).read_text(encoding="utf-8")
+        assert "js/pages/" in html and "renderNav({ active:" in html
+        assert max(len(b) for b in re.findall(r"<script>(.*?)</script>", html, re.S)) < 3000, p
+
+
 def main() -> None:
     tests = [
         test_recoil_convention_values,
@@ -1337,6 +1384,7 @@ def main() -> None:
         test_cavity_photon_race,
         test_cz_pulse,
         test_showcase_links_resolve,
+        test_hosting_and_theme_tokens_2026_11_27,
     ]
     for test in tests:
         test()

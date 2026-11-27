@@ -1072,3 +1072,34 @@ ul.watch { columns: 2; column-gap: 28px; padding-left: 1.1em; font-size: .92em; 
 .scale-stop .sc-ch { font: 600 11.5px/1.4 var(--sans); margin-top: 6px; }
 .scale-stop .sc-ch a { border: 0; }
 @media print { .scale-map-grid { grid-template-columns: repeat(3, 1fr); } .glossary-dl dt { font-size: 10pt; } }
+
+/* Reader UX: chapter reading time, search modal, formula sheet & jump flash */
+.ch-read-time {
+  display: inline-block; margin-left: .55rem; font: 600 .72rem/1 var(--sans);
+  letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+  padding: .18rem .45rem; border: 1px solid var(--rule); border-radius: 999px; vertical-align: middle;
+}
+.book-search-modal {
+  position: fixed; inset: 0; z-index: 200; background: rgba(10, 14, 22, 0.55);
+  backdrop-filter: blur(4px); display: none; align-items: flex-start; justify-content: center; padding: 10vh 16px 24px;
+}
+.book-search-modal.open { display: flex; }
+.book-search-box {
+  width: min(640px, 100%); max-height: 76vh; background: var(--paper); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 14px; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.book-search-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+.book-search-head input { flex: 1; font: 15px/1.3 var(--sans); background: transparent; border: none; outline: none; color: var(--ink); }
+.book-search-kbd { font: 600 11px/1 var(--mono); color: var(--muted); border: 1px solid var(--rule); border-radius: 5px; padding: 3px 6px; }
+.book-search-results { overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.book-search-item { display: block; text-decoration: none; border: none; padding: 9px 12px; border-radius: 8px; color: var(--ink); transition: background .12s; }
+.book-search-item:hover, .book-search-item:focus-visible { background: var(--tint); outline: none; }
+.book-search-meta { font: 700 11px/1.2 var(--sans); text-transform: uppercase; letter-spacing: .05em; color: var(--accent); }
+.book-search-title { font: 600 14px/1.35 var(--sans); margin: 2px 0; }
+.book-search-snip { font: 12.5px/1.45 var(--sans); color: var(--muted); }
+.book-jump-flash { animation: bookFlash 1.4s ease-out; }
+@keyframes bookFlash { 0% { background-color: color-mix(in srgb, var(--accent) 26%, transparent); } 100% { background-color: transparent; } }
+.formula-sheet-group { margin: 1.1rem 0 1.35rem; }
+.formula-sheet-group h2 { font-size: 1.05rem; margin-bottom: .45rem; }
+@media print { .book-search-modal, .ch-read-time { display: none !important; } }

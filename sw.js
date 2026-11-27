@@ -1,13 +1,18 @@
 /* AMO Toolkit — Offline-first Service Worker for PWA support */
-const CACHE_NAME = 'amo-toolkit-v2';
+const CACHE_NAME = 'amo-toolkit-v3';
 const CORE_ASSETS = [
   './',
   './home.html',
   './404.html',
   './manifest.json',
   './favicon.svg',
-  './css/styles.css?v=42',
+  './css/styles.css?v=43',
   './js/main.js?v=58',
+  // vendored libraries (vendor/README.md): most pages need them, so precache them for offline lab use
+  './vendor/katex/0.16.11/katex.min.css',
+  './vendor/katex/0.16.11/katex.min.js',
+  './vendor/katex/0.16.11/contrib/auto-render.min.js',
+  './vendor/chart.js/4.4.3/chart.umd.js',
 ];
 
 self.addEventListener('install', event => {
@@ -59,7 +64,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Stale-while-revalidate for CSS, JS, images, and CDN math/chart libraries.
+  // Stale-while-revalidate for CSS, JS, fonts and images (KaTeX and Chart.js are vendored, so same-origin), Plotly and Google Fonts.
   event.respondWith(
     caches.match(req).then(cached => {
       const net = fetch(req)

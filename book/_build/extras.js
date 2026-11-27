@@ -1,7 +1,7 @@
 // Edition 1.1 additions to "Building with Atoms", generated from the site's own pages:
 //   prologue()          — "Follow one atom" (pages/follow-one-atom.html) + the apparatus map (pages/apparatus.html)
-//   recordsAppendix()   — Appendix G, the records board (pages/records.html), with its check date
-//   indexSection()      — Appendix H, a back-of-book index; page numbers are filled in by polish.js (index.py)
+//   recordsAppendix()   — Appendix H, the records board (pages/records.html), with its check date
+//   indexSection()      — Appendix I, a back-of-book index; page numbers are filled in by polish.js (index.py)
 //   apparatusShot(out)  — a still of the exploded apparatus for the prologue figure
 const fs = require('fs'), path = require('path'), vm = require('vm');
 
@@ -57,7 +57,7 @@ function prologue(site, chapters, SITE) {
     ${stageHtml}
     <h2 data-num="P.3">The machine, part by part</h2>
     <p>The same journey happens inside one apparatus. This exploded view (schematic, not to scale) names its parts; the table says what each does and where it is designed. The live version turns and comes apart in 3D: <a href="${SITE}pages/apparatus.html">amotoolkit.com/pages/apparatus.html</a>.</p>
-    <figure class="fig"><img src="img/apparatus-map.png" alt="Exploded schematic of a neutral-atom tweezer experiment with labelled parts" data-w="2400" data-h="1400"></figure>
+    <figure class="fig"><img src="img/apparatus-map.jpg" alt="Exploded schematic of a neutral-atom tweezer experiment with labelled parts" data-w="2400" data-h="1400"></figure>
     <p class="snap">The apparatus map: vacuum chamber, atom source, pumps, coils, beams, objective, AODs, SLM, lasers, cameras, cavity, microwaves, fibres and control system.</p>
     <div class="tablewrap"><table class="wide-ok"><tr><th>Part</th><th>What it does</th><th>Where it is designed</th></tr>${partRows}</table></div>
   </section>`;
@@ -74,7 +74,7 @@ function recordsAppendix(site) {
   const cats = CATS.map(c => `<h2>${esc(c.title)}</h2><p>${esc(c.lead)}</p>
     <div class="tablewrap"><table class="rec"><tr><th>Platform</th><th>Record</th><th>What was measured</th><th>Who, when, source</th><th>Status</th></tr>${c.rows.map(r =>
       `<tr><td>${PF[r.pf]}</td><td class="rv">${r.val}</td><td>${r.what}${r.flags.length ? ` <span class="tag">${r.flags.join(', ')}</span>` : ''}</td><td>${r.who}<br>${r.src.map(link).join(' · ')}</td><td><span class="tag st-${r.st}">${ST[r.st]}</span></td></tr>`).join('')}</table></div>`).join('');
-  return `<section class="appx" id="appx-records"><h1>G · Where the field stands</h1><span class="marker">@@CH:appx-records@@</span>
+  return `<section class="appx" id="appx-records"><h1>H · Where the field stands</h1><span class="marker">@@CH:appx-records@@</span>
   <p>The best published numbers for each quantum-computing platform, from the website's records board, last checked ${esc(checked.trim())}. Records move quickly: treat this as a dated snapshot and check the live board, <a href="${SITE_P}records.html">amotoolkit.com/pages/records.html</a>, before quoting a value. Every entry names its source and says whether it is peer-reviewed, a preprint, or company-reported; "one pair" means it was measured on one or a few qubit pairs rather than averaged over a processor.</p>
   ${cats}</section>`;
 }
@@ -83,7 +83,7 @@ function indexSection(terms) {
   const groups = {};
   Object.keys(terms).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })).forEach(t => { const L = t[0].toUpperCase().replace(/[^A-Z]/, '#'); (groups[L] = groups[L] || []).push(t); });
   const body = Object.keys(groups).sort().map(L => `<div class="ix-l"><h3>${L}</h3>${groups[L].map(t => `<p class="ix-e" data-term="${esc(t)}">${esc(t)}<span class="ix-pg"></span></p>`).join('')}</div>`).join('');
-  return `<section class="appx" id="appx-index"><h1>H · Index</h1><span class="marker">@@CH:appx-index@@</span>
+  return `<section class="appx" id="appx-index"><h1>I · Index</h1><span class="marker">@@CH:appx-index@@</span>
   <p class="ix-intro">Page numbers refer to the PDF edition; in the online edition each number links to the chapter that contains it. The pages listed for each term are where it is discussed most, not every mention.</p>
   <div class="ix">${body}</div></section>`;
 }
@@ -98,7 +98,7 @@ async function apparatusShot(site, out, chromium, sharp) {
   await p.evaluate(() => document.querySelectorAll('.ap-bar, .ap-tip').forEach(e => e.style.display = 'none'));
   await p.waitForTimeout(900);
   const el = await p.$('.ap-stagebox'); const buf = await el.screenshot();
-  await sharp(buf).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile(path.join(out, 'img/apparatus-map.png'));
+  await sharp(buf).flatten({ background: "#050b15" }).jpeg({ quality: 86, mozjpeg: true }).toFile(path.join(out, "img/apparatus-map.jpg"));
   await b.close();
 }
 

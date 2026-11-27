@@ -52,9 +52,11 @@ async function saveImages(key, raw) {
   let body = raw.body;
   for (const im of raw.images) {
     const buf = Buffer.from(im.url.split(',')[1], 'base64');
-    const file = `img/${key}-${im.id}.png`;
-    const img = sharp(buf); const meta = await img.metadata();
-    await img.resize({ width: Math.min(meta.width, 1400), withoutEnlargement: true }).flatten({ background: '#ffffff' }).png({ palette: true, quality: 90, compressionLevel: 9 }).toFile(path.join(out, file));
+    // continuous-tone snapshots (3D renders, heat maps, photos) as JPEG, which the PDF keeps as JPEG; line art as PNG
+    const img = sharp(buf); const meta = await img.metadata(), photo = (await sharp(buf).stats()).entropy > 1.8;
+    const file = `img/${key}-${im.id}.${photo ? 'jpg' : 'png'}`;
+    const sized = img.resize({ width: Math.min(meta.width, 1400), withoutEnlargement: true }).flatten({ background: '#ffffff' });
+    await (photo ? sized.jpeg({ quality: 84, mozjpeg: true }) : sized.png({ palette: true, quality: 90, compressionLevel: 9 })).toFile(path.join(out, file));
     const m2 = await sharp(path.join(out, file)).metadata();
     body = body.replace(`data-img="${im.id}" `, `src="${file}" loading="lazy" data-w="${m2.width}" data-h="${m2.height}" `);
   }
@@ -118,7 +120,7 @@ function front() {
     chapters.filter(c => c.part === p).map(c => `<div class="tc"><span class="n">${c.no}</span><a href="#ch-${c.key}">${esc((META[c.key] || {}).title || c.label)}</a><span class="dots"></span><span class="pg" data-pg="ch-${c.key}"></span></div>`).join('')).join('') +
     `<div class="tp" style="--pc:var(--c-teach)">Part V · Teach with this Book</div><div class="tc"><span class="n">V</span><a href="#part-teach">The 14-week course</a><span class="dots"></span><span class="pg" data-pg="part-teach"></span></div>` +
     `<div class="tp" style="--pc:var(--c-app)">Appendices</div>` +
-    [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly'], ['appx-notation', 'E', 'Notation and symbols'], ['appx-glossary', 'F', 'Glossary of key terms'], ['appx-records', 'G', 'Where the field stands: the records board'], ['appx-index', 'H', 'Index']]
+    [['appx-notebooks', 'A', 'Python notebooks'], ['appx-constants', 'B', 'Constants used in this book'], ['appx-cite', 'C', 'Citing this book and the work behind it'], ['appx-care', 'D', 'Using this material responsibly'], ['appx-notation', 'E', 'Notation and symbols'], ['appx-glossary', 'F', 'Glossary of key terms'], ['appx-formulas', 'G', 'Formula and quick-reference sheet'], ['appx-records', 'H', 'Where the field stands: the records board'], ['appx-index', 'I', 'Index']]
       .map(([id, n, t]) => `<div class="tc"><span class="n">${n}</span><a href="#${id}">${t}</a><span class="dots"></span><span class="pg" data-pg="${id}"></span></div>`).join('');
   return `
 <section class="cover">
@@ -153,7 +155,7 @@ function front() {
   <ul>
     <li>A <strong>prologue</strong> that follows one atom through the machine, an exploded view of the apparatus, and a <strong>map of scales</strong>.</li>
     <li><strong>Numbered figures, tables and equations</strong>, and each chapter's headline figures in <strong>key-number panels</strong>.</li>
-    <li>Appendices on <strong>notation</strong>, a <strong>glossary</strong>, <strong>where the field stands</strong> (record results, each with its source and review status) and an <strong>index</strong>; the research-group directory (Chapter ${chapters.find(c => c.key === 'amo-groups').no}) as tables by country.</li>
+    <li>Appendices on <strong>notation</strong>, a <strong>glossary</strong>, a <strong>formula sheet</strong>, <strong>where the field stands</strong> (record results, each with its source and review status) and an <strong>index</strong>; the research-group directory (Chapter ${chapters.find(c => c.key === 'amo-groups').no}) as tables by country.</li>
     <li>Corrections made on the website since the first edition, and its newest material, such as the surface-code decoder and the zoned-processor views.</li>
   </ul>
   <h2>A word of care</h2>
@@ -223,8 +225,11 @@ function appendices() {
   <p>Common symbols used across Parts I&ndash;IV. Context-specific subscripts are defined where they first appear.</p>
   <div class="tablewrap"><table><tr><th>Symbol</th><th>Meaning</th><th>Typical units</th></tr>${(REF.notation || []).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table></div></section>
   <section class="appx" id="appx-glossary"><h1>F · Glossary of key terms</h1><span class="marker">@@CH:appx-glossary@@</span>
-  <p>Short definitions of experimental and quantum-computing terms that recur across the book. Appendix H points to where each is developed.</p>
-  <dl class="glossary-dl">${(REF.glossary || []).map(g => `<dt>${g[0]}</dt><dd>${g[1]}</dd>`).join('')}</dl></section>`;
+  <p>Short definitions of experimental and quantum-computing terms that recur across the book. The index (Appendix I) points to where each is developed.</p>
+  <dl class="glossary-dl">${(REF.glossary || []).map(g => `<dt>${g[0]}</dt><dd>${g[1]}</dd>`).join('')}</dl></section>
+  <section class="appx" id="appx-formulas"><h1>G · Formula and quick-reference sheet</h1><span class="marker">@@CH:appx-formulas@@</span>
+  <p>Core equations used across Parts I&ndash;III, grouped by topic, with typical laboratory scales and the chapter that develops each. Conventions follow the chapters; where the literature uses more than one (recoil temperature, cavity linewidths), the row says which.</p>
+  ${(REF.formulas || []).map(g => `<div class="formula-sheet-group"><h2>${g.group}</h2><div class="tablewrap"><table><tr><th>Quantity</th><th>Formula</th><th>Typical scale</th><th>Chapter</th></tr>${g.rows.map(r => { const c = chapters.find(x => x.key === r[3]); return `<tr><td><strong>${r[0]}</strong></td><td class="mono">${r[1]}</td><td>${r[2]}</td><td>${c ? `<a href="#ch-${c.key}">Ch. ${c.no}</a>` : ''}</td></tr>`; }).join('')}</table></div></div>`).join('')}</section>`;
 }
 
 (async () => {
@@ -238,7 +243,10 @@ function appendices() {
       const f = path.join(rawDir, c.key + '.json');
       if (!fs.existsSync(f)) { console.warn('missing', c.key); continue; }
       const raw = JSON.parse(fs.readFileSync(f, 'utf8'));
-      const body = c.key === 'amo-groups' ? EXTRAS.groupsBody(site, raw) : await saveImages(c.key, raw);
+      let body = c.key === 'amo-groups' ? EXTRAS.groupsBody(site, raw) : await saveImages(c.key, raw);
+      // keep a figure's deep link only if that id is in the page's own HTML (ids made by scripts may not exist yet on arrival)
+      const src = fs.readFileSync(path.join(site, 'pages', c.key + '.html'), 'utf8');
+      body = body.replace(/ data-anchor="([\w-]+)"/g, (m, id) => src.includes(`id="${id}"`) ? m : '');
       sections.push(chapterHtml(c, body, raw));
     }
   }
@@ -247,7 +255,7 @@ function appendices() {
   sections.push(EXTRAS.recordsAppendix(site));
   sections.push(EXTRAS.indexSection(TERMS));
   const tocSide = `<div class="tp">Front matter</div><a class="tc" href="#about">About this book</a><a class="tc" href="#scale-map">Map of scales</a><div class="tp">Prologue</div><a class="tc" href="#prologue">Follow one atom</a>` + PARTS.map(p => `<div class="tp">Part ${p.n} · ${p.title}</div>` + chapters.filter(c => c.part === p).map(c => `<a class="tc" href="#ch-${c.key}">${c.no}. ${esc((META[c.key] || {}).title || c.label)}</a>`).join('')).join('') +
-    `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a><a class="tc" href="#appx-notation">E · Notation &amp; symbols</a><a class="tc" href="#appx-glossary">F · Glossary</a><a class="tc" href="#appx-records">G · Where the field stands</a><a class="tc" href="#appx-index">H · Index</a>`;
+    `<div class="tp">Part V · Teach</div><a class="tc" href="#part-teach">The 14-week course</a><div class="tp">Appendices</div><a class="tc" href="#appx-notebooks">A · Python notebooks</a><a class="tc" href="#appx-constants">B · Constants</a><a class="tc" href="#appx-cite">C · Citing</a><a class="tc" href="#appx-care">D · Using it responsibly</a><a class="tc" href="#appx-notation">E · Notation &amp; symbols</a><a class="tc" href="#appx-glossary">F · Glossary</a><a class="tc" href="#appx-formulas">G · Formula sheet</a><a class="tc" href="#appx-records">H · Where the field stands</a><a class="tc" href="#appx-index">I · Index</a>`;
   const draft = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <!-- Google tag (gtag.js), same as every site page -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY3G6MDXBD"></script>

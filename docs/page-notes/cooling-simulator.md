@@ -87,3 +87,4 @@ The four route-cards open chapters 1–4. Simulation Codes and References have n
 
 ## 2026-11-14: citation check + contrast pass
 - Six species cards now 3 + 3 on wide screens.
+- 2026-11-27: dark-mode colour patch block replaced by `--dk-*` tokens on the inline colours (same look in both themes). KaTeX and Chart.js now load from `vendor/`.

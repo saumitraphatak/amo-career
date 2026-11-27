@@ -3,7 +3,7 @@
 const { chromium } = require('playwright');
 const http = require('http'), fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const out = path.resolve(process.argv[2]);
-const T = { '.css': 'text/css', '.png': 'image/png', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.html': 'text/html' };
+const T = { '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.html': 'text/html' };
 const srv = http.createServer((q, r) => {
   const p = path.join(out, decodeURIComponent(q.url.split('?')[0]));
   fs.readFile(p, (e, b) => { if (e) { r.writeHead(404); return r.end(); } r.writeHead(200, { 'Content-Type': T[path.extname(p)] || 'application/octet-stream' }); r.end(b); });
@@ -109,7 +109,8 @@ function bookish() {
       const h = heading(fig);
       let text = own ? own.innerHTML.trim() : '';
       if (!text) text = h ? esc(h) + '.' : '';
-      if (snap) text += (text ? ' ' : '') + '<span class="fig-live">Snapshot at the default settings; interactive on the website.</span>';
+      const live = key ? `https://amotoolkit.com/pages/${key}.html${fig.dataset.anchor ? '#' + fig.dataset.anchor : ''}` : '';
+      if (snap) text += (text ? ' ' : '') + `<span class="fig-live">Snapshot at the default settings; ${live ? `<a href="${live}">interactive on the website</a>` : 'interactive on the website'}.</span>`;
       if (own) own.remove(); if (snap) snap.remove();
       const fc = document.createElement('figcaption'); fc.className = 'fig-cap'; fc.innerHTML = `<span class="fig-num">Figure ${num}.${f}</span>${text}`;
       fig.appendChild(fc);
@@ -141,12 +142,24 @@ function bookish() {
 
 // UI hints that only make sense with a mouse on the live page
 function cleanHints() {
-  const RX = /^\(?\s*(drag (to rotate|to turn|the sphere|on the|to pan)[^]*|double-click to reset|hover( \/ tap)? [^]*|tap datasets[^]*|hover a qubit[^]*|press run( or step)?[^]*|click two[^]*)\)?\s*\.?$/i;
+  const RX = /^\(?\s*(drag (to rotate|to turn|the sphere|the sliders?|on the|to pan)[^]*|double-click to reset|hover( \/ tap)? [^]*|tap datasets[^]*|hover a qubit[^]*|press run( or step)?[^]*|click two[^]*)\)?\s*\.?$/i;
   let n = 0;
   document.querySelectorAll('.ch-body p, .ch-body span, .ch-body small, .ch-body div, .ch-body figcaption, .ch-body em, .ch-body i').forEach(e => {
     if (!e.isConnected) return;
     const t = e.textContent.replace(/\s+/g, ' ').trim();
     if (t.length && t.length < 110 && !e.querySelector('img,svg,.katex,table') && RX.test(t)) { e.remove(); n++; }
+  });
+  document.querySelectorAll('em').forEach(e => { if (!e.textContent.trim() && !e.children.length) { e.remove(); n++; } });
+  // a link in the text to another chapter's page goes to that chapter in the book (a link to the chapter's own page stays live)
+  const chNums = new Map([...document.querySelectorAll('section.chapter[data-key]')].map(s => [s.dataset.key, s.querySelector('.ch-num')?.textContent.trim()]));
+  document.querySelectorAll('.ch-body p a[href*="/pages/"], .ch-body li a[href*="/pages/"]').forEach(a => {
+    if (a.closest('.ia, .ch-companion')) return;
+    const m = (a.getAttribute('href') || '').match(/\/pages\/([a-z0-9-]+)\.html(?:#[^"]*)?$/), own = a.closest('section.chapter[data-key]');
+    if (m && chNums.has(m[1]) && !(own && own.dataset.key === m[1])) {
+      a.setAttribute('href', `#ch-${m[1]}`);
+      if (!/\bCh\.\s*\d+/i.test(a.textContent)) a.append(` (Ch. ${chNums.get(m[1])})`);
+      n++;
+    }
   });
   // hint fragments glued into a longer text node, and the website's "this page" phrasing
   const FR = /\s*(drag to rotate|drag to turn it)\s*·\s*double-click to reset\s*/gi;
@@ -205,6 +218,13 @@ srv.listen(0, '127.0.0.1', async () => {
   html = '<!DOCTYPE html>\n' + await pp.evaluate(() => document.documentElement.outerHTML);
   fs.writeFileSync(path.join(out, 'index.html'), html);   // keep the PDF page numbers in the online contents too
   const pages2 = scan().markers;
+  // smaller file for phones: object streams, maximum Flate, linearized for fast first-page display (qpdf, if installed)
+  try {
+    const before = fs.statSync(pdf).size;
+    execFileSync('qpdf', ['--object-streams=generate', '--recompress-flate', '--compression-level=9', '--linearize', pdf, pdf + '.tmp']);
+    fs.renameSync(pdf + '.tmp', pdf);
+    console.log('qpdf', (before / 1e6).toFixed(1), '→', (fs.statSync(pdf).size / 1e6).toFixed(1), 'MB');
+  } catch (e) { console.log('qpdf not available or failed; PDF left as printed'); }
   const n = execFileSync('python3', ['-c', `import pypdf;print(len(pypdf.PdfReader("${pdf}").pages))`]).toString().trim();
   console.log('pdf pages', n, 'markers', Object.keys(pages2).length, 'stable', JSON.stringify(pages) === JSON.stringify(pages2));
   await b.close(); srv.close();
