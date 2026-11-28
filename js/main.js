@@ -3180,8 +3180,77 @@ window.AMOPrint = AMOPrint;
     ["citation_copy", "📎 Citations Copied"],
   ];
 
+  /* Toolkit reach in 2026: a dated snapshot from Google Analytics (Reports snapshot + Events exports, 1 Jan – 27 Nov 2026).
+     The GA4 property also covers Saumitra's personal site, so only figures that can be limited to amotoolkit.com are shown:
+     page views of toolkit pages (personal pages and 404s excluded, titles merged across the title-format change), the
+     most-used tools, and cities. Users, downloads and outbound clicks are property-wide in those exports, so they are not
+     shown until a per-hostname export exists. Cloud data-centre towns (crawler traffic) are left out of the city list. */
+  const GA4_REACH_2026 = {
+    range: "1 Jan – 27 Nov 2026",
+    toolkitViews: 11003, cities: 853,
+    topTools: [
+      ["MOT Designer", "pages/mot-designer.html", 1163],
+      ["Rydberg Gate Error Budget", "pages/fidelity-budget.html", 713],
+      ["Single-atom Cooling", "pages/laser-cooling.html", 582],
+      ["AMO Group Finder", "pages/amo-groups.html", 501],
+      ["Single-atom Imaging", "pages/imaging-calculator.html", 427],
+      ["MOT Temperature", "pages/tof-calculator.html", 356],
+    ],
+    cityList: ["Boulder", "Cambridge", "West Lafayette", "Denver", "Chicago", "Shanghai", "Bengaluru", "Tehran", "Toronto", "New York", "Shenzhen", "Boston", "Mumbai", "Amsterdam", "London"],
+    ways: ["Google Search", "Direct links", "Microsoft Teams links", "ChatGPT", "LinkedIn", "Google Scholar", "Gemini", "Overleaf"],
+  };
+
   function renderActivityPanel(communityCounts) {
+    const reachEl = document.getElementById("amo-reach-stats");
     const statsEl = document.getElementById("amo-activity-stats");
+    const R = GA4_REACH_2026;
+    if (reachEl && !reachEl.dataset.rendered) {
+      reachEl.dataset.rendered = "1";
+      const items = [
+        ["📄 Toolkit page views", R.toolkitViews.toLocaleString("en-US")],
+        ["🏙️ Reader cities", R.cities.toLocaleString("en-US") + "+"],
+        ["🛠️ Most-used tool", R.topTools[0][0]],
+      ];
+      reachEl.innerHTML = items.map(([lbl, val]) =>
+        `<div style="background:var(--bg-surface,var(--bg-base));border:1px solid var(--border);border-radius:10px;padding:.55rem .75rem;">
+          <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.15rem;">${lbl}</div>
+          <div style="font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:var(--text-primary);">${val}</div>
+        </div>`
+      ).join("");
+    }
+    const hlEl = document.getElementById("amo-highlights");
+    if (hlEl && !hlEl.dataset.rendered) {
+      hlEl.dataset.rendered = "1";
+      const maxV = R.topTools[0][2];
+      const toolRows = R.topTools.map(([name, href, v]) => {
+        const pct = Math.round((v / maxV) * 100);
+        return `<a href="${href}" style="display:block;text-decoration:none;color:inherit;padding:.24rem 0;">
+          <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.16rem;">
+            <span style="font-weight:600;color:var(--text-primary);">${name}</span>
+            <span style="font-family:var(--font-mono);color:var(--text-muted);">${v.toLocaleString("en-US")}</span>
+          </div>
+          <div style="height:5px;border-radius:999px;background:var(--border);overflow:hidden;" aria-hidden="true">
+            <div style="width:${pct}%;height:100%;border-radius:999px;background:var(--c-atom,#38bdf8);"></div>
+          </div>
+        </a>`;
+      }).join("");
+      const chip = (c) => `<span style="font-size:.72rem;padding:.18rem .52rem;border-radius:999px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);">${c}</span>`;
+      hlEl.innerHTML = `
+        <div style="background:var(--bg-surface,var(--bg-base));border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;">
+          <div style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.45rem;">Most-used tools (page views)</div>
+          ${toolRows}
+        </div>
+        <div style="background:var(--bg-surface,var(--bg-base));border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;display:flex;flex-direction:column;justify-content:space-between;gap:.65rem;">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.45rem;">Cities with the most readers</div>
+            <div style="display:flex;flex-wrap:wrap;gap:.35rem;">${R.cityList.map(chip).join("")}</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:.38rem;">How people arrive, most common first</div>
+            <div style="display:flex;flex-wrap:wrap;gap:.35rem;">${R.ways.map(chip).join("")}</div>
+          </div>
+        </div>`;
+    }
     const listEl = document.getElementById("amo-activity-list");
     const scopeEl = document.getElementById("amo-activity-scope");
     if (!statsEl) return;
@@ -3190,8 +3259,17 @@ window.AMOPrint = AMOPrint;
     if (scopeEl) {
       scopeEl.textContent = communityCounts
         ? "Live community totals · synced with Google Sheets & GA4"
-        : "Your browser activity · events also recorded in GA4";
+        : "Your activity in this browser";
     }
+    const anything = communityCounts || LABELS.some(([k]) => log.counts[k]);
+    const clearBtn0 = document.getElementById("amo-activity-clear");
+    if (clearBtn0) clearBtn0.hidden = !anything || !!communityCounts;
+    if (!anything) {
+      statsEl.innerHTML = `<p style="grid-column:1/-1;margin:0;font-size:.8rem;color:var(--text-muted);">Nothing recorded in this browser yet. Download the book, open a notebook or export a figure and it is counted here (only in your browser, plus an anonymous event in Google Analytics).</p>`;
+      const det = document.getElementById("amo-activity-details"); if (det) det.hidden = true;
+      return;
+    }
+    { const det = document.getElementById("amo-activity-details"); if (det) det.hidden = false; }
     statsEl.innerHTML = LABELS.map(([k, lbl]) => {
       const val = src[k] || 0;
       const mine = communityCounts ? ` <span style="font-size:.68rem;color:var(--text-muted);font-weight:400;">(you: ${log.counts[k] || 0})</span>` : "";

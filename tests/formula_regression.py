@@ -1356,6 +1356,9 @@ def test_usage_log() -> None:
         assert f'id="{el}"' in home, el
     assert "'amo-activity-log'" in read("book/_build/reader.js")
     assert (ROOT / "scripts" / "telemetry-apps-script.gs").exists()
+    # the 2026 reach snapshot shows only what can be limited to amotoolkit.com, with its date range
+    assert "GA4_REACH_2026" in js and 'range: "1 Jan – 27 Nov 2026"' in js and "Verified" not in home
+    assert "GA4_BASELINE_2026" not in js and "extraDl" not in js
 
 
 def main() -> None:

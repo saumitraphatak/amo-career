@@ -13,6 +13,9 @@
  */
 
 const SHEET_NAME = 'Events';
+const GA4_PROPERTY_ID = '512337025';
+// 2026 snapshot shown on home.html (toolkit pages only; see GA4_REACH_2026 in js/main.js)
+const BASELINE = { toolkit_views: 11003, cities: 853 };
 const NOTIFY_EMAIL = ''; // e.g. 'you@example.com' — leave empty to disable email alerts
 const NOTIFY_EVENTS = { book_pdf_download: true }; // add figure_export / notebook_download if desired
 

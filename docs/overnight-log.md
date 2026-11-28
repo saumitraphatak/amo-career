@@ -400,3 +400,6 @@ Newest entries at the bottom. Each overnight run appends one entry covering: dat
 - Gemini's usage log (main.js `AMOTrack`, home panel, Apps Script receiver) integrated: book events go to the same log; "citation copy" narrowed to real citation buttons; main.js cache bumped to v59 sitewide and in sw.js.
 - Phone top bar of the book: one row (icons for search/theme, "PDF"), was three rows (112 px).
 - Tests: OK 48 (`test_usage_log`, reader and list-of-figures checks in `test_book`).
+
+## 2026-11-28: Home "reach" snapshot (review of Gemini's version)
+- Kept Gemini's layout; corrected what it claims. GA4 exports (Reports snapshot, Events, 1 Jan – 27 Nov 2026) cover a property shared with the personal site and include cloud crawler traffic, so only toolkit page views (11,003), most-used tools, reader cities (853+) and arrival channels are shown; users, downloads and outbound clicks wait for per-hostname exports. Removed "Verified", the "AMO research hubs" and "Lab Teams" labels, and the addition of each visitor's local counts to the site-wide download total. main.js v60.

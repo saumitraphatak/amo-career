@@ -7,7 +7,7 @@ const CORE_ASSETS = [
   './manifest.json',
   './favicon.svg',
   './css/styles.css?v=43',
-  './js/main.js?v=59',
+  './js/main.js?v=60',
   // vendored libraries (vendor/README.md): most pages need them, so precache them for offline lab use
   './vendor/katex/0.16.11/katex.min.css',
   './vendor/katex/0.16.11/katex.min.js',
